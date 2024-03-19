@@ -27,6 +27,7 @@ HEADERS: dict = {
                    'manufacturer', 'model', 'imei', 'meid'],
 }
 
+API_VERSION: str = 'v1.0'
 
 ''' CLIENT '''
 
@@ -36,7 +37,7 @@ class MsGraphClient:
                  ok_codes, certificate_thumbprint, private_key,
                  managed_identities_client_id: Optional[str] = None):
         self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
-        self.base_url = urljoin(self.azure_cloud.endpoints.microsoft_graph_resource_id, '/v1.0')
+        self.base_url = urljoin(self.azure_cloud.endpoints.microsoft_graph_resource_id, f'/{API_VERSION}')
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=self.base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint,
@@ -47,10 +48,16 @@ class MsGraphClient:
                                          azure_cloud=self.azure_cloud
                                          )
 
-    def list_managed_devices(self, limit: int) -> tuple[list, Any]:
-        url_suffix: str = '/deviceManagement/managedDevices'
+    def list_managed_devices(self, limit: int, page_size: int | None,
+                             next_link: str | None = None) -> tuple[list, str | None, Any]:
+        limit = page_size if page_size else limit
+        url_suffix: str = f'/deviceManagement/managedDevices?$top={limit}&'
+        if next_link:
+            url_suffix = next_link.split(API_VERSION)[1]
         raw_response = self.ms_client.http_request('GET', url_suffix)
-        return raw_response.get('value', [])[:limit], raw_response
+        next_link = raw_response.get('@odata.nextLink')
+
+        return raw_response.get('value', []), next_link, raw_response
 
     def find_managed_devices(self, device_name: str) -> tuple[Any, str]:
         url_suffix: str = f"/deviceManagement/managedDevices?$filter=deviceName eq '{device_name}'"
@@ -59,6 +66,10 @@ class MsGraphClient:
 
     def get_managed_device(self, device_id: str) -> tuple[Any, str]:
         url_suffix: str = f'/deviceManagement/managedDevices/{device_id}'
+        return self.ms_client.http_request('GET', url_suffix), device_id
+
+    def get_managed_device_physical_memory(self, device_id: str) -> tuple[Any, str]:
+        url_suffix: str = f'/deviceManagement/managedDevices/{device_id}?$select=id,physicalMemoryInBytes,deviceName'
         return self.ms_client.http_request('GET', url_suffix), device_id
 
     def make_action(self, device_id: str, action: str, body: str = None) -> None:
@@ -229,6 +240,7 @@ def build_device_object(raw_device: dict) -> dict:
         'TotalStorageSpaceInBytes': raw_device.get('totalStorageSpaceInBytes'),
         'FreeStorageSpaceInBytes': raw_device.get('freeStorageSpaceInBytes'),
         'ManagedDeviceName': raw_device.get('managedDeviceName'),
+        'PhysicalMemoryInBytes': raw_device.get('physicalMemoryInBytes'),
         'PartnerReportedThreatState': raw_device.get('partnerReportedThreatState')
     })
 
@@ -238,9 +250,13 @@ def build_device_object(raw_device: dict) -> dict:
 
 def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
     limit: int = try_parse_integer(args.get('limit', 10), err_msg='This value for limit must be an integer.')
-    list_raw_devices, raw_response = client.list_managed_devices(limit)
+    page_size: int | None = arg_to_number(args.get('page_size'))
+    next_link = args.get('next_link')
+    list_raw_devices, next_link, raw_response = client.list_managed_devices(limit, page_size, next_link)
     list_devices: list = [build_device_object(device) for device in list_raw_devices if device]
     entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': list_devices}
+    if next_link:
+        entry_context['MSGraphDeviceManagement.DeviceNextLink(val.NextLink)'] = {"NextLink": next_link}
     human_readable: str = 'No managed devices found.'
     if list_devices:
         name: str = 'List managed devices'
@@ -248,7 +264,9 @@ def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
             name = f'Managed device {list_devices[0].get("Name", "")}'
         human_readable = tableToMarkdown(name=name, t=list_raw_devices, headers=HEADERS['raw_device'],
                                          headerTransform=lambda h: SPECIAL_HEADERS.get(h, pascalToSpace(h)),
-                                         removeNull=True)
+                                         removeNull=True) + (f"\nThere are more results than shown. "
+                                                             f"For more data please enter the next_link argument:\n "
+                                                             f"next_link={next_link}" if next_link else "")
     return_outputs(human_readable, entry_context, raw_response)
 
 
@@ -281,6 +299,25 @@ def get_managed_device_command(client: MsGraphClient, args: dict) -> None:
                                          headerTransform=lambda h: SPECIAL_HEADERS.get(h, pascalToSpace(h)),
                                          removeNull=True)
     return_outputs(human_readable, entry_context, raw_response)
+
+
+def get_managed_device_physical_memory_command(client: MsGraphClient, args: dict) -> None:
+    """
+    Returns the device physical memory.
+    :param device_id: The device id
+    :return: A CommandResults object
+    """
+    device_id: str = args.get('device_id', '')
+    raw_response, device_id = client.get_managed_device_physical_memory(device_id)
+
+    device: dict = build_device_object(raw_response)
+    entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': device}
+    device_name: str = device.get('Name', '')
+    human_readable: str = f'Managed device {device_id} not found.'
+    if device:
+        human_readable = tableToMarkdown(name=f'Managed device {device_name}', t=device, removeNull=True,
+                                         headers=['PhysicalMemoryInBytes'])
+    return_outputs(human_readable, entry_context, device)
 
 
 def disable_lost_mode_command(client: MsGraphClient, args: dict) -> None:
@@ -448,6 +485,8 @@ def main():
             list_managed_devices_command(client, args)
         elif command == 'msgraph-get-managed-device-by-id':
             get_managed_device_command(client, args)
+        elif command == 'msgraph-get-managed-device-physical-memory-by-id':
+            get_managed_device_physical_memory_command(client, args)
         elif command == 'msgraph-device-disable-lost-mode':
             disable_lost_mode_command(client, args)
         elif command == 'msgraph-locate-device':

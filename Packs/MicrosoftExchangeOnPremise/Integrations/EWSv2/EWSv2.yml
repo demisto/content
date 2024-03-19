@@ -66,10 +66,7 @@ configuration:
   type: 13
   section: Connect
   required: false
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                           Manual Mode
-    Exchange Server Hostname or IP address
+- display: "┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉\n‎                                           Manual Mode\nExchange Server Hostname or IP address"
   name: ewsServer
   type: 0
   section: Connect
@@ -81,7 +78,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: 'Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013, and 2016)'
+- display: 'Exchange Server Version (On-Premise only. Supported versions: 2007, 2010, 2010_SP2, 2013 2016, and 2019)'
   name: defaultServerVersion
   type: 0
   section: Connect
@@ -93,10 +90,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                         Advanced Mode
-    Override Authentication Type (NTLM, Basic, or Digest).
+- display: "┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉\n‎                                         Advanced Mode\nOverride Authentication Type (NTLM, Basic, or Digest)."
   name: authType
   type: 0
   section: Connect
@@ -215,10 +209,10 @@ script:
       description: The ID of the deleted attachment, in case of other attachment (for example, "email").
       type: string
     - contextPath: EWS.Items.FileAttachments.action
-      description: 'The deletion action in case of file attachment. This is a constant value: ''deleted''.'
+      description: "The deletion action in case of file attachment. This is a constant value: 'deleted'."
       type: string
     - contextPath: EWS.Items.ItemAttachments.action
-      description: 'The deletion action in case of other attachment (for example, "email"). This is a constant value: ''deleted''.'
+      description: "The deletion action in case of other attachment (for example, \"email\"). This is a constant value: 'deleted'."
       type: string
   - description: Returns a list of searchable mailboxes. This command requires eDiscovery permissions to the Exchange Server. For more information, see the EWSv2 integration documentation.
     name: ews-get-searchable-mailboxes
@@ -354,6 +348,12 @@ script:
       name: selected-fields
       predefined:
       - ''
+    - auto: PREDEFINED
+      description: Whether to surround the message ID with angle brackets (<>) if it does not exist. Default is 'True'.
+      name: surround_id_with_angle_brackets
+      predefined:
+      - 'True'
+      - 'False'
     description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
     name: ews-search-mailbox
     outputs:
@@ -508,12 +508,12 @@ script:
       name: item-id
       required: true
     - auto: PREDEFINED
-      defaultValue: 'yes'
+      defaultValue: yes
       description: Whether to move the item from the original folder to the junk folder.
       name: move-items
       predefined:
-      - 'yes'
-      - 'no'
+      - yes
+      - no
     - description: If empty, will use the default mailbox. If you specify a different mailbox, you might need impersonation rights to the mailbox.
       name: target-mailbox
     description: 'Marks an item as junk. This is commonly used to block an email address. For more information, see the Microsoft documentation: https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx.'
@@ -564,12 +564,12 @@ script:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      defaultValue: 'no'
+      defaultValue: no
       description: If the email item contains another email as an attachment (EML or MSG file), whether to retrieve the EML/MSG file attachment. Can be "yes" or "no". Default is "no".
       name: get-internal-item
       predefined:
-      - 'yes'
-      - 'no'
+      - yes
+      - no
     description: Retrieves items from a specified folder in a mailbox. The items are order by the item created time, most recent is first.
     name: ews-get-items-from-folder
     outputs:
@@ -630,6 +630,87 @@ script:
     - contextPath: EWS.Items.categories
       description: The categories of the email.
       type: unknown
+  - arguments:
+    - description: 'The text value of this argument is used to resolve names against the following fields: First name, Last name, Display name, Full name, Office, Alias, SMTP address. Eg. `John Doe` or `sip:johndoe@example.com`.'
+      isArray: false
+      name: identifier
+      required: true
+    - auto: PREDEFINED
+      description: Describes whether the full contact details for public contacts for a resolved name are returned.
+      name: full-contact-data
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'True'
+    description: This operation verifies aliases and matches display names to the correct mailbox user. It handles one ambiguous name at a time. If there are multiple potential matches, all will be returned, but limited to a maximum of 100 candidates.
+    name: ews-resolve-name
+    outputs:
+    - contextPath: EWS.ResolvedNames.FullContactInfo.contactSource
+      description: Whether the contact is located in the Exchange store or Active Directory Domain Services (AD DS).
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.culture
+      description: Represents the culture for a given item in a mailbox.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.displayName
+      description: The display name of a contact.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.ItemId
+      description: Contains the unique identifier and change key of an item in the Exchange store.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.emailAddresses
+      description: Represents a collection of email addresses for a contact.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.givenName
+      description: Contains a contact's given name.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.importance
+      description: Describes the importance of an item.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.initials
+      description: Represents the initials of a contact.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.phoneNumbers.label
+      description: 'The following are the possible values for this attribute: AssistantPhone, BusinessFax, BusinessPhone, BusinessPhone2, Callback, CarPhone, CompanyMainPhone, HomeFax, HomePhone, HomePhone2, Isdn, MobilePhone, OtherFax, OtherTelephone, Pager, PrimaryPhone, RadioPhone, Telex, TtyTddPhone.'
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.phoneNumbers.phoneNumber
+      description: The phone number of the contact.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.city
+      description: The physical addresses city associated with the contact.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.country
+      description: The physical addresses country associated with the contact.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.label
+      description: The physical addresses label associated with the contact.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.state
+      description: The physical addresses state associated with the contact.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.street
+      description: The physical addresses street associated with the contact.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.physicalAddresses.zipcode
+      description: The physical addresses zipcode associated with the contact.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.postalAddressIndex
+      description: Represents the display types for physical addresses.
+      type: String
+    - contextPath: EWS.ResolvedNames.FullContactInfo.sensitivity
+      description: Indicates the sensitivity level of an item.
+      type: String
+    - contextPath: EWS.ResolvedNames.email_address
+      description: The primary SMTP address of a mailbox user.
+      type: String
+    - contextPath: EWS.ResolvedNames.mailbox_type
+      description: The type of mailbox that is represented by the email address.
+      type: String
+    - contextPath: EWS.ResolvedNames.name
+      description: The name of a mailbox user.
+      type: String
+    - contextPath: EWS.ResolvedNames.routing_type
+      description: The address type for the mailbox.
+      type: String
   - arguments:
     - description: A CSV list if item IDs.
       isArray: true
@@ -965,7 +1046,7 @@ script:
     - name: htmlBody
       description: HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument.
     - name: bodyType
-      description: 'Whether message response body type is Text, or HTML.'
+      description: Whether message response body type is Text, or HTML.
       auto: PREDEFINED
       defaultValue: Text
       predefined:

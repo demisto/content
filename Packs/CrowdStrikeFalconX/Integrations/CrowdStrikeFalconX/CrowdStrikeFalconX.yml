@@ -932,7 +932,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: File.Malicious.Description
-      description: A description explaining why the file was determined to be malicious
+      description: A description explaining why the file was determined to be malicious.
       type: String
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
@@ -968,7 +968,7 @@ script:
       description: The architecture of the machine on which the report was created.
       type: String
     - contextPath: csfalconx.resource.classification
-      description: Classification
+      description: Classification.
       type: String
     - contextPath: csfalconx.resource.classification_tags
       description: Tags related to the classification.
@@ -1010,7 +1010,7 @@ script:
       description: Description of an extracted file.
       type: String
     - contextPath: csfalconx.resource.extracted_files.file_size
-      description: Size of an extracted file
+      description: Size of an extracted file.
       type: Number
     - contextPath: csfalconx.resource.extracted_files.md5
       description: MD5 of an extracted file.
@@ -1317,14 +1317,14 @@ script:
       description: Used quota number.
       type: Number
     - contextPath: csfalconx.resource.in_progress
-      description: The number of calls in progress
+      description: The number of calls in progress.
       type: Number
   - arguments:
-    - description: Optional filter and sort criteria in the form of an FQL query. Takes precedence over the *hash* argument (if provided)
+    - description: Optional filter and sort criteria in the form of an FQL query. Takes precedence over the *hash* argument (if provided).
       name: filter
     - description: The offset from which to start retrieving reports.
       name: offset
-    - description: SHA256 hashes to search for. Overridden by the *filter* argument (if provided)
+    - description: SHA256 hashes to search for. Overridden by the *filter* argument (if provided).
       isArray: true
       name: hashes
     - description: Maximum number of report IDs to return. Maximum is 5000. Default is 50.
@@ -1369,7 +1369,7 @@ script:
   - arguments:
     - default: true
       description: |-
-        The file hash(es) to search for
+        The file hash(es) to search for.
       isArray: true
       name: file
       required: true
@@ -1436,7 +1436,7 @@ script:
   - arguments:
     - description: |-
         A web page or file URL. It can be HTTP(S) or FTP.
-        For example: “https://url.com”,“ftp://ftp.com”
+        For example: “https://url.com”,“ftp://ftp.com”.
       name: url
     - description: Sandbox environment used for analysis.
       name: environment_id
@@ -1457,9 +1457,9 @@ script:
         default_maxantievasion
         default_randomfiles
         default_randomtheme
-        default_openie
+        default_openie.
       name: action_script
-    - description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters'
+    - description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters.'
       name: command_line
     - description: 'Auto-filled for Adobe or Office files that prompt for a password. Max length: 32 characters.'
       name: document_password
@@ -1726,7 +1726,7 @@ script:
       name: accept_encoding
     description: Downloads IOC packs, PCAP files, and other analysis artifacts.
     name: cs-fx-download-ioc
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
   subtype: python3

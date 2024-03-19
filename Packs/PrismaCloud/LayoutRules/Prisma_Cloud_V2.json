@@ -5,61 +5,65 @@
   "rule_name": "Prisma Cloud V2 Layout Rule",
   "alerts_filter": {
     "filter": {
-      "OR": [
+      "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "AWS CloudTrail Misconfiguration"
-        },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "EQ",
-          "SEARCH_VALUE": "AWS EC2 Instance Misconfiguration"
-        },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "EQ",
-          "SEARCH_VALUE": "AWS IAM Policy Misconfiguration"
-        },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "EQ",
-          "SEARCH_VALUE": "Azure AKS Misconfiguration"
-        },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "EQ",
-          "SEARCH_VALUE": "Azure Network Misconfiguration"
-        },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "EQ",
-          "SEARCH_VALUE": "Azure SQL Misconfiguration"
-        },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "EQ",
-          "SEARCH_VALUE": "Azure Storage Misconfiguration"
-        },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "EQ",
-          "SEARCH_VALUE": "GCP Compute Engine Misconfiguration"
-        },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "EQ",
-          "SEARCH_VALUE": "GCP Kubernetes Engine Misconfiguration"
-        },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "EQ",
-          "SEARCH_VALUE": "Prisma Cloud - VM Alert Prioritization"
-        },
-        {
-          "SEARCH_FIELD": "alert_type",
-          "SEARCH_TYPE": "EQ",
-          "SEARCH_VALUE": "Prisma Cloud"
+          "OR": [
+            {
+              "SEARCH_FIELD": "alert_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "AWS CloudTrail Misconfiguration"
+            },
+            {
+              "SEARCH_FIELD": "alert_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "AWS EC2 Instance Misconfiguration"
+            },
+            {
+              "SEARCH_FIELD": "alert_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "AWS IAM Policy Misconfiguration"
+            },
+            {
+              "SEARCH_FIELD": "alert_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Azure AKS Misconfiguration"
+            },
+            {
+              "SEARCH_FIELD": "alert_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Azure Network Misconfiguration"
+            },
+            {
+              "SEARCH_FIELD": "alert_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Azure SQL Misconfiguration"
+            },
+            {
+              "SEARCH_FIELD": "alert_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Azure Storage Misconfiguration"
+            },
+            {
+              "SEARCH_FIELD": "alert_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "GCP Compute Engine Misconfiguration"
+            },
+            {
+              "SEARCH_FIELD": "alert_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "GCP Kubernetes Engine Misconfiguration"
+            },
+            {
+              "SEARCH_FIELD": "alert_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Prisma Cloud - VM Alert Prioritization"
+            },
+            {
+              "SEARCH_FIELD": "alert_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "Prisma Cloud"
+            }
+          ]
         }
       ]
     }

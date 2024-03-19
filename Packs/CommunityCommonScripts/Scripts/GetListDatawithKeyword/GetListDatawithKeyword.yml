@@ -1,0 +1,45 @@
+args:
+- description: Provide a key word to search the data.
+  name: Keyword
+  required: true
+- description: The value is an array of elements.
+  isArray: true
+  name: value
+  required: true
+comment: |-
+  This transformer will get list of array elements by providing keyword. List data format
+  [
+      {
+      "folder": "abc",
+      "username": "test"
+      },
+      {
+      "folder": "def",
+      "username": "test123"
+      },
+      {
+      "folder": "ghi",
+      "username": "admin"
+      }
+  ]
+commonfields:
+  id: GetListDatawithKeyword
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.13.84405
+enabled: true
+name: GetListDatawithKeyword
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- general
+- transformer
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

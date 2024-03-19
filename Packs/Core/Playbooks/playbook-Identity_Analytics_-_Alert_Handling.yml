@@ -500,7 +500,7 @@ tasks:
     task:
       id: c57402d1-54ac-4fcd-86b3-ea787ef0f134
       version: -1
-      name: Analyst Desicion
+      name: Analyst Decision
       description: An analyst’s decision is required to determine whether it is a malicious or non-malicious activity.
       type: condition
       iscommand: false
@@ -1249,35 +1249,8 @@ tasks:
         simple: NumOfRelatedAlerts
       value:
         complex:
-          root: foundIncidents.severity
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: foundIncidents.severity
-                iscontext: true
-              right:
-                value:
-                  simple: medium
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: foundIncidents.severity
-                iscontext: true
-              right:
-                value:
-                  simple: high
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: foundIncidents.severity
-                iscontext: true
-              right:
-                value:
-                  simple: critical
-              ignorecase: true
+          root: foundIncidents
+          accessor: severity
           transformers:
           - operator: count
     separatecontext: false
@@ -1574,7 +1547,7 @@ inputs:
     simple: "5"
   required: false
   description: |-
-    This is the minimum threshold for XSIAM related alerts of medium severity or higher, based on MITRE tactics used to identify malicious activity by the user in the last 1 day.
+    This is the minimum threshold for XSIAM related alerts, based on MITRE tactics used to identify malicious activity by the user in the last 1 day.
     Example: If this input is set to '5' and it detects '6' XSIAM related alerts, it will classify this check as indicating malicious activity.
     The default value is '5'.
   playbookInputQuery:

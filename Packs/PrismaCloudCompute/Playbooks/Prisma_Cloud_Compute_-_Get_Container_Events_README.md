@@ -1,6 +1,5 @@
 This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
-- Get container WAAS events
-- Get runtime container events and set it to layout.
+- Get container runtime or WAAS events and set it in the layout.
 
 ## Dependencies
 
@@ -20,9 +19,9 @@ ToTable
 
 ### Commands
 
-* prisma-cloud-compute-get-audit-firewall-container-alerts
-* setIncident
 * prisma-cloud-compute-runtime-container-audit-events-list
+* setIncident
+* prisma-cloud-compute-get-audit-firewall-container-alerts
 
 ## Playbook Inputs
 

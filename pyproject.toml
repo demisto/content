@@ -10,7 +10,7 @@ python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.25.1"
+demisto-sdk = "1.27.4"
 requests = "^2.22.0"
 pre-commit = "^3.5.0"
 google-cloud-compute = "^1.8.0"
@@ -451,6 +451,8 @@ select = [
     "UP036", # outdated-version-block
     "UP037", # quoted-annotation
     "UP038", # non-pep604-isinstance
+
+    "W291", # trailing-whitespace
 
     "YTT101", # sys-version-slice3
     "YTT102", # sys-version2

@@ -3,8 +3,8 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph.
 
 ## Authentication
 
-For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication)
-Note: eDiscovery commands only support the `Delegated (work or school account)` permission type.
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication)  
+*Note*: [The eDiscovery](#ediscovery-commands) and [Threat Assessment](#threat-assessment-commands) commands are only supported when using the `Authorization Code flow` with `Delegated (work or school account)` permission type.
 
 ## Important Notes:
 - Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.\
@@ -12,7 +12,6 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 - When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
 - As of July 2023, Microsoft Graph API does **not support** a solution to search for and delete emails. To do this, refer to the [Security & Compliance](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance) integration. 
 - When using Threat Assessment, only the following properties are supported as filters for *filter* parameter: expectedAssessment, ContentType ,status and requestSource.
-- For Threat Assessment commands the only authorization that supported is [Authorize on Behalf of a User](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user)
 - When using Threat Assessment, for information protection, The following limits apply to any request on /informationProtection:
     - For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).
      
@@ -23,23 +22,23 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 
 ### Required Permissions
 
-Legacy Alerts:
+**Legacy Alerts**:
 
 1. SecurityEvents.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
 2. SecurityEvents.ReadWrite.All - Application (required for updating alerts with the command: `msg-update-alert`)
 3. User.Read.All - Application (Only required if using the deprecated commands: `msg-get-user` and `msg-get-users`)
 
-Alerts v2:
+**Alerts v2**:
 
 1. SecurityAlert.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
 2. SecurityAlert.ReadWrite.All - Application (required for updating alerts with the commands: `msg-update-alert` and `msg-create-alert-comment`)
 
-EDiscovery:
+**eDiscovery**:
 
 1. eDiscovery.Read.All - Delegated (Required for the `list-ediscovery` commands)
 2. eDiscovery.ReadWrite.All - Delegated (Required for the `create/update-ediscovery` commands)
 
-Threat Assessment:
+**Threat Assessment**:
 
 1. Mail.Read.Shared - Delegated
 2. ThreatAssessment.ReadWrite.All - Delegated
@@ -377,19 +376,19 @@ Update an editable alert property within any integrated solution to keep alert s
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| alert_id | The Alert ID. Provider-generated GUID/unique identifier. | Required | 
-| assigned_to | Name of the analyst the alert is assigned to for triage, investigation, or remediation. | Optional | 
-| closed_date_time | Relevant only for Legacy Alerts. Time the alert was closed in the string format MM/DD/YYYY. | Optional | 
-| comments | Relevant only for Legacy Alerts. Analyst comments on the alert (for customer alert management). | Optional | 
-| feedback | Relevant only for Legacy Alerts. Analyst feedback on the alert. Possible values are: unknown, truePositive, falsePositive, benignPositive. | Optional | 
-| status | Alert lifecycle status (stage). Possible values are: unknown, newAlert, inProgress, resolved, new. | Optional | 
-| tags | Relevant only for Legacy Alerts. User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW). | Optional | 
-| vendor_information | Relevant only for Legacy Alerts. Details about the security service vendor, for example Microsoft. | Optional | 
-| provider_information | Relevant only for Legacy Alerts. Details about the security service vendor, for example Windows Defender ATP. | Optional | 
-| classification | Relevant only for Alerts v2. Use this field to update the alert's classification. Possible values are: unknown, truePositive, falsePositive, benignPositive. | Optional | 
-| determination | Relevant only for Alerts v2. Use this field to update the alert's determination. Possible values are: unknown, apt, malware, phishing, other, securityPersonnel, securityTesting, multiStagedAttack, maliciousUserActivity, lineOfBusinessApplication, unwantedSoftware. | Optional | 
+| **Argument Name**    | **Description**                                                                                                                                                                                                                                  | **Required** |
+|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| alert_id             | The Alert ID. Provider-generated GUID/unique identifier.                                                                                                                                                                                         | Required     | 
+| assigned_to          | Name of the analyst the alert is assigned to for triage, investigation, or remediation.                                                                                                                                                          | Optional     | 
+| closed_date_time     | Relevant only for Legacy Alerts. Time the alert was closed in the string format MM/DD/YYYY.                                                                                                                                                      | Optional     | 
+| comments             | Relevant only for Legacy Alerts. Analyst comments on the alert (for customer alert management).                                                                                                                                                  | Optional     | 
+| feedback             | Relevant only for Legacy Alerts. Analyst feedback on the alert. Possible values are: unknown, truePositive, falsePositive, benignPositive.                                                                                                       | Optional     | 
+| status               | Alert lifecycle status (stage). Possible values are: unknown, newAlert, inProgress, resolved, new.                                                                                                                                               | Optional     | 
+| tags                 | Relevant only for Legacy Alerts. User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW).                                                                                             | Optional     | 
+| vendor_information   | Relevant only for Legacy Alerts. Details about the security service vendor, for example Microsoft.                                                                                                                                               | Optional     | 
+| provider_information | Relevant only for Legacy Alerts. Details about the security service vendor, for example Windows Defender ATP.                                                                                                                                    | Optional     | 
+| classification       | Relevant only for Alerts v2. Use this field to update the alert's classification. Possible values are: unknown, truePositive, falsePositive, informationalExpectedActivity.                                                                      | Optional     | 
+| determination        | Relevant only for Alerts v2. Use this field to update the alert's determination. Possible values are: unknown, malware, phishing, other, securityTesting, multiStagedAttack, maliciousUserActivity, lineOfBusinessApplication, unwantedSoftware. | Optional     | 
 
 #### Context Output
 
@@ -454,6 +453,8 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### eDiscovery Commands
 ### msg-list-ediscovery-cases
 
 ***
@@ -1701,27 +1702,8 @@ There is no context output for this command.
 
 >eDiscovery search e7282eff-ba81-43cb-9027-522a343f6692 was deleted successfully.
 
-### msg-generate-login-url
 
-***
-Generate the login URL used for authorization code flow.
-
-#### Base Command
-
-`msg-generate-login-url`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Human Readable Output
-
-
+### Threat Assessment Commands
 ### msg-create-mail-assessment-request
 
 ***
@@ -2168,6 +2150,26 @@ Retrieve all threat assessment requests.
 >| 49c5ef5b-1f65-444a-e6b9-08d772ea2059 | "2019-11-27T03:30:18.6890937Z"| mail | block| spam| pending| administrator | avishaibrandies@microsoft.com |63798129-a62c-4f9e-2c6d-08d772fcfb0e|spam attempt.|notJunk|
 >| ab2ad9b3-2213-4091-ae0c-08d76ddbcacf | 2019-11-20T17:05:06.4088076Z| mail | block| malware| pending| administrator | avishaibrandies@microsoft.com |63798129-a62c-4f9e-2c6d-08d772fcfb0e|Malware attempt.|notJunk|
 
+
+### msg-generate-login-url
+
+***
+Generate the login URL used for the authorization code flow.
+
+#### Base Command
+
+`msg-generate-login-url`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
 >### Authorization instructions
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:

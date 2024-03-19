@@ -29,7 +29,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "13"
+      - "71"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -69,7 +69,7 @@ tasks:
       {
         "position": {
           "x": 452.5,
-          "y": 3360
+          "y": 3640
         }
       }
     note: false
@@ -108,7 +108,7 @@ tasks:
       {
         "position": {
           "x": 452.5,
-          "y": 4355
+          "y": 4615
         }
       }
     note: false
@@ -138,7 +138,7 @@ tasks:
       {
         "position": {
           "x": 452.5,
-          "y": 4515
+          "y": 4785
         }
       }
     note: false
@@ -195,8 +195,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 52.5,
-          "y": 240
+          "x": -250,
+          "y": 480
         }
       }
     note: false
@@ -210,10 +210,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 88b1ac49-acbd-49c4-8089-096d4c10464f
+    taskid: 004fc4d0-b539-4e59-8d54-9e6968178db3
     type: playbook
     task:
-      id: 88b1ac49-acbd-49c4-8089-096d4c10464f
+      id: 004fc4d0-b539-4e59-8d54-9e6968178db3
       version: -1
       name: Extract Indicators From File - Generic v2
       description: |-
@@ -236,21 +236,21 @@ tasks:
         - DOTM
         - XLSB
         - DOT
-        - PPSM
+        - PPSM.
       playbookName: Extract Indicators From File - Generic v2
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+      - "77"
     separatecontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 52.5,
-          "y": 1415
+          "y": 1915
         }
       }
     note: false
@@ -268,6 +268,8 @@ tasks:
           root: File
           transformers:
           - operator: uniq
+      MaxImagesFromPDF:
+        simple: "2"
     loop:
       iscommand: false
       exitCondition: ""
@@ -293,8 +295,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 52.5,
-          "y": 800
+          "x": 882.5,
+          "y": 1100
         }
       }
     note: false
@@ -325,7 +327,7 @@ tasks:
       {
         "position": {
           "x": 52.5,
-          "y": 1125
+          "y": 1625
         }
       }
     note: false
@@ -389,8 +391,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -190,
-          "y": 2270
+          "x": 300,
+          "y": 2480
         }
       }
     note: false
@@ -421,8 +423,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 52.5,
-          "y": 2110
+          "x": 542.5,
+          "y": 2290
         }
       }
     note: false
@@ -453,7 +455,7 @@ tasks:
       {
         "position": {
           "x": 52.5,
-          "y": 1265
+          "y": 1765
         }
       }
     note: false
@@ -465,10 +467,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 8afa51db-69e8-4a4a-8924-76738464bd13
+    taskid: 99ce7114-4916-4107-8d26-1b993a6f2052
     type: playbook
     task:
-      id: 8afa51db-69e8-4a4a-8924-76738464bd13
+      id: 99ce7114-4916-4107-8d26-1b993a6f2052
       version: -1
       name: Search Endpoints By Hash - Generic V2
       description: Hunt using available tools
@@ -484,8 +486,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 52.5,
-          "y": 1730
+          "x": 470,
+          "y": 1230
         }
       }
     note: false
@@ -540,7 +542,7 @@ tasks:
       {
         "position": {
           "x": 770,
-          "y": 3550
+          "y": 3830
         }
       }
     note: false
@@ -572,38 +574,7 @@ tasks:
       {
         "position": {
           "x": 770,
-          "y": 3700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
-    taskid: 71ca3a3b-de2c-4806-807d-3e9e3207c5d0
-    type: title
-    task:
-      id: 71ca3a3b-de2c-4806-807d-3e9e3207c5d0
-      version: -1
-      name: Find affected endpoints
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "34"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 52.5,
-          "y": 1580
+          "y": 3980
         }
       }
     note: false
@@ -615,24 +586,46 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: bce158dc-0a33-4254-8509-277115b34463
+    taskid: 9fbadd29-5601-4d76-8c56-f0459ede8a38
     type: condition
     task:
-      id: bce158dc-0a33-4254-8509-277115b34463
+      id: 9fbadd29-5601-4d76-8c56-f0459ede8a38
       version: -1
-      name: Should extract indicators manually (Auto-extract is off)?
-      description: Checks whether indicators in this incident should be extracted and enriched manually. This should be done if Auto-extract is switched off for the current incident type. When Auto-extract is turned off for the incident type, it means that indicators will not be extracted from the data mapped to the various incident fields upon the creation of the incident. In that case, in order for the playbook to perform optimally, the indicators have to be extracted explicitly using the extractIndicators command.
+      name: Run advanced investigation?
+      description: Checks whether indicators in this incident should be extracted and enriched manually. This should be done if Auto-extract is switched off for the current incident type (by default, that type is the Unclassified type). When Auto-extract is turned off for the incident type, it means that indicators will not be extracted from the data mapped to the various incident fields upon the creation of the incident. In that case, in order for the playbook to perform correctly when enabling the AdvancedInvestigation input, the indicators have to be extracted explicitly using the extractIndicators command with auto-extract set to Inline.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "16"
-      "yes":
+      - "76"
+      "No":
+      - "75"
+      "Yes":
       - "40"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ExtractIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AdvancedInvestigation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: "No"
       condition:
       - - operator: isEqualString
           left:
@@ -648,7 +641,7 @@ tasks:
       {
         "position": {
           "x": 52.5,
-          "y": 430
+          "y": 710
         }
       }
     note: false
@@ -660,12 +653,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 9890b9a5-b612-4d30-8f95-d763d3d6bae7
+    taskid: 1c3cf375-5438-49c3-8ff8-b02f1c4a8c76
     type: regular
     task:
-      id: 9890b9a5-b612-4d30-8f95-d763d3d6bae7
+      id: 1c3cf375-5438-49c3-8ff8-b02f1c4a8c76
       version: -1
-      name: Extract indicators from incident
+      name: Extract indicators - inline
       description: Extracts all indicators from the incident and enriches the indicators by using the reputation command defined for each indicator type.
       script: Builtin|||extractIndicators
       type: regular
@@ -674,6 +667,7 @@ tasks:
     nexttasks:
       '#none#':
       - "16"
+      - "72"
     scriptarguments:
       text:
         complex:
@@ -684,8 +678,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 620
+          "x": 680,
+          "y": 920
         }
       }
     note: false
@@ -716,7 +710,7 @@ tasks:
       {
         "position": {
           "x": 452.5,
-          "y": 4035
+          "y": 4315
         }
       }
     note: false
@@ -772,7 +766,7 @@ tasks:
       {
         "position": {
           "x": 52.5,
-          "y": 2810
+          "y": 3090
         }
       }
     note: false
@@ -807,7 +801,7 @@ tasks:
       {
         "position": {
           "x": 452.5,
-          "y": 4170
+          "y": 4450
         }
       }
     note: false
@@ -840,7 +834,7 @@ tasks:
       {
         "position": {
           "x": 52.5,
-          "y": 3015
+          "y": 3295
         }
       }
     note: false
@@ -878,7 +872,7 @@ tasks:
       {
         "position": {
           "x": 452.5,
-          "y": 3200
+          "y": 3480
         }
       }
     note: false
@@ -916,7 +910,7 @@ tasks:
       {
         "position": {
           "x": -470,
-          "y": 3210
+          "y": 3490
         }
       }
     note: false
@@ -955,7 +949,7 @@ tasks:
       {
         "position": {
           "x": 52.5,
-          "y": 2620
+          "y": 2900
         }
       }
     note: false
@@ -967,10 +961,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: e79379fc-90e1-4a85-8c51-a1103f1e8fba
+    taskid: 7114019d-060d-4747-8449-60f663ceff44
     type: regular
     task:
-      id: e79379fc-90e1-4a85-8c51-a1103f1e8fba
+      id: 7114019d-060d-4747-8449-60f663ceff44
       version: -1
       name: Save found endpoints in layout
       description: commands.local.cmd.set.incident
@@ -980,7 +974,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "27"
+      - "19"
     scriptarguments:
       detectedendpoints:
         complex:
@@ -998,8 +992,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 52.5,
-          "y": 1900
+          "x": 470,
+          "y": 1400
         }
       }
     note: false
@@ -1026,13 +1020,14 @@ tasks:
     nexttasks:
       '#none#':
       - "62"
+      - "78"
     separatecontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 52.5,
-          "y": 2440
+          "y": 2720
         }
       }
     note: false
@@ -1133,7 +1128,7 @@ tasks:
       {
         "position": {
           "x": 452.5,
-          "y": 3870
+          "y": 4150
         }
       }
     note: false
@@ -1145,10 +1140,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: ef072633-b4ea-4cc0-80bf-f452112a5b76
+    taskid: f6f727e4-67ea-4fad-8c40-04acf5999484
     type: playbook
     task:
-      id: ef072633-b4ea-4cc0-80bf-f452112a5b76
+      id: f6f727e4-67ea-4fad-8c40-04acf5999484
       version: -1
       name: Get File Sample - Generic
       description: Retrieves files from endpoints by the file hash or the file path.
@@ -1202,8 +1197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 52.5,
-          "y": 950
+          "x": 882.5,
+          "y": 1230
         }
       }
     note: false
@@ -1234,8 +1229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 312.5,
-          "y": 2270
+          "x": 802.5,
+          "y": 2480
         }
       }
     note: false
@@ -1245,10 +1240,237 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 4aaf78e5-6877-4503-82f9-52a25ea07d51
+    type: condition
+    task:
+      id: 4aaf78e5-6877-4503-82f9-52a25ea07d51
+      version: -1
+      name: Search, link and close similar incidents?
+      description: Whether to search for incidents similar to the current incident, link them to this incident and close them.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.DedupSimilarIncidents
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 52.5,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 32f0f7bd-2c1d-48fb-8c5b-15a9497e9b91
+    type: title
+    task:
+      id: 32f0f7bd-2c1d-48fb-8c5b-15a9497e9b91
+      version: -1
+      name: Search hash in endpoints
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: b37d9848-369d-4f84-8efd-804b4e0c47c3
+    type: regular
+    task:
+      id: b37d9848-369d-4f84-8efd-804b4e0c47c3
+      version: -1
+      name: Extract indicators in the background
+      description: Extracts all indicators from the incident and enriches the indicators by using the reputation command defined for each indicator type.
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      text:
+        complex:
+          root: incident
+    reputationcalc: 3
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 3a4fd30f-3c7e-4ad6-86a3-cab20bd773dd
+    type: title
+    task:
+      id: 3a4fd30f-3c7e-4ad6-86a3-cab20bd773dd
+      version: -1
+      name: Skip initial indicator extraction
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 52.5,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 0e44bc2a-a92f-4ea5-8d29-34f979a70e51
+    type: condition
+    task:
+      id: 0e44bc2a-a92f-4ea5-8d29-34f979a70e51
+      version: -1
+      name: Continue with advanced investigation?
+      description: Checks whether indicators in this incident should be extracted and enriched manually. This should be done if Auto-extract is switched off for the current incident type (by default, that type is the Unclassified type). When Auto-extract is turned off for the incident type, it means that indicators will not be extracted from the data mapped to the various incident fields upon the creation of the incident. In that case, in order for the playbook to perform correctly when enabling the AdvancedInvestigation input, the indicators have to be extracted explicitly using the extractIndicators command with auto-extract set to Inline.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      "Yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AdvancedInvestigation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 52.5,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 6b40af08-a740-419d-89d1-077812b77019
+    type: regular
+    task:
+      id: 6b40af08-a740-419d-89d1-077812b77019
+      version: -1
+      name: Update field for layout actions
+      description: Initiates the Selected Indicators field with a value so that user can select indicators to tag from the Investigation tab in the layout.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      selectedindicators:
+        simple: Select an indicator
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "39_16_#default#": 0.23,
+      "39_40_Yes": 0.41,
+      "39_75_No": 0.56,
+      "39_76_#default#": 0.63,
       "42_45_#default#": 0.58,
       "42_58_false positive": 0.42,
       "45_58_False Positive": 0.48,
@@ -1256,9 +1478,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4480,
-        "width": 1620,
-        "x": -470,
+        "height": 4750,
+        "width": 1742.5,
+        "x": -480,
         "y": 100
       }
     }
@@ -1268,12 +1490,35 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Determines whether indicators in this incident should be extracted manually. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise, indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook.
+  description: Determines whether indicators in this incident should be extracted by the playbook. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise, indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook.
   playbookInputQuery:
+- key: AdvancedInvestigation
+  value:
+    simple: "False"
+  required: false
+  description: "Whether to perform advanced actions in the incident. \n\nWhen both this input and the ExtractIndicators input are set to True, indicator extraction will be performed Inline to ensure the indicators are extracted for the advanced investigation steps.\nAdvanced steps include:\n- Getting file samples from endpoints.\n- Searching more endpoints by the extracted file hash.\n- Detonating files and URLs in sandbox integrations.\n\nIf this input is set to False, indicators will be extracted by the playbook in Out-of-band mode, or not extracted at all, depending on the ExtractIndicators input.\n\nPossible values are: True, False.\n\n\n\n\n\n"
+  playbookInputQuery:
+- key: DedupSimilarIncidents
+  value:
+    simple: "False"
+  required: false
+  description: Whether to deduplicate incidents that are similar to the current incident. Can be True or False.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - ExtractIndicators
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+- inputs:
+  - AdvancedInvestigation
+  - DedupSimilarIncidents
+  name: Execution Options
+  description: Choose whether to execute
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
-marketplaces:
-- xsoar
 tests:
 - No tests (auto formatted)
 fromversion: 8.2.0
-system: true

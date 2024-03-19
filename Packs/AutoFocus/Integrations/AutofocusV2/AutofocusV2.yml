@@ -129,6 +129,13 @@ script:
       - 'false'
     - description: The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes.
       name: af_cookie
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: retry_on_rate_limit
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Searches for samples in AutoFocus. To view results, run the autofocus-samples-search-results command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     name: autofocus-search-samples
     polling: true
@@ -211,6 +218,24 @@ script:
     - contextPath: AutoFocus.SamplesResults.ID
       description: ID of sample search.
       type: String
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
   - arguments:
     - auto: PREDEFINED
       description: Use XSOAR built-in polling to retrieve the result when it's ready.
@@ -273,6 +298,13 @@ script:
       name: time_after
     - description: 'The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59.'
       name: time_before
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: retry_on_rate_limit
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Searches for sessions in AutoFocus. To view results, run the autofocus-sessions-search-results command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes. The `polling` argument was added in XSOAR 6.2.0. It enables handling the search in a single command, rather than using the `Autofocus Query Samples, Sessions and Tags` Playbook.
     polling: true
     name: autofocus-search-sessions
@@ -328,10 +360,35 @@ script:
     - contextPath: AutoFocus.SessionsResults.Seen
       description: Session seen.
       type: Date
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
   - arguments:
     - description: The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes.
       name: af_cookie
       required: true
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: retry_on_rate_limit
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns results of a previous samples search. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     name: autofocus-samples-search-results
     outputs:
@@ -404,10 +461,36 @@ script:
     - contextPath: AutoFocus.SamplesResults.ID
       description: ID of sample search.
       type: String
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
+    polling: true
   - arguments:
     - description: The AF Cookie for retrieving the results of a previous search. The AF Cookie expires 120 seconds after the search completes.
       name: af_cookie
       required: true
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: retry_on_rate_limit
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns results of a previous sessions search. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     name: autofocus-sessions-search-results
     outputs:
@@ -453,10 +536,36 @@ script:
     - contextPath: AutoFocus.SessionsResults.Seen
       description: Session seen.
       type: Date
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
+    polling: true
   - arguments:
     - description: The session ID.
       name: session_id
       required: true
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: retry_on_rate_limit
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Get session details by session ID.
     name: autofocus-get-session-details
     outputs:
@@ -487,6 +596,25 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: String
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
+    polling: true
   - arguments:
     - description: The SHA256 hash of the sample to analyze.
       name: sample_id
@@ -508,6 +636,13 @@ script:
       predefined:
       - 'True'
       - 'False'
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: retry_on_rate_limit
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns properties, behaviors, and activities observed for a sample. Run the command a single time to get the fields and operating systems under HTTP, Coverage, Behavior, Registry, Files, Processes, Connections, and DNS.
     name: autofocus-sample-analysis
     outputs:
@@ -538,10 +673,36 @@ script:
     - contextPath: AutoFocus.SampleAnalysis.Analysis.Mutex
       description: The mutex created when the programs start is listed with the parent process if the sample generates other program threads when executed in the analysis environment.
       type: Unknown
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
+    polling: true
   - arguments:
     - description: The public tag name. Can be retrieved from the top-tags command.
       name: tag_name
       required: true
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: retry_on_rate_limit
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns details about the given tag.
     name: autofocus-tag-details
     outputs:
@@ -578,6 +739,25 @@ script:
     - contextPath: AutoFocus.Tag.Description
       description: Tag description.
       type: String
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
+    polling: true
   - arguments:
     - auto: PREDEFINED
       description: Scope of the search. Can be "industry", "organization", "all", or "global".
@@ -637,6 +817,13 @@ script:
       predefined:
       - 'True'
       - 'False'
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: retry_on_rate_limit
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Performs a search to identify the most popular tags. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     name: autofocus-top-tags-search
     polling: true
@@ -665,10 +852,35 @@ script:
     - contextPath: AutoFocus.TopTagsSearch.Status
       description: The search status. Can be "in progress" or "complete".
       type: String
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
   - arguments:
     - description: 'The AF Cookie for retrieving results of previous search. Note: The AF Cookie expires 120 seconds after the search completes.'
       name: af_cookie
       required: true
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: retry_on_rate_limit
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Returns the results of a previous top tags search. `Autofocus Query Samples, Sessions and Tags` Playbook is recommended for querying and polling.
     name: autofocus-top-tags-results
     outputs:
@@ -687,6 +899,25 @@ script:
     - contextPath: AutoFocus.TopTagsSearch.Status
       description: The search status. Can be "in progress" or "complete".
       type: String
+    - contextPath: AutoFocus.Quota.minute_points
+      description: Total number of AutoFocus API points alloted per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points
+      description: Total number of AutoFocus API points alloted per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_points_remaining
+      description: Remaining number of AutoFocus API points per minute.
+      type: Number
+    - contextPath: AutoFocus.Quota.daily_points_remaining
+      description: Remaining number of AutoFocus API points per day.
+      type: Number
+    - contextPath: AutoFocus.Quota.minute_bucket_start
+      description: Timestamp for when the current minute allotment started.
+      type: Date
+    - contextPath: AutoFocus.Quota.daily_bucket_start
+      description: Timestamp for when the current daily allotment started.
+      type: Date
+    polling: true
   - arguments:
     - default: true
       description: IP address to check.
@@ -1096,6 +1327,13 @@ script:
     - description: The label of the exported list.
       name: label
       required: true
+    - defaultValue: 'false'
+      description: Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.
+      name: retry_on_rate_limit
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Gets export list indicators from AutoFocus.
     name: autofocus-get-export-list-indicators
     outputs:
@@ -1117,7 +1355,8 @@ script:
     - contextPath: Domain.Name
       description: The domain name.
       type: String
-  dockerimage: demisto/python3:3.10.13.75921
+    polling: true
+  dockerimage: demisto/python3:3.10.13.86272
   runonce: false
   script: '-'
   subtype: python3

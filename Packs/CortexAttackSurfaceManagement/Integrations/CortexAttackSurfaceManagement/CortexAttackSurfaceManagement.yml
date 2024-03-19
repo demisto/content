@@ -442,7 +442,7 @@ script:
       description: Attack surface rule priority.
     - contextPath: ASM.AttackSurfaceRule.remediation_guidance
       description: Remediation guidance of attack surface rule.
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.85415
   runonce: false
   script: ''
   subtype: python3

@@ -157,6 +157,7 @@ class Client(BaseClient):
         json_data=None,
         params=None,
         headers=None,
+        ok_codes=None,
     ):
         """
             Override http_request method from BaseClient class. This method will print an error based on status code
@@ -177,6 +178,9 @@ class Client(BaseClient):
         :type headers: ``dict``
         :param headers: Headers to send in the request. If None, will use self._headers.
 
+        :type ok_codes: ``tuple``
+        :param ok_codes: The tuple of acceptable status codes. Default is None.
+
         :return: Depends on the resp_type parameter
         :rtype: ``dict`` or ``str`` or ``requests.Response``
         """
@@ -190,7 +194,7 @@ class Client(BaseClient):
                 headers=headers,
                 resp_type='response',
                 timeout=self.request_timeout,
-                ok_codes=(200, 201),
+                ok_codes=ok_codes or (200, 201),
                 error_handler=self.handle_error_response,
             )
         except MissingSchema:
@@ -358,10 +362,10 @@ def set_attachment_file(client, incident: dict, uuid: str, headers: dict):
         'GET',
         url_suffix=URL_SUFFIX['GET_ARTIFACTS'].format(uuid),
         headers=headers,
+        ok_codes=(200, 201, 404),
     )
-
-    # Create file from Content
-    if int(artifacts_resp.headers.get('Content-Length', '0')) > 0:
+    if artifacts_resp and int(artifacts_resp.headers.get('Content-Length', '0')) > 0:
+        # Create file from Content
         file_name = f'{uuid}.zip'
 
         attachment_file = fileResult(

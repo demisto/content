@@ -91,26 +91,7 @@ SEARCH_FIXES_EXPECTED = {
         }
     ]
 }
-SEARCH_ASSETS_EXPECTED = {
-    "Kenna.Assets(val.ID === obj.ID)": [
-        {
-            "Fqdn": None,
-            "Hostname": None,
-            "ID": 3,
-            "IpAddress": "Kenna",
-            "Score": 3,
-            "OperatingSystem": "Kenna",
-            "Owner": None,
-            "Priority": 3,
-            "Status": "active",
-            "Tags": [
-                "Kenna"
-            ],
-            "VulnerabilitiesCount": 3,
-            "Notes": None
-        }
-    ]
-}
+
 GET_ASSETS_VULNERABILITIES_EXPECTED = {
     "Kenna.VulnerabilitiesOfAsset(val.ID === obj.ID)": [
         {

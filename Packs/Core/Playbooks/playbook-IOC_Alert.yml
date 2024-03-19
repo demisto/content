@@ -566,8 +566,6 @@ tasks:
         complex:
           root: alert
           accessor: agentid
-      timeRange:
-        simple: 2 hours ago
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -1495,6 +1493,47 @@ inputs:
   required: false
   description: Comment for the ticket.
   playbookInputQuery: null
+inputSections:
+- inputs:
+  - ShouldCloseAutomatically
+  - ShouldHandleFPautomatically
+  name: Alert Management
+  description: Alert management settings and data, including escalation processes, and user engagements.
+- inputs:
+  - PreHostContainment
+  - AutoEradication
+  - AutoContainment
+  - BlockIndicatorsAutomatically
+  - FileRemediation
+  - AutoRestoreEndpoint
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - ShouldOpenTicket
+  - serviceNowShortDescription
+  - serviceNowImpact
+  - serviceNowUrgency
+  - serviceNowSeverity
+  - serviceNowTicketType
+  - serviceNowCategory
+  - serviceNowAssignmentGroup
+  - ZendeskPriority
+  - ZendeskRequester
+  - ZendeskStatus
+  - ZendeskSubject
+  - ZendeskTags
+  - ZendeskType
+  - ZendeskAssigne
+  - ZendeskCollaborators
+  - description
+  - addCommentPerEndpoint
+  - CommentToAdd
+  name: Ticket Management
+  description: Ticket management settings and data.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - No tests (auto formatted)

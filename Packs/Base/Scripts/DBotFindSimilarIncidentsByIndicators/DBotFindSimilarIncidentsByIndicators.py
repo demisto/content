@@ -9,37 +9,55 @@ from collections import Counter
 import re
 import math
 
+from GetIncidentsApiModule import *  # noqa: E402
+
+SEARCH_INDICATORS_LIMIT = 10000
+SEARCH_INDICATORS_PAGE_SIZE = 500
+
+ROUND_SCORING = 2
+PLAYGROUND_PATTERN = "[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}"
+
+# Mutual indicators fields/columns
+INDICATOR_ID_FIELD = "id"
+VALUE_FIELD = "value"
+VALUE_FIELD_FOR_COMPATIBILITY = "name"  # value field can't be used in demisto.searchIndicators on v6.9.0
+SCORE_FIELD = "score"
+INVESTIGATION_IDS_FIELD = "investigationIDs"
+INDICATOR_TYPE_FIELD = "indicator_type"
+INDICATOR_LINK_COLUMN = "indicatorID"
+TYPE_COLUMN = "type"
+REPUTATION_COLUMN = "Reputation"
+INVOLVED_INCIDENTS_COUNT_COLUMN = "involvedIncidentsCount"
+
+INDICATOR_FIELDS_TO_POPULATE_FROM_QUERY = [
+    INDICATOR_ID_FIELD, INDICATOR_TYPE_FIELD, INVESTIGATION_IDS_FIELD, SCORE_FIELD, VALUE_FIELD_FOR_COMPATIBILITY
+]
+MUTUAL_INDICATORS_HEADERS = [
+    INDICATOR_LINK_COLUMN, VALUE_FIELD, TYPE_COLUMN, REPUTATION_COLUMN, INVOLVED_INCIDENTS_COUNT_COLUMN
+]
+
+# Similar incidents fields/columns
+INCIDENT_ID_FIELD = "id"
+CREATED_FIELD = "created"
+NAME_FIELD = "name"
+STATUS_FIELD = "status"
+INCIDENT_LINK_COLUMN = "incident ID"
+INDICATORS_COLUMN = "indicators"
+SIMILARITY_SCORE_COLUMN = "similarity indicators"
+IDENTICAL_INDICATORS_COLUMN = "Identical indicators"
+
+FIRST_COLUMNS_INCIDENTS_DISPLAY = [INCIDENT_LINK_COLUMN, CREATED_FIELD, NAME_FIELD]
+FIELDS_TO_EXCLUDE_FROM_DISPLAY = [INCIDENT_ID_FIELD]
+
 STATUS_DICT = {
     0: "Pending",
     1: "Active",
     2: "Closed",
     3: "Archive",
 }
-
-ROUND_SCORING = 2
-PLAYGROUND_PATTERN = '[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}'
-FIRST_COLUMNS_INCIDENTS_DISPLAY = ['incident ID', 'created', 'name']
-FIELDS_TO_REMOVE_TO_DISPLAY = ['id']
-INCIDENT_FIELDS_TO_USE = ['indicators']
-FIELD_INDICATOR_TYPE = 'indicator_type'
-
-
-def normalize(x: list[str]) -> str:
-    """
-    Normalize function for indicators
-    :param x:  list of indicators
-    :return:
-    """
-    return ' '.join(x)
-
-
-def identity_score(x):
-    """
-    Identity function
-    :param x: object
-    :return:
-    """
-    return x
+INDICATOR_LINK_FORMAT = "[{0}](#/indicator/{0})"
+INCIDENT_LINK_FORMAT = "[{0}](#/Details/{0})"
+DATE_FORMAT = "%Y-%m-%d"
 
 
 def flatten_list(my_list: list[list]) -> list:
@@ -56,574 +74,476 @@ class FrequencyIndicators(BaseEstimator, TransformerMixin):
     FrequencyIndicators class for indicator frequencies computation
     """
 
-    def __init__(self, incident_field, normalize_function, current_incident):
-        self.incident_field = incident_field
-        self.normalize_function = normalize_function
-        self.frequency = {}
-        if self.normalize_function:
-            current_incident = current_incident[self.incident_field].apply(self.normalize_function)
-        else:
-            current_incident = current_incident[self.incident_field]
-        self.vocabulary = current_incident.iloc[0].split(' ')
+    def __init__(self, incident_field: str, actual_incident: pd.DataFrame) -> None:
+        self.column_name = incident_field
+        self.frequency: dict = {}
+        self.vocabulary = actual_incident[self.column_name].iloc[0].split(" ")
 
-    def fit(self, x):
-        if self.normalize_function:
-            x = x[self.incident_field].apply(self.normalize_function)
-        else:
-            x = x[self.incident_field]
+    def fit(self, x: pd.DataFrame) -> 'FrequencyIndicators':
+        x = x[self.column_name]
         size = len(x) + 1
-        frequencies = Counter(flatten_list([t.split(' ') for t in x.values]))
+        frequencies = Counter(flatten_list([t.split(" ") for t in x.values]))
         frequencies.update(Counter(self.vocabulary))
         self.frequency = {k: math.log(1 + size / v) for k, v in frequencies.items()}
         return self
 
-    def transform(self, x):
-        if self.normalize_function:
-            x = x[self.incident_field].apply(self.normalize_function)
-        else:
-            x = x[self.incident_field]
-        return x.apply(self.compute_term_score)
+    def transform(self, x: pd.DataFrame) -> pd.DataFrame:
+        return x[self.column_name].apply(self.compute_term_score)
 
     def compute_term_score(self, indicators_values_string: str) -> float:
-        x = indicators_values_string.split(' ')
+        x = indicators_values_string.split(" ")
         return sum([1 * self.frequency[word] for word in self.vocabulary if word in x]) / sum(
             [self.frequency[word] for word in self.vocabulary])
 
 
-TRANSFORMATION = {
-    'frequency_indicators': {'transformer': FrequencyIndicators,
-                             'normalize': None,
-                             'scoring_function': identity_score
-                             }
-}
-
-
-class Transformer():
-    def __init__(self, p_transformer_type, incident_field, p_incidents_df, p_current_incident, p_params):
+class FrequencyIndicatorsTransformer:
+    def __init__(self, incidents_df: pd.DataFrame, actual_incident: pd.DataFrame):
         """
-        :param p_transformer_type: One of the key value of TRANSFORMATION dict
-        :param incident_field: incident field used in this transformation
-        :param p_incidents_df: DataFrame of incident (should contains one columns which same name than incident_field)
-        :param p_current_incident: DataFrame of the current incident
-        :param p_params: Dictionary of all the transformation - TRANSFORMATION
+        :param incidents_df: DataFrame of related incidents
+        :param actual_incident: DataFrame of the actual incident
         """
-        self.transformer_type = p_transformer_type
-        self.incident_field = incident_field
-        self.current_incident = p_current_incident
-        self.incidents_df = p_incidents_df
-        self.params = p_params
+        self.incidents_df = incidents_df
+        self.actual_incident = actual_incident
+        self.transformed_column = INDICATORS_COLUMN
+        self.scoring_function = lambda x: x
 
     def fit_transform(self):
-        transformation = self.params[self.transformer_type]
-        transformer = transformation['transformer'](self.incident_field, transformation['normalize'],
-                                                    self.current_incident)
-        X_vect = transformer.fit_transform(self.incidents_df)
-        incident_vect = transformer.transform(self.current_incident)
-        return X_vect, incident_vect
+        transformer = FrequencyIndicators(
+            self.transformed_column,
+            self.actual_incident,
+        )
+        x_vector = transformer.fit_transform(self.incidents_df)
+        incident_vect = transformer.transform(self.actual_incident)
+        return x_vector, incident_vect
 
     def get_score(self):
-        scoring_function = self.params[self.transformer_type]['scoring_function']
-        X_vect, incident_vect = self.fit_transform()
-        distance = scoring_function(X_vect)
-        self.incidents_df['similarity %s' % self.incident_field] = np.round(distance, ROUND_SCORING)
+        x_vector, _ = self.fit_transform()
+        distance = self.scoring_function(x_vector)
+        self.incidents_df[SIMILARITY_SCORE_COLUMN] = np.round(distance, ROUND_SCORING)
         return self.incidents_df
 
 
 class Model:
-    def __init__(self, p_transformation):
+    def __init__(
+        self,
+        incident_to_match: pd.DataFrame,
+        incidents_df: pd.DataFrame,
+        similarity_threshold: float,
+        max_incidents: int,
+    ) -> None:
         """
-        :param p_transformation: Dict with the transformers parameters - TRANSFORMATION
+        :param incident_to_match: Dataframe with one incident
+        :param incidents_df: Dataframe with all the incidents
+        :param similarity_threshold: The similarity threshold
+        :param max_incidents: Maximum number of incidents to return
         """
-        self.transformation = p_transformation
+        self.incident_to_match = incident_to_match
+        self.incidents_df = incidents_df
+        self.threshold = similarity_threshold
+        self.max_incidents = max_incidents
 
-    def init_prediction(self, p_incident_to_match, p_incidents_df, p_fields_for_frequencyIndicators=[]):
-        """
-        :param p_incident_to_match: Dataframe with one incident
-        :param p_incidents_df: Dataframe with all the incidents
-        :param p_fields_indicators_transformation: list of incident fields that for the transformer 'indicators'
-        :return:
-        """
-        self.incident_to_match = p_incident_to_match
-        self.incidents_df = p_incidents_df
-        self.fields_for_frequencyIndicators = p_fields_for_frequencyIndicators
-
-    def predict(self):
-        self.remove_empty_field()
+    def predict(self) -> pd.DataFrame:
         self.get_score()
+        self.filter_results()
         self.prepare_for_display()
         return self.incidents_df
 
-    def remove_empty_field(self):
-        remove_list = []
-        for field in self.fields_for_frequencyIndicators:
-            if field not in self.incident_to_match.columns or not self.incident_to_match[field].values[
-                0] or not isinstance(self.incident_to_match[field].values[0], str) or \
-                    self.incident_to_match[field].values[0] == 'None' or \
-                    self.incident_to_match[field].values[0] == 'N/A':
-                remove_list.append(field)
-        self.fields_for_frequencyIndicators = [x for x in self.fields_for_frequencyIndicators if
-                                               x not in remove_list]
+    def get_score(self) -> None:
+        t = FrequencyIndicatorsTransformer(
+            self.incidents_df,
+            self.incident_to_match,
+        )
+        t.get_score()
 
-    def get_score(self):
-        for field in self.fields_for_frequencyIndicators:
-            t = Transformer('frequency_indicators', field, self.incidents_df, self.incident_to_match,
-                            self.transformation)
-            t.get_score()
+    def filter_results(self) -> None:
+        self.incidents_df = self.incidents_df[self.incidents_df[SIMILARITY_SCORE_COLUMN] > self.threshold]
+        self.incidents_df = self.incidents_df.sort_values([SIMILARITY_SCORE_COLUMN], ascending=False)
+        self.incidents_df = self.incidents_df.head(self.max_incidents)
 
-    def prepare_for_display(self):
-        vocabulary = self.incident_to_match['indicators'].iloc[0].split(' ')
-        self.incidents_df['Identical indicators'] = self.incidents_df['indicators'].apply(
-            lambda x: ','.join([id for id in x.split(' ') if id in vocabulary]))
+    def prepare_for_display(self) -> None:
+        vocabulary = self.incident_to_match[INDICATORS_COLUMN].iloc[0].split(" ")
+        self.incidents_df[IDENTICAL_INDICATORS_COLUMN] = self.incidents_df[INDICATORS_COLUMN].apply(
+            lambda x: ",".join([id for id in x.split(" ") if id in vocabulary])
+        )
 
 
-def get_all_indicators_for_incident(incident_id: str) -> list[dict]:
+def search_indicators(
+    query: str,
+    fields_to_populate: list | None = None,
+    limit: int = SEARCH_INDICATORS_LIMIT,
+    page_size: int = SEARCH_INDICATORS_PAGE_SIZE,
+) -> list:
+    demisto.debug(f"Searching indicators with {query=}")
+    search_indicators = IndicatorsSearcher(
+        query=query,
+        limit=limit,
+        size=page_size,
+        filter_fields=",".join(fields_to_populate) if fields_to_populate else None
+    )
+    return flatten_list([ioc_res.get('iocs') or [] for ioc_res in search_indicators])
+
+
+def get_indicators_of_actual_incident(
+    incident_id: str,
+    indicator_types: list[str],
+    min_number_of_indicators: int,
+    max_incidents_per_indicator: int,
+) -> dict[str, dict]:
+    """ Given an incident ID, returns a map between IDs of its related indicators and their data
+
+    :param incident_id: ID of actual incident
+    :param indicators_types: list of indicators type accepted
+    :param min_number_of_indicators: Min number of indicators in the actual incident
+    :param max_incidents_per_indicator: Max incidents in indicators for white list
+    :return: a map from indicator ids of the actual incident to their data
     """
-    Get indicators for one incident
-    :param incident_id: incident id
-    :return:
+    indicators = search_indicators(query=f"investigationIDs:({incident_id})")
+    if not indicators:
+        return {}
+    indicators = [i for i in indicators if len(i.get("investigationIDs") or []) <= max_incidents_per_indicator]
+    if indicator_types:
+        indicators = [x for x in indicators if x[INDICATOR_TYPE_FIELD].lower() in indicator_types]
+    if len(indicators) < min_number_of_indicators:
+        return {}
+
+    indicators_data = {ind[INDICATOR_ID_FIELD]: ind for ind in indicators}
+    demisto.debug(
+        f"Found {len(indicators_data)} indicators for incident {incident_id}: {list(indicators_data.keys())}"
+    )
+    return indicators_data
+
+
+def get_related_incidents(
+    indicators: dict[str, dict],
+    query: str,
+    from_date: str | None,
+) -> list[str]:
+    """ Given indicators data including their related incidents,
+    filters their related incidents by query and date and returns a list of the incident IDs.
+
+    :param indicators: List of indicators
+    :param query: A query to filter the related incidents by
+    :param from_date: A created date to filter the related incidents by
+    :return: The list of the related incident IDs
     """
-    query = 'investigationIDs:%s' % incident_id
-    res = demisto.executeCommand("findIndicators", {'query': query})
-    if is_error(res):
-        get_error(res)
-    if not res[0]['Contents']:
+    incident_ids = flatten_list([i.get("investigationIDs") or [] for i in indicators.values()])
+    incident_ids = list({x for x in incident_ids if not re.match(PLAYGROUND_PATTERN, x)})
+    if not (query or from_date) or not incident_ids:
+        demisto.debug(f"Found {len(incident_ids)} related incidents: {incident_ids}")
+        return incident_ids
+
+    args = {
+        "query": f"{query + ' AND ' if query else ''}incident.id:({' '.join(incident_ids)})",
+        "populateFields": INCIDENT_ID_FIELD,
+        "fromDate": from_date,
+    }
+    demisto.debug(f"Executing GetIncidentsByQuery with {args=}")
+    incidents = get_incidents_by_query(args)
+    incident_ids = [incident[INCIDENT_ID_FIELD] for incident in incidents]
+    demisto.debug(f"Found {len(incident_ids)} related incidents: {incident_ids}")
+    return incident_ids
+
+
+def get_indicators_of_related_incidents(
+    incident_ids: list[str],
+    max_incidents_per_indicator: int,
+) -> list[dict]:
+    if not incident_ids:
+        demisto.debug("No mutual indicators were found.")
         return []
-    indicators = res[0]['Contents']
+    indicators = search_indicators(
+        query=f"investigationIDs:({' '.join(incident_ids)})",
+        fields_to_populate=INDICATOR_FIELDS_TO_POPULATE_FROM_QUERY,
+    )
+    indicators = [i for i in indicators if len(i.get("investigationIDs") or []) <= max_incidents_per_indicator]
+    indicators_ids = [ind[INDICATOR_ID_FIELD] for ind in indicators]
+    demisto.debug(f"Found {len(indicators_ids)} related indicators: {indicators_ids}")
     return indicators
 
 
-def get_number_of_invs_for_indicators(indicator: dict) -> int:
-    """
-    :param indicator: list of dict representing indicators
-    :return: lenght of investigation ids for this indicators
-    """
-    invs = indicator.get('investigationIDs') or []
-    return len(invs)
+def get_mutual_indicators(
+    related_indicators: list[dict],
+    indicators_of_actual_incident: dict[str, dict],
+) -> list[dict]:
+    mutual_indicators = [
+        ind for ind in related_indicators if ind[INDICATOR_ID_FIELD] in indicators_of_actual_incident
+    ]
+    mutual_indicators_ids = [ind[INDICATOR_ID_FIELD] for ind in mutual_indicators]
+    demisto.debug(f"Found {len(mutual_indicators_ids)} mutual indicators: {mutual_indicators_ids}")
+    return mutual_indicators
 
 
-def get_indicators_from_incident_ids(ids: list[str]) -> list[dict]:
-    """
-    Get indicators for list of incidents ids
-    :param ids: List of incident ids
-    :return: List of indicators for each id
-    """
-    ids_string = []
-    for id_ in ids:
-        ids_string.append('incident.id: "%s"' % id_)
-    query = " OR ".join(ids_string)
-    res = demisto.executeCommand('findIndicators', {
-        'query': query
-    })
-    if is_error(res):
-        get_error(res)
-    if not res[0]['Contents']:
-        return []
-    indicators = res[0]['Contents']
-    return indicators
+def get_mutual_indicators_df(
+    indicators: list[dict],
+    incident_ids: list[str],
+) -> pd.DataFrame:
+    indicators_df = pd.DataFrame(indicators)
+    if not indicators_df.empty:
+        indicators_df[INVOLVED_INCIDENTS_COUNT_COLUMN] = indicators_df[INVESTIGATION_IDS_FIELD].apply(
+            lambda inv_ids: sum(id_ in incident_ids for id_ in inv_ids),
+        )
+        indicators_df[INDICATOR_LINK_COLUMN] = indicators_df[INDICATOR_ID_FIELD].apply(
+            lambda x: INDICATOR_LINK_FORMAT.format(x)
+        )
+        indicators_df = indicators_df.sort_values(
+            [SCORE_FIELD, INVOLVED_INCIDENTS_COUNT_COLUMN],
+            ascending=False,
+        )
+        indicators_df[REPUTATION_COLUMN] = indicators_df[SCORE_FIELD].apply(scoreToReputation)  # pylint: disable=E1137
+        indicators_df = indicators_df.rename({INDICATOR_TYPE_FIELD: TYPE_COLUMN}, axis=1)
+        indicators_df = indicators_df.rename({VALUE_FIELD_FOR_COMPATIBILITY: VALUE_FIELD}, axis=1)
+    return indicators_df
 
 
-def match_indicators_incident(indicators: list[dict], incident_ids: list[str]) -> dict[str, list]:
+def mutual_indicators_results(mutual_indicators: list[dict], incident_ids: list[str]):
+    indicators_df = get_mutual_indicators_df(mutual_indicators, incident_ids)
+    outputs = [] if indicators_df.empty else indicators_df[[INDICATOR_ID_FIELD, VALUE_FIELD]].to_dict(orient="records")
+    readable_output = tableToMarkdown(
+        "Mutual Indicators",
+        indicators_df.to_dict(orient="records"),
+        headers=MUTUAL_INDICATORS_HEADERS,
+        headerTransform=pascalToSpace,
+    )
+    return CommandResults(
+        outputs=outputs,
+        outputs_prefix="MutualIndicators.indicators",
+        readable_output=readable_output,
+    )
+
+
+def create_actual_incident_df(indicators_of_actual_incident: dict[str, dict]) -> pd.DataFrame:
+    return pd.DataFrame(
+        data=[" ".join(indicators_of_actual_incident.keys())],
+        columns=[INDICATORS_COLUMN],
+    )
+
+
+def create_related_incidents_df(
+    indicators: list[dict],
+    incident_ids: list[str],
+    actual_incident_id: str,
+) -> dict[str, list]:
     """
     :param indicators: list of dict representing indicators
     :param incident_ids: list of incident ids
     :return: dict of {incident id : list of indicators ids related to this incident)
     """
-    d = {k: [] for k in incident_ids}  # type: dict[str, list]
-    for indicator in indicators:
-        inv_ids = indicator.get('investigationIDs', None)
-        if inv_ids:
-            for inv_id in inv_ids:
-                if inv_id in d:
-                    d[inv_id] = d[inv_id] + [indicator['id']]
-    return d
+    incidents_to_indicators = {
+        inc_id: [
+            indicator[INDICATOR_ID_FIELD] for indicator in indicators
+            if inc_id in (indicator.get(INVESTIGATION_IDS_FIELD) or [])
+        ]
+        for inc_id in incident_ids
+    }
+    return pd.DataFrame.from_dict(
+        data={
+            k: " ".join(v) for k, v in incidents_to_indicators.items()
+            if k != actual_incident_id
+        },
+        orient="index",
+        columns=[INDICATORS_COLUMN],
+    )
 
 
-def enriched_incidents(df, fields_incident_to_display, from_date: str):
+def enrich_incidents(
+    incidents: pd.DataFrame,
+    fields_to_display: list,
+) -> pd.DataFrame:
     """
-    Enriched incidents with data
-    :param df: Incidents dataFrame
-    :param fields_incident_to_display: Fields selected for enrichement
-    :param from_date: from_date
+    Enriches a DataFrame of incidents with the given fields to display.
+
+    :param similar_incidents: Incidents dataFrame
+    :param fields_to_display: Fields selected for enrichement
     :return: Incidents dataFrame enriched
     """
-    if 'id' in df.columns:
-        ids = df.id.tolist()
-    else:
-        ids = df.index
-    ids_string = []
-    for id_ in ids:
-        ids_string.append('id: "%s"' % id_)
-    query = " OR ".join(ids_string)
-    res = demisto.executeCommand('GetIncidentsByQuery', {
-        'query': query,
-        'populateFields': ' , '.join(fields_incident_to_display),
-        'fromDate': from_date,
-    })
-    if is_error(res):
-        return_error(res)
-    if not json.loads(res[0]['Contents']):
-        return []
-    else:
-        incidents = json.loads(res[0]['Contents'])
-        incidents_dict = {incident['id']: incident for incident in incidents}
-        for field in fields_incident_to_display:
-            if field == 'created':
-                df[field] = [incidents_dict.get(id_, {}).get(field, '')[:10] if
-                             len(incidents_dict.get(id_, {}).get(field, '')) > 10 else '' for id_ in ids]
-            elif field == 'status':
-                df[field] = [STATUS_DICT.get(incidents_dict.get(id_, {}).get(field, '')) if
-                             incidents_dict.get(id_, {}).get(field, '') in STATUS_DICT else ' ' for id_ in ids]
-            else:
-                df[field] = [incidents_dict.get(id_, {}).get(field, '') for id_ in ids]
-        return df
+    if incidents.empty:
+        return incidents
 
+    incident_ids = incidents.id.tolist() if INCIDENT_ID_FIELD in incidents.columns else incidents.index
 
-def return_outputs_custom(readable_output, outputs=None):
-    return_entry = {
-        "Type": entryTypes["note"],
-        "HumanReadable": readable_output,
-        "ContentsFormat": formats['json'],
-        "Contents": outputs,
-        "EntryContext": outputs,
+    args = {
+        "query": f"incident.id:({' '.join(incident_ids)})",
+        "populateFields": ",".join(fields_to_display),
     }
-    return CommandResults(outputs=return_entry)
+    demisto.debug(f"Executing GetIncidentsByQuery with {args=}")
+    res = get_incidents_by_query(args)
+    incidents_map: dict[str, dict] = {incident[INCIDENT_ID_FIELD]: incident for incident in res}
+    if CREATED_FIELD in fields_to_display:
+        incidents[CREATED_FIELD] = [
+            dateparser.parse(incidents_map[inc_id][CREATED_FIELD]).strftime(DATE_FORMAT)  # type: ignore
+            for inc_id in incident_ids
+        ]
+    if STATUS_FIELD in fields_to_display:
+        incidents[STATUS_FIELD] = [
+            STATUS_DICT.get(incidents_map[inc_id][STATUS_FIELD]) or " "
+            for inc_id in incident_ids
+        ]
+
+    for field in fields_to_display:
+        if field not in [CREATED_FIELD, STATUS_FIELD]:
+            incidents[field] = [incidents_map[inc_id][field] or "" for inc_id in incident_ids]
+    return incidents
 
 
-def return_no_mututal_indicators_found_entry():
-    hr = '### Mutual Indicators' + '\n'
-    hr += 'No mutual indicators were found.'
-    return_outputs_custom(hr, add_context_key(create_context_for_indicators()))
+def replace_indicator_ids_with_values(
+    inc_ids: str,
+    indicators_data: dict[str, dict],
+) -> str:
+    return "\n".join([
+        indicators_data.get(x, {}).get(VALUE_FIELD_FOR_COMPATIBILITY) or " "
+        for x in inc_ids.split(" ")
+    ])
 
 
-def create_context_for_indicators(indicators_df=None):
-    if indicators_df is None:
-        indicators_context = []
-    else:
-        indicators_df.rename({'Value': 'value'}, axis=1, inplace=True)  # noqa: PD002
-        indicators_df = indicators_df[['id', 'value']]
-        indicators_context = indicators_df.to_dict(orient='records')
-    return {'indicators': indicators_context}
+def format_similar_incidents(
+    similar_incidents: pd.DataFrame,
+    indicators_data: dict[str, dict],
+    fields_to_display: list[str],
+) -> pd.DataFrame:
+    """ Formats the similar incidents DataFrame.
 
-
-def add_context_key(entry_context):
-    new_context = {}
-    for k, v in entry_context.items():
-        new_context['{}.{}'.format('MutualIndicators', k)] = v
-    return new_context
-
-
-def return_indicator_entry(incident_ids, indicators_types, indicators_list):
-    indicators_query = 'investigationIDs:({})'.format(' '.join(f'"{id_}"' for id_ in incident_ids))
-    fields = ['id', 'indicator_type', 'investigationIDs', 'relatedIncCount', 'score', 'value']
-    indicators_args = {'query': indicators_query, 'limit': '150', 'populateFields': ','.join(fields)}
-    res = demisto.executeCommand('GetIndicatorsByQuery', args=indicators_args)
-    if is_error(res):
-        return_error(res)
-    indicators = res[0]['Contents']
-    indicators_df = pd.DataFrame(data=indicators)
-    if len(indicators_df) == 0:
-        return_no_mututal_indicators_found_entry()
-        return indicators_df
-    indicators_df = indicators_df[indicators_df['relatedIncCount'] < 150]
-    indicators_df['Involved Incidents Count'] = \
-        indicators_df['investigationIDs'].apply(lambda x: sum(id_ in incident_ids for id_ in x))
-    indicators_df = indicators_df[indicators_df['Involved Incidents Count'] > 1]
-    if indicators_types:
-        indicators_df = indicators_df[indicators_df.indicator_type.isin(indicators_types)]
-    indicators_df = indicators_df[indicators_df.id.isin([x.get('id') for x in indicators_list])]
-    if len(indicators_df) == 0:
-        return_no_mututal_indicators_found_entry()
-        return indicators_df
-    indicators_df['Id'] = indicators_df['id'].apply(lambda x: f"[{x}](#/indicator/{x})")
-    indicators_df = indicators_df.sort_values(['score', 'Involved Incidents Count'], ascending=False)
-    indicators_df['Reputation'] = indicators_df['score'].apply(scoreToReputation)
-    indicators_df.rename({'value': 'Value', 'indicator_type': 'Type'}, axis=1, inplace=True)  # noqa: PD002
-    indicators_headers = ['Id', 'Value', 'Type', 'Reputation', 'Involved Incidents Count']
-    hr = tableToMarkdown('Mutual Indicators', indicators_df.to_dict(orient='records'),
-                         headers=indicators_headers)
-    return_outputs_custom(hr, add_context_key(create_context_for_indicators(indicators_df)))
-    return indicators_df
-
-
-def get_indicators_map(indicators: list[dict]) -> dict[str, dict]:
+    :param indicators_data: a mapping between IDs and the mutual indicators data
+    :param fields_to_display: Fields selected for enrichement
+    :return: a formatted, enriched DataFrame of the similar incidents.
     """
-    :param indicators: list of dict representing indicators
-    :return: Dictionary {id of indicators: indicators}
+    if similar_incidents.empty:
+        demisto.debug("No similar incidents found.")
+        return similar_incidents
+
+    # format and enrich DataFrame
+    similar_incidents = similar_incidents.reset_index().rename(columns={"index": INCIDENT_ID_FIELD})
+    similar_incidents[INCIDENT_LINK_COLUMN] = similar_incidents[INCIDENT_ID_FIELD].apply(
+        lambda _id: INCIDENT_LINK_FORMAT.format(_id)
+    )
+    similar_incidents[IDENTICAL_INDICATORS_COLUMN] = similar_incidents[IDENTICAL_INDICATORS_COLUMN].apply(
+        lambda inc_ids: replace_indicator_ids_with_values(inc_ids, indicators_data)
+    )
+    similar_incidents = similar_incidents[
+        [INCIDENT_LINK_COLUMN, INCIDENT_ID_FIELD, IDENTICAL_INDICATORS_COLUMN, SIMILARITY_SCORE_COLUMN]
+    ]
+    return enrich_incidents(similar_incidents, fields_to_display)
+
+
+def similar_incidents_results(
+    similar_incidents: pd.DataFrame,
+    indicators_of_actual_incident: dict,
+    fields_to_display: list,
+):
+    similar_incidents = format_similar_incidents(similar_incidents, indicators_of_actual_incident, fields_to_display)
+    outputs = similar_incidents.to_dict(orient="records")
+    additional_headers = [
+        x for x in similar_incidents.columns.tolist()
+        if x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + FIELDS_TO_EXCLUDE_FROM_DISPLAY
+    ]
+    return CommandResults(
+        outputs={"similarIncident": outputs, "isSimilarIncidentFound": len(outputs) > 0},
+        outputs_prefix="DBotFindSimilarIncidentsByIndicators",
+        raw_response=outputs,
+        readable_output=tableToMarkdown(
+            "Similar Incidents",
+            outputs,
+            headers=FIRST_COLUMNS_INCIDENTS_DISPLAY + additional_headers,
+            headerTransform=str.title,
+        ),
+        tags=["similarIncidents"],  # type: ignore
+    )
+
+
+def actual_incident_results(
+    incident_df: pd.DataFrame,
+    incident_id: str,
+    indicators_data: dict,
+    fields_to_display: list[str],
+) -> CommandResults:
     """
-    return {ind['id']: ind for ind in indicators}
-
-
-def join(my_list: list) -> str:
-    return ' '.join(my_list)
-
-
-def organize_data(similar_incidents: pd.DataFrame, indicators_map: dict[str, dict], threshold: float,
-                  max_incidents_to_display: int) \
-        -> pd.DataFrame:
+    Formats the given DataFrame, and returns a CommandResults object of the actual incident data
+    :param incident_df: a DataFrame of actual incident
+    :param incident_id: the incident ID
+    :param indicators_data: indicators data of the actual incident
+    :param fields_to_display: A list of fields to display
+    :return: a CommandResults obj
     """
-    Clean and organize dataframe before displaying
-    :param similar_incidents: DataFrame of incident
-    :param indicators_map: Dict of indicators
-    :param threshold: threshold for similarity score
-    :param max_incidents_to_display:  Max number of incidents we want to display
-    :return: Clean DataFrame of incident
-    """
-    similar_incidents = similar_incidents.reset_index().rename(columns={'index': 'id'})
-    similar_incidents['incident ID'] = similar_incidents['id'].apply(lambda _id: f"[{_id}](#/Details/{_id})")
-    similar_incidents['Identical indicators'] = similar_incidents['Identical indicators'].apply(
-        lambda _ids: '\n'.join(
-            [indicators_map.get(x).get('value') if indicators_map.get(x) else ' ' for x in  # type: ignore
-             _ids.split(',')]))  # type: ignore
-    similar_incidents = similar_incidents[['incident ID', 'id', 'Identical indicators', 'similarity indicators']]
-    similar_incidents = similar_incidents[similar_incidents['similarity indicators'] > threshold]
-    similar_incidents.sort_values(['similarity indicators'], inplace=True, ascending=False)  # noqa: PD002
-    return similar_incidents.head(max_incidents_to_display)
+    incident_df[INCIDENT_ID_FIELD] = [incident_id]
+    incident_df[INCIDENT_LINK_COLUMN] = incident_df[INCIDENT_ID_FIELD].apply(
+        lambda _id: INCIDENT_LINK_FORMAT.format(_id)
+    )
+    incident_df[INDICATORS_COLUMN] = incident_df[INDICATORS_COLUMN].apply(
+        lambda inc_ids: replace_indicator_ids_with_values(inc_ids, indicators_data)
+    )
+    incident_df = enrich_incidents(incident_df, fields_to_display)
+    additional_headers = [
+        x for x in incident_df.columns.tolist()
+        if x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + FIELDS_TO_EXCLUDE_FROM_DISPLAY
+    ]
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Actual Incident",
+            incident_df.to_dict(orient="records"),
+            headers=FIRST_COLUMNS_INCIDENTS_DISPLAY + additional_headers,
+            headerTransform=pascalToSpace,
+        ),
+    )
 
 
-def return_no_similar_incident_found_entry():
-    hr = '### No Similar indicators' + '\n'
-    hr += 'No Similar indicators were found.'
-    return CommandResults(readable_output=hr,
-                          outputs={'DBotFindSimilarIncidentsByIndicators': create_context_for_incidents()},
-                          raw_response={})
+def find_similar_incidents_by_indicators(incident_id: str, args: dict) -> list[CommandResults]:
+    # get_indicators_of_actual_incident() args
+    indicators_types = argToList(args.get("indicatorsTypes"), transform=str.lower)
+    min_number_of_indicators = int(args["minNumberOfIndicators"])
+    max_incidents_per_indicator = int(args["maxIncidentsInIndicatorsForWhiteList"])
+
+    # get_related_incidents() args
+    query = args.get("query") or ""
+    from_date = args.get("fromDate")
+
+    # get_similar_incidents() args
+    similarity_threshold = float(args["threshold"])
+    max_incidents_to_display = int(args["maxIncidentsToDisplay"])
+
+    # outputs formatting args
+    show_actual_incident = argToBoolean(args.get("showActualIncident"))
+    fields_to_display = list(set(argToList(args["fieldsIncidentToDisplay"])) | {CREATED_FIELD, NAME_FIELD})
+
+    command_results_list: list[CommandResults] = []
+
+    indicators_of_actual_incident = get_indicators_of_actual_incident(
+        incident_id,
+        indicators_types,
+        min_number_of_indicators,
+        max_incidents_per_indicator,
+    )
+
+    incident_ids = get_related_incidents(indicators_of_actual_incident, query, from_date)
+    related_indicators = get_indicators_of_related_incidents(incident_ids, max_incidents_per_indicator)
+    mutual_indicators = get_mutual_indicators(related_indicators, indicators_of_actual_incident)
+    actual_incident_df = create_actual_incident_df(indicators_of_actual_incident)
+    related_incidents_df = create_related_incidents_df(related_indicators, incident_ids, incident_id)
+
+    similar_incidents = Model(
+        actual_incident_df,
+        related_incidents_df,
+        similarity_threshold,
+        max_incidents_to_display,
+    ).predict()
+
+    if show_actual_incident:
+        command_results_list.append(
+            actual_incident_results(actual_incident_df, incident_id, indicators_of_actual_incident, fields_to_display)
+        )
+    command_results_list.extend([
+        mutual_indicators_results(mutual_indicators, incident_ids),
+        similar_incidents_results(similar_incidents, indicators_of_actual_incident, fields_to_display),
+    ])
+    return command_results_list
 
 
-def create_context_for_incidents(similar_incidents=pd.DataFrame()):
-    """
-    Return context from dataframe of incident
-    :param similar_incidents: DataFrame of incidents with indicators
-    :return: context
-    """
-    if len(similar_incidents) == 0:
-        context = {
-            'similarIncidentList': {},
-            'isSimilarIncidentFound': False
-        }
-    else:
-        context = {
-            'similarIncident': (similar_incidents.to_dict(orient='records')),
-            'isSimilarIncidentFound': True
-        }
-    return context
+def main():  # pragma: no cover
+    try:
+        args = demisto.args()
+        incident_id = args.get("incidentId") or demisto.incidents()[0]["id"]
+        return_results(find_similar_incidents_by_indicators(incident_id, args))
+    except Exception as e:
+        return_error(f"Failed to execute DBotFindSimilarIncidentsByIndicators. Error: {e}")
 
 
-def display_actual_incident(incident_df: pd.DataFrame, incident_id: str, fields_incident_to_display: list[str],
-                            from_date: str) -> CommandResults:
-    """
-    Display current incident
-    :param incident_df: DataFrame of incident
-    :param incident_id: incident ID
-    :param fields_incident_to_display: fields to display
-    :param from_date: fields to from_date
-    :return: None
-    """
-    incident_df['id'] = [incident_id]
-    incident_df = enriched_incidents(incident_df, fields_incident_to_display, from_date)
-    incident_df['Incident ID'] = incident_df['id'].apply(lambda _id: f"[{_id}](#/Details/{_id})")
-    col_incident = incident_df.columns.tolist()
-    col_incident = FIRST_COLUMNS_INCIDENTS_DISPLAY + [x for x in col_incident if
-                                                      x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + ['id', 'indicators']]
-    col_incident = [x.title() for x in col_incident]
-    incident_df = incident_df.rename(str.title, axis='columns')
-    incident_json = incident_df.to_dict(orient='records')
-    return CommandResults(readable_output=tableToMarkdown("Actual Incident",
-                                                          incident_json,
-                                                          col_incident))
-
-
-def load_indicators_for_current_incident(incident_id: str, indicators_types: list[str], min_nb_of_indicators: int,
-                                         max_indicators_for_white_list: int):
-    """
-    Take
-    :param incident_id: ID of current incident
-    :param indicators_types: list of indicators type accepted
-    :param limit_nb_of_indicators: Min number of indicators in the current incident
-    :param max_indicators: Max incidents in indicators for white list
-    :return: return [*indicators] and dictionnary {key: indicators} and if early_stop
-    """
-    indicators = get_all_indicators_for_incident(incident_id)
-    if not indicators:
-        return_no_mututal_indicators_found_entry()
-        return_no_similar_incident_found_entry()
-        return [], {}, True
-    indicators_map = get_indicators_map(indicators)
-    indicators = list(
-        filter(lambda x: get_number_of_invs_for_indicators(x) < max_indicators_for_white_list, indicators))
-    if indicators_types:
-        indicators = [x for x in indicators if x.get(FIELD_INDICATOR_TYPE) in indicators_types]
-    if len(indicators) < min_nb_of_indicators:
-        return_no_mututal_indicators_found_entry()
-        return_no_similar_incident_found_entry()
-        return [], {}, True
-    return indicators, indicators_map, False
-
-
-def get_incidents_ids_related_to_indicators(indicators, query):
-    """
-    Return incident ids from a list of indicators
-    :param indicators: List of indicators
-    :return: [*incidents_ids]
-    """
-    incident_ids = [indicator.get('investigationIDs', None) for indicator in indicators if
-                    indicator.get('investigationIDs', None)]
-    incident_ids = flatten_list(incident_ids)
-    p = re.compile(PLAYGROUND_PATTERN)
-    incident_ids = [x for x in incident_ids if not p.match(x)]
-    incident_ids = get_incidents_filtered_from_query(incident_ids, query)
-    if not incident_ids:
-        return_no_mututal_indicators_found_entry()
-        return_no_similar_incident_found_entry()
-        return [], True
-    return incident_ids, False
-
-
-def get_ids_condition_clause(incident_ids):
-    if incident_ids:
-        return "incident.id:(" + " ".join(incident_ids) + ")"
-    return ""
-
-
-def get_incidents_filtered_from_query(incident_ids, query):
-    ids_condition_clause = get_ids_condition_clause(incident_ids)
-    query += " AND %s" % ids_condition_clause
-    res = demisto.executeCommand('GetIncidentsByQuery', {
-        'query': query,
-        'populateFields': 'id'
-    })
-    if is_error(res):
-        get_error(res)
-    if not json.loads(res[0]['Contents']):
-        return []
-    else:
-        filtered_incidents_dict = json.loads(res[0]['Contents'])
-    filtered_incidents = [incident['id'] for incident in filtered_incidents_dict]
-    return filtered_incidents
-
-
-def get_related_incidents_with_indicators(incident_ids: list[str], indicators_types: list[str],
-                                          incident_id: str) -> pd.DataFrame:
-    """
-    Create dataframe of incident with indicators from incidents ids list
-    :param incident_ids: List if incident id
-    :param indicators_types: List of indicators type
-    :param incident_id: current incident (in order to remove it)
-    :return: dataframe of incident with indicators
-    """
-    indicators_related = get_indicators_from_incident_ids(incident_ids)
-    if not indicators_related:
-        return_no_similar_incident_found_entry()
-        return pd.DataFrame(), True
-    if indicators_types:
-        indicators_related = [x for x in indicators_related if x.get(FIELD_INDICATOR_TYPE) in indicators_types]
-        if not indicators_related:
-            return_no_similar_incident_found_entry()
-            return pd.DataFrame(), True
-    incidents_with_indicators = match_indicators_incident(indicators_related, incident_ids)
-    incidents_with_indicators_join = {k: join(v) for k, v in incidents_with_indicators.items()}
-    incidents_with_indicators_join.pop(incident_id, None)
-    if not bool(incidents_with_indicators_join):
-        return_no_similar_incident_found_entry()
-        return pd.DataFrame(), True
-    incidents_df = pd.DataFrame.from_dict(incidents_with_indicators_join, orient='index')
-    incidents_df.columns = ['indicators']
-    return incidents_df, False
-
-
-def organize_current_incident(current_incident_df, indicators_map):
-    current_incident_df['Indicators'] = current_incident_df['indicators'].apply(
-        lambda _ids: '\n'.join(
-            [indicators_map.get(x).get('value') if indicators_map.get(x) else ' ' for x in  # type: ignore
-             _ids.split(' ')]))  # type: ignore
-    return current_incident_df
-
-
-def return_outputs_tagged(similar_incidents: pd.DataFrame, context: dict, tag: Optional[str] = None):
-    colums_to_display = FIRST_COLUMNS_INCIDENTS_DISPLAY + [x for x in similar_incidents.columns.tolist() if
-                                                           x not in FIRST_COLUMNS_INCIDENTS_DISPLAY + FIELDS_TO_REMOVE_TO_DISPLAY]
-    similar_incidents_renamed = similar_incidents.rename(str.title, axis='columns')
-    similar_incidents_json = similar_incidents_renamed.to_dict(orient='records')
-    colums_to_display = [x.title() for x in colums_to_display]
-    readable_output = tableToMarkdown("Similar incidents", similar_incidents_json, colums_to_display)
-    return_entry = {
-        "Type": entryTypes["note"],
-        "HumanReadable": readable_output,
-        "ContentsFormat": formats['json'],
-        "Contents": similar_incidents.to_dict(orient='records'),
-        "EntryContext": {'DBotFindSimilarIncidentsByIndicators': context},
-    }
-    if tag is not None:
-        return_entry["Tags"] = [tag]
-    return return_entry
-
-
-def main():
-    max_indicators_for_white_list = int(demisto.args()['maxIncidentsInIndicatorsForWhiteList'])
-    min_nb_of_indicators = int(demisto.args()['minNumberOfIndicators'])
-    threshold = float(demisto.args()['threshold'])
-    indicators_types = demisto.args().get('indicatorsTypes')
-    if indicators_types:
-        indicators_types = indicators_types.split(',')
-        indicators_types = [x.strip() for x in indicators_types if x]
-    show_actual_incident = demisto.args().get('showActualIncident')
-    max_incidents_to_display = int(demisto.args()['maxIncidentsToDisplay'])
-    fields_incident_to_display = demisto.args()['fieldsIncidentToDisplay'].split(',')
-    fields_incident_to_display = [x.strip() for x in fields_incident_to_display if x]
-    fields_incident_to_display = list(set(['created', 'name'] + fields_incident_to_display))
-    from_date = demisto.args().get('fromDate')
-    query = demisto.args().get('query', "")
-
-    # load the Dcurrent incident
-    incident_id = demisto.args().get('incidentId')
-    if not incident_id:
-        incident = demisto.incidents()[0]
-        incident_id = incident['id']
-
-    # load the related indicators to the incidents
-    indicators, indicators_map, early_exit = load_indicators_for_current_incident(incident_id, indicators_types,
-                                                                                  min_nb_of_indicators,
-                                                                                  max_indicators_for_white_list)
-    if early_exit:
-        return
-
-    # Get the Investigation IDs related to the indicators if the incidents
-    incident_ids, early_exit = get_incidents_ids_related_to_indicators(indicators, query)
-    if early_exit:
-        return
-
-    # Return Mutual indicators
-    _ = return_indicator_entry(incident_ids, indicators_types, indicators)
-
-    # Get related incidents with indicators
-    incidents_df, early_exit = get_related_incidents_with_indicators(incident_ids, indicators_types, incident_id)
-    if early_exit:
-        return
-
-    # Current incident
-    indicators_for_incident = [' '.join({x.get('id') for x in indicators})]  # type: ignore
-    current_incident_df = pd.DataFrame(indicators_for_incident, columns=['indicators'])
-
-    # Prediction
-    model = Model(p_transformation=TRANSFORMATION)
-    model.init_prediction(current_incident_df, incidents_df, INCIDENT_FIELDS_TO_USE)
-    similar_incidents = model.predict()
-
-    # Display and enriched incidents data
-    current_incident_df = organize_current_incident(current_incident_df, indicators_map)
-    similar_incidents = organize_data(similar_incidents, indicators_map, threshold, max_incidents_to_display)
-    similar_incidents = enriched_incidents(similar_incidents, fields_incident_to_display, from_date)
-
-    incident_found_bool = (len(similar_incidents) > 0)
-
-    if show_actual_incident == 'True':
-        command_results = display_actual_incident(current_incident_df, incident_id, fields_incident_to_display, from_date)
-        return_results(command_results)
-
-    if incident_found_bool:
-        context = create_context_for_incidents(similar_incidents)
-        return_results(return_outputs_tagged(similar_incidents, context, 'similarIncidents'))
-    else:
-        return_no_similar_incident_found_entry()
-
-
-if __name__ in ['__main__', '__builtin__', 'builtins']:
+if __name__ in ["__main__", "__builtin__", "builtins"]:
     main()

@@ -18,7 +18,7 @@ description: Alert for change in user''s permissions change from Guest to Owner.
 drilldown_query_timeframe: ALERT
 execution_mode: SCHEDULED
 global_rule_id: 73ffe0c0-d4ef-498b-b740-e461cf4e498b
-investigation_query_link: "datamodel\r\n| filter xdm.observer.vendor = \"gitlab\" and xdm.observer.product = \"gitlab\"\r\n| fields _time\r\n,xdm.event.id \r\n,xdm.source.user.identifier \r\n,xdm.target.resource.id \r\n,xdm.target.resource.type \r\n,xdm.source.user.username \r\n,xdm.target.resource.sub_type \r\n,xdm.target.resource.name \r\n,xdm.event.description \r\n,xdm.source.ipv4 \r\n,xdm.target.resource_before.value \r\n,xdm.target.resource.value \r\n,xdm.event.operation \r\n,xdm.event.type \r\n,xdm.event.operation_sub_type \r\n| filter xdm.event.operation = \"change_access_level\" and xdm.target.resource_before.value = \"Guest\" and xdm.target.resource.value = \"Owner\""
+investigation_query_link: "datamodel dataset = gitlab_gitlab_raw \r\n| fields _time\r\n,xdm.event.id \r\n,xdm.source.user.identifier \r\n,xdm.target.resource.id \r\n,xdm.target.resource.type \r\n,xdm.source.user.username \r\n,xdm.target.resource.sub_type \r\n,xdm.target.resource.name \r\n,xdm.event.description \r\n,xdm.source.ipv4 \r\n,xdm.target.resource_before.value \r\n,xdm.target.resource.value \r\n,xdm.event.operation \r\n,xdm.event.type \r\n,xdm.event.operation_sub_type \r\n| filter xdm.event.operation = \"change_access_level\" and xdm.target.resource_before.value = \"Guest\" and xdm.target.resource.value = \"Owner\""
 mapping_strategy: CUSTOM
 mitre_defs: {}
 name: Gitlab - User Permission Changed
@@ -29,5 +29,5 @@ suppression_enabled: true
 suppression_fields: xdm.source.user.username
 user_defined_category:
 user_defined_severity:
-xql_query: "datamodel\r\n| filter xdm.observer.vendor = \"gitlab\" and xdm.observer.product = \"gitlab\"\r\n| fields _time\r\n,xdm.event.id \r\n,xdm.source.user.identifier \r\n,xdm.target.resource.id \r\n,xdm.target.resource.type \r\n,xdm.source.user.username \r\n,xdm.target.resource.sub_type \r\n,xdm.target.resource.name \r\n,xdm.event.description \r\n,xdm.source.ipv4 \r\n,xdm.target.resource_before.value \r\n,xdm.target.resource.value \r\n,xdm.event.operation \r\n,xdm.event.type \r\n,xdm.event.operation_sub_type \r\n| filter xdm.event.operation = \"change_access_level\" and xdm.target.resource_before.value = \"Guest\" and xdm.target.resource.value = \"Owner\""
+xql_query: "datamodel dataset = gitlab_gitlab_raw \r\n| fields _time\r\n,xdm.event.id \r\n,xdm.source.user.identifier \r\n,xdm.target.resource.id \r\n,xdm.target.resource.type \r\n,xdm.source.user.username \r\n,xdm.target.resource.sub_type \r\n,xdm.target.resource.name \r\n,xdm.event.description \r\n,xdm.source.ipv4 \r\n,xdm.target.resource_before.value \r\n,xdm.target.resource.value \r\n,xdm.event.operation \r\n,xdm.event.type \r\n,xdm.event.operation_sub_type \r\n| filter xdm.event.operation = \"change_access_level\" and xdm.target.resource_before.value = \"Guest\" and xdm.target.resource.value = \"Owner\""
 fromversion: 6.10.0

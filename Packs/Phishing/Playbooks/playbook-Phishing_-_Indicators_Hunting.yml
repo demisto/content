@@ -41,14 +41,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: f0a7a0b1-156d-4f73-8a68-e0c06661cb54
+    taskid: 2f9c6950-28fb-4994-8d79-5dfe301cd2e2
     type: playbook
     task:
-      id: f0a7a0b1-156d-4f73-8a68-e0c06661cb54
+      id: 2f9c6950-28fb-4994-8d79-5dfe301cd2e2
       version: -1
       name: Microsoft 365 Defender - Threat Hunting Generic
       description: |
-        This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress`, and `MessageID` inputs. The output will be a unified object with all of the retrieved emails based on the sub-playbooks outputs:
+        This playbook retrieves email data based on the `URLDomain`, `SHA256`, `IPAddress`, and `MessageID` inputs. The output is a unified object with all of the retrieved emails based on the following sub-playbooks outputs:
 
         - **Microsoft 365 Defender - Get Email URL clicks**:
                 Retrieves data based on URL click events.
@@ -57,7 +57,7 @@ tasks:
         - **Microsoft 365 Defender - Emails Indicators Hunt**:
                 Retrieves data based on several different email events.
 
-        Read the playbooks' descriptions in order to get the full details.
+        Read the playbook's descriptions in order to get the full details.
       playbookName: Microsoft 365 Defender - Threat Hunting Generic
       type: playbook
       iscommand: false
@@ -88,6 +88,8 @@ tasks:
                 value:
                   simple: "3"
           accessor: Indicator
+          transformers:
+          - operator: uniq
       ListenerMailbox:
         complex:
           root: inputs.ListenerMailbox
@@ -129,6 +131,8 @@ tasks:
               right:
                 value:
                   simple: "64"
+          transformers:
+          - operator: uniq
       URLDomain:
         complex:
           root: inputs.DBotScore
@@ -160,6 +164,14 @@ tasks:
                 value:
                   simple: "3"
           accessor: Indicator
+          transformers:
+          - operator: uniq
+      ResultsLimit:
+        simple: "50"
+      SearchTimeframe:
+        simple: "7"
+      Timeout:
+        simple: "180"
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -349,3 +361,6 @@ quiet: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

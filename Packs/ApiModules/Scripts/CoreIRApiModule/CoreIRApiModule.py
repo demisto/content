@@ -13,17 +13,18 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Other': 'resolved_other',
-    'Duplicate': 'resolved_duplicate',
+    'Duplicate': 'resolved_duplicate_incident',
     'False Positive': 'resolved_false_positive',
     'Resolved': 'resolved_true_positive',
+    'Security Testing': 'resolved_security_testing',
 }
 
 XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_known_issue': 'Other',
-    'resolved_duplicate': 'Duplicate',
+    'resolved_duplicate_incident': 'Duplicate',
     'resolved_false_positive': 'False Positive',
     'resolved_true_positive': 'Resolved',
-    'resolved_security_testing': 'Other',
+    'resolved_security_testing': 'Security Testing',
     'resolved_other': 'Other',
     'resolved_auto': 'Resolved'
 }
@@ -148,6 +149,136 @@ class CoreClient(BaseClient):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
 
+    def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
+                      lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
+                      starred_incidents_fetch_window=None, sort_by_modification_time=None, sort_by_creation_time=None,
+                      page_number=0, limit=100, gte_creation_time_milliseconds=0):
+        """
+        Filters and returns incidents
+
+        :param incident_id_list: List of incident ids - must be list
+        :param lte_modification_time: string of time format "2019-12-31T23:59:00"
+        :param gte_modification_time: string of time format "2019-12-31T23:59:00"
+        :param lte_creation_time: string of time format "2019-12-31T23:59:00"
+        :param gte_creation_time: string of time format "2019-12-31T23:59:00"
+        :param starred_incidents_fetch_window: string of time format "2019-12-31T23:59:00"
+        :param starred: True if the incident is starred, else False
+        :param status: string of status
+        :param sort_by_modification_time: optional - enum (asc,desc)
+        :param sort_by_creation_time: optional - enum (asc,desc)
+        :param page_number: page number
+        :param limit: maximum number of incidents to return per page
+        :param gte_creation_time_milliseconds: greater than time in milliseconds
+        :return:
+        """
+        search_from = page_number * limit
+        search_to = search_from + limit
+
+        request_data = {
+            'search_from': search_from,
+            'search_to': search_to,
+        }
+
+        if sort_by_creation_time and sort_by_modification_time:
+            raise ValueError('Should be provide either sort_by_creation_time or '
+                             'sort_by_modification_time. Can\'t provide both')
+        if sort_by_creation_time:
+            request_data['sort'] = {
+                'field': 'creation_time',
+                'keyword': sort_by_creation_time
+            }
+        elif sort_by_modification_time:
+            request_data['sort'] = {
+                'field': 'modification_time',
+                'keyword': sort_by_modification_time
+            }
+
+        filters = []
+        if incident_id_list is not None and len(incident_id_list) > 0:
+            filters.append({
+                'field': 'incident_id_list',
+                'operator': 'in',
+                'value': incident_id_list
+            })
+
+        if status:
+            filters.append({
+                'field': 'status',
+                'operator': 'eq',
+                'value': status
+            })
+
+        if starred and starred_incidents_fetch_window:
+            filters.append({
+                'field': 'starred',
+                'operator': 'eq',
+                'value': True
+            })
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': starred_incidents_fetch_window
+            })
+            if demisto.command() == 'fetch-incidents':
+                if len(filters) > 0:
+                    request_data['filters'] = filters
+                incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
+                return incidents
+
+        else:
+            if lte_creation_time:
+                filters.append({
+                    'field': 'creation_time',
+                    'operator': 'lte',
+                    'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
+                })
+
+            if gte_creation_time:
+                filters.append({
+                    'field': 'creation_time',
+                    'operator': 'gte',
+                    'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
+                })
+
+            if lte_modification_time:
+                filters.append({
+                    'field': 'modification_time',
+                    'operator': 'lte',
+                    'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
+                })
+
+            if gte_modification_time:
+                filters.append({
+                    'field': 'modification_time',
+                    'operator': 'gte',
+                    'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
+                })
+
+            if gte_creation_time_milliseconds > 0:
+                filters.append({
+                    'field': 'creation_time',
+                    'operator': 'gte',
+                    'value': gte_creation_time_milliseconds
+                })
+
+        if len(filters) > 0:
+            request_data['filters'] = filters
+
+        res = self._http_request(
+            method='POST',
+            url_suffix='/incidents/get_incidents/',
+            json_data={'request_data': request_data},
+            headers=self._headers,
+            timeout=self.timeout
+        )
+        incidents = res.get('reply', {}).get('incidents', [])
+
+        return incidents
+
+    def handle_fetch_starred_incidents(self, limit: int, page_number: int, request_data: Dict[Any, Any]) -> List[Any]:
+        """Called from get_incidents if the command is fetch-incidents. Implement in child classes."""
+        return []
+
     def get_endpoints(self,
                       endpoint_id_list=None,
                       dist_name=None,
@@ -215,7 +346,7 @@ class CoreClient(BaseClient):
         endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
 
-    def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:      # pragma: no cover
+    def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:  # pragma: no cover
         """
         This func is used to set the alias name of an endpoint.
 
@@ -803,8 +934,7 @@ class CoreClient(BaseClient):
                                                ip_list: list, vendor: list, vendor_id: list, product: list,
                                                product_id: list,
                                                serial: list,
-                                               hostname: list, violation_ids: list, username: list) \
-            -> Dict[str, Any]:
+                                               hostname: list, violation_ids: list, username: list) -> Dict[str, Any]:
         arg_list = {'type': type_of_violation,
                     'endpoint_id_list': endpoint_ids,
                     'ip_list': ip_list,
@@ -1578,8 +1708,8 @@ def validate_args_scan_commands(args):
               'and without any other filters. This may cause performance issues.\n' \
               'To scan/abort scan some of the endpoints, please use the filter arguments.'
     if all_:
-        if endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen \
-                or ip_list or group_name or platform or alias or hostname:
+        if (endpoint_id_list or dist_name or gte_first_seen or gte_last_seen or lte_first_seen or lte_last_seen
+                or ip_list or group_name or platform or alias or hostname):
             raise Exception(err_msg)
     elif not endpoint_id_list and not dist_name and not gte_first_seen and not gte_last_seen \
             and not lte_first_seen and not lte_last_seen and not ip_list and not group_name and not platform \
@@ -2718,26 +2848,62 @@ def handle_outgoing_incident_owner_sync(update_args):
 
 def handle_user_unassignment(update_args):
     if ('assigned_user_mail' in update_args and update_args.get('assigned_user_mail') in ['None', 'null', '', None]) \
-            or ('assigned_user_pretty_name' in update_args
-                and update_args.get('assigned_user_pretty_name') in ['None', 'null', '', None]):
+        or ('assigned_user_pretty_name' in update_args
+            and update_args.get('assigned_user_pretty_name') in ['None', 'null', '', None]):
         update_args['unassign_user'] = 'true'
         update_args['assigned_user_mail'] = None
         update_args['assigned_user_pretty_name'] = None
 
 
+def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
+    """
+    Resolving XDR close reason from possible custom XSOAR->XDR close-reason mapping or default mapping.
+    :param xsoar_close_reason: XSOAR raw status/close reason e.g. 'False Positive'.
+    :return: XDR close-reason in snake_case format e.g. 'resolved_false_positive'.
+    """
+    # Initially setting the close reason according to the default mapping.
+    xdr_close_reason = XSOAR_RESOLVED_STATUS_TO_XDR.get(xsoar_close_reason, 'Other')
+    # Reading custom XSOAR->XDR close-reason mapping.
+    custom_xsoar_to_xdr_close_reason_mapping = comma_separated_mapping_to_dict(
+        demisto.params().get("custom_xsoar_to_xdr_close_reason_mapping")
+    )
+
+    # Overriding default close-reason mapping if there exists a custom one.
+    if xsoar_close_reason in custom_xsoar_to_xdr_close_reason_mapping:
+        xdr_close_reason_candidate = custom_xsoar_to_xdr_close_reason_mapping[xsoar_close_reason]
+        # Transforming resolved close-reason into snake_case format with known prefix to match XDR status format.
+        demisto.debug(
+            f"resolve_xdr_close_reason XSOAR->XDR custom close-reason exists, using {xsoar_close_reason}={xdr_close_reason}")
+        xdr_close_reason_candidate = "resolved_" + "_".join(xdr_close_reason_candidate.lower().split(" "))
+
+        if xdr_close_reason_candidate not in XDR_RESOLVED_STATUS_TO_XSOAR:
+            demisto.debug("Warning: Provided XDR close-reason does not exist. Using default XDR close-reason mapping. ")
+        else:
+            xdr_close_reason = xdr_close_reason_candidate
+    else:
+        demisto.debug(f"resolve_xdr_close_reason using default mapping {xsoar_close_reason}={xdr_close_reason}")
+
+    return xdr_close_reason
+
+
 def handle_outgoing_issue_closure(remote_args):
+    incident_id = remote_args.remote_incident_id
+    demisto.debug(f"handle_outgoing_issue_closure {incident_id=}")
     update_args = remote_args.delta
     current_remote_status = remote_args.data.get('status') if remote_args.data else None
+    close_reason = update_args.get('close_reason') or update_args.get('closeReason')
+    demisto.debug(f'{current_remote_status=} {remote_args.data=} {remote_args.inc_status=} {close_reason=}')
     # force closing remote incident only if:
     #   The XSOAR incident is closed
     #   and the remote incident isn't already closed
-    if remote_args.inc_status == 2 and \
-       current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
-
+    if remote_args.inc_status == 2 and current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR and close_reason:
         if close_notes := update_args.get('closeNotes'):
+            demisto.debug(f"handle_outgoing_issue_closure {incident_id=} {close_notes=}")
             update_args['resolve_comment'] = close_notes
-        update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get(update_args.get('closeReason', 'Other'))
-        demisto.debug(f"Closing Remote incident with status {update_args['status']}")
+
+        xdr_close_reason = resolve_xdr_close_reason(close_reason)
+        update_args['status'] = xdr_close_reason
+        demisto.debug(f"handle_outgoing_issue_closure Closing Remote incident {incident_id=} with status {update_args['status']}")
 
 
 def get_update_args(remote_args):
@@ -3012,7 +3178,6 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> Tuple[s
     requires_polling_arg=False  # means it will always be default to poll, poll=true
 )
 def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
-
     if action_id := args.get('action_id'):
         response = client.get_script_execution_status(action_id)
         general_status = response.get('reply', {}).get('general_status') or ''
@@ -3604,7 +3769,6 @@ def create_request_filters(
 
 
 def args_to_request_filters(args):
-
     if set(args.keys()) & {  # check if any filter argument was provided
         'endpoint_id_list', 'dist_name', 'ip_list', 'group_name', 'platform', 'alias_name',
         'isolate', 'hostname', 'status', 'first_seen_gte', 'first_seen_lte', 'last_seen_gte', 'last_seen_lte'
@@ -3678,7 +3842,6 @@ def parse_risky_users_or_hosts(user_or_host_data: dict[str, Any],
                                score_header: str,
                                description_header: str
                                ) -> dict[str, Any]:
-
     reasons = user_or_host_data.get('reasons', [])
     return {
         id_header: user_or_host_data.get('id'),
@@ -3910,13 +4073,14 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         ValueError: If the API connection fails.
 
     """
+
     def _warn_if_module_is_disabled(e: DemistoException) -> None:
         if (
-                e is not None
-                and e.res is not None
-                and e.res.status_code == 500
-                and 'No identity threat' in str(e)
-                and "An error occurred while processing XDR public API" in e.message
+            e is not None
+            and e.res is not None
+            and e.res.status_code == 500
+            and 'No identity threat' in str(e)
+            and "An error occurred while processing XDR public API" in e.message
         ):
             return_warning(f'Please confirm the XDR Identity Threat Module is enabled.\nFull error message: {e}', exit=True)
 
@@ -3968,4 +4132,102 @@ def list_risky_users_or_host_command(client: CoreClient, command: str, args: dic
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.{outputs_prefix}',
         outputs_key_field='id',
         outputs=outputs,
+    )
+
+
+def get_incidents_command(client, args):
+    """
+    Retrieve a list of incidents from XDR, filtered by some filters.
+    """
+
+    # sometimes incident id can be passed as integer from the playbook
+    incident_id_list = args.get('incident_id_list')
+    if isinstance(incident_id_list, int):
+        incident_id_list = str(incident_id_list)
+
+    incident_id_list = argToList(incident_id_list)
+    # make sure all the ids passed are strings and not integers
+    for index, id_ in enumerate(incident_id_list):
+        if isinstance(id_, int | float):
+            incident_id_list[index] = str(id_)
+
+    lte_modification_time = args.get('lte_modification_time')
+    gte_modification_time = args.get('gte_modification_time')
+    since_modification_time = args.get('since_modification_time')
+
+    if since_modification_time and gte_modification_time:
+        raise ValueError('Can\'t set both since_modification_time and lte_modification_time')
+    if since_modification_time:
+        gte_modification_time, _ = parse_date_range(since_modification_time, TIME_FORMAT)
+
+    lte_creation_time = args.get('lte_creation_time')
+    gte_creation_time = args.get('gte_creation_time')
+    since_creation_time = args.get('since_creation_time')
+
+    if since_creation_time and gte_creation_time:
+        raise ValueError('Can\'t set both since_creation_time and lte_creation_time')
+    if since_creation_time:
+        gte_creation_time, _ = parse_date_range(since_creation_time, TIME_FORMAT)
+
+    statuses = argToList(args.get('status', ''))
+
+    starred = args.get('starred')
+    starred_incidents_fetch_window = args.get('starred_incidents_fetch_window', '3 days')
+    starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
+
+    sort_by_modification_time = args.get('sort_by_modification_time')
+    sort_by_creation_time = args.get('sort_by_creation_time')
+
+    page = int(args.get('page', 0))
+    limit = int(args.get('limit', 100))
+
+    # If no filters were given, return a meaningful error message
+    if not incident_id_list and (not lte_modification_time and not gte_modification_time and not since_modification_time
+                                 and not lte_creation_time and not gte_creation_time and not since_creation_time
+                                 and not statuses and not starred):
+        raise ValueError("Specify a query for the incidents.\nFor example:"
+                         " since_creation_time=\"1 year\" sort_by_creation_time=\"desc\" limit=10")
+
+    if statuses:
+        raw_incidents = []
+
+        for status in statuses:
+            raw_incidents += client.get_incidents(
+                incident_id_list=incident_id_list,
+                lte_modification_time=lte_modification_time,
+                gte_modification_time=gte_modification_time,
+                lte_creation_time=lte_creation_time,
+                gte_creation_time=gte_creation_time,
+                sort_by_creation_time=sort_by_creation_time,
+                sort_by_modification_time=sort_by_modification_time,
+                page_number=page,
+                limit=limit,
+                status=status,
+                starred=starred,
+                starred_incidents_fetch_window=starred_incidents_fetch_window,
+            )
+
+        if len(raw_incidents) > limit:
+            raw_incidents = raw_incidents[:limit]
+    else:
+        raw_incidents = client.get_incidents(
+            incident_id_list=incident_id_list,
+            lte_modification_time=lte_modification_time,
+            gte_modification_time=gte_modification_time,
+            lte_creation_time=lte_creation_time,
+            gte_creation_time=gte_creation_time,
+            sort_by_creation_time=sort_by_creation_time,
+            sort_by_modification_time=sort_by_modification_time,
+            page_number=page,
+            limit=limit,
+            starred=starred,
+            starred_incidents_fetch_window=starred_incidents_fetch_window,
+        )
+
+    return (
+        tableToMarkdown('Incidents', raw_incidents),
+        {
+            f'{args.get("integration_context_brand", "CoreApiModule")}.Incident(val.incident_id==obj.incident_id)': raw_incidents
+        },
+        raw_incidents
     )

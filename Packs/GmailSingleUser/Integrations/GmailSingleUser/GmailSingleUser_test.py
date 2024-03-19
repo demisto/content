@@ -2,8 +2,9 @@ import json
 import pytest
 import demistomock as demisto
 
-from GmailSingleUser import Client, send_mail_command
+from GmailSingleUser import Client, send_mail_command, MIMEMultipart
 from email.utils import parsedate_to_datetime
+import base64
 
 
 @pytest.fixture
@@ -14,133 +15,133 @@ def gmail_client(mocker):
 
 
 MOCK_MAIL_NO_LABELS = {
-    u'internalDate': u'1572251535000',
-    u'historyId': u'249781',
-    u'payload': {
-        u'mimeType': u'multipart/mixed',
-        u'body': {u'size': 0},
-        u'partId': u'',
-        u'filename': u'',
-        u'headers': [
+    'internalDate': '1572251535000',
+    'historyId': '249781',
+    'payload': {
+        'mimeType': 'multipart/mixed',
+        'body': {'size': 0},
+        'partId': '',
+        'filename': '',
+        'headers': [
             {
-                u'name': u'Received',
-                u'value': u'from 1041831412594 named unknown by gmailapi.google.com with '
-                          u'HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
+                'name': 'Received',
+                'value': 'from 1041831412594 named unknown by gmailapi.google.com with '
+                u'HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
             }, {
-                u'name': u'Content-Type',
-                u'value': u'mixed; boundary="===============4922146810840031257=="'
+                'name': 'Content-Type',
+                'value': 'mixed; boundary="===============4922146810840031257=="'
             }, {
-                u'name': u'MIME-Version',
-                u'value': u'1.0'
+                'name': 'MIME-Version',
+                'value': '1.0'
             }, {
-                u'name': u'to',
-                u'value': u'<some_mail>'
+                'name': 'to',
+                'value': '<some_mail>'
             }, {
-                u'name': u'cc',
-                u'value': u''
+                'name': 'cc',
+                'value': ''
             }, {
-                u'name': u'bcc',
-                u'value': u''
+                'name': 'bcc',
+                'value': ''
             }, {
-                u'name': u'from',
-                u'value': u'<some_mail>'
+                'name': 'from',
+                'value': '<some_mail>'
             }, {
-                u'name': u'subject',
-                u'value': u'a mail subject'
+                'name': 'subject',
+                'value': 'a mail subject'
             }, {
-                u'name': u'reply-to',
-                u'value': u''
+                'name': 'reply-to',
+                'value': ''
             }, {
-                u'name': u'Date',
-                u'value': u'Mon, 28 Oct 2019 04:32:15 -0400'
+                'name': 'Date',
+                'value': 'Mon, 28 Oct 2019 04:32:15 -0400'
             }, {
-                u'name': u'Message-Id',
-                u'value': u'<some_id>'
+                'name': 'Message-Id',
+                'value': '<some_id>'
             }
         ],
-        u'parts': [
+        'parts': [
             {
-                u'mimeType': u'text/plain',
-                u'headers': [
+                'mimeType': 'text/plain',
+                'headers': [
                     {
-                        u'name': u'Content-Type',
-                        u'value': u'text/plain; charset="utf-8"'
+                        'name': 'Content-Type',
+                        'value': 'text/plain; charset="utf-8"'
                     }, {
-                        u'name': u'MIME-Version',
-                        u'value': u'1.0'
+                        'name': 'MIME-Version',
+                        'value': '1.0'
                     }, {
-                        u'name': u'Content-Transfer-Encoding',
-                        u'value': u'base64'
+                        'name': 'Content-Transfer-Encoding',
+                        'value': 'base64'
                     }
                 ],
-                u'body': {
-                    u'data': u'<data>',
-                    u'size': 9
+                'body': {
+                    'data': '<data>',
+                    'size': 9
                 },
-                u'partId': u'0',
-                u'filename': u''
+                'partId': '0',
+                'filename': ''
             }
         ]
     },
-    u'snippet': u'some info',
-    u'sizeEstimate': 637,
-    u'threadId': u'<id>',
-    u'id': u'<id>'
+    'snippet': 'some info',
+    'sizeEstimate': 637,
+    'threadId': '<id>',
+    'id': '<id>'
 }
 
 
 EXPECTED_GMAIL_CONTEXT = {
-    'To': u'<some_mail>',
-    'Body': u'',
-    'From': u'<some_mail>',
-    'Attachments': u'',
-    'Format': u'mixed',
-    'Cc': u'',
+    'To': '<some_mail>',
+    'Body': '',
+    'From': '<some_mail>',
+    'Attachments': '',
+    'Format': 'mixed',
+    'Cc': '',
     'Labels': '',
     'Mailbox': 'some_mail',
     'Headers': [
         {
-            'Name': u'Received',
-            'Value': u'from 1041831412594 named '
+            'Name': 'Received',
+            'Value': 'from 1041831412594 named '
                      u'unknown by gmailapi.google.com with HTTPREST; Mon, 28 Oct 2019 04:32:15 -0400'
         }, {
-            'Name': u'Content-Type',
-            'Value': u'mixed; boundary="===============4922146810840031257=="'
+            'Name': 'Content-Type',
+            'Value': 'mixed; boundary="===============4922146810840031257=="'
         }, {
-            'Name': u'MIME-Version',
-            'Value': u'1.0'
+            'Name': 'MIME-Version',
+            'Value': '1.0'
         }, {
-            'Name': u'to',
-            'Value': u'<some_mail>'
+            'Name': 'to',
+            'Value': '<some_mail>'
         }, {
-            'Name': u'cc',
-            'Value': u''
+            'Name': 'cc',
+            'Value': ''
         }, {
-            'Name': u'bcc', 'Value': u''
+            'Name': 'bcc', 'Value': ''
         }, {
-            'Name': u'from', 'Value': u'<some_mail>'
+            'Name': 'from', 'Value': '<some_mail>'
         }, {
-            'Name': u'subject',
-            'Value': u'a mail subject'
+            'Name': 'subject',
+            'Value': 'a mail subject'
         }, {
-            'Name': u'reply-to',
-            'Value': u''
+            'Name': 'reply-to',
+            'Value': ''
         }, {
-            'Name': u'Date',
-            'Value': u'Mon, 28 Oct 2019 04:32:15 -0400'
+            'Name': 'Date',
+            'Value': 'Mon, 28 Oct 2019 04:32:15 -0400'
         }, {
-            'Name': u'Message-Id',
-            'Value': u'<some_id>'
+            'Name': 'Message-Id',
+            'Value': '<some_id>'
         }
     ],
     'Html': None,
     'RawData': None,
-    'ThreadId': u'<id>',
+    'ThreadId': '<id>',
     'Date': 'Mon, 28 Oct 2019 04:32:15 -0400',
-    'Bcc': u'',
+    'Bcc': '',
     'Type': 'Gmail',
-    'ID': u'<id>',
-    'Subject': u'a mail subject'
+    'ID': '<id>',
+    'Subject': 'a mail subject'
 }
 
 
@@ -179,7 +180,7 @@ def test_extract_occurred_no_headers():
 
 
 def test_no_date_mail():
-    with open('test_data/email_no_date.json', 'r') as f:
+    with open('test_data/email_no_date.json') as f:
         msg = json.load(f)
     client = Client()
     context_gmail, _, _, occurred, is_valid = client.get_email_context(msg, "some_mail")
@@ -288,3 +289,135 @@ def test_send_mail_with_reference(gmail_client: Client, mocker):
         references=['test', 'test1'],
         inReplyTo='test test'
     )
+
+
+def test_send_mail_MIMEMultipart_constructor(mocker):
+    """
+    Given:
+        - Client object
+    When:
+        - Client constructor called
+    Then:
+        - Ensure MIMEMultipart constructor called once without subtype
+    """
+    from GmailSingleUser import Client
+    import GmailSingleUser
+
+    gmail_single_user_client = Client()
+    # Replace MIMEMultipart with the mock object
+    mocker_obj = mocker.patch.object(
+        GmailSingleUser, "MIMEMultipart", return_value=MIMEMultipart()
+    )
+    mocker = mocker.patch.object(
+        gmail_single_user_client, "send_email_request", return_value=True
+    )
+    gmail_single_user_client.send_mail(
+        emailto="test@gmail.com",
+        emailfrom="test@gmail.com",
+        send_as="test@gmail.com",
+        cc=None,
+        bcc=None,
+        subject="hello-world",
+        body="body",
+        htmlBody="<>",
+        entry_ids=[],
+        replyTo=None,
+        file_names=[],
+        attach_cid=[],
+        manualAttachObj=[],
+        transientFile=[],
+        transientFileContent=[],
+        transientFileCID=[],
+        additional_headers=[],
+        templateParams=None,
+    )
+    mocker_obj.assert_called_once()
+    assert mocker_obj.call_args.args == ()
+
+
+def test_handle_html(mocker):
+    """
+    Given:
+        - html body of a message.
+    When:
+        - run handle_html function.
+    Then:
+        - Ensure attachments list contains 2 items with correct data, name and cid fields.
+    """
+    client = Client()
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    htmlBody = """<html>
+                        <body>
+                            <img src="data:image/png;base64,Aa=="/>
+                            <img src="data:image/jpeg;base64,Bb=="/>
+                        </body>
+                      </html>"""
+
+    expected_attachments = [
+        {
+            "maintype": "image",
+            "subtype": "png",
+            "data": base64.b64decode("Aa=="),
+            "name": "image0.png",
+            "cid": "image0.png",
+        },
+        {
+            "maintype": "image",
+            "subtype": "jpeg",
+            "data": base64.b64decode("Bb=="),
+            "name": "image1.jpeg",
+            "cid": "image1.jpeg",
+        },
+    ]
+    expected_cleanBody = """<html>
+                        <body>
+                            <img src="cid:image0.png"/>
+                            <img src="cid:image1.jpeg"/>
+                        </body>
+                      </html>"""
+
+    cleanBody, attachments = client.handle_html(htmlBody)
+
+    assert expected_cleanBody == cleanBody
+    assert expected_attachments == attachments
+
+
+def test_handle_html_image_with_new_line(mocker):
+    """
+    Given:
+        - html body of a message with an attached base64 image.
+    When:
+        - run handle_html function.
+    Then:
+        - Ensure attachments list contains correct data, name and cid fields.
+    """
+    client = Client()
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    htmlBody = """
+<html>
+    <body>
+        <img\n\t\t\t\t\t  src="data:image/png;base64,Aa=="/>
+    </body>
+</html>"""
+
+    expected_attachments = [
+        {
+            "maintype": "image",
+            "subtype": "png",
+            "data": base64.b64decode("Aa=="),
+            "name": "image0.png",
+            "cid": "image0.png",
+        }
+    ]
+    expected_cleanBody = """
+<html>
+    <body>
+        <img
+\t\t\t\t\t  src="cid:image0.png"/>
+    </body>
+</html>"""
+
+    cleanBody, attachments = client.handle_html(htmlBody)
+
+    assert expected_cleanBody == cleanBody
+    assert expected_attachments == attachments

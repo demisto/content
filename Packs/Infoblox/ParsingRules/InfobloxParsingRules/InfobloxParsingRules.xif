@@ -1,19 +1,65 @@
 [INGEST:vendor="infoblox", product="infoblox", target_dataset="infoblox_infoblox_raw", no_hit=keep]
-// Timestamp ingestion is supported for the MMM d hh:mm:ss - "Jan 1 10:00:00" format.
-filter _raw_log ~= "\<\d+\>\w{3}\s+\d{1,2}\s+\d{2}\:\d{2}\:\d{2}\s+"
-| alter 
-    tmp_time_without_year = arraystring(regextract( _raw_log, "\<\d+\>(\w{3}\s+\d{1,2}\s+\d{2}\:\d{2}\:\d{2})\s+"), ""),
-    tmp_year = to_string(format_timestamp("%Y",current_time()))
-| alter 
-    tmp_time_format = arraystring(arraycreate(tmp_year, tmp_time_without_year), " ")
-| alter 
-    tmp_time1_1 = parse_timestamp("%Y %b %e %H:%M:%S", tmp_time_format)
-| alter tmp_timeDiff = timestamp_diff(tmp_time1_1, current_time(), "DAY")
-// Check if the date is a future date
-| alter tmp_year2 = if(tmp_timeDiff > 0, to_string(subtract(to_integer(tmp_year),1)),null)
-// Create timestamp minus 1 year if the timestamp is a future one
-| alter tmp_time1_2 = if(tmp_year2 != null, concat(tmp_year2, " ", tmp_time_without_year ),null)
-| alter tmp_time1_2 = if(tmp_time1_2 != null, parse_timestamp("%Y %b %e %H:%M:%S", tmp_time1_2 ),null)
-| alter tmp_time_without_year = coalesce(tmp_time1_2, tmp_time1_1)
-| alter _time = tmp_time_without_year
-| fields -tmp_time_without_year, tmp_year, tmp_time_format, tmp_time1_1 , tmp_timeDiff , tmp_year2 , tmp_time1_2;
+/* 
+   This filter applies to DNS Queries & Responses events, which contain an internal timestamp within the syslog message. 
+   It supports timestamp ingestion for the following timestamp format: <dd-mmm-YYYY HH:MM:SS.uuu>.
+   For example: "18-Jan-2024 13:03:44.821". 
+   The timestamp is interpreted in a GMT+0 timezone. 
+   See https://docs.infoblox.com/space/nios85/35816694/Capturing+DNS+Queries+and+Responses for additional details.
+ */
+filter _raw_log ~= "\d{2}\-\w{3}\-\d{4}\s+\d{2}:\d{2}:\d{2}\.\d{3}"
+| alter tmp_timestamp_string = arrayindex(regextract(_raw_log, "\d{2}\-\w{3}\-\d{4}\s+\d{2}:\d{2}:\d{2}\.\d{3}"), 0)
+| alter _time = parse_timestamp("%d-%b-%Y %H:%M:%E3S", tmp_timestamp_string)
+| fields - tmp_timestamp_string; // Remove the temporary utility field
+
+/* 
+    This filter applies to syslog messages that are sent to Cortex XSIAM from Infoblox directly (Excluding DNS Queries & Responses events),
+    as opposed to event logs which are downloaded to a file and sent to Cortex XSIAM indirectly via an intermediate syslog client. 
+    It supports timestamp ingestion in the following formats <Mmm dd hh:mm:ss> 
+    where Mmm is the English language abbreviation for the month of the year with the first character in uppercase and the other two
+    characters in lowercase, and dd is the day of the month, where if the day of the month is less 
+    than 10, then it MUST be represented as a space and then the number, as in the RFC 3164 timestamp format. 
+    For example: "Jan  9 21:30:48" or "Jan 18 21:30:48".
+    The timestamp is interpreted in a GMT+0 timezone, and the year is derived from current year. 
+*/   
+filter // Exclude DNS Queries & Responses events timestamp format
+    _raw_log !~= "\d{2}\-\w{3}\-\d{4}\s+\d{2}:\d{2}:\d{2}\.\d{3}" and _raw_log ~= "\<\d+\>\w{3}\s+\d{1,2}\s+\d{2}\:\d{2}\:\d{2}\s+"
+| alter // Extract current year and raw timestamp
+    tmp_current_year = to_string(format_timestamp("%Y",current_time())),
+    tmp_raw_timestamp_string = arrayindex(regextract( _raw_log, "\<\d+\>(\w{3}\s+\d{1,2}\s+\d{2}\:\d{2}\:\d{2})\s+"), 0)
+| alter // Reformat the raw timestamp representation with current year 
+    tmp_current_year_timestamp_string = concat(tmp_current_year, " ", tmp_raw_timestamp_string)
+| alter // Convert the timestamp string representation to datetime format
+    tmp_current_year_timestamp_datetime = parse_timestamp("%Y %b %e %H:%M:%S", tmp_current_year_timestamp_string)
+| alter // Check if the calculated date is in the future (due to year transitioning during log ingestion )
+    tmp_time_difference = timestamp_diff(tmp_current_year_timestamp_datetime, current_time(), "MILLISECOND")
+| alter // Calculate previous year if necessary 
+    tmp_previous_year = if(tmp_time_difference > 0, to_string(subtract(to_integer(tmp_current_year), 1)), null)
+| alter // Adjust timestamp to previous year if required
+    tmp_previous_year_timestamp_string = if(tmp_previous_year != null, concat(tmp_previous_year, " ", tmp_raw_timestamp_string), null)
+| alter // Converts the previous year string representation to datetime format 
+    tmp_previous_year_timestamp_datetime = if(tmp_previous_year_timestamp_string != null, parse_timestamp("%Y %b %e %H:%M:%S", tmp_previous_year_timestamp_string), null)
+| alter // Set to the relevant timestamp 
+    _time = coalesce(tmp_previous_year_timestamp_datetime, tmp_current_year_timestamp_datetime, _insert_time) 
+| fields - tmp*; // Remove all temporary util fields 
+
+/* 
+    This filter applies to other syslog messages that are sent to Cortex XSIAM indirectly via an intermediate syslog client, 
+    which is compatible with RFC5424. For example if the logs from Infoblox are downloaded to a file, 
+    and an intermediate syslog process then reads these records and forwards them to Cortex XSIAM. 
+    It Supports RFC 5424 compatible timestamps format, which include a seconds fraction precision.
+    For example: "2023-10-29T11:18:59.123Z", or "2023-10-29T11:18:59.123456-06:00".
+    The timezone is extracted from the RFC5424 timestamp.
+*/ 
+filter // Exclude DNS Queries & Responses events timestamp format and Infoblox syslog messages timestamp format 
+    _raw_log ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\.\d+([+-]\d{2}:\d{2}|Z)" and _raw_log !~= "\d{2}\-\w{3}\-\d{4}\s+\d{2}:\d{2}:\d{2}\.\d{3}" and _raw_log !~= "\<\d+\>\w{3}\s+\d{1,2}\s+\d{2}\:\d{2}\:\d{2}\s+" 
+| alter tmp_raw_timestamp = arrayindex(regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}\S+"), 0)
+| alter tmp_timestamp = replace(to_string(tmp_raw_timestamp), "Z", "+00:00") // normalize zulu time timezone to a numeric offset
+| alter tmp_precision = arrayindex(regextract(tmp_timestamp, "\.(\d{1,6})"), 0)
+| alter tmp_precision_length = len(tmp_precision)
+| alter tmp_time = if( // adjust parsing format according to the precision length
+    tmp_precision_length = 1, parse_timestamp("%FT%H:%M:%E1S%Ez", tmp_timestamp),
+    tmp_precision_length = 2, parse_timestamp("%FT%H:%M:%E2S%Ez", tmp_timestamp),
+    tmp_precision_length = 3, parse_timestamp("%FT%H:%M:%E3S%Ez", tmp_timestamp),
+    tmp_precision_length = 6, parse_timestamp("%FT%H:%M:%E6S%Ez", tmp_timestamp))
+| alter _time = tmp_time
+| fields - tmp*; // Remove all temporary util fields 

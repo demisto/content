@@ -29,10 +29,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2e14779f-7f47-4445-845c-bfea5627cbe3
+    taskid: f4dd1d62-3485-48d2-84fe-443ea35990af
     type: start
     task:
-      id: 2e14779f-7f47-4445-845c-bfea5627cbe3
+      id: f4dd1d62-3485-48d2-84fe-443ea35990af
       version: -1
       name: ""
       description: '-'
@@ -46,7 +46,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 152.5,
           "y": 50
         }
       }
@@ -59,17 +59,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: c7c659db-15a7-4c9b-8f3d-72713eefe5f1
+    taskid: b33e62ef-e707-4c8a-80bb-bd410cd59118
     type: regular
     task:
-      id: c7c659db-15a7-4c9b-8f3d-72713eefe5f1
+      id: b33e62ef-e707-4c8a-80bb-bd410cd59118
       version: -1
       name: CrowdStrike Falcon Intelligence Sandbox Get Full Report
       description: Get a full version of a sandbox report.
-      script: CrowdStrike Falcon X|||cs-fx-get-full-report
+      script: '|||cs-fx-get-full-report'
       type: regular
       iscommand: true
-      brand: CrowdStrike Falcon X
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
@@ -83,8 +83,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 890
+          "x": 480,
+          "y": 1070
         }
       }
     note: false
@@ -96,10 +96,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 73843b9d-b556-4e1c-895c-93ae4f6671dc
+    taskid: 88425bce-aa78-4cb6-898e-4ce454fecfcf
     type: title
     task:
-      id: 73843b9d-b556-4e1c-895c-93ae4f6671dc
+      id: 88425bce-aa78-4cb6-898e-4ce454fecfcf
       version: -1
       name: Done
       description: Finished.
@@ -112,7 +112,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1060
+          "y": 1245
         }
       }
     note: false
@@ -124,10 +124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: fbcbfd3f-5a86-4438-8ce7-c4dd4c1848bc
+    taskid: aa5a4002-650f-426b-8817-f1df27ffabe7
     type: condition
     task:
-      id: fbcbfd3f-5a86-4438-8ce7-c4dd4c1848bc
+      id: aa5a4002-650f-426b-8817-f1df27ffabe7
       version: -1
       name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
       description: |
@@ -174,7 +174,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 152.5,
           "y": 195
         }
       }
@@ -187,10 +187,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 813639b9-9c78-44dc-8600-afad5cc1c5db
+    taskid: c47174c1-d1b3-4203-896a-cb106c96cc90
     type: condition
     task:
-      id: 813639b9-9c78-44dc-8600-afad5cc1c5db
+      id: c47174c1-d1b3-4203-896a-cb106c96cc90
       version: -1
       name: Is there a File to Detonate?
       description: Checks that there is a file in the playbook’s input.
@@ -201,7 +201,7 @@ tasks:
       '#default#':
       - "5"
       "yes":
-      - "14"
+      - "19"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -215,8 +215,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 300,
-          "y": 370
+          "x": -360,
+          "y": 330
         }
       }
     note: false
@@ -228,10 +228,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 12b7b1f2-98bb-41e0-8869-6f18075f8d4d
+    taskid: 4281d3e3-a469-4bfa-87fb-4c981a31a995
     type: regular
     task:
-      id: 12b7b1f2-98bb-41e0-8869-6f18075f8d4d
+      id: 4281d3e3-a469-4bfa-87fb-4c981a31a995
       version: -1
       name: CrowdStrike Falcon Intelligence Sandbox Upload File to Sandbox
       description: Uploads a file for sandbox analysis.
@@ -258,10 +258,60 @@ tasks:
       file:
         complex:
           root: inputs.File
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PE64|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PE64|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|EXE|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
           accessor: EntryID
       file_name:
         complex:
           root: inputs.File
+          filters:
+          - - operator: match
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PE64|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PE64|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+            - operator: match
+              left:
+                value:
+                  simple: inputs.File.Extension
+                iscontext: true
+              right:
+                value:
+                  simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|EXE|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
           accessor: Name
       interval_in_seconds:
         complex:
@@ -284,8 +334,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 540
+          "x": 260,
+          "y": 740
         }
       }
     note: false
@@ -297,16 +347,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 39983faa-72ad-4bee-8bf7-e074701eae1a
+    taskid: 0548035e-6c48-4e72-8795-24dda368281a
     type: condition
     task:
-      id: 39983faa-72ad-4bee-8bf7-e074701eae1a
+      id: 0548035e-6c48-4e72-8795-24dda368281a
       version: -1
       name: Full Report or Report Summary?
       type: condition
+      description: A condition task.
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "18"
@@ -330,8 +380,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 720
+          "x": 260,
+          "y": 895
         }
       }
     note: false
@@ -343,10 +393,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 26fa1ab8-0cea-48ac-864d-4969b8f5ab35
+    taskid: a530fc30-b681-46cb-8055-ec8b3e38ff1a
     type: regular
     task:
-      id: 26fa1ab8-0cea-48ac-864d-4969b8f5ab35
+      id: a530fc30-b681-46cb-8055-ec8b3e38ff1a
       version: -1
       name: CrowdStrike Falcon Intelligence Sandbox Get Report Summary
       description: Gets a short summary version of a sandbox report.
@@ -367,8 +417,76 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 730,
-          "y": 890
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 92533968-fa12-413e-8004-63564cc1b7bd
+    type: condition
+    task:
+      id: 92533968-fa12-413e-8004-63564cc1b7bd
+      version: -1
+      name: Is the file type supported?
+      type: condition
+      description: A condition task.
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.File
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: inputs.File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PE64|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+                  - operator: match
+                    left:
+                      value:
+                        simple: inputs.File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PE64|PDF|DMG|PKG|RAR|7Z|JS|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+                  - operator: match
+                    left:
+                      value:
+                        simple: inputs.File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: .*(?:APK|JAR|DOC|DOCX|RTF|XLS|XLSX|PPT|PPTX|OOXML|PE32|PE|PDF|DMG|PKG|RAR|7Z|JS|EXE|ELF|HTA|LNK|VBS|PS1|PERL|sh|PYTHON|SHELL|DLL|MSI)\b
+                accessor: EntryID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -160,
+          "y": 560
         }
       }
     note: false
@@ -406,12 +524,6 @@ inputs:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (in minutes).
-  playbookInputQuery:
-- key: Timeout
-  value:
-    simple: "10"
-  required: false
-  description: How much time to wait before a timeout occurs (in minutes).
   playbookInputQuery:
 - key: EnvironmentID
   value:

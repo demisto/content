@@ -56,6 +56,7 @@ configuration:
   - critical
   - informational
   type: 16
+  required: false
 - display: Alert Statuses to fetch
   name: status
   type: 16
@@ -89,6 +90,12 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
+- additionalinfo: Maximum amount of search results for listing commands.
+  defaultvalue: '100'
+  display: Search Limit
+  name: search_limit
+  required: false
+  type: 0
 description: Integration to pull assets and other ASM related information.
 display: Cortex Xpanse
 name: Cortex Xpanse
@@ -836,7 +843,18 @@ script:
       description: User-provided notes related to the incident.
       type: string
     description: Returns additional details about a specific incident.
-  dockerimage: demisto/python3:3.10.13.84405
+  - name: asm-list-external-websites
+    arguments:
+    - name: authentication
+      description: Authentication type string on which to search.
+    - name: limit
+      description: Maximum number of assets to return. The maximum value is 100.
+      defaultValue: "100"
+    outputs:
+    - contextPath: ASM.ExternalWebsite
+      description: A list of the websites results assets.
+    description: Get external websites assets.
+  dockerimage: demisto/python3:3.10.13.89009
   isFetchSamples: true
   isfetch: true
   script: ''

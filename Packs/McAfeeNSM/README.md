@@ -1,7 +1,7 @@
 
 # McAfee NSM (Network Security Manager)
 This pack includes Cortex XSIAM content.
-
+<~XSIAM>
 ## McAfee NSM Syslog configuration
 McAfee NSM syslog event types:
 * IPS Events
@@ -75,4 +75,4 @@ You can configure the specific vendor and product for this instance.
 4. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - mcafee
    - product as product - nsm
- 
+</~XSIAM>

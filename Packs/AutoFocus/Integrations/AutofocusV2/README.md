@@ -80,6 +80,7 @@ Searches for samples. To view the results provide polling=true, or run the `auto
 | last_updated | The date range of the last updated date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
 | af_cookie | The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes. | Optional |
 | polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional | 
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 ##### Using polling
 The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need to run `autofocus-samples-search-results`.
@@ -124,6 +125,12 @@ Copy the query value from the opening curly bracket `{` until the `,"scope"` par
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Type | String | The file type, as determined by libmagic (same as displayed in file entries). | 
 | File.Tags | String | The tags of the file. | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 ##### Command Example
 ```
@@ -171,6 +178,7 @@ Searches for sessions. To view the results provide polling=true, or run the `aut
 | time_after | The date after which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59 | Optional | 
 | time_before | The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59 | Optional |
 | polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional | 
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 ##### Using polling
 The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need for `autofocus-sessions-search-results`.
@@ -206,6 +214,12 @@ For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/s
 | File.Name | String | The full file name (including file extension). | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Tags | String | The tags of the file. | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
@@ -242,6 +256,7 @@ Returns the results of a previous samples search.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | af_cookie | The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes. | Required | 
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 
 ##### Context Output
@@ -270,6 +285,12 @@ Returns the results of a previous samples search.
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Type | String | The file type, as determined by libmagic (same as displayed in file entries). | 
 | File.Tags | String | The tags of the file. | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
@@ -378,6 +399,7 @@ Returns the results of a previous session's search.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | af_cookie | The AF Cookie for retrieving the results of a previous search. The AF Cookie expires 120 seconds after the search completes. | Required | 
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 
 ##### Context Output
@@ -397,6 +419,12 @@ Returns the results of a previous session's search.
 | File.Name | String | The full file name (including file extension). | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | File.Tags | String | The tags of the file. | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
@@ -493,6 +521,7 @@ Returns session details by session ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | session_id | The ID of the session. | Required | 
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 
 ##### Context Output
@@ -508,6 +537,12 @@ Returns session details by session ID.
 | AutoFocus.Sessions.UploadSource | String | The source that uploaded the sample. | 
 | File.Name | String | The full file name (including file extension). | 
 | File.SHA256 | String | The SHA256 hash of the file. | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
@@ -560,6 +595,7 @@ Returns properties, behaviors, and activities observed for a sample. Runs the co
 | sample_id | The SHA256 hash of the sample to analyze. | Required | 
 | os | The analysis environment. Can be "win7", "winxp", "android", "static_analyzer", "mac", or "bare_metal". | Optional | 
 | filter_data | Whether to smartly filter the data. If "False", the data returned will not be smartly filtered, and will significantly reduce integration performance. The recommended setting is "True". | Optional | 
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 
 ##### Context Output
@@ -575,6 +611,12 @@ Returns properties, behaviors, and activities observed for a sample. Runs the co
 | AutoFocus.SampleAnalysis.Analysis.Connections | Unknown | The connections to other hosts on the network when the sample was executed. | 
 | AutoFocus.SampleAnalysis.Analysis.Dns | Unknown | The DNS activity observed when the sample was executed. | 
 | AutoFocus.SampleAnalysis.Analysis.Mutex | Unknown | The mutex created when the program's start is listed with the parent process if the sample generates other program threads when executed in the analysis environment. | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
@@ -922,6 +964,7 @@ Returns details about the given tag.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | tag_name | The public tag name. Can be retrieved from the top-tags command. | Required | 
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 
 ##### Context Output
@@ -939,6 +982,12 @@ Returns details about the given tag.
 | AutoFocus.Tag.TagDefinitionStatus | String | The status of the tag definition. Can be "enabled", "disabled", "removing", or "rescoping". | 
 | AutoFocus.Tag.TagGroup | String | The tag group of the tag. | 
 | AutoFocus.Tag.Description | String | The tag description. | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
@@ -991,6 +1040,7 @@ Performs a search to identify the most popular tags.
 | unit42 | Whether the tag scope is "Unit42". If "True", the tag scope is unit42. The default is "False". | Optional | 
 | af_cookie | The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes. | Optional |
 | polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional | 
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 ##### Using polling
 The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need to run `autofocus-samples-search-results`.
@@ -1014,7 +1064,13 @@ For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/s
 | AutoFocus.TopTagsResults.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
 | AutoFocus.TopTagsResults.TagName | String | The simple name of the tag. | 
 | AutoFocus.TopTagsResults.Lasthit | Date | The last encounter date of the tag. | 
-| AutoFocus.TopTagsSearch.Status | String | The search status. Can be "in progress" or "complete". |
+| AutoFocus.TopTagsSearch.Status | String | The search status. Can be "in progress" or "complete". | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example
@@ -1051,6 +1107,7 @@ Returns the results of a previous top tags search.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | af_cookie | The AF Cookie for retrieving results of the previous search. The AF Cookie expires 120 seconds after the search completes. | Required | 
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
 
 
 ##### Context Output
@@ -1062,6 +1119,12 @@ Returns the results of a previous top tags search.
 | AutoFocus.TopTagsResults.TagName | String | The simple name of the tag. | 
 | AutoFocus.TopTagsResults.Lasthit | Date | The last encounter date of the tag. | 
 | AutoFocus.TopTagsSearch.Status | String | The search status. Can be "in progress" or "complete". | 
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
 
 
 ##### Command Example

@@ -1,0 +1,460 @@
+{
+  "raw_response": {
+    "data": {
+      "principalSummaries": {
+        "edges": [
+          {
+            "cursor": "cursor_1",
+            "node": {
+              "principalId": "S-1-0-01-0000000000-0000000000-000000000-0001",
+              "fullName": "Demo Rubrik",
+              "upn": "demo@rubrik.com",
+              "riskLevel": "HIGH_RISK",
+              "sensitiveFiles": {
+                "highRiskFileCount": {
+                  "totalCount": 124,
+                  "violatedCount": 0,
+                  "__typename": "SummaryCount"
+                },
+                "mediumRiskFileCount": {
+                  "totalCount": 0,
+                  "violatedCount": 0,
+                  "__typename": "SummaryCount"
+                },
+                "lowRiskFileCount": {
+                  "totalCount": 0,
+                  "violatedCount": 0,
+                  "__typename": "SummaryCount"
+                },
+                "__typename": "SensitiveFiles"
+              },
+              "totalSensitiveHits": {
+                "totalHits": 86972,
+                "violatedHits": 0,
+                "__typename": "SummaryHits"
+              },
+              "sensitiveObjectCount": {
+                "totalCount": 1,
+                "violatedCount": 0,
+                "__typename": "SummaryCount"
+              },
+              "numDescendants": 0,
+              "domainName": "rubrik.com",
+              "__typename": "PrincipalSummary"
+            },
+            "__typename": "PrincipalSummaryEdge"
+          },
+          {
+            "cursor": "cursor_1",
+            "node": {
+              "principalId": "S-1-0-01-0000000000-0000000000-000000000-0002",
+              "fullName": "Demo2 Rubrik",
+              "upn": "demo2@rubrik.com",
+              "riskLevel": "HIGH_RISK",
+              "sensitiveFiles": {
+                "highRiskFileCount": {
+                  "totalCount": 124,
+                  "violatedCount": 0,
+                  "__typename": "SummaryCount"
+                },
+                "mediumRiskFileCount": {
+                  "totalCount": 0,
+                  "violatedCount": 0,
+                  "__typename": "SummaryCount"
+                },
+                "lowRiskFileCount": {
+                  "totalCount": 0,
+                  "violatedCount": 0,
+                  "__typename": "SummaryCount"
+                },
+                "__typename": "SensitiveFiles"
+              },
+              "totalSensitiveHits": {
+                "totalHits": 86972,
+                "violatedHits": 0,
+                "__typename": "SummaryHits"
+              },
+              "sensitiveObjectCount": {
+                "totalCount": 1,
+                "violatedCount": 0,
+                "__typename": "SummaryCount"
+              },
+              "numDescendants": 0,
+              "domainName": "rubrik.com",
+              "__typename": "PrincipalSummary"
+            },
+            "__typename": "PrincipalSummaryEdge"
+          }
+        ],
+        "pageInfo": {
+          "startCursor": "cursor_1",
+          "endCursor": "cursor_2",
+          "hasNextPage": true,
+          "hasPreviousPage": false,
+          "__typename": "PageInfo"
+        },
+        "__typename": "PrincipalSummaryConnection"
+      }
+    },
+    "xsoar_risk_levels": ["HIGH_RISK"]
+  },
+  "raw_response_when_not_whitelisted": {
+    "data": {
+      "principalSummaries": {
+        "edges": [
+          {
+            "cursor": "cursor_1",
+            "node": {
+              "principalId": "S-1-0-01-0000000000-0000000000-000000000-0001",
+              "fullName": "Demo Rubrik",
+              "upn": "demo@rubrik.com",
+              "riskLevel": "HIGH_RISK",
+              "sensitiveFiles": {
+                "highRiskFileCount": {
+                  "totalCount": 0,
+                  "violatedCount": 124,
+                  "__typename": "SummaryCount"
+                },
+                "mediumRiskFileCount": {
+                  "totalCount": 0,
+                  "violatedCount": 0,
+                  "__typename": "SummaryCount"
+                },
+                "lowRiskFileCount": {
+                  "totalCount": 0,
+                  "violatedCount": 0,
+                  "__typename": "SummaryCount"
+                },
+                "__typename": "SensitiveFiles"
+              },
+              "totalSensitiveHits": {
+                "totalHits": 0,
+                "violatedHits": 86972,
+                "__typename": "SummaryHits"
+              },
+              "sensitiveObjectCount": {
+                "totalCount": 0,
+                "violatedCount": 1,
+                "__typename": "SummaryCount"
+              },
+              "numDescendants": 0,
+              "domainName": "rubrik.com",
+              "__typename": "PrincipalSummary"
+            },
+            "__typename": "PrincipalSummaryEdge"
+          },
+          {
+            "cursor": "cursor_1",
+            "node": {
+              "principalId": "S-1-0-01-0000000000-0000000000-000000000-0002",
+              "fullName": "Demo2 Rubrik",
+              "upn": "demo2@rubrik.com",
+              "riskLevel": "HIGH_RISK",
+              "sensitiveFiles": {
+                "highRiskFileCount": {
+                  "totalCount": 0,
+                  "violatedCount": 124,
+                  "__typename": "SummaryCount"
+                },
+                "mediumRiskFileCount": {
+                  "totalCount": 0,
+                  "violatedCount": 0,
+                  "__typename": "SummaryCount"
+                },
+                "lowRiskFileCount": {
+                  "totalCount": 0,
+                  "violatedCount": 0,
+                  "__typename": "SummaryCount"
+                },
+                "__typename": "SensitiveFiles"
+              },
+              "totalSensitiveHits": {
+                "totalHits": 0,
+                "violatedHits": 86972,
+                "__typename": "SummaryHits"
+              },
+              "sensitiveObjectCount": {
+                "totalCount": 0,
+                "violatedCount": 1,
+                "__typename": "SummaryCount"
+              },
+              "numDescendants": 0,
+              "domainName": "rubrik.com",
+              "__typename": "PrincipalSummary"
+            },
+            "__typename": "PrincipalSummaryEdge"
+          }
+        ],
+        "pageInfo": {
+          "startCursor": "cursor_1",
+          "endCursor": "cursor_2",
+          "hasNextPage": true,
+          "hasPreviousPage": false,
+          "__typename": "PageInfo"
+        },
+        "__typename": "PrincipalSummaryConnection"
+      }
+    },
+    "xsoar_risk_levels": ["HIGH_RISK"]
+  },
+  "empty_response": {
+    "data": {}
+  },
+  "outputs_2_1": [
+    {
+      "principalId": "S-1-0-01-0000000000-0000000000-000000000-0001",
+      "fullName": "Demo Rubrik",
+      "upn": "demo@rubrik.com",
+      "riskLevel": "HIGH_RISK",
+      "sensitiveFiles": {
+        "highRiskFileCount": {
+          "totalCount": 124,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "mediumRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "lowRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "__typename": "SensitiveFiles"
+      },
+      "totalSensitiveHits": {
+        "totalHits": 86972,
+        "violatedHits": 0,
+        "__typename": "SummaryHits"
+      },
+      "sensitiveObjectCount": {
+        "totalCount": 1,
+        "violatedCount": 0,
+        "__typename": "SummaryCount"
+      },
+      "numDescendants": 0,
+      "domainName": "rubrik.com",
+      "__typename": "PrincipalSummary"
+    },
+    {
+      "principalId": "S-1-0-01-0000000000-0000000000-000000000-0002",
+      "fullName": "Demo2 Rubrik",
+      "upn": "demo2@rubrik.com",
+      "riskLevel": "HIGH_RISK",
+      "sensitiveFiles": {
+        "highRiskFileCount": {
+          "totalCount": 124,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "mediumRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "lowRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "__typename": "SensitiveFiles"
+      },
+      "totalSensitiveHits": {
+        "totalHits": 86972,
+        "violatedHits": 0,
+        "__typename": "SummaryHits"
+      },
+      "sensitiveObjectCount": {
+        "totalCount": 1,
+        "violatedCount": 0,
+        "__typename": "SummaryCount"
+      },
+      "numDescendants": 0,
+      "domainName": "rubrik.com",
+      "__typename": "PrincipalSummary"
+    }
+  ],
+  "outputs_1_1": [
+    {
+      "principalId": "S-1-0-01-0000000000-0000000000-000000000-0001",
+      "fullName": "Demo Rubrik",
+      "upn": "demo@rubrik.com",
+      "riskLevel": "HIGH_RISK",
+      "sensitiveFiles": {
+        "highRiskFileCount": {
+          "totalCount": 124,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "mediumRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "lowRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "__typename": "SensitiveFiles"
+      },
+      "totalSensitiveHits": {
+        "totalHits": 86972,
+        "violatedHits": 0,
+        "__typename": "SummaryHits"
+      },
+      "sensitiveObjectCount": {
+        "totalCount": 1,
+        "violatedCount": 0,
+        "__typename": "SummaryCount"
+      },
+      "numDescendants": 0,
+      "domainName": "rubrik.com",
+      "__typename": "PrincipalSummary"
+    }
+  ],
+  "outputs_1_2": [
+    {
+      "principalId": "S-1-0-01-0000000000-0000000000-000000000-0002",
+      "fullName": "Demo2 Rubrik",
+      "upn": "demo2@rubrik.com",
+      "riskLevel": "HIGH_RISK",
+      "sensitiveFiles": {
+        "highRiskFileCount": {
+          "totalCount": 124,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "mediumRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "lowRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "__typename": "SensitiveFiles"
+      },
+      "totalSensitiveHits": {
+        "totalHits": 86972,
+        "violatedHits": 0,
+        "__typename": "SummaryHits"
+      },
+      "sensitiveObjectCount": {
+        "totalCount": 1,
+        "violatedCount": 0,
+        "__typename": "SummaryCount"
+      },
+      "numDescendants": 0,
+      "domainName": "rubrik.com",
+      "__typename": "PrincipalSummary"
+    }
+  ],
+  "outputs_when_not_whitelisted": [
+    {
+      "principalId": "S-1-0-01-0000000000-0000000000-000000000-0001",
+      "fullName": "Demo Rubrik",
+      "upn": "demo@rubrik.com",
+      "riskLevel": "HIGH_RISK",
+      "sensitiveFiles": {
+        "highRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 124,
+          "__typename": "SummaryCount"
+        },
+        "mediumRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "lowRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "__typename": "SensitiveFiles"
+      },
+      "totalSensitiveHits": {
+        "totalHits": 0,
+        "violatedHits": 86972,
+        "__typename": "SummaryHits"
+      },
+      "sensitiveObjectCount": {
+        "totalCount": 0,
+        "violatedCount": 1,
+        "__typename": "SummaryCount"
+      },
+      "numDescendants": 0,
+      "domainName": "rubrik.com",
+      "__typename": "PrincipalSummary"
+    },
+    {
+      "principalId": "S-1-0-01-0000000000-0000000000-000000000-0002",
+      "fullName": "Demo2 Rubrik",
+      "upn": "demo2@rubrik.com",
+      "riskLevel": "HIGH_RISK",
+      "sensitiveFiles": {
+        "highRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 124,
+          "__typename": "SummaryCount"
+        },
+        "mediumRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "lowRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "__typename": "SensitiveFiles"
+      },
+      "totalSensitiveHits": {
+        "totalHits": 0,
+        "violatedHits": 86972,
+        "__typename": "SummaryHits"
+      },
+      "sensitiveObjectCount": {
+        "totalCount": 0,
+        "violatedCount": 1,
+        "__typename": "SummaryCount"
+      },
+      "numDescendants": 0,
+      "domainName": "rubrik.com",
+      "__typename": "PrincipalSummary"
+    }
+  ],
+  "page_token_2_1": {
+    "endCursor": "cursor_2",
+    "hasNextPage": true,
+    "hasPreviousPage": false,
+    "has_next_upn_page": false,
+    "next_upn_page_number": 1,
+    "name": "rubrik-sonar-user-access-list",
+    "startCursor": "cursor_1"
+  },
+  "page_token_1_1": {
+    "endCursor": "cursor_2",
+    "hasNextPage": true,
+    "hasPreviousPage": false,
+    "has_next_upn_page": true,
+    "next_upn_page_number": 2,
+    "name": "rubrik-sonar-user-access-list",
+    "startCursor": "cursor_1"
+  },
+  "page_token_1_2": {
+    "endCursor": "cursor_2",
+    "hasNextPage": true,
+    "hasPreviousPage": false,
+    "has_next_upn_page": false,
+    "next_upn_page_number": 2,
+    "name": "rubrik-sonar-user-access-list",
+    "startCursor": "cursor_1"
+  }
+}

@@ -151,3 +151,12 @@ ignore=IF100
 
 [file:XDR_Alert_Count.json]
 ignore=IF100
+
+[file:playbook-Cortex_XDR_IOCs_-_Disable_expired_IOCs_in_XDR.yml]
+ignore=PB105
+
+[file:playbook-Cortex_XDR_IOCs_-_Push_new_IOCs_to_XDR.yml]
+ignore=PB105
+
+[file:Cortex_XDR_-_Large_Upload.yml]
+ignore=PB121

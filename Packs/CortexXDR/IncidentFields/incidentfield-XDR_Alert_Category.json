@@ -4,7 +4,8 @@
         "Cortex XDR Incident",
         "Cortex XDR Device Control Violations",
         "Cortex XDR Port Scan",
-        "Cortex XDR Disconnected endpoints"
+        "Cortex XDR Disconnected endpoints",
+        "Cortex XDR - Lite"
     ],
     "caseInsensitive": true,
     "cliName": "xdralertcategory",

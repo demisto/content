@@ -700,15 +700,16 @@ class Client:
         cleanBody = ''
         lastIndex = 0
         for i, m in enumerate(
-                re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I)):
+                re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I | re.S)):
             maintype, subtype = m.group(2).split('/', 1)
+            name = f"image{i}.{subtype}"
             att = {
                 'maintype': maintype,
                 'subtype': subtype,
                 'data': base64.b64decode(m.group(3)),
-                'name': f'image{i}.{subtype}'
+                'name': name,
+                'cid': name
             }
-            att['cid'] = f"{att['name']}@{self.randomword(8)}.{self.randomword(8)}"  # type: ignore[str-bytes-safe]
             attachments.append(att)
             cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
             lastIndex = m.end() - 1
@@ -894,7 +895,7 @@ class Client:
             message.attach(alt)
             attach_body_to = alt
         else:
-            message = MIMEMultipart('alternative') if body and htmlBody else MIMEMultipart()  # type: ignore
+            message = MIMEMultipart()  # type: ignore
 
         if not attach_body_to:
             attach_body_to = message  # type: ignore
@@ -914,8 +915,6 @@ class Client:
 
         # if there are any attachments to the mail or both body and htmlBody were given
         if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
-            msg = MIMEText(body, 'plain', 'utf-8')
-            attach_body_to.attach(msg)  # type: ignore
             htmlAttachments = []  # type: list
             inlineAttachments = []  # type: list
 
@@ -930,6 +929,8 @@ class Client:
             else:
                 # if not html body, cannot attach cids in message
                 transientFileCID = None
+                msg = MIMEText(body, 'plain', 'utf-8')
+                attach_body_to.attach(msg)  # type: ignore
 
             attachments = self.collect_attachments(entry_ids, file_names)
             manual_attachments = self.collect_manual_attachments()

@@ -1,16 +1,14 @@
-import io
 import json
 import re
 import time
 
 import dateparser
 import pytest
-
-from NetskopeEventCollector import Client, ALL_SUPPORTED_EVENT_TYPES, RATE_LIMIT_REMAINING, RATE_LIMIT_RESET
+from NetskopeEventCollector import ALL_SUPPORTED_EVENT_TYPES, RATE_LIMIT_REMAINING, RATE_LIMIT_RESET, Client
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -32,7 +30,7 @@ def test_test_module(mocker):
         - Verify that 'ok' is returned.
     """
     from NetskopeEventCollector import test_module
-    client = Client(BASE_URL, 'dummy_token', False, False)
+    client = Client(BASE_URL, 'dummy_token', False, False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
     mocker.patch.object(client, 'perform_data_export', return_value=EVENTS_RAW)
     results = test_module(client, last_run=FIRST_LAST_RUN, max_fetch=1)
     assert results == 'ok'
@@ -72,14 +70,15 @@ def test_get_all_events(requests_mock):
         return EVENTS_PAGE_RAW[endpoint]
 
     from NetskopeEventCollector import get_all_events
-    client = Client(BASE_URL, 'netskope_token', validate_certificate=False, proxy=False)
+    client = Client(BASE_URL, 'netskope_token', validate_certificate=False,
+                    proxy=False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
     url_matcher = re.compile('https://netskope[.]example[.]com/events/dataexport/events')
     requests_mock.get(url_matcher, json=json_callback)
     events, new_last_run = get_all_events(client, FIRST_LAST_RUN)
     assert len(events) == 25
     assert events[0].get('event_id') == '1'
     assert events[0].get('_time') == '2023-05-22T10:30:16.000Z'
-    assert all([new_last_run[event_type]['operation'] == 'next' for event_type in ALL_SUPPORTED_EVENT_TYPES])
+    assert all(new_last_run[event_type]['operation'] == 'next' for event_type in ALL_SUPPORTED_EVENT_TYPES)
 
 
 def test_get_events_command(mocker):
@@ -94,7 +93,7 @@ def test_get_events_command(mocker):
         - Make sure the outputs are set correctly.
     """
     from NetskopeEventCollector import get_events_command
-    client = Client(BASE_URL, 'dummy_token', False, False)
+    client = Client(BASE_URL, 'dummy_token', False, False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
     mocker.patch('NetskopeEventCollector.get_all_events', return_value=[MOCK_ENTRY, {}])
     mocker.patch.object(time, "sleep")
     results, events = get_events_command(client, args={}, last_run=FIRST_LAST_RUN)
@@ -161,5 +160,32 @@ def test_setup_last_run(mocker, last_run_dict, expected_operation_value):
     from NetskopeEventCollector import setup_last_run
     first_fetch = dateparser.parse('2023-01-01T10:00:00Z')
     mocker.patch.object(dateparser, "parse", return_value=first_fetch)
-    last_run = setup_last_run(last_run_dict)
-    assert all([val.get('operation') == expected_operation_value for key, val in last_run.items()])
+    last_run = setup_last_run(last_run_dict, ALL_SUPPORTED_EVENT_TYPES)
+    assert all(val.get('operation') == expected_operation_value for key, val in last_run.items())
+
+
+@pytest.mark.parametrize('event_types_to_fetch_param, expected_value', [
+    ('Application', ['application']),
+    ('Alert, Page, Audit', ['alert', 'page', 'audit']),
+    (['Application', 'Audit', 'Network'], ['application', 'audit', 'network']),
+    (None, ALL_SUPPORTED_EVENT_TYPES),
+])
+def test_event_types_to_fetch_parameter_handling(event_types_to_fetch_param, expected_value):
+    """
+    Given:
+        Case a: event_types_to_fetch parameter has a single value
+        Case b: event_types_to_fetch parameter has multiple values
+        Case c: event_types_to_fetch parameter is a pythonic list
+        Case d: event_types_to_fetch parameter is None
+
+    When:
+        Handling the event_types_to_fetch parameter
+
+    Then:
+        - Make sure the parameter converts into a valid pythonic list
+        - The values are lowercase
+        - In the case event_types_to_fetch in None, default ALL_SUPPORTED_EVENT_TYPES is used as parameter
+
+    """
+    from NetskopeEventCollector import handle_event_types_to_fetch
+    assert handle_event_types_to_fetch(event_types_to_fetch_param) == expected_value

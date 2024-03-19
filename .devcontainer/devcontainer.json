@@ -24,11 +24,6 @@
 		"DEMISTO_SDK_CONTENT_PATH": "${containerWorkspaceFolder}",
 		"PYTHONPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
 		"MYPYPATH": "${containerWorkspaceFolder}:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
-		"DEMISTO_BASE_URL": "${localEnv:DEMISTO_BASE_URL}",
-		"DEMISTO_USERNAME": "${localEnv:DEMISTO_USERNAME}",
-		"DEMISTO_PASSWORD": "${localEnv:DEMISTO_PASSWORD}",
-		"DEMISTO_VERIFY_SSL": "${localEnv:DEMISTO_VERIFY_SSL}",
-		"DEMISTO_API_KEY": "${localEnv:DEMISTO_API_KEY}"
 	},
 	"customizations": {
 		"vscode": {
@@ -97,7 +92,7 @@
 // 	"ghcr.io/devcontainers/features/common-utils:1"
 // ],
 "onCreateCommand": "sudo dos2unix -n .devcontainer/createCommand.sh .devcontainer/createCommand_unix.sh && bash .devcontainer/createCommand_unix.sh",
-"postStartCommand": "poetry install && poetry run demisto-sdk pre-commit >/dev/null 2>&1 || true",
+"postStartCommand": "git pull || true && poetry install && poetry run demisto-sdk pre-commit --mode=commit >/dev/null 2>&1 || true",
 "hostRequirements": {
 	"cpus": 4,
 	"memory": "8gb",

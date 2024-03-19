@@ -92,6 +92,8 @@ configuration:
   - DGA Domain Feed
   - High-Confidence DGA Domain Feed
   - Sinkhole Feed
+  - Malware Domains Feed
+  - Phishing Domains Feed
   required: true
   type: 16
 - display: Username
@@ -123,7 +125,7 @@ script:
       name: indicator_type
     description: Gets the feed indicators.
     name: bambenek-get-indicators
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.86272
   feed: true
   runonce: false
   script: '-'

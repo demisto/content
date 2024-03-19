@@ -96,21 +96,29 @@ def get_diff(args: Namespace) -> dict:  # pragma: no cover
     absolute_artifacts_folder = Path(args.artifacts_folder)
     relative_artifacts_folder = absolute_artifacts_folder.relative_to(ARTIFACTS_DIR_LOCATION)
     gitlab_client = GitlabClient(args.gitlab_token)
-    previous = gitlab_client.get_packs_dependencies_json(
-        args.master_sha,
-        args.job_name,
-        relative_artifacts_folder / PACKS_DEPENDENCIES_FILENAME,
+    master_packs_dependencies_json = json.loads(
+        gitlab_client.get_artifact_file(
+            args.master_sha,
+            args.job_name,
+            relative_artifacts_folder / PACKS_DEPENDENCIES_FILENAME,
+            ref="master",
+        )
     )
-    current = json.loads((absolute_artifacts_folder / PACKS_DEPENDENCIES_FILENAME).read_text())
-    return compare(previous, current)
+    current_packs_dependencies_json = json.loads(
+        (absolute_artifacts_folder / PACKS_DEPENDENCIES_FILENAME).read_text()
+    )
+    return compare(master_packs_dependencies_json, current_packs_dependencies_json)
 
 
 def main():  # pragma: no cover
-    args = parse_args()
-    diff = get_diff(args)
-    diff_file = Path(args.artifacts_folder) / DIFF_FILENAME
-    logger.info(f"Dumping the diff to an artifact file: {diff_file}")
-    diff_file.write_text(json.dumps(diff, indent=4))
+    try:
+        args = parse_args()
+        diff = get_diff(args)
+        diff_file = Path(args.artifacts_folder) / DIFF_FILENAME
+        logger.info(f"Dumping the diff to an artifact file: {diff_file}")
+        diff_file.write_text(json.dumps(diff, indent=4))
+    except Exception as e:
+        logger.warning(f"Skipping pack dependencies calculation: \n{e}")
 
 
 if __name__ == '__main__':

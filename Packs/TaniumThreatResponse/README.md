@@ -1,7 +1,7 @@
 # Tanium Threat Response
 This pack includes Cortex XSIAM content.
 
-
+<~XSIAM>
 ## Configuration on Server Side
 You need to configure a Socket Receiver on the Tanium side. 
 
@@ -21,10 +21,10 @@ Perform the following steps to configure the Socket Receiver:
 
 More information can be found [here](https://docs.tanium.com/threat_response/threat_response/overview.html#Integrat)
 
-<u>**Note:**</u>
+**Note:**
 Make sure to send the log in UTC time. 
-Don't modify the value type of the "Timestamp" field. This field is set to UTC by default.
-The supported time format is yyyy-MM-ddThh:mm:ss.nnnZ (2022-01-01T10:00:00.000Z). The relevant field is "Timestamp".
+Don't modify the value type of the **Timestamp** field. This field is set to UTC by default.
+The supported time format is yyyy-MM-ddThh:mm:ss.nnnZ (2022-01-01T10:00:00.000Z).
 
 ## Collect Events from Vendor
 In order to use the collector, use the [Broker VM](#broker-vm) option.
@@ -41,3 +41,4 @@ You can configure the specific vendor and product for this instance.
 4. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - tanium
    - product as product - threat_response
+</~XSIAM>

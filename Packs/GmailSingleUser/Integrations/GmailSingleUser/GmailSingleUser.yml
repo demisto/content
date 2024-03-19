@@ -154,22 +154,22 @@ script:
     - description: |-
         A comma-separated list of new names used to rename attachments corresponding to the order in which they were attached to the email.
                 Examples - To rename the first and third file: attachNames=new_fileName1,,new_fileName3
-                To rename the second and fifth files: attachNames=,new_fileName2,,,new_fileName5
+                To rename the second and fifth files: attachNames=,new_fileName2,,,new_fileName5.
       isArray: true
       name: attachNames
     - description: A comma-separated list of CID images to embed as attachments inside the email.
       isArray: true
       name: attachCIDs
     - description: |-
-        Textual name for an attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"
+        Textual name for an attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
       isArray: true
       name: transientFile
     - description: |-
-        Content for the attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"
+        Content for the attached file. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
       isArray: true
       name: transientFileContent
     - description: |-
-        CID image for an attached file to include within the email body. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz"
+        CID image for an attached file to include within the email body. Multiple files are supported as a comma-separated list. For example, transientFile="t1.txt,temp.txt,t3.txt" transientFileContent="test 2,temporary file content,third file content" transientFileCID="t1.txt@xxx.yyy,t2.txt@xxx.zzz".
       isArray: true
       name: transientFileCID
     - description: 'A comma-separated list of additional headers in the format: headerName=headerValue. For example: "headerName1=headerValue1,headerName2=headerValue2".'
@@ -185,7 +185,7 @@ script:
       predefined:
       - HTML
       - Text
-    - description: Indicates whether to render the email body
+    - description: Indicates whether to render the email body.
       name: renderBody
       auto: PREDEFINED
       predefined:
@@ -248,11 +248,9 @@ script:
     - description: The email address used to reply to the message.
       name: replyTo
     - description: >-
-        A comma-separated list of new names to rename for existing
-        attachments, which relates to the order that they were attached to
-        the email.
+        A comma-separated list of new names to rename for existing attachments, which relates to the order that they were attached to the email.
                 For example, rename the first and third file attachNames=new_fileName1,,new_fileName3
-                To rename the second and fifth files, attachNames=,new_fileName2,,,new_fileName5
+                To rename the second and fifth files, attachNames=,new_fileName2,,,new_fileName5.
       isArray: true
       name: attachNames
     - description: A comma-separated list of CID images to embed attachments in to the email.
@@ -298,7 +296,7 @@ script:
       predefined:
       - HTML
       - Text
-    - description: Indicates whether to render the email body
+    - description: Indicates whether to render the email body.
       name: renderBody
     description: Sends an email using Gmail.
     name: send-mail
@@ -350,7 +348,7 @@ script:
       required: true
     description: Retrieves attachments from a sent Gmail message.
     name: gmail-get-attachments
-  dockerimage: demisto/google-api-py3:1.0.0.64100
+  dockerimage: demisto/google-api-py3:1.0.0.88704
   isfetch: true
   runonce: false
   script: '-'

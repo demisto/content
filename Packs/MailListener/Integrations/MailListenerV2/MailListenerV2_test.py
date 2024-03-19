@@ -250,11 +250,33 @@ def test_fetch_mail_gets_bytes(mocker, src_data, expected):
 
     mail_mocker = mocker.patch('MailListenerV2.Email', return_value=mock_email())
     mocker.patch.object(demisto, 'debug')
-    mocker.patch.object(IMAPClient, 'search')
+    mocker.patch.object(IMAPClient, 'search', return_value=[1])
     mocker.patch.object(IMAPClient, 'fetch', return_value=src_data)
     mocker.patch.object(IMAPClient, '_create_IMAP4')
     fetch_mails(IMAPClient('http://example_url.com'))
     assert mail_mocker.call_args[0][0] == expected
+
+
+def test_fetch_mail__default_uid(mocker,):
+    """
+    Given:
+        - No uid is passed to fetch_mails function
+    When:
+        - Fetching mails
+    Then:
+        - Validate search query is empty
+    """
+    from MailListenerV2 import fetch_mails
+    import demistomock as demisto
+    from imapclient import IMAPClient
+
+    mocker.patch('MailListenerV2.Email')
+    mocker.patch.object(demisto, 'debug')
+    search_mocker = mocker.patch.object(IMAPClient, 'search', return_value=[1])
+    mocker.patch.object(IMAPClient, 'fetch')
+    mocker.patch.object(IMAPClient, '_create_IMAP4')
+    fetch_mails(IMAPClient('http://example_url.com'))
+    assert search_mocker.call_args[0][0] == []  # default uid is 0 so no search query is passed
 
 
 def test_invalid_mail_object_handling(mocker):
@@ -279,7 +301,7 @@ def test_invalid_mail_object_handling(mocker):
 
     mocker.patch('MailListenerV2.Email', side_effect=[mock_email_1, Exception('Invalid Mail'), mock_email_3])
     mocker.patch.object(demisto, 'debug')
-    mocker.patch.object(IMAPClient, 'search')
+    mocker.patch.object(IMAPClient, 'search', return_value=[1])
     mocker.patch.object(IMAPClient, 'fetch', return_value=src_data)
     mocker.patch.object(IMAPClient, '_create_IMAP4')
     mails_fetched, messages_fetched, _ = fetch_mails(IMAPClient('http://example_url.com'))
@@ -575,3 +597,138 @@ def test_replace_spaces_in_credentials(input_credentials, output_credentials):
     import json
 
     assert (json.dumps(replace_spaces_in_credentials(input_credentials)) == json.dumps(output_credentials))
+
+
+def test_fetch_incidents__last_uid_as_int(mocker):
+    """
+    Given:
+        - A mock client and last run with 'last_uid' as an integer - 8
+    When:
+        - Fetching incidents
+    Then:
+        - Ensure that the "last_uid" received from the 'last_run' of previous cycles is converted to an integer.
+        Also, verify that the 'last_uid' to be written in the 'last_run' for the next cycle is a string.
+    """
+    from MailListenerV2 import fetch_incidents
+    mocker.patch('MailListenerV2.Email.convert_to_incident', return_value={})
+    fetch_mail_mocker = mocker.patch('MailListenerV2.fetch_mails', return_value=([mock_email()], [mock_email()], 5))
+
+    next_run, _ = fetch_incidents(
+        client=mocker.Mock(),
+        last_run={'last_uid': 8},
+        first_fetch_time='2022-01-01 00:00:00',
+        include_raw_body=False,
+        with_headers=False,
+        permitted_from_addresses='test@example.com',
+        permitted_from_domains='example.com',
+        delete_processed=False,
+        limit=10,
+        save_file=False
+    )
+    assert isinstance(fetch_mail_mocker.call_args[1]['uid_to_fetch_from'], int)
+    assert isinstance(next_run['last_uid'], str)
+
+
+def test_fetch_incidents__last_uid_as_string(mocker):
+    """
+    Given:
+        - A mock client and last run with 'last_uid' as a string - "8"
+    When:
+        - Fetching incidents
+    Then:
+        - Ensure that the "last_uid" received from the 'last_run' of previous cycles is converted to an integer.
+        Also, verify that the 'last_uid' to be written in the 'last_run' for the next cycle is a string.
+    """
+    from MailListenerV2 import fetch_incidents
+    mocker.patch('MailListenerV2.Email.convert_to_incident', return_value={})
+    fetch_mail_mocker = mocker.patch('MailListenerV2.fetch_mails', return_value=([mock_email()], [mock_email()], 5))
+
+    next_run, _ = fetch_incidents(
+        client=mocker.Mock(),
+        last_run={'last_uid': "8"},
+        first_fetch_time='2022-01-01 00:00:00',
+        include_raw_body=False,
+        with_headers=False,
+        permitted_from_addresses='test@example.com',
+        permitted_from_domains='example.com',
+        delete_processed=False,
+        limit=10,
+        save_file=False
+    )
+    assert isinstance(fetch_mail_mocker.call_args[1]['uid_to_fetch_from'], int)
+    assert isinstance(next_run['last_uid'], str)
+
+
+def test_fetch_incidents__last_uid_was_zero(mocker):
+    """
+    Given:
+        - A mock client and last run with 'last_uid' as a string - "0"
+    When:
+        - Fetching incidents
+    Then:
+        - Ensure that the next run is None, since setting it to "0" will cause an error in the next cycle.
+
+    """
+    from MailListenerV2 import fetch_incidents
+    mocker.patch('MailListenerV2.Email.convert_to_incident', return_value={})
+    mocker.patch('MailListenerV2.fetch_mails', return_value=([mock_email()], [mock_email()], 0))
+
+    next_run, _ = fetch_incidents(
+        client=mocker.Mock(),
+        last_run={'last_uid': "0"},
+        first_fetch_time='2022-01-01 00:00:00',
+        include_raw_body=False,
+        with_headers=False,
+        permitted_from_addresses='test@example.com',
+        permitted_from_domains='example.com',
+        delete_processed=False,
+        limit=10,
+        save_file=False
+    )
+    assert next_run is None
+
+
+def test_fetch_mails__mail_id_is_greater(mocker):
+    """
+    Given:
+        - A mock client and last run with uid_to_fetch_from == 2
+        - The email UID returend from the client are  [1, 2, 3]
+    When:
+        - Fetching incidents
+    Then:
+        - Ensure that next_uid_to_fetch_from is 3 since it is greater than the last run
+    """
+    from MailListenerV2 import fetch_mails
+    import demistomock as demisto
+    from imapclient import IMAPClient
+
+    mocker.patch('MailListenerV2.Email')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(IMAPClient, 'search', return_value=[1, 2, 3])
+    mocker.patch.object(IMAPClient, 'fetch')
+    mocker.patch.object(IMAPClient, '_create_IMAP4')
+    _, _, next_uid_to_fetch_from = fetch_mails(IMAPClient('http://example_url.com'), uid_to_fetch_from=2)
+    assert next_uid_to_fetch_from == 3
+
+
+def test_fetch_mails__last_run_is_greater(mocker):
+    """
+    Given:
+        - A mock client and last run with uid_to_fetch_from == 4
+        - The email UID returend from the client are  [1, 2, 3]
+    When:
+        - Fetching incidents
+    Then:
+        - Ensure that the next_uid_to_fetch_from is 4 since it is greater than the greatest email UID
+    """
+    from MailListenerV2 import fetch_mails
+    import demistomock as demisto
+    from imapclient import IMAPClient
+
+    mocker.patch('MailListenerV2.Email')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(IMAPClient, 'search', return_value=[1, 2, 3])
+    mocker.patch.object(IMAPClient, 'fetch')
+    mocker.patch.object(IMAPClient, '_create_IMAP4')
+    _, _, next_uid_to_fetch_from = fetch_mails(IMAPClient('http://example_url.com'), uid_to_fetch_from=4)
+    assert next_uid_to_fetch_from == 4

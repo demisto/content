@@ -14,6 +14,8 @@ Remediation:
 - Cloud Response - Generic
 - Manual Remediation
 
+Currently, the playbook supports incidents created by **Runtime** and **WAAS** triggers.
+
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.

@@ -186,22 +186,23 @@ tasks:
       id: bed915ec-699c-4289-8e18-09a200000d57
       version: -1
       name: Get Geolocation data
-      description: Provides data enrichment for IPs.
-      script: Whois|||ip
+      description: Gets a quick indicator of the risk associated with an IP address.
+      script: '|||ip'
       type: regular
       iscommand: true
-      brand: Whois
+      brand: ""
     nexttasks:
       '#none#':
       - "30"
     scriptarguments:
-      extended_data:
-        simple: "true"
       ip:
         complex:
-          root: alertJson.raw_abioc.event
-          accessor: caller_ip
+          root: incident.xdralerts
+          accessor: hostip
+          transformers:
+          - operator: uniq
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -952,16 +953,35 @@ inputs:
   description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
   playbookInputQuery:
 - key: InternalRange
-  value: {}
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexExtractAll
+        args:
+          error_if_no_match: {}
+          ignore_case: {}
+          multi_line: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+          unpack_matches: {}
+      - operator: join
+        args:
+          separator:
+            value:
+              simple: ','
   required: false
   description: A list of internal IP ranges to check IP addresses against. \nFor IP Enrichment - Generic v2 playbook.
   playbookInputQuery:
 outputs:
 - contextPath: IP
-  description: The IP objects
+  description: The IP objects.
   type: unknown
 - contextPath: DBotScore
-  description: Indicator, Score, Type, Vendor
+  description: Indicator, Score, Type, Vendor.
   type: unknown
 - contextPath: Account
   description: The account object.

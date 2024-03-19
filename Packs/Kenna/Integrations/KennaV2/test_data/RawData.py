@@ -132,54 +132,6 @@ SEARCH_FIXES_RESPONSE = {
         }
     ]
 }
-SEARCH_ASSETS_RESPONSE = {
-    "assets": [
-        {
-            "id": 3,
-            "created_at": "Kenna",
-            "priority": 3,
-            "operating_system": "Kenna",
-            "notes": None,
-            "last_booted_at": None,
-            "primary_locator": "Kenna",
-            "locator": "Kenna",
-            "vulnerabilities_count": 3,
-            "status": "active",
-            "last_seen_time": "Kenna",
-            "network_ports": [],
-            "tags": [
-                "Kenna"
-            ],
-            "owner": None,
-            "urls": {
-                "vulnerabilities": "Kenna"
-            },
-            "ip_address": "Kenna",
-            "database": None,
-            "hostname": None,
-            "fqdn": None,
-            "netbios": None,
-            "application": None,
-            "file": None,
-            "mac_address": "Kenna",
-            "ec2": None,
-            "url": None,
-            "external_id": None,
-            "ipv6": None,
-            "risk_meter_score": 3,
-            "asset_groups": [
-                {
-                    "id": 3,
-                    "name": "Kenna"
-                },
-                {
-                    "id": 4,
-                    "name": "Kenna"
-                }
-            ]
-        }
-    ]
-}
 
 
 GET_ASSETS_VULNERABILITIES_RESPONSE = {

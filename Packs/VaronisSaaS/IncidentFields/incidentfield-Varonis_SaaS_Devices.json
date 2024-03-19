@@ -1,0 +1,59 @@
+{
+    "id": "incident_varonissaasdevices",
+    "version": -1,
+    "name": "Varonis SaaS Devices",
+    "ownerOnly": false,
+    "cliName": "varonissaasdevices",
+    "associatedTypes": [
+        "Varonis SaaS Incident"
+    ],
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "name",
+            "displayName": "Name",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 285,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "asset",
+            "displayName": "Asset",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 200,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}
