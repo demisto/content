@@ -132,4 +132,4 @@ cidrRanges = argToList(args.right)
 res = isIPInAnyCIDR(ipAddresses, cidrRanges);
 // NOTE: The code above is a copy of the code in IsInCidrRanges script, they should be kept identical
 
-return res.map(val => val.Contents == "True" ? "False" : "True");
+return res.map(val => val == "True" ? "False" : "True");
