@@ -491,8 +491,6 @@ src = [
 "**/*_test.py" = []
 # Ignore any Python update in ApiModules, until we can proprtly determine their desired version.
 "**/*ApiModule.py"  = [ "UP" ]
-"conftest.py" = [ "UP" ]
-
 [tool.mypy]
 python_version = "3.10"
 check_untyped_defs = true

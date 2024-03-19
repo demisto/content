@@ -503,6 +503,7 @@
     - .unittests-and-lint-settings
   script:
     - section_start "Revoking GCP Auth and Configure Docker"
+    # we need to configure the docker with the registry in order to be able to pull the images
     - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
     - gcloud auth configure-docker ${DOCKER_IO_DOMAIN} >> "${ARTIFACTS_FOLDER}/logs/configure_docker_with_registry.log" 2>&1
     - section_end "Revoking GCP Auth and Configure Docker"
