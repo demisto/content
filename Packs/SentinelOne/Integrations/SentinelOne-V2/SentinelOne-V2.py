@@ -1171,7 +1171,7 @@ def get_hash_command(client: Client, args: dict) -> CommandResults:
     }
 
     return CommandResults(
-        readable_output=tableToMarkdown('Sentinel One - Hash Reputation\nProvides hash reputation (rank from 0 to 10):',
+        readable_output=tableToMarkdown('SentinelOne - Hash Reputation Verdict\nProvides hash reputation verdict:',
                                         contents, removeNull=True),
         outputs_prefix='SentinelOne.Hash',
         outputs_key_field='Hash',
