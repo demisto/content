@@ -6,7 +6,8 @@ from ZimperiumV2 import Client, users_search_command, devices_search_command, \
     report_get_command, threat_search_command, app_version_list_command, get_devices_by_cve_command, \
     devices_os_version_command, get_cves_by_device_command, policy_group_list_command, policy_privacy_get_command, \
     policy_threat_get_command, policy_phishing_get_command, policy_app_settings_get_command, \
-    policy_device_inactivity_list_command, policy_device_inactivity_get_command, fetch_incidents, vulnerability_get_command
+    policy_device_inactivity_list_command, policy_device_inactivity_get_command, fetch_incidents, \
+    vulnerability_get_command, main
 
 SERVER_URL = 'https://test_url.com/api'
 
@@ -416,3 +417,12 @@ def test_fetch_incidents_no_new_incidents(client, requests_mock):
 
     assert len(incidents) == 0
     assert next_run['time'] == '2023-12-12T15:00:00.000000Z'
+    
+
+def test_proxy_parameter_setup(mocker):
+    mocker.patch.object(demisto, 'params', return_value={'proxy' : 'true', 'url': 'fake_url.com'})
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch('ZimperiumV2.test_module', return_value=CommandResults(readable_output='test'))
+    client = mocker.patch('ZimperiumV2.Client')
+    main()
+    assert client.call_args.kwargs.get('proxy')
