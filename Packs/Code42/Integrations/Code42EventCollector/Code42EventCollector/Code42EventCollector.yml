@@ -40,15 +40,26 @@ name: Code42EventCollector
 script:
   commands:
   - arguments:
-    - description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      name: dummy
+    - description: 'from which time to get events.'
+      name: start_date
       required: true
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    name: cybelangel-get-events
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
+    - description: 'until which time to get events.'
+      name: end_date
+      required: true
+    - description: 'the maximum number of events to return.'
+      name: limit
+      required: true
+      defaultValue: '100'
+    - description: 'the type of event to return.'
+      name: event_type
+      required: true
+      auto: PREDEFINED
+      predefined:
+        - "audit-logs"
+        - "file-events"
+    description: 'Manual command to get events, used mainly for debugging'
+    name: code42-get-events
+    outputs: []
   runonce: false
   script: '-'
   type: python

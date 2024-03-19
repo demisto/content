@@ -111,6 +111,43 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
+def get_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Get events command, used mainly for debugging
+    """
+    start_date = args.get("start_date")
+    end_date = args.get("end_date")
+    limit = arg_to_number(args.get("limit")) or 100
+    event_type = args.get("event_type")
+
+    if event_type == "audit":
+        events = client.get_audit_logs(start_date, end_time=end_date, limit=limit)
+        readable_output = tableToMarkdown(
+            "Audit Logs",
+            events,
+            headers=["actorId", "actorName", "timestamp", "type"],
+            headerTransform=pascalToSpace, removeNull=True
+        )
+    else:
+        events = client.get_file_events(start_date, end_time=end_date, limit=limit)
+        for event in events:
+            event["id"] = event["event"]["id"]
+            event["inserted"] = event["event"]["inserted"]
+        readable_output = tableToMarkdown(
+            "File Events",
+            events,
+            headers=["id", "inserted"],
+            headerTransform=lambda x: x.upper(),
+            removeNull=True
+        )
+
+    return CommandResults(
+        outputs_prefix="Code42EventCollector.Events",
+        outputs=events,
+        raw_response=events,
+        readable_output=readable_output
+    )
+
 
 ''' MAIN FUNCTION '''
 
@@ -140,7 +177,7 @@ def main() -> None:
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug(f'Successfully sent event {[event.get("id") for event in events]} IDs to XSIAM')
             demisto.setLastRun(last_run)
-        elif command == "cybelangel-get-events":
+        elif command == "code42-get-events":
             return_results(get_events_command(client, demisto.args()))
     except Exception as e:
         demisto.error(traceback.format_exc())
