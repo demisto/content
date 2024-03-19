@@ -1,4 +1,4 @@
-This playbook is a generic playbook that receives a process name and command-line argument. It uses the "Cortex XDR IR" integration to search for the given process executions inside XDR alerts and compares the command-line argument from the results to the command-line argument received from the playbook input.
+This playbook is a generic playbook that receives a process name and command-line argument. It uses the "Cortex XDR IR" integration to search for the given process executions inside Cortex XDR alerts and compares the command-line argument from the results to the command-line argument received from the playbook input.
 
 Note: Under the "Processes" input, the playbook should receive an array that contains the following keys:
 - value: *process name*
