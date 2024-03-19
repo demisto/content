@@ -94,6 +94,7 @@ configuration:
   - dd-MM-yyyy
   - dd.MM.yyyy
   - yyyy-MM-dd
+  - mmm-dd-yyyy
   type: 15
   required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in ServiceNow.
@@ -1316,6 +1317,13 @@ script:
       - sc_task
       - sc_req_item
       - sn_si_incident
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Whether to add ticket notes and work notes as notes in the War Room.
+      name: add_as_entry
+      predefined:
+      - 'true'
+      - 'false'
     description: Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting "Read permissions" for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
     name: servicenow-get-ticket-notes
     outputs:
@@ -1329,7 +1337,7 @@ script:
       description: Date/time the ticket note was created.
       type: date
     - contextPath: ServiceNow.Ticket.Note.CreatedBy
-      description: User that created the ticket note.
+      description: User who created the ticket note.
       type: string
     - contextPath: ServiceNow.Ticket.Note.Type
       description: Ticket note type.
@@ -1610,7 +1618,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api.
       type: string
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.13.89009
   isfetch: true
   ismappable: true
   isremotesyncin: true

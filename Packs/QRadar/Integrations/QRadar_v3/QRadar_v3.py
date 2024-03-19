@@ -587,8 +587,8 @@ class Client(BaseClient):
     def reference_sets_list(self, range_: Optional[str] = None, ref_name: Optional[str] = None,
                             filter_: Optional[str] = None, fields: Optional[str] = None):
         name_suffix = f'/{parse.quote(ref_name, safe="")}' if ref_name else ''
-        params = assign_params(fields=fields) if ref_name else assign_params(filter=filter_, fields=fields)
-        additional_headers = {'Range': range_} if not ref_name else None
+        params = assign_params(filter=filter_, fields=fields)
+        additional_headers = {'Range': range_}
         return self.http_request(
             method='GET',
             url_suffix=f'/reference_data/sets{name_suffix}',

@@ -60,7 +60,7 @@ script:
       defaultValue: 300
     description: Gets events from Zoom.
     name: zoom-get-events
-  dockerimage: demisto/auth-utils:1.0.0.87472
+  dockerimage: demisto/auth-utils:1.0.0.88531
   isfetchevents: true
   script: '-'
   subtype: python3

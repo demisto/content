@@ -59,7 +59,7 @@ The integration was tested with 4.x version of Tanium Threat Response, and is co
     <li>
     <strong>OAuth 2.0 Authentication -</strong> To use OAuth 2.0 follow the next steps:
     <ol>
-    <li>Follow the instructions <a href= https://docs.tanium.com/platform_user/platform_user/console_api_tokens.html#add_API_tokens ><strong>here</strong></a>  to create an API token.
+    <li>Follow the instructions <a href=https://help.tanium.com/bundle/ug_console_cloud/page/platform_user/console_api_tokens.html#add_API_tokens><strong>here</strong></a> to create an API token.
     <li>Paste the generated API Token into the <strong>API Token</strong> parameter in the instance configuration, and leave the username
         and password fields empty.</li>
     <li>Click the <strong>Test</strong> button to validate the instance configuration.</li>
@@ -74,7 +74,7 @@ The integration was tested with 4.x version of Tanium Threat Response, and is co
      the api_token_expiration_in_days global setting (minimum value is 1), or include a value with the expire_in_days field when you create the token.</li>
     <li>To edit a global setting in the Tanium platform, go to <i>Administration</i> -> <i>Global
      Settings</i> and search for the setting you would like to edit.</li>
-     <li>For more information see the <a href=https://docs.tanium.com/platform_user/platform_user/console_api_tokens.html><strong>Tanium documentation</strong></a>.</li>
+     <li>For more information see the <a href=https://help.tanium.com/bundle/ug_console_cloud/page/platform_user/console_api_tokens.html><strong>Tanium documentation</strong></a>.</li>
 </ol>
 <h2>Commands</h2>
 <p>

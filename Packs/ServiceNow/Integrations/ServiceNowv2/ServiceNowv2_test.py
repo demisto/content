@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from freezegun import freeze_time
 import ServiceNowv2
 import requests
-from CommonServerPython import DemistoException, EntryType
+from CommonServerPython import CommandResults, DemistoException, EntryType
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
     generate_body, parse_dict_ticket_fields, split_fields, Client, update_ticket_command, create_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
@@ -18,7 +18,8 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, delete_ticket_command, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, get_timezone_offset, \
-    converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS
+    converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS, \
+    format_incidents_response_with_display_values, get_entries_for_notes, is_time_field
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -32,7 +33,8 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR_CLOSED, RESPONSE_CLOSING_TICKET_MIRROR_RESOLVED, \
     RESPONSE_CLOSING_TICKET_MIRROR_CUSTOM, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
     RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME, USER_RESPONSE, \
-    RESPONSE_GENERIC_TICKET, RESPONSE_COMMENTS_DISPLAY_VALUE, RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS
+    RESPONSE_GENERIC_TICKET, RESPONSE_COMMENTS_DISPLAY_VALUE_AFTER_FORMAT, RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS, \
+    RESPONSE_COMMENTS_DISPLAY_VALUE, RESPONSE_FETCH_USE_DISPLAY_VALUE
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_CREATE_TICKET_WITH_OUT_JSON, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, \
@@ -220,8 +222,9 @@ def test_convert_to_notes_result():
                                    'sys_created_by': 'Test User',
                                    'element': 'comments'
                                    }]}
-    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE,
-                                   time_info={'display_date_format': DATE_FORMAT}) == expected_result
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE_AFTER_FORMAT,
+                                   time_info={'display_date_format': DATE_FORMAT,
+                                              'timezone_offset': timedelta(minutes=-60)}) == expected_result
 
     # Filter comments by creation time (filter is given in UTC):
     expected_result = {'result': [{'sys_created_on': '2022-11-21 21:50:34',
@@ -229,13 +232,13 @@ def test_convert_to_notes_result():
                                    'sys_created_by': 'System Administrator',
                                    'element': 'comments'
                                    }]}
-    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE,
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE_AFTER_FORMAT,
                                    time_info={'display_date_format': DATE_FORMAT,
-                                              'filter': datetime.strptime('2022-11-21 21:44:37',
-                                                                          DATE_FORMAT)}) == expected_result
+                                              'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT),
+                                              'timezone_offset': timedelta(minutes=-60)}) == expected_result
 
-    ticket_response = {'result': []}
-    assert convert_to_notes_result(ticket_response, time_info={'display_date_format': DATE_FORMAT}) == []
+    ticket_response = {}
+    assert convert_to_notes_result(ticket_response, time_info={'display_date_format': DATE_FORMAT}) == {}
 
     assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS,
                                    time_info={'display_date_format': DATE_FORMAT}) == {'result': []}
@@ -289,6 +292,19 @@ def test_split_notes():
                        }]
     assert notes == expected_notes
 
+    raw_notes = '21.11.2022 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n Mirrored from ' \
+                'Cortex XSOAR\n\n21.11.2022 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
+    time_info = {'timezone_offset': timedelta(minutes=-60),
+                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT),
+                 'display_date_format': DATE_FORMAT_OPTIONS.get('dd.MM.yyyy')}
+    notes = split_notes(raw_notes, 'comments', time_info)
+    expected_notes = [{'sys_created_on': '2022-11-21 21:50:34',
+                       'value': 'Second comment\n\n Mirrored from Cortex XSOAR',
+                       'sys_created_by': 'System Administrator',
+                       'element': 'comments'
+                       }]
+    assert notes == expected_notes
+
     raw_notes = '11-21-2022 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n Mirrored from ' \
                 'Cortex XSOAR\n\n11-21-2022 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
     time_info = {'timezone_offset': timedelta(minutes=-120),
@@ -307,25 +323,151 @@ def test_get_timezone_offset():
     Then:
         - Assert the offset between the UTC and the instance times are correct.
     """
-    full_response = {
-        'result': {'sys_created_on': {'display_value': '2022-12-07 05:38:52', 'value': '2022-12-07 13:38:52'}}}
+    full_response = {'sys_created_on': {'display_value': '2022-12-07 05:38:52', 'value': '2022-12-07 13:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT)
     assert offset == timedelta(minutes=480)
 
-    full_response = {
-        'result': {'sys_created_on': {'display_value': '12-07-2022 15:47:34', 'value': '2022-12-07 13:47:34'}}}
+    full_response = {'sys_created_on': {'display_value': '12-07-2022 15:47:34', 'value': '2022-12-07 13:47:34'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('MM-dd-yyyy'))
     assert offset == timedelta(minutes=-120)
 
-    full_response = {
-        'result': {'sys_created_on': {'display_value': '06/12/2022 23:38:52', 'value': '2022-12-07 09:38:52'}}}
+    full_response = {'sys_created_on': {'display_value': '06/12/2022 23:38:52', 'value': '2022-12-07 09:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd/MM/yyyy'))
     assert offset == timedelta(minutes=600)
 
-    full_response = {
-        'result': {'sys_created_on': {'display_value': '07.12.2022 0:38:52', 'value': '2022-12-06 19:38:52'}}}
+    full_response = {'sys_created_on': {'display_value': '07.12.2022 0:38:52', 'value': '2022-12-06 19:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd.MM.yyyy'))
     assert offset == timedelta(minutes=-300)
+
+    full_response = {'sys_created_on': {'display_value': 'Dec-07-2022 00:38:52', 'value': '2022-12-06 19:38:52'}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('mmm-dd-yyyy'))
+    assert offset == timedelta(minutes=-300)
+
+
+def test_get_ticket_notes_command_success(mocker):
+    """
+    Given
+    - A mock client and args input to the get_ticket_notes_command function
+    - A mock successful API response
+
+    When
+    - The get_ticket_notes_command function is called
+
+    Then
+    - Ensure the expected API call is made
+    - Validate the expected CommandResults are returned
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
+    args = {'id': 'sys_id'}
+
+    mock_send_request = mocker.patch.object(Client, 'send_request')
+    mock_send_request.return_value = RESPONSE_GET_TICKET_NOTES
+    result = get_ticket_notes_command(client, args, {})
+
+    assert isinstance(result[0], CommandResults)
+    assert mock_send_request.called
+    assert len(result[0].raw_response.get("result")) == 5
+    assert result[0].outputs_prefix == 'ServiceNow.Ticket'
+    assert result[0].outputs == EXPECTED_GET_TICKET_NOTES
+
+
+def test_get_ticket_notes_command_use_display_value(mocker):
+    """
+    Given
+    - A mock client and args input to the get_ticket_notes_command function
+    - A mock successful API response
+
+    When
+    - The get_ticket_notes_command function is called with use_display_value
+
+    Then
+    - Ensure the expected API call is made
+    - Validate the expected CommandResults are returned
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name', use_display_value=True,
+                    display_date_format="yyyy-MM-dd")
+    args = {'id': 'sys_id'}
+
+    mock_send_request = mocker.patch.object(Client, 'send_request')
+    mock_send_request.return_value = RESPONSE_COMMENTS_DISPLAY_VALUE
+    result = get_ticket_notes_command(client, args, {})
+
+    assert isinstance(result[0], CommandResults)
+    assert mock_send_request.called
+    assert len(result[0].raw_response.get("result")) == 2
+    assert result[0].outputs_prefix == 'ServiceNow.Ticket'
+    assert result[0].outputs == EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE
+
+
+def test_get_ticket_notes_command_use_display_value_no_comments(mocker):
+    """
+    Given
+    - A mock client and args input to the get_ticket_notes_command function
+    - A mock successful API response
+
+    When
+    - The get_ticket_notes_command function is called with use_display_value but no comments
+
+    Then
+    - Ensure the expected API call is made
+    - Validate the expected CommandResults are returned
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name', use_display_value=True,
+                    display_date_format="yyyy-MM-dd")
+    args = {'id': 'sys_id'}
+
+    mock_send_request = mocker.patch.object(Client, 'send_request')
+    mock_send_request.return_value = RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS
+    result = get_ticket_notes_command(client, args, {})
+
+    assert isinstance(result[0], CommandResults)
+    assert mock_send_request.called
+    assert result[0].raw_response == "No comment found on ticket sys_id."
+
+
+@pytest.mark.parametrize("notes, params, expected", [
+    (
+        [
+            {
+                "value": "First comment",
+                "sys_created_by": "Test User",
+                "sys_created_on": "2022-11-21 20:45:37",
+                "element": "comments"
+            }
+        ],
+        {
+            "comment_tag_from_servicenow": "CommentFromServiceNow"
+        },
+        [
+            {
+                "Type": 1,
+                "Category": None,
+                "Contents": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\nFirst comment",
+                "ContentsFormat": None,
+                "Tags": ["CommentFromServiceNow"],
+                "Note": True,
+                "EntryContext": {"comments_and_work_notes": "First comment"}
+            }
+        ]
+    )
+])
+def test_get_entries_for_notes_with_comment(notes, params, expected):
+    """
+    Given
+        - A list of notes
+        - Params containing comment tag
+    When
+        - Calling get_entries_for_notes
+    Then
+        - Should return a list of entry contexts
+    """
+    assert get_entries_for_notes(notes, params) == expected
 
 
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [
@@ -346,11 +488,6 @@ def test_get_timezone_offset():
      RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, True),
     (upload_file_command, {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test_file'}, RESPONSE_UPLOAD_FILE,
      EXPECTED_UPLOAD_FILE, True),
-    (get_ticket_notes_command, {'id': "sys_id"}, RESPONSE_GET_TICKET_NOTES, EXPECTED_GET_TICKET_NOTES, True),
-    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true', 'display_date_format': DATE_FORMAT},
-     RESPONSE_COMMENTS_DISPLAY_VALUE, EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE, True),
-    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true', 'display_date_format': DATE_FORMAT},
-     RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS, {}, True),
     (get_record_command, {'table_name': "alm_asset", 'id': "sys_id", 'fields': "asset_tag,display_name"},
      RESPONSE_GET_RECORD, EXPECTED_GET_RECORD, True),
     (update_record_command, {'name': "alm_asset", 'id': "1234", 'custom_fields': "display_name=test4"},
@@ -2110,3 +2247,64 @@ def test_parse_dict_ticket_fields_empty_ticket(ticket, expected_ticket):
             return USER_RESPONSE
     parse_dict_ticket_fields(Client(), ticket)  # type: ignore
     assert ticket == expected_ticket
+
+
+def test_format_incidents_response_with_display_values_with_no_incidents():
+    """
+    Given:
+        No incidents
+    When:
+        Calling format_incidents_response_with_display_values
+    Then:
+        Returns empty list
+    """
+    incidents_res = []
+    result = format_incidents_response_with_display_values(incidents_res)
+
+    assert result == []
+
+
+def test_format_incidents_response_with_display_values_with_incidents():
+    """
+    Given:
+        Incidents response containing opened_by, sys_domain, assignment_group and other fields
+    When:
+        Calling format_incidents_response_with_display_values
+    Then:
+        Returns formatted incidents with display_value
+    """
+    incidents_res = RESPONSE_FETCH_USE_DISPLAY_VALUE["result"]
+    result = format_incidents_response_with_display_values(incidents_res)
+
+    assert len(result) == 2
+    assert result[0]["sys_updated_on"] == "2024-02-29 13:09:46"
+    assert result[0]["opened_at"] == "2024-02-29 13:08:46"
+    assert result[0]["opened_by"] == incidents_res[0]["opened_by"]
+    assert result[0]["sys_domain"] == incidents_res[0]["sys_domain"]
+    assert result[0]["assignment_group"] == incidents_res[0]["assignment_group"]
+
+    assert result[1]["sys_updated_on"] == "2024-02-29 11:08:44"
+    assert result[1]["opened_at"] == "2024-02-29 11:07:48"
+    assert result[1]["opened_by"] == incidents_res[1]["opened_by"]
+    assert result[1]["sys_domain"] == incidents_res[1]["sys_domain"]
+    assert result[1]["assignment_group"] == ""
+
+
+@pytest.mark.parametrize("input_string, expected", [
+    ("2023-02-15 10:30:45", True),
+    ("invalid", False),
+    ("15.02.2023 10:30:45", False),
+    ("a2023-02-15 10:30:45", False),
+    ("2023-02-15 10:30:45a", False),
+    ("2023-02-15 10:30:45 a", False),
+])
+def test_is_time_field(input_string, expected):
+    """
+    Given:
+        Input strings of varying validity
+    When:
+        is_time_field is called on those strings
+    Then:
+        It should return True if string contains valid datetime, False otherwise
+    """
+    assert is_time_field(input_string) is expected
