@@ -3869,8 +3869,8 @@ inputs:
     simple: "True"
   required: false
   description: |-
-    In case of an incident with non malicious email it possible either to close the incident or to review and approve by analyst.
-    Set the value "True" for review the incident by analyst. Set the value "False" to close incidents with non malicious emails.
+    In case of an incident with a non-malicious email, it is possible either to close the incident or to review and approve it by an analyst.
+    Set the value "True" for a review of the incident by an analyst. Set the value "False" to close the incident.
   playbookInputQuery:
 inputSections:
 - inputs:
