@@ -20,7 +20,7 @@ def util_load_json(path):
 @pytest.fixture()
 def client(requests_mock):
     requests_mock.post(f'{SERVER_URL}/auth/v1/api_keys/login', json={'accessToken': 'token'})
-    return Client(base_url=SERVER_URL, client_id='test', client_secret='test', verify=True)
+    return Client(base_url=SERVER_URL, client_id='test', client_secret='test', verify=True, proxy=False)
 
 
 def test_users_search_command(client, requests_mock):
