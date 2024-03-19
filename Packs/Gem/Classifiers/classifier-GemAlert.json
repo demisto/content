@@ -1,0 +1,18 @@
+{
+    "id": "Gem Classifier",
+    "name": "Gem Classifier",
+    "type": "classification",
+    "defaultIncidentType": "Gem Alert",
+    "description": "Classifies Gem Alerts.",
+    "fromVersion": "6.10.0",
+    "keyTypeMap": {},
+    "transformer": {
+        "complex": null,
+        "simple": ""
+    },
+    "version": -1,
+    "feed": false,
+    "propagationLabels": [
+        "all"
+    ]
+}

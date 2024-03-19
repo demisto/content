@@ -1,0 +1,358 @@
+description: Gem playbook to handle an alert involving an ec2 instance.
+id: "Gem Handle ec2"
+inputs:
+  - description: Slack user to send message for
+    key: User
+    playbookInputQuery:
+    required: true
+    value: {}
+name: Gem Handle ec2
+outputs: []
+starttaskid: "0"
+fromversion: 6.8.0
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 858a615f-7cd9-467b-8766-2186642cecf0
+      iscommand: false
+      name: ""
+      version: -1
+      description: ""
+    taskid: 858a615f-7cd9-467b-8766-2186642cecf0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -60
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+        simple: "Hi, \nWe've detected some suspicious activity related to your ec2 instance: \n${incident.gemmainentityname}\nWould you like to take a containment action?"
+      cc:
+      defaultOption: Ignore
+      format: ""
+      methods:
+        - SlackV3
+      replyOptions:
+        - Stop
+        - Isolate
+        - Terminate
+        - Ignore
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: Administrator,${inputs.User}
+    nexttasks:
+      Ignore:
+        - "8"
+      Isolate:
+        - "5"
+      Stop:
+        - "2"
+      Terminate:
+        - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    sla:
+      days: 3
+      hours: 0
+      minutes: 0
+      weeks: 2
+    task:
+      brand: ""
+      description: Ask using Slack if the user wants to take a containment action
+      id: 060e59f3-79e2-4bda-840d-33dc6b1ed26d
+      iscommand: false
+      name: Ask
+      type: condition
+      version: -1
+    taskid: 060e59f3-79e2-4bda-840d-33dc6b1ed26d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 260
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: stop
+      alert_id:
+        simple: ${incident.gemalertid}
+      entity_id:
+        simple: ${incident.gemmainentityid}
+      entity_type:
+        simple: ec2_instance
+      resource_id:
+        simple: ${incident.gemmainentityid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Gem
+      description: Run an action on an entity.
+      id: 10d46260-c266-4f58-806f-404813c01b0e
+      iscommand: true
+      name: Run stop
+      script: Gem|||gem-run-action
+      type: regular
+      version: -1
+    taskid: 10d46260-c266-4f58-806f-404813c01b0e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 440
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: terminate
+      alert_id:
+        simple: ${incident.gemalertid}
+      entity_id:
+        simple: ${incident.gemmainentityid}
+      entity_type:
+        simple: ec2_instance
+      resource_id:
+        simple: ${incident.gemmainentityid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Gem
+      description: Run an action on an entity.
+      id: 59382a0b-2f19-46c3-8084-c9ccd28d6355
+      iscommand: true
+      name: Run terminate
+      script: Gem|||gem-run-action
+      type: regular
+      version: -1
+    taskid: 59382a0b-2f19-46c3-8084-c9ccd28d6355
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 440
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      "#none#":
+        - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: isolate_instance_traffic
+      alert_id:
+        simple: ${incident.gemalertid}
+      entity_id:
+        simple: ${incident.gemmainentityid}
+      entity_type:
+        simple: ec2_instance
+      resource_id:
+        simple: ${incident.gemmainentityid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Gem
+      description: Run an action on an entity.
+      id: f6be5c84-d347-40a5-8db6-3ccd73d16002
+      iscommand: true
+      name: Run Isolate
+      script: Gem|||gem-run-action
+      type: regular
+      version: -1
+    taskid: f6be5c84-d347-40a5-8db6-3ccd73d16002
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      status:
+        simple: in_progress
+      threat_id:
+        simple: ${incident.gemthreatid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Gem
+      description: Set a threat's status to open, in progress or resolved.
+      id: db885934-e2ab-4824-8570-4df2f60992ef
+      iscommand: true
+      name: Update status to "in progress"
+      script: Gem|||gem-update-threat-status
+      type: regular
+      version: -1
+    taskid: db885934-e2ab-4824-8570-4df2f60992ef
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 780
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      ec2_instance:
+        - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${incident.gemmainentitytype}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
+      id: 3c7d05ef-aad4-4d97-80c3-86d1d9075791
+      iscommand: false
+      name: Validate ec2 instance
+      script: checkValue
+      type: condition
+      version: -1
+    taskid: 3c7d05ef-aad4-4d97-80c3-86d1d9075791
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 90
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: No containment action was taken.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Pretty-print data using Python's pprint library.  This is useful for seeing the structure of incident and context data.  Here's how to use it:
+
+        !PrettyPrint value=${incident}
+      id: 65cf5c36-5edb-4e89-84c3-594451ce1967
+      iscommand: false
+      name: Ignore
+      script: PrettyPrint
+      type: regular
+      version: -1
+    taskid: 65cf5c36-5edb-4e89-84c3-594451ce1967
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 440
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_4_Terminate": 0.78
+    },
+    "paper": {
+      "dimensions": {
+        "height": 935,
+        "width": 1710,
+        "x": 10,
+        "y": -60
+      }
+    }
+  }
+tests:
+  - No tests (auto formatted)
