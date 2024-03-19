@@ -31,7 +31,7 @@ MESSAGES = namedtuple(
 )
 COMMENT_MESSAGES = MESSAGES(
     "For the Reviewer: Trigger build request has been accepted for this contribution PR.",
-    "For the Reviewer: Successfully created a pipeline in Gitlab with url: {url}",
+    "For the Reviewer: Successfully created a pipeline in GitLab with url: {url}",
     "For the Reviewer: Build was not triggered for this PR since a current pipeline already running.",
 )
 
@@ -157,7 +157,7 @@ def main():
         "Authorization": f"Bearer {args.gitlab_api_token}",
     }
 
-    response = get_contribution_prs(args.github_token)
+    response = get_contribution_prs(github_headers)
 
     if items := response.get("items"):
         pr_numbers: list[str] = []
