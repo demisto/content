@@ -1,0 +1,351 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: Binalyze Air
+  version: -1
+configuration:
+- display: Server URL (e.g., https://<host:port>)
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: ''
+  displaypassword: API Key
+  hiddenusername: true
+  name: credentials
+  required: true
+  section: Connect
+  type: 9
+description: Modernize Digital Forensics and Incident Response with Binalyze.Automate evidence and image acquisition and assigning triage  rule tasks. Isolate, reboot, shutdown,  retrieve logs, update version of your assets.
+display: Binalyze Air
+name: Binalyze Air
+script:
+  commands:
+  - arguments:
+    - defaultValue: '0'
+      description: The ID of the organization that you want to retrieve assets from.
+      name: organizationid
+      required: true
+    - description: You may filter your search based on the string that you have provide in this argument, for instance you may provide device-name, ip address, tag, os type as an input to filter your results.
+      name: searchterm
+    description: Get Assets from Binalyze, if no filter is provided all assets are returned.
+    name: binalyze-get-assets
+  - arguments: []
+    description: Get Drone Analyzers from Binlayze Platform.
+    name: binalyze-get-drone-analyzers
+  - arguments:
+    - defaultValue: '0'
+      description: Organization id to look for tasks in Binalyze AIR.
+      name: organizationid
+      required: true
+    description: Get tasks from the specified organization.
+    name: binalyze-get-tasks
+  - arguments:
+    - defaultValue: '0'
+      description: Organization id to look for acquisition profiles in Binalyze AIR.
+      name: organizationid
+      required: true
+    description: Get Acquisition profiles in the specified organization.
+    name: binalyze-get-acquisition-profiles
+  - arguments:
+    - description: IP address that you want to start acquisiton via webhook.
+      name: ipaddress
+    - description: the name of the webhook should not contain any space. Spaces should be replaced with '-' character. Example Webhook 1 should be written as Example-webook-1.
+      name: webhookname
+      required: true
+    - description: Token value for webhook authentication.
+      name: webhooktoken
+      required: true
+    description: You can use webhook to start acquisition by  specifying ip address of the client that you acquire and name of the webhook, the name of the webooh and the token is required as an input.
+    name: binalyze-start-acquisition-webhook
+  - arguments:
+    - description: The case id on Binalyze AIR.
+      name: caseId
+    - auto: PREDEFINED
+      description: Valid values are True,False.
+      name: mitreattackenabled
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+    - auto: PREDEFINED
+      defaultValue: managed
+      description: The managed status of the asset on Binalyze AIR.
+      name: managedstatus
+      predefined:
+      - managed
+      - unmanaged
+      - off-network
+    - description: Fill this section empty if you do not want to filter results based on an ip address.
+      name: ipaddress
+    - description: Name filter parameter while assigning triage task on Binalyze platform.
+      name: Name
+    - description: Search Filter for Triage Task, this seciton is optional.
+      name: SearchTerm
+    - auto: PREDEFINED
+      defaultValue: unisolated
+      description: Valid values are isolating,isolated,unisolating,unisolated.
+      name: isolationstatus
+      predefined:
+      - isolating
+      - isolated
+      - unsolating
+      - unisolated
+      required: true
+    - description: Rule ids for Triage Rules that are on the Binalyze Platform. Specified rules will carry out the triage task on the defined hosts based on this parameter.
+      name: triageruleids
+    - auto: PREDEFINED
+      defaultValue: windows
+      description: Valid values are windows,linux,darwin.
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - darwin
+    - description: You may filter the search based on a tag, if no filter applied all tags will be contained in the search.
+      name: tags
+    - description: If no endpoint id is provided all endpoints will be included in the assets.
+      name: includedendpointids
+    - default: true
+      defaultValue: '0'
+      description: Id of the organization that you want to assign the triage task on Binalyze Platform.
+      name: organizationsIds
+      required: true
+    description: Assign a triage task to an asset/all assets. You can use input arguments to filter your triage assignees.
+    name: binalyze-assign-triage-task-by-filter
+  - arguments:
+    - default: true
+      defaultValue: '0'
+      name: organizationid
+      required: true
+    description: Get Users from Binalyze AIR platform on the specified organization.
+    name: binalyze-get-users
+  - arguments:
+    - defaultValue: '0'
+      description: The organization id that you want to create the case in.
+      name: organizationid
+      required: true
+    - description: The Name of the Case that you want to create on Binalyze Platform.
+      name: casename
+      required: true
+    - defaultValue: OwOEWPR7rrf1eI7SbKGYtBIC
+      description: Case creator user's owner id, you may get the owner id's by executing get users command.
+      name: owneruserid
+      required: true
+    description: Create Case on the Binalyze Platfrom based on the specified organization.
+    name: binalyze-create-case
+  - arguments:
+    - default: true
+      defaultValue: '0'
+      description: The id field for an organization is required that you want to get the cases from.
+      name: organizationid
+      required: true
+    description: Get Cases from Binalyze Platform based on the specified organization id.
+    name: binalyze-get-cases
+  - arguments:
+    - description: Search Term to look for in Triage Rules in Binalyze Platform. If this field is empty no filter will be applied and all triage rules will be returned.
+      name: searchterm
+    - defaultValue: '0'
+      description: Organization ID defined on the Binalyze AIR Platform.
+      name: organizationid
+      required: true
+    description: Get triage rules from Binalyze AIR, you may filter the results based on your search.
+    name: binalyze-get-triage-rules
+  - arguments:
+    - description: Case ID in Binalyze AIR.
+      name: caseId
+    - defaultValue: full
+      description: Binalyze Acquisition Profile ID.
+      name: acquisitionProfileID
+      required: true
+    - description: filter search for the acquisition profiles.
+      name: searchterm
+    - defaultValue: 'True'
+      description: Valid values are True or False.
+      name: droneconfig_autopilot
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'True'
+      description: Default value is True.
+      name: droneconfig_enabled
+      predefined:
+      - 'True'
+      - 'False'
+    - description: Some analyzer examples are "bha",       "wsa",       "aa",       "ara".
+      name: droneconfig_analyzers
+    - description: Keywords for drone configuration parameters, an optional parameter.
+      name: droneconfig_keywords
+    - auto: PREDEFINED
+      defaultValue: 'True'
+      description: Compression of the Acquistion File.
+      name: compression
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      defaultValue: managed
+      description: Valid values are managed,unmanaged,off-network.
+      name: managedStatus
+      predefined:
+      - managed
+      - unmanaged
+      - off-network
+    - auto: PREDEFINED
+      defaultValue: unisolated
+      description: Valid values are isolating,isolated,unisolating,unisolated.
+      name: isolationStatus
+      predefined:
+      - isolating
+      - isolated
+      - unisolating
+      - unisolated
+    - auto: PREDEFINED
+      defaultValue: windows
+      description: Valid values are windows,linux,darwin.
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - darwin
+    - description: Fill empty if this field if you do not want to filter your search for acquisition profile.
+      name: ipAddress
+    - defaultValue: '0'
+      description: OrganizationID parameter, default is 0. Define this parameter according which organizations you would like to assign the evidence acquisition task.
+      name: organizationIds
+      required: true
+    - description: Name of the Acquisition Profile on Binalyze Platform.
+      name: name
+    - defaultValue: '25'
+      description: Task configuration to lmit optimal CPU usage while acquisition.
+      name: cpulimit
+      required: true
+    - description: If no endpoint id is provided all endpoints will be included in the assets.
+      name: includedendpointids
+    - description: You may filter the search based on a tag, if no filter applied all tags will be contained in the search.
+      name: tags
+    description: Assign evidence acquisition task to an asset under the specified organization on Binalyze AIR.
+    name: binalyze-assign-evidence-acquisition
+  - arguments:
+    - description: Device Name of the Asset.
+      name: name
+    - description: If you do not specify any IP address, all ip addresses will be included in the specified organization for the reboot task.
+      name: ipAddress
+    - description: Search term for assets, if not search term provided all asset results will be returned.
+      name: searchterm
+    - defaultValue: '0'
+      description: OrganizationID parameter, default is 0. Define this parameter according which organizations you would like to assign the acquisition task.
+      name: organizationIds
+      required: true
+    description: Assign shutdown task to an asset on Binalyze AIR.
+    name: binalyze-assign-shutdown-task
+  - arguments:
+    - description: Search term for assets, if not search term provided all asset results will be returned.
+      name: searchterm
+    - description: If you do not specify any IP address, all ip addresses will be included in the specified organization for the reboot task.
+      name: ipAddress
+    - defaultValue: '0'
+      description: OrganizationID parameter, default is 0. Define this parameter according which organizations you would like to assign the acquisition task.
+      name: organizationIds
+      required: true
+    - description: Device Name of the Asset.
+      name: name
+    description: Assign isolation task to an asset on Binalyze AIR.
+    name: binalyze-assign-isolation-task
+  - arguments:
+    - description: Search term for assets, if not search term provided all asset results will be returned.
+      name: searchterm
+    - description: If you do not specify any IP address, all ip addresses will be included in the specified organization for the reboot task.
+      name: ipAddress
+    - default: true
+      defaultValue: '0'
+      description: OrganizationID parameter, default is 0. Define this parameter according which organizations you would like to assign the log retrieval task.
+      name: organizationIds
+      required: true
+    - description: Device Name of the Asset.
+      name: name
+    - description: Tags attached to the assets on Binalyze AIR platform.
+      name: tags
+    description: Retrieve Logs from an asset on Binalyze AIR.
+    name: binalyze-assign-log-retrieval-task
+  - arguments:
+    - description: Search term for assets, if no search term provided all asset results will be returned.
+      name: searchterm
+    - description: If you do not specify any IP address, all ip addresses will be included in the specified organization for the reboot task.
+      name: ipAddress
+    - defaultValue: '0'
+      description: OrganizationID parameter, default is 0. Define this parameter according which organizations you would like to assign the acquisition task.
+      name: organizationIds
+      required: true
+    - description: Device Name of the Asset.
+      name: name
+    - description: Tags attached to the assets on Binalyze AIR platform.
+      name: tags
+    description: Update the version of your assets on your Binalyze AIR Platform.
+    name: binalyze-assign-version-update-task
+  - arguments:
+    - description: Search term for assets, if not search term provided all asset results will be returned.
+      name: searchterm
+    - description: If you do not specify any IP address, all ip addresses will be included in the specified organization for the reboot task.
+      name: ipAddress
+    - defaultValue: '0'
+      description: OrganizationID parameter, default is 0. Define this parameter according which organizations you would like to assign the acquisition task.
+      name: organizationIds
+      required: true
+    - description: Device Name of the Asset.
+      name: name
+    - description: Tags attached to the assets on Binalyze AIR platform.
+      name: tags
+    description: Assign reboot task to an asset on Binalyze AIR platform.
+    name: binalyze-assign-reboot-task
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'True'
+      description: Compression of the Image File.
+      name: compression
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+    - description: Device Name of the asset.
+      name: name
+    - description: IP address of the asset on Binalyze Platform.
+      name: ipAddress
+    - defaultValue: '0'
+      description: OrganizationID parameter, default is 0. Define this parameter according which organizations you would like to assign the acquisition task.
+      name: organizationid
+      required: true
+    - auto: PREDEFINED
+      defaultValue: windows
+      description: Valid values are windows,linux,darwin.
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - darwin
+    - description: You may filter the search based on a tag, if no filter applied all tags will be contained in the search.
+      name: tags
+    - default: true
+      description: The endpoint ID that you want take the image of on Binalyze AIR Platform.
+      name: EndpointId
+      required: true
+    - description: Volume to take Image from the endpoint.
+      name: EndpointVolume
+      required: true
+    - description: The repository ID of the repository to save disk image.
+      name: RepositoryID
+      required: true
+    - description: The repository path to save the disk image.
+      name: RepositoryPath
+      required: true
+    - description: Case ID on the Binalyze AIR.
+      name: caseid
+      required: true
+    description: Assign image acquisition task to an assets on Binalyze AIR platform.
+    name: binalyze-assign-image-acquisition-task
+  dockerimage: demisto/python3:3.10.13.89873
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

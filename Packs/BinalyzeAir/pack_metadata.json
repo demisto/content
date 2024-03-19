@@ -1,0 +1,21 @@
+{
+    "name": "Binalyze Air",
+    "description": "Modernize Digital Forensics and Incident Response with Binalyze.Automate evidence and image acquisition and assigning triage  rule tasks. Isolate, reboot, shutdown,  retrieve logs, update version of your assets.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Asim Sarp Kurt",
+    "url": "",
+    "email": "",
+    "created": "2024-03-19T14:54:13Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "asimsarpkurt"
+    ]
+}
