@@ -666,7 +666,8 @@ xsiam_server_ga:
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
   timeout: 12 hours
   variables:
-    CLOUD_MACHINES_TYPE: "cleanup" #change to my type
+    CLOUD_MACHINES_TYPE: "build"
+    #CLOUD_MACHINES_TYPE: "cleanup" #change to my type
     CLEAN_MACHINE_NEEDED: "true"
     CLOUD_MACHINES_COUNT: 1
     INSTANCE_ROLE: "XSIAM"
