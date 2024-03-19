@@ -19,7 +19,6 @@ DEFAULT_AUDIT_EVENTS_MAX_FETCH = 100000
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 MAX_FETCH_AUDIT_LOGS = 100000
 MAX_AUDIT_LOGS_PAGE_SIZE = 10000
 
@@ -27,19 +26,23 @@ MAX_AUDIT_LOGS_PAGE_SIZE = 10000
 MAX_FETCH_FILE_EVENTS = 50000
 MAX_FILE_EVENTS_PAGE_SIZE = 10000
 
+
+VENDOR = "code42"
+PRODUCT = "code42"
+
 ''' CLIENT CLASS '''
 
 
 class Client:
 
-    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, **kwargs):
+    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool):
         self.client_id = client_id
         self.client_secret = client_secret
         self.code42_client = incydr.Client(base_url, api_client_id=client_id, api_client_secret=client_secret)
         self.code42_client.session.verify = verify
 
     def get_audit_logs(
-        self, start_time: datetime | str | timedelta, end_time: datetime | timedelta | str | None = None, limit: int = MAX_FETCH_AUDIT_LOGS, page_size: int = MAX_AUDIT_LOGS_PAGE_SIZE
+        self, start_time: datetime | str, end_time: datetime | timedelta | str | None = None, limit: int = MAX_FETCH_AUDIT_LOGS, page_size: int = MAX_AUDIT_LOGS_PAGE_SIZE
     ) -> List[Dict]:
         """
         Get audit logs
@@ -107,8 +110,13 @@ class Client:
 
 def test_module(client: Client) -> str:
     client.get_file_events(timedelta(minutes=1), page_size=1)
-    client.get_audit_logs(timedelta(minutes=1), page_size=1)
+    client.get_audit_logs(datetime.now() - timedelta(minutes=1), page_size=1)
     return "ok"
+
+
+def fetch_events(client: Client, last_run: Dict, max_fetch_file_events: int, max_fetch_audit_events: int) -> List[Dict[str, Any], Dict[str, Any]]:
+    pass
+
 
 
 def get_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -173,9 +181,13 @@ def main() -> None:
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'fetch-events':
-            events, last_run = fetch_events(client, first_fetch=max_fetch_audit_events, last_run=demisto.getLastRun(), max_fetch=max_fetch_file_events)
+            events, last_run = fetch_events(
+                client,
+                last_run=demisto.getLastRun(),
+                max_fetch_file_events=max_fetch_file_events,
+                max_fetch_audit_events=max_fetch_audit_events
+            )
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-            demisto.debug(f'Successfully sent event {[event.get("id") for event in events]} IDs to XSIAM')
             demisto.setLastRun(last_run)
         elif command == "code42-get-events":
             return_results(get_events_command(client, demisto.args()))
