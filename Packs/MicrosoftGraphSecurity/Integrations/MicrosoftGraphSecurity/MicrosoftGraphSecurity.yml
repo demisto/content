@@ -2043,7 +2043,7 @@ script:
       description: Advanced hunting query.
       required: true
     - name: limit
-      description: Number of entries.  Enter -1 for unlimited query.
+      description: Number of entries.  Enter -1 for unlimited query, In case a limit also appears in the question, priority will be given to the query.
       defaultValue: '50'
     - name: timeout
       description: The time limit in seconds for the http request to run.
@@ -2098,7 +2098,7 @@ script:
       description: The specification for the incident.
     - name: odata
       description: Filter incidents using 'odata' query.
-    description: Get a list of incident objects that Microsoft 365 Defender created to track attacks in an organization.
+    description: Get a list of incident objects that Microsoft 365 Defender created to track attacks in an organization. If you want a specific incident, just enter incident_id.
     name: msg-list-security-incident
     outputs:
     - contextPath: MsGraph.Incident.assignedTo

@@ -341,17 +341,23 @@ class MsGraphClient:
 
     def get_incidents_request(self, incident_id: Optional[int], limit: int, timeout: int, args_for_filter: dict) -> dict:
         """
-        GET request to get single incident.
+        Perform a GET request to retrieve incidents.
+
         Args:
-            incident_id (int): incident's id
-            timeout (int): waiting time for command execution
+            incident_id (int): The ID of the incident to retrieve. If None, retrieves a list of incidents.
+            limit (int): The maximum number of incidents to retrieve.
+            timeout (int): The timeout for the request in seconds.
+            args_for_filter (dict): A dictionary containing filters for the request:
+                - status (str): Filter by status.
+                - assigned_to (str): Filter by assigned user.
+                - severity (str): Filter by severity.
+                - classification (str): Filter by classification.
+                - odata (str): Filter by odata.
 
-
-       Returns( Dict): request results as dict:
-                    { '@odata.context',
-                      'value': updated incident,
-                    }
-
+        Returns:
+            dict: The request results as a dictionary, containing:
+                - '@odata.context'
+                - 'value': The updated incident(s).
         """
 
         if incident_id:
@@ -745,11 +751,15 @@ def ediscovery_source_command_results(raw_case_list: list, source_type, raw_res=
 
 def query_set_limit(query: str, limit: int) -> str:
     """
-    Add limit to given query. If the query has limit, changes it.
+    Set the limit of a query if it doesn't already have a limit set.
+
     Args:
-        query: the original query
-        limit: new limit value, if the value is negative return the original query.
-    Returns: query with limit parameters
+        query (str): The query string.
+        limit (int): The limit to set.
+
+    Returns:
+        str: The modified query string with the limit set,
+        or the original query if it already had a limit set or if the limit is less than 0.
     """
     if limit < 0:
         return query
@@ -1985,6 +1995,8 @@ def main():
             return_results(advanced_hunting_command(client, args))
         elif demisto.command() == 'msg-list-security-incident':
             return_results(get_list_security_incident_command(client, args))
+        elif demisto.command() == 'msg-update-security-incident':
+            return_results(update_incident_command(client, args))
 
         else:
             if command not in commands:
