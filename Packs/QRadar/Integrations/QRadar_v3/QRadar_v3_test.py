@@ -234,7 +234,7 @@ def test_add_iso_entries_to_dict():
      - All 'usecs' keys in the dict are replaced with 'iso time' entries with correct iso values.
      - The dict is cloned and its values are not changed, and a new one is created
     """
-    tested_dict  = {usec_entry: 1600000000000 for usec_entry in USECS_ENTRIES}
+    tested_dict = {usec_entry: 1600000000000 for usec_entry in USECS_ENTRIES}
     tested_dict['host_name'] = 'QRadar Host'
     output_dict = add_iso_entries_to_dict([tested_dict])[0]
     assert tested_dict['host_name'] == 'QRadar Host'
@@ -569,8 +569,8 @@ def test_enrich_offense_with_events(mocker, offense: dict, fetch_mode: FetchMode
         events = poll_events[:min(events_limit, len(poll_events))] if poll_events else []
         num_events = sum(event.get('eventcount', 1) for event in poll_events)
         expected_offense: dict[str, list | int] = dict(offense, events=events,
-                                events_fetched=num_events,
-                                )
+                                                       events_fetched=num_events,
+                                                       )
     else:
         expected_offense = dict(offense,
                                 events_fetched=num_events,
@@ -883,16 +883,16 @@ def test_commands(mocker, command_func: Callable[[Client, dict], CommandResults]
     )
     mocker.patch.object(client, command_name, return_value=response)
     if command_func == qradar_search_create_command:
-        results = command_func(client, args)
+        results = command_func(client, {}, args)
     elif command_func == qradar_reference_set_value_upsert_command:
-        results = command_func(client, args)
+        results = command_func(args, client, {"api_version": "14"})
     elif command_func == qradar_indicators_upload_command:
         mocker.patch.object(IndicatorsSearcher, "search_indicators_by_version", return_value={
             "iocs": [{"value": "test1", "indicator_type": "ip"},
                      {"value": "test2", "indicator_type": "ip"},
                      {"value": "test3", "indicator_type": "ip"}]})
         mocker.patch.object(client, "reference_sets_list")
-        results = command_func(client, args)
+        results = command_func(args, client, {"api_version": "14"})
 
     else:
         results = command_func(client, args)
