@@ -807,7 +807,7 @@ script:
     description: Delete a comment from an issue.
     name: jira-issue-delete-comment
   - arguments:
-    - description: The attachment ID.
+    - description: The attachment ID. In order to see the attachment ID please use the jira-get-issue command.
       name: attachment_id
       required: true
     description: Delete an attachment from an issue.
