@@ -167,7 +167,7 @@ def main():
                     github_headers, pr, COMMENT_MESSAGES.build_request_accepted
                 )
                 check_running_pipeline(gitlab_headers, pr)
-                trigger_build_for_contribution_pr(args.gitlab_api_token, pr)
+                trigger_build_for_contribution_pr(github_headers, pr)
                 delete_label_from_contribution_pr(github_headers, pr)
                 post_comment_to_contribution_pr(
                     github_headers, pr, COMMENT_MESSAGES.build_triggered
