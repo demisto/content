@@ -779,7 +779,6 @@ class BranchTestCollector(TestCollector):
             marketplace: MarketplaceVersions,
             service_account: str | None,
             private_pack_path: str | None = None,
-            graph: bool = True,
     ):
         """
 
@@ -788,7 +787,7 @@ class BranchTestCollector(TestCollector):
         :param service_account: used for comparing with the latest upload bucket
         :param private_pack_path: path to a pack, only used for content-private.
         """
-        super().__init__(marketplace, graph)
+        super().__init__(marketplace)
         logger.debug(f'Created BranchTestCollector for {branch_name}')
         self.branch_name = branch_name
         self.service_account = service_account
@@ -1217,9 +1216,8 @@ class SpecificPacksTestCollector(TestCollector):
             self,
             packs_to_upload: str,
             marketplace: MarketplaceVersions,
-            graph: bool = True,
     ):
-        super().__init__(marketplace, graph=graph)
+        super().__init__(marketplace)
         self.packs_to_upload = packs_to_upload
 
     def _collect(self) -> CollectionResult | None:
@@ -1268,8 +1266,8 @@ class UploadAllCollector(TestCollector):
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, graph: bool = True):
-        super().__init__(MarketplaceVersions.MarketplaceV2, graph=graph)
+    def __init__(self):
+        super().__init__(MarketplaceVersions.MarketplaceV2)
 
     def _collect_packs_of_content_matching_marketplace_value(self) -> CollectionResult | None:
         """
@@ -1364,8 +1362,8 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
 
 class XSOARNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, marketplace: MarketplaceVersions = MarketplaceVersions.XSOAR, graph: bool = True):
-        super().__init__(marketplace, graph=graph)
+    def __init__(self, marketplace: MarketplaceVersions = MarketplaceVersions.XSOAR):
+        super().__init__(marketplace)
 
     def _collect(self) -> CollectionResult | None:
         return CollectionResult.union((
@@ -1470,8 +1468,8 @@ def output(result: CollectionResult | None):
 
 
 class XPANSENightlyTestCollector(NightlyTestCollector):
-    def __init__(self, graph: bool = True):
-        super().__init__(MarketplaceVersions.XPANSE, graph=graph)
+    def __init__(self):
+        super().__init__(MarketplaceVersions.XPANSE)
 
     def _collect(self) -> CollectionResult | None:
         logger.info('tests are not currently supported for XPANSE, returning nothing.')
@@ -1511,31 +1509,31 @@ if __name__ == '__main__':
     collector: TestCollector
 
     if args.changed_pack_path:
-        collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path, graph=graph)
+        collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path)
 
     elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
         if args.override_all_packs:
-            collector = UploadAllCollector(marketplace, graph)
+            collector = UploadAllCollector(marketplace)
         elif pack_to_upload:
-            collector = SpecificPacksTestCollector(pack_to_upload.split(','), marketplace, graph)
+            collector = SpecificPacksTestCollector(pack_to_upload.split(','), marketplace)
         else:
-            collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
+            collector = UploadBranchCollector(branch_name, marketplace, service_account)
 
     elif sdk_nightly:
-        collector = SDKNightlyTestCollector(marketplace=marketplace, graph=graph)
+        collector = SDKNightlyTestCollector(marketplace=marketplace)
 
     elif nightly:
         match marketplace:
             case MarketplaceVersions.XSOAR:
-                collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
+                collector = XSOARNightlyTestCollector(marketplace=marketplace)
             case MarketplaceVersions.XSOAR_SAAS:
-                collector = XsoarSaasE2ETestCollector(marketplace=marketplace, graph=graph)
+                collector = XsoarSaasE2ETestCollector(marketplace=marketplace)
             case MarketplaceVersions.MarketplaceV2:
-                collector = XSIAMNightlyTestCollector(graph=graph)
+                collector = XSIAMNightlyTestCollector()
             case MarketplaceVersions.XPANSE:
-                collector = XPANSENightlyTestCollector(graph=graph)
+                collector = XPANSENightlyTestCollector()
     else:
-        collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
+        collector = BranchTestCollector(branch_name, marketplace, service_account)
 
     collected = collector.collect()
     output(collected)  # logs and writes to output files
