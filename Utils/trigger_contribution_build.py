@@ -30,8 +30,8 @@ MESSAGES = namedtuple(
     "MESSAGES",
     ["build_request_accepted", "build_triggered", "cant_trigger_build"],
 )
-PR_COMMENT_MESSAGES = MESSAGES(
-    "For the Reviewer: Trigger build request has been accepted and will be handled in the next polling.",
+COMMENT_MESSAGES = MESSAGES(
+    "For the Reviewer: Trigger build request has been accepted for this contribution PR.",
     "For the Reviewer: Successfully created a pipeline in Gitlab with url: {url}",
     "For the Reviewer: Build was not triggered for this PR since a current pipeline already running.",
 )
@@ -69,7 +69,13 @@ def get_contribution_prs(github_request_headers: dict[str, str]):
         sys.exit(1)
 
 
-def delete_label_from_contribution_pr(github_request_headers: dict[str, str], pr: dict):
+def delete_label_from_contribution_pr(github_headers: dict[str, str], pr: dict) -> None:
+    """Deletes the "ready-for-instance-test" label from a contribution PR.
+
+    Args:
+        github_headers (dict[str, str]): GitHub API request headers.
+        pr (dict): Dictionary representing a contribution PR.
+    """
     issue_number = str(pr.get("number"))
 
     response = requests.delete(
@@ -79,7 +85,7 @@ def delete_label_from_contribution_pr(github_request_headers: dict[str, str], pr
             issue_number=issue_number,
             label_name=GITHUB_TRIGGER_BUILD_LABEL,
         ),
-        headers=github_request_headers,
+        headers=github_headers,
     )
     title = pr.get("title")
     if response.status_code == 200:
@@ -93,22 +99,36 @@ def delete_label_from_contribution_pr(github_request_headers: dict[str, str], pr
 
 
 def post_comment_to_contribution_pr(
-    github_request_headers: dict[str, str], pr: dict, message: str
-):
-    issue_number = str(pr.get("number"))
+    github_headers: dict[str, str], pr: dict, message: str
+) -> None:
+    """Posts a comment on a contribution PR based on a given message.
 
-    response = requests.post(
+    Args:
+        github_headers (dict[str, str]): _description_
+        pr (dict): _description_
+        message (str): _description_
+    """
+    # issue_number = str(pr.get("number"))
+    issue_number = "33308"
+
+    requests.post(
         GITHUB_POST_COMMENT_ENDPOINT.format(
             owner=OWNER,
             repo=REPO,
             issue_number=issue_number,
             label_name=GITHUB_TRIGGER_BUILD_LABEL,
+            body=message,
         ),
-        headers=github_request_headers,
+        # add body to request
+        headers=github_headers,
     )
 
 
-def trigger_build_for_contribution_pr(gitlab_api_token: str, pr: dict):
+def trigger_build_for_contribution_pr(gitlab_headers: dict[str, str], pr: dict):
+    pass
+
+
+def check_running_pipeline(gitlab_headers: dict[str, str], pr: dict):
     pass
 
 
@@ -134,28 +154,27 @@ def main():
         "Authorization": f"Bearer {args.github_token}",
     }
 
-    gitlab_headers = {}
+    gitlab_headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {args.gitlab_api_token}",
+    }
 
     if items := response.get("items"):
         pr_numbers: list[str] = []
         for pr in items:
-            if is_pipeline_already_running():
-                post_comment_to_contribution_pr(
-                    github_headers, pr, PR_COMMENT_MESSAGES.cant_trigger_build
-                )
-            else:
-                post_comment_to_contribution_pr(
-                    github_headers, pr, PR_COMMENT_MESSAGES.build_request_accepted
-                )
-                trigger_build_for_contribution_pr(args.gitlab_api_token, pr)
-                delete_label_from_contribution_pr(github_headers, pr)
-                post_comment_to_contribution_pr(
-                    github_headers, pr, PR_COMMENT_MESSAGES.build_triggered
-                )
-            pr_numbers.append(str(pr.get("number")))
+            post_comment_to_contribution_pr(
+                github_headers, pr, COMMENT_MESSAGES.build_request_accepted
+            )
+            # check_running_pipeline(gitlab_headers, pr)
+            # trigger_build_for_contribution_pr(args.gitlab_api_token, pr)
+            # delete_label_from_contribution_pr(github_headers, pr)
+            # post_comment_to_contribution_pr(
+            #     github_headers, pr, COMMENT_MESSAGES.build_triggered
+            # )
+            # pr_numbers.append(str(pr.get("number")))
         print(f"Build triggered for the following contribution PRs: {pr_numbers}")
     else:
-        print("No Contribution PRs builds were trigger.")
+        print("No contribution PRs builds were trigger.")
         return
 
 
