@@ -708,8 +708,8 @@ def main():
             )
 
             if threaded_messages:
-                data = response.data  # type: ignore[assignment]
-                thread_ts = data['ts']
+                data: dict = response.data  # type: ignore[assignment]
+                thread_ts: str = data['ts']
                 for slack_msg in threaded_messages:
                     slack_msg = [slack_msg] if not isinstance(slack_msg, list) else slack_msg
                     slack_client.chat_postMessage(
