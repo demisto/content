@@ -326,7 +326,7 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
     elif upload_status == 'UPLOAD_INITIATED':
         results = CommandResults(readable_output="Polling job failed.")
         return PollResult(
-            response=None,
+            response=results,
             continue_to_poll=True,
             args_for_next_run={'report_id':report_id},
             partial_result=CommandResults(
@@ -378,13 +378,11 @@ def main() -> None:
           
         # Generate an access token for pan-OS/panorama
         client.generate_access_token_request()
-        
-        # generate_report_command(client, args)
-                   
+                           
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'pan-aiops-bpa-report-generate':
-            return_results(generate_report_command(client, args))
+            generate_report_command(client, args)
         elif command == 'pan-aiops-polling-upload-report':
             return_results(polling_until_upload_report_command(args, client))
         else:
