@@ -16,10 +16,10 @@ function parseValue(value) {
             Date(value);
             return value;
         } catch(e) {
-            // value type should be supported for Cut
+            // unexpected value - will throw the error below
         }
     }
-    // value type should be supported for Cut (either a boolean or a dict)
+    // value type isn't supported for Cut (either a boolean or a dict)
     throw "Unsupported value for Cut: " + value;
 }
 
