@@ -31,7 +31,7 @@ alter event_id = arrayindex(regextract(_raw_log, "log_id=(\d{10})" ), 0),
 
 // extract user type
 |alter tmp_user_type = arrayindex(regextract(_raw_log, "user_type=\"(?i)(super|restrict)" ), 0)
-|alter auth_privilege_level = if(tmp_user_type = "super", "XDM_CONST.PRIVILEGE_LEVEL_ADMIN", tmp_user_type = "restrict", "XDM_CONST.PRIVILEGE_LEVEL_USER")
+|alter auth_privilege_level = if(tmp_user_type = "super", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, tmp_user_type = "restrict", XDM_CONST.PRIVILEGE_LEVEL_USER)
 
 |alter
     xdm.event.id = event_id,
