@@ -304,7 +304,6 @@ class CollectionResult:
 class TestCollector(ABC):
     def __init__(self, marketplace: MarketplaceVersions):
         self.marketplace = marketplace
-        self.id_set: Graph
         self.id_set = Graph(marketplace)
         self.conf = TestConf(PATHS.conf_path, marketplace)
         self.trigger_sanity_tests = False
