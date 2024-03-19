@@ -53,7 +53,7 @@
         "is_array": false
       },
       "Type": {
-        "type": "string",
+        "type": "int",
         "is_array": false
       },
       "Value": {
@@ -62,4 +62,3 @@
     }
   }
 }
-  
