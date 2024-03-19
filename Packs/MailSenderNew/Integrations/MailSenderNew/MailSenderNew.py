@@ -63,16 +63,13 @@ def handle_file(msg, filename, maintype, subtype, cid, data):
     """
     Add the attachment to the message and add the relevant header
     """
-    if maintype == 'text':
+    if maintype in ('text', 'message') :
         # UTF-8 is a pretty safe bet
         att = MIMEText(data, subtype, UTF_8)  # type: MIMEBase
     elif maintype == 'image':
         att = MIMEImage(data, subtype)
     elif maintype == 'audio':
         att = MIMEAudio(data, subtype)
-    elif maintype == 'message':
-        att = MIMEBase(maintype, subtype)
-        att.set_payload(data)
     else:
         att = MIMEBase(maintype, subtype)
         att.set_payload(data)
