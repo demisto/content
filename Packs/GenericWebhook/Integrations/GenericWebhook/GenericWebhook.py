@@ -18,7 +18,6 @@ from fastapi.security.api_key import APIKey, APIKeyHeader
 from pydantic import BaseModel
 from uvicorn.logging import AccessFormatter
 
-from CommonServerUserPython import *
 
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
 
@@ -36,11 +35,11 @@ async def parse_incidents(request: Request) -> list[dict]:
     json_body = json.loads(body)
     incidents = json_body if isinstance(json_body, list) else [json_body]
     demisto.debug(f'received create incidents request of length {len(incidents)}')
-    for incindent in incidents:
-        if raw_json := incindent.get('raw_json'):
+    for incident in incidents:
+        if raw_json := incident.get('raw_json'):
             if isinstance(raw_json, str):
                 demisto.debug('raw_json is string, decoding')
-                incindent['raw_json'] = json.loads(raw_json)
+                incident['raw_json'] = json.loads(raw_json)
     return incidents
 
 
