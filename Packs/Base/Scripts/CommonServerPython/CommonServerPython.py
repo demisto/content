@@ -9271,6 +9271,32 @@ if 'requests' in sys.modules:
             except AttributeError:
                 pass
 
+def generic_http_request(method,
+                         server_url,
+                         timeout=10,
+                         verify=True,
+                         proxy=False,
+                         client_headers=None,
+                         headers=None,
+                         url_suffix=None,
+                         data=None,
+                         ok_codes=None,
+                         auth=None,
+                         error_handler=None,
+                         files=None,
+                         params=None,
+                         retries=0
+                         ):
+    client = BaseClient(base_url=server_url,
+                        verify=verify,
+                        proxy=proxy,
+                        ok_codes=ok_codes,
+                        headers=client_headers,
+                        auth=auth,
+                        timeout=timeout
+                        )
+    return client._http_request(method=method, url_suffix=url_suffix, data=data, ok_codes=ok_codes,
+                                error_handler=error_handler, headers=headers, files=files, params=params, retries=retries)
 
 def batch(iterable, batch_size=1):
     """Gets an iterable and yields slices of it.

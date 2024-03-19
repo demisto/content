@@ -1,8 +1,4 @@
-import json
-import random
-import time
 
-import requests
 import urllib3
 
 import demistomock as demisto  # noqa: F401
@@ -81,70 +77,57 @@ class AuthorizationError(DemistoException):
 """ HELPER FUNCTIONS """
 
 
-def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_wait=3):
-    if headers is None:
-        headers = DEFAULT_HEADERS
-    data = {} if data is None else data
-    url = BASE_URL + url_suffix
-    try:
-        res = requests.request(
-            method,
-            url,
-            verify=USE_SSL,
-            data=data,
-            headers=headers,
-            timeout=REQUEST_TIMEOUT,
+def error_handler(res):
+    """
+        Deals with unsuccessfull calls
+    """
+    if res.status_code in (401, 403):
+        raise AuthorizationError(res.content)
+    elif (
+        res.status_code == 400
+        and res.request.method == "PUT"
+        and "/urlCategories/" in res.request.url
+    ):
+        raise Exception(
+            "Bad request, This could be due to reaching your organizations quota."
+            " For more info about your quota usage, run the command zscaler-url-quota."
         )
-        if res.status_code not in (200, 204):
-            if (
-                res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE
-                and num_of_seconds_to_wait <= MAX_SECONDS_TO_WAIT
-            ):
-                random_num_of_seconds = random.randint(
-                    num_of_seconds_to_wait, num_of_seconds_to_wait + 3
+    else:
+        if res.status_code in ERROR_CODES_DICT:
+            raise Exception(
+                "Your request failed with the following error: {}.\nMessage: {}".format(
+                    ERROR_CODES_DICT[res.status_code], res.text
                 )
-                time.sleep(random_num_of_seconds)  # pylint: disable=sleep-exists
-                return http_request(
-                    method,
-                    url_suffix,
-                    data,
-                    headers=headers,
-                    num_of_seconds_to_wait=num_of_seconds_to_wait + 3,
-                )
-            elif res.status_code in (401, 403):
-                raise AuthorizationError(res.content)
-            elif (
-                res.status_code == 400
-                and method == "PUT"
-                and "/urlCategories/" in url_suffix
-            ):
-                raise Exception(
-                    "Bad request, This could be due to reaching your organizations quota."
-                    " For more info about your quota usage, run the command zscaler-url-quota."
-                )
-            else:
-                if res.status_code in ERROR_CODES_DICT:
-                    raise Exception(
-                        "Your request failed with the following error: {}.\nMessage: {}".format(
-                            ERROR_CODES_DICT[res.status_code], res.text
-                        )
-                    )
-                else:
-                    raise Exception(
-                        "Your request failed with the following error: {}.\nMessage: {}".format(
-                            res.status_code, res.text
-                        )
-                    )
-    except Exception as e:
-        LOG(
-            "Zscaler request failed with url={url}\tdata={data}".format(
-                url=url, data=data
             )
-        )
+        else:
+            raise Exception(
+                "Your request failed with the following error: {}.\nMessage: {}".format(
+                    res.status_code, res.text
+                )
+            )
+
+
+def http_request(method, url_suffix, data=None, headers=None):
+    try:
+        res = generic_http_request(method=method,
+                                   server_url=BASE_URL,
+                                   timeout=REQUEST_TIMEOUT,
+                                   verify=USE_SSL,
+                                   proxy=PROXY,
+                                   client_headers=DEFAULT_HEADERS,
+                                   headers=headers,
+                                   url_suffix=url_suffix,
+                                   data=data,
+                                   ok_codes=(200, 204),
+                                   error_handler=error_handler,
+                                   retries=10)
+
+
+    except Exception as e:
+        LOG(f"Zscaler request failed with url suffix={url_suffix}\tdata={data}")
         LOG(e)
         raise e
     return res
-
 
 def validate_urls(urls):
     for url in urls:

@@ -18,9 +18,7 @@ BASE_URL = 'https://haveibeenpwned.com/api/v3'
 DEFAULT_DBOT_SCORE_EMAIL = 2 if params.get('default_dbot_score_email') == 'SUSPICIOUS' else 3
 DEFAULT_DBOT_SCORE_DOMAIN = 2 if params.get('default_dbot_score_domain') == 'SUSPICIOUS' else 3
 
-
 ''' GLOBALS/PARAMS '''
-
 
 VENDOR = 'Have I Been Pwned? V2'
 SUFFIXES = {
@@ -38,48 +36,31 @@ RETRIES_END_TIME = datetime.min
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params=None, data=None):
-    while True:
-        res = requests.request(
-            method,
-            BASE_URL + url_suffix,
-            verify=USE_SSL,
-            params=params,
-            data=data,
-            headers={
-                'hibp-api-key': API_KEY,
-                'user-agent': 'DBOT-API',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        )
-
-        if res.status_code != 429:
-            # Rate limit response code
-            break
-
-        if datetime.now() > RETRIES_END_TIME:
-            return_error('Max retry time has exceeded.')
-
-        wait_regex = re.search(r'\d+', res.json()['message'])
-        if wait_regex:
-            wait_amount = wait_regex.group()
-        else:
-            demisto.error('failed extracting wait time will use default (5). Res body: {}'.format(res.text))
-            wait_amount = '5'
-        if datetime.now() + timedelta(seconds=int(wait_amount)) > RETRIES_END_TIME:
-            return_error('Max retry time has exceeded.')
-        time.sleep(int(wait_amount))
-
+def error_handler(res):
     if res.status_code == 404:
         return None
-    if not res.status_code == 200:
-        if not res.status_code == 401:
-            demisto.error(
-                'Error in API call to Pwned Integration [%d]. Full text: %s' % (res.status_code, res.text))
-        return_error('Error in API call to Pwned Integration [%d] - %s' % (res.status_code, res.reason))
-        return None
+    else:
+        demisto.error(
+            'Error in API call to Pwned Integration [%d]. Full text: %s' % (res.status_code, res.text))
+    return_error('Error in API call to Pwned Integration [%d] - %s' % (res.status_code, res.reason))
+    return None
 
+
+def http_request(method, url_suffix, params=None, data=None):
+    headers = {
+        'hibp-api-key': API_KEY,
+        'user-agent': 'DBOT-API',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+    res = generic_http_request(method=method,
+                               server_url=BASE_URL,
+                               verify=USE_SSL,
+                               client_headers=headers,
+                               url_suffix=url_suffix,
+                               data=data,
+                               params=params,
+                               error_handler=error_handler)
     return res.json()
 
 

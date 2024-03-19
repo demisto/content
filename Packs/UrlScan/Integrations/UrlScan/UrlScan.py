@@ -116,23 +116,15 @@ def http_request(client, method, url_suffix, json=None, retries=0):
 
     rate_limit_remaining = int(r.headers.get('X-Rate-Limit-Remaining', 99))
     rate_limit_reset_after = int(r.headers.get('X-Rate-Limit-Reset-After', 60))
-    limit_action = r.headers.get('X-Rate-Limit-Action', 'search')
-    limit_window = r.headers.get('X-Rate-Limit-Window', 'minute')
+
     if rate_limit_remaining < 10:
         return_warning('Your available rate limit remaining is {} and is about to be exhausted. '
                        'The rate limit will reset at {}'.format(str(rate_limit_remaining),
                                                                 r.headers.get("X-Rate-Limit-Reset")))
     if r.status_code != 200:
         if r.status_code == 429:
-            if ScheduledCommand.supports_polling():
-                return {}, ErrorTypes.QUOTA_ERROR, rate_limit_reset_after
-            if retries <= 0:
-                # Error in API call to URLScan.io [429] - Too Many Requests
-                return_error(f'You have exceeded your {limit_action} limit for this {limit_window}. The rate limit will'
-                             f' reset in {rate_limit_reset_after} seconds')
-            else:
-                time.sleep(rate_limit_reset_after)  # pylint: disable=sleep-exists
-                return http_request(method, url_suffix, json, rate_limit_reset_after, retries - 1)
+            return {}, ErrorTypes.QUOTA_ERROR, rate_limit_reset_after
+
 
         response_json = r.json()
         error_description = response_json.get('description') or response_json.get('message')
