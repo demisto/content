@@ -1706,6 +1706,7 @@ def send_alert_attachment_command(
         outputs_key_field="ID",
     )
 
+
 def compromised_domain_command(
     client: ZFClient,
     args: dict[str, Any]
@@ -1879,7 +1880,6 @@ def main():
         "zerofox-modify-alert-notes": modify_alert_notes_command,
         "zerofox-submit-threat": submit_threat_command,
         "zerofox-send-alert-attachment": send_alert_attachment_command,
-        "zerofox-get-alert-attachments": get_alert_attachments_command,
 
         # ZeroFox CTI Feed
         "zerofox-search-compromised-domain": compromised_domain_command,
