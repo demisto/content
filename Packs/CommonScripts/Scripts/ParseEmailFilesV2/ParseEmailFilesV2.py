@@ -94,10 +94,13 @@ def extract_file_info(entry_id: str) -> tuple:
         
         dt_file_info = demisto.dt(demisto.context(), f"File(val.EntryID=='{entry_id}').Info")
         file_info = dt_file_info[0] if isinstance(dt_file_info, list) else dt_file_info
+        demisto.debug(f'Context values: {dt_file_type=}, {file_type=}, {dt_file_info=}, {file_info=}')
+
         if file_info:
             file_info_lower = file_info.lower()
         
         if (file_type == 'eml' or file_type == 'txt') and ('rfc' in file_info_lower or 'ascii' in file_info_lower):
+            demisto.debug(f'{file_type=} seems wrong, changing it to {file_info=}')
             file_type = file_info
 
     except Exception as ex:
@@ -105,6 +108,7 @@ def extract_file_info(entry_id: str) -> tuple:
             "Failed to load file entry with entry id: {}. Error: {}".format(
                 entry_id, str(ex) + "\n\nTrace:\n" + traceback.format_exc()))
 
+    demisto.debug(f'extract_file_info returning {file_type=}, {file_path=}, {file_name=}')
     return file_type, file_path, file_name
 
 
