@@ -109,7 +109,6 @@ def fetch_events_command(
     for result in results:
         result["Value"] = parse(result.get("Value"))
         result['_time'] = result["ModificationTimeStamp"]
-        print(type(result.get("Value")))
     cached_audits: List[str] = last_run.get('audit_cache', [])
     updated_results, updated_cached_audits = remove_duplicated_events(results, cached_audits)
     last_run['audit_cache'] = updated_cached_audits
