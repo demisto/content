@@ -1864,6 +1864,7 @@ class Pack:
                 created_time = metadata.get(Metadata.FIRST_CREATED, '')
             elif metadata.get('created') and not metadata.get(Metadata.FIRST_CREATED):
                 metadata[Metadata.FIRST_CREATED] = metadata.get('created')
+                created_time = metadata.get(Metadata.FIRST_CREATED, '')
                 logging.debug(f"Found deprecated create date field in the {pack_name} pack, updating to firstCreated.")
             else:
                 raise Exception(f'The metadata file of the {pack_name} pack does not contain "{Metadata.FIRST_CREATED}" time')
