@@ -47,7 +47,8 @@ ALERTS_ENDPOINT = "/1.0/alerts/"
 def load_json(file: str):
     with open(file) as f:
         return json.load(f)
-    
+
+
 def fetch_alert_endpoint(alert_id: str):
     return f"/1.0/alerts/{alert_id}/"
 
