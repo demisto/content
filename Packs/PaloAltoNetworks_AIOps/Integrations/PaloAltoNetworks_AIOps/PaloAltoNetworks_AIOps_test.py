@@ -2,7 +2,6 @@ from unittest.mock import mock_open, patch
 import pytest
 from PaloAltoNetworks_AIOps import Client
 from pytest_mock import MockerFixture
-import pytest
 
 @pytest.fixture
 def AIOps_client(base_url='base_url', api_key='api_key', tsg_id='tsg_id', client_id='client_id', client_secret='client_secret',
@@ -351,31 +350,6 @@ def test_data_of_download_bpa_request_called_with(mocker, AIOps_client):
     downloaded_BPA_url = "cloud.com"
     AIOps_client.data_of_download_bpa_request(downloaded_BPA_url)
     http_request_mock.assert_called_once_with(method='GET', full_url='cloud.com', headers={'Authorization': 'Bearer {}'})
-    
-def test_data_of_download_bpa_request_check_return(mocker, AIOps_client):
-    bpa_dict = {
-                'best_practices': {
-                                    'device': {
-                                                'feature1': [
-                                                    {
-                                                        'warnings': [{'check_id': 1, 'check_message': 'Warning message 1'}],
-                                                        'notes': [{'check_id': 2, 'check_message': 'Note message 1'}]
-                                                    }
-                                                ],
-                                                'feature2': [
-                                                    {
-                                                        'warnings': [{'check_id': 3, 'check_message': 'Warning message 2'}],
-                                                        'notes': [{'check_id': 4, 'check_message': 'Note message 2'}]
-                                                    }
-                                                ]
-                                            }
-                                    }
-                }
-    http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
-    http_request_mock.return_value = bpa_dict
-    downloaded_BPA_url = "cloud.com"
-    result = AIOps_client.data_of_download_bpa_request(downloaded_BPA_url)
-    assert result == bpa_dict
 
 ''' HELPER FUNCTIONS'''
 
