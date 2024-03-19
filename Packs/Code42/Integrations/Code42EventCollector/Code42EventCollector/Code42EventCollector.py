@@ -39,7 +39,7 @@ class Client:
         self.code42_client.session.verify = verify
 
     def get_audit_logs(
-        self, start_time: datetime | str, end_time: datetime | str | None = None, limit: int = MAX_FETCH_AUDIT_LOGS, page_size: int = MAX_AUDIT_LOGS_PAGE_SIZE
+        self, start_time: datetime | str | timedelta, end_time: datetime | timedelta | str | None = None, limit: int = MAX_FETCH_AUDIT_LOGS, page_size: int = MAX_AUDIT_LOGS_PAGE_SIZE
     ) -> List[Dict]:
         """
         Get audit logs
@@ -68,7 +68,7 @@ class Client:
 
         return audit_logs
 
-    def get_file_events(self, start_time: datetime | str, end_time: datetime | str | None = None, limit: int = MAX_FETCH_FILE_EVENTS, page_size: int = MAX_FILE_EVENTS_PAGE_SIZE) -> List[Dict[str, Any]]:
+    def get_file_events(self, start_time: datetime | str | timedelta, end_time: datetime | str | timedelta | None = None, limit: int = MAX_FETCH_FILE_EVENTS, page_size: int = MAX_FILE_EVENTS_PAGE_SIZE) -> List[Dict[str, Any]]:
         """
         Get file events
 
@@ -98,26 +98,6 @@ class Client:
 
 
 
-
-
-
-
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-
-
 ''' HELPER FUNCTIONS '''
 
 # TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
@@ -126,49 +106,10 @@ class Client:
 
 
 def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
+    client.get_file_events(timedelta(minutes=1), page_size=1)
+    client.get_audit_logs(timedelta(minutes=1), page_size=1)
+    return "ok"
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
-
-
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
 ''' MAIN FUNCTION '''
