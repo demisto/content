@@ -44,7 +44,7 @@ script:
     - name: pan-aiops-bpa-report-generate
       arguments:
       - name: entry_id
-        description: Entry_id from xsoar war-room after uploading a file
+        description: Entry_id from xsoar war-room after uploading a file - should be a config file in xml format
       - name: requester_email
         required: true
         description: Enter the requester email

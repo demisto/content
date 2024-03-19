@@ -1,3 +1,4 @@
+from unittest.mock import mock_open, patch
 import pytest
 from PaloAltoNetworks_AIOps import Client
 from pytest_mock import MockerFixture
@@ -11,7 +12,66 @@ def AIOps_client(base_url='base_url', api_key='api_key', tsg_id='tsg_id', client
 
 
 ''' COMMAND FUNCTIONS TESTS '''
+def test_polling_until_upload_report_command_upload_initiated_status(mocker, AIOps_client):
+    from PaloAltoNetworks_AIOps import polling_until_upload_report_command
+    check_upload_status_request_mock = mocker.patch.object(AIOps_client, 'check_upload_status_request')
+    check_upload_status_request_mock.return_value = 'UPLOAD_INITIATED'
+    args = {'report_id': '123456789'}
+    result = polling_until_upload_report_command(args, AIOps_client)
+    assert result.scheduled_command
+    assert result.readable_output == 'The report with id 123456789 was sent successfully. Download in progress...'
 
+def test_polling_until_upload_report_command_completed_with_error(mocker, AIOps_client):
+    from PaloAltoNetworks_AIOps import polling_until_upload_report_command
+    check_upload_status_request_mock = mocker.patch.object(AIOps_client, 'check_upload_status_request')
+    check_upload_status_request_mock.return_value = 'COMPLETED_WITH_ERROR'
+    args = {'report_id': '123456789'}
+    result = polling_until_upload_report_command(args, AIOps_client)
+    assert not result.scheduled_command
+    assert result.readable_output == 'The report with id 123456789 could not be uploaded- finished with an error.'
+
+def test_polling_until_upload_report_command_config_parsed(mocker, AIOps_client):
+    from PaloAltoNetworks_AIOps import polling_until_upload_report_command
+    check_upload_status_request_mock = mocker.patch.object(AIOps_client, 'check_upload_status_request')
+    check_upload_status_request_mock.return_value = 'CONFIG_PARSED'
+    args = {'report_id': '123456789'}
+    result = polling_until_upload_report_command(args, AIOps_client)
+    assert result.scheduled_command
+    
+def test_polling_until_upload_report_command_completed_with_success(mocker, AIOps_client):
+    from PaloAltoNetworks_AIOps import polling_until_upload_report_command
+    bpa_json = {
+                'best_practices': {
+                                    'device': {
+                                                'feature1': [
+                                                    {
+                                                        'warnings': [{'check_id': 1, 'check_message': 'Warning message 1'}],
+                                                        'notes': [{'check_id': 2, 'check_message': 'Note message 1'}]
+                                                    }
+                                                ],
+                                                'feature2': [
+                                                    {
+                                                        'warnings': [{'check_id': 3, 'check_message': 'Warning message 2'}],
+                                                        'notes': [{'check_id': 4, 'check_message': 'Note message 2'}]
+                                                    }
+                                                ]
+                                            }
+                                    }
+                }
+    check_upload_status_request_mock = mocker.patch.object(AIOps_client, 'check_upload_status_request')
+    check_upload_status_request_mock.return_value = 'COMPLETED_WITH_SUCCESS'
+    download_bpa_request_mock = mocker.patch.object(AIOps_client, 'download_bpa_request')
+    download_bpa_request_mock.return_value = "cloud.com"
+    download_bpa_request_mock = mocker.patch.object(AIOps_client, 'data_of_download_bpa_request')
+    download_bpa_request_mock.return_value = bpa_json
+    args = {'report_id': '123456789'}
+    result = polling_until_upload_report_command(args, AIOps_client)
+    assert not result.scheduled_command
+    assert result.readable_output == ('### BPA results:\n|Check Id|Check Category|Check Feature|Check Message|Check Type|\n'
+                                        '|---|---|---|---|---|\n| 1 | device | feature1 | Warning message 1 | warning |\n'
+                                        '| 2 | device | feature1 | Note message 1 | note |\n| 3 | device | feature2 | '
+                                        'Warning message 2 | warning |\n| 4 | device | feature2 | Note message 2 | note |\n')
+    
 def test_get_info_about_device_request_called_with(mocker, AIOps_client):
     """
     Given:
@@ -141,7 +201,6 @@ def test_get_config_file_request_fails(mocker: MockerFixture, AIOps_client):
     with pytest.raises(DemistoException) as e:
         AIOps_client.get_config_file_request()
     assert e.value.message == "Request Succeeded, A parse error occurred."
-###
 
 def test_generate_bpa_report_request_called_with(mocker, AIOps_client):
     """
@@ -210,16 +269,168 @@ def test_generate_bpa_report_request_fails(mocker: MockerFixture, AIOps_client):
         AIOps_client.generate_bpa_report_request(requester_email, requester_name, dict_for_request)
     assert e.value.message== "Response not in format, can not find uploaded-url or report id."
     
+def test_config_file_to_report_request_called_with(mocker, AIOps_client):
+    http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
+    uploaded_url = "cloud.test"
+    config_binary = b'<?xml version="1.0"?>\n <config>test</config>'
+    AIOps_client.config_file_to_report_request(uploaded_url, config_binary)
+    http_request_mock.assert_called_once_with(method='PUT', full_url='cloud.test', headers={'Content-Type':
+        'application/octet-stream', 'Accept': '*/*', 'Authorization': 'Bearer {}'},
+        data=b'<?xml version="1.0"?>\n <config>test</config>', empty_valid_codes=[200], return_empty_response=True)
+    
+def test_config_file_to_report_request_check_return(mocker, AIOps_client):
+    from CommonServerPython import DemistoException
+    http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
+    http_request_mock.return_value = {'reason': 'OK', 'ok': True}
+    uploaded_url = "cloud.test"
+    config_binary = b'<?xml version="1.0"?>\n <config>test</config>'
+    result = AIOps_client.config_file_to_report_request(uploaded_url, config_binary)
+    assert result['ok']
+    assert result['reason'] == 'OK'
+    
+def test_config_file_to_report_request_fails(mocker, AIOps_client):
+    from CommonServerPython import DemistoException
+    http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
+    http_request_mock.side_effect = DemistoException(message='API ERROR - [404]')
+    uploaded_url = "cloud.test"
+    config_binary = b'<?xml version="1.0"?>\n <config>test</config>'
+    with pytest.raises(DemistoException) as e:
+        AIOps_client.config_file_to_report_request(uploaded_url, config_binary)
+    assert e.value.message == 'API ERROR - [404]'
+    
+def test_check_upload_status_request_called_with(mocker, AIOps_client):
+    http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
+    report_id = "123456789"
+    AIOps_client.check_upload_status_request(report_id)
+    http_request_mock.assert_called_once_with(method='GET', full_url=
+                                              'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/jobs/123456789',
+                                              headers={'Accept': '*/*', 'Authorization': 'Bearer {}'})
+
+def test_check_upload_status_request_check_return(mocker, AIOps_client):
+    http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
+    http_request_mock.return_value = {'status': 'COMPLETED_WITH_SUCCESS'}
+    report_id = "123456789"
+    result = AIOps_client.check_upload_status_request(report_id)
+    assert result in ['COMPLETED_WITH_SUCCESS', 'UPLOAD_INITIATED', 'COMPLETED_WITH_ERROR', 'CONFIG_PARSED']
+
+def test_check_upload_status_request_invalid_response(mocker, AIOps_client):
+    from CommonServerPython import DemistoException
+    http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
+    http_request_mock.return_value = {'statuss': 'COMPLETED_WITH_SUCCESS'}
+    report_id = "123456789"
+    with pytest.raises(DemistoException) as e:
+        AIOps_client.check_upload_status_request(report_id)
+    assert e.value.message == 'Missing upload status, Error: parse Error.'
+    
+def test_download_bpa_request_called_with(mocker, AIOps_client):
+    http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
+    report_id = "123456789"
+    AIOps_client.download_bpa_request(report_id)
+    http_request_mock.assert_called_once_with(method='GET', full_url=
+                                              'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/reports/123456789',
+                                              headers={'Accept': 'application/json', 'Authorization': 'Bearer {}'})
+
+def test_download_bpa_request_check_return(mocker, AIOps_client):
+    http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
+    http_request_mock.return_value = {'download-url':'cloud.com'}
+    report_id = "123456789"
+    result = AIOps_client.download_bpa_request(report_id)
+    assert result == 'cloud.com'
+    
+def test_download_bpa_request_invalid_response(mocker, AIOps_client):
+    from CommonServerPython import DemistoException
+    http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
+    http_request_mock.return_value = {}
+    report_id = "123456789"
+    with pytest.raises(DemistoException) as e:
+        AIOps_client.download_bpa_request(report_id)
+    assert e.value.message == 'Missing download-url, Error: parse Error.'
+     
+def test_data_of_download_bpa_request_called_with(mocker, AIOps_client):
+    http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
+    downloaded_BPA_url = "cloud.com"
+    AIOps_client.data_of_download_bpa_request(downloaded_BPA_url)
+    http_request_mock.assert_called_once_with(method='GET', full_url='cloud.com', headers={'Authorization': 'Bearer {}'})
+    
+def test_data_of_download_bpa_request_check_return(mocker, AIOps_client):
+    bpa_dict = {
+                'best_practices': {
+                                    'device': {
+                                                'feature1': [
+                                                    {
+                                                        'warnings': [{'check_id': 1, 'check_message': 'Warning message 1'}],
+                                                        'notes': [{'check_id': 2, 'check_message': 'Note message 1'}]
+                                                    }
+                                                ],
+                                                'feature2': [
+                                                    {
+                                                        'warnings': [{'check_id': 3, 'check_message': 'Warning message 2'}],
+                                                        'notes': [{'check_id': 4, 'check_message': 'Note message 2'}]
+                                                    }
+                                                ]
+                                            }
+                                    }
+                }
+    http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
+    http_request_mock.return_value = bpa_dict
+    downloaded_BPA_url = "cloud.com"
+    result = AIOps_client.data_of_download_bpa_request(downloaded_BPA_url)
+    assert result == bpa_dict
+
 ''' HELPER FUNCTIONS'''
+
 def test_adjust_xml_format():
+    """
+    Given:
+        - xml string
+        - new tag root
+
+    When:
+        - Calling adjust_xml_format
+
+    Then:
+        - Get the wanted result
+    """
     from PaloAltoNetworks_AIOps import adjust_xml_format
     xml_data = ('<response status="success"><result><system><hostname>test</hostname><ip-address>1.2.3.4</ip-address></system>'
                 '</result></response>')
     new_root_tag = 'system'
     result = adjust_xml_format(xml_data, new_root_tag)
     assert result == '<system ><hostname>test</hostname><ip-address>1.2.3.4</ip-address></system>'
-    
+
+def test_adjust_xml_format_invalid():
+    """
+    Given:
+        - xml string
+        - new root tag
+
+    When:
+        - Calling adjust_xml_format
+
+    Then:
+        - raise an error since a mismatch with new root tag in xml_string
+    """
+    from PaloAltoNetworks_AIOps import adjust_xml_format
+    from CommonServerPython import DemistoException
+    xml_data = ('<response status="success"><result><system><hostname>test</hostname><ip-address>1.2.3.4</ip-address></system>'
+                '</result></response>')
+    new_root_tag = 'systems'
+    with pytest.raises(DemistoException) as e:
+        adjust_xml_format(xml_data, new_root_tag)
+    assert e.value.message == 'Request Succeeded, A parse error occurred.'
+        
 def test_get_values_from_xml():
+    """
+    Given:
+        - xml string
+        - array of tags
+
+    When:
+        - Calling get_values_from_xml
+
+    Then:
+        - Get the wanted result
+    """
     from PaloAltoNetworks_AIOps import get_values_from_xml
     tags = ['family', 'model', 'serial', 'sw-version']
     xml_string = ('<system ><family>test1</family><model>test2</model><serial>test3</serial><hostname>test</hostname><sw-version>'
@@ -227,3 +438,166 @@ def test_get_values_from_xml():
     result = get_values_from_xml(xml_string, tags)
     assert result == ['test1', 'test2', 'test3', 'test4']
 
+def test_get_values_from_xml_invalid():
+    """
+    Given:
+        - xml string
+        - array of tags
+
+    When:
+        - Calling get_values_from_xml
+
+    Then:
+        - raise an error since a mismatch tags in xml_string
+    """
+    from PaloAltoNetworks_AIOps import get_values_from_xml
+    from CommonServerPython import DemistoException
+    tags = ['family', 'model', 'serial', 'sw-version']
+    xml_string = (
+        '<system ><family>test1</familys><model>test2</model><serial>test3</serial><hostname>test</hostname><sw-version>'
+        'test4</sw-version><ip-address>1.1.1.1</ip-address></system>'
+        )
+    with pytest.raises(DemistoException) as e:
+        get_values_from_xml(xml_string, tags)
+    assert e.value.message == 'Could not find the required tags in the System file.'
+    
+def test_convert_config_to_bytes_with_user_flag(mocker, AIOps_client):
+    """
+    Given:
+        - flag is User
+        - path to file from user
+
+    When:
+        - Calling convert_config_to_bytes with user flag
+
+    Then:
+        - succeed to convert into bytes
+    """
+    from PaloAltoNetworks_AIOps import convert_config_to_bytes
+    config_file_path = '/path/to/config_file.txt'
+    expected_bytes = b'<?xml version="1.0"?><config>test</config>'
+    with patch('builtins.open', mock_open(read_data=expected_bytes)) as mock_open_func, \
+            patch('demistomock.getFilePath', return_value={'path': config_file_path}):
+        result_bytes = convert_config_to_bytes('config_file.txt', 'User')
+        assert result_bytes == expected_bytes
+        mock_open_func.assert_called_once_with(config_file_path, 'rb')
+
+def test_convert_config_to_bytes_get_path_exception():
+    """
+    Given:
+        - flag is User
+        - path to file from user
+    When:
+        - Calling convert_config_to_bytes with user flag
+
+    Then:
+        - Raise a file convertion error
+    """
+    from PaloAltoNetworks_AIOps import convert_config_to_bytes
+    from CommonServerPython import DemistoException
+    with patch('demistomock.getFilePath', side_effect=Exception), pytest.raises(DemistoException) as e:
+        convert_config_to_bytes('config_file.txt', 'User')
+    assert e.value.message == 'The config file upload was unsuccessful or the file could not be converted.'
+
+def test_convert_config_to_bytes_invalid_getFilePath_response():
+    """
+    Given:
+        - flag is User
+        - path to file from user
+    When:
+        - Calling convert_config_to_bytes with user flag
+
+    Then:
+        - Raise a file convertion error
+    """
+    from PaloAltoNetworks_AIOps import convert_config_to_bytes
+    from CommonServerPython import DemistoException
+    with patch('demistomock.getFilePath', return_value={}), pytest.raises(DemistoException) as e:
+        convert_config_to_bytes('config_file.txt', 'User')
+    assert e.value.message == 'The config file upload was unsuccessful or the file could not be converted.'
+        
+def test_convert_config_to_bytes_with_download_flag(mocker, AIOps_client):
+    """
+    Given:
+        - flag is Download
+
+    When:
+        - Calling convert_config_to_bytes with Download flag
+
+    Then:
+        - succeed to convert into bytes
+    """
+    from PaloAltoNetworks_AIOps import convert_config_to_bytes
+    config_file = '<config>test</config>'
+    expected_bytes = b'<?xml version="1.0"?>\n <config>test</config>'
+    result = convert_config_to_bytes(config_file, 'Download')
+    assert result == expected_bytes
+    
+
+def test_convert_config_to_bytes_converted_with_exception():
+    """
+    Given:
+        - flag is User
+        - path to file from user
+    When:
+        - Calling convert_config_to_bytes with user flag
+
+    Then:
+        - Raise a file convertion error
+    """
+    from PaloAltoNetworks_AIOps import convert_config_to_bytes
+    from CommonServerPython import DemistoException
+    config_file = '<config>test</config>'
+    with patch('io.StringIO', side_effect=Exception), pytest.raises(DemistoException) as e:
+        convert_config_to_bytes(config_file, 'Download')
+    assert e.value.message == 'The downloaded config file could not be converted.'
+    
+def test_create_readable_output_checks_result():
+    from PaloAltoNetworks_AIOps import create_readable_output
+    bpa_dict = {
+            'best_practices': {
+                                'device': {
+                                            'feature1': [
+                                                {
+                                                    'warnings': [{'check_id': 1, 'check_message': 'Warning message 1'}],
+                                                    'notes': [{'check_id': 2, 'check_message': 'Note message 1'}]
+                                                }
+                                            ],
+                                            'feature2': [
+                                                {
+                                                    'warnings': [{'check_id': 3, 'check_message': 'Warning message 2'}],
+                                                    'notes': [{'check_id': 4, 'check_message': 'Note message 2'}]
+                                                }
+                                            ]
+                                        }
+                                }
+            }
+    result = create_readable_output(bpa_dict)
+    assert result ==('### BPA results:\n|Check Id|Check Category|Check Feature|Check Message|Check Type|\n|---|---|---|---|---|\n'
+    '| 1 | device | feature1 | Warning message 1 | warning |\n| 2 | device | feature1 | Note message 1 | note |\n| 3 | device | '
+    'feature2 | Warning message 2 | warning |\n| 4 | device | feature2 | Note message 2 | note |\n')
+
+def test_create_readable_output_fails():
+    from CommonServerPython import DemistoException
+    from PaloAltoNetworks_AIOps import create_readable_output
+    bpa_dict = {
+            'best_practices': {
+                                'device': {
+                                            'feature1': [
+                                                [
+                                                    {'warnings': [{'check_id': 1, 'check_message': 'Warning message 1'}]},
+                                                    {'notes': [{'check_id': 2, 'check_message': 'Note message 1'}]}
+                                                ]
+                                            ],
+                                            'feature2': [
+                                                [
+                                                    {'warnings': [{'check_id': 3, 'check_message': 'Warning message 2'}]},
+                                                    {'notes': [{'check_id': 4, 'check_message': 'Note message 2'}]}
+                                                ]
+                                            ]
+                                        }
+                                }
+            }
+    with pytest.raises(DemistoException) as e:
+        create_readable_output(bpa_dict)
+    assert e.value.message == 'BPA was created but was unsuccessfully converted. Error: parse error.'

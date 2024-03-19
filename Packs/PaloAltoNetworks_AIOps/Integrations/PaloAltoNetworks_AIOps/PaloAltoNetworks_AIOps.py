@@ -145,7 +145,10 @@ class Client(BaseClient):
                     full_url=f'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/jobs/{report_id}',
                     headers=headers
                     )
-        return res.get('status')
+        status = res.get('status')
+        if not status:
+            raise DemistoException("Missing upload status, Error: parse Error.")
+        return status
     
     def download_bpa_request(self, report_id):
         headers = {
@@ -156,7 +159,10 @@ class Client(BaseClient):
             full_url=f'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/reports/{report_id}',
             headers=headers
             )
-        return res.get('download-url')
+        url = res.get('download-url')
+        if not url:
+            raise DemistoException("Missing download-url, Error: parse Error.")
+        return url
     
     def data_of_download_bpa_request(self, downloaded_BPA_url):
         headers = {
@@ -191,59 +197,65 @@ def get_values_from_xml(xml_string, tags):
         for tag in tags:
             result.append(root.find(tag).text) #type: ignore
         return result
-    except Exception:
-        raise DemistoException("Could not find the required tags from the System file of the configured pan-os/panorama.")
+    except Exception as e:
+        raise DemistoException("Could not find the required tags in the System file.")
 
 def convert_config_to_bytes(config_file, origin_flag):
     if origin_flag == 'User':
-        get_file_path_res = demisto.getFilePath(config_file)
-        file_path = get_file_path_res.pop('path')
-        file_bytes: bytes = b''
-        with open(file_path, 'rb') as f:
-            file_bytes = f.read()
-        return file_bytes
+        try:
+            get_file_path_res = demisto.getFilePath(config_file)
+            file_path = get_file_path_res.pop('path')
+            file_bytes: bytes = b''
+            with open(file_path, 'rb') as f:
+                file_bytes = f.read()
+            return file_bytes
+        except Exception as e:
+            raise DemistoException("The config file upload was unsuccessful or the file could not be converted.")
     else:
         try:
             # Add xml tag to xml
             xml_header = '<?xml version="1.0"?>'
-            
             result = f'{xml_header}\n {config_file}'
             sio_xml = io.StringIO(result)
             xml_in_bytes = sio_xml.read().encode()
             return xml_in_bytes
-        except DemistoException as e:
-            raise DemistoException(f"Cannot reformat config file with error : {e}")
+        except Exception as e:
+            raise DemistoException("The downloaded config file could not be converted.")
     
 def create_readable_output(response_json):
-    dict_to_markdown = []
-    headers = ['check_id', 'check_category', 'check_feature', 'check_message', 'check_name', 'check_passed', 'check_type',
-               'check_severity']
-    check_category_options =['device', 'service_health', 'objects', 'network', 'policies']
-    # Get best_practices elements (warnings and notes)
-    best_practices= response_json.get('best_practices',{})
-    for category in check_category_options:
-        category_objects = best_practices.get(category, None)
-        for key, value in category_objects.items():
-            if value:
-                warnings = value[0].get('warnings')
-                notes = value[0].get('notes')
-                for warning in warnings:
-                    warning['check_type'] = 'warning'
-                    warning['check_feature'] = key
-                    warning['check_category'] = category
-                    dict_to_markdown.append(warning)
-                for note in notes:
-                    note['check_type'] = 'note'
-                    note['check_feature'] = key
-                    note['check_category'] = category
-                    dict_to_markdown.append(note)
+    try:
+        dict_to_markdown = []
+        headers = ['check_id', 'check_category', 'check_feature', 'check_message', 'check_name', 'check_passed', 'check_type',
+                'check_severity']
+        check_category_options =['device', 'service_health', 'objects', 'network', 'policies']
+        # Get best_practices elements (warnings and notes)
+        best_practices= response_json.get('best_practices',{})
+        for category in check_category_options:
+            category_objects = best_practices.get(category, None)
+            if category_objects:
+                for key, value in category_objects.items():
+                    if value:
+                        warnings = value[0].get('warnings')
+                        notes = value[0].get('notes')
+                        for warning in warnings:
+                            warning['check_type'] = 'warning'
+                            warning['check_feature'] = key
+                            warning['check_category'] = category
+                            dict_to_markdown.append(warning)
+                        for note in notes:
+                            note['check_type'] = 'note'
+                            note['check_feature'] = key
+                            note['check_category'] = category
+                            dict_to_markdown.append(note)
 
-    markdown_table = tableToMarkdown('BPA results:', dict_to_markdown,
-                           headers=headers, removeNull=True, headerTransform=string_to_table_header
-                           )
-    
-    return markdown_table
-
+        markdown_table = tableToMarkdown('BPA results:', dict_to_markdown,
+                            headers=headers, removeNull=True, headerTransform=string_to_table_header
+                            )
+        
+        return markdown_table
+    except Exception as e:
+        raise DemistoException("BPA was created but was unsuccessfully converted. Error: parse error.")
+        
 ''' COMMAND FUNCTIONS '''
 
 def test_module(client: Client) -> str:
@@ -314,7 +326,7 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
     elif upload_status == 'UPLOAD_INITIATED':
         results = CommandResults(readable_output="Polling job failed.")
         return PollResult(
-            response=results,
+            response=None,
             continue_to_poll=True,
             args_for_next_run={'report_id':report_id},
             partial_result=CommandResults(
@@ -367,8 +379,8 @@ def main() -> None:
         # Generate an access token for pan-OS/panorama
         client.generate_access_token_request()
         
-        #to delete
-        return_results(generate_report_command(client, args))
+        # generate_report_command(client, args)
+                   
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'pan-aiops-bpa-report-generate':
