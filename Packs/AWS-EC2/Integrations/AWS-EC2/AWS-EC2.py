@@ -11,7 +11,6 @@ from concurrent.futures import ThreadPoolExecutor
 PARAMS = demisto.params()
 MAX_WORKERS = arg_to_number(PARAMS.get('max_workers'))
 ROLE_NAME: str = PARAMS.get('access_role_name', '')
-# You don't check if the roleArn is set in the params
 IS_ARN_PROVIDED = bool(demisto.getArg('roleArn')) | bool(demisto.getParam('roleArn'))
 
 
@@ -141,11 +140,8 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
 
         def run_command(account_id: str) -> CommandResults:
             new_args = args | {
-                # I see a roleArn with ::user insteadof ::role is this wrong?
                 #  the role ARN must be of the format: arn:aws:iam::<account_id>:role/<role_name>
-                # Why you go over the roleArn the customer configured
                 'roleArn': f'arn:aws:iam::{account_id}:role/{role_name}',
-                # Why changing this two lines? if you don't set the roleArun you will always run on 900 duration?
                 'roleSessionName': args.get('roleSessionName', f'account_{account_id}'),
                 'roleSessionDuration': args.get('roleSessionDuration', 900),
             }
