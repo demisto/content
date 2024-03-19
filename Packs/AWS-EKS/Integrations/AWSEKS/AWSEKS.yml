@@ -70,7 +70,8 @@ script:
       description: The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter.
       type: List
   - name: aws-eks-update-cluster-config
-    description: Updates an Amazon EKS cluster configuration. Only one type of update can be allowed.
+    description: "Updates an Amazon EKS cluster configuration. Only one type of update can be allowed. Potentially harmful: once the authentication mode was updated to 'API' it is irreversible."
+    execution: true
     arguments:
     - name: cluster_name
       description: The name of the Amazon EKS cluster to update.
@@ -85,7 +86,7 @@ script:
       required: false
       isArray: false
     - name: authentication_mode
-      description: The desired authentication mode for the cluster.
+      description: The desired authentication mode for the cluster. Note - once the authentication mode was updated to 'API' it is irreversible.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -94,7 +95,7 @@ script:
       - API_AND_CONFIG_MAP
       - CONFIG_MAP
     outputs:
-    - contextPath: AWS.EKS.UpdateCluster.name
+    - contextPath: AWS.EKS.UpdateCluster.clusterName
       description: The name of the cluster.
       type: String
     - contextPath: AWS.EKS.UpdateCluster.id
@@ -263,7 +264,7 @@ script:
       isArray: false
     - name: type
       description: The type of access entry to create.
-      required: true
+      required: false
       isArray: false
       defaultValue: Standard
       auto: PREDEFINED

@@ -140,11 +140,11 @@ def update_cluster_config_command(aws_client: AWSClient, args: dict) -> CommandR
         )
 
     response_data = response.get('update', {})
-    response_data['name'] = cluster_name
+    response_data['clusterName'] = cluster_name
     datetime_to_str(response_data, 'createdAt')
 
     md_table = {
-        'Cluster Name': response_data.get('name'),
+        'Cluster Name': response_data.get('clusterName'),
         'ID': response_data.get('id'),
         'Status': response_data.get('status'),
         'Type': response_data.get('type'),
@@ -310,11 +310,25 @@ def associate_access_entry_command(aws_client: AWSClient, args: dict) -> Command
     response_data['clusterName'] = response.get('clusterName')
     response_data['principalArn'] = response.get('principalArn')
 
-    datetime_to_str(response, 'associatedAt')
-    datetime_to_str(response, 'modifiedAt')
+    datetime_to_str(response_data, 'associatedAt')
+    datetime_to_str(response_data, 'modifiedAt')
+
+    md_table = {
+        'Cluster Name': response_data.get('clusterName'),
+        'Principal ARN': response_data.get('principalArn'),
+        'Policy ARN': response_data.get('policyArn'),
+        'Associated At': response_data.get('associatedAt')
+    }
+    headers = ['Cluster Name', 'Principal ARN', 'Policy ARN', 'Associated At']
+    readable_output = tableToMarkdown(
+        name='The access policy was associated to the access entry successfully.',
+        t=md_table,
+        removeNull=True,
+        headers=headers
+    )
 
     return CommandResults(
-        readable_output='The access policy was associated to the access entry successfully.',
+        readable_output=readable_output,
         outputs_prefix='AWS.EKS.AssociatedAccessPolicy',
         outputs=response_data,
         raw_response=response,

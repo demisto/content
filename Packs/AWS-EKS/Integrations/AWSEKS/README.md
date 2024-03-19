@@ -75,7 +75,7 @@ Lists the Amazon EKS clusters in your Amazon Web Services account in the specifi
 ### aws-eks-update-cluster-config
 
 ***
-Updates an Amazon EKS cluster configuration.
+Updates an Amazon EKS cluster configuration. Only one type of update can be allowed. Potentially harmful: once the authentication mode was updated to 'API' it is irreversible.
 
 #### Base Command
 
@@ -88,12 +88,13 @@ Updates an Amazon EKS cluster configuration.
 | cluster_name | The name of the Amazon EKS cluster to update. | Required | 
 | resources_vpc_config | The VPC configuration used by the cluster control plane. | Optional | 
 | logging | The logging configuration for the cluster. | Optional | 
+| authentication_mode | The desired authentication mode for the cluster. Note - once the authentication mode was updated to 'API' it is irreversible. Possible values are: API, API_AND_CONFIG_MAP, CONFIG_MAP. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.EKS.UpdateCluster.name | String | The name of the cluster. | 
+| AWS.EKS.UpdateCluster.clusterName | String | The name of the cluster. | 
 | AWS.EKS.UpdateCluster.id | Integer | The ID of the update. | 
 | AWS.EKS.UpdateCluster.status | String | The status of the update. | 
 | AWS.EKS.UpdateCluster.type | String | The type of the update. | 
