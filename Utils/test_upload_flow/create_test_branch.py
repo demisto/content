@@ -157,6 +157,7 @@ def add_dependency(base_pack: Path, new_depndency_pack: Path, mandatory: bool = 
         }
     })
     json_write(str(metadata_json), base_metadata)
+    enhance_release_notes(base_pack)
     return base_pack, base_metadata['currentVersion'], None
 
 
@@ -306,7 +307,6 @@ def do_changes_on_branch(packs_path: Path):
 
     # Case 3: Verify dependencies handling - Armis
     add_dependency(packs_path / 'Armis', new_pack_path)
-    enhance_release_notes(packs_path / 'Armis')
 
     # Case 4: Verify new version - ZeroFox
     enhance_release_notes(packs_path / 'ZeroFox')
@@ -338,7 +338,6 @@ def do_changes_on_branch(packs_path: Path):
     # case 12: Verify setting hidden dependency does not add this dependency to the metadata - MicrosoftAdvancedThreatAnalytics
     add_dependency(packs_path / 'MicrosoftAdvancedThreatAnalytics', packs_path / 'Microsoft365Defender',
                    mandatory=False)
-    enhance_release_notes(packs_path / 'MicrosoftAdvancedThreatAnalytics')
 
     # case 13: Verify new only-XSOAR pack uploaded only to XSOAR's bucket - TestUploadFlowXSOAR
     create_new_pack(pack_id='TestUploadFlowXSOAR')

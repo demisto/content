@@ -1436,13 +1436,13 @@ class SDKNightlyTestCollector(TestCollector):
         return self.sanity_tests
 
 
-def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[set, set]:
+def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[list, list]:
     """
     :param: packs_to_upload: The resultant list of packs to upload
     :return:
-     Tuple[set, set]:
-        packs_to_upload: Set of packs to upload (hard upload - changed files with RN and version bump)
-        packs_to_update_metadata: Set of packs to update
+     Tuple[list, list]:
+        packs_to_upload: list of packs to upload (hard upload - changed files with RN and version bump)
+        packs_to_update_metadata: list of packs to update
          (soft upload - changed only to packmetadata file without RN and version bump)
     """
     packs_to_update_metadata = set()
@@ -1450,13 +1450,15 @@ def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[set, set]:
     changed_files = git_util._get_all_changed_files()
     for pack_id in packs_to_upload:
         current_version = PACK_MANAGER.get_current_version(pack_id) or ""
-        rn_path = Path(f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
-        pack_metadata_path = Path(f"Packs/{pack_id}/pack_metadata.json")
+        rn_path = Path(f"{PACK_MANAGER.packs_path}/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
+        pack_metadata_path = Path(f"{PACK_MANAGER.packs_path}/{pack_id}/pack_metadata.json")
 
         if rn_path not in changed_files and pack_metadata_path in changed_files:
             packs_to_update_metadata.add(pack_id)
 
     packs_to_upload = packs_to_upload - packs_to_update_metadata
+    packs_to_upload = sorted(packs_to_upload, key=lambda x: x.lower()) if packs_to_upload else []
+    packs_to_update_metadata = sorted(packs_to_update_metadata, key=lambda x: x.lower()) if packs_to_update_metadata else []
     return packs_to_upload, packs_to_update_metadata
 
 
@@ -1467,8 +1469,6 @@ def output(result: CollectionResult | None):
     tests = sorted(result.tests, key=lambda x: x.lower()) if result else ()
     packs_to_install = sorted(result.packs_to_install, key=lambda x: x.lower()) if result else ()
     packs_to_upload, packs_to_update_metadata = sort_packs_to_upload(result.packs_to_upload) if result else ([], [])
-    packs_to_upload = sorted(packs_to_upload, key=lambda x: x.lower()) if packs_to_upload else []
-    packs_to_update_metadata = sorted(packs_to_update_metadata, key=lambda x: x.lower()) if packs_to_update_metadata else []
 
     modeling_rules_to_test = sorted(
         result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()

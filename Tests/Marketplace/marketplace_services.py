@@ -404,8 +404,6 @@ class Pack:
             dict: Updated metadata fields.
         """
         update_statistics_metadata = {
-            Metadata.CREATED: self._create_date,
-            Metadata.UPDATED: self._update_date,
             Metadata.DOWNLOADS: self._downloads_count,
             Metadata.TAGS: list(self._tags or []),
             Metadata.SEARCH_RANK: self._search_rank,
@@ -427,7 +425,7 @@ class Pack:
                 f"{self.is_metadata_updated=}")
 
         updated_metadata = update_metadata_fields | update_statistics_metadata
-        logging.debug(f"Updating the following metadata fields: {updated_metadata.keys()}")
+        logging.debug(f"Updating the following metadata fields: {updated_metadata}")
         return updated_metadata
 
     @staticmethod
@@ -519,7 +517,8 @@ class Pack:
             dict: parsed pack metadata.
         """
         pack_metadata = self.update_metadata
-
+        if not self.is_metadata_updated:
+            pack_metadata = pack_metadata | {Metadata.CREATED: self._create_date, Metadata.UPDATED: self._update_date}
         if parse_dependencies:
             pack_metadata[Metadata.DEPENDENCIES] = self._dependencies
 

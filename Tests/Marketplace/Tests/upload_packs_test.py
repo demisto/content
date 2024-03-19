@@ -6,7 +6,8 @@ import os
 
 import pytest
 from unittest.mock import patch
-from Tests.Marketplace.upload_packs import get_packs_ids_to_upload_and_update, get_updated_private_packs, is_private_packs_updated
+from Tests.Marketplace.upload_packs import (get_packs_ids_to_upload, get_updated_private_packs, is_private_packs_updated,
+                                            get_packs_ids_to_upload_and_update)
 
 from Tests.Marketplace.marketplace_services import Pack
 from Tests.Marketplace.marketplace_constants import Metadata
@@ -16,12 +17,22 @@ from Tests.Marketplace.marketplace_constants import Metadata
 
 class TestModifiedPacks:
     @pytest.mark.parametrize("packs_names_input, expected_result", [
+        ("pack1,pack2,pack1", {"pack1", "pack2"}),
+        ("pack1, pack2,  pack3", {"pack1", "pack2", "pack3"})
+    ])
+    def test_get_packs_names_specific(self, packs_names_input, expected_result):
+        modified_packs = get_packs_ids_to_upload(packs_names_input)
+
+        assert modified_packs == expected_result
+
+
+    @pytest.mark.parametrize("packs_names_input, expected_result", [
         ('{"packs_to_upload": ["pack1", "pack2"], "packs_to_update_metadata": ["pack3"]}',
          ({'pack1', 'pack2'}, {'pack3'})),
         ('{"packs_to_upload": ["pack1", "pack2", "pack2"], "packs_to_update_metadata": ["pack3"]}',
          ({'pack1', 'pack2'}, {'pack3'}))
     ])
-    def test_get_packs_names_specific(self, packs_names_input, expected_result):
+    def test_get_packs_ids_to_upload_and_update(self, packs_names_input, expected_result):
         modified_packs = get_packs_ids_to_upload_and_update(packs_names_input)
 
         assert modified_packs == expected_result
@@ -58,8 +69,6 @@ class TestUpdateIndexAndPack:
         Metadata.SEARCH_RANK: None,
         Metadata.TAGS: [],
         Metadata.INTEGRATIONS: None,
-        Metadata.CREATED: '',
-        Metadata.UPDATED: None,
     }
 
     def test_update_index_folder_new_version(self, mocker):
