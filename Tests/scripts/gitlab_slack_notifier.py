@@ -114,9 +114,11 @@ def get_test_report_pipeline_url(pipeline_url: str) -> str:
 def get_msg_machines(
     failed_jobs: dict, job_cause_fail: set[str], job_cause_warning: set[str], msg: str
 ):
-    if job_cause_fail.issubset(set(failed_jobs)):
+    if job_cause_fail.intersection(set(failed_jobs)):
         color = "danger"
-    elif job_cause_warning.issubset(set(failed_jobs)):
+    elif set(set(failed_jobs) - job_cause_fail) != set(failed_jobs):
+        ...
+    elif job_cause_warning.intersection(set(failed_jobs)):
         color = "warning"
     else:
         color = "good"
