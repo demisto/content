@@ -57,11 +57,7 @@ The following query returns all mapped XDM Fields
     xdm.event.log_level 
 ```
 
-
-
-Severity field according Fortinet FortiManager [Documentation](https://docs.fortinet.com/document/fortimanager/7.4.2/log-message-reference/547625/priority-levels)
-
-[FortiManager log types and subtypes](https://docs.fortinet.com/document/fortimanager/7.2.0/log-message-reference/238528/fortimanager-log-types-and-subtypes)
-
+For further documentation please visit FortiManager documentation: 
+* FortiManager [log types and subtypes](https://docs.fortinet.com/document/fortimanager/7.2.0/log-message-reference/238528/fortimanager-log-types-and-subtypes).
 
 </~XSIAM>
