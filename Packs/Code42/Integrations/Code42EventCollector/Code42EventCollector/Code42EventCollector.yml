@@ -66,5 +66,7 @@ script:
   subtype: python3
   dockerimage: demisto/py42:1.0.0.89347
 fromversion: 8.4.0
+marketplaces:
+  - marketplacev2
 tests:
 - No tests (auto formatted)
