@@ -48,8 +48,9 @@ build-machines-cleanup:
     - exit "${EXIT_CODE}"
   after_script:
     - source .gitlab/helper_functions.sh
-    - git branch --list
     - !reference [ .unlock-machine ]
+    - export GITLAB_REPO_URL=https://GITLAB_PUSH_TOKEN:${GITLAB_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git  # disable-secrets-detection
+    - git push "$GITLAB_REPO_URL" --delete "$BRANCH" --quiet
   timeout: 4 hours
   variables:
     CLOUD_MACHINES_TYPE: $CLOUD_MACHINES_TYPE
@@ -72,6 +73,7 @@ build-machines-cleanup:
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     MARKETPLACE_NAME: "marketplacev2"
     NON_REMOVABLE_PACKS: "Base"
+    BRANCH: "${BRANCH}"
 
 fan-in-build-machines-cleanup:
   tags:
