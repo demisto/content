@@ -1,0 +1,71 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: CybelAngel Event Collector
+  version: -1
+configuration:
+- defaultvalue: https://platform.cybelangel.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Client ID
+  displaypassword: Client Secret
+  name: credentials
+  type: 9
+  required: true
+- display: The maximum number of events per fetch
+  name: max_fetch
+  defaultvalue: "5000"
+  advanced: true
+  type: 0
+  required: true
+  section: Collect
+- defaultvalue: 30 days
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+  section: Collect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+description: 'CybelAngel Event Collector collects reports from the CybelAngel platform, which specializes in external attack surface protection and management.'
+display: CybelAngel Event Collector
+name: CybelAngel Event Collector
+script:
+  commands:
+  - arguments:
+    - description: 'Get reports from a specific start date.'
+      name: start_date
+      required: true
+    - description: 'Get reports until a specific end date. If not provided, uses current date.'
+      name: end_date
+      required: true
+    - description: 'The maximum number of events to return.'
+      name: limit
+      required: true
+    description: 'Send events from CybelAngel to XSIAM. Used mainly for debugging.'
+    name: cybelangel-get-events
+    outputs: []
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.89009
+  isfetchevents: true
+fromversion: 8.0.0
+marketplaces:
+  - marketplacev2
+tests:
+- No tests (auto formatted)

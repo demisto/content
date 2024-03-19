@@ -82,18 +82,19 @@
 .gitlab/ci/* @yucohen
 .gitlab/* @yucohen
 .gitlab-ci.yml @yucohen
-/Tests/scripts/wait_in_line_for_cloud_env.sh @daryakoval
+/Tests/scripts/wait_in_line_for_cloud_env.sh @yucohen
 .gitlab/ci/.gitlab-ci.staging.yml @ilaner
-/Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh @daryakoval
-/Tests/Marketplace/search_and_uninstall_pack.py @daryakoval
-/Tests/scripts/install_content_and_test_integrations.sh @daryakoval
-/Tests/configure_and_test_integration_instances.py @daryakoval
-/Tests/scripts/print_cloud_machine_details.sh @daryakoval
-/Tests/scripts/run_tests.sh @daryakoval
-/Tests/scripts/download_demisto_conf.sh @daryakoval
-Tests/scripts/test_modeling_rules.sh @daryakoval
-Tests/scripts/lock_cloud_machines.py @daryakoval
+/Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh @yucohen
+/Tests/Marketplace/search_and_uninstall_pack.py @yucohen
+/Tests/scripts/install_content_and_test_integrations.sh @yucohen
+/Tests/configure_and_test_integration_instances.py @yucohen
+/Tests/scripts/print_cloud_machine_details.sh @yucohen
+/Tests/scripts/run_tests.sh @yucohen
+/Tests/scripts/download_demisto_conf.sh @yucohen
+Tests/scripts/test_modeling_rules.sh @AradCarmi
+Tests/scripts/lock_cloud_machines.py @yucohen
 Tests/Marketplace/server_content_items.json @dantavori
+validation_config.toml @YuvHayun @JudahSchwartz @GuyAfik @anara123
 
 # SDK Related
 .gitlab/ci/.gitlab-ci.sdk-nightly.yml @dorschw
@@ -113,7 +114,7 @@ poetry.lock @ilaner @dorschw
 .devcontainer/* @ilaner
 
 # Demisto Class
-Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @daryakoval
+Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavori
 
 # TIM Related
 /Packs/TAXIIServer/Integrations/* @MLainer1

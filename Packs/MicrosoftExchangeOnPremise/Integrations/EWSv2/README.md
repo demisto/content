@@ -316,7 +316,6 @@ The number of mailboxes to search in may be limited by Microsoft Exchange. See [
 | limit | Maximum number of results to return. Default is 250. | Optional | 
 | email_addresses | CSV list or array of email addresses. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -464,6 +463,8 @@ Searches for items in the specified mailbox. Specific permissions are needed for
 | is-public | Whether the folder is a Public Folder?. Possible values are: True, False. | Optional | 
 | message-id | The message ID of the email. This will be ignored if a query argument is provided. | Optional | 
 | selected-fields | A CSV list of fields to retrieve. Possible values are: . Default is all. | Optional | 
+| surround_id_with_angle_brackets | Whether to surround the message ID with angle brackets (&lt;&gt;) if it does not exist. Default is 'True'. | Optional | 
+
 
 
 #### Context Output

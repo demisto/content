@@ -167,7 +167,7 @@ script:
       required: true
     description: Gets a specific dynamic address group.
     name: pan-os-get-dag
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.13.88772
   runonce: false
   script: '-'
   subtype: python3

@@ -16,7 +16,7 @@ The web server for the integration runs within a long-running Docker container. 
 ## Important Information
  - The messaging endpoint must be one of the following:
  	- the URL of the Cortex XSOAR server, including the configured port
- 	- the Cortex XSOAR rerouting URL that you've defined for your Microsoft Teams instance (see the [Using Cortex XSOAR rerouting](#1-using-cortex-xsoar-rerouting) section for more details)
+ 	- the Cortex XSOAR rerouting URL that you've defined for your Microsoft Teams instance (see the [Using Cortex XSOAR or Cortex XSIAM rerouting](#1-using-cortex-xsoar-or-cortex-xsiam-rerouting) section for more details)
  	- a proxy that redirects the messages received from Teams to the Cortex XSOAR or Cortex XSIAM server (see the [Using NGINX as reverse proxy](#2-using-nginx-as-reverse-proxy) section for more details)
  - Microsoft Teams will send events to the messaging endpoints via HTTPS request, which means the messaging endpoint must be accessible for Microsoft Teams to reach to it. As follows, the messaging endpoint can not contain private IP address or any DNS that will block the request from Microsoft Teams.
 In order to verify that the messaging endpoint is open as expected, you can surf to the messaging endpoint from a browser in an environment which is disconnected from the Cortex XSOAR environment.
@@ -57,7 +57,7 @@ The messaging endpoint needs to be:
 
 For Cortex XSOAR version 6.x: `<CORTEX-XSOAR-URL>/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://my.demisto.live/instance/execute/teams`.
 
-For Cortex XSOAR version 8 and XSIAM: `https://ext-<CORTEX-XSOAR-Domain>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
+For Cortex XSOAR version 8 and XSIAM: `https://ext-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
 
 The integration instance name, `teams` in this example, needs to be configured in the [Configure Microsoft Teams on Cortex XSOAR](#configure-microsoft-teams-on-cortex-xsoar) step. Make sure to set the instance name in all lowercase letters and as one word.
 
@@ -237,7 +237,6 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
     | Name | The integration instance name.<br />If using Cortex XSOAR rerouting configuration, insert here the instance name you configured in the messaging endpoint. | True |
     | Bot ID | Bot ID. | True |
     | Bot Password | Bot Password. | True |
-    | Tenant ID |  | False |
     | Authentication Type |  | True |
     | Application redirect URI (for Authorization Code mode) |  | False |
     | Authorization code | For Authorization Code flow mode. Received from the authorization step. See the Detailed Instructions \(?\) section | False |
@@ -266,6 +265,8 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 2. Enter your Client/Application ID in the *Bot ID* parameter. 
 3. Enter your Client Secret in the *Bot Password* parameter.
 4. Save the instance.
+5. Click **Test** to validate the URLs, token, and connection.
+6. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
 
 ##### Authentication Using the Authorization Code Flow
 
@@ -273,9 +274,11 @@ Note: The [microsoft-teams-ring-user](https://learn.microsoft.com/en-us/graph/ap
 2. Enter your Client/Application ID in the *Bot ID* parameter. 
 3. Enter your Client Secret in the *Bot Password* parameter.
 4. Enter your Application redirect URI in the *Application redirect URI* parameter.
-5. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
-6. Save the instance.
-7. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
+5. Save the instance.
+6. [Add the Demisto Bot to a Team](#Add-the-Demisto-Bot-to-a-Team)
+7. Run the ***!microsoft-teams-generate-login-url*** command in the War Room and follow the instructions.
+8. Save the instance.
+9. Run the ***!microsoft-teams-auth-test*** command. A 'Success' message should be printed to the War Room.
 
 
 ### Add the Demisto Bot to a Team
@@ -1072,6 +1075,27 @@ There is no context output for this command.
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 >and paste it in your instance configuration under the **Authorization code** parameter.
 >
+
+### microsoft-teams-auth-reset
+
+***
+Run this command if for some reason you need to rerun the graph authentication process.
+Notes:
+- Use this command to switch between authentication flows and ensure the integration uses the appropriate token.
+- After making changes to permissions in the Azure Portal, reset the authentication to ensure that the token reflects the updated permissions.
+- When using the `Authorization Code Flow`, after executing the command, regenerate the **Authorization code** parameter, and then run the *!microsoft-teams-auth-test* command to verify the authentication.
+
+#### Base Command
+
+`microsoft-teams-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
 
 
 ## Running commands from Microsoft Teams
