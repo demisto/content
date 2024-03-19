@@ -24,6 +24,7 @@ class TempFile:
     def __del__(self):
         os.remove(self.path)
 
+
 def handle_connection_errors(error):
     if "SSLError" in error:
         return_error('Unable to connect to MISP because of a SSLCertVerificationError, '
