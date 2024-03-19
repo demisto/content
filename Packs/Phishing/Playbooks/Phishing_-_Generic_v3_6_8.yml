@@ -2162,6 +2162,7 @@ tasks:
       id: 9ff4d990-f0b2-4085-8352-137c92a77882
       version: -1
       name: Phishing - Machine Learning Analysis
+      description: Predicts phishing emails and URLs using machine-learning, available on Cortex XSOAR.
       playbookName: Phishing - Machine Learning Analysis
       type: playbook
       iscommand: false
