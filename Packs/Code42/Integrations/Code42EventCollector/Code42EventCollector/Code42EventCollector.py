@@ -1,5 +1,4 @@
-import py42.sdk
-import py42.settings as settings
+import incydr
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -29,9 +28,8 @@ class Client:
     def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, **kwargs):
         self.client_id = client_id
         self.client_secret = client_secret
-        self.client = py42.sdk.from_api_client(base_url, client_id=client_id, secret=client_secret)
-        settings.verify_ssl_certs = verify
-        self.client.alerts.
+        self.code42_client = incydr.Client(base_url, api_client_id=client_id, api_client_secret=client_secret)
+        self.code42_client.session.verify = verify
 
 
     # TODO: REMOVE the following dummy function:
