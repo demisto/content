@@ -109,11 +109,30 @@ def fetch_events_command(
     for result in results:
         result["Value"] = parse(result.get("Value"))
         result['_time'] = result["ModificationTimeStamp"]
-    if results:
-        last_run["start_time"] = datetime.strptime(results[-1]["ModificationTimeStamp"], "%Y-%m-%dT%H:%M:%S.%fZ")
+        print(type(result.get("Value")))
+    cached_audits: List[str] = last_run.get('audit_cache', [])
+    updated_results, updated_cached_audits = remove_duplicated_events(results, cached_audits)
+    last_run['audit_cache'] = updated_cached_audits
+    if updated_results:
+        last_run["start_time"] = datetime.strptime(updated_results[-1]["ModificationTimeStamp"], "%Y-%m-%dT%H:%M:%S.%fZ")
     else:
         demisto.info("No new events were fetched. Therefore, the last_run object won't be updated.")
-    return results, last_run
+    return updated_results, last_run
+
+
+def remove_duplicated_events(results: List[dict], cached_audits: List[str]) -> tuple[List[dict], List[str]]:
+    updated_results: List[dict] = []
+    updated_cached_audits: List[str] = []
+    removed_events: List[str] = []
+    for result in results:
+        if event_guid := result.get("Guid", "") in cached_audits:
+            removed_events.append(event_guid)
+        else:
+            updated_results.append(result)
+            updated_cached_audits.append(event_guid)
+    if removed_events:
+        demisto.info(f"The following events were deduplicated: {', '.join(removed_events)}.")
+    return updated_results, updated_cached_audits
 
 
 def main() -> None:  # pragma: no cover
@@ -159,14 +178,13 @@ def main() -> None:  # pragma: no cover
             )
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
-
         if should_push_events:
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.info(f"{len(events)} events were pushed to XSIAM")
 
         if should_save_last_run:
             demisto.setLastRun(last_run)
-            demisto.info(f"set {last_run=}")
+            demisto.info(f"set last run time: {last_run['start_time']}")
 
     except Exception as e:
         return_error(
