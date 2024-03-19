@@ -2180,7 +2180,7 @@ and paste it in your instance configuration under the **Authorization code** par
 ### msg-advanced-hunting
 
 ***
-Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft Graph Security. Details on how to write queries: https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide.
+Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft Graph Security.
 
 #### Base Command
 
@@ -2203,10 +2203,56 @@ Advanced hunting is a threat-hunting tool that uses specially constructed querie
 | Microsoft365Defender.Hunt.query | String | The query used, also acted as a key. | 
 | Microsoft365Defender.Hunt.results | Unknown | The results of the query. | 
 
+#### Command example
+```!msg-advanced-hunting query=AlertInfo limit=1```
+#### Context Example
+```json
+{
+    "Microsoft365Defender": {
+        "Hunt": {
+            "query": "AlertInfo | limit 1 ",
+            "results": [
+                {
+                    "AlertId": "dlcc6c6fab-0202-be70-be00-08dc47c0ce49",
+                    "AttackTechniques": "",
+                    "Category": "Exfiltration",
+                    "DetectionSource": "Microsoft Data Loss Prevention",
+                    "ServiceSource": "Microsoft Data Loss Prevention",
+                    "Severity": "Medium",
+                    "Timestamp": "2024-03-19T03:00:08Z",
+                    "Title": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min)"
+                }
+            ]
+        }
+    },
+    "MsGraph": {
+        "Hunt": {
+            "query": "AlertInfo | limit 1 ",
+            "results": [
+                {
+                    "AlertId": "dlcc6c6fab-0202-be70-be00-08dc47c0ce49",
+                    "AttackTechniques": "",
+                    "Category": "Exfiltration",
+                    "DetectionSource": "Microsoft Data Loss Prevention",
+                    "ServiceSource": "Microsoft Data Loss Prevention",
+                    "Severity": "Medium",
+                    "Timestamp": "2024-03-19T03:00:08Z",
+                    "Title": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min)"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>See Results Above
 
 ### msg-list-security-incident
 
 ***
+Get a list of incident objects that Microsoft 365 Defender created to track attacks in an organization.
 
 #### Base Command
 
@@ -2229,17 +2275,59 @@ Advanced hunting is a threat-hunting tool that uses specially constructed querie
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.Incident.incidentId | number | Incident's ID. | 
-| MsGraph.Incident.redirectIncidentId | unknown | Only populated in case an incident is grouped together with another incident, as part of the incident processing logic. | 
-| MsGraph.Incident.incidentName | string | The name of the incident. | 
-| MsGraph.Incident.createdTime | date | The date and time \(in UTC\) the incident was created. | 
-| MsGraph.Incident.lastUpdateTime | date | The date and time \(in UTC\) the incident was last updated. | 
-| MsGraph.Incident.assignedTo | string | Owner of the incident. | 
-| MsGraph.Incident.classification | string | Specification of the incident. Possible values are: Unknown, FalsePositive, and TruePositive. | 
-| MsGraph.Incident.determination | string | The determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other. | 
-| MsGraph.Incident.severity | string | Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High. | 
-| MsGraph.Incident.status | string | The current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
-| MsGraph.Incident.alerts | unknown | List of alerts relevant for the incidents. | 
+| MsGraph.Incident.assignedTo | string | Owner of the incident, or null if no owner is assigned. Free editable text. | 
+| MsGraph.Incident.classification | string | The specification for the incident. Possible values are unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. | 
+| MsGraph.Incident.comments | string | Array of comments created by the Security Operations \(SecOps\) team when the incident is managed. | 
+| MsGraph.Incident.createdDateTime | date | Time when the incident was first created. | 
+| MsGraph.Incident.customTags | string | Array of custom tags associated with an incident. | 
+| MsGraph.Incident.description | string | Description of the incident. | 
+| MsGraph.Incident.determination | string | Specifies the determination of the incident. Possible values are unknown, apt, malware, securityPersonnel, securityTesting, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, clean, insufficientData, confirmedUserActivity, lineOfBusinessApplication, unknownFutureValue. | 
+| MsGraph.Incident.displayName | string | The incident name. | 
+| MsGraph.Incident.id | number | Unique identifier to represent the incident. | 
+| MsGraph.Incident.incidentWebUrl | string | The URL for the incident page in the Microsoft 365 Defender portal. | 
+| MsGraph.Incident.lastModifiedBy | string | The identity that last modified the incident. | 
+| MsGraph.Incident.lastUpdateDateTime | string | Time when the incident was last updated. | 
+| MsGraph.Incident.redirectIncidentId | string | Only populated in case an incident is grouped with another incident, as part of the logic that processes incidents. In such a case, the status property is redirected. | 
+| MsGraph.Incident.severity | string | Indicates the possible impact on assets. The higher the severity, the bigger the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue. | 
+| MsGraph.Incident.status | string | The status of the incident. Possible values are active, resolved, inProgress, redirected, unknownFutureValue, and awaitingAction. | 
+| MsGraph.Incident.tenantId | string | The Microsoft Entra tenant in which the alert was created. | 
+| MsGraph.Incident.systemTags | string | The system tags associated with the incident. | 
+
+#### Command example
+```!msg-list-security-incident limit=1```
+#### Context Example
+```json
+{
+    "MsGraph": {
+        "Incident": {
+            "@odata.count": 26176,
+            "value": [
+                {
+                    "Assigned to": null,
+                    "Classification": "unknown",
+                    "Created date time": "2024-03-19T08:08:33.2533333Z",
+                    "Custom tags": "",
+                    "Determination": "unknown",
+                    "Display name": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min) involving one user",
+                    "Severity": "medium",
+                    "Status": "active",
+                    "System tags": "",
+                    "Updated date time": "2024-03-19T08:08:33.36Z",
+                    "id": "54811"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Incidents:
+>|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min) involving one user | 54811 | medium | active |  |  |  | unknown | unknown | 2024-03-19T08:08:33.2533333Z | 2024-03-19T08:08:33.36Z |
+
 
 ### msg-update-security-incident
 
@@ -2266,14 +2354,57 @@ Update the incident with the given ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MsGraph.Incident.incidentId | Number | Incident's ID. | 
-| MsGraph.Incident.redirectIncidentId | Unknown | Only populated in case an incident is grouped together with another incident, as part of the incident processing logic. | 
-| MsGraph.Incident.incidentName | String | The name of the incident. | 
-| MsGraph.Incident.createdTime | Date | The date and time \(in UTC\) the incident was created. | 
-| MsGraph.Incident.lastUpdateTime | Date | The date and time \(in UTC\) the incident was last updated. | 
-| MsGraph.Incident.assignedTo | String | Owner of the incident. | 
-| MsGraph.Incident.classification | String | Specification of the incident. Possible values are: Unknown, FalsePositive, and TruePositive. | 
-| MsGraph.Incident.determination | String | The determination of the incident. Possible values are: NotAvailable, Apt, Malware, SecurityPersonnel, SecurityTesting, UnwantedSoftware, and Other. | 
-| MsGraph.Incident.severity | String | Severity of the incident. Possible values are: UnSpecified, Informational, Low, Medium, and High. | 
-| MsGraph.Incident.status | String | The current status of the incident. Possible values are: Active, Resolved, and Redirected. | 
-| MsGraph.Incident.alerts | unknown |  | 
+| MsGraph.Incident.assignedTo | String | Owner of the incident, or null if no owner is assigned. Free editable text. | 
+| MsGraph.Incident.classification | String | The specification for the incident. Possible values are unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. | 
+| MsGraph.Incident.comments | String | Array of comments created by the Security Operations \(SecOps\) team when the incident is managed. | 
+| MsGraph.Incident.createdDateTime | Date | Time when the incident was first created. | 
+| MsGraph.Incident.customTags | String | Array of custom tags associated with an incident. | 
+| MsGraph.Incident.description | String | Description of the incident. | 
+| MsGraph.Incident.determination | String | Specifies the determination of the incident. Possible values are unknown, apt, malware, securityPersonnel, securityTesting, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, clean, insufficientData, confirmedUserActivity, lineOfBusinessApplication, unknownFutureValue. | 
+| MsGraph.Incident.displayName | String | The incident name. | 
+| MsGraph.Incident.id | String | Unique identifier to represent the incident. | 
+| MsGraph.Incident.incidentWebUrl | String | The URL for the incident page in the Microsoft 365 Defender portal. | 
+| MsGraph.Incident.lastModifiedBy | String | The identity that last modified the incident. | 
+| MsGraph.Incident.lastUpdateDateTime | Date | Time when the incident was last updated. | 
+| MsGraph.Incident.redirectIncidentId | String | Only populated in case an incident is grouped with another incident, as part of the logic that processes incidents. In such a case, the status property is redirected. | 
+| MsGraph.Incident.severity | String | Indicates the possible impact on assets. The higher the severity, the bigger the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue. | 
+| MsGraph.Incident.status | String | The status of the incident. Possible values are active, resolved, inProgress, redirected, unknownFutureValue, and awaitingAction. | 
+| MsGraph.Incident.tenantId | String | The Microsoft Entra tenant in which the alert was created. | 
+| MsGraph.Incident.systemTags | String collection | The system tags associated with the incident. | 
+
+#### Command example
+```!msg-update-security-incident incident_id=54577```
+#### Context Example
+```json
+{
+    "MsGraph": {
+        "Incidents": {
+            "assignedTo": "test5",
+            "classification": "unknown",
+            "comments": [],
+            "createdDateTime": "2024-03-17T15:50:31.9033333Z",
+            "customTags": [],
+            "description": null,
+            "determination": "unknown",
+            "displayName": "Exfiltration incident involving one user",
+            "id": "54577",
+            "incidentWebUrl": "https://security.microsoft.com/incidents/54577?tid=ebac1a16-81bf-449b-8d43-5732c3c1d999",
+            "lastModifiedBy": "Microsoft 365 Defender-AlertCorrelation",
+            "lastUpdateDateTime": "2024-03-19T07:24:34.7066667Z",
+            "redirectIncidentId": null,
+            "severity": "medium",
+            "status": "active",
+            "systemTags": [],
+            "tenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated incident No. 54577:
+>|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| Exfiltration incident involving one user | 54577 | medium | active | test5 |  |  | unknown | unknown | 2024-03-17T15:50:31.9033333Z | 2024-03-19T07:24:34.7066667Z |
+
