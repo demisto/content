@@ -1335,6 +1335,35 @@ def test_chromebrowser_list_command_high_limit(gsuite_client, mocker):
     assert command_result.outputs_prefix == 'GSuite.ChromeBrowserDevices'
 
 
+def test_chromebrowser_list_command_device_id(gsuite_client, mocker):
+    """
+        Scenario: chromebrowserdevice list successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command chromebrowser_list_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import chromebrowser_list_command
+    args = {"customer_id": "test", "device_id": "1111111111"}
+    with open('test_data/chromebrowser_list_by_device_response.json') as file:
+        api_response = json.load(file)
+    with open('test_data/chromebrwoser_list_by_device_context.json') as file:
+        expected_entry_context = json.load(file)
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
+    command_result = chromebrowser_list_command(gsuite_client, args)
+    assert command_result.readable_output == expected_entry_context['readable_output']
+    assert command_result.outputs == expected_entry_context['outputs']
+    assert command_result.raw_response == expected_entry_context['raw_response']
+    assert command_result.outputs_key_field == ['deviceId']
+    assert command_result.outputs_prefix == 'GSuite.ChromeBrowserDevices'
+
+
+
 def test_modify_policy_command(gsuite_client, mocker):
     """
         Scenario: Policy Modify command successful execution.
@@ -1441,6 +1470,32 @@ def test_policy_schemas_command_high_limit(gsuite_client, mocker):
     assert command_result.outputs_key_field == ['name']
     assert command_result.outputs_prefix == 'GSuite.PolicySchema'
 
+def test_policy_schemas_command_schema_name(gsuite_client, mocker):
+    """
+        Scenario: Policy Schema list command successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command policy_schemas_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import policy_schemas_command
+    args = {"customer_id": "test", "schema_name": "chrome.users.appsconfig.AllowedAppTypes"}
+    with open('test_data/policy_schemas_list_reponse_schema_name.json') as file:
+        api_response = json.load(file)
+    with open('test_data/policy_schemas_list_context_schema_name.json') as file:
+        expected_entry_context = json.load(file)
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
+    command_result = policy_schemas_command(gsuite_client, args)
+    assert command_result.readable_output == expected_entry_context['readable_output']
+    assert command_result.outputs == expected_entry_context['outputs']
+    assert command_result.raw_response == expected_entry_context['raw_response']
+    assert command_result.outputs_key_field == ['name']
+    assert command_result.outputs_prefix == 'GSuite.PolicySchema'
 
 def test_policy_resolve_command(gsuite_client, mocker):
     """

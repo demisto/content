@@ -26,7 +26,6 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
-
   required: false
 description: G Suite or Google Workspace Admin is an integration to perform an action on IT infrastructure, create users, update settings, and more administrative tasks.
 display: Google Workspace Admin

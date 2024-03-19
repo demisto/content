@@ -1580,40 +1580,40 @@ def chromebrowser_list_command(client: Client, args: dict[str, str]) -> CommandR
     limit = args.get('limit', '')
 
     full_url = f'https://www.googleapis.com/admin/directory/v1.1beta1/customer/{customer_id}/devices/chromebrowsers/'
-
+    cb_list_resp = []
     if device_id:
         full_url = full_url + f'{device_id}'
         params_for_command = GSuiteClient.remove_empty_entities({
             'projection': projection
         })
+        response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+        cb_list_resp.append(response)
     else:
         params_for_command = assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path, page_token,
                                                               page_size)
-
-    cb_list_resp = []
-    if limit:
-        if int(limit) <= API_LIMIT:
-            page_size = limit
-            params_for_command = assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path,
-                                                                  page_token, page_size)
-            response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
-            cb_list_resp.extend(response['browsers'])
-        else:
-            while len(cb_list_resp) < int(limit):
-                if int(limit) - len(cb_list_resp) > API_LIMIT:
-                    page_size = str(API_LIMIT)
-                else:
-                    page_size = str(int(limit) - len(cb_list_resp))
+        if limit:
+            if int(limit) <= API_LIMIT:
+                page_size = limit
                 params_for_command = assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path,
                                                                       page_token, page_size)
                 response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
-                page_token = response.get('nextPageToken', '')
                 cb_list_resp.extend(response['browsers'])
-                if not page_token:
-                    break
-    else:
-        response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
-        cb_list_resp.extend(response['browsers'])
+            else:
+                while len(cb_list_resp) < int(limit):
+                    if int(limit) - len(cb_list_resp) > API_LIMIT:
+                        page_size = str(API_LIMIT)
+                    else:
+                        page_size = str(int(limit) - len(cb_list_resp))
+                    params_for_command = assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path,
+                                                                          page_token, page_size)
+                    response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+                    page_token = response.get('nextPageToken', '')
+                    cb_list_resp.extend(response['browsers'])
+                    if not page_token:
+                        break
+        else:
+            response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+            cb_list_resp.extend(response['browsers'])
 
     readable_output = tableToMarkdown(HR_MESSAGES['CHROME_BROWSER_LIST'].format(device_id), cb_list_resp,
                                       ['deviceId', 'osPlatform', 'osVersion', 'machineName', 'serialNumber', 'orgUnitPath'],
@@ -1793,46 +1793,45 @@ def policy_schemas_command(client: Client, args: dict[str, str]) -> CommandResul
     limit = args.get('limit', '')
 
     full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policySchemas'
-
+    policy_schemas_resp = []
     if schema_name:
-        params_for_command = GSuiteClient.remove_empty_entities({
-            'name': schema_name,
-        })
+        full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policySchemas/{schema_name}'
+        response = client.http_request(full_url=full_url, method='GET')
+        policy_schemas_resp.append(response)
     else:
         params_for_command = assign_params_policy_schemas(filter, page_size, page_token)
-
-    policy_schemas_resp = []
-    if limit:
-        if int(limit) <= API_LIMIT:
-            page_size = limit
-            params_for_command = assign_params_policy_schemas(filter, page_size, page_token)
-            response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
-            policy_schemas_resp.extend(response['policySchemas'])
-        else:
-            while len(policy_schemas_resp) < int(limit):
-                if int(limit) - len(policy_schemas_resp) > API_LIMIT:
-                    page_size = str(API_LIMIT)
-                else:
-                    page_size = str(int(limit) - len(policy_schemas_resp))
+        if limit:
+            if int(limit) <= API_LIMIT:
+                page_size = limit
                 params_for_command = assign_params_policy_schemas(filter, page_size, page_token)
                 response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
-                page_token = response.get('nextPageToken', '')
                 policy_schemas_resp.extend(response['policySchemas'])
-                if not page_token:
-                    break
-    else:
-        response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
-        policy_schemas_resp.extend(response['policySchemas'])
+            else:
+                while len(policy_schemas_resp) < int(limit):
+                    if int(limit) - len(policy_schemas_resp) > API_LIMIT:
+                        page_size = str(API_LIMIT)
+                    else:
+                        page_size = str(int(limit) - len(policy_schemas_resp))
+                    params_for_command = assign_params_policy_schemas(filter, page_size, page_token)
+                    response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+                    page_token = response.get('nextPageToken', '')
+                    policy_schemas_resp.extend(response['policySchemas'])
+                    if not page_token:
+                        break
+        else:
+            response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+            policy_schemas_resp.extend(response['policySchemas'])
 
     # Readable Output
     readable_output = tableToMarkdown(HR_MESSAGES['POLICY_LIST'], policy_schemas_resp,
                                       ['name', 'policyDescription', 'schemaName'],
                                       headerTransform=pascalToSpace, removeNull=True)
-    return CommandResults(outputs_prefix=OUTPUT_PREFIX['POLICY SCHEMAS'],
+    a= CommandResults(outputs_prefix=OUTPUT_PREFIX['POLICY SCHEMAS'],
                           outputs_key_field=['name'],
                           outputs=policy_schemas_resp,
                           readable_output=readable_output,
                           raw_response=response)
+    return a
 
 
 def group_delete_command(client: Client, args: dict[str, str]) -> str:
