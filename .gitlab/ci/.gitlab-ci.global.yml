@@ -510,11 +510,10 @@
     - SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
     - |
       if [[ -n "${SHOULD_LINT_ALL}" ]]; then
-        echo "Pre Commit all files";
+        echo "Pre Commit all files"
         demisto-sdk pre-commit -a --mode=nightly
-      fi
       else
-        echo "Pre Commit only changed files";
+        echo "Pre Commit only changed files"
         demisto-sdk pre-commit --mode=ci
       fi
     - job-done
