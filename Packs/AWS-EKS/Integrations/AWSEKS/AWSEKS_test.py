@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 from AWSApiModule import *
 from AWSEKS import datetime_to_str, validate_args, list_clusters_command
+from test_data.test_response import UPDATE_CLUSTER_CONFIG_LOGGING_RESPONSE
 
 
 def util_load_json(path):
@@ -137,6 +138,9 @@ class Boto3Client:
     def list_clusters(self):
         pass
 
+    def update_cluster_config(self, clusterName, resourcesVpcConfig=None, logging=None, authenticationMode=None):
+        pass
+
 
 def test_list_clusters_command(mocker):
     """
@@ -206,3 +210,28 @@ def test_list_clusters_command_with_pagination(mocker):
     result = list_clusters_command(client, {'limit': '200'})
     assert result.readable_output == ('### The list of clusters\n|ClustersNames|\n|---|\n| '
                                       'cluster_name_1,<br>cluster_name_100,<br>cluster_name_101 |\n')
+
+
+def test_update_cluster_config_command(mocker):
+    """
+        Given:
+            - A cluster name and a logging configuration.
+        When:
+            - running update_cluster_config_command.
+        Then:
+            - assert that the readable output and outputs are correct.
+    """
+    from AWSEKS import update_cluster_config_command
+    expected_output = util_load_json("test_data/update_cluster_config.json").get('logging_expected_output')
+    expected_readable_output = util_load_json("test_data/update_cluster_config.json").get('logging_expected_readable_output')
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
+    mocker.patch.object(Boto3Client, "update_cluster_config", return_value=UPDATE_CLUSTER_CONFIG_LOGGING_RESPONSE)
+    client = AWSClient("aws_default_region", None, None, None,
+                       None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
+    args = {
+        "cluster_name": "cluster_name",
+        "logging": "{'clusterLogging': [{'types': ['api', 'authenticator', 'audit'], 'enabled': true}]}"
+    }
+    result = update_cluster_config_command(client, args)
+    assert result.readable_output == expected_readable_output
+    assert result.outputs == expected_output
