@@ -372,7 +372,7 @@
       echo "machine ids:${CLOUD_CHOSEN_MACHINE_IDS}"
       section_start "Create Testing Branch"
       export BRANCH="${CI_COMMIT_BRANCH}-cleanup-branch-${CI_PIPELINE_ID}"
-      export GITLAB_REPO_URL=https://GITLAB_PUSH_TOKEN:${GITLAB_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git
+      export GITLAB_REPO_URL=https://GITLAB_PUSH_TOKEN:${GITLAB_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git  # disable-secrets-detection
       git push "$GITLAB_REPO_URL" "$CI_COMMIT_BRANCH:$BRANCH"
       echo "Created test branch:${BRANCH}"
       git branch --list

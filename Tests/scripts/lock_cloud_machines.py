@@ -126,7 +126,7 @@ def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval:
 
     """
     logging.info(f"test job_id= {job_id}")
-    if job_id.find("_"):
+    if "_" in job_id:
         job_id = job_id.split('_')[1]
         user_endpoint = JOB_STATUS_URL.format(GITLAB_SERVER_URL, CONTENT_GITLAB_PROJECT_ID, job_id)
     else:
