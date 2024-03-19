@@ -2641,7 +2641,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-      description: "If set to True will convert 'value' argument from date in format: '%Y-%m-%dT%H:%M:%S.%f000Z' (e.g. '2018-11-06T08:56:41.000000Z') to epoch."
+      description: "If set to True will convert 'value' argument from date in format: '%Y-%m-%dT%H:%M:%S.%f000Z' (e.g.,  '2018-11-06T08:56:41.000000Z') to epoch."
       defaultValue: 'False'
     outputs:
     - contextPath: QRadar.Reference.Name
