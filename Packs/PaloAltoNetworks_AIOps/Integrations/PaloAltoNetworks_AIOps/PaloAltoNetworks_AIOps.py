@@ -66,7 +66,7 @@ class Client(BaseClient):
                     }
                     # store received token and expiration time in the integration context
                     set_integration_context(new_token)
-                    self._access_token = new_token.get(tsg_access_token)
+                    self._access_token = new_token.get(tsg_access_token, {})
                 else:
                     raise DemistoException('Error occurred while creating an access token. Access token field has not'
                                            ' found in the response data. Please check the instance configuration.\n')

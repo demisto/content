@@ -65,6 +65,7 @@ script:
       - name: report_id
         description: Report_id recieved from generate_bpa_report_request
         required: true
+      description: Polling mechanism to upload report
       polling: true
       hidden: true
   runonce: false
