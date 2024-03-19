@@ -1826,12 +1826,11 @@ def policy_schemas_command(client: Client, args: dict[str, str]) -> CommandResul
     readable_output = tableToMarkdown(HR_MESSAGES['POLICY_LIST'], policy_schemas_resp,
                                       ['name', 'policyDescription', 'schemaName'],
                                       headerTransform=pascalToSpace, removeNull=True)
-    a= CommandResults(outputs_prefix=OUTPUT_PREFIX['POLICY SCHEMAS'],
+    return CommandResults(outputs_prefix=OUTPUT_PREFIX['POLICY SCHEMAS'],
                           outputs_key_field=['name'],
                           outputs=policy_schemas_resp,
                           readable_output=readable_output,
                           raw_response=response)
-    return a
 
 
 def group_delete_command(client: Client, args: dict[str, str]) -> str:
