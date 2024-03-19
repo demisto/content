@@ -123,11 +123,13 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None, 
     indicators = []
     if indicator_objects:
         for indicator_object in indicator_objects:
+            raw_name = indicator_object.get('name', '')
             pattern = indicator_object.get('pattern') or ''
+            
             for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
                     indicator_obj = {
-                        "value": indicator_object.get('name', ''),
+                        "value": raw_name,
                         "type": UNIT42_TYPES_TO_DEMISTO_TYPES.get(key),
                         "score": ThreatIntel.ObjectsScore.MALWARE,  # default verdict of fetched indicators is malicious
                         "rawJSON": indicator_object,
@@ -144,8 +146,11 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None, 
                         if ioc_value := extract_ioc_value(pattern):
                             indicator_obj['value'] = ioc_value
                             
-                            if indicator_object.get('name'):
-                                indicator_obj['fields']['associatedfilenames'] = indicator_object['name']
+                        if ioc_value == raw_name:
+                            continue
+                        
+                        if raw_name:
+                            indicator_obj['fields']['associatedfilenames'] = indicator_object['name']
 
                     if tlp_color:
                         indicator_obj['fields']['trafficlightprotocol'] = tlp_color
