@@ -436,7 +436,7 @@ def construct_slack_msg(
     pipeline_failed_jobs: list[ProjectPipelineJob],
     pull_request: GithubPullRequest | None,
     shame_message: tuple[str, str, str, str] | None,
-) -> tuple[list[dict[str, Any]], list[dict[str, Any] | list[dict[str, Any]]]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]] | list[list[dict[str, Any]]]]:
     # report failing jobs
     content_fields = []
 
