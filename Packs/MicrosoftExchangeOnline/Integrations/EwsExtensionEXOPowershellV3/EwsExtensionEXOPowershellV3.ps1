@@ -1575,7 +1575,7 @@ function ListRulesCommand {
     $raw_response = $client.GetRules($mailbox, $limit)
     $md_columns = $raw_response | Select-Object -Property RuleIdentity, Name, Enabled, Priority
     $human_readable = TableToMarkdown $md_columns "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule" = $raw_response }
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule(obj.Guid === val.Guid)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
 function GetRuleCommand {
@@ -1589,7 +1589,7 @@ function GetRuleCommand {
     $raw_response = $client.GetRule($mailbox, $identity)
     $md_columns = $raw_response | Select-Object -Property RuleIdentity, Name, Enabled, Priority, Description, StopProcessingRules, IsValid
     $human_readable = TableToMarkdown $md_columns "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule" = $raw_response }
+    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule(obj.Guid === val.Guid)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
 function RemoveRuleCommand {
