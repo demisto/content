@@ -76,7 +76,7 @@ This playbook does not use any integrations.
 | UserEngagement | Specify whether to engage with the user via email for investigation updates.<br/>Set the value to 'True' to allow user engagement, or 'False' to avoid user engagement. | True | Optional |
 | TakeManualActions | Specify whether to stop the playbook to take additional action before closing the incident.<br/>Set the value to 'True' to stop the playbook before closing the incidents, or "False" to close the incident once the playbook flow is done. | False | Optional |
 | KeyWordsToSearch | A comma-separated list of keywords to search in the email body.<br/>For example: name of the organization finance app that the attacker might impersonate.<br/>This input is used in the "Spear Phishing Investigation" sub-playbook. |  | Optional |
-| NonMaliciousEmailReview | In case of an incident with non malicious email it possible either to close the incident or to review and approve by analyst.<br/>Set the value "True" for review the incident by analyst. Set the value "False" to close incidents with non malicious emails. | True | Optional |
+| NonMaliciousEmailReview | In case of an incident with a non-malicious email, it is possible either to close the incident or to review and approve it by an analyst.<br/>Set the value "True" for a review of the incident by an analyst. Set the value "False" to close incident. | True | Optional |
 
 ## Playbook Outputs
 
