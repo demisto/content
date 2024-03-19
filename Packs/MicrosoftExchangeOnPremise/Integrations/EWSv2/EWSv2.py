@@ -33,7 +33,6 @@ from exchangelib.protocol import NoVerifyHTTPAdapter  # noqa: E402
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
 from exchangelib.version import VERSIONS as EXC_VERSIONS
-import ssl
 
 
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
