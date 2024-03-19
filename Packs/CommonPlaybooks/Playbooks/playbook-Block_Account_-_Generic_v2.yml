@@ -1551,8 +1551,7 @@ tasks:
     scriptarguments:
       username:
         complex:
-          root: UserAD.attributes
-          accessor: sAMAccountName
+          root: UserAD
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2130,7 +2129,6 @@ tasks:
       user:
         complex:
           root: UserMSGraph
-          accessor: id
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2381,7 +2379,7 @@ tasks:
       - "77"
     scriptarguments:
       extend-context:
-        simple: UserAD=
+        simple: UserAD=attributes.sAMAccountName
       ignore-outputs:
         simple: "true"
       username:
@@ -2428,7 +2426,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: UserAD.attributes.sAMAccountName
+              simple: UserAD
             iscontext: true
           right:
             value: {}
@@ -2467,7 +2465,7 @@ tasks:
       - "79"
     scriptarguments:
       extend-context:
-        simple: UserMSGraph=
+        simple: UserMSGraph=id
       ignore-outputs:
         simple: "true"
       user:
@@ -2514,7 +2512,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: UserMSGraph.id
+              simple: UserMSGraph
             iscontext: true
           right:
             value: {}
@@ -2572,7 +2570,6 @@ view: |-
       "70_33_yes": 0.1,
       "72_2_#default#": 0.1,
       "72_74_yes": 0.44,
-      "77_48_yes": 0.54,
       "8_38_yes": 0.65,
       "8_39_#default#": 0.13
     },
