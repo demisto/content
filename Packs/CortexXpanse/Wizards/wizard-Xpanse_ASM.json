@@ -51,16 +51,16 @@
           "priority": 1,
           "name": "Cortex Xpanse",
           "action": {
-            "existing": "Update your current instance to work with the new Xpanse incident type: \n1. Enable fetching. \n2. Set the Incident type field to Xpanse Issue - Generic. \n3. Set the Mapper field to 'ExpanseV2 Mapper'.",
-            "new": "Set up new 'Cortex Xpanse' instance to start fetching Cortex Xpanse incidents: \n1. Enable fetching. \n2. Set the Incident type field to Xpanse Issue - Generic. \n3. Set the Mapper field to 'ExpanseV2 Mapper'."
+            "existing": "Update your current instance to work with the new Xpanse Alert Incident type: \n1. Enable fetching. \n2. Set the Incident classifier field to Xpanse - Classifier. \n3. Set the Mapper field to 'Xpanse - Incoming Mapper'.",
+            "new": "Set up new 'Cortex Xpanse' instance to start fetching Cortex Xpanse Alerts: \n1. Enable fetching. \n2. Set the Incident classifier to Xpanse - Classifier. \n3. Set the Mapper field to 'Xpanse - Incoming Mapper'."
           },
           "description": "Set up the 'Cortex Xpanse' integration to work with your Attack Surface Management use case.",
-          "incident_type": "Xpanse Issue - Generic"
+          "incident_type": "Xpanse Alert"
         }
       ],
       "set_playbook": [
         {
-          "name": "Xpanse Incident Handling - Generic"
+          "name": "Xpanse - Alert Handler"
         }
       ],
       "supporting_integrations": [
@@ -117,8 +117,8 @@
         {
           "name": "Enable Your Use Case",
           "action": {
-            "existing": "Enable the fetching integrations to start ingesting data and run the playbook.",
-            "new": "Enable the fetching integrations to start ingesting data and run the playbook."
+            "existing": "Enable the fetching integrations to start ingesting Xpanse Alerts.",
+            "new": "Enable the fetching integrations to start ingesting Xpanse Alerts."
           }
         }
       ]
