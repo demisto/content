@@ -31,7 +31,7 @@ class Client(BaseClient):
         previous_token_expiry_time = integration_context.get(tsg_expiry_time)
 
         if previous_token and previous_token_expiry_time > date_to_timestamp(datetime.now()):  # type: ignore
-            return previous_token
+            self._access_token = previous_token
         else:
             data = {
                 'grant_type': 'client_credentials',
@@ -42,7 +42,9 @@ class Client(BaseClient):
                     'Content-Type': 'application/x-www-form-urlencoded',
                     'Accept': 'application/json',
                 }
-
+                #Trying to be as accurate as possible with the time of the request
+                expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)
+                
                 res = self._http_request(method='POST',
                                          full_url='https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token',
                                          auth=(self._client_id, self._client_secret),
@@ -56,8 +58,7 @@ class Client(BaseClient):
                                            f'Error: {exception}')
 
                 if access_token := res.get('access_token'):
-                    expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)
-                    expiry_time += res.get('expires_in', 0) - 20
+                    expiry_time += (res.get('expires_in', 0) *1000)
                     new_token = {
                         tsg_access_token: access_token,
                         tsg_expiry_time: expiry_time
