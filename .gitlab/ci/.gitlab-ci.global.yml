@@ -508,7 +508,6 @@
     - section_end "Revoking GCP Auth and Configure Docker"
 
     - SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
-    - SHOULD_LINT_ALL=true # TODO remove, for testing only
     - |
       if [[ -n "${SHOULD_LINT_ALL}" ]]; then
         echo "Pre Commit all files";
