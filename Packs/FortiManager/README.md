@@ -37,7 +37,7 @@ You can configure the specific vendor and product for this instance.
 
 ### XQL Queries
 The following query returns all mapped XDM Fields
-```sql
+```
 | datamodel dataset = fortinet_fortimanager_raw 
 | fields fortinet_fortimanager_raw._raw_log,
     xdm.event.id,
