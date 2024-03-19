@@ -113,7 +113,8 @@ def fetch_events_command(
     updated_results, updated_cached_audits = remove_duplicated_events(results, cached_audits)
     last_run['audit_cache'] = updated_cached_audits
     if updated_results:
-        last_run["start_time"] = datetime.strptime(updated_results[-1]["ModificationTimeStamp"], "%Y-%m-%dT%H:%M:%S.%fZ")
+        last_run["start_time"] = (datetime.strptime(updated_results[-1]["ModificationTimeStamp"],
+                                                    "%Y-%m-%dT%H:%M:%S.%fZ")).strftime(DATE_FORMAT_EVENT)
     else:
         demisto.info("No new events were fetched. Therefore, the last_run object won't be updated.")
     return updated_results, last_run
@@ -124,8 +125,8 @@ def remove_duplicated_events(results: List[dict], cached_audits: List[str]) -> t
     updated_cached_audits: List[str] = []
     removed_events: List[str] = []
     for result in results:
-        if event_guid := result.get("Guid", "") in cached_audits:
-            removed_events.append(event_guid)
+        if (event_guid := result.get("Guid", "")) in cached_audits:
+            removed_events.append(str(event_guid))
         else:
             updated_results.append(result)
             updated_cached_audits.append(event_guid)

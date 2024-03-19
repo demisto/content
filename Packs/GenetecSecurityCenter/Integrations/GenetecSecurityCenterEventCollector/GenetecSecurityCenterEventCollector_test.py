@@ -5,21 +5,25 @@ import demistomock as demisto
 
 INCIDENT_NO_ONE = {
     'Id': 1,
+    'Guid': 1,
     'ModificationTimeStamp': '2024-02-21T23:21:33.96Z',
     'Value': "<AuditData><EId>1</EId></AuditData>"
 }
 INCIDENT_NO_TWO = {
     'Id': 2,
+    'Guid': 2,
     'ModificationTimeStamp': '2024-02-22T23:21:33.96Z',
     'Value': "<AuditData><EId>2</EId></AuditData>"
 }
 INCIDENT_NO_THREE = {
     'Id': 3,
+    'Guid': 3,
     'ModificationTimeStamp': '2024-02-23T23:21:33.96Z',
     'Value': "<AuditData><EId>3</EId></AuditData>"
 }
 INCIDENT_NO_FOUR = {
     'Id': 4,
+    'Guid': 4,
     'ModificationTimeStamp': '2024-02-24T23:21:33.96Z',
     'Value': "<AuditData><EId>4</EId></AuditData>"
 }
@@ -69,29 +73,31 @@ def test_test_module_failure(mocker):
                          'expected_events_first_call, expected_events_second_call',
                          [
                              ([INCIDENT_NO_ONE, INCIDENT_NO_TWO.copy(), INCIDENT_NO_THREE, INCIDENT_NO_FOUR],
-                              [INCIDENT_NO_TWO, INCIDENT_NO_THREE, INCIDENT_NO_FOUR], 2, 2,
-                              {'start_time': '2024-02-22T23:21:33'}, {'start_time': '2024-02-23T23:21:33'},
+                              [INCIDENT_NO_TWO, INCIDENT_NO_THREE, INCIDENT_NO_FOUR], 2, 1,
+                              {'audit_cache': [1, 2], 'start_time': '2024-02-22T23:21:33'},
+                              {'audit_cache': [3], 'start_time': '2024-02-23T23:21:33'},
                               [
                                   {
                                       'Id': 1,
+                                      'Guid': 1,
                                       'ModificationTimeStamp': '2024-02-21T23:21:33.96Z',
+                                      '_time': '2024-02-21T23:21:33.96Z',
                                       'Value': {'AuditData': {'EId': '1'}}
                                   },
                                   {
                                       'Id': 2,
+                                      'Guid': 2,
                                       'ModificationTimeStamp': '2024-02-22T23:21:33.96Z',
+                                      '_time': '2024-02-22T23:21:33.96Z',
                                       'Value': {'AuditData': {'EId': '2'}}
                                   }
                              ],
                                  [
                                   {
-                                      'Id': 2,
-                                      'ModificationTimeStamp': '2024-02-22T23:21:33.96Z',
-                                      'Value': {'AuditData': {'EId': '2'}}
-                                  },
-                                  {
                                       'Id': 3,
+                                      'Guid': 3,
                                       'ModificationTimeStamp': '2024-02-23T23:21:33.96Z',
+                                      '_time': '2024-02-23T23:21:33.96Z',
                                       'Value': {'AuditData': {'EId': '3'}}
                                   }
                              ])
