@@ -25,7 +25,7 @@ from Tests.scripts.collect_tests.exceptions import (
     NotUnderPackException, PrivateTestException, SkippedPackException,
     SkippedTestException, TestMissingFromIdSetException,
     NonNightlyPackInNightlyBuildException, IncompatibleTestMarketplaceException)
-from Tests.scripts.collect_tests.id_set import Graph, IdSet, IdSetItem
+from Tests.scripts.collect_tests.id_set import Graph, IdSetItem
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.test_conf import TestConf
@@ -86,7 +86,7 @@ class CollectionResult:
             version_range: VersionRange | None,
             reason_description: str,
             conf: TestConf | None,
-            id_set: IdSet | Graph | None,
+            id_set: Graph | None,
             is_sanity: bool = False,
             is_nightly: bool = False,
             skip_support_level_compatibility: bool = False,
@@ -195,7 +195,7 @@ class CollectionResult:
             test: str | None,
             reason: CollectionReason,
             conf: TestConf | None,
-            id_set: IdSet | Graph | None,
+            id_set: Graph | None,
             is_sanity: bool,
             is_nightly: bool,
             skip_support_level_compatibility: bool,
@@ -302,13 +302,10 @@ class CollectionResult:
 
 
 class TestCollector(ABC):
-    def __init__(self, marketplace: MarketplaceVersions, graph: bool = False):
+    def __init__(self, marketplace: MarketplaceVersions):
         self.marketplace = marketplace
-        self.id_set: IdSet | Graph
-        if graph:
-            self.id_set = Graph(marketplace)
-        else:
-            self.id_set = IdSet(marketplace, PATHS.id_set_path)
+        self.id_set: Graph
+        self.id_set = Graph(marketplace)
         self.conf = TestConf(PATHS.conf_path, marketplace)
         self.trigger_sanity_tests = False
 
@@ -782,7 +779,7 @@ class BranchTestCollector(TestCollector):
             marketplace: MarketplaceVersions,
             service_account: str | None,
             private_pack_path: str | None = None,
-            graph: bool = False,
+            graph: bool = True,
     ):
         """
 
@@ -1220,7 +1217,7 @@ class SpecificPacksTestCollector(TestCollector):
             self,
             packs_to_upload: str,
             marketplace: MarketplaceVersions,
-            graph: bool = False,
+            graph: bool = True,
     ):
         super().__init__(marketplace, graph=graph)
         self.packs_to_upload = packs_to_upload
@@ -1271,7 +1268,7 @@ class UploadAllCollector(TestCollector):
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, graph: bool = False):
+    def __init__(self, graph: bool = True):
         super().__init__(MarketplaceVersions.MarketplaceV2, graph=graph)
 
     def _collect_packs_of_content_matching_marketplace_value(self) -> CollectionResult | None:
@@ -1367,7 +1364,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
 
 class XSOARNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, marketplace: MarketplaceVersions = MarketplaceVersions.XSOAR, graph: bool = False):
+    def __init__(self, marketplace: MarketplaceVersions = MarketplaceVersions.XSOAR, graph: bool = True):
         super().__init__(marketplace, graph=graph)
 
     def _collect(self) -> CollectionResult | None:
@@ -1473,7 +1470,7 @@ def output(result: CollectionResult | None):
 
 
 class XPANSENightlyTestCollector(NightlyTestCollector):
-    def __init__(self, graph: bool = False):
+    def __init__(self, graph: bool = True):
         super().__init__(MarketplaceVersions.XPANSE, graph=graph)
 
     def _collect(self) -> CollectionResult | None:
@@ -1492,7 +1489,6 @@ if __name__ == '__main__':
     parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version',
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
-    parser.add_argument('--graph', '-g', type=str2bool, help='Should use graph', default=False, required=False)
     parser.add_argument('--override_all_packs', '-a', type=str2bool, help='Collect all packs if override upload', default=False,
                         required=False)
     parser.add_argument('-up', '--pack_names', help="Packs to upload, will only collect what is related to them", default='',

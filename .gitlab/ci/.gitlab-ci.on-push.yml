@@ -158,7 +158,7 @@ validate-content-conf:
     - git add Packs
     - echo "Updating the content graph"
     - mkdir "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph"
-    - demisto-sdk update-content-graph -g --marketplace "${MARKETPLACE_VERSION}" -o "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph"
+    - demisto-sdk update-content-graph --marketplace "${MARKETPLACE_VERSION}" -o "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph"
     - echo "Successfully updated content graph"
 
     - section_end "Create or update content graph"
