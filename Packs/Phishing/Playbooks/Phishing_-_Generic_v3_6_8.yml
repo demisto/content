@@ -3594,6 +3594,7 @@ tasks:
           right:
             value:
               simple: "True"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
