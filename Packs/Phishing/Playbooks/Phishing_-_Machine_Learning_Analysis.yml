@@ -528,3 +528,5 @@ fromversion: 6.1.0
 contentitemexportablefields:
   contentitemfields: {}
 system: true
+marketplaces:
+  - xsoar
