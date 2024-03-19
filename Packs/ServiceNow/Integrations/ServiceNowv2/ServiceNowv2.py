@@ -1463,19 +1463,26 @@ def upload_file_command(client: Client, args: dict) -> tuple[str, dict, dict, bo
 
 
 def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
-    """Delete an attachment file.
+    """Deletes an attachment file.
+    Note: This function exclusively returns 404 error responses,
+    while all other types of errors are managed within the send_request function.
 
     Args:
-        client: Client object with request.
-        args: Usually demisto.args()
+        client: Client object used to make requests.
+        args: The command arguments provided by user.
 
-    Returns:
-        Demisto Outputs.
+    return: a tuple for CommandResults containing:
+        - Human readable message.
+        - Entry context data.
+        - The raw response.
+        - Ignore auto extract flag.
+
+    :raises DemistoException: Raised if no record is found for the provided attachment file ID.
     """
     attachment_file_id = str(args.get('file_sys_id', ''))
 
     result = client.delete_attachment(attachment_file_id)
-    if not result:
+    if not result:  # successful response is 204 (empty response)
         return f'Attachment with Sys ID {attachment_file_id} was successfully deleted.', {}, result, True
     raise DemistoException("Error: No record found. Record doesn't exist or ACL restricts the record retrieval.")
 
