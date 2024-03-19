@@ -1946,17 +1946,15 @@ class Taxii2FeedClient(STIX2XSOARParser):
             id_to_object={},
             field_map=field_map if field_map else {},
             skip_complex_mode=skip_complex_mode,
-            # update_custom_fields=update_custom_fields,
+            update_custom_fields=update_custom_fields,
             tags=tags if tags else [],
         )
         self._conn = None
         self.server = None
         self.api_root = None
         self.collections = None
-        # self.last_fetched_indicator__modified = None
 
         self.collection_to_fetch = collection_to_fetch
-        self.skip_complex_mode = skip_complex_mode
         if not limit_per_request:
             limit_per_request = DFLT_LIMIT_PER_REQUEST
         self.limit_per_request = limit_per_request
@@ -1987,13 +1985,8 @@ class Taxii2FeedClient(STIX2XSOARParser):
         if certificate and key:
             self.crt = (self.build_certificate(certificate), self.build_certificate(key))
 
-        self.field_map = field_map if field_map else {}
-        self.tags = tags if tags else []
-        self.tlp_color = tlp_color
-        self.id_to_object: dict[str, Any] = {}
         self.objects_to_fetch = objects_to_fetch
         self.default_api_root = default_api_root
-        self.update_custom_fields = update_custom_fields
 
     def init_server(self, version=TAXII_VER_2_1):
         """
