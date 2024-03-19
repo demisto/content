@@ -417,10 +417,11 @@ def test_fetch_incidents_no_new_incidents(client, requests_mock):
 
     assert len(incidents) == 0
     assert next_run['time'] == '2023-12-12T15:00:00.000000Z'
-    
+
+
 @pytest.mark.parametrize('proxy, result', [('true', True), ('false', False)])
 def test_proxy_parameter_setup(proxy, result, mocker):
-    mocker.patch.object(demisto, 'params', return_value={'proxy' :proxy, 'url': 'fake_url.com'})
+    mocker.patch.object(demisto, 'params', return_value={'proxy': proxy, 'url': 'fake_url.com'})
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch('ZimperiumV2.test_module', return_value=CommandResults(readable_output='test'))
     client = mocker.patch('ZimperiumV2.Client')
