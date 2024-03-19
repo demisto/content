@@ -10,9 +10,19 @@ from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEv
 from pymisp.tools import GenericObjectGenerator, EMailObject
 from pymisp.tools import FileObject
 from base64 import b64decode
+import tempfile
 
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
 
+
+class TempFile:
+    def __init__(self, data):
+        _, self.path = tempfile.mkstemp()
+        with open(self.path, 'w') as temp_file:
+            temp_file.write(data)
+
+    def __del__(self):
+        os.remove(self.path)
 
 def handle_connection_errors(error):
     if "SSLError" in error:
@@ -47,9 +57,15 @@ MISP_URL = params.get('url')
 TO_IDS = params.get('check_to_ids')
 ALLOWED_ORGS = argToList(params.get('allowed_orgs'), ',')
 VERIFY = not params.get('insecure')
+CERTIFICATE = replace_spaces_in_credential(params.get('certificate', {}).get('identifier'))
+PRIVATE_KEY = replace_spaces_in_credential(params.get('certificate', {}).get('password'))
+cert = TempFile(CERTIFICATE) if CERTIFICATE else None
+key = TempFile(PRIVATE_KEY) if PRIVATE_KEY else None
+misp_client_cert = (cert.path, key.path) if cert and key else None
+
 PROXIES = handle_proxy()  # type: ignore
 try:
-    PYMISP = ExpandedPyMISP(url=MISP_URL, key=MISP_API_KEY, ssl=VERIFY, proxies=PROXIES)
+    PYMISP = ExpandedPyMISP(url=MISP_URL, key=MISP_API_KEY, ssl=VERIFY, proxies=PROXIES, cert=misp_client_cert)
 except PyMISPError as e:
     handle_connection_errors(e.message)
 
