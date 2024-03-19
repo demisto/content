@@ -1,4 +1,5 @@
 import incydr
+from incydr import EventQuery
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -19,6 +20,12 @@ DEFAULT_AUDIT_EVENTS_MAX_FETCH = 100000
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+MAX_FETCH_AUDIT_LOGS = 100000
+MAX_AUDIT_LOGS_PAGE_SIZE = 10000
+
+
+MAX_FETCH_FILE_EVENTS = 50000
+MAX_FILE_EVENTS_PAGE_SIZE = 10000
 
 ''' CLIENT CLASS '''
 
@@ -30,6 +37,69 @@ class Client:
         self.client_secret = client_secret
         self.code42_client = incydr.Client(base_url, api_client_id=client_id, api_client_secret=client_secret)
         self.code42_client.session.verify = verify
+
+    def get_audit_logs(
+        self, start_time: datetime | str, end_time: datetime | str | None = None, limit: int = MAX_FETCH_AUDIT_LOGS, page_size: int = MAX_AUDIT_LOGS_PAGE_SIZE
+    ) -> List[Dict]:
+        """
+        Get audit logs
+
+        Args:
+            start_time: from which start time to get logs
+            end_time: until which time to get logs
+            limit: maximum events to retrieve
+            page_size: the page size per single request
+        """
+        audit_logs = []
+        page = 0
+        while len(audit_logs) < limit:
+            audit_event_page = self.code42_client.audit_log.v1.get_page(page, start_time=start_time, end_time=end_time)
+            events = audit_event_page.events
+            if len(events) < page_size:
+                break
+            audit_logs.extend(audit_event_page.events)
+
+        audit_logs = sorted(
+            audit_logs, key=lambda _log: dateparser.parse(_log["timestamp"])  # type: ignore[arg-type, return-value]
+        )
+        audit_logs = audit_logs[:limit]
+        for audit_log in audit_logs:
+            audit_log["_time"] = audit_log["timestamp"]
+
+        return audit_logs
+
+    def get_file_events(self, start_time: datetime | str, end_time: datetime | str | None = None, limit: int = MAX_FETCH_FILE_EVENTS, page_size: int = MAX_FILE_EVENTS_PAGE_SIZE) -> List[Dict[str, Any]]:
+        """
+        Get file events
+
+        Args:
+            start_time: from which start time to get events
+            end_time: until which time to get events
+            limit: maximum events to retrieve
+            page_size: the page size per single request
+        """
+        query = EventQuery(start_date=start_time, end_date=end_time, srtDir="asc", pgSize=page_size)
+        response = self.code42_client.file_events.v2.search(
+            query
+        )
+
+        file_events = response.file_events
+        if not file_events:
+            return []
+        while query.page_token is not None or len(file_events) < limit:
+            file_events.extend(self.code42_client.file_events.v2.search(query))
+
+        file_events = file_events[:limit]
+
+        for event in file_events:
+            event["_time"] = event["event"]["inserted"]
+
+        return file_events
+
+
+
+
+
 
 
     # TODO: REMOVE the following dummy function:
