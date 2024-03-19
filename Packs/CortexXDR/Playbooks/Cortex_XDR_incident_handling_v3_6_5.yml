@@ -1648,8 +1648,8 @@ tasks:
     task:
       id: 3ba84f9e-aaf6-4bd3-8d22-cfc00499e075
       version: -1
-      name: Whether to continue with the investigation and response?
-      description: Checks if the playbook should continue or exit.
+      name: Check whether there are any unhandled alerts?
+      description: Checks if there are any unhandled alerts and the playbook should continue with the investigation and response or exit.
       type: condition
       iscommand: false
       brand: ""
