@@ -25,7 +25,6 @@ class TestModifiedPacks:
 
         assert modified_packs == expected_result
 
-
     @pytest.mark.parametrize("packs_names_input, expected_result", [
         ('{"packs_to_upload": ["pack1", "pack2"], "packs_to_update_metadata": ["pack3"]}',
          ({'pack1', 'pack2'}, {'pack3'})),
