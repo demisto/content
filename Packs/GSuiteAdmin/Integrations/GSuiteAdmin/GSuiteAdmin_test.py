@@ -1363,7 +1363,6 @@ def test_chromebrowser_list_command_device_id(gsuite_client, mocker):
     assert command_result.outputs_prefix == 'GSuite.ChromeBrowserDevices'
 
 
-
 def test_modify_policy_command(gsuite_client, mocker):
     """
         Scenario: Policy Modify command successful execution.
@@ -1470,6 +1469,7 @@ def test_policy_schemas_command_high_limit(gsuite_client, mocker):
     assert command_result.outputs_key_field == ['name']
     assert command_result.outputs_prefix == 'GSuite.PolicySchema'
 
+
 def test_policy_schemas_command_schema_name(gsuite_client, mocker):
     """
         Scenario: Policy Schema list command successful execution.
@@ -1496,6 +1496,7 @@ def test_policy_schemas_command_schema_name(gsuite_client, mocker):
     assert command_result.raw_response == expected_entry_context['raw_response']
     assert command_result.outputs_key_field == ['name']
     assert command_result.outputs_prefix == 'GSuite.PolicySchema'
+
 
 def test_policy_resolve_command(gsuite_client, mocker):
     """
