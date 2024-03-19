@@ -1654,7 +1654,7 @@ def modify_policy_command(client: Client, args: dict[str, str]) -> str:
 
     atk_temp = '{' + additional_target_keys + '}'
     atk_dict = json.loads(atk_temp)
-    app_payload = {}
+
     if policy_raw_json:
         app_payload = GSuiteClient.safe_load_non_strict_json(policy_raw_json)
     elif policy_field_json_entry_id:
@@ -1862,7 +1862,6 @@ def group_delete_command(client: Client, args: dict[str, str]) -> str:
         target_resource_customized = f'orgunits/{target_resource}'
 
     full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policies/groups:batchDelete'
-    app_payload = {}
     if policy_raw_json:
         app_payload = GSuiteClient.safe_load_non_strict_json(policy_raw_json)
     elif policy_field_json_entry_id:
