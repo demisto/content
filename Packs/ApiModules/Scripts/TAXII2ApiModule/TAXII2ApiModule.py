@@ -457,7 +457,7 @@ class XSOAR2STIXParser:
         demisto.debug(f'{stix_ioc=}')
         if stix_ioc.get('type') == "file":
             for hash_type in ["SHA-256", "MD5", "SHA-1", "SHA-512"]:
-                if hash_value := stix_ioc.get("hashes").get(hash_type):
+                if hash_value := stix_ioc.get("hashes", {}).get(hash_type):
                     return hash_value
             return None
 
@@ -757,7 +757,6 @@ class XSOAR2STIXParser:
         Returns:
             Dict[str, Any]: A JSON object of a STIX indicator
         """
-
         custom_fields = xsoar_indicator.get('CustomFields') or {}
 
         if stix_object['type'] == 'autonomous-system':
@@ -768,13 +767,14 @@ class XSOAR2STIXParser:
         elif stix_object['type'] == 'file':
             # hashes is the only required field for file
             value = xsoar_indicator.get('value')
-            stix_object['hashes'] = {HASH_TYPE_TO_STIX_HASH_TYPE[get_hash_type(value)]: value}
-            for hash_type in ('md5', 'sha1', 'sha256', 'sha512'):
-                try:
-                    stix_object['hashes'][HASH_TYPE_TO_STIX_HASH_TYPE[hash_type]] = custom_fields[hash_type]
+            if 'hashes' in stix_object:
+                stix_object['hashes'] = {HASH_TYPE_TO_STIX_HASH_TYPE[get_hash_type(value)]: value}
+                for hash_type in ('md5', 'sha1', 'sha256', 'sha512'):
+                    try:
+                        stix_object['hashes'][HASH_TYPE_TO_STIX_HASH_TYPE[hash_type]] = custom_fields[hash_type]
 
-                except KeyError:
-                    pass
+                    except KeyError:
+                        pass
 
         elif stix_object['type'] == 'windows-registry-key':
             # key is the only required field for windows-registry-key
