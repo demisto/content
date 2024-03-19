@@ -1,7 +1,7 @@
 import asyncio
 import json
 from http import HTTPStatus
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 # import demistomock as demisto
 from fastapi import Request
 import pytest
@@ -25,7 +25,8 @@ def test_handle_post_single_incident(mocker, client):
     response = client.post('/', json=incident_data)
 
     called_arg = create_incidents.call_args_list[0].args[0]
-    assert isinstance(called_arg, list) and len(called_arg) == 1
+    assert isinstance(called_arg, list)
+    assert len(called_arg) == 1
     assert response.status_code == HTTPStatus.OK
     assert response.json() == return_incidents
 
@@ -41,7 +42,8 @@ def test_handle_post_multiple_incident(mocker, client):
     response = client.post('/', json=incident_data)
 
     called_arg = create_incidents.call_args_list[0].args[0]
-    assert isinstance(called_arg, list) and len(called_arg) == 2
+    assert isinstance(called_arg, list)
+    assert len(called_arg) == 2
     assert response.status_code == HTTPStatus.OK
     assert response.json() == return_incidents
 
@@ -61,7 +63,7 @@ def test_handle_post_with_valid_credentials(mocker, client):
         'identifier': 'user',
         'password': 'pass'
     }})
-    response = client.post('/', json=[{"name": "Test Incident"}], auth=('user', 'pass'))
+    client.post('/', json=[{"name": "Test Incident"}], auth=('user', 'pass'))
     # assert response.status_code == HTTPStatus.OK
     # assert response.text == '[]'
 
@@ -81,7 +83,7 @@ def test_handle_post_with_invalid_json(mocker, client):
 
 
 @pytest.mark.parametrize('body', [
-    '''[{"name": "Test Incident 1", "type": "Test Type 1", 
+    '''[{"name": "Test Incident 1", "type": "Test Type 1",
 "occurred": "2024-03-17T12:00:00Z",
 "raw_json": {"key": "value"}}]''',
     json.dumps([

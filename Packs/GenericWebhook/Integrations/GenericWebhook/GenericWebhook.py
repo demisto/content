@@ -9,13 +9,11 @@ from copy import copy
 from secrets import compare_digest
 from tempfile import NamedTemporaryFile
 from traceback import format_exc
-from typing import Dict
 
 import uvicorn
 from fastapi import Depends, FastAPI, Request, Response, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKey, APIKeyHeader
-from pydantic import BaseModel
 from uvicorn.logging import AccessFormatter
 
 
@@ -36,15 +34,14 @@ async def parse_incidents(request: Request) -> list[dict]:
     incidents = json_body if isinstance(json_body, list) else [json_body]
     demisto.debug(f'received create incidents request of length {len(incidents)}')
     for incident in incidents:
-        if raw_json := incident.get('raw_json'):
-            if isinstance(raw_json, str):
-                demisto.debug('raw_json is string, decoding')
-                incident['raw_json'] = json.loads(raw_json)
+        if (raw_json := incident.get('raw_json')) and isinstance(raw_json, str):
+            demisto.debug('raw_json is string, decoding')
+            incident['raw_json'] = json.loads(raw_json)
     return incidents
 
 
 class GenericWebhookAccessFormatter(AccessFormatter):
-    def get_user_agent(self, scope: Dict) -> str:
+    def get_user_agent(self, scope: dict) -> str:
         headers = scope.get('headers', [])
         user_agent_header = list(filter(lambda header: header[0].decode() == 'user-agent', headers))
         user_agent = ''
@@ -159,7 +156,7 @@ def main() -> None:
                 certificate_path = ''
                 private_key_path = ''
                 try:
-                    ssl_args = dict()
+                    ssl_args = {}
 
                     if certificate and private_key:
                         certificate_file = NamedTemporaryFile(delete=False)
