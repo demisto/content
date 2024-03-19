@@ -194,7 +194,7 @@ class Metadata:
     NAME = 'name'
     ID = 'id'
     DESCRIPTION = 'description'
-    CREATED = 'created'
+    FIRST_CREATED = 'firstCreated'
     UPDATED = 'updated'
     LEGACY = 'legacy'
     SUPPORT = 'support'
