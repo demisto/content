@@ -770,7 +770,7 @@ def query_set_limit(query: str, limit: int) -> str:
     # split the query to sections and find limit sections
     for section in query_list:
         section_list = section.split()
-        # 'take' and 'limit' are synonyms.
+        # Set the limit of a query if it doesn't already have a limit set.
         if section_list and section_list[0] == 'limit' or section_list[0] == 'take':
             return query
 
@@ -1991,18 +1991,12 @@ def main():
             return_results(reset_auth())
         elif demisto.command() == 'msg-generate-login-url':
             return_results(generate_login_url(client.ms_client))
-        elif demisto.command() == 'msg-advanced-hunting':
-            return_results(advanced_hunting_command(client, args))
-        elif demisto.command() == 'msg-list-security-incident':
-            return_results(get_list_security_incident_command(client, args))
-        elif demisto.command() == 'msg-update-security-incident':
-            return_results(update_incident_command(client, args))
 
         else:
             if command not in commands:
                 raise NotImplementedError(f'The provided command {command} was not implemented.')
             command_res = commands[command](client, args)  # type: ignore
-            if isinstance(command_res, CommandResults or list[CommandResults]):
+            if isinstance(command_res, (CommandResults | list)):
                 return_results(command_res)
             else:
                 human_readable, entry_context, raw_response = command_res  # pylint: disable=E0633  # type: ignore
