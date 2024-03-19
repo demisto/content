@@ -192,19 +192,6 @@ def test_handle_multiple_dates_in_one_field(field_name, field_value, expected_re
     assert handle_multiple_dates_in_one_field(field_name, field_value) == expected_result
 
 
-# def test_get_indicator_publication():
-#     """
-#     Given
-#     - Indicator with external_reference field
-#     When
-#     - we extract this field to publications grid field
-#     Then
-#     - run the get_indicator_publication
-#     Validate The grid field extracted successfully.
-#     """
-#     assert STIX2XSOARParser.get_indicator_publication(ATTACK_PATTERN_DATA[0], ignore_external_id=True) == PUBLICATIONS
-
-
 @pytest.mark.parametrize('indicator_name, expected_result', [
     ({"name": "T1564.004: NTFS File Attributes",
       "x_mitre_is_subtechnique": True,
