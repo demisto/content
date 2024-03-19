@@ -99,7 +99,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3190
+          "y": 3025
         }
       }
     note: false
@@ -1133,10 +1133,10 @@ tasks:
       version: -1
       name: Authenticate email
       description: Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM.
-      scriptName: CheckEmailAuthenticity
       type: regular
       iscommand: false
       brand: ""
+      scriptName: CheckEmailAuthenticity
     nexttasks:
       '#none#':
       - "83"
@@ -3509,6 +3509,10 @@ tasks:
       id: b7d56405-d0e0-4421-8d2a-54bdb5104285
       version: -1
       name: Detonate URL - Generic v1.5
+      playbookName: Detonate URL - Generic v1.5
+      type: playbook
+      iscommand: false
+      brand: ""
       description: |-
         Detonate a URL through one or more active integrations that support URL detonation.
         Supported integrations:
@@ -3530,10 +3534,6 @@ tasks:
         -  VirusTotal
         - Anomali ThreatStream
         - Hatching Triage
-      playbookName: Detonate URL - Generic v1.5
-      type: playbook
-      iscommand: false
-      brand: ""
     nexttasks:
       '#none#':
       - "52"
@@ -3567,10 +3567,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "228":
     id: "228"
-    taskid: 2959e8cf-1f8a-4e95-83a6-0dcbd39f64f2
+    taskid: 95ec8c6f-527e-49dc-83fc-03fe573e46ab
     type: condition
     task:
-      id: 2959e8cf-1f8a-4e95-83a6-0dcbd39f64f2
+      id: 95ec8c6f-527e-49dc-83fc-03fe573e46ab
       version: -1
       name: Should be reviewed by analyst?
       type: condition
@@ -3586,11 +3586,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isTrue
+      - - operator: isEqualString
           left:
             value:
               simple: inputs.NonMaliciousEmailReview
             iscontext: true
+          right:
+            value:
+              simple: "True"
     continueonerrortype: ""
     view: |-
       {
@@ -3862,12 +3865,51 @@ inputs:
   playbookInputQuery:
 - key: NonMaliciousEmailReview
   value:
-    simple: "False"
+    simple: "True"
   required: false
   description: |-
     In case of an incident with non malicious email it possible either to close the incident or to review and approve by analyst.
     Set the value "True" for review the incident by analyst. Set the value "False" to close incidents with non malicious emails.
   playbookInputQuery:
+inputSections:
+- inputs:
+  - Role
+  - OnCall
+  - EmailHuntingCreateNewIncidents
+  - ListenerMailbox
+  - SendMailInstance
+  - UserEngagement
+  - TakeManualActions
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, and user engagements.
+- inputs:
+  - DetonateURL
+  - InternalRange
+  - InternalDomains
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+- inputs:
+  - AuthenticateEmail
+  - CheckMicrosoftHeaders
+  - GetOriginalEmail
+  - OriginalAuthenticationHeader
+  - PhishingModelName
+  - DBotPredictURLPhishingURLsNumber
+  - EmailFileToExtract
+  - HuntEmailIndicators
+  - KeyWordsToSearch
+  name: Investigation
+  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - BlockIndicators
+  - SearchAndDelete
+  - SearchAndDeleteIntegration
+  - O365DeleteType
+  - O365ExchangeLocation
+  - O365AllowNotFoundSearchLocations
+  - O365ExchangeLocationExclusion
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
 outputs: []
 tests:
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
