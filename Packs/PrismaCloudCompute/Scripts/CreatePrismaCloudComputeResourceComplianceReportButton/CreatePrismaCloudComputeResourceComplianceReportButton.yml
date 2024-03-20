@@ -1,7 +1,6 @@
 commonfields:
-  id: b5fce012-73f9-4a2c-844e-81c30d2840e6
-  version: 57
-vcShouldKeepItemLegacyProdMachine: false
+  id: CreatePrismaCloudComputeResourceComplianceReportButton
+  version: -1
 name: CreatePrismaCloudComputeResourceComplianceReportButton
 script: ''
 type: python
@@ -50,9 +49,10 @@ args:
   description: A comma separated list of resources. In case the report should contain results only for specific resources, whether it's a host, container ID or an image ID, provide the resources here.
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.10.11.56082
+dockerimage: demisto/python3:3.10.13.90168
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
