@@ -80,9 +80,9 @@ class Client(BaseClient):
         self.api_token = self.headers['X-RFToken'] = api_token
         self.services = services
         self.indicator_type = indicator_type
-        self.malicious_threshold = int(malicious_threshold) if malicious_threshold else malicious_threshold
-        self.suspicious_threshold = int(suspicious_threshold) if suspicious_threshold else suspicious_threshold
-        self.risk_score_threshold = int(risk_score_threshold) if risk_score_threshold else risk_score_threshold
+        self.malicious_threshold = int(malicious_threshold) if malicious_threshold else 65
+        self.suspicious_threshold = int(suspicious_threshold) if suspicious_threshold else 25
+        self.risk_score_threshold = int(risk_score_threshold) if risk_score_threshold else 0
         self.tags = tags
         self.tlp_color = tlp_color
 
