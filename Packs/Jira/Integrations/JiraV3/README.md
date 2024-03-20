@@ -73,7 +73,7 @@ Locate permissions for the tasks listed below:
 
 
 ### OAuth 2.0
-For both instances (Cloud ID & OnPrem), it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The OProxy URL is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally, if you don't want to use the OProxy URL, you can use a localhost URL on a port that is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the URL address bar in the response (see [Authorization Flow In Cortex XSOAR](#authorization-flow-in-cortex-xsoar)).
+For both instances (Cloud ID & OnPrem), it is advised to use the `https://oproxy.demisto.ninja/authcode` **Callback URL**. The OProxy URL is a client side only web page which provides an easy interface to copy the obtained auth code from the authorization response to the integration configuration in the authorization flow steps. Optionally, if you don't want to use the OProxy URL, you can use a localhost URL on a port that is not used locally on your machine. For example: <http://localhost:9004>. You will then need to copy the code from the URL address bar in the response (see [OAuth 2.0 authorization Flow In Cortex XSOAR](#oauth-20-authorization-flow-in-cortex-xsoar)).
 
 #### Cloud authentication
 
@@ -93,7 +93,7 @@ Go to your [Developer console](https://developer.atlassian.com/console/myapps/) 
 
 The integration uses the *offline_access* scope, in order to retrieve refresh tokens.
 
-###### Classic Scopes
+##### Classic Scopes
 
 * read:jira-work
 * read:jira-user
@@ -113,21 +113,21 @@ The integration uses the *offline_access* scope, in order to retrieve refresh to
 
 1. Log in to Jira as a user with `Jira Administrator` permissions.
 2. Click the Jira Administration tab (the gear icon found in the top right corner) and click **Applications**.
-3. To create a new `Application link`, which will be used to integrate Cortex XSOAR with Jira:
-    a. Click **Application links** under `Integrations`, found on the left side menu.
-    b. Click **Create link** and choose **External application** with the **Incoming** direction.
-4. Fill in the required details as explained in the page and choose the permission **Write**.
+3. To create a new `Application link`, which will be used to integrate Cortex XSOAR with Jira:  
+    a. Click **Application links** under `Integrations`, found on the left side menu.  
+    b. Click **Create link** and choose **External application** with the **Incoming** direction.  
+4. Fill in the required details as explained in the page, by inserting a Callback URL, and choosing the permission Write.
 5. Once the link is created, you will be able to see `Client ID`, and the `Client secret`, which are required in the configuration screen. Copy these values and paste them into the respective fields in the configuration screen.
 
-#### OnPrem Scopes
+##### OnPrem Scopes
 
 Write
 
-##### Authorization Flow In Cortex XSOAR
+#### OAuth 2.0 authorization Flow In Cortex XSOAR
 
-1. Create the authentication application as explained in the [Authentication](#authentication) section.
+1. Create the authentication application as explained in the [OAuth 2.0](#oauth-20) section.
 2. Run the command `!jira-oauth-start`, where you will be presented with a URL to authenticate yourself.
-3. After authenticating, you will be redirected to the configured callback URL, where you will retrieve the authorization code provided as a query parameter called `code`.
+3. After authenticating, you will be redirected to the configured *Callback URL*, where you will retrieve the authorization code provided as a query parameter called `code`.
 4. Insert the retrieved authorization code as an argument to the `!jira-oauth-complete` command.
 5. Run the `!jira-oauth-test` to test the connection of the instance.
 
