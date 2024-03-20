@@ -16,8 +16,7 @@ alter event_id = arrayindex(regextract(_raw_log, "log_id=(\d{10})" ), 0),
     source_user_groups = regextract(_raw_log, "adminprof=\"([^\"]+)" ),
 // extract operation
     event_operation_sub_type = arrayindex(regextract(_raw_log, "operation=\"([^\"]+)" ), 0),
-// extract session id *2
-    //network_session_id = arrayindex(regextract(_raw_log, "session_id=(\d{1,10})" ), 0),
+// extract session id
     session_context_id = arrayindex(regextract(_raw_log, "session_id=(\d{1,10})" ), 0),
 // extract version
     target_resource_type = arrayindex(regextract(_raw_log, "version=\"([^\"]+)" ), 0)
@@ -26,8 +25,8 @@ alter event_id = arrayindex(regextract(_raw_log, "log_id=(\d{10})" ), 0),
 | alter userfrom_ipv4 = arrayindex(regextract(_raw_log, "userfrom=\"\w+[(](\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3})[)]" ), 0)
 |alter userfrom_ipv6 = arrayindex(regextract(_raw_log , "userfrom=\"\w+[(]([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})[)]" ), 0)
 
-|alter source_ipv4 = if( userfrom_ipv4 ~= "\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}", userfrom_ipv4)
-|alter source_ipv6 = if( userfrom_ipv6 ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", userfrom_ipv6)
+| alter source_ipv4 = if( userfrom_ipv4 ~= "\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}", userfrom_ipv4)
+| alter source_ipv6 = if( userfrom_ipv6 ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", userfrom_ipv6)
 
 // extract user type
 |alter tmp_user_type = arrayindex(regextract(_raw_log, "user_type=\"(?i)(super|restrict)" ), 0)
