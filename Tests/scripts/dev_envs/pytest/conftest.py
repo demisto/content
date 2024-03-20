@@ -56,7 +56,7 @@ def check_std_out_err(capfd):
 def pytest_sessionfinish(session, exitstatus):
     """
     This function runs after all tests are run.
-    If the exit code is 5 (no tests were collected), it will change the exit code to 0 (success)
+    If the exit code is 5 (no tests were collected), it will change the exit code to 0 (success) as this is the current behavior in content.
     """
     if exitstatus == 5:
         session.exitstatus = 0
