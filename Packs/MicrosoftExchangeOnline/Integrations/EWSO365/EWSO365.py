@@ -2051,8 +2051,9 @@ def handle_attached_email_with_incorrect_message_id(attached_email: Message):
     """
     message_id_value = ""
     for i in range(len(attached_email._headers)):
-        if attached_email._headers[i][0] == "Message-ID":
+        if attached_email._headers[i][0].lower() == "message-id":
             message_id = attached_email._headers[i][1]
+            message_header = attached_email._headers[i][0]
             demisto.debug(f'Handling Message-ID header, {message_id=}.')
             try:
                 message_id_value = handle_incorrect_message_id(message_id)
@@ -2060,7 +2061,7 @@ def handle_attached_email_with_incorrect_message_id(attached_email: Message):
                     # If the Message-ID header was fixed in the context of this function
                     # the header will be replaced in _headers list
                     attached_email._headers.pop(i)
-                    attached_email._headers.append(("Message-ID", message_id_value))
+                    attached_email._headers.append((message_header, message_id_value))
 
             except Exception as e:
                 # The function is designed to handle a specific format error for the Message-ID header
