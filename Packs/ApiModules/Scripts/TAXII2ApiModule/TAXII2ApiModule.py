@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 
 from typing import Optional, Tuple
 from requests.sessions import merge_setting, CaseInsensitiveDict
+from requests.exceptions import HTTPError
 import re
 import copy
 import logging
