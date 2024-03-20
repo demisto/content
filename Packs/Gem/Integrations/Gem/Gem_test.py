@@ -19,43 +19,45 @@ def set_mocks(mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
 
 
-test_fetch_incidents_data = [{"id": "00000000-0000-0000-0000-000000000000",
-                              "type": "Threat",
-                              "link": "A link",
-                              "title": "A title",
-                              "description": "A description",
-                              "metadata": {
-                                      "title": "A title",
-                                      "events": [
+test_fetch_incidents_data = [
+    {"id": "00000000-0000-0000-0000-000000000000",
+     "type": "Threat",
+     "link": "A link",
+     "title": "A title",
+     "description": "A description",
+     "metadata": {
+         "title": "A title",
+         "events": [
 
-                                      ],
-                                  "account": "123456789012",
-                                  "alert_id": "00000000-0000-0000-0000-000000000000",
-                                  "severity": 6,
-                                  "timeframe": {
-                                          "start": "2023-03-09T12:41:33.000000",
-                                          "end": "2023-03-09T12:41:33.000000"
-                                  },
+         ],
+         "account": "123456789012",
+         "alert_id": "00000000-0000-0000-0000-000000000000",
+         "severity": 6,
+         "timeframe": {
+             "start": "2023-03-09T12:41:33.000000",
+             "end": "2023-03-09T12:41:33.000000"
+         },
 
-                                  "attributes": {},
-                                  "created_at": "2023-03-09T12:41:33.000000",
-                                  "description": "A description",
-                                  "main_entity": {
-                                          "id": "an id",
-                                          "type": "ExternalUser"
-                                  },
-                                  "account_name": "test account",
-                                  "cloud_provider": "aws",
-                              },
-                              "event_datetime": "2023-03-09T12:41:33.000000",
-                              "created": "2023-03-09T12:41:33.000000",
-                              "severity": 8,
-                              "account": {
-                                  "name": "123456789012",
-                                  "display_name": "test account",
-                                  "cloud_provider": "aws"
-                              }
-                              }]
+         "attributes": {},
+         "created_at": "2023-03-09T12:41:33.000000",
+         "description": "A description",
+         "main_entity": {
+             "id": "an id",
+             "type": "ExternalUser"
+         },
+         "account_name": "test account",
+         "cloud_provider": "aws",
+     },
+     "event_datetime": "2023-03-09T12:41:33.000000",
+     "created": "2023-03-09T12:41:33.000000",
+     "severity": 8,
+     "account": {
+         "name": "123456789012",
+         "display_name": "test account",
+         "cloud_provider": "aws"
+     }
+     }
+]
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
