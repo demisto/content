@@ -5646,6 +5646,10 @@
             "integrations": "AWS-SNS-Listener",
             "playbookID": "AWS SNS Listener - Test",
             "instance_names": "AWS-SNS-Listener"
+        },
+        {
+            "integrations": "PaloAltoNetworksAIOps",
+            "playbookID": "PaloAltoNetworksAIOps-Test"
         }
     ],
     "skipped_tests": {

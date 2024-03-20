@@ -41,38 +41,38 @@ display: Palo Alto Networks AIOps
 name: PaloAltoNetworksAIOps
 script:
   commands:
-    - name: pan-aiops-bpa-report-generate
-      arguments:
-      - name: entry_id
-        description: Entry_id from xsoar war-room after uploading a file - should be a config file in xml format
-      - name: requester_email
-        required: true
-        description: Enter the requester email
-      - name: requester_name
-        required: true
-        description: Enter the requester name
-      - name: interval_in_seconds
-        description: Enter the interval for polling mechanism
-        defaultValue: "30"
-      - name: timeout
-        default: true
-        description: Enter the timeout for downloading the file
-        defaultValue: "600"
-      description: Generates a bpa
-      polling: true
-    - name: pan-aiops-polling-upload-report
-      arguments:
-      - name: report_id
-        description: Report_id recieved from generate_bpa_report_request
-        required: true
-      description: Polling mechanism to upload report
-      polling: true
-      hidden: true
+  - name: pan-aiops-bpa-report-generate
+    arguments:
+    - name: entry_id
+      description: Entry_id from xsoar war-room after uploading a file - should be a config file in xml format.
+    - name: requester_email
+      required: true
+      description: Enter the requester email.
+    - name: requester_name
+      required: true
+      description: Enter the requester name.
+    - name: interval_in_seconds
+      description: Enter the interval for polling mechanism.
+      defaultValue: "30"
+    - name: timeout
+      default: true
+      description: Enter the timeout for downloading the file.
+      defaultValue: "600"
+    description: Generates a bpa.
+    polling: true
+  - name: pan-aiops-polling-upload-report
+    arguments:
+    - name: report_id
+      description: Report_id recieved from generate_bpa_report_request.
+      required: true
+    description: Polling mechanism to upload report.
+    polling: true
+    hidden: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.10.13.90168
-fromversion: 5.5.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

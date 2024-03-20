@@ -97,7 +97,9 @@ def test_get_info_about_device_request_called_with(mocker, AIOps_client):
     http_request_mock.return_value = response_mock
     AIOps_client.get_info_about_device_request()
     http_request_mock.assert_called_once_with('GET', '/api', params={'type': 'op', 'cmd':
-                                                                     '<show><system><info></info></system></show>', 'key': 'api_key'}, headers={'Content-Type': 'application/xml'},
+                                                                     '<show><system><info></info></system></show>',
+                                                                     'key': 'api_key'}, headers={'Content-Type': 'application/xml'
+                                                                                                 },
                                               resp_type='xml')
 
 
@@ -236,8 +238,12 @@ def test_generate_bpa_report_request_called_with(mocker, AIOps_client):
                                               full_url='https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/requests',
                                               headers={'Content-Type': 'application/json', 'Accept': 'application/json',
                                                        'Authorization': 'Bearer {}'}, json_data={'requester-email':
-                                                                                                 'test@gamil.com', 'requester-name': 'test', 'serial': 'test3',
-                                                                                                 'version': 'test4', 'model': 'test2', 'family': 'test1'})
+                                                                                                 'test@gamil.com',
+                                                                                                 'requester-name': 'test',
+                                                                                                 'serial': 'test3',
+                                                                                                 'version': 'test4',
+                                                                                                 'model': 'test2',
+                                                                                                 'family': 'test1'})
 
 
 def test_generate_bpa_report_request_return(mocker, AIOps_client):
@@ -290,8 +296,11 @@ def test_config_file_to_report_request_called_with(mocker, AIOps_client):
     config_binary = b'<?xml version="1.0"?>\n <config>test</config>'
     AIOps_client.config_file_to_report_request(uploaded_url, config_binary)
     http_request_mock.assert_called_once_with(method='PUT', full_url='cloud.test', headers={'Content-Type':
-                                                                                            'application/octet-stream', 'Accept': '*/*', 'Authorization': 'Bearer {}'},
-                                              data=b'<?xml version="1.0"?>\n <config>test</config>', empty_valid_codes=[200], return_empty_response=True)
+                                                                                            'application/octet-stream',
+                                                                                            'Accept': '*/*',
+                                                                                            'Authorization': 'Bearer {}'},
+                                              data=b'<?xml version="1.0"?>\n <config>test</config>', empty_valid_codes=[200],
+                                              return_empty_response=True)
 
 
 def test_config_file_to_report_request_check_return(mocker, AIOps_client):
@@ -579,9 +588,10 @@ def test_create_readable_output_checks_result():
         }
     }
     result = create_readable_output(bpa_dict)
-    assert result == ('### BPA results:\n|Check Id|Check Category|Check Feature|Check Message|Check Type|\n|---|---|---|---|---|\n'
-                      '| 1 | device | feature1 | Warning message 1 | warning |\n| 2 | device | feature1 | Note message 1 | note |\n| 3 | device | '
-                      'feature2 | Warning message 2 | warning |\n| 4 | device | feature2 | Note message 2 | note |\n')
+    assert result == ('### BPA results:\n|Check Id|Check Category|Check Feature|Check Message|Check Type|\n'
+                      '|---|---|---|---|---|\n| 1 | device | feature1 | Warning message 1 | warning |\n'
+                      '| 2 | device | feature1 | Note message 1 | note |\n| 3 | device | feature2 | '
+                      'Warning message 2 | warning |\n| 4 | device | feature2 | Note message 2 | note |\n')
 
 
 def test_create_readable_output_fails():
