@@ -13,7 +13,7 @@
     "id": "incident_gemurl",
     "isReadOnly": true,
     "locked": false,
-    "name": "Gem URL",
+    "name": "Gem Url",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -26,5 +26,5 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.12.0"
 }

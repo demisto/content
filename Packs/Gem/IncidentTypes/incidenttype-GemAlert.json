@@ -1,5 +1,5 @@
 {
-    "fromVersion": "6.10.0",
+    "fromVersion": "6.12.0",
     "autorun": true,
     "closureScript": "ResolveGemAlert",
     "color": "#32EAC2",

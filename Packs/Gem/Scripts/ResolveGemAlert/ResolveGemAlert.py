@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 def main():
     close_reason, close_notes, incident_id, threat_id, verdict, status = _get_params()
 
-    demisto.log(f"Resolving Gem Threat {threat_id} with status {status}, verdict {verdict} and close notes {close_notes}")
+    demisto.info(f"Resolving Gem Threat {threat_id} with status {status}, verdict {verdict} and close notes {close_notes}")
     demisto.executeCommand("gem-update-threat-status", {
         "verdict": verdict,
         "reason": f"Closed from XSOAR, incident id: {incident_id}\n"
@@ -13,7 +13,7 @@ def main():
         "threat_id": threat_id,
         "status": status})
 
-    demisto.log(f"Resolved Gem Threat {threat_id} with status {status}, verdict {verdict} and close notes {close_notes}")
+    demisto.info(f"Resolved Gem Threat {threat_id} with status {status}, verdict {verdict} and close notes {close_notes}")
 
 
 def _get_params():

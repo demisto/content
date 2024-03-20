@@ -9,7 +9,7 @@ inputs:
 name: Gem Handle ec2
 outputs: []
 starttaskid: "0"
-fromversion: 6.8.0
+fromversion: 6.12.0
 tasks:
   "0":
     continueonerrortype: ""

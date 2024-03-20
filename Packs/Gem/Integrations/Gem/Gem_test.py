@@ -1,3 +1,4 @@
+import json
 import pytest
 from unittest.mock import patch
 import demistomock as demisto
@@ -16,6 +17,54 @@ mock_auth_token = "mock_auth_token"
 @pytest.fixture(autouse=True)
 def set_mocks(mocker):
     mocker.patch.object(demisto, 'params', return_value=params)
+
+
+test_fetch_incidents_data = [{"id": "00000000-0000-0000-0000-000000000000",
+                              "type": "Threat",
+                              "link": "A link",
+                              "title": "A title",
+                              "description": "A description",
+                              "metadata": {
+                                      "title": "A title",
+                                      "events": [
+
+                                      ],
+                                  "account": "123456789012",
+                                  "alert_id": "00000000-0000-0000-0000-000000000000",
+                                  "severity": 6,
+                                  "timeframe": {
+                                          "start": "2023-03-09T12:41:33.000000",
+                                          "end": "2023-03-09T12:41:33.000000"
+                                  },
+
+                                  "attributes": {},
+                                  "created_at": "2023-03-09T12:41:33.000000",
+                                  "description": "A description",
+                                  "main_entity": {
+                                          "id": "an id",
+                                          "type": "ExternalUser"
+                                  },
+                                  "account_name": "test account",
+                                  "cloud_provider": "aws",
+                              },
+                              "event_datetime": "2023-03-09T12:41:33.000000",
+                              "created": "2023-03-09T12:41:33.000000",
+                              "severity": 8,
+                              "account": {
+                                  "name": "123456789012",
+                                  "display_name": "test account",
+                                  "cloud_provider": "aws"
+                              }
+                              }]
+
+
+@patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
+@patch('Gem.BaseClient._http_request', return_value=test_fetch_incidents_data)
+def test_fetch_incidents(_http_request, _generate_token):
+    from Gem import fetch_threats, init_client
+    client = init_client(params)
+    last_run, incidents = fetch_threats(client, max_results=1, last_run={}, first_fetch_time="3 days")
+    assert json.loads(incidents[0]['rawJSON']) == test_fetch_incidents_data[0]
 
 
 test_get_threat_details_data = {
@@ -82,8 +131,8 @@ test_get_threat_details_data = {
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_get_threat_details_data)
-def test_get_threat_details(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_get_threat_details_data)
+def test_get_threat_details(_http_request, _generate_token):
     from Gem import get_threat_details, init_client
     client = init_client(params)
     args = {
@@ -97,8 +146,8 @@ test_list_threats_data = {'count': 1, 'next': None, 'previous': None, 'results':
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_list_threats_data)
-def test_list_threats(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_list_threats_data)
+def test_list_threats(_http_request, _generate_token):
     from Gem import list_threats, init_client
     client = init_client(params)
     args = {
@@ -203,8 +252,8 @@ test_get_alert_details_data = {
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_get_alert_details_data)
-def test_get_alert_details(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_get_alert_details_data)
+def test_get_alert_details(_http_request, _generate_token):
     from Gem import get_alert_details, init_client
     client = init_client(params)
     args = {
@@ -240,8 +289,8 @@ test_get_resource_details_data = {
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_get_resource_details_data)
-def test_get_resource_details(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_get_resource_details_data)
+def test_get_resource_details(_http_request, _generate_token):
     from Gem import get_resource_details, init_client
     client = init_client(params)
     args = {
@@ -255,8 +304,8 @@ test_list_inventory_resources_data = {'next': None, 'previous': None, 'results':
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_list_inventory_resources_data)
-def test_list_inventory_resources(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_list_inventory_resources_data)
+def test_list_inventory_resources(_http_request, _generate_token):
     from Gem import list_inventory_resources, init_client
     client = init_client(params)
     args = {
@@ -317,8 +366,8 @@ test_list_ips_by_entity_data = {
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_list_ips_by_entity_data)
-def test_list_ips_by_entity(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_list_ips_by_entity_data)
+def test_list_ips_by_entity(_http_request, _generate_token):
     from Gem import list_ips_by_entity, init_client
     client = init_client(params)
     args = {
@@ -356,8 +405,8 @@ test_list_services_by_entity_data = {
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_list_services_by_entity_data)
-def test_list_services_by_entity(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_list_services_by_entity_data)
+def test_list_services_by_entity(_http_request, _generate_token):
     from Gem import list_services_by_entity, init_client
     client = init_client(params)
     args = {
@@ -396,8 +445,8 @@ test_list_events_by_entity_data = {
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_list_events_by_entity_data)
-def test_list_events_by_entity(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_list_events_by_entity_data)
+def test_list_events_by_entity(_http_request, _generate_token):
     from Gem import list_events_by_entity, init_client
     client = init_client(params)
     args = {
@@ -429,8 +478,8 @@ test_list_accessing_entities_data = {
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_list_accessing_entities_data)
-def test_list_accessing_entities(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_list_accessing_entities_data)
+def test_list_accessing_entities(_http_request, _generate_token):
     from Gem import list_accessing_entities, init_client
     client = init_client(params)
     args = {
@@ -462,8 +511,8 @@ test_list_using_entities_data = {
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_list_using_entities_data)
-def test_list_using_entities(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_list_using_entities_data)
+def test_list_using_entities(_http_request, _generate_token):
     from Gem import list_using_entities, init_client
     client = init_client(params)
     args = {
@@ -501,8 +550,8 @@ test_list_events_on_entity_data = {
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_list_events_on_entity_data)
-def test_list_events_on_entity(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_list_events_on_entity_data)
+def test_list_events_on_entity(_http_request, _generate_token):
     from Gem import list_events_on_entity, init_client
     client = init_client(params)
     args = {
@@ -566,8 +615,8 @@ test_list_accessing_ips_data = {
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_list_accessing_ips_data)
-def test_list_accessing_ips(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_list_accessing_ips_data)
+def test_list_accessing_ips(_http_request, _generate_token):
     from Gem import list_accessing_ips, init_client
     client = init_client(params)
     args = {
@@ -584,8 +633,8 @@ test_update_threat_status_data = None
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_update_threat_status_data)
-def test_update_threat_status(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_update_threat_status_data)
+def test_update_threat_status(_http_request, _generate_token):
     from Gem import update_threat_status, init_client
     client = init_client(params)
     args = {
@@ -600,8 +649,8 @@ test_run_action_on_entity_data = {}
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_run_action_on_entity_data)
-def test_run_action_on_entity(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_run_action_on_entity_data)
+def test_run_action_on_entity(_http_request, _generate_token):
     from Gem import run_action_on_entity, init_client
     client = init_client(params)
     args = {
@@ -619,8 +668,8 @@ test_add_timeline_event_data = {}
 
 
 @patch('Gem.GemClient._generate_token', return_value=mock_auth_token)
-@patch('Gem.GemClient.http_request', return_value=test_add_timeline_event_data)
-def test_add_timeline_event(http_request, _generate_token):
+@patch('Gem.BaseClient._http_request', return_value=test_add_timeline_event_data)
+def test_add_timeline_event(_http_request, _generate_token):
     from Gem import add_timeline_event, init_client
     client = init_client(params)
     args = {

@@ -1,6 +1,6 @@
 {
     "feed": false,
-    "fromVersion": "6.10.0",
+    "fromVersion": "6.12.0",
     "mapping": {
         "Gem Alert": {
             "dontMapEventToLabels": false,

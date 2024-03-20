@@ -3,7 +3,7 @@
     "name": "Gem Mapper",
     "type": "mapping-incoming",
     "description": "Maps incoming Gem Alert fields.",
-    "fromVersion": "6.10.0",
+    "fromVersion": "6.12.0",
     "defaultIncidentType": "Gem Alert",
     "mapping": {
         "Gem Alert": {

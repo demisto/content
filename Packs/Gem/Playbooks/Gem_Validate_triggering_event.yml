@@ -10,7 +10,7 @@ inputs:
     value: {}
 name: Gem Validate triggering event
 outputs: []
-fromversion: 6.8.0
+fromversion: 6.12.0
 starttaskid: "0"
 tasks:
   "0":

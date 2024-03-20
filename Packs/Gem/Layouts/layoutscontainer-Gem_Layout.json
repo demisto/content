@@ -478,7 +478,7 @@
     "name": "Gem Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.10.0",
+    "fromVersion": "6.12.0",
     "description": "Gem Alert layout",
     "marketplaces": [
         "xsoar"
