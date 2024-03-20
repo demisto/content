@@ -162,7 +162,7 @@ def main():
     if items := response.get("items"):
         pr_numbers: list[str] = []
         for pr in items:
-            if pr.get("number") == "33308":  # for testing only
+            if str(pr.get("number")) == "33308":  # for testing only
                 post_comment_to_contribution_pr(
                     github_headers, pr, COMMENT_MESSAGES.build_request_accepted
                 )
