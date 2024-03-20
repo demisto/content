@@ -8,6 +8,7 @@ from CommonServerUserPython import *  # noqa
 
 import urllib3
 from typing import Dict, Any
+from enum import Enum
 
 
 # Disable insecure warnings
@@ -30,8 +31,15 @@ MAX_FILE_EVENTS_PAGE_SIZE = 10000
 VENDOR = "code42"
 PRODUCT = "code42"
 
-''' CLIENT CLASS '''
 
+class FileEventLastRun(str, Enum):
+    TIME = "file-event-time"  # saves the last time of previous fetch of file-events
+    FETCHED_IDS = "file-event-ids"  # saved a list of IDs of previous fetch which are is the latest time
+
+
+class EventType(str, Enum):
+    FILE = "file-event"
+    AUDIT = "audit"
 
 class Client:
 
@@ -105,12 +113,38 @@ class Client:
         file_events = file_events[:limit]
 
         for event in file_events:
+            event["type"] = EventType.FILE
             event["_time"] = event["event"]["inserted"]
 
         return file_events
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def dedup_fetched_events(
+    events: List[dict],
+    last_run_fetched_event_ids: Set[str],
+    keys_list_to_id: List[str]
+) -> List[dict]:
+    """
+    Dedup events, removes events which were already fetched.
+    """
+    un_fetched_events = []
+
+    for event in events:
+        event_id = dict_safe_get(event, keys=keys_list_to_id)
+        if event_id not in last_run_fetched_event_ids:
+            demisto.debug(f'event {event["type"]} with ID {event_id} has not been fetched.')
+            un_fetched_events.append(event)
+        else:
+            demisto.debug(f'event {event["type"]} with ID {event_id} for has been fetched')
+
+    un_fetched_event_ids = {dict_safe_get(event, keys=keys_list_to_id) for event in un_fetched_events}
+    demisto.debug(f'{un_fetched_event_ids=}')
+    
+    return un_fetched_events
+
 
 # TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
 
@@ -124,7 +158,16 @@ def test_module(client: Client) -> str:
 
 
 def fetch_events(client: Client, last_run: Dict, max_fetch_file_events: int, max_fetch_audit_events: int) -> List[Dict[str, Any], Dict[str, Any]]:
-    pass
+    if FileEventLastRun.TIME not in last_run:
+        file_event_time = datetime.now() - timedelta(minutes=1)
+    else:
+        file_event_time = last_run[FileEventLastRun.TIME]
+
+    file_events = client.get_file_events(file_event_time, limit=max_fetch_file_events)
+
+
+
+
 
 
 
