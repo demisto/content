@@ -315,7 +315,7 @@ def slack_block_builder_command(args: dict[str, Any]):
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main():  # pragma: no cover
     try:
         return_results(slack_block_builder_command(demisto.args()))
     except Exception as excep:
@@ -325,5 +325,5 @@ def main():
 
 ''' ENTRY POINT '''
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

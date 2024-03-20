@@ -23,9 +23,10 @@ BLOCKS_URL = "https://app.slack.com/block-kit-builder/T0DAYMVCM#%7B%22blocks%22:
              "%22text%22:%7B%22type%22:%22plain_text%22,%22emoji%22:true,%22text%22:%22Approve%22%7D," \
              "%22style%22:%22primary%22,%22value%22:%22click_me_123%22%7D,%7B%22type%22:%22button%22," \
              "%22text%22:%7B%22type%22:%22plain_text%22,%22emoji%22:true,%22text%22:%22Deny%22%7D," \
-             "%22style%22:%22danger%22,%22value%22:%22click_me_123%22%7D%5D%7D,%7B%22type%22:%22input%22," \
-             "%22element%22:%7B%22type%22:%22plain_text_input%22,%22action_id%22:%22plain_text_input-action%22%7D," \
-             "%22label%22:%7B%22type%22:%22plain_text%22,%22text%22:%22Label%22,%22emoji%22:true%7D%7D%5D%7D "
+             "%22style%22:%22danger%22,%22value%22:%22click_me_123%22,%22url%22:%22https://google.com/#/Details/incident.id%22%" \
+    "7D%5D%7D,%7B%22type%22:%22input%22,%22element%22:%7B%22type%22:%22plain_text_input%22,%22action_id%22:%" \
+    "22plain_text_input-action%22%7D,%22label%22:%7B%22type%22:%22plain_text%22,%22text%22:%22Label%22," \
+    "%22emoji%22:true%7D%7D%5D%7D "
 
 
 def test_block_carrier_with_url(mocker):
