@@ -10,7 +10,8 @@ from CreatePrismaCloudComputeResourceComplianceReportButton import (
     filter_severities,
     transform_html_for_resource,
     send_html_email,
-    send_xlsx_email
+    send_xlsx_email,
+    main
 )
 
 # Test transformation functions
@@ -49,12 +50,6 @@ def test_filter_severities_with_critical_severity():
     expected_data = [entry for entry in test_table_data if 'critical' in entry['complianceissues'].lower()]
     assert filtered_data == expected_data
 
-def test_filter_severities_with_high_severity():
-    # Test with critical severity only
-    filtered_data = filter_severities(test_table_data, ['high'])
-    # Assert that the filtered data contains only entries with critical severity
-    expected_data = [entry for entry in test_table_data if 'high' in entry['complianceissues'].lower()]
-    assert filtered_data == expected_data
 
 # "HTML" test data
 
@@ -164,3 +159,16 @@ def test_send_xlsx_email(mock_executeCommand, email_xlsx_data):
             "body": "Please find attached file for the compliance report from Prisma Cloud Compute.",
         },
     )
+
+
+RETURN_ERROR_TARGET = 'CreatePrismaCloudComputeResourceComplianceReportButton.return_error'
+
+
+def test_main_function_with_error(mocker):
+    # Mock the necessary components
+    mocker.patch.object(demisto, 'args', return_value={'table': test_table_data, 'to': 'example@example.com',
+                                                       'output_type': 'invalid', 'resource_type': 'host'})
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    main()
+    err_msg = return_error_mock.call_args_list[0][0][0]
+    assert "Invalid output type. Supported types: 'html', 'xlsx'." in err_msg

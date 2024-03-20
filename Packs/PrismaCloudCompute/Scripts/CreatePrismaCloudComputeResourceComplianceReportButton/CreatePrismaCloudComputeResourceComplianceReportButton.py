@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def filter_severities(data, desired_severities):
+def filter_severities(data: List[Dict[str, Any]], desired_severities: List[str]) -> List[Dict[str, Any]]:
     """
     Filters the data based on desired severities.
 
@@ -35,7 +35,7 @@ def filter_severities(data, desired_severities):
     return filtered_data
 
 
-def filter_resources(data, resource_type, desired_resources):
+def filter_resources(data: List[Dict[str, Any]], resource_type: str, desired_resources: List[str]) -> List[Dict[str, Any]]:
     """
     Filters the data based on desired resources and resource type.
 
@@ -69,7 +69,7 @@ def filter_resources(data, resource_type, desired_resources):
     return filtered_data
 
 
-def transform_html_for_resource(html, resource_type):
+def transform_html_for_resource(html: str, resource_type: str) -> str:
     """
     Transforms the HTML table based on the resource type.
 
@@ -108,7 +108,7 @@ def transform_html_for_resource(html, resource_type):
     return html
 
 
-def send_html_email(html, resource_type, to_email):
+def send_html_email(html: str, resource_type: str, to_email: str) -> None:
     """
     Sends an HTML email with the compliance report attached.
 
@@ -143,7 +143,7 @@ def send_html_email(html, resource_type, to_email):
     ))
 
 
-def send_xlsx_email(file_id, file_name, to_email, resource_type):
+def send_xlsx_email(file_id: str, file_name: str, to_email: str, resource_type: str) -> None:
     """
     Sends an email with an XLSX attachment containing the compliance report.
 
@@ -168,7 +168,7 @@ def send_xlsx_email(file_id, file_name, to_email, resource_type):
         raise DemistoException(f'Failed to send email with XLSX attachment: {str(get_error(res))}')
 
 
-def main():
+def main() -> None:
     """
     Main function to create and send compliance reports based on input parameters.
 
@@ -223,7 +223,7 @@ def main():
             send_xlsx_email(file_id, file_name, args.get("to"), args.get("resource_type"))
 
         else:
-            raise DemistoException("Invalid output type. Supported types: 'html', 'xlsx'.")
+            return_error("Invalid output type. Supported types: 'html', 'xlsx'.")
 
     except Exception as e:
         return_error(e)

@@ -267,7 +267,7 @@ def turn_pd_grid_to_context_table(pd_grid: pandas.DataFrame) -> list:
     for record in pd_grid.to_dict(orient='records'):
         new_record_dict = {}
         for record_key, record_value in record.items():
-            if record_value and (isinstance(record_value, dict | list)):
+            if record_value and (isinstance(record_value, dict | list) or pd.notnull(record_value)):
                 if isinstance(record_value, dict):
                     str_record_value = "\n".join(f'{dict_key}: {dict_value}' for dict_key, dict_value in record_value.items())
                 elif isinstance(record_value, list):
