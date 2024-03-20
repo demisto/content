@@ -125,11 +125,8 @@ repos:
     require_serial: true
     pass_filenames: false
     args:
-      - --protected-dir
       - Packs
-      - --protected-dir
       - Tests
-      - --protected-dir
       - Utils
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker
