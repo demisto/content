@@ -5,10 +5,10 @@ from CommonServerPython import *  # noqa: F401
 from typing import Dict, Any, List
 import traceback
 import urllib.parse
+import regex as re
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 ''' STANDALONE FUNCTION '''
-
 
 class Commands(object):
     SEND_NOTIFICATION = 'send-notification'
@@ -28,7 +28,7 @@ class ErrorMessages(object):
     MISSING_DESTINATION = 'Either a user or a channel must be provided.'
     NOT_FOUND = 'Item not found (8)'
     MISSING_URL_OR_LIST = 'blocks_url or a list was not specified'
-
+    INVALID_BLOCKS_URL = 'An error has occurred while parsing the blocks_url argument.'
 
 class BlockCarrier:
     def __init__(self, url: str = '', list_name: Optional[str] = None, task: Optional[str] = None,
@@ -157,10 +157,16 @@ class BlockCarrier:
         Slack provides a tool located at https://app.slack.com/block-kit-builder. When you are done, you can copy and
         paste the URL into the blocks_url argument for this automation. The URL is then decoded to provide the blocks.
         """
-        url_encoded_blocks: str = self.url.split('#')[1]
-        url_decoded_blocks: str = urllib.parse.unquote(url_encoded_blocks)
-        parsed_blocks: Any = json.loads(url_decoded_blocks)
-        self.blocks_dict = parsed_blocks.get('blocks', [{}])
+        try:
+            url_encoded_blocks: str = re.search(r"#(.+)", self.url)[1]
+            url_decoded_blocks: str = urllib.parse.unquote(url_encoded_blocks)
+            parsed_blocks: Any = json.loads(url_decoded_blocks)
+            self.blocks_dict = parsed_blocks.get('blocks', [{}])
+            demisto.debug(f"Parsed blocks: {self.blocks_dict}")
+        except Exception as e:
+            demisto.debug(f"Failed to parse blocks from URL, {str(e)}")
+            raise DemistoException(ErrorMessages.INVALID_BLOCKS_URL)
+
 
     def _retrieve_blocks_from_list(self):
         """Retrieves the blocks when given an XSOAR list name.
