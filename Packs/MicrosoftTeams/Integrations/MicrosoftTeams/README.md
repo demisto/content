@@ -56,12 +56,12 @@ In order to verify that the messaging endpoint is open as expected, you can surf
 2. Check the **long running instance** parameter in the integration instance configuration.
 3. Set the **port** parameter. It's under the Connect section in the integration instance configuration.
 4. If using the same bot from the XSOAR 6 instance, make sure to remove the bot from the team and to add it back:
-   - Go to Microsoft Teams app.
-   - Go to your team, and click on the three dots next to the name
-   - Go to `manage team` -> `apps`.
-   - Find your bot, and click on the three dots in the same row.
-   - choose `remove`.
-   - Add the bot again to the team.
+   a. Go to the Microsoft Teams app.
+   b. Go to your team, and click the three dots next to the name.
+   c. Go to **manage team** > **apps**.
+   d. Find your bot, and click the three dots in the same row.
+   e. Click **remove**.
+   f. Add the bot to the team.
 
 
 ## Setup Examples
