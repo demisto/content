@@ -4159,6 +4159,7 @@ def qradar_search_retrieve_events_command(
     interval_in_secs = int(args.get('interval_in_seconds', 30))
     search_id = args.get('search_id')
     is_polling = argToBoolean(args.get('polling', True))
+    timeout_in_seconds = int(args.get('timeout', 600))
     search_command_results = None
     if not search_id:
         search_command_results = qradar_search_create_command(client, params, args)
@@ -4192,7 +4193,6 @@ def qradar_search_retrieve_events_command(
         # return the result only if the all events were retrieved, unless for the last call for this function
         offense_id = args.get('offense_id', '')
         events_limit = int(args.get('events_limit', params.get('events_limit')))
-        timeout_in_seconds = int(args.get('timeout', '600'))
         fetch_mode: FetchMode = args.get('fetch_mode', params.get('fetch_mode'))
         if argToBoolean(args.get('retry_if_not_all_fetched', False)) and  \
             not is_last_run and not \
