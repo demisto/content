@@ -1362,6 +1362,7 @@ files = [
     {file = "demisto_sdk-1.27.4-py3-none-any.whl", hash = "sha256:e0343204df595c4ee2d888763a53743251f1513a2313ac19a2de8413edbe98a4"},
     {file = "demisto_sdk-1.27.4.tar.gz", hash = "sha256:0436b45cd4aa6b7180b690eff48e3017dbc895a76df8457d108f7047800e2ee2"},
 ]
+develop = false
 
 [package.dependencies]
 autopep8 = "^1.6.0"
@@ -7149,4 +7150,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "f9e7fb467f1134fec599b167005a8ae88904936b858a2875203c2d48ec350210"
+content-hash = "af674e4548c6d86795a7b7c0baa2bfe03e0805d6089ff202cd9d16a1a4a5621a"
