@@ -1339,7 +1339,7 @@ script:
   isfetchassets: true
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.10.13.90168
 tests:
 - Tenable.io test
 fromversion: 5.0.0
