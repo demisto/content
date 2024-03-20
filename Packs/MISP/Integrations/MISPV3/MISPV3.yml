@@ -13,6 +13,11 @@ configuration:
   hiddenusername: true
   display: ""
   required: false
+- display: Client Certificate
+  displaypassword: Private Key
+  name: certificate
+  type: 9
+  required: false
 - display: Use IDS flag
   name: check_to_ids
   defaultvalue: "true"
