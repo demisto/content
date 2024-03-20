@@ -1,5 +1,5 @@
 {
-    "name": "customers/C02f0zfqw/policySchemas/chrome.users.appsconfig.AllowedAppTypes", 
+    "name": "customers/test/policySchemas/chrome.users.appsconfig.AllowedAppTypes",
     "policyDescription": "Allowed types of apps and extensions.", 
     "definition": 
     {
@@ -64,7 +64,7 @@
             "fieldConstraints": {}
         }
     ], 
-    "supportUri": "https://support.google.com/chrome/a/answer/9039146?hl=en#allowed", 
+    "supportUri": "https://support.google.com/chrome/a/answer/1111",
     "schemaName": "chrome.users.appsconfig.AllowedAppTypes", 
     "validTargetResources": ["ORG_UNIT"],
     "policyApiLifecycle": 
