@@ -841,7 +841,7 @@ inputs:
   value: {}
 - description: |-
     The account type
-    GCP - "User" / "Service Account"
+    GCP - "user" / "service_account"
   key: accountType
   playbookInputQuery:
   required: false

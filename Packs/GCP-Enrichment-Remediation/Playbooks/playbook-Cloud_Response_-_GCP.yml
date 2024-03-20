@@ -1757,7 +1757,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: service account
+              simple: service_account
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -1963,12 +1963,12 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-- description: "Determine the account type you are dealing with: User / Service Account. Default User"
+- description: "Determine the account type you are dealing with: \"user\" / \"service_account\". Default: \"user\""
   key: accountType
   playbookInputQuery:
   required: false
   value:
-    simple: "False"
+    simple: "user"
 outputs: []
 tests:
 - No tests (auto formatted)
