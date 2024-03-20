@@ -28,6 +28,7 @@ def calculate_affected_content_items(
     content_items_coverage: dict[str, int],
     content_items_by_docker_image: dict[str, list[dict[str, Any]]],
     target_docker_tag: str,
+    nightly_packs: list[str],
 ) -> dict[str, Any]:
     affected_content_items: list[str] = []
     only_nightly: bool = batch_config.get("only_nightly", False)
@@ -38,20 +39,25 @@ def calculate_affected_content_items(
     for content_item in content_items_by_docker_image[docker_image]:
         content_item_path = Path(content_item["content_item"])
         content_item_support = content_item["support_level"]
-        # TODO Check if content item is part of nightly if only_nightly is True
-        content_item_cov = content_items_coverage.get(str(content_item_path), -1)
-        if content_item_cov == -1:
-            logging.warning(f"Could not find coverage of content item {content_item_path}, skipping")
-        elif support_levels != {""} and content_item_support not in support_levels:
-            # If support_levels == {""}, that means there is no limitation to the support level,
-            # that means we can go ahead and add the content item
-            logging.warning(f"Is not of {support_levels=}, skipping")
-        elif content_item_cov >= min_cov and content_item_cov <= max_cov:
-            # Since the content item that we get will be a python file, and we want to
-            # return a YML
-            affected_content_items.append(str(content_item_path.with_suffix('.yml')))
+        content_pack_path = content_item["pack_path"]
+        
+        if only_nightly and content_pack_path not in nightly_packs:
+            logging.info(f"Pack path {content_pack_path} for {content_item} is not in nightly, skipping.")
+            continue
+        if content_item_cov := content_items_coverage.get(str(content_item_path)):
+            if support_levels != {""} and content_item_support not in support_levels:
+                # We skip this condition if support_levels == {""}, which means there is no limitation to the support level,
+                # and we can go ahead and add the content item, or that content item support is in the support levels
+                logging.info(f"Is not of {support_levels=}, skipping")
+            elif content_item_cov >= min_cov and content_item_cov <= max_cov:
+                # Since the content item that we get will be a python file, and we want to
+                # return a YML
+                affected_content_items.append(str(content_item_path.with_suffix('.yml')))
+            else:
+                logging.info(f"{content_item} not within coverage, skipping")
         else:
-            logging.warning("Not within coverage, skipping")
+            logging.warning(f"Could not find coverage of content item {content_item_path}, skipping")
+
     return {
         "content_items": affected_content_items,
         "pr_tags": batch_config.get("pr_tags", []),
@@ -61,7 +67,7 @@ def calculate_affected_content_items(
 def get_docker_image_tag(docker_image: str, images_tag: dict[str, str]) -> str:
     if docker_image in images_tag:
         image_tag = images_tag[docker_image]
-        logging.info(f"{docker_image} was found in images tag file, with tag {image_tag}")
+        logging.info(f"{docker_image} was found in images tag file with tag {image_tag}")
         return image_tag
     latest_tag = DockerImage(docker_image).latest_tag
     return latest_tag.base_version
@@ -73,7 +79,8 @@ def get_affected_content_items_by_docker_image(
     content_items_coverage: dict[str, int],
     affected_docker_images: list[str],
     content_items_by_docker_image: dict[str, list[dict[str, Any]]],
-    images_tag: dict[str, str]
+    images_tag: dict[str, str],
+    nightly_packs: list[str],
 ) -> dict[str, Any]:
     affected_content_items_by_docker_image: dict[str, Any] = {}
     custom_images: list[str] = list(image_custom_configs.keys())
@@ -96,6 +103,7 @@ def get_affected_content_items_by_docker_image(
                     content_items_coverage=content_items_coverage,
                     content_items_by_docker_image=content_items_by_docker_image,
                     target_docker_tag=docker_image_tag,
+                    nightly_packs=nightly_packs,
                 )
                 # We will also add the tags of the batch
         elif default_batch_config:
@@ -105,6 +113,7 @@ def get_affected_content_items_by_docker_image(
                 content_items_coverage=content_items_coverage,
                 content_items_by_docker_image=content_items_by_docker_image,
                 target_docker_tag=docker_image_tag,
+                nightly_packs=nightly_packs,
             )
         affected_content_items_by_docker_image[docker_image] = affected_content_items
     return affected_content_items_by_docker_image
@@ -157,17 +166,20 @@ def get_content_items_by_docker_image() -> dict[str, list[dict[str, Any]]]:
     content_images: dict[str, list[dict[str, Any]]] = defaultdict(list)
     with ContentGraphInterface() as graph, graph.driver.session() as session:
         docker_images_with_content_items = session.execute_read(query_used_dockers)
-        for docker_image, content_item, auto_update_docker_image, pack_path, support_level in docker_images_with_content_items:
+        for docker_image, content_item, auto_update_docker_image, full_pack_path, support_level in docker_images_with_content_items:
             # TODO We can check here if the content item is part of nightly or not, by
             # receiving a file that has all the nightly content items, and checking if
             # the content item is in that file
             if auto_update_docker_image:
                 content_item_py = Path(content_item).with_suffix('.py')
                 if content_item_py.is_file():
+                    # Since the full_pack_path is in the format "Packs/{pack path}"
+                    pack_path = full_pack_path.split("/")[1]
                     # Since the docker image returned will include the tag, we only need the image
                     docker_image_without_tag = docker_image.split(":")[0]
                     content_images[docker_image_without_tag].append({"content_item": content_item_py,
-                                                                        "support_level": support_level})
+                                                                    "support_level": support_level,
+                                                                    "pack_path": pack_path})
                 else:
                     logging.warning(f"{content_item_py} was returned from the graph, but not found in repo")
             else:
@@ -201,6 +213,8 @@ def get_affected_content_items(
     # https://gitlab.xdr.pan.local/xdr/cortex-content/dockerfiles-cicd/-/blob/main/scripts/CVE_report/create_cve_report_json.py?ref_type=heads
     docker_images_latest_tag_path = "/Users/ayousef/dev/demisto/content/Utils/auto_update_docker/images_tag.json"
     images_tag: dict[str, str] = {}
+    tests_conf = load_json('Tests/conf.json')
+    nightly_packs: list[str] = tests_conf.get('nightly_packs', [])
     if docker_images_latest_tag_path:
         images_tag = load_json(docker_images_latest_tag_path)
     coverage_report_dict: dict[str, Any] = load_json(coverage_report)
@@ -225,7 +239,8 @@ def get_affected_content_items(
         content_items_coverage=content_items_coverage,
         affected_docker_images=affected_docker_images,
         content_items_by_docker_image=content_items_by_docker_image,
-        images_tag=images_tag
+        images_tag=images_tag,
+        nightly_packs=nightly_packs
     )
     docker_images_target_tag = {docker_image: affected_items["target_tag"] for docker_image, affected_items in
                                 affected_content_items_by_docker_image.items()}

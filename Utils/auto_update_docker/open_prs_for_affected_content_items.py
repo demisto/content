@@ -29,21 +29,28 @@ def get_affected_content_items(
         default="auto",
         help="The staging branch, that will act as the base branch for the PRs",
     ),
-    batch_index: int = typer.Argument(
-        default="0",
-        help="The batch index",
-    ),
-    coverage_report: str = typer.Argument(
-        default="Utils/auto_update_docker/coverage_report.json",
-        help="The coverage report from last nightly",
-    ),
-    docker_images_latest_tag_path: str = typer.Argument(
-        default="",
-        help="The file that contains the docker images tag, if given an empty string, will retrieve them latest tags from dockerhub",
+    prs_limit: str = typer.Argument(
+        default="10",
+        help="The maximum number of content items to open in one PR",
     ),
 ):
-    ...
+    org_name = "demisto"
+    repo_name = "content"
+    remote_github_controller = Github(os.getenv("GITHUB_ACCESS_TOKEN"), verify=False)
+    # Get the remote repo that is at Github
+    remote_content_repo = remote_github_controller.get_repo(f"{org_name}/{repo_name}")
+    # Run the script in a git-initialized repo
+    repo = Repo(".")
+    index = repo.index
+    origin = repo.remotes.origin
+    # Get current active branch
+    active_branch = repo.active_branch
+    logging.info(f'Checking out master\n{repo.git.checkout("master")}')
+    # Pull from master
+    origin.pull()
 
+    # Check if the staging branch exists, if not, create one:
+    remote_github_controller
 def main():
     app()
 
