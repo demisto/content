@@ -1108,11 +1108,11 @@ script:
     - name: notes
       description: The notes to add to an alert.
       required: true
-    - auto: PREDEFINED
+    - name: action
       default: true
       defaultValue: replace
       description: Whether to replace or append new notes.
-      name: action
+      auto: PREDEFINED
       predefined:
       - replace
       - append
