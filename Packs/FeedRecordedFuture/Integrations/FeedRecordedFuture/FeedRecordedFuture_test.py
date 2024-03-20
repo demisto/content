@@ -528,5 +528,5 @@ def test_calculate_dbot_score(risk_from_feed, malicious_threshold, suspicious_th
     Then:
      - Verify that no errors were thrown (especially the part that check that malicious_threshold <= suspicious_threshold)
     """
-    client = Client(indicator_type='ip', api_token='123', services=[
-                    'fusion'], malicious_threshold=None, suspicious_threshold=None)
+    Client(indicator_type='ip', api_token='123', services=[
+        'fusion'], malicious_threshold=None, suspicious_threshold=None)
