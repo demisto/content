@@ -2191,8 +2191,8 @@ Advanced hunting is a threat-hunting tool that uses specially constructed querie
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | Advanced hunting query. | Required | 
-| limit | Number of entries.  Enter -1 for unlimited query, In case a limit also appears in the question, priority will be given to the query. | Optional | 
-| timeout | The time limit in seconds for the http request to run. Default is 50. | Optional | 
+| limit | Number of entries. Enter -1 for unlimited query, In case a limit also appears in the query, priority will be given to the query. | Optional | 
+| timeout | The time limit in seconds for the http request to run | Optional | 
 
 #### Context Output
 
