@@ -149,24 +149,11 @@ def main():  # pragma: no cover
     args["integration_name"] = INTEGRATION_NAME
     api_key = demisto.params().get('apikey')
     api_key_id = demisto.params().get('apikey_id')
-    url = demisto.params().get('url')
     url_suffix = '/xsiam' if command in PREVALENCE_COMMANDS else "/public_api/v1"
-
-    if not api_key or not api_key_id or not url:
-        headers = {
-            "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
-            demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
+    headers = {
             "Content-Type": "application/json"
         }
-        url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
-        add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
-    else:
-        headers = {
-            "Content-Type": "application/json",
-            "x-xdr-auth-id": str(api_key_id),
-            "Authorization": api_key
-        }
-        add_sensitive_log_strs(api_key)
+    url = "/api/webapp/" if not api_key or not api_key_id else ""
 
     base_url = urljoin(url, url_suffix)
     proxy = demisto.params().get('proxy')
