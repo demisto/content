@@ -46,6 +46,22 @@
         "Nmap": {
             "mandatory": false,
             "display_name": "Nmap"
+        },
+        "AWS-EC2": {
+            "mandatory": false,
+            "display_name": "AWS - EC2"
+        },
+        "Google Cloud Compute": {
+            "mandatory": false,
+            "display_name": "Google Cloud Compute"
+        },
+        "Azure Compute": {
+            "mandatory": false,
+            "display_name": "Azure Compute"
+        },
+        "Microsoft Graph API": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph API"
         }
     },
     "displayedImages": [

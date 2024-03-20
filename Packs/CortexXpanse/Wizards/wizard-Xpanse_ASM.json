@@ -38,7 +38,7 @@
                 },
                 {
                     "name": "AWS-EC2",
-                    "display_name": "AWS EC2"
+                    "display_name": "AWS - EC2"
                 },
                 {
                     "name": "GoogleCloudCompute",
