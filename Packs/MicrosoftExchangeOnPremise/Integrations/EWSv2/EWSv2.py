@@ -1104,7 +1104,7 @@ def parse_object_as_dict_with_serialized_items(object):
                     json.dumps(v)
                     raw_dict[field.name] = v
             except (TypeError, OverflowError):
-                demisto.debug(f'Data in field {field.name} is not serilizable, skipped field')
+                demisto.debug(f'Data in field {field.name} is not serilizable, skipped field value is \n{v}\n')
                 continue
     return raw_dict
 
@@ -1375,8 +1375,33 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                     raise e
 
         incident['labels'] = labels
-        incident['rawJSON'] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
-
+        
+        parsed_items_as_dict = parse_item_as_dict(item, None)
+        try:
+            incident['rawJSON'] = json.dumps(parsed_items_as_dict, ensure_ascii=False)
+        except Exception as e:
+            demisto.debug('~~~~ Error dumping the mail info as dict ~~~~~')
+            if parsed_items_as_dict:
+                if isinstance(parsed_items_as_dict, dict):
+                    demisto.debug('~~~~ Type of dict ~~~~~')
+                    for key, value in parsed_items_as_dict.items():
+                        try:
+                            json.dumps(value, ensure_ascii=False)
+                        except Exception:
+                            demisto.debug(f'~~~Error dumping field {key} with value \n{value}\n')
+                            continue
+                elif isinstance(parsed_items_as_dict, list):
+                    demisto.debug('~~~~ Type of list ~~~~~')
+                    for value in parsed_items_as_dict:
+                        try:
+                            json.dumps(value, ensure_ascii=False)
+                        except Exception:
+                            demisto.debug(f'~~~Error dumping \n{value}\n')
+                            continue
+                else:
+                    demisto.debug(f'parsed_items_as_dict not of type list of dict {type(parsed_items_as_dict)}')
+                        
+            raise e
     except Exception as e:
         if 'Message is not decoded yet' in str(e):
             demisto.debug('EWS v2 - Skipped a protected message')
