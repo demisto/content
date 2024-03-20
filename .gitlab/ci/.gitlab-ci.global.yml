@@ -440,6 +440,7 @@
         ./Tests/scripts/sdk_pylint_check.sh
       fi
     - section_end "Test Infrastructure"
+    - rm -rf Packs/MyPack # remove MyPack from the Packs folder, workaround until demisto-sdk 1.27.5 will be released
     - section_start "Revoking GCP Auth and Configure Docker"
     - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
     - gcloud auth configure-docker ${DOCKER_IO_DOMAIN} >> "${ARTIFACTS_FOLDER}/logs/configure_docker_with_registry.log" 2>&1
