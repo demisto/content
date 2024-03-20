@@ -1250,8 +1250,8 @@ def test_chromebrowser_move_ou_command(gsuite_client, mocker):
     response = chromebrowser_move_ou_command(gsuite_client, args)
     assert response == f'Chrome browser devices have been moved to the new organization unit {args["org_unit_path"]}'
 
+
 @pytest.mark.parametrize(
-    # Write and define the expected
     "args",
     [
         {"customer_id": "test", "limit": "1"},
@@ -1338,7 +1338,6 @@ def test_modify_policy_command(gsuite_client, mocker):
 
 
 @pytest.mark.parametrize(
-    # Write and define the expected
     "args",
     [
         {"customer_id": "test", "limit": "2"},
@@ -1402,7 +1401,6 @@ def test_policy_schemas_command_schema_name(gsuite_client, mocker):
 
 
 @pytest.mark.parametrize(
-    # Write and define the expected
     "args",
     [
         {"customer_id": "test", "limit": "2"},
