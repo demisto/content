@@ -91,7 +91,7 @@
     "outputs_prefix": "GSuite.PolicySchema",
     "raw_response":
     {
-        "name": "customers/1111/policySchemas/chrome.users.appsconfig.AllowedAppTypes",
+        "name": "customers/test/policySchemas/chrome.users.appsconfig.AllowedAppTypes",
         "policyDescription": "Allowed types of apps and extensions.",
         "definition":
         {
