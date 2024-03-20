@@ -115,15 +115,17 @@ script:
       description: Resposne for the SIQL query.
       type: Unknown
   - arguments:
-    - name: page
-    - name: pageSize
+    - description: Page in which to retrieve results.  
+      name: page
+    - description: Number of results in the page.
+      name: pageSize
     description: Get all the collectors in the inventory.
     name: firemon-collector-get-all
     outputs:
     - contextPath: FireMonSecurityManager.Collector
       description: Firemon Collector Infomation.
   - arguments:
-    - description: collector id.
+    - description: Collector id.
       name: id
     description: Get collector status.
     name: firemon-collector-get-status-byid
