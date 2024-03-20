@@ -736,7 +736,7 @@ def test_last_run_after_fetch_incidents(mocker):
 
     fetch_incidents()
 
-    assert demisto.setLastRun.call_args[0][0]['gmt_time'] == '2022-11-10T05:45:45Z'
+    assert demisto.setLastRun.call_args[0][0]['gmt_time'] == '2022-11-10T03:45:45Z'
 
 
 EMAIL_NO_INTERNALDATE = input_data.email_without_date
