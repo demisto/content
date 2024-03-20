@@ -54,6 +54,8 @@ configuration:
   type: 0
   required: false
   section: Collect
+  hidden:
+  - xsoar
 - additionalinfo: The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section.
   defaultvalue: '1000'
   display: Events max fetch
@@ -62,6 +64,8 @@ configuration:
   required: false
   advanced: true
   section: Collect
+  hidden:
+  - xsoar
 - defaultvalue: '720'
   display: Assets and vulnerabilities fetch interval
   name: assetsFetchInterval
@@ -69,6 +73,8 @@ configuration:
   required: false
   advanced: true
   section: Collect
+  hidden:
+  - xsoar
 description: A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
 display: Tenable Vulnerability Management (formerly Tenable.io)
 name: Tenable.io
