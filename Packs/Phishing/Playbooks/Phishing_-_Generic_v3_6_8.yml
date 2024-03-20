@@ -254,7 +254,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 2705
+          "y": 2685
         }
       }
     note: false
@@ -304,7 +304,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3745
+          "y": 3945
         }
       }
     note: false
@@ -681,14 +681,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - "228"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -920,
-          "y": 2880
+          "y": 2860
         }
       }
     note: false
@@ -721,7 +721,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3210
+          "y": 3370
         }
       }
     note: false
@@ -2038,7 +2038,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3560
+          "y": 3750
         }
       }
     note: false
@@ -3490,7 +3490,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3390
+          "y": 3580
         }
       }
     note: false
@@ -3538,8 +3538,20 @@ tasks:
     nexttasks:
       '#none#':
       - "52"
+    scriptarguments:
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -3554,18 +3566,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    scriptarguments:
-      URL:
-        complex:
-          root: URL
-          accessor: Data
-          transformers:
-          - operator: uniq
-    loop:
+  "228":
+    id: "228"
+    taskid: 95ec8c6f-527e-49dc-83fc-03fe573e46ab
+    type: condition
+    task:
+      id: 95ec8c6f-527e-49dc-83fc-03fe573e46ab
+      version: -1
+      name: Should be reviewed by analyst?
+      type: condition
       iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "226"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.NonMaliciousEmailReview
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -920,
+          "y": 2990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -3589,7 +3634,7 @@ view: |-
       "222_53_yes": 0.42,
       "222_56_#default#": 0.17,
       "223_224_yes": 0.47,
-      "33_30_yes": 0.1,
+      "33_30_yes": 0.34,
       "36_152_Yes": 0.49,
       "79_82_yes": 0.46,
       "79_84_#default#": 0.17
@@ -3819,6 +3864,14 @@ inputs:
     A comma-separated list of keywords to search in the email body.
     For example: name of the organization finance app that the attacker might impersonate.
     This input is used in the "Spear Phishing Investigation" sub-playbook.
+  playbookInputQuery:
+- key: NonMaliciousEmailReview
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    In case of an incident with a non-malicious email, it is possible either to close the incident or to review and approve it by an analyst.
+    Set the value "True" for a review of the incident by an analyst. Set the value "False" to close the incident.
   playbookInputQuery:
 inputSections:
 - inputs:
