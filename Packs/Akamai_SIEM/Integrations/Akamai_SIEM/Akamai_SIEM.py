@@ -6,7 +6,8 @@ from datetime import datetime, timezone
 from base64 import b64decode
 
 # 3-rd party imports
-from typing import Dict, Tuple, Union, Optional, List, Any, Sequence
+from typing import Any
+from collections.abc import Sequence
 import urllib.parse
 import urllib3
 from akamai.edgegrid import EdgeGridAuth
@@ -30,15 +31,18 @@ Attributes:
 INTEGRATION_NAME = 'Akamai SIEM'
 INTEGRATION_COMMAND_NAME = 'akamai-siem'
 INTEGRATION_CONTEXT_NAME = 'Akamai'
+PRODUCT = "akamai"
+VENDOR = "waf"
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def get_events(self, config_ids: str, offset: Optional[str] = '', limit: Optional[Union[str, int]] = None,
-                   from_epoch: Optional[str] = '', to_epoch: Optional[str] = '') \
-            -> Tuple[List[Any], Any]:
+    def get_events(self, config_ids: str, offset: str | None = '', limit: str | int | None = None,
+                   from_epoch: str | None = '', to_epoch: str | None = '') \
+            -> tuple[list[Any], Any]:
         """
             Get security events from Akamai WAF service by - https://developer.akamai.com/api/cloud_security/siem/v1.html,
             Pay attention response as text of multiple json objects
@@ -78,7 +82,7 @@ class Client(BaseClient):
                                                url_suffix=f'/{config_ids}',
                                                params=assign_params(**params),
                                                resp_type='text')
-        events: List = []
+        events: list = []
         if '{ "total": 0' not in raw_response:
             events = [json.loads(event) for event in raw_response.split('\n')[:-2]]
             new_offset = str(max([int(event.get('httpMessage', {}).get('start')) for event in events]))
@@ -108,7 +112,7 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
     Returns:
         Converted date as Datetime object or string object
     """
-    converted_date: Union[str, int] = ''
+    converted_date: str | int = ''
     if from_format == 'epoch':
         converted_date = datetime.utcfromtimestamp(int(date_before)).strftime(readable_format)
     elif from_format == 'readable':
@@ -118,7 +122,7 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
     return str(converted_date)
 
 
-def decode_message(msg: str) -> Sequence[Optional[str]]:
+def decode_message(msg: str) -> Sequence[str | None]:
     """
         Follow these steps for data members that appear within the event’s attackData section:
             1. If the member name is prefixed rule, URL-decode the value.
@@ -147,7 +151,7 @@ def decode_message(msg: str) -> Sequence[Optional[str]]:
     return readable_msg
 
 
-def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
+def events_to_ec(raw_response: list) -> tuple[list, list, list]:
     """
         Convert raw response response to ec
     Args:
@@ -156,9 +160,9 @@ def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
     Returns:
         events as defined entry context and events for human readable
     """
-    events_ec: List[Dict] = []
-    ip_ec: List[Dict] = []
-    events_human_readable: List[Dict] = []
+    events_ec: list[dict] = []
+    ip_ec: list[dict] = []
+    events_human_readable: list[dict] = []
 
     for event in raw_response:
         events_ec.append(
@@ -227,7 +231,7 @@ def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
 
 
 @logger
-def test_module_command(client: Client) -> Tuple[None, None, str]:
+def test_module_command(client: Client) -> tuple[None, None, str]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
@@ -240,10 +244,16 @@ def test_module_command(client: Client) -> Tuple[None, None, str]:
     Raises:
         DemistoException: If test failed.
     """
-    # Test on the following date Monday, 6 March 2017 16:07:22
-    events, offset = client.get_events(config_ids=demisto.params().get('configIds'),
-                                       from_epoch='1488816442',
-                                       limit='1')
+    params = demisto.params()
+    if is_xsiam_or_xsoar_saas():
+        events, _ = client.get_events(config_ids=params.get('event_configIds'),
+                                           from_epoch='1488816442',
+                                           limit='1')
+    elif is_xsoar():
+        # Test on the following date Monday, 6 March 2017 16:07:22
+        events, _ = client.get_events(config_ids=params.get('configIds'),
+                                           from_epoch='1488816442',
+                                           limit='1')
     if isinstance(events, list):
         return None, None, 'ok'
     raise DemistoException(f'Test module failed, {events}')
@@ -253,9 +263,9 @@ def test_module_command(client: Client) -> Tuple[None, None, str]:
 def fetch_incidents_command(
         client: Client,
         fetch_time: str,
-        fetch_limit: Union[str, int],
+        fetch_limit: str | int,
         config_ids: str,
-        last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
+        last_run: str | None = None) -> tuple[list[dict[str, Any]], dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -269,7 +279,7 @@ def fetch_incidents_command(
     Returns:
         incidents, new last_run
     """
-    raw_response: Optional[List] = []
+    raw_response: list | None = []
     if not last_run:
         last_run, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     raw_response, offset = client.get_events(config_ids=config_ids, from_epoch=last_run, limit=fetch_limit)
@@ -287,9 +297,38 @@ def fetch_incidents_command(
     return incidents, {'lastRun': offset}
 
 
-def get_events_command(client: Client, config_ids: str, offset: Optional[str] = None, limit: Optional[str] = None,
-                       from_epoch: Optional[str] = None, to_epoch: Optional[str] = None, time_stamp: Optional[str] = None) \
-        -> Tuple[object, dict, Union[List, Dict]]:
+def fetch_events_command(
+        client: Client,
+        last_run: dict,
+        fetch_limit: str | int,
+        config_ids: str) -> tuple[list[dict[str, Any]], dict]:
+    """Uses to fetch incidents into Demisto
+    Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
+
+    Args:
+        client: Client object with request.
+        last_run: Last fetch object occurs.
+        fetch_limit: limit of incidents in a fetch.
+        config_ids: security configuration ids to fetch, e.g. `51000;56080`
+
+    Returns:
+        incidents, new last_run
+    """
+    events: list | None = []
+    from_time: str = last_run.get("events_last_run", "")
+    if not from_time:
+        from_time, _ = parse_date_range(date_range=datetime.now(), date_format='%s')
+    events, offset = client.get_events(config_ids=config_ids, from_epoch=from_time, limit=fetch_limit)
+
+    for event in events:
+        event["_time"] = event["_time"]
+
+    return events, {'events_last_run': offset}
+
+
+def get_events_command(client: Client, config_ids: str, offset: str | None = None, limit: str | None = None,
+                       from_epoch: str | None = None, to_epoch: str | None = None, time_stamp: str | None = None) \
+        -> tuple[object, dict, list | dict]:
     """
         Get security events from Akamai WAF service
         Allowed query parameters combinations:
@@ -349,6 +388,8 @@ def get_events_command(client: Client, config_ids: str, offset: Optional[str] = 
 
 def main():
     params = demisto.params()
+    if is_xsiam_or_xsoar_saas() and not params.get("event_configIds"):
+        raise DemistoException("'Config IDs to fetch for fetch events on xsiam' must be given when when setting an instance in xsiam.")
     client = Client(
         base_url=urljoin(params.get('host'), '/siem/v1/configs'),
         verify=not params.get('insecure', False),
@@ -374,6 +415,17 @@ def main():
                                                               last_run=demisto.getLastRun().get('lastRun'))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
+
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            demisto.debug(f'Starting a new fetch interval with {last_run=}')
+            events, new_last_run = fetch_events_command(client,
+                                                        last_run,
+                                                        fetch_limit=params.get("max_fetch"),
+                                                        onfig_ids=params.get("event_configIds", "50"))
+            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(new_last_run)
+            demisto.debug(f'{new_last_run=}')
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
             return_outputs(human_readable, entry_context, raw_response)

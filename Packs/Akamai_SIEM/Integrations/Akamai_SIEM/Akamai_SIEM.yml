@@ -88,9 +88,9 @@ configuration:
   defaultvalue: "1"
   type: 19
   required: false
-- display: Config IDs to fetch for events fetch
+- display: Config IDs to fetch for fetch events on xsiam
+  additionalinfo:  Config IDs to fetch - mandatory field when setting integration in xsiam.
   name: event_configIds
-  defaultvalue: '50170'
   type: 0
   section: Collect
 - additionalinfo: Maximum number of events per fetch for fetch events (XSIAM)
