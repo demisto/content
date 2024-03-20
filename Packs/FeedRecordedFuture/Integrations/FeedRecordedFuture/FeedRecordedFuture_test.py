@@ -516,8 +516,7 @@ def test_duplicated_indicator_in_the_same_batch(mocker):
     assert indicators_occurrences.get('http://www.test.duckdns.ORG/') == 1
 
 
-@pytest.mark.parametrize('risk_from_feed, malicious_threshold, suspicious_threshold, expected_score', CALCULATE_DBOT_SCORE_INPUTS)
-def test_calculate_dbot_score(risk_from_feed, malicious_threshold, suspicious_threshold, expected_score):
+def test_client_init_with_null_values():
     """
     Given:
      - malicious_threshold, suspicious_threshold, and risk_score_threshold params all set to None
