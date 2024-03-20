@@ -5,7 +5,6 @@ from CommonServerPython import *  # noqa: F401
 from typing import Any
 import traceback
 import urllib.parse
-import regex as re
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 ''' STANDALONE FUNCTION '''
@@ -159,11 +158,14 @@ class BlockCarrier:
         paste the URL into the blocks_url argument for this automation. The URL is then decoded to provide the blocks.
         """
         try:
-            url_encoded_blocks: str = re.search(r"#(.+)", self.url)[1]
-            url_decoded_blocks: str = urllib.parse.unquote(url_encoded_blocks)
-            parsed_blocks: Any = json.loads(url_decoded_blocks)
-            self.blocks_dict = parsed_blocks.get('blocks', [{}])
-            demisto.debug(f"Parsed blocks: {self.blocks_dict}")
+            if match_url_encoded_blocks := re.search(r"#(.+)", self.url):
+                url_encoded_blocks = match_url_encoded_blocks[1]
+                url_decoded_blocks = urllib.parse.unquote(url_encoded_blocks)
+                parsed_blocks = json.loads(url_decoded_blocks)
+                self.blocks_dict = parsed_blocks.get('blocks', [{}])
+                demisto.debug(f"Parsed blocks: {self.blocks_dict}")
+            else:
+                raise DemistoException("No blocks found in URL")
         except Exception as e:
             demisto.debug(f"Failed to parse blocks from URL, {str(e)}")
             raise DemistoException(ErrorMessages.INVALID_BLOCKS_URL)
