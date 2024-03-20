@@ -1242,3 +1242,30 @@ class TestGetIncidents():
         assert len(outputs) == len(multiple_extra_data['reply']['incidents'])
         assert outputs[0]['alerts']['total_count'] <= alert_limit
         assert outputs[1]['alerts']['total_count'] <= alert_limit
+
+
+def test_get_incident_extra_data_incident_not_exist(mocker):
+    """
+    Given:
+        -  an XDR client
+        - arguments (id)
+    When
+        - Running get_incident_extra_data_command
+    Then
+        - Verify that if the incident id is not found, it returns an error
+    """
+    from CortexXDRIR import get_incident_extra_data_command, Client
+
+    mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=[])
+    mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=2)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
+    args = {
+        'incident_id': '1'
+    }
+    with pytest.raises(DemistoException) as e:
+            _, outputs, raw_incident = get_incident_extra_data_command(client, args)
+    assert str(e.value) == 'incident 1 is not found'
+    
+

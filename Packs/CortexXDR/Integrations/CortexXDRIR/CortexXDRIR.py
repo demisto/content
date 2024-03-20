@@ -537,7 +537,9 @@ def get_incident_extra_data_command(client, args):
         else:  # the incident was not modified
             return "The incident was not modified in XDR since the last mirror in.", {}, {}
     raw_incident = client.get_multiple_incidents_extra_data(incident_id_list=[incident_id])
-    if raw_incident and isinstance(raw_incident, list):
+    if not raw_incident:
+        raise DemistoException(f'incident {incident_id} is not found')
+    if isinstance(raw_incident, list):
         raw_incident = raw_incident[0]
     if raw_incident.get('incident', {}).get('alert_count') > ALERTS_LIMIT_PER_INCIDENTS:
         raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
