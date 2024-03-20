@@ -229,6 +229,9 @@ script:
     - contextPath: File.Size
       description: File size.
       type: number
+    - contextPath: File.EntryID
+      description: 'The EntryID of the file.'
+      type: string
   - arguments:
     - default: true
       description: The user's email address. The "me" special value can be used to indicate the authenticated user.
@@ -355,6 +358,9 @@ script:
     - contextPath: File.Size
       description: Relevant only when include-attachments is set to True. File size.
       type: number
+    - contextPath: File.EntryID
+      description: 'The EntryID of the file.'
+      type: string
   - arguments:
     - default: true
       description: The user's email address. The "me" special value can be used to indicate the authenticated user.
