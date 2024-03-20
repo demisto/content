@@ -703,6 +703,42 @@ def test_fetch_incidents(mocker, return_value_get_last_run, expected_result):
     assert incidents == expected_result
 
 
+def test_last_run_after_fetch_incidents(mocker):
+    """
+    Tests the result of last_run obj after fetch_incidents.
+        Given:
+             - lastRun object.
+        When:
+            - executing fetch_incidents function.
+        Then:
+            - verify the gmt_time in setLastRun is the newest message + 1 sec.
+    """
+    import Gmail
+    from Gmail import fetch_incidents
+
+    messages_gen = (message for message in [input_data.third_message, input_data.fourth_message])
+
+    def mocked_get_message():
+        return next(messages_gen)
+
+    mocked_messages = {'messages': [
+        {'id': '1845fa4c3a5618cd', 'threadId': '1845fa4c3a5618cd'},
+        {'id': '1845fa4c2d5dfbb1', 'threadId': '1845fa4c2d5dfbb1'}
+    ]
+    }
+
+    mocked_get_service = mocker.patch.object(Gmail, 'get_service')
+    mocked_get_service().users().messages().list().execute.return_value = mocked_messages
+    mocked_get_service().users().messages().get().execute.side_effect = mocked_get_message
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'params', return_value={'queryUserKey': '111', 'query': '', 'fetch_limit': '1'})
+    mocker.patch.object(demisto, 'getLastRun', return_value={'gmt_time': '2017-10-24T14:13:20Z'})
+
+    fetch_incidents()
+
+    assert demisto.setLastRun.call_args[0][0]['gmt_time'] == '2022-11-10T05:45:45Z'
+
+
 EMAIL_NO_INTERNALDATE = input_data.email_without_date
 EXPECTED_OCCURRED_NO_INTERNALDATE = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
 EMAIL_INTERNALDATE_EARLY = input_data.email_with_early_internalDate
