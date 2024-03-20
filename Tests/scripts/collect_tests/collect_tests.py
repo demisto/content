@@ -1504,8 +1504,8 @@ def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[list, list]:
     changed_files = git_util._get_all_changed_files()
     for pack_id in packs_to_upload:
         current_version = PACK_MANAGER.get_current_version(pack_id) or ""
-        rn_path = Path(f"{PACK_MANAGER.packs_path}/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
-        pack_metadata_path = Path(f"{PACK_MANAGER.packs_path}/{pack_id}/pack_metadata.json")
+        rn_path = Path(f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
+        pack_metadata_path = Path(f"Packs/{pack_id}/pack_metadata.json")
 
         if rn_path not in changed_files and pack_metadata_path in changed_files:
             packs_to_update_metadata.add(pack_id)

@@ -813,5 +813,5 @@ def test_sort_packs_to_upload(mocker):
     mocker.patch.object(PACK_MANAGER, "get_current_version", return_value="1.0.0")
     packs_to_upload, packs_to_update_metadata = sort_packs_to_upload({"myPack", "myPack2"})
 
-    assert packs_to_upload == {"myPack2"}, "myPack should be marked for hard upload"
-    assert packs_to_update_metadata == {"myPack"}, "myPack should be marked for metadata update"
+    assert packs_to_upload == ["myPack2"], "myPack should be marked for hard upload"
+    assert packs_to_update_metadata == ["myPack"], "myPack should be marked for metadata update"
