@@ -52,7 +52,7 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
 
 ''' CONSTANTS '''
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
-DEFAULT_INDICATOR_SCORE = ThreatIntel.ObjectsScore.MALWARE  # default verdict of fetched indicators is malicious
+DEFAULT_INDICATOR_SCORE = 3  # default verdict of fetched indicators is malicious
 
 
 class Client(BaseClient):
