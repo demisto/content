@@ -50,7 +50,9 @@ MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {
     'command-and-control': ThreatIntel.KillChainPhases.COMMAND_AND_CONTROL
 }
 
+''' CONSTANTS '''
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
+DEFAULT_INDICATOR_SCORE = ThreatIntel.ObjectsScore.MALWARE  # default verdict of fetched indicators is malicious
 
 
 class Client(BaseClient):
@@ -131,7 +133,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None, 
                     indicator_obj = {
                         "value": raw_name,
                         "type": UNIT42_TYPES_TO_DEMISTO_TYPES.get(key),
-                        "score": ThreatIntel.ObjectsScore.MALWARE,  # default verdict of fetched indicators is malicious
+                        "score": DEFAULT_INDICATOR_SCORE,  # default verdict of fetched indicators is malicious
                         "rawJSON": indicator_object,
                         "fields": {
                             "firstseenbysource": indicator_object.get('created'),
