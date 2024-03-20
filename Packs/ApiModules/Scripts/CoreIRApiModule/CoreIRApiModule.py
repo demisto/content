@@ -4,7 +4,7 @@ import urllib3
 import copy
 import re
 from operator import itemgetter
-
+import json
 from typing import Tuple, Callable
 
 # Disable insecure warnings
@@ -148,6 +148,86 @@ class CoreClient(BaseClient):
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
+    
+    def request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
+                params=None, data=None, timeout=None, raise_on_status=False):
+        '''
+        """A wrapper for requests lib to send our requests and handle requests and responses better.
+
+            :type method: ``str``
+            :param method: The HTTP method, for example: GET, POST, and so on.
+
+            :type url_suffix: ``str``
+            :param url_suffix: The API endpoint.
+
+            :type full_url: ``str``
+            :param full_url:
+                Bypasses the use of self._base_url + url_suffix. This is useful if you need to
+                make a request to an address outside of the scope of the integration
+                API.
+
+            :type headers: ``dict``
+            :param headers: Headers to send in the request. If None, will use self._headers.
+            
+            :type params: ``dict``
+            :param params: URL parameters to specify the query.
+
+            :type data: ``dict``
+            :param data: The data to send in a 'POST' request.
+            
+            :type raise_on_status ``bool``
+                :param raise_on_status: Similar meaning to ``raise_on_redirect``:
+                    whether we should raise an exception, or return a response,
+                    if status falls in ``status_forcelist`` range and retries have
+                    been exhausted.
+            
+            :type timeout: ``float`` or ``tuple``
+            :param timeout:
+                The amount of time (in seconds) that a request will wait for a client to
+                establish a connection to a remote machine before a timeout occurs.
+                can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
+        '''
+        try:
+            # Replace params if supplied
+            address = full_url if full_url else urljoin(self._base_url, url_suffix)
+            headers = headers if headers else self._headers
+            res = demisto._apiCall(
+                        method=method,
+                        path=address,
+                        data=data,
+                        json=json_data,
+                        headers=headers,
+                        timeout=timeout,
+                    )
+            return res
+        except requests.exceptions.ConnectTimeout as exception:
+                err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
+                          ' is incorrect or that the Server is not accessible from your host.'
+                raise DemistoException(err_msg, exception)
+        except requests.exceptions.SSLError as exception:
+            # in case the "Trust any certificate" is already checked
+            if not self._verify:
+                raise
+            err_msg = 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox in' \
+                      ' the integration configuration.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.ProxyError as exception:
+            err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
+                      ' selected, try clearing the checkbox.'
+            raise DemistoException(err_msg, exception)
+        except requests.exceptions.ConnectionError as exception:
+            # Get originating Exception in Exception chain
+            error_class = str(exception.__class__)
+            err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+            err_msg = 'Verify that the server URL parameter' \
+                ' is correct and that you have access to the server from your host.' \
+                '\nError Type: {}'.format(err_type)
+            if exception.errno and exception.strerror:
+                err_msg += '\nError Number: [{}]\nMessage: {}\n'.format(exception.errno, exception.strerror)
+            else:
+                err_msg += '\n{}'.format(str(exception))
+            raise DemistoException(err_msg, exception)
+
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
@@ -335,12 +415,13 @@ class CoreClient(BaseClient):
 
         request_data['filters'] = filters
 
-        reply = self._http_request(
+        response = self._http_request(
             method='POST',
             url_suffix='/endpoints/get_endpoint/',
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
+        reply = response.get('Data')
         demisto.debug(f"get_endpoints response = {reply}")
 
         endpoints = reply.get('reply').get('endpoints', [])
