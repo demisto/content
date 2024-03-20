@@ -455,7 +455,7 @@ Retrieves the Gmail message sent to a specified user.
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
 | message-id | The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
 | format | The format to return the message. Can be: "full": Returns the full email message data with body content parsed in the payload field; the raw field is not used. (default) / "metadata": Returns only the email message ID, labels, and email headers / "minimal": Returns only the email message ID and labels; does not return the email headers, body, or payload / "raw": Returns the full email message data with body content in the raw field as a base64url encoded string; the payload field is not used. Possible values are: full, metadata, minimal, raw. Default is full. | Optional | 
-| include-attachments | Whether to include the attachment entries in the result or not. Possible values are: False, True. | Optional | 
+| include-attachments | Whether to include the attachment entries in the result or not. Possible values are: False, True. Default is false. | Optional | 
 
 #### Context Output
 
@@ -487,10 +487,10 @@ Retrieves the Gmail message sent to a specified user.
 | Email.Attachments.ID | Unknown | The email attachment ID \(as appear in gmail\). | 
 | Email.Attachments.Name | Unknown | The email attachment name. | 
 | Email.Date | String | The date the email was received. | 
+| File.Name | String | Relevant only when include-attachments is set to True. The name of the file. | 
 | File.MD5 | String | Relevant only when include-attachments is set to True. The MD5 hash of the file. | 
 | File.SHA1 | String | Relevant only when include-attachments is set to True. The SHA1 hash of the file. | 
 | File.SHA256 | String | Relevant only when include-attachments is set to True. The SHA256 hash of the file. | 
-| File.Name | String | Relevant only when include-attachments is set to True. The name of the file. | 
 | File.SSDeep | String | Relevant only when include-attachments is set to True. The SSDeep hash of the file \(same as displayed in file entries\). | 
 | File.Type | string | Relevant only when include-attachments is set to True. File type, for example: "PE". | 
 | File.Size | number | Relevant only when include-attachments is set to True. File size. | 

@@ -208,6 +208,9 @@ script:
     description: Retrieves attachments from a sent Gmail message.
     name: gmail-get-attachments
     outputs:
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
@@ -216,9 +219,6 @@ script:
       type: String
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
-      type: String
-    - contextPath: File.Name
-      description: The name of the file.
       type: String
     - contextPath: File.SSDeep
       description: The SSDeep hash of the file (same as displayed in file entries).
@@ -250,7 +250,7 @@ script:
       - minimal
       - raw
     - auto: PREDEFINED
-      defaultValue: False
+      defaultValue: 'false'
       description: Whether to include the attachment entries in the result or not.
       name: include-attachments
       predefined:
@@ -337,6 +337,9 @@ script:
     - contextPath: Email.Date
       description: The date the email was received.
       type: String
+    - contextPath: File.Name
+      description: Relevant only when include-attachments is set to True. The name of the file.
+      type: String
     - contextPath: File.MD5
       description: Relevant only when include-attachments is set to True. The MD5 hash of the file.
       type: String
@@ -345,9 +348,6 @@ script:
       type: String
     - contextPath: File.SHA256
       description: Relevant only when include-attachments is set to True. The SHA256 hash of the file.
-      type: String
-    - contextPath: File.Name
-      description: Relevant only when include-attachments is set to True. The name of the file.
       type: String
     - contextPath: File.SSDeep
       description: Relevant only when include-attachments is set to True. The SSDeep hash of the file (same as displayed in file entries).
