@@ -1017,7 +1017,7 @@ def main():     # pragma: no cover
     base_url = urljoin(params.get('url'), '/api')
     verify = not params.get('insecure', False)
     proxy = argToBoolean(params.get('proxy', False))
-    
+
     # fetch params
     max_fetch = arg_to_number(params.get('max_fetch', 50)) or 50
     fetch_query = argToList(params.get('fetch_query')) or []
