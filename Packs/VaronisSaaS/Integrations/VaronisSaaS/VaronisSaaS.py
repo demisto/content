@@ -1255,12 +1255,8 @@ class ThreatModelObjectMapper(BaseMapper):
 
     def map_item(self, row: dict) -> ThreatModelItem:
         threat_model_item = ThreatModelItem()
-        if hasattr(row, ThreatModelAttributes.Id):
-            threat_model_item.ID = row[ThreatModelAttributes.Id]
-            threat_model_item.Name = row[ThreatModelAttributes.Name]
-        else:
-            threat_model_item.ID = row['dataField']
-            threat_model_item.Name = row['displayField']
+        threat_model_item.ID = row.get(ThreatModelAttributes.Id, row.get('dataField'))
+        threat_model_item.Name = row.get(ThreatModelAttributes.Name, row.get('displayField'))
         return threat_model_item
 
 
@@ -1986,12 +1982,11 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
     :rtype: ``bool``
 
     """
-    close_reason = str(args.get('close_reason'))
-    close_reasons = list(filter(lambda name: not strEqual(name, 'none'), CLOSE_REASONS.keys()))
-    if not close_reason or close_reason.lower() not in close_reasons:
-        raise ValueError(f'close reason must be one of {close_reasons}')
+    close_reason = str(args.get('close_reason')).lower()
+    close_reason_id = CLOSE_REASONS.get(close_reason)
+    if not close_reason_id:
+        raise ValueError(f'Close reason must be one of {list(CLOSE_REASONS.keys())}')
 
-    close_reason_id = CLOSE_REASONS[close_reason.lower()]
     note = args.get('note')
     return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'],
                                 argToList(args.get('alert_id'), separator='|'), note)
