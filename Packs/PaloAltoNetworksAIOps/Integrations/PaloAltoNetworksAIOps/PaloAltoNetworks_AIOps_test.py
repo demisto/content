@@ -1,6 +1,6 @@
 from unittest.mock import mock_open, patch
 import pytest
-from PaloAltoNetworks_AIOps import Client
+from PaloAltoNetworksAIOps import Client
 from pytest_mock import MockerFixture
 
 
@@ -15,7 +15,7 @@ def AIOps_client(base_url='base_url', api_key='api_key', tsg_id='tsg_id', client
 
 
 def test_polling_until_upload_report_command_upload_initiated_status(mocker, AIOps_client):
-    from PaloAltoNetworks_AIOps import polling_until_upload_report_command
+    from PaloAltoNetworksAIOps import polling_until_upload_report_command
     check_upload_status_request_mock = mocker.patch.object(AIOps_client, 'check_upload_status_request')
     check_upload_status_request_mock.return_value = 'UPLOAD_INITIATED'
     args = {'report_id': '123456789'}
@@ -25,7 +25,7 @@ def test_polling_until_upload_report_command_upload_initiated_status(mocker, AIO
 
 
 def test_polling_until_upload_report_command_completed_with_error(mocker, AIOps_client):
-    from PaloAltoNetworks_AIOps import polling_until_upload_report_command
+    from PaloAltoNetworksAIOps import polling_until_upload_report_command
     check_upload_status_request_mock = mocker.patch.object(AIOps_client, 'check_upload_status_request')
     check_upload_status_request_mock.return_value = 'COMPLETED_WITH_ERROR'
     args = {'report_id': '123456789'}
@@ -35,7 +35,7 @@ def test_polling_until_upload_report_command_completed_with_error(mocker, AIOps_
 
 
 def test_polling_until_upload_report_command_config_parsed(mocker, AIOps_client):
-    from PaloAltoNetworks_AIOps import polling_until_upload_report_command
+    from PaloAltoNetworksAIOps import polling_until_upload_report_command
     check_upload_status_request_mock = mocker.patch.object(AIOps_client, 'check_upload_status_request')
     check_upload_status_request_mock.return_value = 'CONFIG_PARSED'
     args = {'report_id': '123456789'}
@@ -44,7 +44,7 @@ def test_polling_until_upload_report_command_config_parsed(mocker, AIOps_client)
 
 
 def test_polling_until_upload_report_command_completed_with_success(mocker, AIOps_client):
-    from PaloAltoNetworks_AIOps import polling_until_upload_report_command
+    from PaloAltoNetworksAIOps import polling_until_upload_report_command
     bpa_json = {
         'best_practices': {
             'device': {
@@ -389,7 +389,7 @@ def test_adjust_xml_format():
     Then:
         - Get the wanted result
     """
-    from PaloAltoNetworks_AIOps import adjust_xml_format
+    from PaloAltoNetworksAIOps import adjust_xml_format
     xml_data = ('<response status="success"><result><system><hostname>test</hostname><ip-address>1.2.3.4</ip-address></system>'
                 '</result></response>')
     new_root_tag = 'system'
@@ -409,7 +409,7 @@ def test_adjust_xml_format_invalid():
     Then:
         - raise an error since a mismatch with new root tag in xml_string
     """
-    from PaloAltoNetworks_AIOps import adjust_xml_format
+    from PaloAltoNetworksAIOps import adjust_xml_format
     from CommonServerPython import DemistoException
     xml_data = ('<response status="success"><result><system><hostname>test</hostname><ip-address>1.2.3.4</ip-address></system>'
                 '</result></response>')
@@ -431,7 +431,7 @@ def test_get_values_from_xml():
     Then:
         - Get the wanted result
     """
-    from PaloAltoNetworks_AIOps import get_values_from_xml
+    from PaloAltoNetworksAIOps import get_values_from_xml
     tags = ['family', 'model', 'serial', 'sw-version']
     xml_string = ('<system ><family>test1</family><model>test2</model><serial>test3</serial><hostname>test</hostname><sw-version>'
                   'test4</sw-version><ip-address>1.1.1.1</ip-address></system>')
@@ -451,7 +451,7 @@ def test_get_values_from_xml_invalid():
     Then:
         - raise an error since a mismatch tags in xml_string
     """
-    from PaloAltoNetworks_AIOps import get_values_from_xml
+    from PaloAltoNetworksAIOps import get_values_from_xml
     from CommonServerPython import DemistoException
     tags = ['family', 'model', 'serial', 'sw-version']
     xml_string = (
@@ -475,7 +475,7 @@ def test_convert_config_to_bytes_with_user_flag(mocker, AIOps_client):
     Then:
         - succeed to convert into bytes
     """
-    from PaloAltoNetworks_AIOps import convert_config_to_bytes
+    from PaloAltoNetworksAIOps import convert_config_to_bytes
     config_file_path = '/path/to/config_file.txt'
     expected_bytes = b'<?xml version="1.0"?><config>test</config>'
     with patch('builtins.open', mock_open(read_data=expected_bytes)) as mock_open_func, \
@@ -496,7 +496,7 @@ def test_convert_config_to_bytes_get_path_exception():
     Then:
         - Raise a file convertion error
     """
-    from PaloAltoNetworks_AIOps import convert_config_to_bytes
+    from PaloAltoNetworksAIOps import convert_config_to_bytes
     from CommonServerPython import DemistoException
     with patch('demistomock.getFilePath', side_effect=Exception), pytest.raises(DemistoException) as e:
         convert_config_to_bytes('config_file.txt', 'User')
@@ -514,7 +514,7 @@ def test_convert_config_to_bytes_invalid_getFilePath_response():
     Then:
         - Raise a file convertion error
     """
-    from PaloAltoNetworks_AIOps import convert_config_to_bytes
+    from PaloAltoNetworksAIOps import convert_config_to_bytes
     from CommonServerPython import DemistoException
     with patch('demistomock.getFilePath', return_value={}), pytest.raises(DemistoException) as e:
         convert_config_to_bytes('config_file.txt', 'User')
@@ -532,7 +532,7 @@ def test_convert_config_to_bytes_with_download_flag(mocker, AIOps_client):
     Then:
         - succeed to convert into bytes
     """
-    from PaloAltoNetworks_AIOps import convert_config_to_bytes
+    from PaloAltoNetworksAIOps import convert_config_to_bytes
     config_file = '<config>test</config>'
     expected_bytes = b'<?xml version="1.0"?>\n <config>test</config>'
     result = convert_config_to_bytes(config_file, 'Download')
@@ -550,7 +550,7 @@ def test_convert_config_to_bytes_converted_with_exception():
     Then:
         - Raise a file convertion error
     """
-    from PaloAltoNetworks_AIOps import convert_config_to_bytes
+    from PaloAltoNetworksAIOps import convert_config_to_bytes
     from CommonServerPython import DemistoException
     config_file = '<config>test</config>'
     with patch('io.StringIO', side_effect=Exception), pytest.raises(DemistoException) as e:
@@ -559,7 +559,7 @@ def test_convert_config_to_bytes_converted_with_exception():
 
 
 def test_create_readable_output_checks_result():
-    from PaloAltoNetworks_AIOps import create_readable_output
+    from PaloAltoNetworksAIOps import create_readable_output
     bpa_dict = {
         'best_practices': {
             'device': {
@@ -586,7 +586,7 @@ def test_create_readable_output_checks_result():
 
 def test_create_readable_output_fails():
     from CommonServerPython import DemistoException
-    from PaloAltoNetworks_AIOps import create_readable_output
+    from PaloAltoNetworksAIOps import create_readable_output
     bpa_dict = {
         'best_practices': {
             'device': {
