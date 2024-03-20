@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Dict, Any, List
+from typing import Any
 import traceback
 import urllib.parse
 import regex as re
@@ -10,18 +10,19 @@ import regex as re
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 ''' STANDALONE FUNCTION '''
 
-class Commands(object):
+
+class Commands:
     SEND_NOTIFICATION = 'send-notification'
     ADD_ENTITLEMENT = 'addEntitlement'
     GET_LIST = 'getList'
 
 
-class DefaultValues(object):
+class DefaultValues:
     RESPONSE = 'Thank you for your reply.'
     ONE_DAY = '1 day'
 
 
-class ErrorMessages(object):
+class ErrorMessages:
     MALFORMED_LIST = 'The list that was provided is not a dictionary. Please ensure the entire payload has been copied' \
                      ' from the Block Kit Builder'
     COMMAND_ERROR = 'An error has occurred while executing the send-notification command'
@@ -29,6 +30,7 @@ class ErrorMessages(object):
     NOT_FOUND = 'Item not found (8)'
     MISSING_URL_OR_LIST = 'blocks_url or a list was not specified'
     INVALID_BLOCKS_URL = 'An error has occurred while parsing the blocks_url argument.'
+
 
 class BlockCarrier:
     def __init__(self, url: str = '', list_name: Optional[str] = None, task: Optional[str] = None,
@@ -58,15 +60,15 @@ class BlockCarrier:
         Raises:
             ValueError: If neither the url nor list_name arg is not provided, will raise an exception.
         """
-        self.entitlement_string = str()
+        self.entitlement_string = ''
         self.default_response = default_response
-        self.blocks_ready_for_args: Dict[str, Any] = dict()
+        self.blocks_ready_for_args: dict[str, Any] = {}
         self.url = url
         self.list_name = list_name
         self.persistent = persistent
         self.reply_entries_tag = reply_entries_tag
         self.task = task
-        self.blocks_dict: List[dict] = list(dict())
+        self.blocks_dict: list[dict] = list({})
         self.investigation_id = demisto.investigation().get('id', '00')
         self.reply = reply
         self._build_entitlement()
@@ -119,13 +121,12 @@ class BlockCarrier:
                     actions_block_id: str = block.get('elements', [{}])[0].get('type', '')
                     block['block_id'] = actions_block_id + '_' + str(action_id_int)
                     action_id_int += 1
-            elif block.get('type') == 'section':
-                if 'accessory' in block:
-                    sec_action_id: str = block.get('accessory', {}).get('type', '')
-                    if not sec_action_id == 'image':
-                        block['block_id'] = sec_action_id + '_' + str(action_id_int)
-                        block['accessory']['action_id'] = sec_action_id + str(action_id_int)
-                        action_id_int += 1
+            elif block.get('type') == 'section' and 'accessory' in block:
+                sec_action_id: str = block.get('accessory', {}).get('type', '')
+                if sec_action_id != 'image':
+                    block['block_id'] = sec_action_id + '_' + str(action_id_int)
+                    block['accessory']['action_id'] = sec_action_id + str(action_id_int)
+                    action_id_int += 1
 
     def _add_submit_button(self):
         """Adds a submit button with a known action_id
@@ -166,7 +167,6 @@ class BlockCarrier:
         except Exception as e:
             demisto.debug(f"Failed to parse blocks from URL, {str(e)}")
             raise DemistoException(ErrorMessages.INVALID_BLOCKS_URL)
-
 
     def _retrieve_blocks_from_list(self):
         """Retrieves the blocks when given an XSOAR list name.
@@ -265,7 +265,7 @@ class SendNotification:
 ''' COMMAND FUNCTION '''
 
 
-def slack_block_builder_command(args: Dict[str, Any]):
+def slack_block_builder_command(args: dict[str, Any]):
     """Executes the block_builder command.
 
     Args:
