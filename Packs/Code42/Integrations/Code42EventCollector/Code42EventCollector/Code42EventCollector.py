@@ -42,7 +42,11 @@ class Client:
         self.code42_client.session.verify = verify
 
     def get_audit_logs(
-        self, start_time: datetime | str, end_time: datetime | timedelta | str | None = None, limit: int = MAX_FETCH_AUDIT_LOGS, page_size: int = MAX_AUDIT_LOGS_PAGE_SIZE
+        self,
+        start_time: datetime | str,
+        end_time: datetime | timedelta | str | None = None,
+        limit: int = MAX_FETCH_AUDIT_LOGS,
+        page_size: int = MAX_AUDIT_LOGS_PAGE_SIZE
     ) -> List[Dict]:
         """
         Get audit logs
@@ -71,7 +75,13 @@ class Client:
 
         return audit_logs
 
-    def get_file_events(self, start_time: datetime | str | timedelta, end_time: datetime | str | timedelta | None = None, limit: int = MAX_FETCH_FILE_EVENTS, page_size: int = MAX_FILE_EVENTS_PAGE_SIZE) -> List[Dict[str, Any]]:
+    def get_file_events(
+        self,
+        start_time: datetime | str | timedelta,
+        end_time: datetime | str | timedelta | None = None,
+        limit: int = MAX_FETCH_FILE_EVENTS,
+        page_size: int = MAX_FILE_EVENTS_PAGE_SIZE
+    ) -> List[Dict[str, Any]]:
         """
         Get file events
 
@@ -98,7 +108,6 @@ class Client:
             event["_time"] = event["event"]["inserted"]
 
         return file_events
-
 
 
 ''' HELPER FUNCTIONS '''
