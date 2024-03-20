@@ -14,9 +14,9 @@ class Client(BaseClient):
     Client to use in the ZimperiumV2 integration. Overrides BaseClient
     """
 
-    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool):
+    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool):
         self._headers = {'Content-Type': 'application/json'}
-        super().__init__(base_url=base_url, verify=verify, headers=self._headers)
+        super().__init__(base_url=base_url, verify=verify, headers=self._headers, proxy=proxy)
         access_token = self.auth(client_id, client_secret)
         self._headers['Authorization'] = f'Bearer {access_token}'
 
@@ -1016,6 +1016,7 @@ def main():     # pragma: no cover
     client_secret = params.get('credentials', {}).get('password')
     base_url = urljoin(params.get('url'), '/api')
     verify = not params.get('insecure', False)
+    proxy = argToBoolean(params.get('proxy', False))
 
     # fetch params
     max_fetch = arg_to_number(params.get('max_fetch', 50)) or 50
@@ -1030,7 +1031,7 @@ def main():     # pragma: no cover
     args = demisto.args()
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        client = Client(base_url=base_url, client_id=client_id, client_secret=client_secret, verify=verify)
+        client = Client(base_url=base_url, client_id=client_id, client_secret=client_secret, verify=verify, proxy=proxy)
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client, first_fetch_time_str, fetch_query, max_fetch, look_back))
