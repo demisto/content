@@ -389,7 +389,7 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
 def main():
     params = demisto.params()
     if is_xsiam_or_xsoar_saas() and not params.get("event_configIds"):
-        raise DemistoException("'Config IDs to fetch for fetch events on xsiam' must be given when when setting an instance in xsiam.")
+        raise DemistoException("'Config IDs to fetch (Relevant only for xsiam)' must be given when when setting an instance in xsiam.")
     client = Client(
         base_url=urljoin(params.get('host'), '/siem/v1/configs'),
         verify=not params.get('insecure', False),
