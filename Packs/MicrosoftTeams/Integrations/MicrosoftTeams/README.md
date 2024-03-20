@@ -48,6 +48,22 @@ In order to verify that the messaging endpoint is open as expected, you can surf
     - botframework.com
     - microsoftonline.com
 
+
+## Migration from Cortex XSOAR 6 to Cortex XSOAR 8 and Cortex XSIAM.
+
+### Using Cortex XSOAR or Cortex XSIAM rerouting
+1. Set the messaging endpoint in the Azure bot to be `https://ext-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., `https://ext-my.demisto.live/xsoar/instance/execute/teams`.
+2. Check the **long running instance** parameter in the integration instance configuration.
+3. Set the **port** parameter. It's under the Connect section in the integration instance configuration.
+4. If using the same bot from the XSOAR 6 instance, make sure to remove the bot from the team and to add it back:
+   a. Go to the Microsoft Teams app.
+   b. Go to your team, and click the three dots next to the name.
+   c. Go to **manage team** > **apps**.
+   d. Find your bot, and click the three dots in the same row.
+   e. Click **remove**.
+   f. Add the bot to the team.
+
+
 ## Setup Examples
 
 ### 1. Using Cortex XSOAR or Cortex XSIAM rerouting
