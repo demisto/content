@@ -142,11 +142,11 @@ def create_xsoar_incident(certificate: dict, domain: str, current_time: datetime
         "type": get_integration_context()["incident_type"],
         "severity": set_incident_severity(result["similarity"]),
         "CustomFields": {
-            "fingerprint": certificate["leaf_cert"]["fingerprint"],
-            "levenshteindistance": result["similarity"],
-            "userasset": result["asset"],
-            "certificatesource": certificate["source"]["name"],
-            "certificateindex": certificate["cert_index"],
+            "certstreamfingerprint": certificate["leaf_cert"]["fingerprint"],
+            "certstreamlevenshteindistance": result["similarity"],
+            "certstreamuserasset": result["asset"],
+            "certificacertstreamtesource": certificate["source"]["name"],
+            "certstreamcertificateindex": certificate["cert_index"],
             "externallink": certificate["cert_link"],
             "domain": domain
         }
