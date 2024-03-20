@@ -1,3 +1,4 @@
+import dateparser
 import incydr
 from incydr import EventQuery
 
@@ -7,7 +8,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 from enum import Enum
 
 
@@ -129,6 +130,11 @@ def dedup_fetched_events(
 ) -> List[dict]:
     """
     Dedup events, removes events which were already fetched.
+
+    Args:
+        events: the events to deduplicate
+        last_run_fetched_event_ids: a list of already fetched IDs from previous run
+        keys_list_to_id (list): a list of keys to retrieve the ID from
     """
     un_fetched_events = []
 
@@ -142,28 +148,71 @@ def dedup_fetched_events(
 
     un_fetched_event_ids = {dict_safe_get(event, keys=keys_list_to_id) for event in un_fetched_events}
     demisto.debug(f'{un_fetched_event_ids=}')
-    
+
     return un_fetched_events
 
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+def get_latest_event_ids_and_time(events: List[dict]) -> Tuple[List[str], str]:
+    """
+    Get the latest event IDs and get latest time
+    """
+    latest_time_event = events[0]["_time"]
 
-''' COMMAND FUNCTIONS '''
+    for i in range(len(events)):
+        event = events[i]
+        if dateparser.parse(latest_time_event) > dateparser.parse(event["_time"]):
+            latest_time_event = event["_time"]
+
+    latest_event_ids = [event for event in events if dateparser.parse(event["_time"]) == latest_time_event]
+    return latest_event_ids, latest_time_event
 
 
 def test_module(client: Client) -> str:
+    """
+    Tests that it is possible to retrieve file events and audit logs and credentials are valid
+    """
     client.get_file_events(timedelta(minutes=1), page_size=1)
     client.get_audit_logs(datetime.now() - timedelta(minutes=1), page_size=1)
     return "ok"
 
 
 def fetch_events(client: Client, last_run: Dict, max_fetch_file_events: int, max_fetch_audit_events: int) -> List[Dict[str, Any], Dict[str, Any]]:
-    if FileEventLastRun.TIME not in last_run:
-        file_event_time = datetime.now() - timedelta(minutes=1)
-    else:
-        file_event_time = last_run[FileEventLastRun.TIME]
+    new_last_run = {}
+    file_event_time = dateparser.parse(last_run[FileEventLastRun.TIME]) if FileEventLastRun.TIME in last_run else (
+        datetime.now() - timedelta(minutes=1)
+        )
 
     file_events = client.get_file_events(file_event_time, limit=max_fetch_file_events)
+    last_fetched_event_file_ids = FileEventLastRun.FETCHED_IDS or set()
+    file_events = dedup_fetched_events(file_events, last_run_fetched_event_ids=last_fetched_event_file_ids)
+    if file_events:
+        latest_file_event_ids, latest_file_event_time = get_latest_event_ids_and_time(file_events)
+        new_last_run.update(
+            {
+                FileEventLastRun.TIME: file_event_time,
+                FileEventLastRun.FETCHED_IDS: latest_file_event_ids,
+                "nextTrigger": "0"
+            }
+        )
+    else:
+        new_last_run.update(
+            {
+                FileEventLastRun.TIME: file_event_time,
+                FileEventLastRun.FETCHED_IDS: last_fetched_event_file_ids,
+                "nextTrigger": "30"
+            }
+        )
+
+
+
+
+
+
+
+
+
+
+
 
 
 
