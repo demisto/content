@@ -49,6 +49,12 @@ def test_filter_severities_with_critical_severity():
     expected_data = [entry for entry in test_table_data if 'critical' in entry['complianceissues'].lower()]
     assert filtered_data == expected_data
 
+def test_filter_severities_with_high_severity():
+    # Test with critical severity only
+    filtered_data = filter_severities(test_table_data, ['high'])
+    # Assert that the filtered data contains only entries with critical severity
+    expected_data = [entry for entry in test_table_data if 'high' in entry['complianceissues'].lower()]
+    assert filtered_data == expected_data
 
 # "HTML" test data
 
