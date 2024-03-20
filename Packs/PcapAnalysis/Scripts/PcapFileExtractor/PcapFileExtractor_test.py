@@ -8,18 +8,26 @@ from magic import Magic
 from pytest import raises
 OUTPUTS = [
     {
-        'FileMD5': 'dca7766edd1e4976cac5e64fcaeec1fd',
-        'FileSHA1': 'e1a60d05cd5b6b1bae28e7e5c0b368be6b48c2b5',
-        'FileSHA256': '39c9534e5fa6fecd3ac083ffd6256c2cc9a58f9f1058cb2e472d1782040231f9',
-        'FileName': 'rfc1350.txt',
-        'FileSize': 24599,
-        'FileExtension': '.txt'
+        'FileMD5': '6e3a2e46a6c0e0e101b4f2f39830e38b',
+        'FileSHA1': '7ce55583ec108e013cd820b6a2e7ae053f0a8863',
+        'FileSHA256': 'f33c934f04a2d862a1918aa8dd374752ced3108936ea04e2b736a4976159f0ff',
+        'FileName': 'default',
+        'FileSize': 346,
+        'FileExtension': ''
+    },
+    {
+        'FileMD5': '6e3a2e46a6c0e0e101b4f2f39830e38b',
+        'FileSHA1': '7ce55583ec108e013cd820b6a2e7ae053f0a8863',
+        'FileSHA256': 'f33c934f04a2d862a1918aa8dd374752ced3108936ea04e2b736a4976159f0ff',
+        'FileName': 'default(1)',
+        'FileSize': 346,
+        'FileExtension': ''
     }
 ]
 
 
 def test_extract_files(tmpdir):
-    """
+    """1
     Given
     - Valid Pcap File.
     When
@@ -29,12 +37,12 @@ def test_extract_files(tmpdir):
     - ensure outputs are correct.
     """
 
-    file_path = './TestData/tftp_rrq.pcap'
+    file_path = './TestData/tftp-dup.pcap'
     results = upload_files(file_path, tmpdir)
     if type(results) is CommandResults:     # Otherwise 'results' has not 'readable_output' or 'outputs' attributes.
         assert 'Pcap Extracted Files' in results.readable_output
         assert OUTPUTS == results.outputs
-    assert os.path.isfile(os.path.join(tmpdir, 'rfc1350.txt'))
+    assert os.path.isfile(os.path.join(tmpdir, 'default'))
 
 
 class TestFilter:
