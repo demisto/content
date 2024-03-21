@@ -66,6 +66,15 @@ configuration:
   section: Collect
   hidden:
   - xsoar
+- defaultvalue: '1'
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  advanced: true
+  section: Collect
+  hidden:
+  - xsoar
 - defaultvalue: '720'
   display: Assets and vulnerabilities fetch interval
   name: assetsFetchInterval
