@@ -2097,14 +2097,14 @@ def test_create_x509_certificate_subject_issuer():
                               types_for_indicator_sdo=[], namespace_uuid=uuid.uuid5(PAWN_UUID, demisto.getLicenseID()))
     assert (
         cilent.create_x509_certificate_subject_issuer(
-            {
+            [{
                 "C": "US",
                 "ST": "Maryland",
                 "L": "Pasadena",
                 "O": "Brent Baccala",
                 "OU": "FreeSoft",
                 "CN": "www.freesoft.org/emailAddress=baccala@freesoft.org",
-            }
+            }]
         )
         == "C=US, ST=Maryland, L=Pasadena, O=Brent Baccala, OU=FreeSoft, CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
     )

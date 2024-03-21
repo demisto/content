@@ -34,8 +34,8 @@ TAXII_V20_CONTENT_LEN = 9765625
 TAXII_V21_CONTENT_LEN = 104857600
 TAXII_REQUIRED_FILTER_FIELDS = {'name', 'type', 'modified', 'createdTime', 'description',
                                 'accounttype', 'userid', 'mitreid', 'stixid', 'reportobjectreferences',
-                                'keyvalue', 'tags', 'subject', 'issuer'
-                                'validnotbefore', 'validnotafter'}
+                                'keyvalue', 'tags', 'subject', 'issuer',
+                                'validitynotbefore','validitynotafter'}
 TAXII_V20_REQUIRED_FILTER_FIELDS = {"tags", "identity_class"}
 TAXII_V21_REQUIRED_FILTER_FIELDS = {"ismalwarefamily", "published"}
 PAGE_SIZE = 2000

@@ -750,7 +750,7 @@ class XSOAR2STIXParser:
                 stix_object['identity_class'] = identity_class
         return stix_object
 
-    def create_x509_certificate_subject_issuer(self,dict_values: dict) -> str:
+    def create_x509_certificate_subject_issuer(self,list_dict_values: list) -> str:
         """
         Args:
             dict_values: A dict with keys and values for subject/issuer
@@ -758,10 +758,12 @@ class XSOAR2STIXParser:
             A string
         """
         string_to_return = ""
-        for key, value in dict_values.items():
-            string_to_return += f"{key}={value}, "
-        string_to_return = string_to_return.rstrip(", ")
-        return string_to_return
+        for dict_values in list_dict_values:
+            for key, value in dict_values.items():
+                string_to_return += f"{key}={value}, "
+            string_to_return = string_to_return.rstrip(", ")
+            return string_to_return
+        return ''
     
     def create_x509_certificate_object(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> dict:
             """
@@ -774,11 +776,14 @@ class XSOAR2STIXParser:
             Returns:
                 Dict[str, Any]: A JSON object of a STIX indicator.
             """
-            stix_object['validity_not_before'] = xsoar_indicator.get('validnotbefore')
-            stix_object['validity_not_after'] = xsoar_indicator.get('validnotafter')
+            demisto.info(f"we are here: {xsoar_indicator}")
+            custom_fields = xsoar_indicator.get('CustomFields') or {}
+            stix_object['validity_not_before'] = custom_fields.get('validitynotbefore')
+            stix_object['validity_not_after'] = custom_fields.get('validitynotafter')
             stix_object['serial_number'] = xsoar_indicator.get('value')
-            stix_object['subject'] = xsoar_indicator.get('subject',{})
-            stix_object['issuer'] = xsoar_indicator.get('issuer',{})
+            stix_object['subject'] = self.create_x509_certificate_subject_issuer(custom_fields.get('subject',[]))
+            stix_object['issuer'] = self.create_x509_certificate_subject_issuer(custom_fields.get('issuer',[]))
+            remove_nulls_from_dictionary(stix_object)
             return stix_object
         
     def build_sco_object(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:
@@ -1611,8 +1616,8 @@ class STIX2XSOARParser(BaseClient):
 
             }
             fields = {"stixid": x509_certificate_obj.get('id', ''),
-                      "validnotbefore": x509_certificate_obj.get('validity_not_before'),
-                      "validnotafter": x509_certificate_obj.get('validity_not_after'),
+                      "validitynotbefore": x509_certificate_obj.get('validity_not_before'),
+                      "validitynotafter": x509_certificate_obj.get('validity_not_after'),
                       "subject": self.create_x509_certificate_grids(x509_certificate_obj.get('subject')),
                       "issuer": self.create_x509_certificate_grids(x509_certificate_obj.get('issuer'))}
             if self.update_custom_fields:
