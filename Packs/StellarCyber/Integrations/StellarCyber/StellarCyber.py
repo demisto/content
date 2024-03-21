@@ -5,11 +5,9 @@ from CommonServerUserPython import *
 from CommonServerPython import *
 
 import dateparser
-import requests
 import json
 import urllib3
 import base64
-import time
 from datetime import datetime, timedelta
 
 # Disable insecure warnings
