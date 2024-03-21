@@ -1,0 +1,21 @@
+{
+    "name": "DummyNewPack",
+    "description": "Test Contribution branch 'CIAC-10044-rm-contrib-zip'. Invoked from script.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Kobbi Gal",
+    "url": "",
+    "email": "",
+    "created": "2024-03-21T11:39:28Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "kgal-pan"
+    ]
+}
