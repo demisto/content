@@ -13,6 +13,8 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | --- | --- | --- |
     | MISP server URL (e.g., <https://192.168.0.1>) |  | True |
     | API Key |  | False |
+    | Client Certificate |  | False |
+    | Private Key |  | False |
     | Use IDS flag | This is to enable checking the boolean flag to_ids. The flag allows you to indicate if an attribute should be actionable or not. | False |
     | ORG names to use for reputation checks | Comma-separated list of allowed TI providers (orgc in MISP events). | False |
     | Use system proxy settings |  | False |
