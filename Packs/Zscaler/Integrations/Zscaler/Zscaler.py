@@ -1,4 +1,3 @@
-
 import urllib3
 
 import demistomock as demisto  # noqa: F401
@@ -32,12 +31,12 @@ ERROR_CODES_DICT = {
     400: "Invalid or bad request",
     401: "Session is not authenticated or timed out",
     403: "One of the following permission errors occurred:\n-The API key was disabled by your service provider\n"
-    "-User role has no access permissions or functional scope\n-A required SKU subscription is missing\n"
-    "Contact support or your account team for assistance.",
+         "-User role has no access permissions or functional scope\n-A required SKU subscription is missing\n"
+         "Contact support or your account team for assistance.",
     404: "Resource does not exist",
     409: "Request could not be processed because of possible edit conflict occurred. Another admin might be saving a "
-    "configuration change at the same time. In this scenario, the client is expected to retry after a short "
-    "time period.",
+         "configuration change at the same time. In this scenario, the client is expected to retry after a short "
+         "time period.",
     406: "Not Acceptable",
     415: "Unsupported media type.",
     429: "Exceeded the rate limit or quota.",
@@ -107,7 +106,7 @@ def error_handler(res):
             )
 
 
-def http_request(method, url_suffix, data=None, headers=None):
+def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
     try:
         res = generic_http_request(method=method,
                                    server_url=BASE_URL,
@@ -120,7 +119,9 @@ def http_request(method, url_suffix, data=None, headers=None):
                                    data=data,
                                    ok_codes=(200, 204),
                                    error_handler=error_handler,
-                                   retries=10)
+                                   retries=10,
+                                   status_list_to_retry=[429],
+                                   resp_type=resp_type)
 
 
     except Exception as e:
@@ -128,6 +129,7 @@ def http_request(method, url_suffix, data=None, headers=None):
         LOG(e)
         raise e
     return res
+
 
 def validate_urls(urls):
     for url in urls:
@@ -171,7 +173,7 @@ def login():
     ts, key = obfuscateApiKey(API_KEY)
     data = {"username": USERNAME, "timestamp": ts, "password": PASSWORD, "apiKey": key}
     json_data = json.dumps(data)
-    result = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    result = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     auth = result.headers["Set-Cookie"]
     ctx[SESSION_ID_KEY] = DEFAULT_HEADERS["cookie"] = auth[: auth.index(";")]
     set_integration_context(ctx)
@@ -405,8 +407,8 @@ def get_blacklist_command(args):
 
 def get_blacklist():
     cmd_url = "/security/advanced"
-    result = http_request("GET", cmd_url, None, DEFAULT_HEADERS)
-    return json.loads(result.content)
+    result = http_request("GET", cmd_url, None, DEFAULT_HEADERS, resp_type='content')
+    return json.loads(result)
 
 
 def get_whitelist_command():
@@ -431,15 +433,15 @@ def get_whitelist_command():
 
 def get_whitelist():
     cmd_url = "/security"
-    result = http_request("GET", cmd_url, None, DEFAULT_HEADERS)
-    return json.loads(result.content)
+    result = http_request("GET", cmd_url, None, DEFAULT_HEADERS, resp_type='content')
+    return json.loads(result)
 
 
 def url_lookup(args):
     url = args.get("url", "")
     multiple = args.get("multiple", "true").lower() == "true"
     response = lookup_request(url, multiple)
-    raw_res = json.loads(response.content)
+    raw_res = json.loads(response)
 
     urls_list = argToList(url)
     results: List[CommandResults] = []
@@ -516,7 +518,7 @@ def ip_lookup(ip):
     results: List[CommandResults] = []
 
     response = lookup_request(ip, multiple=True)
-    raw_res = json.loads(response.content)
+    raw_res = json.loads(response)
 
     for data in raw_res:
         ioc_context = {"Address": data["url"]}
@@ -587,7 +589,7 @@ def lookup_request(ioc, multiple=True):
         ioc_list = [ioc]
     ioc_list = [url.replace("https://", "").replace("http://", "") for url in ioc_list]
     json_data = json.dumps(ioc_list)
-    response = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    response = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='content')
     return response
 
 
@@ -807,7 +809,7 @@ def category_ioc_update(category_data, retaining_parent_category_ip=None):
     if "configuredName" in category_data:
         data["configuredName"] = category_data["configuredName"]
     json_data = json.dumps(data)
-    response = http_request("PUT", cmd_url, json_data).json()
+    response = http_request("PUT", cmd_url, json_data)
     return response
 
 
@@ -846,7 +848,7 @@ def add_or_remove_urls_from_category(action, urls, category_data, retaining_pare
 
 def url_quota_command():
     cmd_url = "/urlCategories/urlQuota"
-    response = http_request("GET", cmd_url).json()
+    response = http_request("GET", cmd_url)
 
     human_readable = {
         "Unique Provisioned URLs": response.get("uniqueUrlsProvisioned"),
@@ -910,7 +912,7 @@ def get_categories(custom_only=False, ids_and_names_only=False):
     else:
         cmd_url = "/urlCategories?customOnly=true" if custom_only else "/urlCategories"
 
-    response = http_request("GET", cmd_url).json()
+    response = http_request("GET", cmd_url)
     return response
 
 
@@ -964,7 +966,7 @@ def sandbox_report_command():
         ec[outputPaths["file"]]["Malicious"] = {
             "Vendor": "Zscaler",
             "Description": "Classified as Malicious, with threat score: "
-            + str(human_readable_report["Zscaler Score"]),
+                           + str(human_readable_report["Zscaler Score"]),
         }
     entry = {
         "Type": entryTypes["note"],
@@ -985,7 +987,7 @@ def sandbox_report(md5, details):
         md5Hash=md5, details=details
     )
 
-    response = http_request("GET", cmd_url).json()
+    response = http_request("GET", cmd_url)
     return response
 
 
@@ -1054,7 +1056,7 @@ def get_users_command(args):
         cmd_url = f"/users?page={pageNo}&pageSize={pageSize}&name={name}"
     else:
         cmd_url = f"/users?page={pageNo}&pageSize={pageSize}"
-    response = http_request("GET", cmd_url).json()
+    response = http_request("GET", cmd_url)
 
     if len(response) < 10:
         human_readable = tableToMarkdown(f"Users ({len(response)})", response)
@@ -1082,7 +1084,7 @@ def get_departments_command(args):
         )
     else:
         cmd_url = f"/departments?page={pageNo}&pageSize={pageSize}"
-    response = http_request("GET", cmd_url).json()
+    response = http_request("GET", cmd_url)
 
     if len(response) < 10:
         human_readable = tableToMarkdown(
@@ -1110,7 +1112,7 @@ def get_usergroups_command(args):
         cmd_url = f"/groups?page={pageNo}&pageSize={pageSize}&search={name}"
     else:
         cmd_url = f"/groups?page={pageNo}&pageSize={pageSize}"
-    response = http_request("GET", cmd_url).json()
+    response = http_request("GET", cmd_url)
 
     if len(response) < 10:
         human_readable = tableToMarkdown(
@@ -1135,7 +1137,7 @@ def set_user_command(args):
     params = json.loads(args.get("user"))
     cmd_url = f"/users/{userId}"
 
-    response = http_request("PUT", cmd_url, json.dumps(params), DEFAULT_HEADERS)
+    response = http_request("PUT", cmd_url, json.dumps(params), DEFAULT_HEADERS, resp_type='response')
     responseJson = response.json()
     if response.status_code == 200:
         entry = {
@@ -1174,9 +1176,7 @@ def create_ip_destination_group(args: dict):
         "isNonEditable": args.get("is_non_editable", False),
     }
     cmd_url = "/ipDestinationGroups"
-    response = http_request(
-        "POST", cmd_url, data=json.dumps(payload), headers=DEFAULT_HEADERS
-    ).json()
+    response = http_request("POST", cmd_url, data=json.dumps(payload), headers=DEFAULT_HEADERS)
     content = {
         "ID": int(response.get("id", "")),
         "Name": response.get("name", ""),
@@ -1268,8 +1268,8 @@ def list_ip_destination_groups(args: dict):
                 + exclude_type_param
                 + type_params_str
             )
-            ipv4_responses = http_request("GET", ipv4_cmd_url).json()
-            ipv6_responses = http_request("GET", ipv6_cmd_url).json()
+            ipv4_responses = http_request("GET", ipv4_cmd_url)
+            ipv6_responses = http_request("GET", ipv6_cmd_url)
             ipv4_contents_filter = (
                 get_contents_lite(ipv4_responses)
                 if lite
@@ -1314,7 +1314,7 @@ def list_ip_destination_groups(args: dict):
                 + exclude_type_param
                 + type_params_str
             )
-            responses = http_request("GET", cmd_url).json()
+            responses = http_request("GET", cmd_url)
             contents_filter = (
                 get_contents_lite(responses) if lite else get_contents(responses)
             )
@@ -1337,7 +1337,7 @@ def list_ip_destination_groups(args: dict):
         responses = []
         for ip_group_id in ip_group_ids:
             cmd_url = f"/ipDestinationGroups/{ip_group_id}"
-            responses.append(http_request("GET", cmd_url).json())
+            responses.append(http_request("GET", cmd_url))
         contents = get_contents(responses)
         markdown = tableToMarkdown(
             f"IPv4 Destination groups ({len(contents)})",
@@ -1369,7 +1369,7 @@ def edit_ip_destination_group(args: dict):
     ip_group_id = str(args.get("ip_group_id", "")).strip()
     check_url = f"/ipDestinationGroups/{ip_group_id}"
     response_data = {}
-    response_data = http_request("GET", check_url).json()
+    response_data = http_request("GET", check_url)
     if response_data.get("id", 0) == 0:
         raise Exception(f"Resource not found with ip_group_id {ip_group_id}")
 
@@ -1385,7 +1385,7 @@ def edit_ip_destination_group(args: dict):
 
     cmd_url = f"/ipDestinationGroups/{ip_group_id}"
     json_data = json.dumps(payload)
-    response = http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS).json()
+    response = http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS)
     content = {
         "ID": int(response.get("id", "")),
         "Name": response.get("name", ""),

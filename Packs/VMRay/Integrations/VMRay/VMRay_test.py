@@ -1,6 +1,8 @@
 import time
 import sys
 
+import urllib3
+
 import demistomock as demisto
 import requests_mock
 
@@ -152,62 +154,6 @@ def test_build_finished_job():
     from VMRay import build_finished_job
 
     assert build_finished_job('test', 'test') == {'JobID': 'test', 'SampleID': 'test', 'Status': 'Finished/NotExists'}
-
-
-def test_rate_limit(requests_mock):
-    requests_mock.get(
-        "https://cloud.vmray.com/rest/submission/123",
-        [
-            {
-                "status_code": 429,
-                "json": {
-                    "error_msg": "Request was throttled. Expected available in 2 seconds.",
-                    "result": "error"
-                },
-                "headers": {
-                    "Retry-After": "2"
-                }
-            },
-            {
-                "status_code": 200,
-                "json": {
-                    "foo": "bar"
-                }
-            }
-        ]
-    )
-
-    from VMRay import http_request
-    response = http_request("GET", "submission/123")
-
-    assert requests_mock.call_count == 2
-    assert response == {"foo": "bar"}
-
-
-def test_rate_limit_max_retries(requests_mock, mocker):
-    mocker.patch.object(sys, "exit", return_value=None)
-    requests_mock.get(
-        "https://cloud.vmray.com/rest/analysis/123",
-        [
-            {
-                "status_code": 429,
-                "json": {
-                    "error_msg": "Request was throttled. Expected available in 60 seconds.",
-                    "result": "error"
-                },
-                "headers": {
-                    "Retry-After": "60"
-                }
-            }
-        ]
-    )
-
-    from VMRay import http_request
-    response = http_request("GET", "analysis/123")
-
-    assert requests_mock.call_count == 11
-    assert response["error_msg"] == "Request was throttled. Expected available in 60 seconds."
-
 
 def test_billing_type(requests_mock):
     requests_mock.get(

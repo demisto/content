@@ -3,7 +3,6 @@ from CommonServerPython import *
 ''' IMPORTS '''
 
 import re
-import requests
 import urllib3
 
 # Disable insecure warnings
@@ -60,7 +59,9 @@ def http_request(method, url_suffix, params=None, data=None):
                                url_suffix=url_suffix,
                                data=data,
                                params=params,
-                               error_handler=error_handler)
+                               error_handler=error_handler,
+                               status_list_to_retry=[429],
+                               retries=10)
     return res.json()
 
 
