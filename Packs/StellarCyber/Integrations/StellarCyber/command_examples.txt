@@ -1,3 +1,3 @@
-!stellar-get-alert alert_id=170971080774869856c331ccb0924ac499350f5037580da9
-!stellar-update-case stellar_incident_id=65e81e6dc53d79db680e69b2 stellar_case_severity=Low
-!stellar-close-case stellar_case_id=65e81e6dc53d79db680e69b2 stellar_close_reason="example close reason"
+!stellar-get-alert alert_id="1710883791406342b1f41b2247774d60bf035a6f98e5ff21"
+!stellar-close-case stellar_case_id="65f340d9b190d36b26ad2bdc" stellar_close_reason="Example..."
+!stellar-update-case stellar_case_id="65f340d9b190d36b26ad2bdc" stellar_case_status="New"

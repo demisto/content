@@ -1,4 +1,4 @@
-## Stellar Cyber Incidents Help
+## Stellar Cyber Help
 
 ### Required Privileges to Make API Calls
 

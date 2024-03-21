@@ -126,11 +126,12 @@ class Client(BaseClient):
         headers["Authorization"] = self._get_auth_header()
         response = self._http_request(method="GET", full_url=incident_url, headers=headers)
         response_incidents = response["data"].get("incidents", [])
-        if len(response_incidents):
-            incident_ids = [i["ticket_id"] for i in response_incidents]
-        else:
-            incident_ids = []
-        return incident_ids
+        updated_incidents = [
+            incident
+            for incident in response_incidents
+            if incident["created_at"] < incident["modified_at"]
+        ]
+        return updated_incidents
 
     def get_incident(self, ticket_id: int):
         incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?ticket_id={ticket_id}"
@@ -152,7 +153,7 @@ class Client(BaseClient):
 
         return response["data"]
 
-    def get_alert(self, alert_id: str, alert_index: str):
+    def get_alert(self, alert_id: str, alert_index: str) -> dict:
         hit = {}
         alert_url = f"https://{self.dp_host}/connect/api/data/{alert_index}/_search?q=_id:{alert_id}"
         headers = {"Accept": "application/json", "Content-type": "application/json"}
@@ -163,7 +164,7 @@ class Client(BaseClient):
         if hits:
             hit = hits[0].get("_source", None)
             alert_index = hits[0].get("_index", "")
-            hit = demisto_normalization(hit, alert_id, alert_index, self.dp_host)
+            hit = demisto_alert_normalization(hit, alert_id, alert_index, self.dp_host)
 
         return hit
 
@@ -194,7 +195,7 @@ class Client(BaseClient):
         headers = {"Accept": "application/json", "Content-type": "application/json"}
         headers["Authorization"] = self._get_auth_header()
         response = self._http_request(method="POST", full_url=incident_url, headers=headers, json_data=update_data)
-        return response
+        return response["data"]
 
     def close_case(self, case_id, close_reason):
         incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?id={case_id}"
@@ -206,7 +207,7 @@ class Client(BaseClient):
             "resolution": f"{close_reason}",
         }
         response = self._http_request(method="POST", full_url=incident_url, headers=headers, json_data=update_data)
-        return response
+        return response["data"]
 
 
 """ HELPER FUNCTIONS """
@@ -216,8 +217,7 @@ def get_xsoar_severity(severity):
     sev_map = {"Low": 1, "Medium": 2, "High": 3, "Critical": 4}
     return sev_map[severity]
 
-
-def demisto_normalization(alert, alert_id, alert_index, dp_host):
+def demisto_alert_normalization(alert, alert_id, alert_index, dp_host):
     """
     Normalizes an alert from Stellar Cyber into a format that can be ingested by Demisto.
 
@@ -258,7 +258,7 @@ def demisto_normalization(alert, alert_id, alert_index, dp_host):
 """ COMMAND FUNCTIONS """
 
 
-def fetch_incidents(client: Client, params: dict):
+def fetch_incidents(client: Client, params: dict) -> list[dict]:
     """
     Retrieves incidents from the Stellar Cyber platform and maps them to XSOAR incidents.
 
@@ -270,9 +270,9 @@ def fetch_incidents(client: Client, params: dict):
     last_incident_ids = last_run.get("last_incidents", [])
     first_fetch_time = params.get("first_fetch", "3 days").strip()
     last_fetch = last_run.get("last_fetch", None)
-    new_last_fetch = int(datetime.utcnow().timestamp() * 1000)
+    # new_last_fetch = int(datetime.utcnow().timestamp() * 1000)
     if not last_fetch:
-        first_fetch = dateparser.parse(first_fetch_time)
+        first_fetch = dateparser.parse(first_fetch_time, settings={'TIMEZONE': 'UTC'})
         assert first_fetch is not None
         last_fetch = int(first_fetch.timestamp() * 1000)
     else:
@@ -353,7 +353,7 @@ def fetch_incidents(client: Client, params: dict):
 #     pass
 
 
-def get_alert_command(client: Client, args: dict):
+def get_alert_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves an alert from the Stellar Cyber platform by its ID.
 
@@ -366,19 +366,17 @@ def get_alert_command(client: Client, args: dict):
     Raises:
         Exception: If there is an issue with retrieving the alert.
     """
-    alert_id = demisto.args().get("alert_id", None)
+    alert_id = args.get("alert_id", None)
     demisto.info(f"Getting alert: {alert_id}")
-    hit = client.get_alert(alert_id, "stellar-index-v1-ser-*")
-    results = CommandResults(
+    hit = client.get_alert(alert_id, "aella-ser-*")
+    return CommandResults(
         outputs_prefix='StellarCyber.Alert',
         outputs_key_field='alert_id',
         outputs=[hit]
     )
-    return_results(results)
-    return hit
 
 
-def test_module_command(client: Client):
+def test_module_command(client: Client) -> str:
     try:
         if client.test_incidents():
             return "ok"
@@ -388,14 +386,20 @@ def test_module_command(client: Client):
         return f"Test failed with the following error: {repr(e)}"
 
 
-def close_case_command(client: Client, args: dict):
+def close_case_command(client: Client, args: dict) -> CommandResults:
     case_id = args.get("stellar_case_id")
     close_reason = args.get("stellar_close_reason", "")
     demisto.info(f"Closing stellar case with id: [{case_id}]")
-    client.close_case(case_id, close_reason)
+    response = client.close_case(case_id, close_reason)
+    
+    return CommandResults(
+        outputs_prefix="StellarCyber.Case.Close",
+        outputs_key_field="_id",
+        outputs=response
+    )
 
 
-def update_case_command(client: Client, args: dict):
+def update_case_command(client: Client, args: dict) -> CommandResults:
     case_id = args.get("stellar_case_id", None)
     case_severity = args.get("stellar_case_severity", None)
     case_status = args.get("stellar_case_status", None)
@@ -407,12 +411,17 @@ def update_case_command(client: Client, args: dict):
         raise Exception(f"No values to update for stellar case with id: [{case_id}]")
 
     demisto.info(f"Updating stellar case with id: [{case_id}]")
-    client.update_case(
+    response = client.update_case(
         case_id, case_severity, case_status, case_assignee, case_tags_add, case_tags_remove
+    )
+    return CommandResults(
+        outputs_prefix="StellarCyber.Case.Update",
+        outputs_key_field="_id",
+        outputs=response
     )
 
 
-def get_remote_data_command(client: Client, args):
+def get_remote_data_command(client: Client, args) -> GetRemoteDataResponse | str | None:
     demisto.debug(f"get_remote_data_command: {args}")
     parsed_args = GetRemoteDataArgs(args)
     demisto.debug(f"parsed_args: {parsed_args}")
@@ -455,24 +464,36 @@ def get_remote_data_command(client: Client, args):
             return_error("API rate limit")
 
 
-def get_modified_remote_data_command(client: Client, args):
+def get_modified_remote_data_command(client: Client, args) -> GetModifiedRemoteDataResponse | str | None:
     demisto.debug(f"get_modified_remote_data_command: {args}")
     try:
-        last_update = get_last_mirror_run().get("last_update")  # type: ignore
-        if not last_update:
-            remote_args = GetModifiedRemoteDataArgs(args)
-            last_update = remote_args.last_update
+        # last_update = get_last_mirror_run().get("last_update")  # type: ignore
+        # if not last_update:
+        #     remote_args = GetModifiedRemoteDataArgs(args)
+        #     last_update = remote_args.last_update
+        remote_args = GetModifiedRemoteDataArgs(args)
+        last_update = remote_args.last_update
         demisto.debug(f"last_update: {last_update}")
+        # last_update_utc = dateparser.parse(last_update)
         last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # type: ignore
         demisto.debug(f"last_update_utc: {last_update_utc}")
         assert last_update_utc is not None
-        last_run_ts = int((last_update_utc - timedelta(minutes=5)).timestamp() * 1000)
-        modified_incident_ids = client.get_updated_incidents(last_run=last_run_ts)
-        if len(modified_incident_ids):
-            set_last_mirror_run({"last_update": str(int(datetime.utcnow().timestamp() * 1000))})
+        last_run_ts = int((last_update_utc - timedelta(minutes=1)).timestamp() * 1000)
+        modified_incidents = client.get_updated_incidents(last_run=last_run_ts)
+        if len(modified_incidents):
+            modified_incident_ids = [
+                str(i["ticket_id"])
+                for i in modified_incidents
+            ]
         else:
-            set_last_mirror_run({"last_update": last_update})
+            modified_incident_ids = []
+        # if len(modified_incident_ids):
+        #     set_last_mirror_run({"last_update": str(int(last_update_utc.timestamp() * 1000))})
+        # else:
+        #     set_last_mirror_run({"last_update": last_update})
+        
         return GetModifiedRemoteDataResponse(modified_incident_ids)
+    
     except Exception as e:
         return_error("skip update")
 
@@ -517,17 +538,13 @@ def main() -> None:  # pragma: no cover
         # elif demisto.command() == 'stellar-simple-query':
         #     return_results(simple_query_command(client, demisto.args()['stellar_index'], demisto.args()['stellar_field'], demisto.args()['stellar_value']))
         elif demisto.command() == "stellar-close-case":
-            close_case_command(client, demisto.args())
-            return_results("ok")
+            return_results(close_case_command(client, demisto.args()))
         elif demisto.command() == "stellar-update-case":
-            update_case_command(client, demisto.args())
-            return_results("ok")
+            return_results(update_case_command(client, demisto.args()))
         elif demisto.command() == "get-modified-remote-data":
-            demisto.debug("get-modified-remote-data being called...")
-            raise NotImplementedError
+            # raise NotImplementedError
             return_results(get_modified_remote_data_command(client, demisto.args()))
         elif demisto.command() == "get-remote-data":
-            demisto.debug("get-remote-data being called...")
             return_results(get_remote_data_command(client, demisto.args()))
 
     except Exception as e:

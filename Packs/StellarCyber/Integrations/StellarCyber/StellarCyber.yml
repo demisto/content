@@ -69,7 +69,7 @@ configuration:
   type: 0
   section: Collect
   additionalinfo: "The maximum number of incidents to fetch per fetch."
-description: Fetches and mirrors Cases from Stellar Cyber to XSOAR. Also provides commands to get an Alert, update a Case, or close a Case.
+description: Fetches and mirrors in Cases from Stellar Cyber to XSOAR. Also provides commands to get an Alert, update a Case, or close a Case.
 display: Stellar Cyber
 name: StellarCyber
 script:
@@ -199,6 +199,7 @@ script:
       required: true
       description: The ID of the Case to update.
     - name: stellar_case_severity
+      required: false
       auto: PREDEFINED
       predefined:
       - Low
@@ -207,6 +208,7 @@ script:
       - Critical
       description: The severity to set the Case to in Stellar Cyber.
     - name: stellar_case_status
+      required: false
       auto: PREDEFINED
       predefined:
       - New
@@ -215,11 +217,14 @@ script:
       - Cancelled
       description: The status to set the Case to.
     - name: stellar_case_assignee
+      required: false
       description: The email or username in to assign to Case in Stellar Cyber.
     - name: stellar_case_tags_add
+      required: false
       description: List of tags to add to Case in Stellar Cyber.
       isArray: true
     - name: stellar_case_tags_remove
+      required: false
       description: List of tags to add remove from Case in Stellar Cyber.
       isArray: true
     description: Update the severity, status, assignee, or tags of a Case in Stellar Cyber.
@@ -234,8 +239,8 @@ script:
   ismappable: false
   isremotesyncin: true
   isremotesyncout: false
-fromversion: 6.0.0
+fromversion: 6.6.0
 defaultclassifier: Stellar Cyber Classifier
 defaultmapperin: Stellar Cyber - Incoming Mapper
 tests:
-- No tests (auto formatted)
+- Stellar Cyber Test
