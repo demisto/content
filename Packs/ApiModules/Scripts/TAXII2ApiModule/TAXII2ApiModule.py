@@ -228,7 +228,7 @@ STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {        # pragma
                   FeedIndicatorType.URL, FeedIndicatorType.File, FeedIndicatorType.Registry),
     'software': FeedIndicatorType.Software,
     'autonomous-system': FeedIndicatorType.AS,
-    "x509-certificate": FeedIndicatorType.X509,
+    'x509-certificate': FeedIndicatorType.X509,
 }
 
 
@@ -262,6 +262,7 @@ XSOAR_TYPES_TO_STIX_SCO = {         # pragma: no cover
     FeedIndicatorType.URL: 'url',
     FeedIndicatorType.Software: 'software',
     FeedIndicatorType.AS: 'autonomous-system',
+    FeedIndicatorType.X509: 'x509-certificate',
 }
 
 HASH_TYPE_TO_STIX_HASH_TYPE = {         # pragma: no cover
@@ -743,12 +744,43 @@ class XSOAR2STIXParser:
             custom_fields = xsoar_indicator.get("CustomFields",{}) or {}
             stix_type = stix_object['type']
             if stix_type in {"indicator", "malware", "report", "threat-actor", "tool"}:
-                tags = custom_fields.get('tags') if custom_fields.get('tags',[]) != [] else [stix_object['type']]
+                tags = custom_fields.get('tags',[]) if custom_fields.get('tags',[]) != [] else [stix_object['type']]
                 stix_object['labels'] = [x.lower().replace(" ", "-") for x in tags]
             if stix_type == 'identity' and (identity_class := custom_fields.get('identityclass','unknown')):
                 stix_object['identity_class'] = identity_class
         return stix_object
 
+    def create_x509_certificate_subject_issuer(self,dict_values: dict) -> str:
+        """
+        Args:
+            dict_values: A dict with keys and values for subject/issuer
+        Returns:
+            A string
+        """
+        string_to_return = ""
+        for key, value in dict_values.items():
+            string_to_return += f"{key}={value}, "
+        string_to_return = string_to_return.rstrip(", ")
+        return string_to_return
+    
+    def create_x509_certificate_object(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> dict:
+            """
+            Builds a correct JSON object for specific x509 certificate.
+
+            Args:
+                stix_object (Dict[str, Any]): A JSON object of a STIX indicator
+                xsoar_indicator (Dict[str, Any]): A JSON object of an XSOAR indicator
+
+            Returns:
+                Dict[str, Any]: A JSON object of a STIX indicator.
+            """
+            stix_object['validity_not_before'] = xsoar_indicator.get('validnotbefore')
+            stix_object['validity_not_after'] = xsoar_indicator.get('validnotafter')
+            stix_object['serial_number'] = xsoar_indicator.get('value')
+            stix_object['subject'] = xsoar_indicator.get('subject',{})
+            stix_object['issuer'] = xsoar_indicator.get('issuer',{})
+            return stix_object
+        
     def build_sco_object(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:
         """
         Builds a correct JSON object for specific SCO types
@@ -770,14 +802,13 @@ class XSOAR2STIXParser:
         elif stix_object['type'] == 'file':
             # hashes is the only required field for file
             value = xsoar_indicator.get('value')
-            if 'hashes' in stix_object:
-                stix_object['hashes'] = {HASH_TYPE_TO_STIX_HASH_TYPE[get_hash_type(value)]: value}
-                for hash_type in ('md5', 'sha1', 'sha256', 'sha512'):
-                    try:
-                        stix_object['hashes'][HASH_TYPE_TO_STIX_HASH_TYPE[hash_type]] = custom_fields[hash_type]
+            stix_object['hashes'] = {HASH_TYPE_TO_STIX_HASH_TYPE[get_hash_type(value)]: value}
+            for hash_type in ('md5', 'sha1', 'sha256', 'sha512'):
+                try:
+                    stix_object['hashes'][HASH_TYPE_TO_STIX_HASH_TYPE[hash_type]] = custom_fields[hash_type]
 
-                    except KeyError:
-                        pass
+                except KeyError:
+                    pass
 
         elif stix_object['type'] == 'windows-registry-key':
             # key is the only required field for windows-registry-key
@@ -790,7 +821,6 @@ class XSOAR2STIXParser:
                     del stix_object['values'][-1]['type']
                 else:
                     pass
-
         elif stix_object['type'] in ('mutex', 'software'):
             stix_object['name'] = xsoar_indicator.get('value')
         # user_id is the only required field for user-account
@@ -798,6 +828,8 @@ class XSOAR2STIXParser:
             user_id = (xsoar_indicator.get('CustomFields') or {}).get('userid')
             if user_id:
                 stix_object['user_id'] = user_id
+        elif stix_object['type'] == 'x509-certificate':
+            self.create_x509_certificate_object(stix_object, xsoar_indicator)
         # ipv4-addr or ipv6-addr or URL
         else:
             stix_object['value'] = xsoar_indicator.get('value')
@@ -1554,29 +1586,45 @@ class STIX2XSOARParser(BaseClient):
 
         return [cve]
     
+    def create_x509_certificate_grids(self, string_object: Optional[str]) -> dict:
+        if string_object:
+            key_value_pairs = string_object.split(', ')
+            result_grid = {}
+            for pair in key_value_pairs:
+                key, value = pair.split('=',1)
+                result_grid[key] = value
+            return result_grid
+        return {}
+    
     def parse_x509_certificate(self, x509_certificate_obj: dict[str, Any]):
         """
         Parses a single x509_certificate object
         :param x509_certificate_obj: x509_certificate object
         :return: x509_certificate extracted from the x509_certificate object in cortex format.
         """
-        x509_certificate = {
-            "value": x509_certificate.get('name'),
-            "type": ThreatIntel.ObjectsNames.X509,
-            "score": Common.DBotScore.NONE,
-            "rawJSON": x509_certificate
-        }
+        if x509_certificate_obj.get('serial_number'):
+            x509_certificate = {
+                "value": x509_certificate_obj.get('serial_number'),
+                'type': FeedIndicatorType.X509,
+                'score': Common.DBotScore.NONE,
+                "rawJSON": x509_certificate_obj,
 
-        fields = self.set_default_fields(x509_certificate)
-        if self.update_custom_fields:
-            custom_fields, score = self.parse_custom_fields(x509_certificate.get('extensions', {}))
-            fields.update(assign_params(**custom_fields))
-            if score:
-                x509_certificate['score'] = score
-        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
-        x509_certificate["fields"] = fields
+            }
+            fields = {"stixid": x509_certificate_obj.get('id', ''),
+                      "validnotbefore": x509_certificate_obj.get('validity_not_before'),
+                      "validnotafter": x509_certificate_obj.get('validity_not_after'),
+                      "subject": self.create_x509_certificate_grids(x509_certificate_obj.get('subject')),
+                      "issuer": self.create_x509_certificate_grids(x509_certificate_obj.get('issuer'))}
+            if self.update_custom_fields:
+                custom_fields, score = self.parse_custom_fields(x509_certificate.get('extensions', {}))
+                fields.update(assign_params(**custom_fields))
+                if score:
+                    x509_certificate['score'] = score
+            fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+            x509_certificate["fields"] = fields
 
-        return [x509_certificate]
+            return [x509_certificate]
+        return []
 
     def parse_relationships(self, relationships_lst: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Parse the Relationships objects retrieved from the feed.

@@ -1056,16 +1056,16 @@ class TestParsingIndicators:
                     'firstseenbysource': '',
                     'modified': '',
                     'modified_time': None,
-                    'number_of_subkeys': None,
-                    'registryvalue': [
+                    'numberofsubkeys': None,
+                    'keyvalue': [
                         {
                             'data': 'qwerty',
-                            'data_type': 'REG_SZ',
+                            'type': 'REG_SZ',
                             'name': 'Foo'
                         },
                         {
                             'data': '42',
-                            'data_type': 'REG_DWORD',
+                            'type': 'REG_DWORD',
                             'name': 'Bar'
                         }
                     ],
@@ -1086,16 +1086,16 @@ class TestParsingIndicators:
                     'firstseenbysource': '',
                     'modified': '',
                     'modified_time': None,
-                    'number_of_subkeys': None,
-                    'registryvalue': [
+                    'numberofsubkeys': None,
+                    'keyvalue': [
                         {
                             'data': 'qwerty',
-                            'data_type': 'REG_SZ',
+                            'type': 'REG_SZ',
                             'name': 'Foo'
                         },
                         {
                             'data': '42',
-                            'data_type': 'REG_DWORD',
+                            'type': 'REG_DWORD',
                             'name': 'Bar'
                         }
                     ],
@@ -1109,11 +1109,12 @@ class TestParsingIndicators:
                 'value': "hkey_local_machine\\system\\bar\\foo"
             }
         ]
-
-        assert taxii_2_client.parse_sco_windows_registry_key_indicator(registry_object) == xsoar_expected_response
+        result  = taxii_2_client.parse_sco_windows_registry_key_indicator(registry_object)
+        assert result == xsoar_expected_response
         taxii_2_client.update_custom_fields = True
-        assert taxii_2_client.parse_sco_windows_registry_key_indicator(
-            registry_object) == xsoar_expected_response_with_update_custom_fields
+        result = taxii_2_client.parse_sco_windows_registry_key_indicator(
+            registry_object)
+        assert result == xsoar_expected_response_with_update_custom_fields
 
     def test_parse_vulnerability(self, taxii_2_client):
         """
@@ -1421,6 +1422,57 @@ class TestParsingIndicators:
          - Make sure all the fields are being parsed correctly.
         """
         assert taxii_2_client.parse_location(location_object) == xsoar_expected_response
+    
+    x509_certificate={
+        "type": "x509-certificate",
+        "serial_number": "serial_number",
+        "issuer": "C=ZA, ST=Western Cape, L=Cape Town, O=Thawte Consulting cc, OU=Certification Services Division, CN=Thawte Server CA/emailAddress=server-certs@thawte.com",
+        "validity_not_before": "2016-03-12T12:00:00Z",
+        "validity_not_after": "2016-08-21T12:00:00Z",
+        "subject": "C=US, ST=Maryland, L=Pasadena, O=Brent Baccala, OU=FreeSoft, CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
+        }
+    x509_certificate_without_serial_number={
+        "type": "x509-certificate",
+        "issuer": "C=ZA, ST=Western Cape, L=Cape Town, O=Thawte Consulting cc, OU=Certification Services Division, CN=Thawte Server CA/emailAddress=server-certs@thawte.com",
+        "validity_not_before": "2016-03-12T12:00:00Z",
+        "validity_not_after": "2016-08-21T12:00:00Z",
+        "subject": "C=US, ST=Maryland, L=Pasadena, O=Brent Baccala, OU=FreeSoft, CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
+        }
+    expected_result = [{'value': 'serial_number', 'type': 'X509 Certificate', 'score': 0,
+                        'rawJSON': {'type': 'x509-certificate', 'serial_number': 'serial_number',
+                                    'issuer': 'C=ZA, ST=Western Cape, L=Cape Town, O=Thawte Consulting cc,'\
+                                    ' OU=Certification Services Division, CN=Thawte'\
+                                    ' Server CA/emailAddress=server-certs@thawte.com',
+                                    'validity_not_before': '2016-03-12T12:00:00Z',
+                                    'validity_not_after': '2016-08-21T12:00:00Z',
+                                    'subject': 'C=US, ST=Maryland, L=Pasadena,'\
+                                    ' O=Brent Baccala, OU=FreeSoft, '\
+                                    'CN=www.freesoft.org/emailAddress=baccala@freesoft.org'},
+                        'fields': {'stixid': '', 'validnotbefore': '2016-03-12T12:00:00Z',
+                                   'validnotafter': '2016-08-21T12:00:00Z',
+                                   'subject': {'C': 'US', 'ST': 'Maryland', 'L': 'Pasadena', 'O': 'Brent Baccala',
+                                               'OU': 'FreeSoft',
+                                               'CN': 'www.freesoft.org/emailAddress=baccala@freesoft.org'},
+                                   'issuer': {'C': 'ZA', 'ST': 'Western Cape', 'L': 'Cape Town', 'O': 'Thawte Consulting cc',
+                                              'OU': 'Certification Services Division',
+                                              'CN': 'Thawte Server CA/emailAddress=server-certs@thawte.com'}
+                                   , 'tags': []}}]
+    @pytest.mark.parametrize('x509_certificate_object, xsoar_expected_response',
+                                [(x509_certificate, expected_result),
+                                (x509_certificate_without_serial_number, [])])
+    def test_parse_x509_certificate(self,taxii_2_client, x509_certificate_object, xsoar_expected_response):
+        """
+        Given:
+         - x509 certificate object.
+
+        When:
+         - Parsing the x509 certificate object into a format XSOAR knows to read.
+
+        Then:
+         - Make sure all the fields are being parsed correctly.
+        """
+        result = taxii_2_client.parse_x509_certificate(x509_certificate_object)
+        assert result == xsoar_expected_response
 
 
 class TestParsingObjects:
@@ -1799,6 +1851,7 @@ test_create_stix_object_param = [
             "modified": "2023-04-19T13:05:01.000000Z",
             "name": "bad malware",
             "description": "",
+            "is_family": False,
         },
     ),
 ]
@@ -1862,11 +1915,11 @@ def test_add_sdo_required_field_2_1(stix_object, xsoar_indicator, expected_stix_
 
 
 @pytest.mark.parametrize('stix_object,xsoar_indicator, expected_stix_object', [
-    ({"type": "indicator"}, {"CustomFields": {'tags': []}}, {'type': 'indicator', 'labels': []}),
-    ({"type": "malware"}, {"CustomFields": {'tags': []}}, {'type': 'malware', 'labels': []}),
-    ({"type": "report"}, {"CustomFields": {'tags': []}}, {'type': 'report', 'labels': []}),
-    ({"type": "threat-actor"}, {"CustomFields": {'tags': []}}, {'type': 'threat-actor', 'labels': []}),
-    ({"type": "tool"}, {"CustomFields": {'tags': []}}, {'type': 'tool', 'labels': []}),
+    ({"type": "indicator"}, {"CustomFields": {'tags': []}}, {'type': 'indicator', 'labels': ["indicator"]}),
+    ({"type": "malware"}, {"CustomFields": {'tags': []}}, {'type': 'malware', 'labels': ["malware"]}),
+    ({"type": "report"}, {"CustomFields": {'tags': []}}, {'type': 'report', 'labels': ["report"]}),
+    ({"type": "threat-actor"}, {"CustomFields": {'tags': []}}, {'type': 'threat-actor', 'labels': ["threat-actor"]}),
+    ({"type": "tool"}, {"CustomFields": {'tags': []}}, {'type': 'tool', 'labels': ["tool"]}),
 ])
 def test_add_sdo_required_field_2_0(stix_object, xsoar_indicator, expected_stix_object):
     """
@@ -1985,6 +2038,14 @@ def test_change_attack_pattern_to_stix_attack_pattern():
 
 
 def test_create_relationships_objects(mocker):
+    """
+    Given
+    - A relationships response.
+    When
+    - call the create_relationships_objects method
+    Then
+    - Validates that the method properly create the relationships objects.
+    """
     mocker.patch.object(demisto, 'getLicenseID', return_value='test')
     cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present={'name', 'type'},
                               types_for_indicator_sdo=[], namespace_uuid=uuid.uuid5(PAWN_UUID, demisto.getLicenseID()))
@@ -1996,6 +2057,14 @@ def test_create_relationships_objects(mocker):
 
 
 def test_create_indicators(mocker):
+    """
+    Given
+    - A search Indicators response.
+    When
+    - call the create_indicators method
+    Then
+    - Validates that the method properly create the indicator objects.
+    """
     mock_iocs = util_load_json('test_data/sort_ip_iocs.json')
     mock_entity_b_iocs = util_load_json('test_data/entity_b_iocs.json')
     expected_result = util_load_json('test_data/create_indicators_test_results.json')
@@ -2014,3 +2083,28 @@ def test_create_indicators(mocker):
 
     assert extensions == []
     assert iocs == expected_result
+
+def test_create_x509_certificate_subject_issuer():
+    """
+    Given
+    - A dicitonary representing the subject and issuer fields of an X.509 certificate
+    When
+    - call the ccreate_x509_certificate_subject_issuer method
+    Then
+    - Validates that the method properly creates the subject and issuer fields of an X.509 certificate as a string.
+    """
+    cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present={'name', 'type'},
+                              types_for_indicator_sdo=[], namespace_uuid=uuid.uuid5(PAWN_UUID, demisto.getLicenseID()))
+    assert (
+        cilent.create_x509_certificate_subject_issuer(
+            {
+                "C": "US",
+                "ST": "Maryland",
+                "L": "Pasadena",
+                "O": "Brent Baccala",
+                "OU": "FreeSoft",
+                "CN": "www.freesoft.org/emailAddress=baccala@freesoft.org",
+            }
+        )
+        == "C=US, ST=Maryland, L=Pasadena, O=Brent Baccala, OU=FreeSoft, CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
+    )

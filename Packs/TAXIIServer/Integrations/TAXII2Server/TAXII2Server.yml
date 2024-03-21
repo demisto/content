@@ -110,6 +110,7 @@ configuration:
   - windows-registry-key
   - file
   - url
+  - x509-certificate
   additionalinfo: Choose which STIX Cyber Observable Object provides as STIX Domain Object of 'indicator'
   section: Collect
   advanced: true

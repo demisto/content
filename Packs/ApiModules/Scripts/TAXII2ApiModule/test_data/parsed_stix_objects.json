@@ -220,9 +220,9 @@
             "aliases": [],
             "kill_chain_phases": [],
             "os_execution_envs": [],
-            "architecture_execution_envs": [],
+            "architecture": [],
             "capabilities": [],
-            "sample_refs": [],
+            "samples": [],
             "tags": [
                 "backdoor"
             ]
