@@ -222,9 +222,6 @@ script:
         - contextPath: ThreatZone.Analysis.UUID
           description: The UUID of the submission.
           type: String
-        - contextPath: ThreatZone.Analysis.SANITIZED
-          description: The url of the sanitized file.
-          type: String
         - contextPath: DBotScore.Indicator
           description: The indicator that was tested.
           type: String

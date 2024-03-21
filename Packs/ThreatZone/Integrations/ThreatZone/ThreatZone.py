@@ -13,6 +13,9 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+glob_HEADERS: dict
+glob_BASEURL: str
+glob_VERIFY: bool
 
 """ CLIENT CLASS """
 
@@ -59,9 +62,14 @@ class Client(BaseClient):
 
     def threatzone_get_sanitized(self, submission_uuid) -> dict:
         filename = f"sanitized-{submission_uuid}.zip"
-        r = requests.get(url=glob_BASEURL + "/public-api/download/cdr/" + submission_uuid, headers=glob_HEADERS, stream=True, verify=glob_VERIFY)
+        r = requests.get(
+            url=glob_BASEURL + "/public-api/download/cdr/" + submission_uuid,
+            headers=glob_HEADERS,
+            stream=True,
+            verify=glob_VERIFY,
+        )
         if r.status_code < 200 or r.status_code > 299:
-            return_error("Bad HTTP response [{code}] - {body}".format(code=r.status_code, body=r.text))
+            raise DemistoException("Bad HTTP response [{code}] - {body}".format(code=r.status_code, body=r.text))
         with open(filename, "wb") as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
@@ -188,7 +196,7 @@ def get_reputation_reliability(reliability):
     return None
 
 
-def generate_dbotscore(indicator, report, score, type_of_indicator=None):
+def generate_dbotscore(indicator, score, type_of_indicator=None):
     """Creates DBotScore object based on the content of 'indicator' argument
     :type indicator: ``str``
     :param indicator: The value of the indicator
@@ -235,9 +243,9 @@ def generate_indicator(indicator, report, type_of_indicator, score=None):
     :rtype: dict
     """
     if score is not None:
-        dbot_score = generate_dbotscore(indicator, report, score, type_of_indicator)
+        dbot_score = generate_dbotscore(indicator, score, type_of_indicator=type_of_indicator)
     else:
-        dbot_score = generate_dbotscore(indicator, report, report.get("LEVEL"), type_of_indicator)
+        dbot_score = generate_dbotscore(indicator, report.get("LEVEL"), type_of_indicator=type_of_indicator)
     if type_of_indicator == "file":
         return Common.File(
             dbot_score,
@@ -256,7 +264,7 @@ def generate_indicator(indicator, report, type_of_indicator, score=None):
     raise DemistoException(f"{type_of_indicator} does not supported")
 
 
-def threatzone_get_result(client: Client, args: Dict[str, Any], only_sanitized: bool = False) -> list[CommandResults]:
+def threatzone_get_result(client: Client, args: Dict[str, Any], only_sanitized: bool = False) -> list[CommandResults] | dict:
     """Get the sample scan result from ThreatZone.
     :param - uuid: For filtering with status
     :type uuid: ``str``
@@ -267,14 +275,20 @@ def threatzone_get_result(client: Client, args: Dict[str, Any], only_sanitized: 
     param = {"uuid": uuid}
 
     result = client.threatzone_get(param=param)
-    stats = {1: "File received", 2: "Submission is accepted", 3: "Submission is running", 4: "Submission VM is ready", 5: "Submission is finished"}
+    stats = {
+        1: "File received",
+        2: "Submission is accepted",
+        3: "Submission is running",
+        4: "Submission VM is ready",
+        5: "Submission is finished",
+    }
 
     levels = {0: "Not Measured", 1: "Informative", 2: "Suspicious", 3: "Malicious"}
 
-    def create_res(readable_dict: dict, output: dict, sanitized=None) -> list[CommandResults]:
+    def create_res(readable_dict: dict, output: dict) -> list[CommandResults]:
 
-        def indicator_creator(output: dict) -> dict:
-            indicators = {"URL": [], "DOMAIN": [], "EMAIL": [], "IP": []}
+        def extract_ioc(output: dict) -> dict:
+            indicators: dict = {"URL": [], "DOMAIN": [], "EMAIL": [], "IP": []}
             if output["REPORT"].get("ioc", {}):
                 if output["REPORT"].get("ioc", {}).get("url", []):
                     indicators["URL"] = output["REPORT"].get("ioc", {}).get("url", [])
@@ -286,29 +300,25 @@ def threatzone_get_result(client: Client, args: Dict[str, Any], only_sanitized: 
                     indicators["IP"] = output["REPORT"].get("ioc", {}).get("ip", [])
             return indicators
 
-        if not only_sanitized:
-            ioc_data = indicator_creator(output)
-            base_readable_output = tableToMarkdown("Submission Result", readable_dict)
-            ioc_readable_output = tableToMarkdown("Extracted IOCs", ioc_data)
-            command_result_list = [
-                CommandResults(
-                    outputs_prefix="ThreatZone.Analysis",
-                    readable_output=base_readable_output,
-                    outputs_key_field="UUID",
-                    outputs=output,
-                    indicator=generate_indicator(output["SHA256"], output, "file"),
-                ),
-                CommandResults(
-                    outputs_prefix="ThreatZone.Indicators",
-                    readable_output=ioc_readable_output,
-                    outputs_key_field="UUID",
-                    outputs=ioc_data,
-                ),
-            ]
-        else:
-            command_result_list = [
-                sanitized,
-            ]
+        ioc_data = extract_ioc(output)
+        base_readable_output = tableToMarkdown("Submission Result", readable_dict)
+        ioc_readable_output = tableToMarkdown("Extracted IOCs", ioc_data)
+        command_result_list = [
+            CommandResults(
+                outputs_prefix="ThreatZone.Analysis",
+                readable_output=base_readable_output,
+                outputs_key_field="UUID",
+                outputs=output,
+                indicator=generate_indicator(output["SHA256"], output, "file"),
+            ),
+            CommandResults(
+                outputs_prefix="ThreatZone.Indicators",
+                readable_output=ioc_readable_output,
+                outputs_key_field="UUID",
+                outputs=ioc_data,
+            ),
+        ]
+
         return command_result_list
 
     try:
@@ -324,7 +334,9 @@ def threatzone_get_result(client: Client, args: Dict[str, Any], only_sanitized: 
         status = result["reports"][report_type]["status"]
         if status == 0:
             raise Exception(
-                "Submission is declined by the scanner." + " " + "The reason behind this could be about your file is broken or the analyzer has crashed."
+                "Submission is declined by the scanner."
+                + " "
+                + "The reason behind this could be about your file is broken or the analyzer has crashed."
             )
         submission_uuid = result["uuid"]
         if not only_sanitized:
@@ -334,7 +346,9 @@ def threatzone_get_result(client: Client, args: Dict[str, Any], only_sanitized: 
             submission_info = {"file_name": result["fileInfo"]["name"], "private": result["private"]}
             submission_info = {"file_name": result["fileInfo"]["name"], "private": result["private"]}
             if status == 0:
-                raise DemistoException(f"Reason: {stats[status]}\nUUID: {submission_uuid}\nSuggestion: Re-analyze submission or contact us.")
+                raise DemistoException(
+                    f"Reason: {stats[status]}\nUUID: {submission_uuid}\nSuggestion: Re-analyze submission or contact us."
+                )
 
             result_url = f"https://app.threat.zone/submission/{submission_uuid}"
             level = result["level"]
@@ -349,7 +363,6 @@ def threatzone_get_result(client: Client, args: Dict[str, Any], only_sanitized: 
                 "PRIVATE": result["private"],
                 "SCAN_URL": result_url,
                 "UUID": submission_uuid,
-                "SANITIZED": None,
             }
 
             output = {
@@ -363,12 +376,13 @@ def threatzone_get_result(client: Client, args: Dict[str, Any], only_sanitized: 
                 "URL": result_url,
                 "UUID": submission_uuid,
                 "REPORT": result["reports"][report_type],
-                "SANITIZED": None,
             }
         if report_type == "cdr" and status == 5:
             file_res = threatzone_get_sanitized_file(client, args)
-            if file_res:
-                return create_res({}, {}, sanitized=file_res)
+            if file_res and only_sanitized:
+                return file_res
+            else:
+                create_res(readable_dict, output)
         return create_res(readable_dict, output)
 
     except Exception as e:
@@ -379,7 +393,12 @@ def threatzone_check_limits(client: Client) -> CommandResults:
     """Checks and prints remaining limits and current quota"""
     availability = client.threatzone_check_limits(None)
     readable_output = tableToMarkdown("LIMITS", availability["Limits"])
-    return CommandResults(outputs_prefix="ThreatZone.Limits", outputs_key_field="E_Mail", readable_output=readable_output, outputs=availability["Limits"])
+    return CommandResults(
+        outputs_prefix="ThreatZone.Limits",
+        outputs_key_field="E_Mail",
+        readable_output=readable_output,
+        outputs=availability["Limits"],
+    )
 
 
 def threatzone_return_results(scan_type, uuid, url, readable_output, availability) -> List[CommandResults]:
@@ -393,7 +412,10 @@ def threatzone_return_results(scan_type, uuid, url, readable_output, availabilit
         scan_prefix = "Sandbox"
     return [
         CommandResults(
-            outputs_prefix=f"ThreatZone.Submission.{scan_prefix}", readable_output=readable_output, outputs_key_field="UUID", outputs={"UUID": uuid, "URL": url}
+            outputs_prefix=f"ThreatZone.Submission.{scan_prefix}",
+            readable_output=readable_output,
+            outputs_key_field="UUID",
+            outputs={"UUID": uuid, "URL": url},
         ),
         CommandResults(outputs_prefix="ThreatZone.Limits", outputs_key_field="E_Mail", outputs=availability["Limits"]),
     ]
@@ -409,7 +431,9 @@ def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> Li
     """Uploads the sample to the ThreatZone sandbox to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("sandbox")
     if not availability["available"]:
-        raise DemistoException(f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}\nLimits: {availability['Limits']}")
+        raise DemistoException(
+            f"Reason: {availability['Reason']}\nSuggestion: {availability['Suggestion']}\nLimits: {availability['Limits']}"
+        )
 
     ispublic = args.get("private")
     environment = args.get("environment")

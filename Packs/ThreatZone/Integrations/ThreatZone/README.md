@@ -6,14 +6,14 @@
 2. Search for ThreatZone.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g. <https://app.threat.zone>) |  | True |
-    | ThreatZone API Key |  | True |
-    | Source Reliability | Reliability of the source. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
 
+   | **Parameter**                                                       | **Description**            | **Required** |
+   | --------------------------------------------------------------------- | ---------------------------- | -------------- |
+   | Server URL (e.g.[https://app.threat.zone](https://app.threat.zone)) |                            | True         |
+   | ThreatZone API Key                                                  |                            | True         |
+   | Source Reliability                                                  | Reliability of the source. | False        |
+   | Trust any certificate (not secure)                                  |                            | False        |
+   | Use system proxy settings                                           |                            | False        |
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
@@ -23,7 +23,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ### tz-sandbox-upload-sample
 
-***
+---
+
 Submits a sample to ThreatZone for sandbox analysis.
 
 #### Base Command
@@ -32,33 +33,36 @@ Submits a sample to ThreatZone for sandbox analysis.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| entry_id | Entry ID of the file to submit. | Required | 
-| environment | Choose what environment you want to run your submission. Possible values are: w7_x64, w10_x64, w11_x64. Default is w7_x64. | Optional | 
-| private | Privacy of the submission. Possible values are: true, false. Default is true. | Optional | 
-| timeout | Duration of the submission analysis. Possible values are: 60, 120, 180, 300. Default is 60. | Optional | 
-| work_path | The working path of the submission. Possible values are: desktop, root, appdata, windows, temp. Default is desktop. | Optional | 
-| mouse_simulation | Enable mouse simulation. Possible values are: true, false. Default is false. | Optional | 
-| https_inspection | Https inspection to read encrypted traffic. Possible values are: true, false. Default is false. | Optional | 
-| internet_connection | Enable internet connection. Possible values are: true, false. Default is false. | Optional | 
-| raw_logs | Raw logs. Possible values are: true, false. Default is false. | Optional | 
-| snapshot | Snapshot. Possible values are: true, false. Default is false. | Optional | 
+
+| **Argument Name**   | **Description**                                                                                                            | **Required** |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| entry_id            | Entry ID of the file to submit.                                                                                            | Required     |
+| environment         | Choose what environment you want to run your submission. Possible values are: w7_x64, w10_x64, w11_x64. Default is w7_x64. | Optional     |
+| private             | Privacy of the submission. Possible values are: true, false. Default is true.                                              | Optional     |
+| timeout             | Duration of the submission analysis. Possible values are: 60, 120, 180, 300. Default is 60.                                | Optional     |
+| work_path           | The working path of the submission. Possible values are: desktop, root, appdata, windows, temp. Default is desktop.        | Optional     |
+| mouse_simulation    | Enable mouse simulation. Possible values are: true, false. Default is false.                                               | Optional     |
+| https_inspection    | Https inspection to read encrypted traffic. Possible values are: true, false. Default is false.                            | Optional     |
+| internet_connection | Enable internet connection. Possible values are: true, false. Default is false.                                            | Optional     |
+| raw_logs            | Raw logs. Possible values are: true, false. Default is false.                                                              | Optional     |
+| snapshot            | Snapshot. Possible values are: true, false. Default is false.                                                              | Optional     |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ThreatZone.Submission.Sandbox.UUID | String | UUID of sample. | 
-| ThreatZone.Submission.Sandbox.URL | String | URL of analysis of sample. | 
-| ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. | 
-| ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
-| ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 
-| ThreatZone.Limits.Daily_Submission_Limit | String | The remaining/total daily submission limits of the current plan. | 
+
+| **Path**                                 | **Type** | **Description**                                                     |
+| ------------------------------------------ | ---------- | --------------------------------------------------------------------- |
+| ThreatZone.Submission.Sandbox.UUID       | String   | UUID of sample.                                                     |
+| ThreatZone.Submission.Sandbox.URL        | String   | URL of analysis of sample.                                          |
+| ThreatZone.Limits.E_Mail                 | String   | The owner e-mail of current plan.                                   |
+| ThreatZone.Limits.API_Limit              | String   | The remaining/total API request limits of the current plan.         |
+| ThreatZone.Limits.Concurrent_Limit       | String   | The remaining/total concurrent analysis limits of the current plan. |
+| ThreatZone.Limits.Daily_Submission_Limit | String   | The remaining/total daily submission limits of the current plan.    |
 
 ### tz-static-upload-sample
 
-***
+---
+
 Submits a sample to ThreatZone for static analysis.
 
 #### Base Command
@@ -67,24 +71,27 @@ Submits a sample to ThreatZone for static analysis.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| entry_id | Entry ID of the file to submit. | Required | 
+
+| **Argument Name** | **Description**                 | **Required** |
+| ------------------- | --------------------------------- | -------------- |
+| entry_id          | Entry ID of the file to submit. | Required     |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ThreatZone.Submission.Static.UUID | String | UUID of sample. | 
-| ThreatZone.Submission.Static.URL | String | URL of analysis of sample. | 
-| ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. | 
-| ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
-| ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 
-| ThreatZone.Limits.Daily_Submission_Limit | String | The remaining/total daily submission limits of the current plan. | 
+
+| **Path**                                 | **Type** | **Description**                                                     |
+| ------------------------------------------ | ---------- | --------------------------------------------------------------------- |
+| ThreatZone.Submission.Static.UUID        | String   | UUID of sample.                                                     |
+| ThreatZone.Submission.Static.URL         | String   | URL of analysis of sample.                                          |
+| ThreatZone.Limits.E_Mail                 | String   | The owner e-mail of current plan.                                   |
+| ThreatZone.Limits.API_Limit              | String   | The remaining/total API request limits of the current plan.         |
+| ThreatZone.Limits.Concurrent_Limit       | String   | The remaining/total concurrent analysis limits of the current plan. |
+| ThreatZone.Limits.Daily_Submission_Limit | String   | The remaining/total daily submission limits of the current plan.    |
 
 ### tz-cdr-upload-sample
 
-***
+---
+
 Submits a sample to ThreatZone for CDR.
 
 #### Base Command
@@ -93,24 +100,27 @@ Submits a sample to ThreatZone for CDR.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| entry_id | Entry ID of the file to submit. | Required | 
+
+| **Argument Name** | **Description**                 | **Required** |
+| ------------------- | --------------------------------- | -------------- |
+| entry_id          | Entry ID of the file to submit. | Required     |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ThreatZone.Submission.CDR.UUID | String | UUID of sample. | 
-| ThreatZone.Submission.CDR.URL | String | URL of analysis of sample. | 
-| ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. | 
-| ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
-| ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 
-| ThreatZone.Limits.Daily_Submission_Limit | String | The remaining/total daily submission limits of the current plan. | 
+
+| **Path**                                 | **Type** | **Description**                                                     |
+| ------------------------------------------ | ---------- | --------------------------------------------------------------------- |
+| ThreatZone.Submission.CDR.UUID           | String   | UUID of sample.                                                     |
+| ThreatZone.Submission.CDR.URL            | String   | URL of analysis of sample.                                          |
+| ThreatZone.Limits.E_Mail                 | String   | The owner e-mail of current plan.                                   |
+| ThreatZone.Limits.API_Limit              | String   | The remaining/total API request limits of the current plan.         |
+| ThreatZone.Limits.Concurrent_Limit       | String   | The remaining/total concurrent analysis limits of the current plan. |
+| ThreatZone.Limits.Daily_Submission_Limit | String   | The remaining/total daily submission limits of the current plan.    |
 
 ### tz-get-result
 
-***
+---
+
 Retrive the analysis result from ThreatZone.
 
 #### Base Command
@@ -119,33 +129,35 @@ Retrive the analysis result from ThreatZone.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| uuid | UUID of the submission. | Required | 
+
+| **Argument Name** | **Description**         | **Required** |
+| ------------------- | ------------------------- | -------------- |
+| uuid              | UUID of the submission. | Required     |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ThreatZone.Analysis.STATUS | String | The status of the submission scanning process. | 
-| ThreatZone.Analysis.LEVEL | String | Threat Level of the scanned file. \(malicious, suspicious or informative\). | 
-| ThreatZone.Analysis.URL | String | The result page url of the submission. | 
-| ThreatZone.Analysis.INFO | String | Contains the file name, scan process status and public status. | 
-| ThreatZone.Analysis.REPORT | String | The analysis report of the submission. | 
-| ThreatZone.Analysis.MD5 | String | The md5 hash of the submission. | 
-| ThreatZone.Analysis.SHA1 | String | The sha1 hash of the submission. | 
-| ThreatZone.Analysis.SHA256 | String | The sha256 hash of the submission. | 
-| ThreatZone.Analysis.UUID | String | The UUID of the submission. | 
-| ThreatZone.Analysis.SANITIZED | String | The url of the sanitized file. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Reliability | String | The reliability of the source providing the intelligence data. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
+
+| **Path**                   | **Type** | **Description**                                                            |
+| ---------------------------- | ---------- | ---------------------------------------------------------------------------- |
+| ThreatZone.Analysis.STATUS | String   | The status of the submission scanning process.                             |
+| ThreatZone.Analysis.LEVEL  | String   | Threat Level of the scanned file.\(malicious, suspicious or informative\). |
+| ThreatZone.Analysis.URL    | String   | The result page url of the submission.                                     |
+| ThreatZone.Analysis.INFO   | String   | Contains the file name, scan process status and public status.             |
+| ThreatZone.Analysis.REPORT | String   | The analysis report of the submission.                                     |
+| ThreatZone.Analysis.MD5    | String   | The md5 hash of the submission.                                            |
+| ThreatZone.Analysis.SHA1   | String   | The sha1 hash of the submission.                                           |
+| ThreatZone.Analysis.SHA256 | String   | The sha256 hash of the submission.                                         |
+| ThreatZone.Analysis.UUID   | String   | The UUID of the submission.                                                |
+| DBotScore.Indicator        | String   | The indicator that was tested.                                             |
+| DBotScore.Reliability      | String   | The reliability of the source providing the intelligence data.             |
+| DBotScore.Score            | Number   | The actual score.                                                          |
+| DBotScore.Type             | String   | The indicator type.                                                        |
+| DBotScore.Vendor           | unknown  | The vendor used to calculate the score.                                    |
 
 ### tz-get-sanitized
 
-***
+---
+
 Downloads and uploads sanitized file from ThreatZone API to WarRoom & Context Data.
 
 #### Base Command
@@ -154,28 +166,31 @@ Downloads and uploads sanitized file from ThreatZone API to WarRoom & Context Da
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| uuid | UUID of the submission. | Required | 
+
+| **Argument Name** | **Description**         | **Required** |
+| ------------------- | ------------------------- | -------------- |
+| uuid              | UUID of the submission. | Required     |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| File.Extension | String | Extension of the file sanitized by CDR. | 
-| File.Name | String | The name of the file sanitized by CDR. | 
-| File.Size | Number | Size of the file sanitized by CDR. | 
-| File.EntryID | String | EntryID of the file sanitized by CDR. | 
-| File.Info | String | Info of the file sanitized by CDR. | 
-| File.MD5 | String | MD5 hash of the file sanitized by CDR. | 
-| File.SHA1 | String | SHA1 hash of the file sanitized by CDR. | 
-| File.SHA256 | String | SHA256 hash of the file sanitized by CDR. | 
-| File.SHA512 | String | SHA512 hash of the file sanitized by CDR. | 
-| File.SSDeep | String | SSDeep hash of the file sanitized by CDR. | 
+
+| **Path**       | **Type** | **Description**                           |
+| ---------------- | ---------- | ------------------------------------------- |
+| File.Extension | String   | Extension of the file sanitized by CDR.   |
+| File.Name      | String   | The name of the file sanitized by CDR.    |
+| File.Size      | Number   | Size of the file sanitized by CDR.        |
+| File.EntryID   | String   | EntryID of the file sanitized by CDR.     |
+| File.Info      | String   | Info of the file sanitized by CDR.        |
+| File.MD5       | String   | MD5 hash of the file sanitized by CDR.    |
+| File.SHA1      | String   | SHA1 hash of the file sanitized by CDR.   |
+| File.SHA256    | String   | SHA256 hash of the file sanitized by CDR. |
+| File.SHA512    | String   | SHA512 hash of the file sanitized by CDR. |
+| File.SSDeep    | String   | SSDeep hash of the file sanitized by CDR. |
 
 ### tz-check-limits
 
-***
+---
+
 Check the plan limits from ThreatZone API.
 
 #### Base Command
@@ -184,18 +199,19 @@ Check the plan limits from ThreatZone API.
 
 #### Input
 
+
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+| ------------------- | ----------------- | -------------- |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ThreatZone.Limits.E_Mail | String | The owner e-mail of current plan. | 
-| ThreatZone.Limits.API_Limit | String | The remaining/total API request limits of the current plan. | 
-| ThreatZone.Limits.Concurrent_Limit | String | The remaining/total concurrent analysis limits of the current plan. | 
-| ThreatZone.Limits.Daily_Submission_Limit | String | The remaining/total daily submission limits of the current plan. | 
 
+| **Path**                                 | **Type** | **Description**                                                     |
+| ------------------------------------------ | ---------- | --------------------------------------------------------------------- |
+| ThreatZone.Limits.E_Mail                 | String   | The owner e-mail of current plan.                                   |
+| ThreatZone.Limits.API_Limit              | String   | The remaining/total API request limits of the current plan.         |
+| ThreatZone.Limits.Concurrent_Limit       | String   | The remaining/total concurrent analysis limits of the current plan. |
+| ThreatZone.Limits.Daily_Submission_Limit | String   | The remaining/total daily submission limits of the current plan.    |
 
 #### Command Example
 
@@ -461,7 +477,6 @@ Note: Long output parts are truncated
           "vnc": "https://app.threat.zone/cloudvnc/index.html?path=?token=95b6bc52-d040-4d82-a98b-af6fd5f6feea"
         }
       },
-      "SANITIZED": null,
       "SHA1": "0cd47f6bb5bb8e8e9dc01286adcc493acf5dd649",
       "SHA256": "80b5c38471c54298259cec965619fccb435641a01ee4254a3d7c62ec47849108",
       "STATUS": 5,
@@ -1096,7 +1111,6 @@ Note: Long output parts are truncated
           }
         }
       },
-      "SANITIZED": null,
       "SHA1": "e0ecee70f2704093a8fb620d61a995b561b65c20",
       "SHA256": "e38dae160633fb5bf65a982374f1c7725c25ed32e89dbe2dce3a8f486cfae3cb",
       "STATUS": 5,
@@ -1152,7 +1166,6 @@ Note: Long output parts are truncated
           "status": 5
         }
       },
-      "SANITIZED": "https://app.threat.zone/download/v1/download/cdr/1170250a-40ac-4b73-84f7-3c0b6026d8af",
       "SHA1": "1bec0d7bfea812ca7aa1f5399bb7ff3671006331",
       "SHA256": "945678e901efcd35ece87a1a0eba82f39feb7d45ea4d38330a4795d1338872ca",
       "STATUS": 5,
@@ -1179,6 +1192,7 @@ Note: Long output parts are truncated
 
 #### Human Readable Output For CDR
 
-| FILE_NAME                                 | MD5                              | PRIVATE | SANITIZED                                                                                                                                                                      | SCAN_URL                                                                                                                                           | SHA1                                     | SHA256                                                           | STATUS                 | THREAT_LEVEL | UUID                                 |
-| ------------------------------------------- | ---------------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------ | ------------------------ | -------------- | -------------------------------------- |
-| fff2035c-def9-482c-9e1a-405c4d427833.docx | cf543c55343c6307349aafd098fb6958 | false   | [https://app.threat.zone/download/v1/download/cdr/1170250a-40ac-4b73-84f7-3c0b6026d8af](https://app.threat.zone/download/v1/download/cdr/1170250a-40ac-4b73-84f7-3c0b6026d8af) | [https://app.threat.zone/submission/1170250a-40ac-4b73-84f7-3c0b6026d8af](https://app.threat.zone/submission/1170250a-40ac-4b73-84f7-3c0b6026d8af) | 1bec0d7bfea812ca7aa1f5399bb7ff3671006331 | 945678e901efcd35ece87a1a0eba82f39feb7d45ea4d38330a4795d1338872ca | Submission is finished | Not Measured | 1170250a-40ac-4b73-84f7-3c0b6026d8af |
+
+| FILE_NAME                                 | MD5                              | PRIVATE | SCAN_URL                                                                                                                                           | SHA1                                     | SHA256                                                           | STATUS                 | THREAT_LEVEL | UUID                                 |
+| ------------------------------------------- | ---------------------------------- | --------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------------------------------------------------ | ------------------------ | -------------- | -------------------------------------- |
+| fff2035c-def9-482c-9e1a-405c4d427833.docx | cf543c55343c6307349aafd098fb6958 | false | [https://app.threat.zone/submission/1170250a-40ac-4b73-84f7-3c0b6026d8af](https://app.threat.zone/submission/1170250a-40ac-4b73-84f7-3c0b6026d8af) | 1bec0d7bfea812ca7aa1f5399bb7ff3671006331 | 945678e901efcd35ece87a1a0eba82f39feb7d45ea4d38330a4795d1338872ca | Submission is finished | Not Measured | 1170250a-40ac-4b73-84f7-3c0b6026d8af |
