@@ -1023,6 +1023,7 @@ FETCH_RESULTS = [
             "reportedby": "Unit42",
         },
     },
+    {'value': 'ca5fb5814ec621f4b79d', 'type': 'File', 'score': 3, 'rawJSON': {'created': '2019-05-06T14:12:22.757Z', 'id': 'indicator--010c5a3e-823b-4267-8411-e38563fcBBBB', 'labels': ['malicious-activity'], 'modified': '2020-05-12T13:02:30.000000Z', 'name': 'Jrdhtjydhjf.exe', 'pattern': "[file:hashes.'SHA-256' = 'ca5fb5814ec621f4b79d']", 'type': 'indicator', 'valid_from': '2019-05-06T14:12:22.757Z'}, 'fields': {'firstseenbysource': '2019-05-06T14:12:22.757Z', 'indicatoridentification': 'indicator--010c5a3e-823b-4267-8411-e38563fcBBBB', 'tags': ['malicious-activity'], 'modified': '2020-05-12T13:02:30.000000Z', 'reportedby': 'Unit42', 'associatedfilenames': 'Jrdhtjydhjf.exe'}},
     {
         "value": "$$DummyIndicator$$",
         "relationships": [

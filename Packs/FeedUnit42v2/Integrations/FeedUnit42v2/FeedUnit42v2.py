@@ -128,9 +128,9 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
                         }
                     }
 
-                    if "file:hashes.'SHA-256' = '" in indicator_obj['value'] and \
-                            (ioc_value := extract_ioc_value(indicator_obj['value'])):
-                        indicator_obj['value'] = ioc_value
+                    if "file:hashes.'SHA-256' = '" in pattern:
+                        if ioc_value := extract_ioc_value(pattern):
+                            indicator_obj['value'] = ioc_value
 
                         if raw_name and raw_name != ioc_value:
                             indicator_obj['fields']['associatedfilenames'] = indicator_object['name']
