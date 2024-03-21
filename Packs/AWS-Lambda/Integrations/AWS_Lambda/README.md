@@ -943,7 +943,7 @@ Creates a Lambda function. To create a function, you need a deployment package a
 | AWS.Lambda.Functions.LastModified | string | The date and time that the function was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
 
 #### Command example
-```!aws-lambda-get-function-configuration functionName=test runtime=nodejs role=test-role handler=test.handler vpcConfig="{\"SubnetIds\": [\"subnet-1\",\"subnet-2\"], \"SecurityGroupIds\":[\"sg-1\"]}" ```
+```!aws-lambda-create-function code=entry_id functionName=test runtime=nodejs role=test-role handler=test.handler vpcConfig="{\"SubnetIds\": [\"subnet-1\",\"subnet-2\"], \"SecurityGroupIds\":[\"sg-1\"]}" ```
 
 #### Context Example
 ```json
@@ -1017,6 +1017,10 @@ Creates an Lambda layer from a ZIP archive.
 | AWS.Lambda.Layers.Version | number | The version number. | 
 | AWS.Lambda.Layers.CompatibleRuntimes | list | The layer’s compatible runtimes. | 
 
+#### Command example
+```!aws-lambda-publish-layer-version layer-name=test zip-file=entry_id description=test-layer-3
+ ```
+
 #### Context Example
 ```json
 {
@@ -1073,6 +1077,9 @@ Lists the versions of an Lambda layer.
 | AWS.Lambda.Layers.LayerVersions.LicenseInfo | string | The layer’s open-source license. | 
 | AWS.Lambda.Layers.LayerVersions.CompatibleArchitectures | list | A list of compatible instruction set architectures. | 
 
+#### Command example
+```!aws-lambda-list-layer-version layer-name=test```
+
 #### Context Example
 ```json
 {
@@ -1116,6 +1123,9 @@ Deletes a version of an Lambda layer.
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+#### Command example
+```!aws-lambda-delete-layer-version version-number=4 layer-name=test_layer```
 
 #### Context Output
 

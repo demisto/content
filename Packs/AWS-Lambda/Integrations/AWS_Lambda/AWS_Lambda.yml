@@ -1008,7 +1008,7 @@ script:
       predefined:
       - ""
     - name: code
-      description: The base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you.
+      description: Entry ID of the uploaded base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you.
       required: false
       isArray: false
       defaultValue: ""
