@@ -21,6 +21,7 @@ def test_create_issue_command(mocker, redmine_client):
     """
     from Redmine import create_issue_command
     http_request = mocker.patch.object(redmine_client, '_http_request')
+    http_request.return_value = {"issue":{"id": "1"}}
     args = {'project_id': '1', 'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': 'Bug', 'watcher_user_ids': '[1]'}
     create_issue_command(redmine_client, args=args)
     http_request.assert_called_with('POST', '/issues.json', params={},
@@ -105,6 +106,7 @@ def test_create_issue_command_with_file(mocker, redmine_client):
     """
     from Redmine import create_issue_command
     http_request = mocker.patch.object(redmine_client, '_http_request')
+    http_request.return_value = {"issue": {"id": "1"}}
     create_file_token_request_mock = mocker.patch.object(redmine_client, 'create_file_token_request')
     create_file_token_request_mock.return_value = {'upload': {'token': 'token123'}}
     args = {'project_id': '1', 'file_entry_id': 'a.png', 'issue_id': '1', 'subject': 'testSub', 'tracker_id': 'Bug',
@@ -400,6 +402,7 @@ def test_get_issue_by_id_command(mocker, redmine_client):
     """
     from Redmine import get_issue_by_id_command
     http_request = mocker.patch.object(redmine_client, '_http_request')
+    http_request.return_value = {"issue" : {"id": "1"}}
     args = {'issue_id': '1', 'include': 'watchers,attachments'}
     get_issue_by_id_command(redmine_client, args)
     http_request.assert_called_with('GET', '/issues/1.json',
@@ -650,6 +653,7 @@ def test_get_project_list_command(mocker, redmine_client):
     """
     from Redmine import get_project_list_command
     http_request = mocker.patch.object(redmine_client, '_http_request')
+    http_request.return_value = {"projects": [{"id": "1", "status": "active", "is_public": "true"}]}
     args = {'include': 'time_entry_activities'}
     get_project_list_command(redmine_client, args)
     http_request.assert_called_with('GET', '/projects.json', params={'include': 'time_entry_activities'},
@@ -724,6 +728,7 @@ def test_get_custom_fields_command(mocker, redmine_client):
     """
     from Redmine import get_custom_fields_command
     http_request = mocker.patch.object(redmine_client, '_http_request')
+    http_request.return_value= {"custom_fields": [{"id": "1", "is_required": True, "is_filter": False}]}
     get_custom_fields_command(redmine_client, {})
     http_request.assert_called_with('GET', '/custom_fields.json', headers={'X-Redmine-API-Key': True})
 
@@ -886,3 +891,19 @@ def test_convert_args_to_request_format():
     args = {'tracker_id': 'Bug'}
     convert_args_to_request_format(args)
     assert args['tracker_id'] == '1'
+
+def test_convert_args_to_request_format_invalid():
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - convert_args_to_request_format command is executed
+    Then:
+        - raises prriority_id is invalid
+    """
+    from CommonServerPython import DemistoException
+    from Redmine import convert_args_to_request_format
+    args = {'priority_id': 'lknljkl'}
+    with pytest.raises(DemistoException) as e:
+        convert_args_to_request_format(args)
+    assert e.value.message == "Predefined value for priority_id is not in format."

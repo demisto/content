@@ -140,7 +140,7 @@ class Client(BaseClient):
 
 def check_include_validity(included_args, include_options):
     """Checks if all include string is valid- all arguments are from predefined options
-
+    
     Args:
         include_arg (str): The string argument.
         include_options (str): The include options for the request.
@@ -172,21 +172,26 @@ def adjust_paging_to_request(page_number, page_size, limit):
 
 
 def convert_args_to_request_format(args: Dict[str, Any]):
-    try:
-        if tracker_id := args.pop('tracker_id', None):
-            args['tracker_id'] = ISSUE_TRACKER_DICT[tracker_id]
-        if status_id := args.pop('status_id', None):
-            args['status_id'] = ISSUE_STATUS_DICT[status_id]
-        if priority_id := args.pop('priority_id', None):
-            args['priority_id'] = ISSUE_PRIORITY_DICT[priority_id]
-    except DemistoException as e:
-        raise DemistoException(f"Predefined value is not in format for {e.message}.")
+    if tracker_id := args.pop('tracker_id', None):
+        if tracker_id not in ISSUE_TRACKER_DICT:
+            raise DemistoException("Predefined value for tracker_id is not in format.")
+        args['tracker_id'] = ISSUE_TRACKER_DICT[tracker_id]
+    if status_id := args.pop('status_id', None):
+        if status_id not in ISSUE_STATUS_DICT:
+            raise DemistoException("Predefined value for status_id is not in format.")
+        args['status_id'] = ISSUE_STATUS_DICT[status_id]
+    if priority_id := args.pop('priority_id', None):
+        if priority_id not in ISSUE_PRIORITY_DICT:
+            raise DemistoException("Predefined value for priority_id is not in format.")
+        args['priority_id'] = ISSUE_PRIORITY_DICT[priority_id]
     if custom_fields := args.pop('custom_fields', None):
         custom_fields = argToList(custom_fields)
         try:
             args['custom_fields'] = [{'id': field.split(':')[0], 'value': field.split(':')[1]} for field in custom_fields]
-        except Exception:
-            raise DemistoException("Custom fields not in format, please follow the instructions")
+        except Exception as e:
+            if 'list index out of range' in e.args[0]:
+                raise DemistoException("Custom fields not in format, please follow the instructions")
+            raise
 
 
 def get_file_content(entry_id: str) -> bytes:
@@ -271,14 +276,13 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
             raise DemistoException(INVALID_ID_DEMISTO_ERROR)
         raise
-    try:
-        issue_response = response['issue']
-    except Exception:
+    if 'issue' not in response:
         raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
+    issue_response = response['issue']
     headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'estimated_hours', 'created_on',
                'subject', 'description', 'start_date', 'estimated_hours', 'custom_fields']
+    #Issue id is a number and tableToMarkdown can't transform it if is_auto_json_transform is True
     issue_response['id'] = str(issue_response['id'])
-
     command_results = CommandResults(
         outputs_prefix='Redmine.Issue',
         outputs_key_field='id',
@@ -365,7 +369,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
         raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
     page_header = create_paging_header(len(issues_response), page_number_for_header)
 
-    '''Issue id is a number and tableToMarkdown can't transform it if is_auto_json_transform is True'''
+    #Issue id is a number and tableToMarkdown can't transform it if is_auto_json_transform is True
     for issue in issues_response:
         issue['id'] = str(issue['id'])
 
@@ -412,17 +416,16 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
                 raise DemistoException(f"{e.message} It can be due to Invalid ID for one or more fields that request IDs, "
                                        "Please make sure all IDs are correct")
             raise
-        try:
-            response_issue = response['issue']
-        except Exception:
+        if "issue" not in response:
             raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
-
+        response_issue = response['issue']
         headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'subject', 'description', 'start_date',
                    'due_date', 'done_ratio', 'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'closed_on',
                    'attachments', 'watchers', 'children', 'relations', 'changesets', 'journals', 'allowed_statuses']
 
-        '''Issue id is a number and tableToMarkdown can't transform it if is_auto_json_transform is True'''
-        response_issue['id'] = str(response_issue['id'])
+        #Issue id is a number and tableToMarkdown can't transform it if is_auto_json_transform is True
+        if 'id' in response_issue:
+            response_issue['id'] = str(response_issue['id'])
         command_results = CommandResults(outputs_prefix='Redmine.Issue',
                                          outputs_key_field='id',
                                          outputs=response_issue,
@@ -453,8 +456,7 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
         if 'Error in API call [422]' in e.args[0] or 'Error in API call [404]' in e.args[0]:
             raise DemistoException("Invalid ID for one or more fields that request IDs "
                                    "Please make sure all IDs are correct")
-        else:
-            raise DemistoException(e.args[0])
+        raise
 
 
 def delete_issue_by_id_command(client: Client, args: dict[str, Any]):
@@ -511,15 +513,14 @@ def get_project_list_command(client: Client, args: dict[str, Any]):
                                ['trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities', 'issue_custom_fields']
                                )
     response = client.get_project_list_request(args)
-    try:
-        projects_response = response['projects']
-    except Exception:
+    if 'projects' not in response:
         raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
+    projects_response = response['projects']
 
     headers = ['id', 'name', 'identifier', 'description', 'status', 'is_public', 'time_entry_activities', 'created_on',
                'updated_on', 'default_value', 'visible', 'roles', 'issue_custom_fields', 'enabled_modules',
                'issue_categories', 'trackers']
-    # Some project fields are numbers and tableToMarkdown can't transform it
+    # Some project fields are numbers and tableToMarkdown can't transform it if is_auto_json_transform is true
     for project in projects_response:
         project['id'] = str(project['id'])
         project['status'] = str(project['status'])
@@ -540,10 +541,9 @@ def get_project_list_command(client: Client, args: dict[str, Any]):
 
 def get_custom_fields_command(client: Client, args):
     response = client.get_custom_fields_request()
-    try:
-        custom_fields_response = response['custom_fields']
-    except Exception:
+    if 'custom_fields' not in response:
         raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
+    custom_fields_response = response['custom_fields']
     headers = ['id', 'name', 'customized_type', 'field_format', 'regexp', 'max_length', 'is_required', 'is_filter',
                'searchable', 'trackers', 'issue_categories', 'enabled_modules', 'time_entry_activities',
                'issue_custom_fields']
