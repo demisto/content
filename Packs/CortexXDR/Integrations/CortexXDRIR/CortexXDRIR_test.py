@@ -1252,7 +1252,7 @@ def test_get_incident_extra_data_incident_not_exist(mocker):
     When
         - Running get_incident_extra_data_command
     Then
-        - Verify that if the incident id is not found, it returns an error
+        - Verify that if the incident id is not found, it returns an error.
     """
     from CortexXDRIR import get_incident_extra_data_command, Client
 
@@ -1266,6 +1266,6 @@ def test_get_incident_extra_data_incident_not_exist(mocker):
     }
     with pytest.raises(DemistoException) as e:
             _, outputs, raw_incident = get_incident_extra_data_command(client, args)
-    assert str(e.value) == 'incident 1 is not found'
+    assert str(e.value) == 'Incident 1 is not found'
     
 
