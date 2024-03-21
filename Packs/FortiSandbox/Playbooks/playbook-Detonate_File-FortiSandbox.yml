@@ -2,7 +2,7 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: Main playbook to upload submissions to FortiSandbox, poll for verdict. Deprecated. Use FortiSandboxv2 commands instead.
+description: Main playbook to upload submissions to FortiSandbox, poll for verdict. Deprecated. Use FortiSandboxv2 `fortisandbox-submission-file-upload` command instead.
   and retrieve report
 id: Detonate File - FortiSandbox
 deprecated: true
