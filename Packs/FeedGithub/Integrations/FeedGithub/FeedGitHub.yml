@@ -1,0 +1,156 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Github Feed
+  version: -1
+configuration:
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- defaultvalue: https://api.github.com
+  display: Server URL
+  name: url
+  type: 0
+  additionalinfo: The REST API URL
+  section: Connect
+  required: false
+- defaultvalue: ""
+  display: Owner
+  name: owner
+  type: 0
+  additionalinfo: Username of the repository owner
+  section: Connect
+  required: true
+- defaultvalue: ""
+  display: Repository / Path to fetch
+  name: repo
+  type: 0
+  additionalinfo: The repository name
+  section: Connect
+  required: true
+- defaultvalue: ""
+  display: Feed type
+  name: feedType
+  options:
+  - YARA
+  - STIX
+  - AUTO
+  type: 15
+  additionalinfo: Predefined list of indicator types
+  section: Connect
+  required: true
+- displaypassword: API Token
+  name: api_token
+  type: 9
+  hiddenusername: true
+  section: Connect
+  required: false
+- display: Credentials
+  name: credentials
+  type: 9
+  section: Connect
+  required: false
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  defaultvalue: Bad
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- defaultvalue: '30'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  defaultvalue: 'true'
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: ''
+  name: feedExpirationPolicy
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ''
+  name: feedExpirationInterval
+  type: 1
+  required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+display: Github Feed
+name: Github Feed
+script:
+  commands:
+  - arguments:
+    - defaultValue: '7 days'
+      description: ''
+      name: since
+    - description: ''
+      name: until
+    - defaultValue: '50'
+      description: The maximum number of results to return.
+      name: limit
+    description: Gets indicators from the feed.
+    name: github-get-indicators
+  dockerimage: demisto/python3:3.9.8.24399
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.8.0
+description: This is the Feed Hello World integration for getting started with your feed integration.
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
+
