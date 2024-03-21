@@ -1,5 +1,5 @@
 {
-    "name": "Best Practice Assessment (BPA) by Palo Alto Networks",
+    "name": "Best Practice Assessment (BPA) by Palo Alto Networks (Deprecated)",
     "description": "Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.",
     "support": "xsoar",
     "currentVersion": "1.2.22",
