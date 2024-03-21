@@ -662,7 +662,7 @@ def publish_layer_version_command(args: dict[str, str], aws_client) -> CommandRe
 
 def delete_layer_version_command(args: dict[str, str], aws_client) -> CommandResults:
     """
-    Deletes a version of an Lambda layer.
+    Deletes a version of a Lambda layer.
 
     Args:
         args (dict): A dictionary containing the command arguments.
