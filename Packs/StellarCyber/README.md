@@ -6,5 +6,4 @@ The Integration in this pack provides the following functionality:
 
 - Fetch and mirror Cases (including alerts) as Incidents from the Stellar Cyber Platform.
 - Retrieve an Alert from Stellar Cyber.
-- Update Stellar Cyber Case severity, status, assignee, and add/remove tags.
-- Close Stellar Cyber case with close reason.
+- Update Stellar Cyber Case severity, status (including setting Case as resolved), assignee, or add/remove tags.

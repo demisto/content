@@ -1,5 +1,5 @@
 Fetches and mirrors in Cases from Stellar Cyber to XSOAR. In addition, provides a command to update Case severity/status/assignee/tags, and a command to query an Alert.
-This integration was integrated and tested with version xx of StellarCyber.
+This integration was integrated and tested with version 5.1.x/4.3.7 of StellarCyber.
 
 ## Configure Stellar Cyber on Cortex XSOAR
 
@@ -23,6 +23,23 @@ This integration was integrated and tested with version xx of StellarCyber.
     | Maximum number of incidents per fetch | The maximum number of incidents to fetch per fetch. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and Stellar Cyber corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Any changes in Stellar Cyber events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+
+
+Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Stellar Cyber.
+
 
 ## Commands
 
@@ -119,18 +136,3 @@ Update the severity, status, assignee, or tags of a Case in Stellar Cyber.
 | StellarCyber.Case.Update.incident_score | Number | Case Score | 
 | StellarCyber.Case.Update.assignee_name | String | Case Assignee Name | 
 
-## Incident Mirroring
-
-You can enable incident mirroring between Cortex XSOAR incidents and Stellar Cyber corresponding events (available from Cortex XSOAR version 6.0.0).
-To set up the mirroring:
-1. Enable *Fetching incidents* in your instance configuration.
-2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
-
-    | **Option** | **Description** |
-    | --- | --- |
-    | None | Turns off incident mirroring. |
-    | Incoming | Any changes in Stellar Cyber events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
-
-
-Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
-**Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Stellar Cyber.
