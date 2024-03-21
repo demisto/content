@@ -98,8 +98,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -920,
-          "y": 3025
+          "x": -590,
+          "y": 3200
         }
       }
     note: false
@@ -720,8 +720,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -920,
-          "y": 3390
+          "x": -590,
+          "y": 3370
         }
       }
     note: false
@@ -3576,7 +3576,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: "Should be reviewed by analyst?"
     nexttasks:
       '#default#':
       - "226"
@@ -3600,7 +3600,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3030
+          "y": 3010
         }
       }
     note: false
