@@ -29,7 +29,9 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
     'intrusion-set': ThreatIntel.ObjectsNames.INTRUSION_SET
 }
 
+''' CONSTANTS '''
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
+DEFAULT_INDICATOR_SCORE = 3  # default verdict of fetched indicators is malicious
 
 
 from TAXII2ApiModule import *  # noqa: E402
