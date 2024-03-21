@@ -553,7 +553,7 @@ tasks:
       url:
         complex:
           root: incident
-          accessor: suspiciousdomainhuntinguserasset
+          accessor: certstreamuserasset
           transformers:
           - operator: uniq
           - operator: concat
@@ -920,7 +920,7 @@ tasks:
       url:
         complex:
           root: incident
-          accessor: suspiciousdomainhuntinguserasset
+          accessor: certstreamuserasset
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1130,7 +1130,7 @@ tasks:
       indicatorsValues:
         complex:
           root: incident
-          accessor: suspiciousdomainhuntingfingerprint
+          accessor: certstreamfingerprint
     separatecontext: false
     continueonerrortype: ""
     view: |-
