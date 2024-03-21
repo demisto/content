@@ -758,9 +758,12 @@ class XSOAR2STIXParser:
             A string
         """
         string_to_return = ""
-        for dict_values in list_dict_values:
-            for key, value in dict_values.items():
-                string_to_return += f"{key}={value}, "
+        if list_dict_values:
+            for dict_values in list_dict_values:
+                title = dict_values.get("title")
+                data = dict_values.get("data")
+                if data is not None:
+                    string_to_return += f"{title}={data}, "
             string_to_return = string_to_return.rstrip(", ")
             return string_to_return
         return ''
@@ -1591,15 +1594,18 @@ class STIX2XSOARParser(BaseClient):
 
         return [cve]
     
-    def create_x509_certificate_grids(self, string_object: Optional[str]) -> dict:
+    def create_x509_certificate_grids(self, string_object: Optional[str]) -> list:
         if string_object:
             key_value_pairs = string_object.split(', ')
-            result_grid = {}
+            result_grid_list = []
             for pair in key_value_pairs:
+                result_grid = {}
                 key, value = pair.split('=',1)
-                result_grid[key] = value
-            return result_grid
-        return {}
+                result_grid['title'] = key
+                result_grid['data'] = value
+                result_grid_list.append(result_grid)
+            return result_grid_list
+        return []
     
     def parse_x509_certificate(self, x509_certificate_obj: dict[str, Any]):
         """
