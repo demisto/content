@@ -4,23 +4,28 @@ args:
   required: true
 - description: The entry ID of the RSA private key.
   name: rsa_decrypt_key_entry_id
-- description: The WPA password. By providing the password you will be able to decrypt. Can be password or ssid:password.
+- description: The WPA password. By providing the password you will be able to decrypt.
+    Can be password or ssid:password.
   name: wpa_password
 - defaultValue: '5'
   description: Maximum number of files to extract. Default is 5.
   name: limit
-- description: 'A comma-separated list of file extensions to include/exclude for example, image/gif.'
+- description: A comma-separated list of file extensions to include/exclude for example,
+    image/gif.
   name: types
 - auto: PREDEFINED
   defaultValue: inclusive
-  description: Is the type/extensions list inclusive or exclusive. Can be "inclusive" or "exclusive". Default is "inclusive".
+  description: Is the type/extensions list inclusive or exclusive. Can be "inclusive"
+    or "exclusive". Default is "inclusive".
   name: inclusive_or_exclusive
   predefined:
   - inclusive
   - exclusive
-- description: 'A comma-separated list of MIME file types to include/exclude, for example, image/png. Can not combine with the extensions argument.'
+- description: A comma-separated list of MIME file types to include/exclude, for example,
+    image/png. Can not combine with the extensions argument.
   name: types
-- description: 'A comma-separated list of file extensions to include/exclude, for example, image/png. Can not combine with the types argument.'
+- description: A comma-separated list of file extensions to include/exclude, for example,
+    image/png. Can not combine with the types argument.
   name: extensions
 comment: This automation extracts all possible files from a PCAP file.
 commonfields:
@@ -87,7 +92,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/pcap-miner:1.0.0.9769
+dockerimage: demisto/pcap-miner:1.0.0.90008
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
