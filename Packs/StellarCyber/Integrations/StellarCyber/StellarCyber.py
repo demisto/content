@@ -1,23 +1,9 @@
 """Stellar Cyber Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
 """
 import demistomock as demisto
 from CommonServerUserPython import *
 from CommonServerPython import *
 
-# from typing import Any, Dict
 import dateparser
 import requests
 import json
@@ -32,19 +18,9 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-# _STELLAR_DP_ = None
-# _INCIDENT_API_PORT_ = None
-# _ALERT_API_USER_ = ""
-# _ALERT_API_TOKEN_ = ""
-# _MINUTES_AGO_ = None
-# # _INCIDENTS_OR_CASES_ = ""
-# VALIDATE_CERT = False
-# _OAUTH_: dict = {}
-# _TENANTID_ = None
-
+# Constants
 
 """ CLIENT CLASS """
-
 
 class AccessToken:
     def __init__(self, token: str, expiration: int):
@@ -197,18 +173,6 @@ class Client(BaseClient):
         response = self._http_request(method="POST", full_url=incident_url, headers=headers, json_data=update_data)
         return response["data"]
 
-    def close_case(self, case_id, close_reason):
-        incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?id={case_id}"
-        headers = {"Accept": "application/json", "Content-type": "application/json"}
-        headers["Authorization"] = self._get_auth_header()
-
-        update_data = {
-            "status": "Resolved",
-            "resolution": f"{close_reason}",
-        }
-        response = self._http_request(method="POST", full_url=incident_url, headers=headers, json_data=update_data)
-        return response["data"]
-
 
 """ HELPER FUNCTIONS """
 
@@ -272,6 +236,7 @@ def fetch_incidents(client: Client, params: dict) -> list[dict]:
     first_fetch_time = params.get("first_fetch", "3 days").strip()
     last_fetch = last_run.get("last_fetch", None)
     fetch_limit = params.get("max_fetch", 200)
+    mirror_direction = params.get("mirror_direction", "None")
     # new_last_fetch = int(datetime.utcnow().timestamp() * 1000)
     if not last_fetch:
         first_fetch = dateparser.parse(first_fetch_time, settings={'TIMEZONE': 'UTC'})
@@ -295,6 +260,7 @@ def fetch_incidents(client: Client, params: dict) -> list[dict]:
             incident_name = incident['metadata']['name_auto'][0]
         else:
             incident_name = incident['name']
+        incident["name"] = incident_name
         incident_ts = incident["created_at"]
         if last_fetch < incident_ts:
             last_fetch = incident_ts
@@ -302,15 +268,17 @@ def fetch_incidents(client: Client, params: dict) -> list[dict]:
         incident_summary = client.get_incident_summary(incident_id)
         incident["summary"] = incident_summary
         event_ids = incident.get("event_ids", None)
-        security_event_cnt = len(event_ids)
         incident["security_alerts"] = []
         for event in event_ids:
             incident["security_alerts"].append(client.get_alert(alert_id=event["_id"], alert_index=event["_index"]))
         case_severity = get_xsoar_severity(incident["priority"])
         case_mirror_id = f"{str(incident['ticket_id'])}:{incident['cust_id']}"
+        case_mirror_direction = None
+        if mirror_direction == "Incoming":
+            case_mirror_direction = "In"
         incident["severity"] = case_severity
         incident["mirror_id"] = case_mirror_id
-        incident["mirror_direction"] = "In"
+        incident["mirror_direction"] = case_mirror_direction
         incident["mirror_instance"] = demisto.integrationInstance()
         if case_mirror_id not in last_incident_ids:
             demisto_incident = {
@@ -376,19 +344,6 @@ def test_module_command(client: Client) -> str:
             return "failed"
     except Exception as e:
         return f"Test failed with the following error: {repr(e)}"
-
-
-def close_case_command(client: Client, args: dict) -> CommandResults:
-    case_id = args.get("stellar_case_id")
-    close_reason = args.get("stellar_close_reason", "")
-    demisto.info(f"Closing stellar case with id: [{case_id}]")
-    response = client.close_case(case_id, close_reason)
-
-    return CommandResults(
-        outputs_prefix="StellarCyber.Case.Close",
-        outputs_key_field="_id",
-        outputs=response
-    )
 
 def update_case_command(client: Client, args: dict) -> CommandResults:
     case_id = args.get("stellar_case_id", None)
@@ -490,7 +445,7 @@ def get_modified_remote_data_command(client: Client, args) -> GetModifiedRemoteD
 """ MAIN FUNCTION """
 
 
-def main() -> None:  # pragma: no cover
+def main() -> None:
     """
     main function, parses params and runs command functions
     """
@@ -498,7 +453,6 @@ def main() -> None:  # pragma: no cover
         _STELLAR_DP_ = demisto.params().get("stellar_dp", "")
         _ALERT_API_USER_ = demisto.getParam("credentials")["identifier"]  # type: ignore
         _ALERT_API_TOKEN_ = demisto.getParam("credentials")["password"]  # type: ignore
-        # FIRST_FETCH = demisto.params().get("first_fetch", "3 days").strip()
         _VALIDATE_CERT_ = not demisto.params().get("insecure", True)
         _PROXY_ = demisto.params().get("proxy", False)
         _TENANTID_ = demisto.params().get("tenantid", None)
@@ -526,8 +480,6 @@ def main() -> None:  # pragma: no cover
             return_results(get_alert_command(client, demisto.args()))
         # elif demisto.command() == 'stellar-simple-query':
         #     return_results(simple_query_command(client, demisto.args()['stellar_index'], demisto.args()['stellar_field'], demisto.args()['stellar_value']))
-        elif demisto.command() == "stellar-close-case":
-            return_results(close_case_command(client, demisto.args()))
         elif demisto.command() == "stellar-update-case":
             return_results(update_case_command(client, demisto.args()))
         elif demisto.command() == "get-modified-remote-data":

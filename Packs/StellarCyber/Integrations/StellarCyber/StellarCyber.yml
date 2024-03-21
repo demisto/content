@@ -12,6 +12,16 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
+- display: Mirroring Direction
+  name: mirror_direction
+  type: 15
+  section: Collect
+  required: false
+  additionalinfo: 'If set to Incoming, will mirror Cases from Stellar Cyber to XSOAR. If set to None, will not mirror Cases from Stellar Cyber to XSOAR. Default is None.'
+  defaultvalue: None
+  options:
+  - None
+  - Incoming
 - name: stellar_dp
   display: Stellar Cyber Host (e.g. example.stellarcyber.cloud)
   required: true
@@ -65,26 +75,11 @@ configuration:
   type: 0
   section: Collect
   additionalinfo: "The maximum number of incidents to fetch per fetch."
-description: Fetches and mirrors in Cases from Stellar Cyber to XSOAR. Also provides commands to get an Alert, update a Case, or close a Case.
+description: Fetches and mirrors in Cases from Stellar Cyber to XSOAR. In addition, provides a command to update Case severity/status/assignee/tags, and a command to query an Alert.
 display: Stellar Cyber
 name: StellarCyber
 script:
   commands:
-  - arguments:
-    - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
-      name: lastUpdate
-      required: true
-    description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes.
-    name: get-modified-remote-data
-  - arguments:
-    - description: The remote incident ID.
-      name: id
-      required: true
-    - defaultValue: '0'
-      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
-      name: lastUpdate
-    description: Gets data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
-    name: get-remote-data
   - name: stellar-get-alert
     arguments:
     - name: alert_id
@@ -178,64 +173,6 @@ script:
       type: String
     - contextPath: StellarCyber.Alert.xdr_technique_name
       description: 'XDR Technique Name of the Stellar Cyber Alert.'
-      type: String
-  - name: stellar-close-case
-    arguments:
-    - name: stellar_case_id
-      required: true
-      description: The ID of the Stellar Cyber Case to close.
-    - name: stellar_close_reason
-      required: true
-      description: The reason for closing the incident.
-    description: Close an incident in Stellar Cyber.
-    outputs:
-    - contextPath: StellarCyber.Case.Close._id
-      description: 'Case ID'
-      type: String
-    - contextPath: StellarCyber.Case.Close.assignee
-      description: 'Case Assignee'
-      type: String
-    - contextPath: StellarCyber.Case.Close.created_at
-      description: 'Case Created Timestamp'
-      type: Date
-    - contextPath: StellarCyber.Case.Close.created_by
-      description: 'Case Created By'
-      type: String
-    - contextPath: StellarCyber.Case.Close.cust_id
-      description: 'Case Tenant ID'
-      type: String
-    - contextPath: StellarCyber.Case.Close.modified_at
-      description: 'Case Modified Timestamp'
-      type: Date
-    - contextPath: StellarCyber.Case.Close.modified_by
-      description: 'Case Modified By'
-      type: String
-    - contextPath: StellarCyber.Case.Close.name
-      description: 'Case Name'
-      type: String
-    - contextPath: StellarCyber.Case.Close.size
-      description: 'Case Size (Number of Alerts)'
-      type: Number
-    - contextPath: StellarCyber.Case.Close.status
-      description: 'Case Status'
-      type: String
-    - contextPath: StellarCyber.Case.Close.tags
-      description: 'Case Tags'
-      type: Unknown
-    - contextPath: StellarCyber.Case.Close.ticket_id
-      description: 'Case Ticket ID'
-      type: Number
-    - contextPath: StellarCyber.Case.Close.version
-      description: 'Case Version'
-      type: Number
-    - contextPath: StellarCyber.Case.Close.priority
-      description: 'Case Priority'
-      type: String
-    - contextPath: StellarCyber.Case.Close.incident_score
-      description: 'Case Score'
-      type: Number
-    - contextPath: StellarCyber.Case.Close.assignee_name
-      description: 'Case Assignee Name'
       type: String
   - name: stellar-update-case
     arguments:
