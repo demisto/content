@@ -15,9 +15,6 @@
             "valid_from": "2018-04-23T17:01:01.248Z",
             "value": "windows-updates.com"
         },
-<<<<<<< HEAD
-        "fields": {"stixid": "indicator--545928d9-bfe8-4320-bb98-751f38139892", "firstseenbysource": "2018-04-23T17:01:01.248Z", "modified": "2018-04-23T17:01:01.248Z", "description": "", "trafficlightprotocol": null, "tags": ["malicious-activity"], "publications": []}
-=======
         "fields": {
             "stixid": "indicator--545928d9-bfe8-4320-bb98-751f38139892",
             "firstseenbysource": "2018-04-23T17:01:01.248Z",
@@ -29,7 +26,6 @@
             ],
             "publications": []
         }
->>>>>>> master
     },
     {
         "value": "T1432: Access Contact List (Mobile)",
