@@ -785,7 +785,7 @@ def build_verdict_command_results(jid: str, raw_response: dict[str, Any]) -> Com
     outputs = dict_safe_get(raw_response, ["result", "data"])
 
     if not outputs:
-        return CommandResults(readable_output=f"## The job {jid} is still in queue/progress.")
+        return CommandResults(readable_output=f"## The job {jid} is still in progress.")
 
     download_url = outputs.get("download_url", "")
     outputs["name"] = base64.b64decode(download_url).decode()
