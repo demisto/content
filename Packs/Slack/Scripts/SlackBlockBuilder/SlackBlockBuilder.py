@@ -156,6 +156,13 @@ class BlockCarrier:
 
         Slack provides a tool located at https://app.slack.com/block-kit-builder. When you are done, you can copy and
         paste the URL into the blocks_url argument for this automation. The URL is then decoded to provide the blocks.
+
+        Regex is used to extract the URL-encoded blocks from the provided URL. The URL is expected to have a format
+        where the blocks are appended after the first '#' symbol.
+
+        Raises:
+            DemistoException: If no blocks are found in the URL or if there is an error while parsing the blocks.
+
         """
         try:
             if match_url_encoded_blocks := re.search(r"#(.+)", self.url):
