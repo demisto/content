@@ -5,14 +5,15 @@ This integration was integrated and tested with January 2023 release of Tenable.
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Tenable Vulnerability Management.
-3. Click **Add instance** to create and configure a new integration instance.
+ Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | URL | Tenable URL. | True |
     | Access Key | Tenable API access key. | True |
     | Secret Key | Tenable API secret key. | True |
-    | Assets Fetch Interval | Fetch interval in minutes for assets and vulnerabilities. | True |
+    | Events Fetch Interval | Fetch interval in minutes for events. | False |
+    | Assets Fetch Interval | Fetch interval in minutes for assets and vulnerabilities. | False |
     | Severity | The severity of the vulnerabilities to include in the export. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Max Fetch | The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section. | False |
@@ -1603,7 +1604,6 @@ Scans that are actively running cannot be exported (run "tenable-io-list-scans" 
 
 >Returned file: scan_16_SSE-144f3dc6-cb2d-42fc-b6cc-dd20b807735f-html.html [Download](https://www.paloaltonetworks.com/cortex)
 
-<~XSIAM>
 ### tenable-io-get-audit-logs
 ***
 Returns audit logs extracted from Tenable io.
@@ -1638,4 +1638,3 @@ There is no context output for this command.
 >|Action| Actor    | Crud | Description | Fields                                                                                                                                                  | Id  |Is Anonymous|Is Failure|Received| Target                                              |
 >|----------|------|-------------|---------------------------------------------------------------------------------------------------------------------------------------------------------|-----|---|---|---|-----------------------------------------------------|---|
 >| user.create | id: test | c    |             | {'key': 'X-Access-Type', 'value': 'apikey'},<br>{'key': 'X-Forwarded-For', 'value': '1.2.3.4'},<br>{'key': 'X-Request-Uuid', 'value': '12:12:12:12:12'} | 12  | true | false | 2022-05-18T16:33:02Z | id: 12-1-1-1-1<br>name: test@test.com<br>type: User |
-</~XSIAM>
