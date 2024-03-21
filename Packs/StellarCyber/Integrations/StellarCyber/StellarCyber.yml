@@ -6,16 +6,12 @@ commonfields:
   id: StellarCyber
   version: -1
 configuration:
-- name: isFetch
-  display: Fetch incidents
-  required: false
+- display: Fetch incidents
+  name: isFetch
   type: 8
-  additionalinfo: "Enable fetching cases from Stellar Cyber as XSOAR incidents."
-- name: incidentType
-  display: Incident type
-  required: false
+- display: Incident type
+  name: incidentType
   type: 13
-  additionalinfo: "If not using a mapper, incident type to be assigned."
 - name: stellar_dp
   display: Stellar Cyber Host (e.g. example.stellarcyber.cloud)
   required: true
@@ -233,7 +229,7 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.10.14.90585
   feed: false
   isfetch: true
   ismappable: false

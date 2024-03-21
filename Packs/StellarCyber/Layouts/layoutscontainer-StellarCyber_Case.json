@@ -377,5 +377,6 @@
     "name": "Stellar Cyber Case",
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": ""
+    "description": "Basic incident layout for Stellar Cyber Case with a table of Case Alerts.",
+    "marketplaces": ["xsoar"]
 }

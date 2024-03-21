@@ -22,5 +22,6 @@
         "Stellar Cyber Case"
     ],
     "fromVersion": "6.0.0",
-    "required": false
+    "required": false,
+    "group": 0
 }
