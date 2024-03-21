@@ -6,8 +6,7 @@ authors = ["Cortex XSOAR"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.9,<3.11"
-defusedxml = "^0.7.1"
+python = ">=3.10,<3.11"
 
 [tool.poetry.group.dev.dependencies]
 demisto-sdk = { git = "https://github.com/demisto/demisto-sdk.git", rev = "support-python-311" }
@@ -15,6 +14,7 @@ requests = "^2.31.0"
 pre-commit = "^3.5.0"
 google-cloud-compute = "^1.8.0"
 dateparser = "^1.1.8"
+defusedxml = "^0.7.1"
 
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
