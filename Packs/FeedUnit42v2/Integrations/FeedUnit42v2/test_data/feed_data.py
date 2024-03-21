@@ -39,6 +39,11 @@ INDICATORS_DATA = [
      "labels": ["malicious-activity"], "modified": "2020-05-12T13:02:30.000000Z",
      "name": "cmstp.exe /s /ns C:\\Users\\ADMINI~W\\AppData\\Local\\Temp\\XKNqbpzl.txt",
      "pattern": "[process:command_line = 'cmstp.exe",
+     "type": "indicator", "valid_from": "2019-05-06T14:12:22.757Z"},
+    {"created": "2019-05-06T14:12:22.757Z", "id": "indicator--010c5a3e-823b-4267-8411-e38563fcBBBB",
+     "labels": ["malicious-activity"], "modified": "2020-05-12T13:02:30.000000Z",
+     "name": "Jrdhtjydhjf.exe",
+     "pattern": "[file:hashes.\'SHA-256\' = \'ca5fb5814ec621f4b79d\']",
      "type": "indicator", "valid_from": "2019-05-06T14:12:22.757Z"}
 ]
 
