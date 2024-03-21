@@ -1,7 +1,14 @@
 import os
+from pathlib import Path
 import pytest
+from pytest_mock import MockerFixture
+import demistomock as demisto
 
-from ValidateContent import get_content_modules, adjust_linter_row_and_col
+from ValidateContent import (
+    get_content_modules,
+    adjust_linter_row_and_col,
+    main
+)
 
 
 def test_get_content_modules(tmp_path, requests_mock, monkeypatch):
@@ -96,3 +103,31 @@ def test_adjust_linter_row_and_col(original_validation_result, expected_output):
     adjust_linter_row_and_col(original_validation_result)
     # after adjustment, the original validation result should match the expected
     assert original_validation_result == expected_output
+
+
+class TestValidateContent():
+
+    test_script_path = Path(__file__).parent.resolve() / "test_data" / "automationwitherrors.yml"
+    test_contrib_zip_path = Path(__file__).parent.resolve() / "test_data" / \
+        "contentpack-6ade7368-803c-4c4b-873c-4a0555c6ca03-Test.zip"
+
+    def test_validate_automation(self, mocker: MockerFixture):
+
+        mocker.patch.object(demisto, "args", return_value={
+            "filename": self.test_script_path.name,
+            "data": self.test_script_path.read_text(),
+            "trust_any_certificate": True
+        })
+
+        main()
+
+        assert True
+
+    def test_validate_automation_with_errors(self):
+        pass
+
+    def test_validate_zip(self):
+        pass
+
+    def test_validate_zip_with_errors(self):
+        pass
