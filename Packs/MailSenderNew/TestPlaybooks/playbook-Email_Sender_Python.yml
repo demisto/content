@@ -400,10 +400,10 @@ tasks:
       version: -1
       name: Fetch email from google mail using message ID
       description: Retrieves the Gmail message sent to a specified user.
-      script: 'Gmail_dev|||gmail-get-mail'
+      script: '|||gmail-get-mail'
       type: regular
       iscommand: true
-      brand: "Gmail_dev"
+      brand: ""
     nexttasks:
       '#none#':
       - "12"
@@ -734,10 +734,10 @@ tasks:
       id: da598d63-fefb-48fa-890c-420a43e097e2
       version: -1
       name: Send mail using python
-      script: Mail Sender (New)_dev|||send-mail
+      script: Mail Sender (New)|||send-mail
       type: regular
       iscommand: true
-      brand: Mail Sender (New)_dev
+      brand: Mail Sender (New)
       description: Send an email.
     nexttasks:
       '#none#':
