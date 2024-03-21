@@ -481,7 +481,6 @@ def binalyze_get_users(api_token,args,params):
 
 def binalyze_assign_triage_task_by_filter(api_token,args,params):
     url=params.get("url")+"/api/public/triages/triage"
-    organization_id=args.get("organizationid")
     payload = {
         "caseId": args.get('caseId'),
         "triageRuleIds": [],
@@ -551,7 +550,6 @@ def binalyze_start_acquisition_webhook(api_token,args,params):
     return_results(result)
 
 def binalyze_get_acquisition_profiles(api_token,args,params):
-    organization_id=args.get("organizationid")
     url = params.get("url")+"/api/public/acquisitions/profiles?filter[organizationIds]="+str(args.get('organizationid'))+"&filter[allOrganizations]=true"
     headers = {
         'Authorization': api_token,
