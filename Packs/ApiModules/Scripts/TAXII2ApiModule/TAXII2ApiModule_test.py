@@ -1426,17 +1426,23 @@ class TestParsingIndicators:
     x509_certificate={
         "type": "x509-certificate",
         "serial_number": "serial_number",
-        "issuer": "C=ZA, ST=Western Cape, L=Cape Town, O=Thawte Consulting cc, OU=Certification Services Division, CN=Thawte Server CA/emailAddress=server-certs@thawte.com",
+        "issuer": "C=ZA, ST=Western Cape, L=Cape Town,"\
+        " O=Thawte Consulting cc, OU=Certification Services"\
+        " Division, CN=Thawte Server CA/emailAddress=server-certs@thawte.com",
         "validity_not_before": "2016-03-12T12:00:00Z",
         "validity_not_after": "2016-08-21T12:00:00Z",
-        "subject": "C=US, ST=Maryland, L=Pasadena, O=Brent Baccala, OU=FreeSoft, CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
+        "subject": "C=US, ST=Maryland, L=Pasadena,"\
+        " O=Brent Baccala, OU=FreeSoft, CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
         }
     x509_certificate_without_serial_number={
         "type": "x509-certificate",
-        "issuer": "C=ZA, ST=Western Cape, L=Cape Town, O=Thawte Consulting cc, OU=Certification Services Division, CN=Thawte Server CA/emailAddress=server-certs@thawte.com",
+        "issuer": "C=ZA, ST=Western Cape, L=Cape Town," \
+        " O=Thawte Consulting cc, OU=Certification " \
+        "Services Division, CN=Thawte Server CA/emailAddress=server-certs@thawte.com",
         "validity_not_before": "2016-03-12T12:00:00Z",
         "validity_not_after": "2016-08-21T12:00:00Z",
-        "subject": "C=US, ST=Maryland, L=Pasadena, O=Brent Baccala, OU=FreeSoft, CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
+        "subject": "C=US, ST=Maryland, L=Pasadena, O=Brent" \
+        " Baccala, OU=FreeSoft, CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
         }
     expected_result = [
         {
