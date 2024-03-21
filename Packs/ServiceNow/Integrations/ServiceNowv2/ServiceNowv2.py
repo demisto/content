@@ -2490,8 +2490,10 @@ def get_timezone_offset(ticket: dict, display_date_format: str):
         datetime.timedelta: The timezone offset between the SNOW instance and UTC.
     """
     try:
-        local_time = ticket.get('sys_created_on', {}).get('display_value', '')
-        local_time = datetime.strptime(local_time, display_date_format)
+        local_time: str = ticket.get('sys_created_on', {}).get('display_value', '')
+        # In the %H time format the AM/PM is just for display and does not add data.
+        local_time = (local_time.replace('AM', '').replace('PM', '')).strip()
+        local_time_dt = datetime.strptime(local_time, display_date_format)
     except Exception as e:
         raise Exception(f'Failed to get the display value offset time. ERROR: {e}')
     try:
@@ -2499,7 +2501,7 @@ def get_timezone_offset(ticket: dict, display_date_format: str):
         utc_time = datetime.strptime(utc_time, DATE_FORMAT)
     except ValueError as e:
         raise Exception(f'Failed to convert {utc_time} to datetime object. ERROR: {e}')
-    offset = utc_time - local_time
+    offset = utc_time - local_time_dt
     return offset
 
 

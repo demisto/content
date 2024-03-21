@@ -334,12 +334,20 @@ def test_get_timezone_offset():
     full_response = {'sys_created_on': {'display_value': '06/12/2022 23:38:52', 'value': '2022-12-07 09:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd/MM/yyyy'))
     assert offset == timedelta(minutes=600)
+    
+    full_response = {'sys_created_on': {'display_value': '06/12/2022 23:38:52 PM', 'value': '2022-12-07 09:38:52'}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd/MM/yyyy'))
+    assert offset == timedelta(minutes=600)
 
     full_response = {'sys_created_on': {'display_value': '07.12.2022 0:38:52', 'value': '2022-12-06 19:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd.MM.yyyy'))
     assert offset == timedelta(minutes=-300)
 
     full_response = {'sys_created_on': {'display_value': 'Dec-07-2022 00:38:52', 'value': '2022-12-06 19:38:52'}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('mmm-dd-yyyy'))
+    assert offset == timedelta(minutes=-300)
+    
+    full_response = {'sys_created_on': {'display_value': 'Dec-07-2022 00:38:52 AM', 'value': '2022-12-06 19:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('mmm-dd-yyyy'))
     assert offset == timedelta(minutes=-300)
 
