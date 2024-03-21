@@ -247,13 +247,13 @@ def test_module_command(client: Client) -> tuple[None, None, str]:
     params = demisto.params()
     if is_xsiam_or_xsoar_saas():
         events, _ = client.get_events(config_ids=params.get('event_configIds'),
-                                           from_epoch='1488816442',
-                                           limit='1')
+                                      from_epoch='1488816442',
+                                      limit='1')
     elif is_xsoar():
         # Test on the following date Monday, 6 March 2017 16:07:22
         events, _ = client.get_events(config_ids=params.get('configIds'),
-                                           from_epoch='1488816442',
-                                           limit='1')
+                                      from_epoch='1488816442',
+                                      limit='1')
     if isinstance(events, list):
         return None, None, 'ok'
     raise DemistoException(f'Test module failed, {events}')
@@ -389,7 +389,8 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
 def main():
     params = demisto.params()
     if is_xsiam_or_xsoar_saas() and not params.get("event_configIds"):
-        raise DemistoException("'Config IDs to fetch (Relevant only for xsiam)' must be given when when setting an instance in xsiam.")
+        raise DemistoException(
+            "'Config IDs to fetch (Relevant only for xsiam)' must be given when when setting an instance in xsiam.")
     client = Client(
         base_url=urljoin(params.get('host'), '/siem/v1/configs'),
         verify=not params.get('insecure', False),
@@ -421,8 +422,8 @@ def main():
             demisto.debug(f'Starting a new fetch interval with {last_run=}')
             events, new_last_run = fetch_events_command(client,
                                                         last_run,
-                                                        fetch_limit=params.get("max_fetch"),
-                                                        onfig_ids=params.get("event_configIds", "50"))
+                                                        fetch_limit=params.get("max_fetch", "50"),
+                                                        config_ids=params.get("event_configIds"))
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(new_last_run)
             demisto.debug(f'{new_last_run=}')
