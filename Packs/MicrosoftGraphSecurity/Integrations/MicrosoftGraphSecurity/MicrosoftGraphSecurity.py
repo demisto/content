@@ -761,24 +761,10 @@ def query_set_limit(query: str, limit: int) -> str:
         str: The modified query string with the limit set,
         or the original query if it already had a limit set or if the limit is less than 0.
     """
-    if limit < 0:
+    if limit < 0 or "limit " in query or "take " in query:
         return query
 
-    # the query has the structure of "section | section | section ..."
-    query_list = re.split(r'(?<!\|)\|(?!\|)', query)
-
-    # split the query to sections and find limit sections
-    for section in query_list:
-        section_list = section.split()
-        # Set the limit of a query if it doesn't already have a limit set.
-        if section_list and section_list[0] == 'limit' or section_list[0] == 'take':
-            return query
-
-    # if the query has no limit, than limit is added to the query
-    query_list.append(f"limit {limit} ")
-
-    fixed_query = ' | '.join(query_list)
-    return fixed_query
+    return f"{query} | limit {limit}"
 
 
 def convert_list_incidents_to_readable(raw_incidents: dict) -> dict:
@@ -1484,10 +1470,24 @@ def advanced_hunting_command(client: MsGraphClient, args: dict) -> list[CommandR
     human_readable_table = tableToMarkdown(name=f" Result of query: {query}:", t=results,
                                            headers=headers)
 
-    return [CommandResults(outputs_prefix='MsGraph.Hunt', outputs_key_field='query', outputs=context_result,
-                           readable_output=human_readable_table),
-            CommandResults(outputs_prefix='Microsoft365Defender.Hunt', outputs_key_field='query', outputs=context_result,
-                           readable_output="See Results Above")]
+    microsoft_365_defender_context = demisto.params().get("microsoft_365_defender_context")
+
+    command_results = [CommandResults(
+        outputs_prefix='MsGraph.Hunt',
+        outputs_key_field='query',
+        outputs=context_result,
+        readable_output=human_readable_table
+    )]
+
+    if microsoft_365_defender_context:
+        command_results.append(CommandResults(
+            outputs_prefix='Microsoft365Defender.Hunt',
+            outputs_key_field='query',
+            outputs=context_result,
+            readable_output="See Results Above"
+        ))
+
+    return command_results
 
 
 def get_list_security_incident_command(client: MsGraphClient, args: dict) -> CommandResults:
