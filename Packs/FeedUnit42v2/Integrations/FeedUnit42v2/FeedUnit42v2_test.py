@@ -106,7 +106,7 @@ def test_fetch_indicators_command(mocker):
     mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client, create_relationships=True)
-    assert len(indicators) == 17
+    assert len(indicators) == 18
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
     assert indicators == FETCH_RESULTS
 
@@ -224,6 +224,23 @@ def test_parse_indicators():
 
     """
     assert parse_indicators(INDICATORS_DATA, [], '')[0] == INDICATORS_RESULT
+
+
+def test_parse_indicators_ioc_in_pattern():
+    """
+    Given
+    - IOC in STIX format where the name value is file name and the ioc is in the pattern.
+    When
+    - we extract this IOCs list to Demisto format.
+    Then
+    - run the parse_indicators
+    - Validate The indicator value is the file hash.
+    - Validate The associatedfilenames value is the file name.
+
+    """
+    file_indicator = parse_indicators(INDICATORS_DATA, [], '')[10]
+    assert file_indicator['value'] == 'ca5fb5814ec621f4b79d'
+    assert file_indicator['fields']['associatedfilenames'] == 'Jrdhtjydhjf.exe'
 
 
 def test_parse_reports():
