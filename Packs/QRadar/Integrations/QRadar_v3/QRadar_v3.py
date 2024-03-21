@@ -5242,9 +5242,9 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
-    except Exception:
+    except Exception as e:
         print_debug_msg(f"The integration context_data is {get_integration_context()}")
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{traceback.format_exc()}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{traceback.format_exc()}\nException is: {str(e)}')
 
 
 ''' ENTRY POINT '''
