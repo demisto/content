@@ -3,8 +3,8 @@ commonfields:
   id: Code42EventCollector
   version: -1
 configuration:
-- defaultvalue: https://platform.cybelangel.com
-  display: Server URL
+- defaultvalue: api.us.code42.com
+  display: Server URL (e.g. https://api.us.code42.com, see help section)
   name: url
   required: true
   type: 0
@@ -65,6 +65,7 @@ script:
   type: python
   subtype: python3
   dockerimage: devdemisto/py42:1.0.0.90984
+  isfetchevents: true
 fromversion: 8.4.0
 marketplaces:
   - marketplacev2
