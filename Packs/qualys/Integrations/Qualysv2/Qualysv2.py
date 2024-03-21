@@ -3407,7 +3407,7 @@ def main():  # pragma: no cover
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == "qualys-get-assets":
-            should_push_events = argToBoolean(args.get('should_push_events', False))
+            should_push_events = argToBoolean(args.get('should_push_assets', False))
             assets, vulnerabilities = fetch_assets(client=client)
             return_results(f'Pulled {len(assets)} assets, and {len(vulnerabilities)} vulnerabilities from API')
             if should_push_events:

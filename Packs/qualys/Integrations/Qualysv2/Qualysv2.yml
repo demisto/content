@@ -2800,6 +2800,17 @@ script:
       name: offset
     description: Gets activity logs from Qualys.
     name: qualys-get-events
+  - arguments:
+      - auto: PREDEFINED
+        defaultValue: 'false'
+        description: If true, the command will create assets, otherwise it will only display the amount of available assets.
+        name: should_push_assets
+        predefined:
+          - 'true'
+          - 'false'
+        required: true
+    description: Gets assets from Qualys.
+    name: qualys-get-assets
   dockerimage: demisto/python3:3.10.13.87159
   isfetchevents: true
   isfetchassets: true
