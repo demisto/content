@@ -9,7 +9,7 @@ from typing import Any
 
 """ Global Variables """
 
-INTEGRATION_NAME: str = get_integration_name().removesuffix("v2")
+INTEGRATION_NAME = "FortiSandbox"
 INTEGRATION_PREFIX = INTEGRATION_NAME.lower()
 OUTPUTS_PREFIX = f"{INTEGRATION_NAME}.Submission"
 SUBMISSION = "submission"
@@ -53,8 +53,6 @@ class StatusCode(int, Enum):
 class Client(BaseClient):
     """Client class to interact with the API."""
 
-    IS_ONLINE = False
-
     def __init__(
         self,
         base_url: str,
@@ -76,6 +74,7 @@ class Client(BaseClient):
             proxy (bool, optional): Whether to use a proxy.
                 Defaults to False.
         """
+        self.is_online = False
         self.username = username
         self.password = password
         self._session_id = ""
@@ -106,11 +105,11 @@ class Client(BaseClient):
             },
         )
         self._session_id = raw_response["session"]
-        self.IS_ONLINE = True
+        self.is_online = True
 
     def logout(self) -> None:
         """Logout from the API."""
-        if not self.IS_ONLINE:
+        if not self.is_online:
             return
 
         self._make_request(
@@ -122,7 +121,7 @@ class Client(BaseClient):
                 "params": [{"url": "/sys/logout"}],
             },
         )
-        self.IS_ONLINE = False
+        self.is_online = False
 
     def submission_file_upload(
         self,

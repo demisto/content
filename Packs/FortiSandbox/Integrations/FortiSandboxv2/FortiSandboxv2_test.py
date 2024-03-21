@@ -10,9 +10,6 @@ import pytest
 TEST_DATA = "test_data"
 BASE_URL = "https://www.example.com"
 API_URL = CommonServerPython.urljoin(BASE_URL, "jsonrpc/")
-FortiSandboxv2.INTEGRATION_NAME = "FortiSandbox"
-FortiSandboxv2.OUTPUTS_PREFIX = "FortiSandbox.Submission"
-
 
 """ Utils """
 
