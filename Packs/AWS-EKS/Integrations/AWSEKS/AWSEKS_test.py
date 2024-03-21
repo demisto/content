@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from AWSApiModule import *
 from AWSEKS import datetime_to_str, validate_args, list_clusters_command
-from test_data.test_response import UPDATE_CLUSTER_CONFIG_LOGGING_RESPONSE
+from test_data.test_response import UPDATE_CLUSTER_CONFIG_LOGGING_RESPONSE, DESCRIBE_CLUSTER_RESPONSE
 
 
 def util_load_json(path):
@@ -140,6 +140,9 @@ class Boto3Client:
 
     def update_cluster_config(self, clusterName, resourcesVpcConfig=None, logging=None, authenticationMode=None):
         pass
+    
+    def describe_cluster(self, clusterName):
+        pass
 
 
 def test_list_clusters_command(mocker):
@@ -233,5 +236,29 @@ def test_update_cluster_config_command(mocker):
         "logging": "{'clusterLogging': [{'types': ['api', 'authenticator', 'audit'], 'enabled': true}]}"
     }
     result = update_cluster_config_command(client, args)
+    assert result.readable_output == expected_readable_output
+    assert result.outputs == expected_output
+
+
+def test_describe_cluster_command(mocker):
+    """
+        Given:
+            - A cluster name.
+        When:
+            - running describe_cluster_command.
+        Then:
+            - assert that the readable output and outputs are correct.
+    """
+    from AWSEKS import describe_cluster_command
+    expected_readable_output = ""
+    expected_output = ""
+    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
+    mocker.patch.object(Boto3Client, "describe_cluster", return_value=DESCRIBE_CLUSTER_RESPONSE)
+    client = AWSClient("aws_default_region", None, None, None,
+                       None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
+    args = {
+        "cluster_name": "cluster_name",
+    }
+    result = describe_cluster_command(client, args)
     assert result.readable_output == expected_readable_output
     assert result.outputs == expected_output
