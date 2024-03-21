@@ -1,3 +1,5 @@
+import hashlib
+
 import dateparser
 import incydr
 from incydr import EventQuery
@@ -37,10 +39,15 @@ class FileEventLastRun(str, Enum):
     TIME = "file-event-time"  # saves the last time of previous fetch of file-events
     FETCHED_IDS = "file-event-ids"  # saved a list of IDs of previous fetch which are is the latest time
 
+class AuditLogLastRun(str, Enum):
+    TIME = "audit-log-time"  # saves the last time of previous fetch of audit-logs
+    FETCHED_IDS = "audit-log-ids"  # saved a list of IDs of previous fetch which are is the latest time
+
 
 class EventType(str, Enum):
     FILE = "file-event"
     AUDIT = "audit"
+
 
 class Client:
 
@@ -56,7 +63,7 @@ class Client:
         end_time: datetime | timedelta | str | None = None,
         limit: int = MAX_FETCH_AUDIT_LOGS,
         page_size: int = MAX_AUDIT_LOGS_PAGE_SIZE
-    ) -> List[Dict]:
+    ):
         """
         Get audit logs
 
@@ -67,22 +74,22 @@ class Client:
             page_size: the page size per single request
         """
         audit_logs = []
-        page = 0
-        while len(audit_logs) < limit:
-            audit_event_page = self.code42_client.audit_log.v1.get_page(page, start_time=start_time, end_time=end_time)
-            events = audit_event_page.events
-            if len(events) < page_size:
-                break
-            audit_logs.extend(audit_event_page.events)
+
+        for fetched_audit_logs in self.code42_client.audit_log.v1.iter_all(
+            start_time=start_time, end_time=end_time, page_size=page_size  # iterates all the pages
+        ):
+            for audit_log in fetched_audit_logs:
+                audit_log["_time"] = audit_log["timestamp"]
+                encoded_audit_log = json.dumps(audit_log, sort_keys=True).encode()
+                audit_log["id"] = hashlib.sha256(encoded_audit_log).hexdigest()
+                audit_log["type"] = EventType.AUDIT
+            audit_logs.extend(fetched_audit_logs)
 
         audit_logs = sorted(
-            audit_logs, key=lambda _log: dateparser.parse(_log["timestamp"])  # type: ignore[arg-type, return-value]
+            audit_logs, key=lambda _log: dateparser.parse(_log["_time"])  # type: ignore[arg-type, return-value]
         )
-        audit_logs = audit_logs[:limit]
-        for audit_log in audit_logs:
-            audit_log["_time"] = audit_log["timestamp"]
+        return audit_logs[:limit]
 
-        return audit_logs
 
     def get_file_events(
         self,
@@ -152,7 +159,7 @@ def dedup_fetched_events(
     return un_fetched_events
 
 
-def get_latest_event_ids_and_time(events: List[dict]) -> Tuple[List[str], str]:
+def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> Tuple[List[str], str]:
     """
     Get the latest event IDs and get latest time
     """
@@ -163,7 +170,10 @@ def get_latest_event_ids_and_time(events: List[dict]) -> Tuple[List[str], str]:
         if dateparser.parse(latest_time_event) > dateparser.parse(event["_time"]):
             latest_time_event = event["_time"]
 
-    latest_event_ids = [event for event in events if dateparser.parse(event["_time"]) == latest_time_event]
+    latest_event_ids: List = [
+        dict_safe_get(event, keys=keys_to_id)
+        for event in events if dateparser.parse(event["_time"]) == latest_time_event
+    ]
     return latest_event_ids, latest_time_event
 
 
@@ -176,20 +186,23 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_events(client: Client, last_run: Dict, max_fetch_file_events: int, max_fetch_audit_events: int) -> List[Dict[str, Any], Dict[str, Any]]:
-    new_last_run = {}
+def fetch_file_events(client: Client, last_run: Dict, max_fetch_file_events: int):
+    """
+    Fetches file events
+    """
+    new_last_run = last_run.copy()
     file_event_time = dateparser.parse(last_run[FileEventLastRun.TIME]) if FileEventLastRun.TIME in last_run else (
         datetime.now() - timedelta(minutes=1)
-        )
+    )
 
     file_events = client.get_file_events(file_event_time, limit=max_fetch_file_events)
     last_fetched_event_file_ids = FileEventLastRun.FETCHED_IDS or set()
-    file_events = dedup_fetched_events(file_events, last_run_fetched_event_ids=last_fetched_event_file_ids)
+    file_events = dedup_fetched_events(file_events, last_run_fetched_event_ids=last_fetched_event_file_ids, keys_list_to_id=["event", "id"])
     if file_events:
-        latest_file_event_ids, latest_file_event_time = get_latest_event_ids_and_time(file_events)
+        latest_file_event_ids, latest_file_event_time = get_latest_event_ids_and_time(file_events, keys_to_id=["id"])
         new_last_run.update(
             {
-                FileEventLastRun.TIME: file_event_time,
+                FileEventLastRun.TIME: latest_file_event_time,
                 FileEventLastRun.FETCHED_IDS: latest_file_event_ids,
                 "nextTrigger": "0"
             }
@@ -203,21 +216,42 @@ def fetch_events(client: Client, last_run: Dict, max_fetch_file_events: int, max
             }
         )
 
+    send_events_to_xsiam(file_events, vendor=VENDOR, product=PRODUCT)
+    demisto.setLastRun(new_last_run)
+
+
+def fetch_audit_logs(client: Client, last_run: Dict, max_fetch_audit_events: int):
+    new_last_run = last_run.copy()
+    audit_log_time = dateparser.parse(last_run[AuditLogLastRun.TIME]) if AuditLogLastRun.TIME in last_run else (
+        datetime.now() - timedelta(minutes=1)
+    )
+    last_fetched_audit_log_ids = AuditLogLastRun.FETCHED_IDS or set()
+    audit_logs = client.get_audit_logs(audit_log_time, limit=max_fetch_audit_events)
+    audit_logs = dedup_fetched_events(audit_logs, last_run_fetched_event_ids=last_fetched_audit_log_ids, keys_list_to_id=["id"])
+    for log in audit_logs:
+        log.pop("id", None)
+
+    if audit_logs:
+        latest_audit_log_ids, latest_audit_log_time = get_latest_event_ids_and_time(audit_logs, keys_to_id=["id"])
+        new_last_run.update(
+            {
+                AuditLogLastRun.TIME: latest_audit_log_time,
+                AuditLogLastRun.FETCHED_IDS: latest_audit_log_ids,
+                "nextTrigger": "0"
+            }
+        )
+    else:
+        new_last_run.update(
+            {
+                "nextTrigger": "30"
+            }
+        )
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+def fetch_events(client: Client, last_run: Dict, max_fetch_file_events: int, max_fetch_audit_events: int):
+    fetch_file_events(client, last_run=last_run, max_fetch_file_events=max_fetch_file_events)
+    fetch_audit_logs(client, last_run=last_run, max_fetch_audit_events=max_fetch_audit_events)
 
 
 def get_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
