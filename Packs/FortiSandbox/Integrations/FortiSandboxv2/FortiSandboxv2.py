@@ -566,6 +566,7 @@ def build_indicator(
     Returns:
         Common.Indicator: The built indicator.
     """
+    demisto.info(f"Building indicator with {data=}")
     entity: str
     indicator: Common.URL | Common.File
 
@@ -584,13 +585,18 @@ def build_indicator(
 
     malware_name = [malware for malware in malware_name if malware != "N/A"]
 
+    demisto.debug(f"Indicator's malware name: {malware_name}")
+
     if url or req_type == "url-csearch":
+        demisto.info("Indicator type is URL")
         entity_type = FeedIndicatorType.URL
 
         # If the entity has a download URL, decode it from base64, else use the input URL.
         if entity := data.get("download_url", ""):
+            demisto.debug(f"Decoding download URL: {entity}")
             entity = base64.b64decode(entity).decode()
         else:
+            demisto.debug(f"Using input URL: {url}")
             entity = data.get("url", url)
 
         dbot_score = build_dbot_score(
@@ -607,10 +613,14 @@ def build_indicator(
             malware_family=malware_name,
         )
     elif file_hash or req_type == "file-csearch":
+        demisto.info("Indicator type is File")
+
         entity_type = FeedIndicatorType.File
         entity = data.get("sha256", file_hash)
         hash_type = get_hash_type(file_hash) if file_hash else "sha256"
         file_name: str = data.get("file_name", "")
+
+        demisto.debug(f"Using hash type: {hash_type}")
 
         dbot_score = build_dbot_score(
             indicator=entity,
@@ -692,6 +702,8 @@ def poll_job_submissions(client: Client, args: dict[str, Any]) -> PollResult:
     get_scan_report = argToBoolean(args.get("get_scan_report", False))
 
     integration_context = get_integration_context()
+    demisto.debug(f"Fetching {integration_context=}")
+
     total_jids: int = integration_context.get("total_jids", 0)
     fetched_jids = set(integration_context.get("fetched_jids", []))
     remaining_jids = set(integration_context.get("remaining_jids", []))
@@ -699,6 +711,7 @@ def poll_job_submissions(client: Client, args: dict[str, Any]) -> PollResult:
 
     # Enter if the total number of jobs is not known yet, or if not all jobs were created.
     if not total_jids or (len(remaining_jids) + len(fetched_jids)) < total_jids:
+        demisto.info(f"Polling for submission {sid} jobs.")
         raw_response = client.submission_job_list(sid)
 
         raw_response = dict_safe_get(raw_response, ["result", "data"], {})
@@ -709,29 +722,32 @@ def poll_job_submissions(client: Client, args: dict[str, Any]) -> PollResult:
 
     # Poll for the verdicts/reports of the remaining jobs.
     for jid in remaining_jids.copy():
+        demisto.debug(f"Polling for job {jid} verdict.")
         raw_response = client.submission_job_verdict(jid)
         data = dict_safe_get(raw_response, ["result", "data"])
 
         # If a result was fetched, add it to the list of results and remove it from the list of remaining jobs.
         if data:
+            demisto.debug(f"Job {jid} verdict found.")
             fetched_jids.add(jid)
             remaining_jids.remove(jid)
             jid_to_raw_response[jid] = raw_response
 
     # Update the integration context with the new data for the next polling.
-    set_integration_context(
-        {
-            "total_jids": total_jids,
-            "fetched_jids": list(fetched_jids),
-            "remaining_jids": list(remaining_jids),
-            "jid_to_raw_response": jid_to_raw_response,
-        }
-    )
+    integration_context = {
+        "total_jids": total_jids,
+        "fetched_jids": list(fetched_jids),
+        "remaining_jids": list(remaining_jids),
+        "jid_to_raw_response": jid_to_raw_response,
+    }
+    demisto.debug(f"Setting {integration_context=}")
+    set_integration_context(integration_context)
 
     fetched_jids_count = len(fetched_jids)
 
     # If not all jobs were fetched, continue to poll.
     if not total_jids or fetched_jids_count < total_jids:
+        demisto.info(f"Not all jobs were fetched for submission {sid}.")
         return PollResult(
             response=None,
             continue_to_poll=True,
@@ -746,6 +762,7 @@ def poll_job_submissions(client: Client, args: dict[str, Any]) -> PollResult:
         )
 
     # All jobs were fetched, clear the integration context and build the CommandResults or fileResult.
+    demisto.info(f"All jobs were fetched for submission {sid}.")
     clear_integration_context()
     response = []
 
@@ -972,6 +989,7 @@ def submission_file_upload_command(args: dict[str, Any], client: Client) -> Poll
             enable_ai=argToBoolean(args.get("enable_ai", False)),
         )
         args["sid"] = dict_safe_get(raw_response, ["result", "data", "sid"])
+        demisto.info(f"Starting polling for submission {args['sid']}")
 
     return poll_job_submissions(client, args)
 
@@ -1024,6 +1042,7 @@ def submission_url_upload_command(args: dict[str, Any], client: Client) -> PollR
             enable_ai=argToBoolean(args.get("enable_ai", False)),
         )
         args["sid"] = dict_safe_get(raw_response, ["result", "data", "sid"])
+        demisto.info(f"Starting polling for submission {args['sid']}")
 
     return poll_job_submissions(client, args)
 
