@@ -1,9 +1,7 @@
 import hashlib
 
-import dateparser
 import incydr
 from incydr import EventQuery
-from incydr.models import FileEventV2
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -11,7 +9,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any, Tuple
+from typing import Any
 from enum import Enum
 
 # Disable insecure warnings
@@ -40,6 +38,7 @@ PRODUCT = "code42"
 class FileEventLastRun(str, Enum):
     TIME = "file-event-time"  # saves the last time of previous fetch of file-events
     FETCHED_IDS = "file-event-ids"  # saved a list of IDs of previous fetch which are is the latest time
+
 
 class AuditLogLastRun(str, Enum):
     TIME = "audit-log-time"  # saves the last time of previous fetch of audit-logs
@@ -97,7 +96,7 @@ class Client:
         end_time: datetime | str | timedelta | None = None,
         limit: int = MAX_FETCH_FILE_EVENTS,
         page_size: int = MAX_FILE_EVENTS_PAGE_SIZE
-    ) -> List[Dict[str, Any]]:
+    ) -> List[dict[str, Any]]:
         """
         Get file events
 
@@ -156,7 +155,7 @@ def dedup_fetched_events(
     return un_fetched_events
 
 
-def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> Tuple[List[str], str]:
+def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> tuple[List[str], str]:
     """
     Get the latest event IDs and get latest time
     """
@@ -183,7 +182,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_file_events(client: Client, last_run: Dict, max_fetch_file_events: int):
+def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int):
     """
     Fetches file events
 
@@ -214,7 +213,7 @@ def fetch_file_events(client: Client, last_run: Dict, max_fetch_file_events: int
     return file_events, new_last_run
 
 
-def fetch_audit_logs(client: Client, last_run: Dict, max_fetch_audit_events: int) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int) -> tuple[List[dict[str, Any]], dict[str, Any]]:
     """
     Fetch audit logs
 
@@ -246,7 +245,7 @@ def fetch_audit_logs(client: Client, last_run: Dict, max_fetch_audit_events: int
     return audit_logs, new_last_run
 
 
-def fetch_events(client: Client, last_run: Dict, max_fetch_file_events: int, max_fetch_audit_events: int):
+def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max_fetch_audit_events: int):
     file_events, file_events_last_run = fetch_file_events(client, last_run=last_run, max_fetch_file_events=max_fetch_file_events)
     audit_logs, audit_logs_last_run = fetch_audit_logs(client, last_run=last_run, max_fetch_audit_events=max_fetch_audit_events)
 
@@ -264,7 +263,7 @@ def fetch_events(client: Client, last_run: Dict, max_fetch_file_events: int, max
     demisto.setLastRun(last_run)
 
 
-def get_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get events command, used mainly for debugging
     """
@@ -298,7 +297,6 @@ def get_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         raw_response=events,
         readable_output=readable_output
     )
-
 
 
 def main() -> None:

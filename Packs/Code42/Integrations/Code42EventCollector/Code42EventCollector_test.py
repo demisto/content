@@ -1,8 +1,5 @@
-import pytest
 
 from CommonServerPython import *
-
-from unittest.mock import MagicMock
 
 
 class HttpRequestsMocker:
