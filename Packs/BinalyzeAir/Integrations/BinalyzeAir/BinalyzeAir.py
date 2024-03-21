@@ -411,8 +411,10 @@ def binalyze_assign_evidence_acquisition(api_token,args,params):
 
 
 def binalyze_get_triage_rules(api_token,args,params):
+    s=str(args.get("searchterm"))
+    o=str(args.get("organizationid"))
     if args.get("searchterm") is not None:
-        url = params.get("url")+"/api/public/triages/rules?pageSize=0&filter[searchTerm]="+str(args.get("searchterm"))+"&filter[organizationIds]="+str(args.get('organizationid'))
+        url = params.get("url")+"/api/public/triages/rules?pageSize=0&filter[searchTerm]="+s+"&filter[organizationIds]="+o
     else:
         url = params.get("url")+"/api/public/triages/rules?pageSize=0&filter[organizationIds]="+str(args.get('organizationid'))
 
@@ -550,7 +552,8 @@ def binalyze_start_acquisition_webhook(api_token,args,params):
     return_results(result)
 
 def binalyze_get_acquisition_profiles(api_token,args,params):
-    url = params.get("url")+"/api/public/acquisitions/profiles?filter[organizationIds]="+str(args.get('organizationid'))+"&filter[allOrganizations]=true"
+    o=str(args.get('organizationid'))
+    url = params.get("url")+"/api/public/acquisitions/profiles?filter[organizationIds]="+o+"&filter[allOrganizations]=true"
     headers = {
         'Authorization': api_token,
         'User-Agent': 'Binalyze AIR',
@@ -579,12 +582,13 @@ def binalyze_get_tasks(api_token,args,params):
     return_results(result)
 
 def binalyze_get_assets(api_token,args,params):
-    organization_id=args.get('organizationid')
+    o=str(args.get('organizationid'))
+    s=str(args.get('searchterm'))
     payload={}
     if args.get("searchterm") is not None:
-        url = params.get("url")+"/api/public/assets?filter[searchTerm]="+str(args.get("searchterm"))+"&filter[organizationIds]="+str(args.get('organizationid'))
+        url = params.get("url")+"/api/public/assets?filter[searchTerm]="+s+"&filter[organizationIds]="+o
     else:
-        url= params.get("url")+"/api/public/assets?filter[organizationIds]="+organization_id
+        url= params.get("url")+"/api/public/assets?filter[organizationIds]="+o
     headers = {
             'Authorization': api_token,
             'User-Agent': 'Binalyze AIR',
