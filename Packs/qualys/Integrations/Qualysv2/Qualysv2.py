@@ -2904,8 +2904,8 @@ def get_host_list_detections_events(client, since_datetime) -> list:
     Returns:
         Host list detections assets
     """
-    demisto.debug(f'Starting to fetch assets')
-    assets = []
+    demisto.debug('Starting to fetch assets')
+    assets = List[Any]
     next_page = ''
 
     while True:
@@ -2947,8 +2947,8 @@ def fetch_assets(client):
     Return:
         event: events to push to xsiam
     """
-    demisto.debug(f'Starting fetch for assets')
-    since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)
+    demisto.debug('Starting fetch for assets')
+    since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
 
     assets = get_host_list_detections_events(client, since_datetime)
     vulnerabilities = get_vulnerabilities(client, since_datetime)

@@ -154,10 +154,12 @@ def test_fetch_assets_command(requests_mock):
     with open('./test_data/vulnerabilities_raw.xml') as f:
         vulnerabilities = f.read()
     requests_mock.get(f'{base_url}api/2.0/fo/asset/host/vm/detection/'
-                      f'?action=list&truncation_limit=3&vm_scan_date_after={arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}', text=assets)
+                      f'?action=list&truncation_limit=3&vm_scan_date_after='
+                      f'{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}', text=assets)
 
     requests_mock.post(f'{base_url}api/2.0/fo/knowledge_base/vuln/'
-                       f'?action=list&last_modified_after={arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}', text=vulnerabilities)
+                       f'?action=list&last_modified_after={arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}',
+                       text=vulnerabilities)
 
     client = Client(base_url=base_url,
                     verify=True,

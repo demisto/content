@@ -35,14 +35,14 @@ configuration:
   display: First event fetch time
   name: first_fetch
   additionalinfo: If "First event fetch time" is set for a long time ago, it may cause performance issues.
-  required: true
+  required: false
   type: 0
 - defaultvalue: 10000
   section: Collect
   display: Event Fetch Limit
   name: max_fetch_activity_logs
   additionalinfo: Maximum number of events to fetch per fetch iteration.
-  required: true
+  required: false
   type: 0
 description: Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 display: Qualys VMDR
@@ -2811,7 +2811,7 @@ script:
         required: true
     description: Gets assets from Qualys.
     name: qualys-get-assets
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.14.90585
   isfetchevents: true
   isfetchassets: true
   runonce: false
