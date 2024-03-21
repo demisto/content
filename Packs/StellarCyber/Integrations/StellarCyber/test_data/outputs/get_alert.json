@@ -92,7 +92,7 @@
                         "GUID": "gSYSardrwigh-BmBrnwhmPVod1ntbixs",
                         "QID": "3ww3rrs5xf-1",
                         "ccAddresses": [],
-                        "cluster": "cityrochesterny_hosted",
+                        "cluster": "example_hosted",
                         "completelyRewritten": false,
                         "fromAddress": [
                             "srso+yf09=cw=testing.com=jane@testing.com"

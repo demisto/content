@@ -96,7 +96,7 @@ script:
       description: 'ID of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_index
-      description: 'Index of the STellar Cyber Alert.'
+      description: 'Index of the Stellar Cyber Alert.'
       type: String
     - contextPath: StellarCyber.Alert.alert_metadata.description
       description: 'Description of the Stellar Cyber Alert.'
@@ -189,53 +189,53 @@ script:
       description: The reason for closing the incident.
     description: Close an incident in Stellar Cyber.
     outputs:
-    - contextPath: StellarCyber.Case.Close.outputs._id
-      description: ''
+    - contextPath: StellarCyber.Case.Close._id
+      description: 'Case ID'
       type: String
-    - contextPath: StellarCyber.Case.Close.outputs.assignee
-      description: ''
+    - contextPath: StellarCyber.Case.Close.assignee
+      description: 'Case Assignee'
       type: String
-    - contextPath: StellarCyber.Case.Close.outputs.created_at
-      description: ''
+    - contextPath: StellarCyber.Case.Close.created_at
+      description: 'Case Created Timestamp'
       type: Date
-    - contextPath: StellarCyber.Case.Close.outputs.created_by
-      description: ''
+    - contextPath: StellarCyber.Case.Close.created_by
+      description: 'Case Created By'
       type: String
-    - contextPath: StellarCyber.Case.Close.outputs.cust_id
-      description: ''
+    - contextPath: StellarCyber.Case.Close.cust_id
+      description: 'Case Tenant ID'
       type: String
-    - contextPath: StellarCyber.Case.Close.outputs.modified_at
-      description: ''
+    - contextPath: StellarCyber.Case.Close.modified_at
+      description: 'Case Modified Timestamp'
       type: Date
-    - contextPath: StellarCyber.Case.Close.outputs.modified_by
-      description: ''
+    - contextPath: StellarCyber.Case.Close.modified_by
+      description: 'Case Modified By'
       type: String
-    - contextPath: StellarCyber.Case.Close.outputs.name
-      description: ''
+    - contextPath: StellarCyber.Case.Close.name
+      description: 'Case Name'
       type: String
-    - contextPath: StellarCyber.Case.Close.outputs.size
-      description: ''
+    - contextPath: StellarCyber.Case.Close.size
+      description: 'Case Size (Number of Alerts)'
       type: Number
-    - contextPath: StellarCyber.Case.Close.outputs.status
-      description: ''
+    - contextPath: StellarCyber.Case.Close.status
+      description: 'Case Status'
       type: String
-    - contextPath: StellarCyber.Case.Close.outputs.tags
-      description: ''
+    - contextPath: StellarCyber.Case.Close.tags
+      description: 'Case Tags'
       type: Unknown
-    - contextPath: StellarCyber.Case.Close.outputs.ticket_id
-      description: ''
+    - contextPath: StellarCyber.Case.Close.ticket_id
+      description: 'Case Ticket ID'
       type: Number
-    - contextPath: StellarCyber.Case.Close.outputs.version
-      description: ''
+    - contextPath: StellarCyber.Case.Close.version
+      description: 'Case Version'
       type: Number
-    - contextPath: StellarCyber.Case.Close.outputs.priority
-      description: ''
+    - contextPath: StellarCyber.Case.Close.priority
+      description: 'Case Priority'
       type: String
-    - contextPath: StellarCyber.Case.Close.outputs.incident_score
-      description: ''
+    - contextPath: StellarCyber.Case.Close.incident_score
+      description: 'Case Score'
       type: Number
-    - contextPath: StellarCyber.Case.Close.outputs.assignee_name
-      description: ''
+    - contextPath: StellarCyber.Case.Close.assignee_name
+      description: 'Case Assignee Name'
       type: String
   - name: stellar-update-case
     arguments:
@@ -273,53 +273,53 @@ script:
       isArray: true
     description: Update the severity, status, assignee, or tags of a Case in Stellar Cyber.
     outputs:
-    - contextPath: StellarCyber.Case.Update.outputs._id
-      description: ''
+    - contextPath: StellarCyber.Case.Update._id
+      description: 'Case ID'
       type: String
-    - contextPath: StellarCyber.Case.Update.outputs.assignee
-      description: ''
+    - contextPath: StellarCyber.Case.Update.assignee
+      description: 'Case Assignee'
       type: String
-    - contextPath: StellarCyber.Case.Update.outputs.created_at
-      description: ''
+    - contextPath: StellarCyber.Case.Update.created_at
+      description: 'Case Created Timestamp'
       type: Date
-    - contextPath: StellarCyber.Case.Update.outputs.created_by
-      description: ''
+    - contextPath: StellarCyber.Case.Update.created_by
+      description: 'Case Created By'
       type: String
-    - contextPath: StellarCyber.Case.Update.outputs.cust_id
-      description: ''
+    - contextPath: StellarCyber.Case.Update.cust_id
+      description: 'Case Tenant ID'
       type: String
-    - contextPath: StellarCyber.Case.Update.outputs.modified_at
-      description: ''
+    - contextPath: StellarCyber.Case.Update.modified_at
+      description: 'Case Modified Timestamp'
       type: Date
-    - contextPath: StellarCyber.Case.Update.outputs.modified_by
-      description: ''
+    - contextPath: StellarCyber.Case.Update.modified_by
+      description: 'Case Modified By'
       type: String
-    - contextPath: StellarCyber.Case.Update.outputs.name
-      description: ''
+    - contextPath: StellarCyber.Case.Update.name
+      description: 'Case Name'
       type: String
-    - contextPath: StellarCyber.Case.Update.outputs.size
-      description: ''
+    - contextPath: StellarCyber.Case.Update.size
+      description: 'Case Size (Number of Alerts)'
       type: Number
-    - contextPath: StellarCyber.Case.Update.outputs.status
-      description: ''
+    - contextPath: StellarCyber.Case.Update.status
+      description: 'Case Status'
       type: String
-    - contextPath: StellarCyber.Case.Update.outputs.tags
-      description: ''
+    - contextPath: StellarCyber.Case.Update.tags
+      description: 'Case Tags'
       type: Unknown
-    - contextPath: StellarCyber.Case.Update.outputs.ticket_id
-      description: ''
+    - contextPath: StellarCyber.Case.Update.ticket_id
+      description: 'Case Ticket ID'
       type: Number
-    - contextPath: StellarCyber.Case.Update.outputs.version
-      description: ''
+    - contextPath: StellarCyber.Case.Update.version
+      description: 'Case Version'
       type: Number
-    - contextPath: StellarCyber.Case.Update.outputs.priority
-      description: ''
+    - contextPath: StellarCyber.Case.Update.priority
+      description: 'Case Priority'
       type: String
-    - contextPath: StellarCyber.Case.Update.outputs.incident_score
-      description: ''
+    - contextPath: StellarCyber.Case.Update.incident_score
+      description: 'Case Score'
       type: Number
-    - contextPath: StellarCyber.Case.Update.outputs.assignee_name
-      description: ''
+    - contextPath: StellarCyber.Case.Update.assignee_name
+      description: 'Case Assignee Name'
       type: String
   runonce: false
   script: "-"

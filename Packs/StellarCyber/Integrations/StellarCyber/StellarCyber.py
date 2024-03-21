@@ -102,12 +102,12 @@ class Client(BaseClient):
         response = self._http_request(method="GET", full_url=incident_url, headers=headers)
         return True
 
-    def get_new_incidents(self, last_run: int):
+    def get_new_incidents(self, last_run: int, limit: int):
         if self._tenantid:
-            incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?tenantid={self._tenantid}&FROM~created_at={last_run}&sort=created_at&order=asc"
+            incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?tenantid={self._tenantid}&FROM~created_at={last_run}&sort=created_at&order=asc&limit={limit}"
         else:
             # incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?FROM~modified_at={last_run}&sort=modified_at&order=asc"
-            incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?FROM~created_at={last_run}&sort=created_at&order=asc"
+            incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?FROM~created_at={last_run}&sort=created_at&order=asc&limit={limit}"
 
         headers = {"Accept": "application/json", "Content-type": "application/json"}
         headers["Authorization"] = self._get_auth_header()
@@ -271,6 +271,7 @@ def fetch_incidents(client: Client, params: dict) -> list[dict]:
     last_incident_ids = last_run.get("last_incidents", [])
     first_fetch_time = params.get("first_fetch", "3 days").strip()
     last_fetch = last_run.get("last_fetch", None)
+    fetch_limit = params.get("max_fetch", 200)
     # new_last_fetch = int(datetime.utcnow().timestamp() * 1000)
     if not last_fetch:
         first_fetch = dateparser.parse(first_fetch_time, settings={'TIMEZONE': 'UTC'})
@@ -278,7 +279,7 @@ def fetch_incidents(client: Client, params: dict) -> list[dict]:
         last_fetch = int(first_fetch.timestamp() * 1000)
     else:
         last_fetch = int(last_fetch)  # Convert last_fetch to an integer
-    incidents = client.get_new_incidents(last_run=last_fetch)
+    incidents = client.get_new_incidents(last_run=last_fetch, limit=fetch_limit)
     demisto_incidents = []
 
     number_of_incidents = len(incidents)
@@ -302,32 +303,22 @@ def fetch_incidents(client: Client, params: dict) -> list[dict]:
         incident["summary"] = incident_summary
         event_ids = incident.get("event_ids", None)
         security_event_cnt = len(event_ids)
-        demisto.info(
-            "Pulling security event info for incident: [{}] [ticket id: {}] [event_cnt: [{}]".format(
-                incident_id, incident_ticket_id, security_event_cnt
-            )
-        )
         incident["security_alerts"] = []
         for event in event_ids:
             incident["security_alerts"].append(client.get_alert(alert_id=event["_id"], alert_index=event["_index"]))
         case_severity = get_xsoar_severity(incident["priority"])
+        case_mirror_id = f"{str(incident['ticket_id'])}:{incident['cust_id']}"
         incident["severity"] = case_severity
-        incident["mirror_id"] = f"{str(incident['ticket_id']):{incident['cust_id']}}"
+        incident["mirror_id"] = case_mirror_id
         incident["mirror_direction"] = "In"
         incident["mirror_instance"] = demisto.integrationInstance()
-        if incident_ticket_id not in last_incident_ids:
-            incident_ids.append(incident_ticket_id)
+        if case_mirror_id not in last_incident_ids:
             demisto_incident = {
-                # "name": incident_name,
-                # "dbotMirrorId": str(incident["ticket_id"]),
-                # "dbotMirrorDirection": "In",
-                # "dbotMirrorInstance": demisto.integrationInstance(),
-                # "mirror_direction": "Incoming",
-                # "mirror_instance": demisto.integrationInstance(),
                 "occurred": timestamp_to_datestring(incident_ts),
                 "rawJSON": json.dumps(incident)
             }
             demisto_incidents.append(demisto_incident)
+            incident_ids.append(case_mirror_id)
 
     if len(incident_ids) == 0:
         incident_ids = last_incident_ids
@@ -398,7 +389,6 @@ def close_case_command(client: Client, args: dict) -> CommandResults:
         outputs_key_field="_id",
         outputs=response
     )
-
 
 def update_case_command(client: Client, args: dict) -> CommandResults:
     case_id = args.get("stellar_case_id", None)
@@ -481,7 +471,7 @@ def get_modified_remote_data_command(client: Client, args) -> GetModifiedRemoteD
         modified_incidents = client.get_updated_incidents(last_run=last_run_ts)
         if len(modified_incidents):
             modified_incident_ids = [
-                f"{str(i['ticket_id']):{i['cust_id']}}"
+                f"{str(i['ticket_id'])}:{i['cust_id']}"
                 for i in modified_incidents
             ]
         else:
