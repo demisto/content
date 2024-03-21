@@ -252,8 +252,6 @@ demisto-sdk-nightly:test-upload-flow:
     - !reference [test-upload-flow, script]
 
 demisto-sdk-nightly:run-end-to-end-tests-general:
-  tags:
-    - gce # can't run docker in docker on gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
@@ -292,8 +290,6 @@ demisto-sdk-nightly:run-end-to-end-tests-general:
     - !reference [.default-after-script]
 
 demisto-sdk-nightly:run-end-to-end-tests-xsoar:
-  tags:
-    - gce # can't run docker in docker on gke
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
@@ -367,8 +363,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsoar:
 demisto-sdk-nightly:run-end-to-end-tests-xsiam:
   rules:
     - when: never
-  tags:
-    - gce
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
@@ -433,8 +427,6 @@ demisto-sdk-nightly:run-end-to-end-tests-xsiam:
 demisto-sdk-nightly:run-end-to-end-tests-xsoar-saas:
   rules:
     - when: never
-  tags:
-    - gce
   extends:
     - .default-job-settings
     - .sdk-nightly-schedule-rule-always
