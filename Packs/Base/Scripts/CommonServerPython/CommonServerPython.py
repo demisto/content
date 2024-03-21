@@ -11893,6 +11893,30 @@ def comma_separated_mapping_to_dict(raw_text):
     demisto.debug("comma_separated_mapping_to_dict << Resolved mapping: {mapping_dict}".format(mapping_dict=mapping_dict))
     return mapping_dict
 
+class ManagedSleep:
+    def __init__(self,):
+        """
+        Initializes the sleeper with the given TTL in seconds.
+
+        """
+        self.run_duration = demisto.getRunDuration()
+        self.start_time = time.time()
+
+    def sleep(self, duration_seconds):
+        """
+        Sleeps for the given duration, but raises an error if it would exceed the TTL.
+
+        Args:
+            duration_seconds: The desired sleep duration in seconds.
+
+        Raises:
+            ValueError: If the sleep duration would exceed the remaining TTL.
+        """
+        time_left = self.run_duration - (time.time() - self.start_time)
+        if duration_seconds > time_left:
+            raise ValueError(f"Requested sleep of {duration_seconds} seconds exceeds TTL of {self.run_duration} seconds")
+        time.sleep(duration_seconds)
+
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
