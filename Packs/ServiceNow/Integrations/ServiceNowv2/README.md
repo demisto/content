@@ -687,6 +687,94 @@ For more information regarding the input_display_value Argument, please see: htt
 
 
 ### servicenow-update-ticket
+
+***
+Updates the specified ticket.
+
+#### Base Command
+
+`servicenow-update-ticket`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| short_description | Short description of the ticket. | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". Possible values are: incident, problem, change_request, sc_request, sc_task, sc_req_item. Default is incident. | Optional | 
+| urgency | Ticket urgency. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". Possible values are: 3 - Low, 2 - Medium, 1 - High. | Optional | 
+| severity | Ticket severity. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". Possible values are: 3 - Low, 2 - Medium, 1 - High. | Optional | 
+| impact | Ticket impact. Possible values are: 3 - Low, 2 - Medium, 1 - High. | Optional | 
+| active | Whether the ticket is Active. Can be "true" or "false". Possible values are: true, false. | Optional | 
+| activity_due | The ticket activity due date, in the format: "2016-07-02 21:51:11". | Optional | 
+| additional_assignee_list | List of users assigned to the ticket. | Optional | 
+| approval_history | Ticket history approval. | Optional | 
+| approval_set | The ticket approval set date/time, in the format: "2016-07-02 21:51:11". | Optional | 
+| assigned_to | User assigned to the ticket. | Optional | 
+| business_duration | Business duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| business_service | Business service. | Optional | 
+| business_stc | Business source. | Optional | 
+| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| caller_id | Caller ID (UID format). | Optional | 
+| category | Category name. | Optional | 
+| caused_by | UID format. | Optional | 
+| close_code | Ticket's close code. Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller". Possible values are: Solved (Work Around), Solved (Permanently), Solved Remotely (Work Around), Solved Remotely (Permanently), Not Solved (Not Reproducible), Not Solved (Too Costly), Closed/Resolved by Caller. | Optional | 
+| close_notes | Close notes of the ticket. | Optional | 
+| closed_at | Date/time the ticket was closed, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| closed_by | User who closed the ticket. | Optional | 
+| cmdb_ci | UID Format. | Optional | 
+| comments | Format type journal input. | Optional | 
+| comments_and_work_notes | Format type journal input. | Optional | 
+| company | UID Format. | Optional | 
+| contact_type | Contact type. | Optional | 
+| correlation_display | Correlation display. | Optional | 
+| correlation_id | Correlation ID. | Optional | 
+| delivery_plan | UID Format. | Optional | 
+| display | Whether to display comments, work notes, and so on. Can be "true" or "false". Possible values are: true, false. | Optional | 
+| description | Ticket description. | Optional | 
+| due_date | Ticket due date, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| escalation | Escalation. | Optional | 
+| expected_start | Expected start date/time, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| follow_up | Follow up date/time, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| group_list | UID format list. | Optional | 
+| knowledge | Whether the ticket is solved in the knowledge base. Can be "true" or "false". Possible values are: true, false. | Optional | 
+| location | Location of the ticket. | Optional | 
+| made_sla | SLA of the ticket. | Optional | 
+| notify | Whether to be notified about this ticket. Can be "1" or "0". Possible values are: 1, 0. | Optional | 
+| order | Order number. | Optional | 
+| parent | Parent (UID format). | Optional | 
+| parent_incident | Parent incident (UID format). | Optional | 
+| problem_id | Problem ID (UID format). | Optional | 
+| reassignment_count | The number of users included in this ticket. | Optional | 
+| reopen_count | The number of times the ticket has been reopened. | Optional | 
+| resolved_at | Date/time the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| resolved_by | Resolved by (UID format). | Optional | 
+| rfc | UID. | Optional | 
+| sla_due | SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| subcategory | Ticket subcategory. | Optional | 
+| sys_updated_by | Last updated by. | Optional | 
+| sys_updated_on | Date/time the system was last updated. | Optional | 
+| user_input | Input from the end user. | Optional | 
+| watch_list | A list of watched tickets. | Optional | 
+| work_end | Format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| work_notes | Format journal list. | Optional | 
+| work_notes_list | Comma-separated list of work notes UIDs. | Optional | 
+| work_start | Date/time when work started on the ticket. | Optional | 
+| assignment_group | Assignment group UID. | Optional | 
+| incident_state | Number representing the incident state. | Optional | 
+| number | Ticket number. | Optional | 
+| priority | Priority of the ticket. Possible values are: 5 - Planning, 4 - Low, 3 - Moderate, 2 - High, 1 - Critical. | Optional | 
+| id | System ID of the ticket to update. | Required | 
+| custom_fields | Custom (user defined) fields in the format: fieldname1=value;fieldname2=value; custom fields start with a "u_". | Optional | 
+| change_type | Type of Change Request ticket. Can be "normal", "standard", or "emergency". Default is "normal". Possible values are: normal, standard, emergency. Default is normal. | Optional | 
+| state | State of the ticket, for example: "Closed" or "7" or "7 - Closed". | Optional | 
+| caller | Caller system ID. | Optional | 
+| approval | Ticket approval. | Optional | 
+| additional_fields | Additional fields in the format: fieldname1=value;fieldname2=value;. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### servicenow-update-ticket
 ***
 Updates the specified ticket.
 
@@ -814,6 +902,25 @@ There is no context output for this command.
 
 
 ### servicenow-delete-ticket
+
+***
+Deletes a ticket from ServiceNow.
+
+#### Base Command
+
+`servicenow-delete-ticket`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Ticket System ID. | Required | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Possible values are: incident, problem, change_request, sc_request, sc_task, sc_req_item. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### servicenow-delete-ticket
 ***
 Deletes a ticket from ServiceNow.
 
@@ -846,24 +953,24 @@ There is no context output for this command.
 >Ticket with ID id was successfully deleted.
 
 ### servicenow-query-tickets
+
 ***
 Retrieves ticket information according to the supplied query.
-
 
 #### Base Command
 
 `servicenow-query-tickets`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of tickets to retrieve. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
-| query | The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html | Optional | 
-| offset | Starting record index to begin retrieving records from. | Optional | 
-| additional_fields | Additional fields to present in the War Room entry and incident context. | Optional || system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True" | Optional | 
-| system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True" | Optional | 
-
+| limit | The maximum number of tickets to retrieve. Default is 10. | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". Possible values are: incident, problem, change_request, sc_request, sc_task. Default is incident. | Optional | 
+| query | The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html. | Optional | 
+| offset | Starting record index to begin retrieving records from. Default is 0. | Optional | 
+| additional_fields | Additional fields to present in the War Room entry and incident context. | Optional | 
+| system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=al;&amp;sysparm_exclude_reference_link=True". | Optional | 
 
 #### Context Output
 
@@ -874,13 +981,14 @@ Retrieves ticket information according to the supplied query.
 | Ticket.CreatedOn | date | The date/time when the ticket was created. | 
 | Ticket.Assignee | string | Specifies the user assigned to complete the ticket. By default, this field uses a reference qualifier to only display users with the itil role. | 
 | Ticket.State | string | Status of the ticket. | 
-| Ticket.Summary | string | A human\-readable title for the record. | 
+| Ticket.Summary | string | A human-readable title for the record. | 
 | Ticket.Number | string | The display value of the ticket. | 
 | Ticket.Active | boolean | Specifies whether work is still being done on a task or whether the work for the task is complete. | 
 | Ticket.AdditionalComments | Unknown | Comments about the task record. | 
 | Ticket.Priority | string | Specifies the ticket priority for the assignee. | 
 | Ticket.OpenedAt | date | The date/time when the ticket was first opened. | 
 | Ticket.Escalation | string | Indicates how long the ticket has been open. | 
+
 
 
 #### Command Example
@@ -991,6 +1099,28 @@ Retrieves ticket information according to the supplied query.
 
 
 ### servicenow-add-link
+
+***
+Adds a link to the specified ticket.
+
+#### Base Command
+
+`servicenow-add-link`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Ticket System ID. | Required | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". Possible values are: incident, problem, change_request, sc_request, sc_task. Default is incident. | Optional | 
+| link | The actual link to publish in ServiceNow ticket, in a valid URL format, for example, http://www.demisto.com. | Required | 
+| post-as-comment | Whether to publish the link as comment on the ticket. Can be "true" or "false". If false will publish the link as WorkNote. | Optional | 
+| text | The text to represent the link. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### servicenow-add-link
 ***
 Adds a link to the specified ticket.
 
@@ -1030,6 +1160,27 @@ There is no context output for this command.
 
 
 ### servicenow-add-comment
+
+***
+Adds a comment to the specified ticket, by ticket ID.
+
+#### Base Command
+
+`servicenow-add-comment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Ticket System ID. | Required | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". Possible values are: incident, problem, change_request, sc_request, sc_task. Default is incident. | Optional | 
+| comment | Comment to add. | Required | 
+| post-as-comment | Whether to publish the note as comment on the ticket. Can be "true" or "false". Default is "false". Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### servicenow-add-comment
 ***
 Adds a comment to the specified ticket, by ticket ID.
 
@@ -1068,22 +1219,22 @@ There is no context output for this command.
 
 
 ### servicenow-upload-file
+
 ***
 Uploads a file to the specified ticket.
-
 
 #### Base Command
 
 `servicenow-upload-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID. | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". Possible values are: incident, problem, change_request, sc_request, sc_task. Default is incident. | Optional | 
 | file_id | War Room entry ID that includes the file. | Required | 
 | file_name | Filename of the uploaded file to override the existing file name in the entry. | Optional | 
-
 
 #### Context Output
 
@@ -1092,6 +1243,7 @@ Uploads a file to the specified ticket.
 | ServiceNow.Ticket.File.Filename | string | Name of the file. | 
 | ServiceNow.Ticket.File.Link | string | Download link for the file. | 
 | ServiceNow.Ticket.File.SystemID | string | System ID of the file. | 
+
 
 
 #### Command Example
@@ -1382,25 +1534,26 @@ There is no context output for this command.
 >ServiceNow record with ID id was successfully deleted.
 
 ### servicenow-list-table-fields
+
 ***
 Lists API fields for the specified ServiceNow table.
-
 
 #### Base Command
 
 `servicenow-list-table-fields`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| table_name | Table name | Required | 
-
+| table_name | Table name. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ServiceNow.Field | string | Table API field name. | 
+
 
 
 #### Command Example
@@ -1907,7 +2060,7 @@ Gets table names by a label to use in commands.
 ### servicenow-get-ticket-notes
 
 ***
-Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting Read permissions for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
+Gets notes from the specified ServiceNow ticket. "Read permissions" are required for the sys_journal_field table.
 
 #### Base Command
 
@@ -1918,11 +2071,8 @@ Gets notes from the specified ServiceNow ticket. Notes can be retrieved either b
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID. | Required | 
-| limit | Maximum number of ticket notes. Default is 10. | Optional | 
+| limit | Maximum number of ticket notes. Default is 10. Default is 10. | Optional | 
 | offset | Offset of the ticket notes. Default is 0. | Optional | 
-| use_display_value | Whether to use `sysparm_display_value` to retrieve comments and work notes. Overrides the value set in the instance configuration. Possible values are: true, false. | Optional | 
-| ticket_type | The ticket type that notes should be retrieved for when using the `use_display_value` option. Possible values are: incident, problem, change_request, sc_request, sc_task, sc_req_item, sn_si_incident. Default is incident. | Optional | 
-| add_as_entry | Whether to add ticket notes and work notes as notes in the War Room. Possible values are true, false. | Optional | 
 
 #### Context Output
 
@@ -1931,8 +2081,9 @@ Gets notes from the specified ServiceNow ticket. Notes can be retrieved either b
 | ServiceNow.Ticket.ID | string | Ticket ID. | 
 | ServiceNow.Ticket.Note.Value | unknown | Ticket note value. | 
 | ServiceNow.Ticket.Note.CreatedOn | date | Date/time the ticket note was created. | 
-| ServiceNow.Ticket.Note.CreatedBy | string | User who created the ticket note. | 
+| ServiceNow.Ticket.Note.CreatedBy | string | User that created the ticket note. | 
 | ServiceNow.Ticket.Note.Type | string | Ticket note type. | 
+
 
 
 #### Command Example
@@ -1987,13 +2138,14 @@ Gets notes from the specified ServiceNow ticket. Notes can be retrieved either b
 
 
 ### servicenow-add-tag
-***
-Adds a tag to a ticket. The tag will be visible in the label_entry table and can be retrieved using the "!servicenow-query-table table_name=label_entry fields=title,table,sys_id,id_display,id_type" command.
 
+***
+Adds a tag to a ticket. The added tag entry will be visible in the label_entry table and can be retrieved using the "!servicenow-query-table table_name=label_entry fields=title,table,sys_id,id_display,id_type" command.
 
 #### Base Command
 
 `servicenow-add-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2001,8 +2153,7 @@ Adds a tag to a ticket. The tag will be visible in the label_entry table and can
 | id | Ticket System ID. | Required | 
 | tag_id | Tag system ID. Can be retrieved using the "!servicenow-query-table table_name=label fields=name,active,sys_id" command. | Required | 
 | title | Tag title. For example: "Incident - INC000001". | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
-
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". Possible values are: incident, problem, change_request, sc_request, sc_task, sc_req_item. Default is incident. | Optional | 
 
 #### Context Output
 
@@ -2011,6 +2162,7 @@ Adds a tag to a ticket. The tag will be visible in the label_entry table and can
 | ServiceNow.Ticket.ID | String | The unique ticket identifier. | 
 | ServiceNow.Ticket.TagTitle | String | Ticket tag title. | 
 | ServiceNow.Ticket.TagID | String | Ticket tag ID. | 
+
 
 
 ### servicenow-query-items
@@ -2148,13 +2300,14 @@ Retrieves item details by system ID.
 
 
 ### servicenow-create-item-order
+
 ***
 Orders the specified catalog item.
-
 
 #### Base Command
 
 `servicenow-create-item-order`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2163,13 +2316,13 @@ Orders the specified catalog item.
 | quantity | Quantity of the item to order. | Required | 
 | variables | If there are mandatory variables defined for the item, they must be passed to the endpoint. Can be retrieved using the servicenow-get-item-details command. For example, var1=value1;var2=value2. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ServiceNow.OrderRequest.ID | String | Generated request system ID. | 
 | ServiceNow.OrderRequest.RequestNumber | String | Number of the generated request. | 
+
 
 
 #### Command Example
@@ -2196,21 +2349,21 @@ Orders the specified catalog item.
 
 
 ### servicenow-document-route-to-queue
+
 ***
 Documents a route to a queue. Requires an installation of the Advanced Work Assignments plugin. An active queue and service channel to the designated table.
-
 
 #### Base Command
 
 `servicenow-document-route-to-queue`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | queue_id | Queue ID. Can be retrieved using the "!servicenow-query-table table_name=awa_queue fields=name,number,order" command. | Required | 
-| document_table | Document table. | Optional | 
+| document_table | Document table. Default is incident. | Optional | 
 | document_id | Document ID. | Required | 
-
 
 #### Context Output
 
@@ -2221,6 +2374,7 @@ Documents a route to a queue. Requires an installation of the Advanced Work Assi
 | ServiceNow.WorkItem.DocumentID | String | Unique ID of the document to be routed to the queue. | 
 | ServiceNow.WorkItem.QueueID | String | Unique ID of the queue on which to route a document. | 
 | ServiceNow.WorkItem.DisplayName | String | Name of the document to be routed by this work item, for example: case record. | 
+
 
 
 ### get-mapping-fields
