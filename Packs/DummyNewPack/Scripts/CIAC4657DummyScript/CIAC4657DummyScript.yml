@@ -1,0 +1,30 @@
+args:
+- name: dummy
+  required: true
+  type: keyValue
+comment: Dummy script to test out CIAC-4657.
+commonfields:
+  id: CIAC-4657-dummy-script
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.14.90585
+enabled: true
+engineinfo: {}
+name: CIAC-4657-dummy-script
+outputs:
+- contextPath: dummy
+  description: Some output.
+  type: string
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- Utilities
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

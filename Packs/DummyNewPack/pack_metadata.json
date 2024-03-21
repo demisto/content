@@ -1,0 +1,21 @@
+{
+    "name": "DummyNewPack",
+    "description": "Dummy pack for testing https://jira-dc.paloaltonetworks.com/browse/CIAC-10044",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Kobbi Gal",
+    "url": "",
+    "email": "",
+    "created": "2024-03-21T11:33:17Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "kgal-pan"
+    ]
+}
