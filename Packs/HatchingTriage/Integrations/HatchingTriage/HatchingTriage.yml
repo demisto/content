@@ -191,10 +191,10 @@ script:
       description: Date the analysis report was created.
       type: Date
     - contextPath: Triage.sample-summaries.custom
-      description: Custom details
+      description: 'Custom details.'
       type: String
     - contextPath: Triage.sample-summaries.owner
-      description: Owner of the sample
+      description: 'Owner of the sample.'
       type: String
     - contextPath: Triage.sample-summaries.sample
       description: Unique identifier of the sample.
