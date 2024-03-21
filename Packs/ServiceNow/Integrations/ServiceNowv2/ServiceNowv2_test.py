@@ -19,7 +19,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, get_timezone_offset, \
     converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS, \
-    format_incidents_response_with_display_values, get_entries_for_notes, is_time_field
+    format_incidents_response_with_display_values, get_entries_for_notes, is_time_field, am_pm_time_format
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -334,12 +334,20 @@ def test_get_timezone_offset():
     full_response = {'sys_created_on': {'display_value': '06/12/2022 23:38:52', 'value': '2022-12-07 09:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd/MM/yyyy'))
     assert offset == timedelta(minutes=600)
+    
+    full_response = {'sys_created_on': {'display_value': '06/12/2022 11:38:52 PM', 'value': '2022-12-07 09:38:52'}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd/MM/yyyy'))
+    assert offset == timedelta(minutes=600)
 
     full_response = {'sys_created_on': {'display_value': '07.12.2022 0:38:52', 'value': '2022-12-06 19:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd.MM.yyyy'))
     assert offset == timedelta(minutes=-300)
 
     full_response = {'sys_created_on': {'display_value': 'Dec-07-2022 00:38:52', 'value': '2022-12-06 19:38:52'}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('mmm-dd-yyyy'))
+    assert offset == timedelta(minutes=-300)
+    
+    full_response = {'sys_created_on': {'display_value': 'Dec-07-2022 12:38:52 AM', 'value': '2022-12-06 19:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('mmm-dd-yyyy'))
     assert offset == timedelta(minutes=-300)
 
@@ -2308,3 +2316,19 @@ def test_is_time_field(input_string, expected):
         It should return True if string contains valid datetime, False otherwise
     """
     assert is_time_field(input_string) is expected
+
+time_str = '2024-03-20 05:15:06'
+time_str2 = '2024-03-20 05:15:06 AM'
+time_format = '%Y-%m-%d %H:%M:%S'
+
+
+@pytest.mark.parametrize(
+    "str_time, expected_format",
+    [
+        ("2024-03-20 05:15:06", "%Y-%m-%d %H:%M:%S"),
+        ("2024-03-20 05:15:06 AM", "%Y-%m-%d %I:%M:%S %p"),
+    ],
+)
+def test_handle_am_pm_time_format(str_time, expected_format):
+    original_format = '%Y-%m-%d %H:%M:%S'
+    assert am_pm_time_format(str_time, original_format) == expected_format

@@ -29,6 +29,10 @@ DATE_FORMAT_OPTIONS = {
     'mmm-dd-yyyy': '%b-%d-%Y %H:%M:%S'
 }
 
+TIME_FORMAT_OPTION = {
+    
+}
+
 TICKET_STATES = {
     'incident': {
         '1': '1 - New',
@@ -2491,7 +2495,7 @@ def get_timezone_offset(ticket: dict, display_date_format: str):
     """
     try:
         local_time = ticket.get('sys_created_on', {}).get('display_value', '')
-        local_time = datetime.strptime(local_time, display_date_format)
+        local_time = datetime.strptime(local_time, am_pm_time_format(local_time, display_date_format))
     except Exception as e:
         raise Exception(f'Failed to get the display value offset time. ERROR: {e}')
     try:
@@ -2802,7 +2806,19 @@ def is_entry_type_mirror_supported(entry_type):
                                 EntryType.VIDEO_FILE, EntryType.STATIC_VIDEO_FILE]
     return entry_type in supported_mirror_entries
 
-
+def am_pm_time_format(time_str: str, date_time_format: str) -> str:
+    """
+        Args:
+            time_str (str): The time from servicenow
+            date_time_format (str): The datetime format
+        Return:
+            The format with appended am/pm parsing if the time string contains AM or PM
+    """
+    if 'AM' in time_str or 'PM' in time_str:
+        date_time_format = date_time_format.replace('H', 'I') + ' %p'
+    
+    return date_time_format
+    
 def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     """
     Returns the list of fields for an incident type.
