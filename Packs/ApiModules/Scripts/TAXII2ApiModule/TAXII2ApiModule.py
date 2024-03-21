@@ -100,6 +100,7 @@ STIX_2_TYPES_TO_CORTEX_TYPES = {       # pragma: no cover
     "identity": FeedIndicatorType.Identity,
     "location": FeedIndicatorType.Location,
     "vulnerability": FeedIndicatorType.CVE,
+    "x509-certificate": FeedIndicatorType.X509,
 }
 
 MITRE_CHAIN_PHASES_TO_DEMISTO_FIELDS = {       # pragma: no cover
@@ -227,6 +228,7 @@ STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {        # pragma
                   FeedIndicatorType.URL, FeedIndicatorType.File, FeedIndicatorType.Registry),
     'software': FeedIndicatorType.Software,
     'autonomous-system': FeedIndicatorType.AS,
+    "x509-certificate": FeedIndicatorType.X509,
 }
 
 
@@ -450,7 +452,6 @@ class XSOAR2STIXParser:
                 object_refs.extend(
                     [relationship.get('source_ref'), relationship.get('id')]
                 )
-                demisto.info("handle_report_relationships: sorting_2")
                 target_report['object_refs'] = sorted(object_refs)
 
     @staticmethod
@@ -721,8 +722,8 @@ class XSOAR2STIXParser:
         Returns:
             Stix object entry for given indicator
         """
-        if self.server_version == TAXII_VER_2_1 and "CustomFields" in xsoar_indicator:
-            custom_fields = xsoar_indicator["CustomFields"]
+        if self.server_version == TAXII_VER_2_1:
+            custom_fields = xsoar_indicator.get("CustomFields",{})
             stix_type = stix_object['type']
             if stix_type == 'malware':
                 stix_object['is_family'] = custom_fields.get('ismalwarefamily', False)
@@ -738,12 +739,13 @@ class XSOAR2STIXParser:
         Returns:
             Stix object entry for given indicator
         """
-        if self.server_version == TAXII_VER_2_0 and "CustomFields" in xsoar_indicator:
-            custom_fields = xsoar_indicator["CustomFields"]
+        if self.server_version == TAXII_VER_2_0:
+            custom_fields = xsoar_indicator.get("CustomFields",{}) or {}
             stix_type = stix_object['type']
             if stix_type in {"indicator", "malware", "report", "threat-actor", "tool"}:
-                stix_object['labels'] = [x.lower().replace(" ", "-") for x in custom_fields.get('tags', [stix_object['type']])]
-            if stix_type == 'identity' and (identity_class := custom_fields.get('identityclass')):
+                tags = custom_fields.get('tags') if custom_fields.get('tags',[]) != [] else [stix_object['type']]
+                stix_object['labels'] = [x.lower().replace(" ", "-") for x in tags]
+            if stix_type == 'identity' and (identity_class := custom_fields.get('identityclass','unknown')):
                 stix_object['identity_class'] = identity_class
         return stix_object
 
@@ -781,7 +783,6 @@ class XSOAR2STIXParser:
             # key is the only required field for windows-registry-key
             stix_object['key'] = xsoar_indicator.get('value')
             stix_object['values'] = []
-
             for keyvalue in custom_fields['keyvalue']:
                 if keyvalue:
                     stix_object['values'].append(keyvalue)
@@ -1184,9 +1185,9 @@ class STIX2XSOARParser(BaseClient):
             "aliases": malware_obj.get('aliases', []),
             "kill_chain_phases": kill_chain_phases,
             "os_execution_envs": malware_obj.get('os_execution_envs', []),
-            "architecture_execution_envs": malware_obj.get('architecture_execution_envs', []),
+            "architecture": malware_obj.get('architecture_execution_envs', []),
             "capabilities": malware_obj.get('capabilities', []),
-            "sample_refs": malware_obj.get('sample_refs', [])
+            "samples": malware_obj.get('sample_refs', [])
         })
 
         if self.update_custom_fields:
@@ -1428,6 +1429,15 @@ class STIX2XSOARParser(BaseClient):
             }
         )
         return account_indicator
+    
+    def create_keyvalue_dict(self, registry_key_obj_values: list[dict[str, Any]]) -> list:
+        returned_grid = []
+        for stix_values_entry in registry_key_obj_values:
+            returned_grid.append({"name":stix_values_entry.get("name", ''),
+                                                               "type":stix_values_entry.get("data_type"),
+                                  "data":stix_values_entry.get("data")})
+        return returned_grid
+            
 
     def parse_sco_windows_registry_key_indicator(self, registry_key_obj: dict[str, Any]) -> list[dict[str, Any]]:
         """
@@ -1439,9 +1449,9 @@ class STIX2XSOARParser(BaseClient):
         registry_key_indicator = self.parse_general_sco_indicator(registry_key_obj, value_mapping='key')
         registry_key_indicator[0]['fields'].update(
             {
-                'registryvalue': registry_key_obj.get('values'),
+                'keyvalue': self.create_keyvalue_dict(registry_key_obj.get('values',[])),
                 'modified_time': registry_key_obj.get('modified_time'),
-                'number_of_subkeys': registry_key_obj.get('number_of_subkeys')
+                'numberofsubkeys': registry_key_obj.get('number_of_subkeys')
             }
         )
         return registry_key_indicator
@@ -1543,6 +1553,30 @@ class STIX2XSOARParser(BaseClient):
         cve['fields'] = fields
 
         return [cve]
+    
+    def parse_x509_certificate(self, x509_certificate_obj: dict[str, Any]):
+        """
+        Parses a single x509_certificate object
+        :param x509_certificate_obj: x509_certificate object
+        :return: x509_certificate extracted from the x509_certificate object in cortex format.
+        """
+        x509_certificate = {
+            "value": x509_certificate.get('name'),
+            "type": ThreatIntel.ObjectsNames.X509,
+            "score": Common.DBotScore.NONE,
+            "rawJSON": x509_certificate
+        }
+
+        fields = self.set_default_fields(x509_certificate)
+        if self.update_custom_fields:
+            custom_fields, score = self.parse_custom_fields(x509_certificate.get('extensions', {}))
+            fields.update(assign_params(**custom_fields))
+            if score:
+                x509_certificate['score'] = score
+        fields['tags'] = list(set(list(fields.get('tags', [])) + self.tags))
+        x509_certificate["fields"] = fields
+
+        return [x509_certificate]
 
     def parse_relationships(self, relationships_lst: list[dict[str, Any]]) -> list[dict[str, Any]]:
         """Parse the Relationships objects retrieved from the feed.
@@ -1810,7 +1844,8 @@ class STIX2XSOARParser(BaseClient):
             "windows-registry-key": self.parse_sco_windows_registry_key_indicator,
             "identity": self.parse_identity,
             "location": self.parse_location,
-            "vulnerability": self.parse_vulnerability
+            "vulnerability": self.parse_vulnerability,
+            "x509-certificate": self.parse_x509_certificate,
         }
 
         indicators, relationships_lst = self.parse_generator_type_envelope(envelopes, parse_stix_2_objects, limit)

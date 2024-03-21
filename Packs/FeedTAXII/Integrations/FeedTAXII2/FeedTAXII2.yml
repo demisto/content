@@ -134,6 +134,7 @@ configuration:
   - identity
   - location
   - vulnerability
+  - x509-certificate
   additionalinfo: 'Choose which STIX object types to fetch from the TAXII server. If left empty, all available object types will be fetched.'
 - display: Certificate File as Text
   name: creds_certificate
