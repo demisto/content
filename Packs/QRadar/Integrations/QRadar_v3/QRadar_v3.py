@@ -4271,6 +4271,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'long-running-execution':
             validate_integration_context()
+            support_multithreading()
             long_running_execution_command(client, params)
 
         elif command in [
