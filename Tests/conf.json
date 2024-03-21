@@ -5648,6 +5648,10 @@
             "instance_names": "AWS-SNS-Listener"
         },
         {
+            "integrations": "Redmine",
+            "playbookID": "Redmine-Test"
+        },
+        {
             "integrations": "PaloAltoNetworksAIOps",
             "playbookID": "PaloAltoNetworksAIOps-Test"
         }
