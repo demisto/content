@@ -493,6 +493,9 @@ def build_dbot_score(
 ) -> Common.DBotScore:
     """Build a DBotScore object.
 
+    The `score` and `rating` arguments both provide a mapping to the DBotScore to be used, the differences between them
+    is that `score` uses integers and `rating` uses a string.
+
     Args:
         indicator (str): The indicating entity.
         indicator_type (str): The type of the indicating entity.
