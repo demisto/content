@@ -165,7 +165,15 @@
                 "native:dev",
                 "native:candidate"
             ]
-        }
+        },
+        {
+            "id":"EWS v2",
+            "reason":"Issue: CIAC-9764",
+            "ignored_native_images":[
+                "native:8.6",
+                "native:candidate"
+            ]
+        },
     ],
     "flags_versions_mapping":{
         "native:dev":"native:dev",
