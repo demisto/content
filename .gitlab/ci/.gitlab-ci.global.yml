@@ -322,7 +322,6 @@
 .trigger-slack-notification:
   stage: .post
   trigger:
-    strategy: depend
     include:
       - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
   inherit: # see https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27775
