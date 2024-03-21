@@ -1109,7 +1109,7 @@ class TestParsingIndicators:
                 'value': "hkey_local_machine\\system\\bar\\foo"
             }
         ]
-        result  = taxii_2_client.parse_sco_windows_registry_key_indicator(registry_object)
+        result = taxii_2_client.parse_sco_windows_registry_key_indicator(registry_object)
         assert result == xsoar_expected_response
         taxii_2_client.update_custom_fields = True
         result = taxii_2_client.parse_sco_windows_registry_key_indicator(
@@ -1423,27 +1423,27 @@ class TestParsingIndicators:
         """
         assert taxii_2_client.parse_location(location_object) == xsoar_expected_response
 
-    x509_certificate={
+    x509_certificate = {
         "type": "x509-certificate",
         "serial_number": "serial_number",
-        "issuer": "C=ZA, ST=Western Cape, L=Cape Town,"\
-        " O=Thawte Consulting cc, OU=Certification Services"\
+        "issuer": "C=ZA, ST=Western Cape, L=Cape Town,"
+        " O=Thawte Consulting cc, OU=Certification Services"
         " Division, CN=Thawte Server CA/emailAddress=server-certs@thawte.com",
         "validity_not_before": "2016-03-12T12:00:00Z",
         "validity_not_after": "2016-08-21T12:00:00Z",
-        "subject": "C=US, ST=Maryland, L=Pasadena,"\
+        "subject": "C=US, ST=Maryland, L=Pasadena,"
         " O=Brent Baccala, OU=FreeSoft, CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
-        }
-    x509_certificate_without_serial_number={
+    }
+    x509_certificate_without_serial_number = {
         "type": "x509-certificate",
-        "issuer": "C=ZA, ST=Western Cape, L=Cape Town," \
-        " O=Thawte Consulting cc, OU=Certification " \
+        "issuer": "C=ZA, ST=Western Cape, L=Cape Town,"
+        " O=Thawte Consulting cc, OU=Certification "
         "Services Division, CN=Thawte Server CA/emailAddress=server-certs@thawte.com",
         "validity_not_before": "2016-03-12T12:00:00Z",
         "validity_not_after": "2016-08-21T12:00:00Z",
-        "subject": "C=US, ST=Maryland, L=Pasadena, O=Brent" \
+        "subject": "C=US, ST=Maryland, L=Pasadena, O=Brent"
         " Baccala, OU=FreeSoft, CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
-        }
+    }
     expected_result = [
         {
             "value": "serial_number",
@@ -1491,9 +1491,10 @@ class TestParsingIndicators:
             },
         }
     ]
+    
     @pytest.mark.parametrize('x509_certificate_object, xsoar_expected_response',
-                                [(x509_certificate, expected_result),
-                                (x509_certificate_without_serial_number, [])])
+                            [(x509_certificate, expected_result),
+                            (x509_certificate_without_serial_number, [])])
     def test_parse_x509_certificate(self,taxii_2_client, x509_certificate_object, xsoar_expected_response):
         """
         Given:
@@ -2117,6 +2118,7 @@ def test_create_indicators(mocker):
 
     assert extensions == []
     assert iocs == expected_result
+
 
 def test_create_x509_certificate_subject_issuer():
     """

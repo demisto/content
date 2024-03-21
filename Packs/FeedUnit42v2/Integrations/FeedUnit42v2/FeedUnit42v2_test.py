@@ -384,6 +384,6 @@ def test_fetch_indicators_command_with_relationship(mocker):
     mocker.patch.object(client, 'fetch_stix_objects_from_api', side_effect=mock_get_stix_objects)
 
     indicators = fetch_indicators(client, create_relationships=True)
-    assert len(indicators) == 17
+    assert len(indicators) == 18
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
     assert REPORTS_INDICATORS_WITH_RELATIONSHIPS in indicators
