@@ -63,7 +63,7 @@ def handle_file(msg, filename, maintype, subtype, cid, data):
     """
     Add the attachment to the message and add the relevant header
     """
-    if maintype in ('text', 'message') :
+    if maintype in ('text', 'message'):
         # UTF-8 is a pretty safe bet
         att = MIMEText(data, subtype, UTF_8)  # type: MIMEBase
     elif maintype == 'image':
