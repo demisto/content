@@ -170,7 +170,7 @@ def calculate_results_table(jira_tickets_for_result: dict[str, Issue],
         skipped_count = 0
         errors_count = 0
         for server_version in server_versions_list:
-            test_suite: TestSuite = result_test_suites.get(server_version)
+            test_suite: TestSuite | None = result_test_suites.get(server_version)
             if test_suite:
                 xml.add_testsuite(test_suite)
                 row.append(
@@ -310,6 +310,8 @@ def is_pivot(current_pipeline: ProjectPipeline, pipeline_to_compare: ProjectPipe
 
     in_order = are_pipelines_in_order(pipeline_a=current_pipeline, pipeline_b=pipeline_to_compare)
     if in_order:
+        logging.info(f"The status of the current pipeline {current_pipeline.id} is {current_pipeline.status} and the "
+                     f"status of the compared pipeline {pipeline_to_compare.id} is {pipeline_to_compare.status}")
         if pipeline_to_compare.status == 'success' and current_pipeline.status == 'failed':
             return True
         if pipeline_to_compare.status == 'failed' and current_pipeline.status == 'success':

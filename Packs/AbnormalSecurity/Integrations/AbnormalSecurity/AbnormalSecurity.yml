@@ -753,13 +753,13 @@ script:
       description: The reason the message was not analyzed.
       type: String
 
-  - arguments:
-    - description: Returns test data if set to `True`.
-      name: mock-data
-    description: Get the latest threat intel feed.
-    name: abnormal-security-get-latest-threat-intel-feed
-    deprecated: true
-  dockerimage: demisto/python3:3.10.13.87159
+    - arguments:
+        - description: Returns test data if set to `True`.
+          name: mock-data
+      description: Get the latest threat intel feed.
+      name: abnormal-security-get-latest-threat-intel-feed
+      deprecated: true
+  dockerimage: demisto/python3:3.10.13.88772
   script: ""
   subtype: python3
   type: python

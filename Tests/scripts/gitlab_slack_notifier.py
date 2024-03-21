@@ -238,7 +238,7 @@ def get_playbook_tests_data(artifact_folder: Path) -> tuple[set[str], set[str], 
     failed_tests = set()
     skipped_tests = set()
     skipped_integrations = set(split_results_file(get_artifact_data(artifact_folder, 'skipped_integrations.txt')))
-    xml = JUnitXml.fromfile(artifact_folder / TEST_PLAYBOOKS_REPORT_FILE_NAME)
+    xml = JUnitXml.fromfile(str(artifact_folder / TEST_PLAYBOOKS_REPORT_FILE_NAME))
     for test_suite in xml.iterchildren(TestSuite):
         properties = get_properties_for_test_suite(test_suite)
         if playbook_id := properties.get("playbook_id"):
@@ -562,8 +562,8 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
-    computed_slack_channel = "dmst-build-test"
     if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
+        computed_slack_channel = "dmst-build-test"
         # Check if the current commit's pipeline differs from the previous one. If the previous pipeline is still running,
         # compare the next build. For commits without pipelines, compare the current one to the nearest commit with a
         # pipeline and all those in between, marking them as suspicious.
@@ -588,9 +588,7 @@ def main():
                                                        pipeline_to_compare=previous_pipeline)
 
                     logging.info(
-                        f"Checking pipeline id: {current_pipeline.id}, of commit: {current_commit.title}, "
-                        f"after comparing with pipeline id: {previous_pipeline.id},"
-                        f"the change status is: {pipeline_changed_status}")
+                        "comparing current pipeline status with nearest older pipeline status")
 
                     if pipeline_changed_status is None and current_commit_index > 0:
                         # looking_forward until we find a commit with a pipeline to compare with
@@ -601,8 +599,7 @@ def main():
                             pipeline_changed_status = is_pivot(current_pipeline=next_pipeline,
                                                                pipeline_to_compare=current_pipeline)
                             logging.info(
-                                f" after comparing with pipeline id: {next_pipeline.id},"
-                                f"the change status is: {pipeline_changed_status}")
+                                "comparing current pipeline status with nearest newer pipeline status")
 
                     if pipeline_changed_status is not None:
                         shame_message = create_shame_message(suspicious_commits, pipeline_changed_status,  # type: ignore

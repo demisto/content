@@ -22,6 +22,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Endpoint Investigation Plan - Test",
+            "timeout": 600
+        },
+        {
             "playbookID": "playbook-AzureLogAnalytics-test",
             "integrations": "Azure Log Analytics",
             "instance_names": "Azure_Log_Analytics_client_cred",
@@ -90,7 +94,7 @@
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
-            "playbookID": " Test Playbook - MDE - Retrieve File",
+            "playbookID": "Test Playbook - MDE - Retrieve File",
             "instance_names": "microsoft_defender_atp_dev"
         },
         {
@@ -111,15 +115,15 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test_Playbook_-_Cortex_XDR_-_Endpoint_Investigation"
+            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation"
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test_Playbook-Cortex_XDR_Malware_-_Incident Enrichment"
+            "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment"
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test_Playbook_-_Cortex_XDR_-_Retrieve_File_by_sha256"
+            "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256"
         },
         {
             "integrations": "Twitter v2",
@@ -266,7 +270,7 @@
         },
         {
             "integrations": "GSuiteAdmin",
-            "playbookID": "GSuiteAdmin-MobileDevices-Test",
+            "playbookID": "playbook-GSuiteAdmin-MobileDevices-Test",
             "fromversion": "5.5.0"
         },
         {
@@ -517,8 +521,7 @@
         },
         {
             "integrations": [
-                "Syslog Sender",
-                "syslog"
+                "Syslog Sender"
             ],
             "playbookID": "Test Syslog",
             "fromversion": "5.5.0",
@@ -809,11 +812,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "Gmail",
-            "playbookID": "Sanity Test - Playbook with Unmockable Integration",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "Whois",
             "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration",
             "fromversion": "6.5.0"
@@ -823,17 +821,6 @@
             "playbookID": "HelloWorld_Scan-Test",
             "fromversion": "5.0.0",
             "timeout": 400
-        },
-        {
-            "integrations": "HelloWorldPremium",
-            "playbookID": "HelloWorldPremium_Scan-Test",
-            "fromversion": "5.0.0",
-            "timeout": 400
-        },
-        {
-            "integrations": "HelloWorldPremium",
-            "playbookID": "HelloWorldPremium-Test",
-            "fromversion": "5.0.0"
         },
         {
             "integrations": "ThreatQ v2",
@@ -1071,16 +1058,12 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "AWS - Athena - Beta",
-            "playbookID": "Beta-Athena-Test"
-        },
-        {
             "integrations": "BeyondTrust Password Safe",
             "playbookID": "BeyondTrust-Test"
         },
         {
             "integrations": "Dell Secureworks",
-            "playbookID": "secureworks_test"
+            "playbookID": "SecureWorks"
         },
         {
             "integrations": "ServiceNow v2",
@@ -1452,7 +1435,7 @@
         },
         {
             "integrations": "Threat Grid",
-            "playbookID": "ThreatGrid_Test",
+            "playbookID": "ThreatGridTest",
             "timeout": 600
         },
         {
@@ -1676,12 +1659,6 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "TestDedupIncidentsPlaybook"
-        },
-        {
-            "playbookID": "TestDedupIncidentsByName"
-        },
-        {
             "integrations": "McAfee Advanced Threat Defense",
             "playbookID": "Test Playbook McAfee ATD",
             "timeout": 700
@@ -1854,7 +1831,7 @@
             "playbookID": "SymantecEndpointProtection_Test"
         },
         {
-            "integrations": "carbonblackprotection",
+            "integrations": "CarbonBlackProtectionV2",
             "playbookID": "search_endpoints_by_hash_-_carbon_black_protection_-_test",
             "timeout": 500
         },
@@ -1878,10 +1855,6 @@
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
-        },
-        {
-            "integrations": "google",
-            "playbookID": "GsuiteTest"
         },
         {
             "integrations": "OpenPhish",
@@ -3037,11 +3010,7 @@
         },
         {
             "integrations": "AWS - CloudTrail",
-            "playbookID": "3da2e31b-f114-4d7f-8702-117f3b498de9"
-        },
-        {
-            "integrations": "carbonblackprotection",
-            "playbookID": "67b0f25f-b061-4468-8613-43ab13147173"
+            "playbookID": "AWS - CloudTrail Test Playbook"
         },
         {
             "integrations": "DomainTools",
@@ -3656,7 +3625,7 @@
             "integrations": "Palo Alto Networks - Prisma SASE",
             "playbookID": "PrismaSASE Test",
             "fromversion": "6.5.0",
-            "timeout": 3000
+            "timeout": 500
         },
         {
             "integrations": "Prisma Access",
@@ -4027,7 +3996,11 @@
             "is_mockable": false
         },
         {
-            "playbookID": "Export Indicators Performance Test",
+            "integrations": "CarbonBlackProtectionV2",
+            "playbookID": "CbP-PlayBook"
+        },
+        {
+            "playbookID": "EDL Indicator Performance Test",
             "instance_names": "eis_auto",
             "integrations": [
                 "ExportIndicators",
@@ -4212,10 +4185,10 @@
             ]
         },
         {
-            "playbookID": "Darktrace Test Playbook",
+            "playbookID": "TestMBsPlaybook",
             "fromversion": "6.0.0",
             "integrations": [
-                "Darktrace"
+                "DarktraceMBs"
             ]
         },
         {
@@ -4247,7 +4220,7 @@
             ]
         },
         {
-            "playbookID": "X509Certificate Test Playbook",
+            "playbookID": "X509Certificate_Test_Playbook",
             "fromversion": "6.0.0"
         },
         {
@@ -4323,7 +4296,7 @@
             ]
         },
         {
-            "playbookID": "a60ae34e-7a00-4a06-81ca-2ca6ea1d58ba",
+            "playbookID": "Test-AnsibleHCloud",
             "fromversion": "6.0.0",
             "integrations": [
                 "AnsibleAlibabaCloud"
@@ -4659,7 +4632,7 @@
             "fromversion": "5.0.0"
         },
         {
-            "playbookID": "7d8ac1af-2d1e-4ed9-875c-d3257d2c6830",
+            "playbookID": "Test-AnsibleHCloud",
             "fromversion": "6.0.0",
             "integrations": [
                 "AnsibleHCloud"
@@ -4714,7 +4687,7 @@
             "playbookID": "Test Playbook TrendMicroDDA",
             "fromversion": "5.0.0",
             "integrations": [
-                "Trend Micro Deep Discovery Analyzer Beta"
+                "Trend Micro Deep Discovery Analyzer"
             ]
         },
         {
@@ -5420,10 +5393,6 @@
             "memory_threshold": 100
         },
         {
-            "playbookID": "Dedup - Generic v3",
-            "fromversion": "5.5.0"
-        },
-        {
             "playbookID": "DBotPredictURLPhishing_test",
             "integrations": [
                 "Whois",
@@ -5478,7 +5447,7 @@
         },
         {
             "integrations": "CloudflareWAF",
-            "playbookID": "playbook-TestCloudflareWAFPlaybook_Test",
+            "playbookID": "TestCloudflareWAFPlaybook",
             "fromversion": "6.2.0"
         },
         {
@@ -5545,11 +5514,8 @@
         },
         {
             "integrations": "Secneurx Analysis",
-            "playbookID": "Detonate URL - SecneurX Anlaysis - Test",
+            "playbookID": "Detonate URL - SecneurX Analysis - Test",
             "fromversion": "6.2.0"
-        },
-        {
-            "playbookID": "GridFieldSetup_test"
         },
         {
             "playbookID": "TestGetArrayElements"
@@ -5575,15 +5541,15 @@
         {
             "integrations": "JoeSecurityV2",
             "fromversion": "6.2.0",
-            "playbookID": "testplaybook- JoeSecuirtyV2"
+            "playbookID": "testplaybook-JoeSecuirtyV2"
         },
         {
-            "integrations": "FortinetFortiwebVM",
+            "integrations": "fortiweb_vm",
             "playbookID": "playbook-FortiwebVM_V1_Test",
             "fromversion": "6.2.0"
         },
         {
-            "integrations": "FortinetFortiwebVM",
+            "integrations": "fortiweb_vm",
             "playbookID": "playbook-FortiwebVM_V2_Test",
             "fromversion": "6.2.0"
         },
@@ -5669,8 +5635,17 @@
             "playbookID": "Test - Netcraft"
         },
         {
-            "integrations": "Fortimail",
-            "playbookID": "playbook-Fortimail_Test"
+            "integrations": "fortimail",
+            "playbookID": "Fortimail"
+        },
+        {
+            "integrations": "Zimperium v2",
+            "playbookID": "Zimperiumv2-TestPlaybook"
+        },
+        {
+            "integrations": "AWS-SNS-Listener",
+            "playbookID": "AWS SNS Listener - Test",
+            "instance_names": "AWS-SNS-Listener"
         }
     ],
     "skipped_tests": {
@@ -5678,7 +5653,7 @@
         "test-threatConnectv3": "No instance - Instance issues",
         "generic-sql-mssql-encrypted-connection": "Instance issues",
         "RSANetWitnessv115-Test": "mocking error CIAC-7576",
-        "CiscoWSAv2": "No instance - developed by Qmasters",
+        "playbook-CiscoWSA_Test": "No instance - developed by Qmasters",
         "DatadogCloudSIEM": "No instance - developed by Login soft",
         "RegPathReputationBasicLists_test": "The D2 pack is deprecated",
         "CirclIntegrationTest": "No instance",
@@ -5697,7 +5672,6 @@
         "MAR - Endpoint data collection test": "Issue CIAC-4521",
         "Tidy - Test": "Will run it manually.",
         "Protectwise-Test": "Issue CRTX-86776",
-        "TestDedupIncidentsPlaybook": "Issue 24344",
         "Endpoint data collection test": "Uses a deprecated playbook called Endpoint data collection",
         "Prisma_Access_Egress_IP_Feed-Test": "unskip after we will get Prisma Access instance - Issue 27112",
         "Prisma_Access-Test": "unskip after we will get Prisma Access instance - Issue 27112",
@@ -5707,17 +5681,17 @@
         "NetWitness Endpoint Test": "Issue 19878",
         "InfoArmorVigilanteATITest": "Test issue 17358",
         "ArcSight Logger test": "Issue 19117",
-        "3da2e31b-f114-4d7f-8702-117f3b498de9": "Issue 19837",
+        "AWS - CloudTrail Test Playbook": "Issue 19837",
         "d66e5f86-e045-403f-819e-5058aa603c32": "pr 3220",
         "IntSights Mssp Test": "Issue #16351",
-        "fd93f620-9a2d-4fb6-85d1-151a6a72e46d": "Issue 19854",
+        "AWS - SQS Test Playbook": "Issue 19854",
         "Test Playbook TrendMicroDDA": "Issue 16501",
         "ssdeepreputationtest": "Issue #20953",
         "C2sec-Test": "Issue #21633",
         "ThreatConnect v2 - Test": "Issue 26782",
         "Email Address Enrichment - Generic v2.1 - Test": "Issue 26785",
         "Tanium v2 - Test": "Issue 26822",
-        "Fidelis Elevate Network": "Issue 26453",
+        "Fidelis-Test": "Issue 26453",
         "Cortex XDR - IOC - Test": "Issue 37957",
         "PAN-OS Query Logs For Indicators Test": "Issue 28753",
         "TCPUtils-Test": "Issue 29677",
@@ -5755,8 +5729,7 @@
         "get_original_email_-_ews-_test": "Issue 27571",
         "Trend Micro Deep Security - Test": "outsourced",
         "Microsoft Teams - Test": "Issue 38263",
-        "EWS Extension: Powershell Online V2 Test": "Issue 39008",
-        "O365 - EWS - Extension - Test": "Issue 39008",
+        "playbook-O365-EWS-Extension-Powershell-Online-V2-Test": "Issue 39008",
         "Majestic Million Test Playbook": "Issue 30931",
         "iDefense_v2_Test": "Issue 40126",
         "Feed iDefense Test": "Issue 34035",
@@ -5782,7 +5755,7 @@
         "cisco-ise-test-playbook": "Issue 44351",
         "GuardiCoreV2-Test": "Issue 43822",
         "ExtractAttackPattern-Test": "Issue 44095",
-        "playbook-EWS_O365_Extension_test": "Issue 25605",
+        "playbook-EWS_O365_Extension_test": "Issue 25605, Issue 39008",
         "Cherwell - test": "Issue 26780",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
@@ -5819,7 +5792,7 @@
         "Carbon Black Enterprise Protection V2 Test": "No credentials",
         "TruSTAR v2-Test": "No credentials",
         "Archer v2 - Test": "Test doesn't pass in the builds because of the creds, but creds seems ok, need to debug further",
-        "AD v2 - debug-mode": "No credentials",
+        "AD v2 - debug-mode - Test": "No credentials",
         "Google-KMS-test": "No instance",
         "hashicorp_test": "No instance",
         "Google BigQuery Test": "No instance",
@@ -5855,7 +5828,8 @@
         "OpsGenieV3TestPlaybook": "Issue CIAC-7649",
         "ThreatStream-Test": "Issue CRTX-96526",
         "MSG-Threat-Assessment-test": "API limitation",
-        "BambenekConsultingFeed_Test": "Issue CRTX-99480"
+        "BambenekConsultingFeed_Test": "Issue CRTX-99480",
+        "AWS SNS Listener - Test": "Cant validate mock msg against AWS-SNS in TBP"
     },
     "skipped_integrations": {
         "EWS Mail Sender": "The integration is deprecated",
@@ -5933,7 +5907,7 @@
         "AlienVault USM Anywhere": "No instance - Issue #18273",
         "Dell Secureworks": "No instance",
         "Service Manager": "No instance - Expired license",
-        "carbonblackprotection": "No instance - License expired",
+        "CarbonBlackProtectionV2": "No instance - License expired",
         "icebrg": "No instance - Issue 14312 - CIAC-2006",
         "Freshdesk": "No instance - Trial account expired",
         "Kafka V2": "No instance - Can not connect to instance from remote",
@@ -5942,7 +5916,7 @@
         "Remedy AR": "No instance - getting 'Not Found' in test button",
         "Salesforce": "No instance - Issue 15901 - CIAC-1976",
         "ANYRUN": "No instance",
-        "SecneurX Analysis": "No Instance",
+        "Secneurx Analysis": "No Instance",
         "Snowflake": "No instance - Looks like account expired, needs looking into",
         "Cisco Spark": "No instance - Issue 18940 - CIAC-1902",
         "Phish.AI": "No instance - Issue 17291",
@@ -5963,7 +5937,7 @@
         "CiscoAMP": "No instance & Depreceated, replaced by AMPV2",
         "AMPv2": "No instance - developed by Qmasters",
         "Cisco Umbrella Reporting": "No instance - developed by Login-Soft",
-        "FortinetFortiwebVM": "No instance - developed by Qmasters",
+        "fortiweb_vm": "No instance - developed by Qmasters",
         "_comment2": "~~~ UNSTABLE ~~~",
         "ThreatConnect v2": "unstable instance",
         "_comment3": "~~~ QUOTA ISSUES ~~~",
@@ -5978,8 +5952,6 @@
         "Forescout": "Can only be run from within PANW network. Look in keeper for - Demisto in the LAB",
         "ForescoutEyeInspect": "No instance - developed by Qmasters",
         "FortiManager": "Can only be run within PANW network",
-        "HelloWorldSimple": "This is just an example integration - no need for test",
-        "TestHelloWorldPlaybook": "This is just an example integration - no need for test",
         "AttackIQFireDrill": "License issues #29774 - CIAC-1502",
         "LogRhythm": "The integration is deprecated",
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
@@ -5989,7 +5961,9 @@
         "SecurityAndComplianceV2": "Can only be authenticated via MFA and requires user interaction to configure.",
         "ThreatExchange v2": "No instance",
         "PhishLabs IOC EIR": "No instance, CRTX-91214",
-        "Fortimail": "No instance"
+        "fortimail": "No instance",
+        "JoeSecurityV2": "CIAC-9872",
+        "Aha": "No instance"
     },
     "nightly_packs": [
         "CommonScripts",
@@ -6098,9 +6072,7 @@
         "ProtectWise": "Nightly - Checking",
         "google-vault": "Nightly - Checking",
         "Forcepoint": "Nightly - Checking",
-        "palo_alto_firewall": "Need to check test module",
         "Signal Sciences WAF": "error with certificate",
-        "google": "'unsecure' parameter not working",
         "EWS Mail Sender": "Inconsistent test (playback fails, record succeeds)",
         "ReversingLabs Titanium Cloud": "No Unsecure checkbox. proxy trying to connect when disabled.",
         "Recorded Future": "might be dynamic test",
@@ -6131,7 +6103,6 @@
         "G Suite Security Alert Center": "googleclient sdk has time based challenge exchange",
         "GoogleDrive": "googleclient sdk has time based challenge exchange",
         "Syslog Sender": "syslog",
-        "syslog": "syslog",
         "MongoDB Log": "Our instance not using SSL",
         "MongoDB Key Value Store": "Our instance not using SSL",
         "Zoom": "Uses dynamic token",
@@ -6207,13 +6178,9 @@
         "Whois",
         "abuse.ch SSL Blacklist Feed",
         "ipinfo",
-        "ipinfo_v2",
-        "syslog"
+        "ipinfo_v2"
     ],
-    "private_tests": [
-        "HelloWorldPremium_Scan-Test",
-        "HelloWorldPremium-Test"
-    ],
+    "private_tests": [],
     "docker_thresholds": {
         "_comment": "Add here docker images which are specific to an integration and require a non-default threshold (such as rasterize or ews). That way there is no need to define this multiple times. You can specify full image name with version or without.",
         "images": {
