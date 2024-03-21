@@ -306,7 +306,7 @@ class TestMetadataParsing:
         dummy_pack._downloads_count = 10
         dummy_pack._displayed_integration_images = []
         dummy_pack._pack_metadata = dummy_pack_metadata
-        dummy_pack._is_modified = False
+        dummy_pack._is_modified = True
         dummy_pack._is_metadata_updated = False
         dummy_pack._tags = set(dummy_pack._pack_metadata.get(Metadata.TAGS))
         dummy_pack._certification = Metadata.CERTIFIED
@@ -324,8 +324,8 @@ class TestMetadataParsing:
 
         assert any(
             call_args == ((
-                "Updating metadata only with statistics because self._pack_name='Test Pack Name' "
-                "self.is_modified=False self.is_metadata_updated=False"),)
+                "Updating metadata with statistics, created, updated fields because self._pack_name='Test Pack Name' "
+                "self.is_modified=True self.is_metadata_updated=False"),)
             for call_args, _ in logging_mock.call_args_list
         )
 
