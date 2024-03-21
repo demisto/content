@@ -140,7 +140,7 @@ class Client(BaseClient):
 
 def check_include_validity(included_args, include_options):
     """Checks if all include string is valid- all arguments are from predefined options
-    
+
     Args:
         include_arg (str): The string argument.
         include_options (str): The include options for the request.
@@ -281,7 +281,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
     issue_response = response['issue']
     headers = ['id', 'project', 'tracker', 'status', 'priority', 'author', 'estimated_hours', 'created_on',
                'subject', 'description', 'start_date', 'estimated_hours', 'custom_fields']
-    #Issue id is a number and tableToMarkdown can't transform it if is_auto_json_transform is True
+    # Issue id is a number and tableToMarkdown can't transform it if is_auto_json_transform is True
     issue_response['id'] = str(issue_response['id'])
     command_results = CommandResults(
         outputs_prefix='Redmine.Issue',
@@ -369,7 +369,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
         raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
     page_header = create_paging_header(len(issues_response), page_number_for_header)
 
-    #Issue id is a number and tableToMarkdown can't transform it if is_auto_json_transform is True
+    # Issue id is a number and tableToMarkdown can't transform it if is_auto_json_transform is True
     for issue in issues_response:
         issue['id'] = str(issue['id'])
 
@@ -423,7 +423,7 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
                    'due_date', 'done_ratio', 'is_private', 'estimated_hours', 'custom_fields', 'created_on', 'closed_on',
                    'attachments', 'watchers', 'children', 'relations', 'changesets', 'journals', 'allowed_statuses']
 
-        #Issue id is a number and tableToMarkdown can't transform it if is_auto_json_transform is True
+        # Issue id is a number and tableToMarkdown can't transform it if is_auto_json_transform is True
         if 'id' in response_issue:
             response_issue['id'] = str(response_issue['id'])
         command_results = CommandResults(outputs_prefix='Redmine.Issue',

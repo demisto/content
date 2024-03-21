@@ -21,7 +21,7 @@ def test_create_issue_command(mocker, redmine_client):
     """
     from Redmine import create_issue_command
     http_request = mocker.patch.object(redmine_client, '_http_request')
-    http_request.return_value = {"issue":{"id": "1"}}
+    http_request.return_value = {"issue": {"id": "1"}}
     args = {'project_id': '1', 'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': 'Bug', 'watcher_user_ids': '[1]'}
     create_issue_command(redmine_client, args=args)
     http_request.assert_called_with('POST', '/issues.json', params={},
@@ -402,7 +402,7 @@ def test_get_issue_by_id_command(mocker, redmine_client):
     """
     from Redmine import get_issue_by_id_command
     http_request = mocker.patch.object(redmine_client, '_http_request')
-    http_request.return_value = {"issue" : {"id": "1"}}
+    http_request.return_value = {"issue": {"id": "1"}}
     args = {'issue_id': '1', 'include': 'watchers,attachments'}
     get_issue_by_id_command(redmine_client, args)
     http_request.assert_called_with('GET', '/issues/1.json',
@@ -728,7 +728,7 @@ def test_get_custom_fields_command(mocker, redmine_client):
     """
     from Redmine import get_custom_fields_command
     http_request = mocker.patch.object(redmine_client, '_http_request')
-    http_request.return_value= {"custom_fields": [{"id": "1", "is_required": True, "is_filter": False}]}
+    http_request.return_value = {"custom_fields": [{"id": "1", "is_required": True, "is_filter": False}]}
     get_custom_fields_command(redmine_client, {})
     http_request.assert_called_with('GET', '/custom_fields.json', headers={'X-Redmine-API-Key': True})
 
@@ -891,6 +891,7 @@ def test_convert_args_to_request_format():
     args = {'tracker_id': 'Bug'}
     convert_args_to_request_format(args)
     assert args['tracker_id'] == '1'
+
 
 def test_convert_args_to_request_format_invalid():
     """
