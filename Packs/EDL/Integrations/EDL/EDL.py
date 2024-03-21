@@ -1,9 +1,12 @@
+import zipfile
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import tempfile
 
 
 import re
+import os
 
 from base64 import b64decode
 from flask import Flask, Response, request
@@ -17,6 +20,8 @@ import dateparser
 import hashlib
 import json
 import ipaddress
+import glob
+import itertools
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -41,6 +46,9 @@ MAX_LIST_SIZE_WITH_URL_QUERY = 100000
 
 EDL_ON_DEMAND_KEY: str = 'UpdateEDL'
 EDL_ON_DEMAND_CACHE_PATH: str = ''
+EDL_FULL_LOG_PATH: str = f'full_log_{demisto.uniqueFile()}'
+EDL_DIFF_LOG_PATH: str = f'diff_log_{demisto.uniqueFile()}'
+ROLLED_LOG_PREFIX: str = f'rolled_edl_log_{demisto.uniqueFile()}'
 EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE: int = 0
 EDL_SEARCH_LOOP_LIMIT: int = 10
 
@@ -264,7 +272,7 @@ def log_iocs_file_data(formatted_indicators: str, max_length: int = 100) -> None
 
 
 @debug_function
-def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
+def create_new_edl(request_args: RequestArguments) -> tuple[str, int, str]:
     """
     Get indicators from the server using IndicatorsSearcher and format them.
 
@@ -285,13 +293,14 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
     )
     demisto.debug(f"Creating a new EDL file in {request_args.out_format} format")
     formatted_indicators = ''
+    new_log_str = ''
     if request_args.out_format == FORMAT_TEXT:
         if request_args.drop_invalids or request_args.collapse_ips != "Don't Collapse":
             # Because there may be illegal indicators or they may turn into cider, the limit is increased
             indicator_searcher.limit = int(limit * INCREASE_LIMIT)
         new_iocs_file, original_indicators_count = get_indicators_to_format(indicator_searcher, request_args)
         # we collect first all indicators because we need all ips to collapse_ips
-        new_iocs_file = create_text_out_format(new_iocs_file, request_args)
+        new_iocs_file, new_log_str = create_text_out_format(new_iocs_file, request_args)
         new_iocs_file.seek(0)
         iocs_set = set()
         for count, line in enumerate(new_iocs_file):
@@ -310,7 +319,7 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
         formatted_indicators = new_iocs_file.read()
     new_iocs_file.close()
     log_iocs_file_data(formatted_indicators)
-    return formatted_indicators, original_indicators_count
+    return formatted_indicators, original_indicators_count, new_log_str
 
 
 @debug_function
@@ -687,6 +696,56 @@ def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) 
             raise AttributeError(f'Invalid inp_list provided to list_to_str: \n{inp_list}')
     return str_res
 
+def log_line_indicator_handling(raw_indicator, indicator, action, reason, logged_indicators):
+    log_line = f"{action} | {indicator} | {raw_indicator} | Reason: {reason}"
+    if log_line not in logged_indicators:
+        logged_indicators.append(log_line)
+    return logged_indicators
+
+def add_log_header(logged_edl_data, request_args):
+    # count modified
+    # count dropped
+    added_count = 0
+    dropped_count = 0
+    modified_count = 0
+    logged_edl_lines = logged_edl_data.split("\n")
+    for logged_line in logged_edl_lines:
+        if logged_line.startswith("Added"):
+            added_count += 1
+        elif logged_line.startswith("Dropped"):
+            dropped_count += 1
+        elif logged_line.startswith("Modified"):
+            modified_count += 1
+
+    total_count = added_count + dropped_count + modified_count
+
+    header = f"EDL stats: {total_count} indicators in total, {modified_count} modified, {dropped_count} dropped, " \
+             f"{added_count} added.\n\nRequest Args: {request_args.to_context_json()}"
+    return f"{header}\n\n{logged_edl_data}"
+
+def extract_indicator(log_line):
+    log_line_data = log_line.split(" | ")
+    if len(log_line_data) >= 2:
+        return log_line_data[1].strip()
+    return ''
+
+def calc_log_diff(logged_edl_data, last_full_logged_data):
+    logged_edl_lines = logged_edl_data.split("\n")
+    last_log_edl_lines = last_full_logged_data.split("\n")
+    log_diff_lines = []
+    diff_indicators = []
+    for new_logged_line in logged_edl_lines:
+        if new_logged_line not in last_log_edl_lines:
+            log_diff_lines.append(new_logged_line)
+            diff_indicators.append(extract_indicator(new_logged_line))
+
+    for old_logged_line in last_full_logged_data:
+        if old_logged_line not in logged_edl_lines:
+            old_line_indicator = extract_indicator(old_logged_line)
+            if old_line_indicator and old_line_indicator not in diff_indicators:
+                log_diff_lines.append(f"Gone | {old_line_indicator} | {old_line_indicator} | Reason: Not found since new run.")
+
+    return "\n".join(log_diff_lines)
 
 @debug_function
 def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO, IO[str]]:
@@ -708,33 +767,47 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
     ipv6_formatted_indicators = set()
     iocs.seek(0)
     formatted_indicators = tempfile.TemporaryFile(mode='w+t')
+    logged_indicators = []
     new_line = ''  # For the first time he will not add a new line
     for str_ioc in iocs:
         ioc = json.loads(str_ioc.rstrip())
-        indicator = ioc.get('value')
-        if not indicator:
+        indicator_raw = ioc.get('value')
+        if not indicator_raw:
             continue
         if enforce_ascii:
             try:
-                indicator.encode('ascii')
+                indicator_raw.encode('ascii')
             except UnicodeEncodeError:
                 continue
         ioc_type = ioc.get('indicator_type')
 
+        indicator = indicator_raw
+
         if ioc_type not in [FeedIndicatorType.IP, FeedIndicatorType.IPv6,
                             FeedIndicatorType.CIDR, FeedIndicatorType.IPv6CIDR]:
 
-            indicator = url_handler(indicator, request_args.url_protocol_stripping,
+            indicator = url_handler(indicator_raw, request_args.url_protocol_stripping,
                                     request_args.url_port_stripping, request_args.url_truncate)
 
             if request_args.drop_invalids:
                 if indicator != _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator) or\
                         indicator != _INVALID_TOKEN_REMOVAL.sub('*', indicator):
                     # check if the indicator held invalid tokens or port
+                    logged_indicators = log_line_indicator_handling(raw_indicator=indicator_raw,
+                                                           indicator=indicator,
+                                                           action='Dropped',
+                                                           reason='Invalid tokens or port.',
+                                                           logged_indicators=logged_indicators)
                     continue
 
                 if ioc_type == FeedIndicatorType.URL and len(indicator) >= PAN_OS_MAX_URL_LEN:
                     # URL indicator exceeds allowed length - ignore the indicator
+                    logged_indicators = log_line_indicator_handling(raw_indicator=indicator_raw,
+                                                           indicator=indicator,
+                                                           action='Dropped',
+                                                           reason=f'URL exceeds max length {PAN_OS_MAX_URL_LEN}.',
+                                                           logged_indicators=logged_indicators)
+
                     continue
 
             # for PAN-OS *.domain.com does not match domain.com
@@ -744,11 +817,21 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
                 domain = str(indicator.lstrip('*.'))
                 # if we should ignore TLDs and the domain is a TLD
                 if request_args.no_wildcard_tld and tldextract.extract(domain).suffix == domain:
+                    logged_indicators = log_line_indicator_handling(raw_indicator=indicator_raw,
+                                                           indicator=domain,
+                                                           action='Dropped',
+                                                           reason=f'Domain is a TLD.',
+                                                           logged_indicators=logged_indicators)
                     continue
                 formatted_indicators.write(new_line + domain)
                 new_line = '\n'
 
         if ioc_type == FeedIndicatorType.CIDR and is_large_cidr(indicator, request_args.maximum_cidr_size):
+            logged_indicators = log_line_indicator_handling(raw_indicator=indicator_raw,
+                                                   indicator=indicator,
+                                                   action='Dropped',
+                                                   reason=f'CIDR exceeds max length {request_args.maximum_cidr_size}.',
+                                                   logged_indicators=logged_indicators)
             continue
 
         if request_args.collapse_ips != DONT_COLLAPSE and ioc_type in (FeedIndicatorType.IP, FeedIndicatorType.CIDR):
@@ -760,20 +843,58 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
         else:
             formatted_indicators.write(new_line + str(indicator))
             new_line = '\n'
+            logged_indicators = log_line_indicator_handling(raw_indicator=indicator_raw,
+                                                   indicator=indicator,
+                                                   action='Added',
+                                                   reason=f'Found new {ioc_type}.',
+                                                   logged_indicators=logged_indicators)
+
     iocs.close()
     if len(ipv4_formatted_indicators) > 0:
-        ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
-        for ip in ipv4_formatted_indicators:
+        ipv4_formatted_indicators_collapsed = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
+        for ip in ipv4_formatted_indicators_collapsed:
             formatted_indicators.write(new_line + str(ip))
             new_line = '\n'
+
+        for ip in ipv4_formatted_indicators:
+            if ip not in ipv4_formatted_indicators_collapsed:
+                logged_indicators = log_line_indicator_handling(raw_indicator=ip,
+                                                       indicator=ip,
+                                                       action='Modified',
+                                                       reason=f'Collapsed IPv4 {request_args.collapse_ips}.',
+                                                       logged_indicators=logged_indicators)
+
+            else:
+                logged_indicators = log_line_indicator_handling(raw_indicator=ip,
+                                                       indicator=ip,
+                                                       action='Added',
+                                                       reason=f'Found new IPv4.',
+                                                       logged_indicators=logged_indicators)
 
     if len(ipv6_formatted_indicators) > 0:
-        ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
-        for ip in ipv6_formatted_indicators:
+        ipv6_formatted_indicators_collapsed = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
+        for ip in ipv6_formatted_indicators_collapsed:
             formatted_indicators.write(new_line + str(ip))
             new_line = '\n'
 
-    return formatted_indicators
+        for ip in ipv6_formatted_indicators:
+            if ip not in ipv6_formatted_indicators_collapsed:
+                logged_indicators = log_line_indicator_handling(raw_indicator=ip,
+                                                       indicator=ip,
+                                                       action='Modified',
+                                                       reason=f'Collapsed IPv6 {request_args.collapse_ips}.',
+                                                       logged_indicators=logged_indicators)
+
+            else:
+                logged_indicators = log_line_indicator_handling(raw_indicator=ip,
+                                                       indicator=ip,
+                                                       action='Added',
+                                                       reason=f'Found new IPv6.',
+                                                       logged_indicators=logged_indicators)
+
+    logged_indicators_str = "\n".join(logged_indicators)
+
+    return formatted_indicators, logged_indicators_str
 
 
 def url_handler(indicator: str, url_protocol_stripping: bool, url_port_stripping: bool, url_truncate: bool) -> str:
@@ -809,6 +930,79 @@ def get_outbound_mimetype(request_args: RequestArguments) -> str:
     else:
         return MIMETYPE_TEXT
 
+def chunks(file_name, size):
+    with open(file_name, 'r') as input_file:
+        content = list(itertools.islice(input_file, size))
+        while content:
+            chunk = "".join(content)
+            yield chunk
+            content = list(itertools.islice(input_file, size))
+
+
+def roll_diff_log_if_needed(created_time):
+    diff_log_file_size = os.path.getsize(EDL_DIFF_LOG_PATH)
+    params = demisto.params()
+    log_roll_size = int(params.get('log_roll_size', 10000))
+    log_rolls_num = int(params.get('log_rolls_num', 10))
+    demisto.debug(f"Checking if log of size {diff_log_file_size} needs to be rolled with roll lines num {log_roll_size} and rolls"
+                  f" num {log_rolls_num}")
+    file_chunks = list(chunks(file_name=EDL_DIFF_LOG_PATH, size=log_roll_size))
+    if len(file_chunks) > 1:
+        demisto.debug(f"Got {len(file_chunks)} file chunks")
+        rolled_files = []
+        created_str = created_time.strftime("%Y%m%d-%H%M%S")
+        for file_index, file_chunk in enumerate(file_chunks[:-1]):
+            rolled_filename = f"{ROLLED_LOG_PREFIX}_{created_str}_{file_index}.zip"
+            demisto.debug(f"Creating new rolled log at {rolled_filename}.")
+            with zipfile.ZipFile(rolled_filename, 'w') as zipped_rolled_log:
+                zipped_rolled_log.writestr(rolled_filename, file_chunk)
+            rolled_files.append(rolled_filename)
+
+        current_data = f"Log rolled at {created_time.isoformat()} created files: {rolled_files}\n\n\n{file_chunks[-1]}"
+
+        with open(EDL_DIFF_LOG_PATH, 'w') as diff_log_file:
+            demisto.debug(f"Storing truncated log diff data of size {len(current_data)}")
+            diff_log_file.write(f"{current_data}\n\n")
+
+        rolled_log_file_paths = glob.glob(f"{ROLLED_LOG_PREFIX}_*.zip")
+        num_of_rolled_log_files = len(rolled_log_file_paths)
+        if num_of_rolled_log_files > log_rolls_num:
+            rolled_log_file_paths.sort(key=lambda x: os.path.getmtime(x))
+            for old_rolled_file_path in rolled_log_file_paths[log_rolls_num:]:
+                if os.path.exists(old_rolled_file_path):
+                    demisto.debug(f"Removing old rolled log {old_rolled_file_path}")
+                    os.remove(old_rolled_file_path)
+
+
+def store_log_edl_data(log_edl_data, created, request_args):
+
+    logged_edl_data = add_log_header(log_edl_data, request_args)
+    try:
+        log_diff = logged_edl_data
+        if os.path.exists(EDL_FULL_LOG_PATH):
+            with open(EDL_FULL_LOG_PATH, 'r') as last_full_log_file:
+                last_full_logged_data = last_full_log_file.read()
+                log_diff = calc_log_diff(logged_edl_data, last_full_logged_data)
+
+        new_log_diff = f"Created new EDL at {created}\n\n{log_diff if log_diff else 'No diff from previous.'}"
+        with open(EDL_DIFF_LOG_PATH, 'a') as diff_log_file:
+            demisto.debug(f"Storing log diff data of size {len(new_log_diff)}")
+            diff_log_file.write(f"{new_log_diff}\n\n")
+
+        roll_diff_log_if_needed(created)
+        demisto.debug(f"Checking if something changed")
+
+        # Only if something changed re-save the full log file.
+        if log_diff:
+            demisto.debug(f'Found diff in log file, re-saving.')
+            with open(EDL_FULL_LOG_PATH, 'w') as last_full_log_file:
+                last_full_log_file.write(logged_edl_data)
+
+    except Exception as e:
+        demisto.debug(f"edl: Error in writing to log file: {str(e)}")
+        raise e
+
+
 
 @debug_function
 def get_edl_on_demand() -> tuple[str, int]:
@@ -822,11 +1016,15 @@ def get_edl_on_demand() -> tuple[str, int]:
     """
     global EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE
     ctx = get_integration_context()
+    demisto.debug(f"integration ctx is {ctx} and key in ctx {EDL_ON_DEMAND_KEY in ctx}")
 
     if EDL_ON_DEMAND_KEY in ctx:
         ctx.pop(EDL_ON_DEMAND_KEY, None)
         request_args = RequestArguments.from_context_json(ctx)
-        edl_data, EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE = create_new_edl(request_args)
+        edl_data, EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE, logged_edl_data = create_new_edl(request_args)
+        demisto.debug(f"Got log edl data, comparing it with previous versions.")
+        created_time = datetime.now(timezone.utc)
+        store_log_edl_data(logged_edl_data, created_time, request_args)
 
         try:
             demisto.debug("edl: Writing EDL data to cache")
@@ -852,9 +1050,17 @@ def get_edl_on_demand() -> tuple[str, int]:
             demisto.debug(f"edl: Error reading cache file: {str(e)}")
             raise e
 
-        demisto.debug("edl: Finished reading EDL data from cache")
+    try:
+        with open(EDL_DIFF_LOG_PATH) as last_diff_log_file:
+            edl_data_diff_log = last_diff_log_file.read()
 
-    return edl_data, EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE
+    except Exception as e:
+        demisto.debug(f"edl: Error reading cache file: {str(e)}")
+        raise e
+
+    demisto.debug("edl: Finished reading EDL data from cache")
+
+    return edl_data, EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE, edl_data_diff_log
 
 
 def validate_basic_authentication(headers: dict, username: str, password: str) -> bool:
@@ -911,7 +1117,12 @@ def route_edl() -> Response:
     request_args = get_request_args(request.args, params)
     on_demand = params.get('on_demand')
     created = datetime.now(timezone.utc)
-    edl_data, original_indicators_count = get_edl_on_demand() if on_demand else create_new_edl(request_args)
+    if on_demand:
+        edl_data, original_indicators_count, log_edl_data_diff = get_edl_on_demand()
+    else:
+        edl_data, original_indicators_count, log_edl_data = create_new_edl(request_args)
+        store_log_edl_data(log_edl_data, created, request_args)
+
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
     etag = f'"{hashlib.sha1(edl_data.encode()).hexdigest()}"'  # nosec
     edl_size = 0
@@ -951,6 +1162,67 @@ def route_edl() -> Response:
                   f'{[f"{header[0]}: {header[1]}" for header in headers]}')
 
     resp = Response(edl_data, status=200, mimetype=mimetype, headers=headers)
+    resp.cache_control.max_age = max_age
+    # number of seconds we are willing to serve stale content when there is an error
+    resp.cache_control['stale-if-error'] = '600'
+
+    return resp
+
+@APP.route('/log', methods=['GET'])
+def route_edl_log() -> Response:
+    """
+    Main handler for values saved in the integration context
+    """
+    params = demisto.params()
+
+    credentials = params.get('credentials') if params.get('credentials') else {}
+    username: str = credentials.get('identifier', '')
+    password: str = credentials.get('password', '')
+    cache_refresh_rate: str = params.get('cache_refresh_rate')
+
+    if username and password:
+        headers: dict = cast(dict[Any, Any], request.headers)
+        if not validate_basic_authentication(headers, username, password):
+            err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
+            demisto.debug(err_msg)
+            return Response(err_msg, status=401, mimetype='text/plain', headers=[
+                ('WWW-Authenticate', 'Basic realm="Login Required"'),
+            ])
+
+    created = datetime.now(timezone.utc)
+    request_args = get_request_args(request.args, params)
+    demisto.debug(f"Getting log file to show")
+
+    edl_data_diff_log = ''
+    if os.path.exists(EDL_DIFF_LOG_PATH):
+        demisto.debug(f"found diff log file")
+        with open(EDL_DIFF_LOG_PATH, 'r') as diff_log_file:
+            edl_data_diff_log = diff_log_file.read()
+            diff_log_file.seek(0)
+
+    if len(edl_data_diff_log) == 0:
+        edl_data_diff_log = '# Empty List'
+
+    elif request_args.out_format == FORMAT_TEXT:
+        append_str = params.get("append_string")
+        prepend_str = params.get("prepend_string")
+        if append_str:
+            append_str = append_str.replace("\\n", "\n")
+            edl_data_diff_log = f"{edl_data_diff_log}{append_str}"
+        if prepend_str:
+            prepend_str = prepend_str.replace("\\n", "\n")
+            edl_data_diff_log = f"{prepend_str}\n{edl_data_diff_log}"
+
+    headers = [
+        ('X-EDL-LOG-Request-Created', created.isoformat()),
+        ('ETag', f'"{hashlib.sha1(edl_data_diff_log.encode()).hexdigest()}"')
+    ]  # type: ignore[assignment]
+    headers_str = f'{[f"{header[0]}: {header[1]}" for header in headers]}'
+    demisto.debug(f'edl: Returning log response with the following headers:\n{headers_str}')
+    max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
+    mimetype = get_outbound_mimetype(request_args)
+
+    resp = Response(edl_data_diff_log, status=200, mimetype=mimetype, headers=headers)
     resp.cache_control.max_age = max_age
     # number of seconds we are willing to serve stale content when there is an error
     resp.cache_control['stale-if-error'] = '600'
@@ -1139,6 +1411,7 @@ def update_edl_command(args: dict, params: dict):
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
     set_integration_context(ctx)
+    demisto.debug(f'setting on demand true in context data: {ctx}')
     hr = 'EDL will be updated the next time you access it.'
 
     if not query:
@@ -1197,9 +1470,43 @@ def initialize_edl_context(params: dict):
                                     no_wildcard_tld)
 
     EDL_ON_DEMAND_CACHE_PATH = demisto.uniqueFile()
+    demisto.debug(f"The full log path: {EDL_FULL_LOG_PATH}")
+    demisto.debug(f"The diff log path: {EDL_DIFF_LOG_PATH}")
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
     set_integration_context(ctx)
+    demisto.debug(f"Setting context data on demand to true: {ctx}")
+
+def download_logs(args: dict, params: dict):
+    log_files_option = args.get('log_files', 'All')
+
+    readable_outputs = []
+    results = []
+    if log_files_option in ['Current Diff Log', 'All']:
+        readable_outputs.append(f"#### Current Diff Log: {EDL_DIFF_LOG_PATH}")
+        current_diff_log_data = ''
+        if os.path.exists(EDL_DIFF_LOG_PATH):
+            with open(EDL_DIFF_LOG_PATH, 'r') as diff_log_file:
+                current_diff_log_data = diff_log_file.read()
+                diff_log_file.seek(0)
+
+        results.append(fileResult(EDL_DIFF_LOG_PATH, current_diff_log_data ,file_type=EntryType.FILE))
+
+    if log_files_option in ['Current Full Log', 'All']:
+        readable_outputs.append(f"#### Current Full Log: {EDL_FULL_LOG_PATH}")
+        current_full_log_data = ''
+        if os.path.exists(EDL_FULL_LOG_PATH):
+            with open(EDL_FULL_LOG_PATH, 'r') as full_log_file:
+                current_full_log_data = full_log_file.read()
+                full_log_file.seek(0)
+
+        results.append(fileResult(EDL_FULL_LOG_PATH, current_full_log_data, file_type=EntryType.FILE))
+
+    if log_files_option in ['All Rolled Logs', 'All']:
+        pass
+
+    readable_output = "\n".join(readable_outputs)
+    return readable_output, results[0], None
 
 
 def check_platform_and_version(params: dict) -> bool:
@@ -1239,6 +1546,7 @@ def main():
         'test-module': test_module,
         'edl-update': update_edl_command,
         'export-indicators-list-update': update_edl_command,
+        'edl-download-logs': download_logs
     }
 
     try:

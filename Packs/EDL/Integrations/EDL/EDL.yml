@@ -262,6 +262,20 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- additionalinfo:  When creating the EDL, a log file is created and rolled if it is big enough. This number indicates the threshold size of the log file to roll.
+  display: Max Log File Line Size
+  name: log_roll_size
+  type: 0
+  section: Collect
+  required: false
+  defaultvalue: '1000'
+- additionalinfo: When creating the EDL, a log file is created and rolled if it is big enough. This number indicates the amount of such log files to save.
+  display: Number of previous logs to save.
+  name: log_rolls_num
+  type: 0
+  section: Collect
+  required: false
+  defaultvalue: '10'
 description: Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
 display: Generic Export Indicators Service
 name: EDL
@@ -432,6 +446,26 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
+  - name: edl-download-logs
+    arguments:
+      - auto: PREDEFINED
+        defaultValue: All
+        description: The format of the exported list.
+        name: log_files
+        predefined:
+          - All
+          - Current Diff Log
+          - Current Full Log
+          - All Rolled Logs
+        required: true
+      - auto: PREDEFINED
+        defaultValue: 'false'
+        description: If selected, any rolled log file downloaded will also be deleted.
+        name: purge
+        predefined:
+          - 'false'
+          - 'true'
+    description: Download the edl log files.
   dockerimage: demisto/flask-nginx:1.0.0.87872
   longRunning: true
   longRunningPort: true
