@@ -28,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -3180
+          "y": -3710
         }
       }
     note: false
@@ -56,7 +56,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 390
+          "y": 710
         }
       }
     note: false
@@ -81,7 +81,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "167"
+      - "183"
     scriptarguments:
       key:
         simple: Users
@@ -93,7 +93,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -850
+          "y": -1050
         }
       }
     note: false
@@ -132,7 +132,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -1190
+          "y": -1390
         }
       }
     note: false
@@ -169,7 +169,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -1370
+          "y": -1570
         }
       }
     note: false
@@ -206,7 +206,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -330
+          "y": -10
         }
       }
     note: false
@@ -243,7 +243,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -490
+          "y": -190
         }
       }
     note: false
@@ -282,7 +282,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -145
+          "y": 175
         }
       }
     note: false
@@ -300,6 +300,7 @@ tasks:
       id: 37a2166b-7580-4ffe-8017-4d4f8d67f264
       version: -1
       name: Verify containment action succeed
+      description: Checks if containment action succeeds.
       type: condition
       iscommand: false
       brand: ""
@@ -331,7 +332,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 40
+          "y": 360
         }
       }
     note: false
@@ -366,7 +367,7 @@ tasks:
       {
         "position": {
           "x": 310,
-          "y": 220
+          "y": 540
         }
       }
     note: false
@@ -408,8 +409,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": -1540
+          "x": 330,
+          "y": -1740
         }
       }
     note: false
@@ -440,7 +441,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -3040
+          "y": -3570
         }
       }
     note: false
@@ -471,7 +472,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2590
+          "y": -3120
         }
       }
     note: false
@@ -527,7 +528,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2750
+          "y": -3280
         }
       }
     note: false
@@ -552,7 +553,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "154"
+      - "185"
     scriptarguments:
       AutoBlockIndicators:
         simple: "True"
@@ -602,7 +603,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -670
+          "y": -560
         }
       }
     note: false
@@ -639,7 +640,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -1020
+          "y": -1220
         }
       }
     note: false
@@ -676,7 +677,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2280
+          "y": -2810
         }
       }
     note: false
@@ -716,7 +717,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2910
+          "y": -3440
         }
       }
     note: false
@@ -756,7 +757,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2460
+          "y": -2990
         }
       }
     note: false
@@ -782,7 +783,7 @@ tasks:
       '#default#':
       - "176"
       "yes":
-      - "177"
+      - "178"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -809,7 +810,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": -2100
+          "y": -2630
         }
       }
     note: false
@@ -834,7 +835,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "177"
+      - "178"
     scriptarguments:
       message:
         simple: "Please check the endpoint status. \nNote: The Endpoint's alias is `TestPlaybook`"
@@ -844,6 +845,123 @@ tasks:
       {
         "position": {
           "x": 320,
+          "y": -2450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "178":
+    id: "178"
+    taskid: 524e9012-1a1c-4364-8b8c-581452c0e2fa
+    type: regular
+    task:
+      id: 524e9012-1a1c-4364-8b8c-581452c0e2fa
+      version: -1
+      name: Check if the file exist
+      description: Initiates a new endpoint script execution to check if file exists.
+      script: '|||core-run-script-file-exists'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "181"
+    scriptarguments:
+      endpoint_ids:
+        simple: ${Core.Endpoint.endpoint_id}
+      file_path:
+        simple: C:\Users\administrator\Downloads\fortestplaybook.txt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "181":
+    id: "181"
+    taskid: 33ab5dde-4cc0-44a3-82c7-a5ad9a2459ee
+    type: regular
+    task:
+      id: 33ab5dde-4cc0-44a3-82c7-a5ad9a2459ee
+      version: -1
+      name: Check script result
+      description: Retrieve the results of a script execution action.
+      script: '|||core-get-script-execution-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "182"
+    scriptarguments:
+      action_id:
+        simple: ${Core.ScriptRun.action_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "182":
+    id: "182"
+    taskid: 9e43d19a-9964-4209-8327-475c92492176
+    type: condition
+    task:
+      id: 9e43d19a-9964-4209-8327-475c92492176
+      version: -1
+      name: Does the file exist?
+      description: Check if the file exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "162"
+      "yes":
+      - "151"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.ScriptResult.results.command_output
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
           "y": -1920
         }
       }
@@ -854,39 +972,108 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "177":
-    id: "177"
-    taskid: 6f4a3263-a211-4ff7-86eb-a849c9954b37
+  "183":
+    id: "183"
+    taskid: 731f27cd-ac92-4ac0-8326-95bf9edc3f08
     type: regular
     task:
-      id: 6f4a3263-a211-4ff7-86eb-a849c9954b37
+      id: 731f27cd-ac92-4ac0-8326-95bf9edc3f08
       version: -1
-      name: Delete file
-      description: Initiates a new endpoint script execution to delete the specified file.
-      script: '|||core-run-script-delete-file'
+      name: Create a new file indicator
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
       type: regular
       iscommand: true
-      brand: ""
+      brand: Builtin
     nexttasks:
       '#none#':
-      - "162"
+      - "184"
     scriptarguments:
-      endpoint_ids:
-        complex:
-          root: Core.Endpoint
-          accessor: endpoint_id
-      file_path:
-        simple: C:\Users\administrator\Downloads\fortestplaybook.txt
-      timeout_in_seconds:
-        simple: "60"
+      tags:
+        simple: File
+      value:
+        simple: 724e1e4079191f086c3a2bcc15133b4309ce5125dbb31c5443262599ca992601
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 60,
-          "y": -1720
+          "y": -890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "184":
+    id: "184"
+    taskid: a484b3ff-8604-4e19-81cf-5fbb33e58440
+    type: regular
+    task:
+      id: a484b3ff-8604-4e19-81cf-5fbb33e58440
+      version: -1
+      name: Create a new domain indicator
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "167"
+    scriptarguments:
+      tags:
+        simple: Domain
+      value:
+        simple: nonofyourbuisness.io
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "185":
+    id: "185"
+    taskid: b0004f6e-5424-4d03-82e2-85f19a05a803
+    type: condition
+    task:
+      id: b0004f6e-5424-4d03-82e2-85f19a05a803
+      version: -1
+      name: Is Active Directory Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "153"
+      "yes":
+      - "154"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": -385
         }
       }
     note: false
@@ -903,10 +1090,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3635,
-        "width": 640,
+        "height": 4485,
+        "width": 650,
         "x": 60,
-        "y": -3180
+        "y": -3710
       }
     }
   }
