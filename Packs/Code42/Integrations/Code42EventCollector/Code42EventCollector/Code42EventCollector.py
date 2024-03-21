@@ -208,7 +208,6 @@ def fetch_file_events(client: Client, last_run: Dict, max_fetch_file_events: int
             {
                 FileEventLastRun.TIME: latest_file_event_time,
                 FileEventLastRun.FETCHED_IDS: latest_file_event_ids,
-                "nextTrigger": "0"
             }
         )
 
@@ -285,13 +284,11 @@ def get_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     else:
         events = client.get_file_events(start_date, end_time=end_date, limit=limit)
         for event in events:
-            event["id"] = event["event"]["id"]
-            event["inserted"] = event["event"]["inserted"]
+            event["Id"] = event["event"]["id"]
         readable_output = tableToMarkdown(
             "File Events",
             events,
-            headers=["id", "inserted"],
-            headerTransform=lambda x: x.upper(),
+            headers=["id", "_time"],
             removeNull=True
         )
 
