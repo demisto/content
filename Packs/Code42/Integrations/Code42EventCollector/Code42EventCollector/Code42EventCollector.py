@@ -91,7 +91,6 @@ class Client:
         )
         return audit_logs[:limit]
 
-
     def get_file_events(
         self,
         start_time: datetime | str | timedelta,
