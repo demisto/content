@@ -1809,7 +1809,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: service account
+              simple: service_account
           ignorecase: true
     continueonerrortype: ""
     view: |-
