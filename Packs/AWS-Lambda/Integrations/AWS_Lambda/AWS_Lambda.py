@@ -683,7 +683,7 @@ def delete_layer_version_command(args: dict[str, str], aws_client) -> CommandRes
 
 def list_layer_version_command(args, aws_client):
     """
-    Lists the version of an Lambda layer.
+    Lists the version of a Lambda layer.
 
     Args:
         args (dict): A dictionary containing the command arguments.
