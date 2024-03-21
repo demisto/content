@@ -9078,11 +9078,16 @@ if 'requests' in sys.modules:
                 # Get originating Exception in Exception chain
                 error_class = str(exception.__class__)
                 err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+
                 err_msg = 'Verify that the server URL parameter' \
-                          ' is correct and that you have access to the server from your host.' \
-                          '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                    .format(err_type, exception.errno, exception.strerror)
+                    ' is correct and that you have access to the server from your host.' \
+                    '\nError Type: {}'.format(err_type)
+                if exception.errno and exception.strerror:
+                    err_msg += '\nError Number: [{}]\nMessage: {}\n'.format(exception.errno, exception.strerror)
+                else:
+                    err_msg += '\n{}'.format(str(exception))
                 raise DemistoException(err_msg, exception)
+
             except requests.exceptions.RetryError as exception:
                 if with_metrics:
                     self.execution_metrics.retry_error += 1
