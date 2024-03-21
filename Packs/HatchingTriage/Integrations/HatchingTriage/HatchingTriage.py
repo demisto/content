@@ -140,23 +140,39 @@ def get_sample(client: Client, **args) -> CommandResults:
     )
 
 
-def get_sample_summary(client: Client, **args) -> CommandResults:
+def get_sample_summary(client: Client, **args):
     outputs = []
     for sample_id in argToList(args.get("sample_id", "")):
         try:
             res = client._http_request(
                 "GET", f"samples/{sample_id}/summary", ok_codes=(200,)
             )
+
+            score = map_scores_to_dbot(res.get('score'))
+            dbot_score = Common.DBotScore(
+                indicator=res.get('sha256'),
+                indicator_type=DBotScoreType.FILE,
+                integration_name="Hatching Triage",
+                score=score
+            )
+            indicator = Common.File(
+                name=res.get('target'),
+                sha256=res.get('sha256'),
+                dbot_score=dbot_score
+            )
+
+            output = CommandResults(
+                outputs_prefix="Triage.sample-summaries", outputs_key_field="sample",
+                outputs=res,
+                indicator=indicator
+            )
+            outputs.append(output)
+
         except DemistoException as e:
             e.message += f" - Sample ID: {sample_id}"
             raise
 
-        outputs.append(res)
-
-    return CommandResults(
-        outputs_prefix="Triage.sample-summaries", outputs_key_field="sample",
-        outputs=outputs
-    )
+    return outputs
 
 
 def delete_sample(client: Client, **args) -> str:

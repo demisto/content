@@ -1,0 +1,467 @@
+id: Detonate File - Hatching Triage
+version: -1
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+name: Detonate File - Hatching Triage
+description: Detonating File with Hatching Triage.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: bc1fedf4-af24-48ac-89b1-1748107d1329
+    type: start
+    task:
+      id: bc1fedf4-af24-48ac-89b1-1748107d1329
+      version: -1
+      name: ""
+      description: starting test
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9c3fc75d-b5ff-4455-806c-c36350b06236
+    type: condition
+    task:
+      id: 9c3fc75d-b5ff-4455-806c-c36350b06236
+      version: -1
+      name: Is there any active Hatching Triage instance?
+      description: Check for active instance
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Hatching Triage
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: cdd1e214-22e3-4306-8247-bb28fd7c9b30
+    type: condition
+    task:
+      id: cdd1e214-22e3-4306-8247-bb28fd7c9b30
+      version: -1
+      name: Is there a File?
+      description: Check for URL
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.File
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 379113b8-86e1-4542-8ac0-824ed4bb23b6
+    type: regular
+    task:
+      id: 379113b8-86e1-4542-8ac0-824ed4bb23b6
+      version: -1
+      name: Send File to Hatching Triage
+      description: Submits a file or url for analysis.
+      script: Hatching Triage|||triage-submit-sample
+      type: regular
+      iscommand: true
+      brand: Hatching Triage
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      data:
+        simple: ${inputs.File.EntryID}
+      kind:
+        simple: file
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a0e7bea6-c03b-447b-80af-43e05627c38a
+    type: playbook
+    task:
+      id: a0e7bea6-c03b-447b-80af-43e05627c38a
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      Ids:
+        simple: ${Triage.submissions.id}
+      Interval:
+        simple: ${inputs.interval}
+      PollingCommandArgName:
+        simple: sample_id
+      PollingCommandName:
+        simple: triage-get-sample-summary
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: Triage.sample-summaries(val.status!=='reported').sample
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 229f4061-9b02-4089-84e4-734e00a35d1a
+    type: title
+    task:
+      id: 229f4061-9b02-4089-84e4-734e00a35d1a
+      version: -1
+      name: Done
+      description: '-'
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e4586b0c-6d43-4ccb-87ad-252dac415447
+    type: regular
+    task:
+      id: e4586b0c-6d43-4ccb-87ad-252dac415447
+      version: -1
+      name: Get task report
+      description: Gets a summary report of the sample id provided.
+      script: Hatching Triage|||triage-get-sample-summary
+      type: regular
+      iscommand: true
+      brand: Hatching Triage
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      sample_id:
+        simple: ${Triage.submissions.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 382f0061-643a-4c1a-83e8-1dc7e1262998
+    type: regular
+    task:
+      id: 382f0061-643a-4c1a-83e8-1dc7e1262998
+      version: -1
+      name: Sleep (let the sandbox create the task)
+      description: sleep
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      seconds:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: true
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: a6617acb-431b-4bd1-87a7-60b610149d11
+    type: regular
+    task:
+      id: a6617acb-431b-4bd1-87a7-60b610149d11
+      version: -1
+      name: View task
+      description: Gets a summary report of the sample id provided.
+      script: Hatching Triage|||triage-get-sample-summary
+      type: regular
+      iscommand: true
+      brand: Hatching Triage
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      sample_id:
+        simple: ${Triage.submissions.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1465,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: File
+  value:
+    simple: ${File}
+  required: false
+  description: File to detonate.
+  playbookInputQuery:
+- key: interval
+  value:
+    simple: "1"
+  required: false
+  description: How often to poll for results.
+  playbookInputQuery:
+- key: timeout
+  value:
+    simple: "10"
+  required: false
+  description: How long to wait before giving up waiting for results.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - File
+  - interval
+  - timeout
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs:
+  - Triage.sample-summaries.completed
+  - Triage.sample-summaries.created
+  - Triage.sample-summaries.custom
+  - Triage.sample-summaries.owner
+  - Triage.sample-summaries.sample
+  - Triage.sample-summaries.score
+  - Triage.sample-summaries.sha256
+  - Triage.sample-summaries.status
+  - Triage.sample-summaries.target
+  - Triage.sample-summaries.tasks
+  - DBotScore.Score
+  - DBotScore.Indicator
+  - DBotScore.Type
+  - DBotScore.Vendor
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs:
+- contextPath: Triage.sample-summaries.completed
+  description: Date the sample analysis was completed.
+- contextPath: Triage.sample-summaries.created
+  description: Date the analysis report was created.
+- contextPath: Triage.sample-summaries.custom
+  description: Custom sample analysis.
+- contextPath: Triage.sample-summaries.owner
+  description: Owner of the sample analysis.
+  type: unknown
+- contextPath: Triage.sample-summaries.sample
+  description: Unique identifier of the sample,.
+  type: unknown
+- contextPath: Triage.sample-summaries.score
+  description: Score of the sample on a scale of 0 to 10.
+  type: unknown
+- contextPath: Triage.sample-summaries.sha256
+  description: SHA256 hash of the sample.
+  type: unknown
+- contextPath: Triage.sample-summaries.status
+  description: Status of the analysis.
+  type: unknown
+- contextPath: Triage.sample-summaries.target
+  description: Target for the analysis.
+  type: unknown
+- contextPath: Triage.sample-summaries.tasks
+  description: Tasks performed in the analysis.
+  type: unknown
+- contextPath: DBotScore.Score
+  description: The actual score.
+- contextPath: DBotScore.Indicator
+  description: The indicator we tested.
+- contextPath: DBotScore.Type
+  description: The type of indicator.
+- contextPath: DBotScore.Vendor
+  description: Vendor used to calculate the score.
+fromversion: 6.10.0
+tests:
+- Hatching Triage - Detonate File

@@ -1,0 +1,45 @@
+{
+    "completed": "2024-03-21T16:37:35Z",
+    "created": "2024-03-21T16:35:02Z",
+    "custom": "frontend:75d885f5-b08f-4f99-88e7-7236dc5f76fd",
+    "meta": {
+        "channel": "rfshare",
+        "rforg": "uhash:4dZ4gLgGUp"
+    },
+    "org_id": "2afaf68a-fdfd-4259-a853-15f349fd2122",
+    "owner": "fe2m4",
+    "sample": "240321-t3mwmagds3",
+    "score": 4,
+    "sha256": "c80004016d79c91b95a7e3001080e99a72ce98b24a77b76f6e4c98eaf1550620",
+    "status": "reported",
+    "target": "test_file.docx",
+    "tasks": {
+        "240321-t3mwmagqs3-behavioral1": {
+            "backend": "sbx4m58",
+            "kind": "behavioral",
+            "os": "windows7-x64",
+            "resource": "win7-20240110-en",
+            "score": 4,
+            "sigs": 7,
+            "status": "reported",
+            "target": "test_file.docx",
+            "timeout": 150
+        },
+        "240321-t3mwmagqs3-behavioral2": {
+            "backend": "sbx4m53",
+            "kind": "behavioral",
+            "os": "windows10-2004-x64",
+            "resource": "win10v2004-20240312-en",
+            "score": 1,
+            "sigs": 4,
+            "status": "reported",
+            "target": "test_file.docx",
+            "timeout": 150
+        },
+        "240321-t3mwmagqs3-static1": {
+            "kind": "static",
+            "score": 1,
+            "status": "reported"
+        }
+    }
+}

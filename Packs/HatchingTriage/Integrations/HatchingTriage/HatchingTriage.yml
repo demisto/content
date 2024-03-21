@@ -191,10 +191,10 @@ script:
       description: Date the analysis report was created.
       type: Date
     - contextPath: Triage.sample-summaries.custom
-      description: ''
+      description: Custom details
       type: String
     - contextPath: Triage.sample-summaries.owner
-      description: ''
+      description: Owner of the sample
       type: String
     - contextPath: Triage.sample-summaries.sample
       description: Unique identifier of the sample.
@@ -214,6 +214,18 @@ script:
     - contextPath: Triage.sample-summaries.tasks
       description: Tasks performed in the analysis.
       type: String
+    - contextPath: DBotScore.Indicator
+      description: Triage analysis target.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type - File or URL.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The integration used to generate the indicator.
+      type: String
+    - contextPath: DBotScore.Score
+      description: Score from 0 to 3.
+      type: Number
   - arguments:
     - description: Sample's unique identifier, can be found using the query samples command.
       name: sample_id
@@ -594,7 +606,7 @@ script:
       required: true
     name: triage-delete-profile
     description: Update the profile with the specified ID or name. The stored profile is overwritten, so it is important that the submitted profile has all fields, with the exception of the ID.
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.14.90585
   runonce: false
   script: ''
   subtype: python3
