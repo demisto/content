@@ -2,7 +2,7 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: Playbook used to retrieve job id for submissions of fortisandbox using. Deprecated. Use FortiSandboxv2 `fortisandbox-submission-file-upload` command instead.
+description: Playbook used to retrieve job id for submissions of fortisandbox using. Deprecated. Use `fortisandbox-submission-file-upload` instead.
   the submission id.
 id: FortiSandbox - Loop for Job Submissions
 deprecated: true
