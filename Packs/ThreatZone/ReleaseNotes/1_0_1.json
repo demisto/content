@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "SANITIZED key removed from readable output and context data output, use !tz-get-sanitized to get sanitized file, check status using !tz-get-result"
+}

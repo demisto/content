@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 import urllib3
 import requests
-from typing import Any, Dict
+from typing import Any
 import shutil
 
 # Disable insecure warnings
@@ -30,7 +30,7 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def threatzone_add(self, param: dict) -> Dict[str, Any]:
+    def threatzone_add(self, param: dict) -> dict[str, Any]:
         """Sends the sample to ThreatZone url using the '/public-api/scan/' API endpoint
 
         :return: dict containing the sample uuid as returned from the API
@@ -52,7 +52,7 @@ class Client(BaseClient):
         suffix = "/public-api/scan/" + param["scan_type"]
         return self._http_request(method="POST", url_suffix=suffix, data=payload, files=param["files"])
 
-    def threatzone_get(self, param: dict) -> Dict[str, Any]:
+    def threatzone_get(self, param: dict) -> dict[str, Any]:
         """Gets the sample scan result from ThreatZone using the '/public-api/get/submission/' API endpoint
 
         :return: dict containing the sample scan results as returned from the API
@@ -69,7 +69,7 @@ class Client(BaseClient):
             verify=glob_VERIFY,
         )
         if r.status_code < 200 or r.status_code > 299:
-            raise DemistoException("Bad HTTP response [{code}] - {body}".format(code=r.status_code, body=r.text))
+            raise DemistoException(f"Bad HTTP response [{r.status_code}] - {r.text}")
         with open(filename, "wb") as f:
             r.raw.decode_content = True
             shutil.copyfileobj(r.raw, f)
@@ -264,7 +264,7 @@ def generate_indicator(indicator, report, type_of_indicator, score=None):
     raise DemistoException(f"{type_of_indicator} does not supported")
 
 
-def threatzone_get_result(client: Client, args: Dict[str, Any], only_sanitized: bool = False) -> list[CommandResults] | dict:
+def threatzone_get_result(client: Client, args: dict[str, Any], only_sanitized: bool = False) -> list[CommandResults] | dict:
     """Get the sample scan result from ThreatZone.
     :param - uuid: For filtering with status
     :type uuid: ``str``
@@ -421,13 +421,13 @@ def threatzone_return_results(scan_type, uuid, url, readable_output, availabilit
     ]
 
 
-def threatzone_get_sanitized_file(client: Client, args: Dict[str, Any]) -> dict:
+def threatzone_get_sanitized_file(client: Client, args: dict[str, Any]) -> dict:
     """Downloads and uploads sanitized file to WarRoom & Context Data."""
     submission_uuid = args.get("uuid")
     return client.threatzone_get_sanitized(submission_uuid)
 
 
-def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """Uploads the sample to the ThreatZone sandbox to analyse with required or optional selections."""
     availability = client.threatzone_check_limits("sandbox")
     if not availability["available"]:
@@ -474,7 +474,7 @@ def threatzone_sandbox_upload_sample(client: Client, args: Dict[str, Any]) -> Li
     return threatzone_return_results("sandbox", uuid, url, readable_output, availability)
 
 
-def threatzone_static_cdr_upload_sample(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     """Uploads the sample to the ThreatZone to analyse with required or optional selections."""
     scan_type = args.get("scan_type")
     availability = client.threatzone_check_limits(scan_type)
