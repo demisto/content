@@ -1265,7 +1265,7 @@ def test_get_incident_extra_data_incident_not_exist(mocker):
         'incident_id': '1'
     }
     with pytest.raises(DemistoException) as e:
-            _, outputs, raw_incident = get_incident_extra_data_command(client, args)
+        _, outputs, raw_incident = get_incident_extra_data_command(client, args)
     assert str(e.value) == 'Incident 1 is not found'
     
 
