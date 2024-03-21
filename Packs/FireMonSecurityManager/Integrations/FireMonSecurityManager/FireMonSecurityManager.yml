@@ -1,4 +1,7 @@
 category: Authentication & Identity Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: FireMonSecurityManager
   version: -1
@@ -127,6 +130,7 @@ script:
   - arguments:
     - description: Collector id.
       name: id
+      required: true
     description: Get collector status.
     name: firemon-collector-get-status-byid
     outputs:
@@ -137,7 +141,6 @@ script:
   script: ''
   subtype: python3
   type: python
-  runonce: false
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
