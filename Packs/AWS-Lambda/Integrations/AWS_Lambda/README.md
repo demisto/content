@@ -1068,14 +1068,14 @@ Lists the versions of an Lambda layer.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.Lambda.Layers.NextMarker | string | A pagination token returned when the response doesn’t contain all versions. | 
-| AWS.Lambda.Layers.LayerVersions.LayerVersionArn | string | The ARN of the layer version. | 
-| AWS.Lambda.Layers.LayerVersions.Version | number | The version number. | 
-| AWS.Lambda.Layers.LayerVersions.Description | string | The description of the version. | 
-| AWS.Lambda.Layers.LayerVersions.CreatedDate | string | The date that the version was created, in ISO 8601 format. For example, 2018-11-27T15:10:45.123\+0000. | 
-| AWS.Lambda.Layers.LayerVersions.CompatibleRuntimes | list | The layer’s compatible runtimes. | 
-| AWS.Lambda.Layers.LayerVersions.LicenseInfo | string | The layer’s open-source license. | 
-| AWS.Lambda.Layers.LayerVersions.CompatibleArchitectures | list | A list of compatible instruction set architectures. | 
+| AWS.Lambda.LayerVersionsNextToken | string | A pagination token returned when the response doesn’t contain all versions. | 
+| AWS.Lambda.Layers.LayerVersionArn | string | The ARN of the layer version. | 
+| AWS.Lambda.Layers.Version | number | The version number. | 
+| AWS.Lambda.Layers.Description | string | The description of the version. | 
+| AWS.Lambda.Layers.CreatedDate | string | The date that the version was created, in ISO 8601 format. For example, 2018-11-27T15:10:45.123\+0000. | 
+| AWS.Lambda.Layers.CompatibleRuntimes | list | The layer’s compatible runtimes. | 
+| AWS.Lambda.Layers.LicenseInfo | string | The layer’s open-source license. | 
+| AWS.Lambda.Layers.CompatibleArchitectures | list | A list of compatible instruction set architectures. | 
 
 #### Command example
 ```!aws-lambda-list-layer-version layer-name=test```

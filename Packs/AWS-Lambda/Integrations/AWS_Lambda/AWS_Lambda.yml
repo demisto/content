@@ -82,12 +82,12 @@ configuration:
   name: insecure
   type: 8
   required: false
-  defaultvalue: "true"
+  defaultvalue: "false"
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-  defaultvalue: "true"
+  defaultvalue: "false"
 description: Amazon Web Services Serverless Compute service (lambda).
 display: AWS - Lambda
 name: AWS - Lambda
@@ -1410,7 +1410,7 @@ script:
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     outputs: []
-  dockerimage: demisto/boto3py3:1.0.0.89951
+  dockerimage: demisto/boto3py3:1.0.0.90777
   runonce: false
   subtype: python3
   script: ''
