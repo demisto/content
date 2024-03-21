@@ -64,7 +64,7 @@ class Client(BaseClient):
                         tsg_access_token: access_token,
                         tsg_expiry_time: expiry_time
                     }
-                    # store received token and expiration time in the integration context
+                    # stores received token and expiration time in the integration context
                     set_integration_context(new_token)
                     self._access_token = new_token.get(tsg_access_token, {})
                 else:
@@ -273,14 +273,14 @@ def test_module(client: Client) -> str:
         client.generate_access_token_request()
     except DemistoException as e:
         if 'access token' in str(e) or 'Forbidden' in str(e) or 'Authorization' in str(e):
-            raise DemistoException("Authorization Error: make sure your tsg_id, client_id, client_secret are correctly set.")
+            raise DemistoException(f"Authorization Error: make sure your tsg_id, client_id, client_secret are correctly set. With error {e}")
         else:
             raise e
     try:
         client.get_info_about_device_request()
         message = 'ok'
-    except Exception:
-        raise DemistoException("Authorization Error: make sure your servel_url and API_key are correctly set.")
+    except Exception as e:
+        raise DemistoException(f"Authorization Error: make sure your servel_url and API_key are correctly set. With error {e}")
     return message
 
 
