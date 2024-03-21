@@ -245,13 +245,6 @@ script:
         - name: uuid
           required: true
           description: UUID of the submission.
-        - name: unzip
-          auto: PREDEFINED
-          predefined:
-            - "true"
-            - "false"
-          description: Unzip zip file with sanitized password.
-          defaultValue: "false"
       description: Downloads and uploads sanitized file from ThreatZone API to WarRoom & Context Data.
       outputs:
         - contextPath: File.Extension
@@ -300,7 +293,7 @@ script:
         - contextPath: ThreatZone.Limits.Daily_Submission_Limit
           description: The remaining/total daily submission limits of the current plan.
           type: String
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.89009
   runonce: false
   subtype: python3
 fromversion: 6.9.0
