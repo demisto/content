@@ -1,4 +1,3 @@
-import logging
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -7,8 +6,11 @@ from CommonServerUserPython import *
 
 from typing import Optional, Tuple
 from requests.sessions import merge_setting, CaseInsensitiveDict
+from requests.exceptions import HTTPError
 import re
 import copy
+import logging
+import traceback
 import types
 import urllib3
 from taxii2client import v20, v21
@@ -20,7 +22,7 @@ import tempfile
 urllib3.disable_warnings()
 
 
-class SuppressWarningFilter(logging.Filter):    # pragma: no cover
+class XsoarSuppressWarningFilter(logging.Filter):    # pragma: no cover
     def filter(self, record):
         # Suppress all logger records, but send the important ones to demisto logger
         if record.levelno == logging.WARNING:
@@ -30,8 +32,14 @@ class SuppressWarningFilter(logging.Filter):    # pragma: no cover
         return False
 
 
+# Make sure we have only one XsoarSuppressWarningFilter
 v21_logger = logging.getLogger("taxii2client.v21")
-v21_logger.addFilter(SuppressWarningFilter())
+demisto.debug(f'Logging Filters before cleaning: {v21_logger.filters=}')
+for current_filter in list(v21_logger.filters):    # pragma: no cover
+    if 'XsoarSuppressWarningFilter' in type(current_filter).__name__:
+        v21_logger.removeFilter(current_filter)
+v21_logger.addFilter(XsoarSuppressWarningFilter())
+demisto.debug(f'Logging Filters: {v21_logger.filters=}')
 
 # CONSTANTS
 TAXII_VER_2_0 = "2.0"
@@ -323,6 +331,12 @@ class Taxii2FeedClient:
             # try TAXII 2.1
             self.set_api_root()
         # (TAXIIServiceException, HTTPError) should suffice, but sometimes it raises another type of HTTPError
+        except HTTPError as e:
+            if e.response.status_code != 406 and "version=2.0" not in str(e):
+                raise e
+            # switch to TAXII 2.0
+            self.init_server(version=TAXII_VER_2_0)
+            self.set_api_root()
         except Exception as e:
             if "406 Client Error" not in str(e) and "version=2.0" not in str(e):
                 raise e
@@ -382,7 +396,7 @@ class Taxii2FeedClient:
                     break
             if not collection_found:
                 raise DemistoException(
-                    "Could not find the provided Collection name in the available collections. "
+                    f"Could not find the provided Collection name {collection_to_fetch} in the available collections. "
                     "Please make sure you entered the name correctly."
                 )
 
@@ -1181,7 +1195,7 @@ class Taxii2FeedClient:
             envelopes = self.poll_collection(page_size, **kwargs)  # got data from server
             indicators = self.load_stix_objects_from_envelope(envelopes, limit)
         except InvalidJSONError as e:
-            demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}')
+            demisto.debug(f'Excepted InvalidJSONError, continuing with empty result.\nError: {e}, {traceback.format_exc()}')
             # raised when the response is empty, because {} is parsed into '筽'
             indicators = []
 
@@ -1219,20 +1233,35 @@ class Taxii2FeedClient:
         if relationships_lst:
             indicators.extend(self.parse_relationships(relationships_lst))
         demisto.debug(
-            f"TAXII 2 Feed has extracted {len(indicators)} indicators"
+            f"TAXII 2 Feed has extracted {len(list(indicators))} indicators"
         )
 
         return indicators
 
+    def increase_count(self, counter: Dict[str, int], id: str):
+        if id in counter:
+            counter[id] = counter[id] + 1
+        else:
+            counter[id] = 1
+
     def parse_generator_type_envelope(self, envelopes: types.GeneratorType, parse_objects_func, limit: int = -1):
         indicators = []
         relationships_lst = []
+        # Used mainly for logging
+        parsed_objects_counter: Dict[str, int] = {}
         try:
             for envelope in envelopes:
-                stix_objects = envelope.get("objects")
-                if not stix_objects:
-                    # no fetched objects
-                    break
+                self.increase_count(parsed_objects_counter, 'envelope')
+                try:
+                    stix_objects = envelope.get("objects")
+                    if not stix_objects:
+                        # no fetched objects
+                        self.increase_count(parsed_objects_counter, 'not-parsed-envelope-not-stix')
+                        break
+                except Exception as e:
+                    demisto.info(f"Exception trying to get envelope objects: {e}, {traceback.format_exc()}")
+                    self.increase_count(parsed_objects_counter, 'exception-envelope-get-objects')
+                    continue
 
                 # we should build the id_to_object dict before iteration as some object reference each other
                 self.id_to_object.update(
@@ -1243,33 +1272,51 @@ class Taxii2FeedClient:
                 )
                 # now we have a list of objects, go over each obj, save id with obj, parse the obj
                 for obj in stix_objects:
-                    obj_type = obj.get('type')
+                    try:
+                        obj_type = obj.get('type')
+                    except Exception as e:
+                        demisto.info(f"Exception trying to get stix_object-type: {e}, {traceback.format_exc()}")
+                        self.increase_count(parsed_objects_counter, 'exception-stix-object-type')
+                        continue
 
                     # we currently don't support extension object
                     if obj_type == 'extension-definition':
                         demisto.debug(f'There is no parsing function for object type "extension-definition", for object {obj}.')
+                        self.increase_count(parsed_objects_counter, 'not-parsed-extension-definition')
                         continue
                     elif obj_type == 'relationship':
                         relationships_lst.append(obj)
+                        self.increase_count(parsed_objects_counter, 'not-parsed-relationship')
                         continue
 
                     if not parse_objects_func.get(obj_type):
                         demisto.debug(f'There is no parsing function for object type {obj_type}, for object {obj}.')
-
+                        self.increase_count(parsed_objects_counter, f'not-parsed-{obj_type}')
                         continue
-                    if result := parse_objects_func[obj_type](obj):
-                        indicators.extend(result)
-                        self.update_last_modified_indicator_date(obj.get("modified"))
+                    try:
+                        if result := parse_objects_func[obj_type](obj):
+                            indicators.extend(result)
+                            self.update_last_modified_indicator_date(obj.get("modified"))
+                    except Exception as e:
+                        demisto.info(f"Exception parsing stix_object-type {obj_type}: {e}, {traceback.format_exc()}")
+                        self.increase_count(parsed_objects_counter, f'exception-parsing-{obj_type}')
+                        continue
+                    self.increase_count(parsed_objects_counter, f'parsed-{obj_type}')
 
                     if reached_limit(limit, len(indicators)):
-                        demisto.debug("Reached limit of indicators to fetch")
+                        demisto.debug(f"Reached the limit ({limit}) of indicators to fetch. Indicators len: {len(indicators)}."
+                                      f' Got {len(indicators)} indicators and {len(list(relationships_lst))} relationships.'
+                                      f' Objects counters: {parsed_objects_counter}')
+
                         return indicators, relationships_lst
         except Exception as e:
+            demisto.info(f"Exception trying to parse envelope: {e}, {traceback.format_exc()}")
             if len(indicators) == 0:
                 demisto.debug("No Indicator were parsed")
                 raise e
             demisto.debug(f"Failed while parsing envelopes, succeeded to retrieve {len(indicators)} indicators.")
-        demisto.debug("Finished parsing all objects")
+        demisto.debug(f'Finished parsing all objects. Got {len(list(indicators))} indicators '
+                      f'and {len(list(relationships_lst))} relationships. Objects counters: {parsed_objects_counter}')
         return indicators, relationships_lst
 
     def poll_collection(
@@ -1286,7 +1333,9 @@ class Taxii2FeedClient:
                 self.objects_to_fetch.append('relationship')
             kwargs['type'] = self.objects_to_fetch
         if isinstance(self.collection_to_fetch, v20.Collection):
+            demisto.debug(f'Collection is a v20 type collction, {self.collection_to_fetch}')
             return v20.as_pages(get_objects, per_request=page_size, **kwargs)
+        demisto.debug(f'Collection is a v21 type collction, {self.collection_to_fetch}')
         return v21.as_pages(get_objects, per_request=page_size, **kwargs)
 
     def get_page_size(self, max_limit: int, cur_limit: int) -> int:
@@ -1314,6 +1363,8 @@ class Taxii2FeedClient:
         extracted_objs = [
             item for item in stix_objs if item.get("type") in required_objects
         ]  # retrieve only required type
+        demisto.debug(f'Extracted {len(list(extracted_objs))} out of {len(list(stix_objs))} Stix objects with the types: '
+                      f'{required_objects}')
 
         return extracted_objs
 

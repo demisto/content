@@ -1,0 +1,18 @@
+{
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "actor_email": "actor_email",
+            "actor_ip": "1.1.1.1",
+            "actor_name": "",
+            "gg_created_at": "2024-01-09T12:24:40.089757Z",
+            "gg_updated_at": "2024-01-09T12:24:40.089768Z",
+            "id": 1,
+            "payload": null,
+            "target_user_email": "target_user_email",
+            "type": "member.sign_in"
+        }
+    ]
+}
