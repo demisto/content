@@ -124,7 +124,7 @@ configuration:
   section: Connect
   required: false
   additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
-  advanced: true
+  advanced: false
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -237,7 +237,7 @@ script:
     - description: Number of total results to return. Default is 50.
       name: limit
       defaultValue: 50
-    description: List alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.
+    description: Get a list of alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.
     name: msg-search-alerts
     outputs:
     - contextPath: MsGraph.Alert.ID
@@ -689,17 +689,15 @@ script:
       - unknown
       - truePositive
       - falsePositive
-      - benignPositive
+      - informationalExpectedActivity
     - auto: PREDEFINED
       description: Relevant only for Alerts v2. Use this field to update the alert's determination.
       name: determination
       predefined:
       - unknown
-      - apt
       - malware
       - phishing
       - other
-      - securityPersonnel
       - securityTesting
       - multiStagedAttack
       - maliciousUserActivity
@@ -904,7 +902,7 @@ script:
       - 'true'
       - 'false'
       required: false
-    description: Lists edicovery cases.
+    description: Get a list of the eDiscovery cases.
     execution: false
     name: msg-list-ediscovery-cases
     outputs:
@@ -994,7 +992,7 @@ script:
       - 'true'
       - 'false'
       required: false
-    description: List custodians on a given eDiscovery case.
+    description: Get a list of the custodians on a given eDiscovery case.
     execution: false
     name: msg-list-ediscovery-custodians
     outputs:
@@ -1521,7 +1519,7 @@ script:
       - 'true'
       - 'false'
       required: false
-    description: Get the list of eDiscoverySearch resources from an eDiscovery case.
+    description: Get a list of eDiscoverySearch resources from an eDiscovery case.
     execution: false
     name: msg-list-ediscovery-searchs
     outputs:
@@ -1603,7 +1601,8 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-      - permanentlyDelete
+      - permanentlydeleted
+      - recoverable
     - description: The ID of the eDiscovery search.
       isArray: false
       name: purge_areas
@@ -1611,6 +1610,7 @@ script:
       auto: PREDEFINED
       predefined:
       - teamsMessages
+      - mailboxes
     description: |-
       Delete Microsoft Teams messages contained in an eDiscovery search.
       Note: This request purges Teams data only. It does not purge other types of data such as mailbox items.
@@ -1985,7 +1985,7 @@ script:
       isArray: false
       name: next_token
       required: false
-    description: Create URL assessment request.
+    description: Get a list of the threat assessment requests.
     execution: false
     name: msg-list-threat-assessment-requests
     polling: true
@@ -2038,7 +2038,7 @@ script:
     - contextPath: MSGraphMail.AssessmentRequest.ResultMessage
       description: The result message of the assessment request.
       type: String
-  dockerimage: demisto/crypto:1.0.0.82826
+  dockerimage: demisto/crypto:1.0.0.87358
   isfetch: true
   runonce: false
   script: '-'
