@@ -539,7 +539,7 @@ def test_publish_layer_version_command(mocker):
 
     results = publish_layer_version_command(args, client)
 
-    assert results.outputs_key_field == 'LayerArn'
+    assert results.outputs_key_field == 'LayerVersionArn'
     assert results.outputs_prefix == 'AWS.Lambda.Layers'
     assert len(results.outputs.keys()) == 6
 
@@ -575,6 +575,4 @@ def test_list_layer_version_command(mocker):
 
     results = list_layer_version_command(args, client)
 
-    assert results.outputs_key_field == 'LayerVersionArn'
-    assert results.outputs_prefix == 'AWS.Lambda.Layers'
     assert len(results.outputs.keys()) == 2

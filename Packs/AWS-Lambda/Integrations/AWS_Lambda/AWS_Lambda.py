@@ -165,11 +165,13 @@ def prepare_create_function_kwargs(args: dict[str, str]):
         raise DemistoException('code or S3-bucket must be provided.')
 
     kwargs['TracingConfig'] = {'Mode': args.get('tracingConfig') or "Active"}
-    kwargs['MemorySize'] = arg_to_number(args.get('memorySize') or 128)
-    kwargs['Timeout'] = arg_to_number(args.get('timeout') or 3)
+    kwargs['MemorySize'] = arg_to_number(args.get('memorySize')) or 128
+    kwargs['Timeout'] = arg_to_number(args.get('timeout')) or 3
 
     for key in create_function_api_keys:
-        kwargs.update({key: args.get(key[0].lower() + key[1:])})
+        arg_name = key[0].lower() + key[1:]
+        if arg_name in args:
+            kwargs.update({key: args.get(arg_name)})
 
     if publish := args.get('publish'):
         kwargs['Publish'] = argToBoolean(publish)
@@ -707,7 +709,7 @@ def list_layer_version_command(args, aws_client):
     outputs = {
         'AWS.Lambda.Layers(val.LayerVersionArn && val.LayerVersionArn == obj.LayerVersionArn)':
             res.get('LayerVersions'),
-        'AWS.Lambda(true)': {f'LayerVersionsNextToken': res.get("NextMarker")}
+        'AWS.Lambda(true)': {'LayerVersionsNextToken': res.get("NextMarker")}
     }
 
     readable_output = tableToMarkdown(name='Layer Version List', t=res.get('LayerVersions'), headerTransform=pascalToSpace)
