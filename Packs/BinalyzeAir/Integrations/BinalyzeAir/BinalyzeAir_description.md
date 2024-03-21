@@ -1,7 +1,13 @@
-## Hello World
-- This section explains how to configure the instance of HelloWorld in Cortex XSOAR:
-- You can use the following API Key: `dummy-key`
-
-
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/hello-world)
+## Binalyze AIR
+- You need to generate and API key on Binalyze Platform in order to authenticate for running integration commands.
+- Generating Auth Token on Binalyze AIR steps:
+- 1)Login to Binalyze AIR host.
+- 2)Navigate to Integrations Page.
+- 3)Select API tokens.
+- 4)Click 'Add New' button.
+- 5)Fill the appropriate fields accordingly. (Choose All Organizations if you want to apply API requests through one token to multiple organizations.)
+- 6)Click Save. The token will be generated save your token in a safe place since it will occur once. 
+- After generating your token navigate to XSOAR Integrations and search for 'Binalyze AIR'.
+- Click add instance.
+- Write the server URL and the appropriate listening port on server. (e.g., https://<host:port>)
+- Paste your token in the 'API Key' field.
