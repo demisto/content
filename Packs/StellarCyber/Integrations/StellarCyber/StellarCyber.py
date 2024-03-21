@@ -133,9 +133,9 @@ class Client(BaseClient):
         ]
         return updated_incidents
 
-    def get_incident(self, ticket_id: int):
-        incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?ticket_id={ticket_id}"
-
+    def get_incident(self, remote_ticket_id: str):
+        ticket_id, cust_id = remote_ticket_id.split(":")
+        incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?ticket_id={ticket_id}&cust_id={cust_id}"
         headers = {"Accept": "application/json", "Content-type": "application/json"}
         headers["Authorization"] = self._get_auth_header()
         response = self._http_request(method="GET", full_url=incident_url, headers=headers)
@@ -217,6 +217,7 @@ def get_xsoar_severity(severity):
     sev_map = {"Low": 1, "Medium": 2, "High": 3, "Critical": 4}
     return sev_map[severity]
 
+
 def demisto_alert_normalization(alert, alert_id, alert_index, dp_host):
     """
     Normalizes an alert from Stellar Cyber into a format that can be ingested by Demisto.
@@ -287,7 +288,6 @@ def fetch_incidents(client: Client, params: dict) -> list[dict]:
 
     for incident in incidents:
         incident_id = incident["_id"]
-        cust_id = incident["cust_id"]
         incident["case_url"] = f"https://{client.dp_host}/cases/case-detail/{incident_id}"
         incident_ticket_id = str(incident["ticket_id"])
         if len(incident['metadata'].get('name_auto', [])):
@@ -312,6 +312,7 @@ def fetch_incidents(client: Client, params: dict) -> list[dict]:
             incident["security_alerts"].append(client.get_alert(alert_id=event["_id"], alert_index=event["_index"]))
         case_severity = get_xsoar_severity(incident["priority"])
         incident["severity"] = case_severity
+        incident["mirror_id"] = f"{str(incident['ticket_id']):{incident['cust_id']}}"
         incident["mirror_direction"] = "In"
         incident["mirror_instance"] = demisto.integrationInstance()
         if incident_ticket_id not in last_incident_ids:
@@ -391,7 +392,7 @@ def close_case_command(client: Client, args: dict) -> CommandResults:
     close_reason = args.get("stellar_close_reason", "")
     demisto.info(f"Closing stellar case with id: [{case_id}]")
     response = client.close_case(case_id, close_reason)
-    
+
     return CommandResults(
         outputs_prefix="StellarCyber.Case.Close",
         outputs_key_field="_id",
@@ -428,7 +429,7 @@ def get_remote_data_command(client: Client, args) -> GetRemoteDataResponse | str
     # mirror_last_sync = int(datetime.utcnow().timestamp() * 1000)
     try:
         remote_incident_id = parsed_args.remote_incident_id
-        incident = client.get_incident(ticket_id=remote_incident_id)
+        incident = client.get_incident(remote_incident_id)
         if len(incident):
             incident_id = incident["_id"]
             incident["case_url"] = f"https://{client.dp_host}/cases/case-detail/{incident_id}"
@@ -451,11 +452,9 @@ def get_remote_data_command(client: Client, args) -> GetRemoteDataResponse | str
             incident["security_alerts"] = []
             for event in event_ids:
                 incident["security_alerts"].append(client.get_alert(alert_id=event["_id"], alert_index=event["_index"]))
-            case_severity = get_xsoar_severity(incident["priority"])
-            incident["severity"] = case_severity
-            incident["mirror_direction"] = "In"
-            incident["mirror_instance"] = demisto.integrationInstance()
-
+            incident["severity"] = get_xsoar_severity(incident["priority"])
+            # incident["mirror_direction"] = "In"
+            # incident["mirror_instance"] = demisto.integrationInstance()
             return GetRemoteDataResponse(mirrored_object=incident, entries=[])
         else:
             return_error(f"Failed to retrieve case: {str(incident['ticket_id'])}")
@@ -482,7 +481,7 @@ def get_modified_remote_data_command(client: Client, args) -> GetModifiedRemoteD
         modified_incidents = client.get_updated_incidents(last_run=last_run_ts)
         if len(modified_incidents):
             modified_incident_ids = [
-                str(i["ticket_id"])
+                f"{str(i['ticket_id']):{i['cust_id']}}"
                 for i in modified_incidents
             ]
         else:
@@ -491,9 +490,9 @@ def get_modified_remote_data_command(client: Client, args) -> GetModifiedRemoteD
         #     set_last_mirror_run({"last_update": str(int(last_update_utc.timestamp() * 1000))})
         # else:
         #     set_last_mirror_run({"last_update": last_update})
-        
+
         return GetModifiedRemoteDataResponse(modified_incident_ids)
-    
+
     except Exception as e:
         return_error("skip update")
 
@@ -542,13 +541,11 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == "stellar-update-case":
             return_results(update_case_command(client, demisto.args()))
         elif demisto.command() == "get-modified-remote-data":
-            # raise NotImplementedError
             return_results(get_modified_remote_data_command(client, demisto.args()))
         elif demisto.command() == "get-remote-data":
             return_results(get_remote_data_command(client, demisto.args()))
 
     except Exception as e:
-        demisto.info(str(e))
         return_error(str(e))
 
 

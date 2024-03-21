@@ -5675,11 +5675,15 @@
         {
             "integrations": "Zimperium v2",
             "playbookID": "Zimperiumv2-TestPlaybook"
-        },        
+        },
         {
             "integrations": "AWS-SNS-Listener",
             "playbookID": "AWS SNS Listener - Test",
             "instance_names": "AWS-SNS-Listener"
+        },
+        {
+            "integrations": "StellarCyber",
+            "playbookID": "Stellar Cyber Test"
         }
     ],
     "skipped_tests": {

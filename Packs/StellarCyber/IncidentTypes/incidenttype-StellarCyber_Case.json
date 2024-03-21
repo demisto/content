@@ -17,5 +17,5 @@
     "default": false,
     "disabled": false,
     "layout": "Stellar Cyber Case",
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.6.0"
 }

@@ -14,6 +14,7 @@ def util_load_json(path):
 def client():
     return Client(dp_host='test.example.com', username='test', password='test', verify=True, proxy=None, tenantid=None)
 
+
 def test_get_alert_command(client, requests_mock):
     args = {
         "alert_id": "1710883791406342b1f41b2247774d60bf035a6f98e5ff21"

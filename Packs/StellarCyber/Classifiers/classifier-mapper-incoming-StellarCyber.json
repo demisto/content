@@ -7,11 +7,7 @@
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "name": {
-                    "complex": {
-                        "filters": [],
-                        "root": "name",
-                        "transformers": []
-                    }
+                    "simple": "name"
                 },
                 "Alert tags": {
                     "complex": {
@@ -22,44 +18,10 @@
                     }
                 },
                 "External Status": {
-                    "complex": {
-                        "filters": [],
-                        "root": "status",
-                        "transformers": []
-                    }
+                    "simple": "status"
                 },
                 "Number Of Found Related Alerts": {
                     "simple": "size"
-                },
-                "Process Names": {
-                    "complex": {
-                        "accessor": "detected_value",
-                        "filters": [
-                            [
-                                {
-                                    "left": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "security_alerts.detected_field"
-                                        }
-                                    },
-                                    "operator": "isEqualString",
-                                    "right": {
-                                        "isContext": false,
-                                        "value": {
-                                            "simple": "process_name"
-                                        }
-                                    }
-                                }
-                            ]
-                        ],
-                        "root": "security_alerts",
-                        "transformers": [
-                            {
-                                "operator": "uniq"
-                            }
-                        ]
-                    }
                 },
                 "Related Alerts": {
                     "complex": {
@@ -164,39 +126,19 @@
                     }
                 },
                 "dbotMirrorDirection": {
-                    "complex": {
-                        "filters": [],
-                        "root": "mirror_direction",
-                        "transformers": []
-                    }
+                    "simple": "mirror_direction"
                 },
                 "dbotMirrorId": {
-                    "complex": {
-                        "filters": [],
-                        "root": "ticket_id",
-                        "transformers": []
-                    }
+                    "simple": "mirror_id"
                 },
                 "dbotMirrorInstance": {
-                    "complex": {
-                        "filters": [],
-                        "root": "mirror_instance",
-                        "transformers": []
-                    }
+                    "simple": "mirror_instance"
                 },
                 "details": {
-                    "complex": {
-                        "filters": [],
-                        "root": "summary",
-                        "transformers": []
-                    }
+                    "simple": "summary"
                 },
                 "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "severity",
-                        "transformers": []
-                    }
+                    "simple": "severity"
                 }
             }
         }
@@ -204,5 +146,5 @@
     "name": "Stellar Cyber - Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.6.0"
 }
