@@ -8,7 +8,7 @@ commonfields:
 configuration:
 - name: base_url
   display: Base URL
-  additional_info: The API base URL
+  additional_info: The API base URL.
   required: true
   type: 0
   section: Connect
@@ -150,7 +150,7 @@ script:
       description: Optional message to show an API response. For example, "Not found".
       type: String
   - name: fortisandbox-submission-file-upload
-    description: Scheduled command, upload any file type to be sandboxed. The system swiftly identifies and mitigates threats in files.
+    description: Scheduled command to upload any file type to be sandboxed. The system swiftly identifies and mitigates threats in files.
     polling: true
     arguments:
     - name: entry_id
@@ -178,7 +178,7 @@ script:
       description: Comma-separated list of virtual machines to use. If this field is not set, default ones will be used.
       isArray: true
     - name: force_vm_scan
-      description: Whether to for the file to be scanned in virtual machine.
+      description: Whether to force the file to be scanned in a virtual machine.
       defaultValue: 'false'
       auto: PREDEFINED
       predefined:
@@ -334,7 +334,7 @@ script:
       description: Optional message to show an API response. For example, "Not found".
       type: String
   - name: fortisandbox-submission-url-upload
-    description: Scheduled command, upload URLs through a text file or directly to be sandboxed individually. The system rigorously examines URLs for online security hazards.
+    description: Scheduled command to upload URLs through a text file or directly to be sandboxed individually. The system rigorously examines URLs for online security hazards.
     polling: true
     arguments:
     - name: entry_id
@@ -353,7 +353,7 @@ script:
       description: Comma-separated list of virtual machines to use. If this field is not set, default ones will be used.
       isArray: true
     - name: force_vm_scan
-      description: Whether to for the file to be scanned in virtual machine.
+      description: Whether to force the file to be scanned in a virtual machine.
       defaultValue: 'false'
       auto: PREDEFINED
       predefined:
@@ -492,7 +492,7 @@ script:
       description: Optional message to show an API response. For example, "Not found".
       type: String
   - name: fortisandbox-submission-cancel
-    description: 'Cancel a running job submission. Notice: jobs that are already being processed cannot be canceled, only jobs that are in the queue.'
+    description: 'Cancel a running job submission. Note: Jobs that are already being processed cannot be canceled, only jobs that are in the queue.'
     arguments:
     - name: id
       description: The submission ID.
@@ -647,18 +647,18 @@ script:
     description: Get a PDF report of the provided submission.
     arguments:
     - name: identifier
-      description: The job ID or sha256 of the scanned file or URL.
+      description: The job ID or SHA256 of the scanned file or URL.
       required: true
       default: true
     outputs:
     - contextPath: InfoFile.Name
-      description: File Name.
+      description: File name.
       type: String
     - contextPath: InfoFile.EntryID
       description: The entry ID of the report.
       type: String
     - contextPath: InfoFile.Size
-      description: File Size.
+      description: File size.
       type: Number
     - contextPath: InfoFile.Type
       description: File type "pdf".

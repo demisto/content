@@ -2,7 +2,7 @@ FortiSandbox is an advanced security tool that goes beyond standard sandboxing. 
 This integration was integrated and tested with version 4.4.3 of FortiSandboxv2.
 
 Some changes have been made that might affect your existing content.
-If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-fortisandbox-v2).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---fortisandbox-v2).
 
 ## Configure FortiSandbox v2 on Cortex XSOAR
 
@@ -148,7 +148,7 @@ Runs reputation on URLs.
 ### fortisandbox-submission-file-upload
 
 ***
-Scheduled command, upload any file type to be sandboxed. The system swiftly identifies and mitigates threats in files.
+Scheduled command to upload any file type to be sandboxed. The system swiftly identifies and mitigates threats in files.
 
 #### Base Command
 
@@ -164,7 +164,7 @@ Scheduled command, upload any file type to be sandboxed. The system swiftly iden
 | skip_steps | Comma-separated list of steps to skip from file analysis. Do not use this parameter if no step to skip. Possible values are: anti_virus, cloud, sandbox, static_scan. | Optional |
 | archive_passwords | Comma-separated list of passwords needed for extracting archived/zipped files. Non-ASCII passwords are invalid. | Optional |
 | overwrite_vm_list | Comma-separated list of virtual machines to use. If this field is not set, default ones will be used. | Optional |
-| force_vm_scan | Whether to for the file to be scanned in virtual machine. Possible values are: true, false. Default is false. | Optional |
+| force_vm_scan | Whether to force the file to be scanned in a virtual machine. Possible values are: true, false. Default is false. | Optional |
 | add_to_threat_package | Specifies whether the uploaded sample should be included in the threat package, based on meeting certain malware criteria. When set to true, the system will evaluate the sample and, if it qualifies, add it to the malware package. The default setting is false, indicating that the sample will not be added unless explicitly requested. Possible values are: false, true. Default is false. | Optional |
 | record | Record scan process in video if VMs are involved. Possible values are: true, false. Default is false. | Optional |
 | enable_ai | Enable Deep-AI mode for this scanning. Possible values are: true, false. Default is false. | Optional |
@@ -224,7 +224,7 @@ Scheduled command, upload any file type to be sandboxed. The system swiftly iden
 ### fortisandbox-submission-url-upload
 
 ***
-Scheduled command, upload URLs through a text file or directly to be sandboxed individually. The system rigorously examines URLs for online security hazards.
+Scheduled command to upload URLs through a text file or directly to be sandboxed individually. The system rigorously examines URLs for online security hazards.
 
 #### Base Command
 
@@ -240,11 +240,11 @@ Scheduled command, upload URLs through a text file or directly to be sandboxed i
 | process_timeout | The time period to stop the URLs scan, in seconds (between 30 and 1200 seconds). | Optional |
 | depth | The recursive depth in which URLs are examined. Level 0 for original URL page (between 0 and 5). | Optional |
 | overwrite_vm_list | Comma-separated list of virtual machines to use. If this field is not set, default ones will be used. | Optional |
-| force_vm_scan | Whether to for the file to be scanned in virtual machine. Possible values are: true, false. Default is false. | Optional |
+| force_vm_scan | Whether to force the file to be scanned in a virtual machine. Possible values are: true, false. Default is false. | Optional |
 | add_to_threat_package | Specifies whether the uploaded sample should be included in the threat package, based on meeting certain malware criteria. When set to true, the system will evaluate the sample and, if it qualifies, add it to the malware package. The default setting is false, indicating that the sample will not be added unless explicitly requested. Possible values are: false, true. Default is false. | Optional |
 | record | Record scan process in video if VMs are involved. Possible values are: true, false. | Optional |
 | enable_ai | Enable Deep-AI mode for this scanning. Possible values are: true, false. | Optional |
-| get_scan_report | Whether to return a PDF scan report at the end of the file analysis. Notice: Generating PDF scan reports can be time-consuming, especially when analyzing multiple URLs. Possible values are: true, false. Default is false. | Optional |
+| get_scan_report | Whether to return a PDF scan report at the end of the file analysis. Note: Generating PDF scan reports can be time-consuming, especially when analyzing multiple URLs. Possible values are: true, false. Default is false. | Optional |
 | interval | The interval between each poll in seconds. Min value is `10`. Default is 30. | Optional |
 | timeout | The timeout for the polling in seconds. Default is 600. | Optional |
 | sid | The submission ID. Hidden argument. | Optional |
@@ -295,7 +295,7 @@ Scheduled command, upload URLs through a text file or directly to be sandboxed i
 ### fortisandbox-submission-cancel
 
 ***
-Cancel a running job submission. Notice: jobs that are already being processed cannot be canceled, only jobs that are in the queue.
+Cancel a running job submission. Note: Jobs that are already being processed cannot be canceled, only jobs that are in the queue.
 
 #### Base Command
 
@@ -499,15 +499,15 @@ Get a PDF report of the provided submission.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| identifier | The job ID or sha256 of the scanned file or URL. | Required |
+| identifier | The job ID or SHA256 of the scanned file or URL. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | String | File Name. |
+| InfoFile.Name | String | File name. |
 | InfoFile.EntryID | String | The entry ID of the report. |
-| InfoFile.Size | Number | File Size. |
+| InfoFile.Size | Number | File size. |
 | InfoFile.Type | String | File type "pdf". |
 | InfoFile.Info | String | Basic information of the file. |
 
@@ -534,12 +534,12 @@ Get a PDF report of the provided submission.
 ## Breaking changes from the previous version of this integration - FortiSandbox v2
 ### Commands
 #### The following commands were removed in this version:
-* *fortisandbox-simple-file-rating-sha256* - this command was replaced by *file*.
-* *fortisandbox-simple-file-rating-sha1* - this command was replaced by *file*.
-* *fortisandbox-url-rating* - this command was replaced by *url*.
-* *fortisandbox-get-file-verdict-detailed* - this command was replaced by *file*.
-* *fortisandbox-upload-file* - this command was replaced by *fortisandbox-submission-upload-file*.
-* *fortisandbox-query-job-verdict* - this command was replaced by *fortisandbox-submission-job-verdict*.
-* *fortisandbox-jobid-from-submission* - this command was replaced by *fortisandbox-submission-job-list*.
-* *fortisandbox-get-pdf-report* - this command was replaced by *fortisandbox-submission-job-report*.
-* *fortisandbox-upload-urls* - this command was replaced by *fortisandbox-submission-upload-url*.
+* ***fortisandbox-simple-file-rating-sha256*** - this command was replaced by ***file***.
+* ***fortisandbox-simple-file-rating-sha1*** - this command was replaced by ***file***.
+* ***fortisandbox-url-rating*** - this command was replaced by ***url***.
+* ***fortisandbox-get-file-verdict-detailed*** - this command was replaced by ***file***.
+* ***fortisandbox-upload-file*** - this command was replaced by ***fortisandbox-submission-upload-file***.
+* ***fortisandbox-query-job-verdict*** - this command was replaced by ***fortisandbox-submission-job-verdict***.
+* ***fortisandbox-jobid-from-submission*** - this command was replaced by ***fortisandbox-submission-job-list***.
+* ***fortisandbox-get-pdf-report*** - this command was replaced by ***fortisandbox-submission-job-report***.
+* ***fortisandbox-upload-urls*** - this command was replaced by ***fortisandbox-submission-upload-url***.
