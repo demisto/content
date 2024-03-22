@@ -456,7 +456,7 @@ def download_file_command(client: Client, args: dict) -> CommandResults:
     inc = demisto.incident()
     incident_id = args.get('incidentID', inc.get("investigationId") if not inc.get("id") else inc.get("id"))
     file_name = args.get("fileName", "")
-    file_uri = re.sub("\/?markdown\/image\/", "",  args.get("fileURI", ""))
+    file_uri = re.sub("\/?markdown\/image\/", "", args.get("fileURI", ""))
     target = args.get('target', 'war room entry')
 
     if not incident_id:
@@ -484,8 +484,8 @@ def download_file_command(client: Client, args: dict) -> CommandResults:
     if target == 'war room entry':
         readable += f' Entry ID is {response["entries"][0]["id"]}'
     return CommandResults(readable_output=readable,
-                            outputs=struct_file_upload(response),
-                            outputs_prefix="File")
+                          outputs=struct_file_upload(response),
+                          outputs_prefix="File")
 
 
 def get_file_hahs_command(client: Client, args: dict) -> CommandResults:
@@ -495,7 +495,7 @@ def get_file_hahs_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults -- Readable output
     """
-    file_uri = re.sub("\/?markdown\/image\/", "",  args.get("fileURI", ""))
+    file_uri = re.sub("\/?markdown\/image\/", "", args.get("fileURI", ""))
     if not file_uri:
         return_error("Please provide file URI")
     # download file
@@ -520,8 +520,8 @@ def get_file_hahs_command(client: Client, args: dict) -> CommandResults:
         nfu["Extension"] = res[-1]
 
     return CommandResults(readable_output="Hash save under the key 'File_Hash'.",
-                            outputs=nfu,
-                            outputs_prefix="File_Hash")
+                          outputs=nfu,
+                          outputs_prefix="File_Hash")
 
 
 ''' MAIN FUNCTION '''
