@@ -354,6 +354,6 @@ def test_add_filename_suffix():
     my_list = ['a', 'b', 'c']
     my_list_with_suffix = add_filename_suffix(my_list, 'sfx')
 
-    assert len(my_list) == my_list_with_suffix
+    assert len(my_list) == len(my_list_with_suffix)
     for current_element_index, _ in enumerate(my_list):
         assert my_list[current_element_index] == f'{my_list_with_suffix[current_element_index]}.sfx'
