@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 import requests_toolbelt.sessions
 
 from CommonServerPython import *
-
+from Code42EventCollector import DATE_FORMAT
 
 TEST_URL = "https://test.com"
 
@@ -16,7 +16,30 @@ def create_mocked_response(response: List[Dict] | Dict, status_code: int = 200) 
     return mocked_response
 
 
+def create_file_events(start_id: int, start_date: str, num_of_file_events: int) -> List[Dict[str, Any]]:
+    return [
+        {
+            "event": {
+                "id": f'{start_id}',
+                "inserted": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT)
+            }
+        } for i in range(start_id, start_id + num_of_file_events)
+    ]
+
+
+def create_audit_logs(start_id: int, start_date: str, num_of_audit_logs: int) -> List[Dict[str, Any]]:
+    return [
+        {
+            "id": f'{start_id}',
+            "timestamp": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT)
+        } for i in range(start_id, start_id + num_of_audit_logs)
+    ]
+
+
 class HttpRequestsMocker:
+
+    latest_file_event_id = 1
+    latest_audit_log_id = 1
 
     def __init__(self, num_of_audit_logs: int = 0, num_of_file_events: int = 0):
         self.num_of_audit_logs = num_of_audit_logs
@@ -35,21 +58,39 @@ class HttpRequestsMocker:
             )
 
         if method == "POST" and "/v1/audit/search-audit-log" in url:
-            return create_mocked_response(
-                response={
-                    "events": []
-                }
-            )
+            audit_logs = create_audit_logs(
+                        self.latest_file_event_id,
+                        start_date=(datetime.utcfromtimestamp(kwargs["json"]["dateRange"]["startTime"])).strftime(DATE_FORMAT),
+                        num_of_audit_logs=kwargs["json"]["pageSize"]
+                    )
+
+            self.latest_audit_log_id = int(audit_logs[-1]["id"])
+            return create_mocked_response(response={"events": audit_logs})
 
         if method == "POST" and "/v2/file-events" in url:
-            return create_mocked_response(
-                response={
-                    "fileEvents": []
-                }
-            )
+            file_events = create_file_events(
+                        self.latest_file_event_id,
+                        start_date="2024-01-24 12:30:45.123456Z",
+                        num_of_file_events=kwargs["json"]["pgSize"]
+                    )
+
+            self.latest_file_event_id = int(file_events[-1]["event"]["id"])
+            return create_mocked_response(response={"fileEvents": file_events})
+
 
 
 def test_the_test_module(mocker):
+    """
+    Given:
+     - a single audit log and a single file event
+     - api returns 200 ok
+
+    When:
+     - running test-module
+
+    Then:
+     - make sure the test is successful.
+    """
     import Code42EventCollector
 
     return_results_mocker: MagicMock = mocker.patch.object(Code42EventCollector, 'return_results')
