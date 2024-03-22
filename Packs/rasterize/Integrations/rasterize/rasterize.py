@@ -659,12 +659,7 @@ def perform_rasterize(path: str,
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
             demisto.debug(f'path type is: {type(path)}')
-            if type(path) == list:
-                demisto.debug('path type is list')
-                paths = argToList(path)
-            else:
-                demisto.debug('path type is str')
-                paths = [path]
+            paths = argToList(path)
             demisto.debug(f"rasterize, {paths=}, {rasterize_type=}")
             rasterization_threads = []
             rasterization_results = []
@@ -865,6 +860,13 @@ def get_list_item(list_of_items: list, index: int, default_value: str):
     return list_of_items[index]
 
 
+def add_filename_suffix(file_names: list, file_extension: str):
+    ret_value = []
+    for current_filename in file_names:
+        ret_value.append(f'{current_filename}.{file_extension}')
+    return ret_value
+
+
 def rasterize_command():  # pragma: no cover
     url = demisto.getArg('url')
     width, height = get_width_height(demisto.args())
@@ -880,14 +882,9 @@ def rasterize_command():  # pragma: no cover
     if rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
         file_extension = "pdf"
 
-    file_name = f'{file_name}.{file_extension}'  # type: ignore
     demisto.debug(f'file_name type is: {type(file_name)}')
-    if type(file_name) == list:
-        demisto.debug('file_name type is list')
-        file_names = argToList(file_name)
-    else:
-        demisto.debug('file_name type is str')
-        file_names = [file_name]
+    file_names = argToList(file_name)
+    file_names = add_filename_suffix(file_names, file_extension)
 
     rasterize_output = perform_rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time,
                                          navigation_timeout=navigation_timeout, include_url=include_url,
@@ -901,7 +898,7 @@ def rasterize_command():  # pragma: no cover
             return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {url}"))
         else:
             res = []
-            current_res = fileResult(filename=get_list_item(file_names, index, 'url'),
+            current_res = fileResult(filename=get_list_item(file_names, index, f'url.{file_extension}'),
                                      data=current_rasterize_output[0], file_type=entryTypes['entryInfoFile'])
 
             if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
