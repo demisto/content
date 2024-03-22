@@ -158,6 +158,13 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- additionalinfo: "Whether to fetch only the essential incident's fields and minimize the incident's information."
+  display: Minimize Incident Information
+  name: exclude_fields
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
 name: Cortex XDR - IR
@@ -3485,7 +3492,7 @@ script:
       isArray: true
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.10.14.90585
   isfetch: true
   isfetch:xpanse: false
   script: ''

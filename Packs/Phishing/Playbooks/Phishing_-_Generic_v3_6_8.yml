@@ -98,8 +98,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -920,
-          "y": 3025
+          "x": -590,
+          "y": 3200
         }
       }
     note: false
@@ -688,7 +688,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 2860
+          "y": 2880
         }
       }
     note: false
@@ -720,7 +720,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -920,
+          "x": -590,
           "y": 3370
         }
       }
@@ -3576,7 +3576,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: "Should be reviewed by analyst?"
     nexttasks:
       '#default#':
       - "226"
@@ -3600,7 +3600,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 2990
+          "y": 3010
         }
       }
     note: false
@@ -3633,6 +3633,8 @@ view: |-
       "222_53_yes": 0.42,
       "222_56_#default#": 0.17,
       "223_224_yes": 0.47,
+      "228_7_yes": 0.65,
+      "33_226_No": 0.55,
       "33_30_yes": 0.34,
       "36_152_Yes": 0.49,
       "79_82_yes": 0.46,
