@@ -1,0 +1,26 @@
+{
+    "completed": "2024-03-21T21:55:36Z",
+    "filename": "test_file.docx",
+    "id": "240321-1ret7sdp6d",
+    "kind": "file",
+    "private": true,
+    "sha256": "c80004016da9c91b95a7e3001080e99aa2ce98b24a77b76f6e4c9deaf1550660",
+    "status": "reported",
+    "submitted": "2024-03-21T21:52:43Z",
+    "tasks": [
+        {
+            "id": "static1",
+            "status": "reported"
+        },
+        {
+            "id": "behavioral1",
+            "status": "reported",
+            "target": "test_file.docx"
+        },
+        {
+            "id": "behavioral2",
+            "status": "reported",
+            "target": "test_file.docx"
+        }
+    ]
+}
