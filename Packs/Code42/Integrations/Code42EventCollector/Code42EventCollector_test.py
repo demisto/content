@@ -58,11 +58,17 @@ class HttpRequestsMocker:
             )
 
         if method == "POST" and "/v1/audit/search-audit-log" in url:
+
+            if self.fetched_audit_logs >= self.num_of_audit_logs:
+                return create_mocked_response(response={"events": []})
+
             audit_logs = create_audit_logs(
                         self.latest_file_event_id,
                         start_date=(datetime.utcfromtimestamp(kwargs["json"]["dateRange"]["startTime"])).strftime(DATE_FORMAT),
                         num_of_audit_logs=kwargs["json"]["pageSize"]
                     )
+
+            self.fetched_audit_logs += len(audit_logs)
 
             self.latest_audit_log_id = int(audit_logs[-1]["id"])
             return create_mocked_response(response={"events": audit_logs})
@@ -75,7 +81,7 @@ class HttpRequestsMocker:
                     )
 
             self.latest_file_event_id = int(file_events[-1]["event"]["id"])
-            return create_mocked_response(response={"fileEvents": file_events})
+            return create_mocked_response(response={"fileEvents": file_events, "totalCount": self.num_of_file_events})
 
 
 
@@ -110,7 +116,7 @@ def test_the_test_module(mocker):
     mocker.patch.object(
         requests_toolbelt.sessions.BaseUrlSession,
         "request",
-        side_effect=HttpRequestsMocker().valid_http_request_side_effect
+        side_effect=HttpRequestsMocker(num_of_file_events=1, num_of_audit_logs=1).valid_http_request_side_effect
     )
 
     Code42EventCollector.main()
