@@ -1,3 +1,4 @@
+import json
 from unittest.mock import MagicMock
 
 import requests_toolbelt.sessions
@@ -15,25 +16,40 @@ def create_mocked_response(response: List[Dict] | Dict, status_code: int = 200) 
     return mocked_response
 
 
-# class HttpRequestsMocker:
-#
-#     def __init__(self, num_of_events: int):
-#         self.num_of_events = num_of_events
-#         self.num_of_calls = 0
-#
-#     def valid_http_request_side_effect(self, method: str, url_suffix: str = "", params: Dict | None = None, **kwargs):
-#         mocker.patch.object(Session, "get", return_value="bla")
-#         if method == "GET" and url_suffix == "/api/v2/reports":
-#             start_date = params.get("start-date")
-#             events = create_events(1, amount_of_events=self.num_of_events, start_date=start_date)
-#             return create_mocked_response(events)
-#         if method == "POST" and kwargs.get("full_url") == "https://auth.cybelangel.com/oauth/token":
-#             return {"access_token": "new_access_token"}
-#         return None
+class HttpRequestsMocker:
+
+    def __init__(self, num_of_audit_logs: int = 0, num_of_file_events: int = 0):
+        self.num_of_audit_logs = num_of_audit_logs
+        self.num_of_file_events = num_of_file_events
+        self.fetched_audit_logs = 0
+        self.fetched_file_events = 0
+
+    def valid_http_request_side_effect(self, method: str, url: str, *args, **kwargs):
+        if method == "POST" and "v1/oauth" in url:
+            return create_mocked_response(
+                response={
+                    "access_token": "1234",
+                    "token_type": "bearer",
+                    "expires_in": 10000000
+                }
+            )
+
+        if method == "POST" and "/v1/audit/search-audit-log" in url:
+            return create_mocked_response(
+                response={
+                    "events": []
+                }
+            )
+
+        if method == "POST" and "/v2/file-events" in url:
+            return create_mocked_response(
+                response={
+                    "fileEvents": []
+                }
+            )
 
 
 def test_the_test_module(mocker):
-    from requests import Session
     import Code42EventCollector
 
     return_results_mocker: MagicMock = mocker.patch.object(Code42EventCollector, 'return_results')
@@ -50,12 +66,10 @@ def test_the_test_module(mocker):
     )
     mocker.patch.object(demisto, 'command', return_value='test-module')
 
-    mocker.patch.object(requests_toolbelt.sessions.BaseUrlSession, "request", return_value=create_mocked_response(response=[]))
-
     mocker.patch.object(
-        Session,
-        "get",
-        return_value="ok"
+        requests_toolbelt.sessions.BaseUrlSession,
+        "request",
+        side_effect=HttpRequestsMocker().valid_http_request_side_effect
     )
 
     Code42EventCollector.main()
