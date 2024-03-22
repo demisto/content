@@ -618,8 +618,11 @@ def save_model_in_demisto(model):
 
 
 def extract_urls(text):
+    demisto.info("In extract_urls")
     res = demisto.executeCommand("extractIndicators", {"text": text})
+    demisto.info(f"extractIndicators {res=}")
     if is_error(res):
+        demisto.info("extractIndicators got error")
         raise DemistoException(get_error(res))
     return list(set(json.loads(res[0]["Contents"]).get("URL", [])))
 
@@ -649,15 +652,18 @@ def get_final_urls(urls, max_urls, model):
 
 
 def extract_embedded_urls_from_html(html):
+    demisto.info("In extract_embedded_urls_from_html")
     embedded_urls = []
     soup = BeautifulSoup(html)
     for a in soup.findAll('a'):
         if a.has_attr('href') and a['href'] not in a.get_text():
             embedded_urls.append(a['href'])
+    demisto.info(f"{embedded_urls=}")
     return embedded_urls
 
 
 def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug):
+    demisto.info(f"In get_urls_to_run, {email_body=}, {email_html=}, {urls_argument=}, {max_urls=}, {model=}, {msg_list=}, {debug=}")
     if email_body:
         urls_email_body = extract_urls(email_body)
     else:
@@ -674,6 +680,7 @@ def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_
     else:
         urls_only = [x.strip() for x in urls_argument.split(' ') if x]
     urls = urls_email_body + urls_only + urls_email_html
+    demisto.info(f"In get_urls_to_run {urls=}")
     urls = list(set(urls))
     if not urls:
         msg_list.append(MSG_NO_URL_GIVEN)
@@ -681,6 +688,7 @@ def get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_
         return [], msg_list
     urls = get_final_urls(urls, max_urls, model)
     urls = [demisto.executeCommand("UnEscapeURLs", {"input": x})[0]['Contents'] for x in urls]
+    demisto.info(f"In get_urls_to_run after UnEscapeURLs {urls=}")
     if debug:
         return_results(urls)
     return urls, msg_list
@@ -747,6 +755,7 @@ def check_if_whois_installed():
 
 
 def main():
+    demisto.info(f"DBotPredictURLPhishing {demisto.args()=}")
     who_is_enabled = check_if_whois_installed()
     try:
         msg_list = []  # type: List
@@ -787,6 +796,7 @@ def main():
             return_results(msg_list)
         return general_summary, detailed_summary, msg_list
     except Exception as ex:
+        demisto.info(traceback.format_exc())
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute URL Phishing script. Error: {str(ex)}')
 

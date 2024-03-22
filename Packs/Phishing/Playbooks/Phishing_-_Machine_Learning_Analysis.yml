@@ -1,6 +1,6 @@
-id: Phishing - Machine Learning Analysis
+id: Phishing - Machine Learning Analysis Dev
 version: -1
-name: Phishing - Machine Learning Analysis
+name: Phishing - Machine Learning Analysis Dev
 description: Runs various machine-learning based checks on phishing emails and URLs, in an attempt to predict whether they are phishing or benign.
 starttaskid: "0"
 tasks:
@@ -208,7 +208,7 @@ tasks:
       version: -1
       name: Predict Phishing URLs
       description: Predicts phishing URLs using a pre-trained model.
-      scriptName: DBotPredictURLPhishing
+      scriptName: DBotPredictURLPhishingDev
       type: regular
       iscommand: false
       brand: ""

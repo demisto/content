@@ -2099,6 +2099,8 @@ def parse_incident_from_item(item):     # pragma: no cover
     incident = {}
     labels = []
     demisto.debug(f"starting to parse the email with id {item.id} into an incident")
+    demisto.info(f'{item.text_body=}')
+    demisto.info(f'{item.body=}')
     log_memory()
     try:
         incident["details"] = item.text_body or item.body
@@ -2148,6 +2150,7 @@ def parse_incident_from_item(item):     # pragma: no cover
             label_attachment_id_type = None
             if isinstance(attachment, FileAttachment):
                 try:
+                    demisto.info(f'{attachment.content=}')
                     if attachment.content:
                         # file attachment
                         label_attachment_type = "attachments"
@@ -2186,13 +2189,14 @@ def parse_incident_from_item(item):     # pragma: no cover
                 # other item attachment
                 label_attachment_type = "attachmentItems"
                 label_attachment_id_type = "attachmentItemsId"
-
+                demisto.info(f'{attachment.item.mime_content=}')
                 # save the attachment
                 if attachment.item.mime_content:
                     mime_content = attachment.item.mime_content
                     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
                     if isinstance(mime_content, str) and not mime_content.isascii():
                         mime_content = mime_content.encode()
+                        demisto.info(f'{mime_content=}')
                     attached_email = email.message_from_bytes(mime_content, policy=email_policy) \
                         if isinstance(mime_content, bytes) \
                         else email.message_from_string(mime_content, policy=email_policy)

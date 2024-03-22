@@ -47,10 +47,10 @@ args:
   - F - Reliability cannot be judged
 comment: Predict phishing URLs using a pre-trained model.
 commonfields:
-  id: DBotPredictURLPhishing
+  id: DBotPredictURLPhishingDev
   version: -1
 enabled: true
-name: DBotPredictURLPhishing
+name: DBotPredictURLPhishingDev
 outputs:
 - contextPath: DBotPredictURLPhishing.URL
   description: URL on which the model ran.
