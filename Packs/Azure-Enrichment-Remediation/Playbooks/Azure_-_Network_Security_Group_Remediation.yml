@@ -514,10 +514,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: e405270b-7ea3-416b-8c2e-526ae28552f3
+    taskid: 6584ec00-606f-4979-88e1-ad8445501150
     type: condition
     task:
-      id: e405270b-7ea3-416b-8c2e-526ae28552f3
+      id: 6584ec00-606f-4979-88e1-ad8445501150
       version: -1
       name: Does remediation deny rule exist?
       description: Determines whether a remediation deny rule already exists or not.
@@ -548,7 +548,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Allow
+                        simple: Deny
                 - - operator: containsGeneral
                     left:
                       value:
@@ -608,7 +608,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: Allow
+                        simple: Deny
                 - - operator: containsGeneral
                     left:
                       value:
@@ -662,12 +662,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 3bbfdb59-7718-4513-8c30-c076faad9bc4
+    taskid: a2f218f3-4fab-4c9b-8790-9f2e92756735
     type: title
     task:
-      id: 3bbfdb59-7718-4513-8c30-c076faad9bc4
+      id: a2f218f3-4fab-4c9b-8790-9f2e92756735
       version: -1
-      name: Retrieve and Update Allow Rule
+      name: Retrieve and Update Deny Rule
       type: title
       iscommand: false
       brand: ""
@@ -693,10 +693,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 3c54060e-7e7a-4245-84e3-ea6116775c5c
+    taskid: 21448315-bcc9-4e2c-865b-483a82cc882d
     type: regular
     task:
-      id: 3c54060e-7e7a-4245-84e3-ea6116775c5c
+      id: 21448315-bcc9-4e2c-865b-483a82cc882d
       version: -1
       name: Set variable for existing deny rule name
       description: Set a variable for the existing deny rule.
@@ -745,7 +745,8 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: "3389"
+                  simple: inputs.RemotePort
+                iscontext: true
           - - operator: containsGeneral
               left:
                 value:
@@ -753,7 +754,8 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: TCP
+                  simple: inputs.RemoteProtocol
+                iscontext: true
           - - operator: notContainsGeneral
               left:
                 value:
