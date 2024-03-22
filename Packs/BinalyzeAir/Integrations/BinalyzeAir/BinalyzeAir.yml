@@ -115,13 +115,14 @@ script:
   - arguments:
     - default: true
       defaultValue: '0'
+      description: Id of the organization.
       name: organizationid
       required: true
     description: Get Users from Binalyze AIR platform on the specified organization.
     name: binalyze-get-users
   - arguments:
     - defaultValue: '0'
-      description: The organization id that you want to create the case in.
+      description: Id of the organization.
       name: organizationid
       required: true
     - description: The Name of the Case that you want to create on Binalyze Platform.
