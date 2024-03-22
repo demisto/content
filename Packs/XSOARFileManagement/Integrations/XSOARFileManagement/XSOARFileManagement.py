@@ -473,7 +473,7 @@ def download_file_command(client: Client, args: dict) -> CommandResults:
         if "Content-Disposition" in headers.keys():
             file_name = re.findall("filename=(.+)", headers["Content-Disposition"])[0]
         else:
-            file_name = url.split("/")[-1]
+            file_name = file_uri.split("/")[-1]
     if not file_name:
         return_error("Please provide file name")
     response = client.upload_file(incident_id, response.content, file_name, target == 'incident attachment')
