@@ -346,3 +346,14 @@ def test_get_list_item():
     assert get_list_item(my_list, 2, "FOO") == 'c'
     assert get_list_item(my_list, 3, "FOO") == 'FOO'
     assert get_list_item(my_list, 4, "FOO") == 'FOO'
+
+
+def test_add_filename_suffix():
+    from rasterize import add_filename_suffix
+
+    my_list = ['a', 'b', 'c']
+    my_list_with_suffix = add_filename_suffix(my_list, 'sfx')
+
+    assert len(my_list) == my_list_with_suffix
+    for current_element_index, _ in enumerate(my_list):
+        assert my_list[current_element_index] == f'{my_list_with_suffix[current_element_index]}.sfx'
