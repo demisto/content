@@ -2491,7 +2491,7 @@ def get_timezone_offset(ticket: dict, display_date_format: str):
     """
     try:
         local_time: str = ticket.get('sys_created_on', {}).get('display_value', '')
-        # In the %H time format the AM/PM is just for display and does not add data.
+        # With %H hour format, AM/PM is redundant info.
         local_time = (local_time.replace('AM', '').replace('PM', '')).strip()
         local_time_dt = datetime.strptime(local_time, display_date_format)
     except Exception as e:
