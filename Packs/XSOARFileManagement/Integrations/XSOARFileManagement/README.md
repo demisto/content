@@ -174,7 +174,13 @@ Get file hash from URI.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File_Hash | Dict | Structure of different hash of the URI. | 
+| File_Hash.Extension | String | Extension of the file. | 
+| File_Hash.MD5 | String | MD5 of the file. | 
+| File_Hash.Name | String | Name of the file. | 
+| File_Hash.SHA1 | String | SHA1 of the file. | 
+| File_Hash.SHA256 | String | SHA256 of the file. | 
+| File_Hash.SHA512 | String | SHA512 of the file. | 
+| File_Hash.Size | String | Size of the file. | 
 
 #### Command Example
 
