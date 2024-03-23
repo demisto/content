@@ -8,8 +8,6 @@ from collections import namedtuple
 import requests
 import urllib3
 
-from github import Github
-
 urllib3.disable_warnings()
 
 
@@ -193,6 +191,9 @@ def get_branch_name(headers: dict[str, str], pr: dict) -> str | None:
         return None
 
 
+def get_gitlab_merge_request(headers: dict[str, str]):
+
+
 def main():
     args = arguments_handler()
 
@@ -206,39 +207,28 @@ def main():
         "Authorization": f"Bearer {args.gitlab_api_token}",
     }
 
-    g = Github(args.github_token)
-    repo = g.get_repo("demisto/content")
+    response = get_contribution_prs(github_headers)
 
-    issues = repo.get_issues(
-        state="open", labels=["ready-for-instance-test", "Contribution"]
-    )
-
-    for issue in issues:
-        issue_number = str(issue._number)
-        print(issue_number + ", ")
-
-    # response = get_contribution_prs(github_headers)
-
-    # if items := response.get("items"):
-    #     pr_numbers: list[str] = []
-    #     for pr in items:
-    #         if str(pr.get("number")) == "33308":  # FIX: if statement for testing only
-    #             post_comment_to_contribution_pr(
-    #                 github_headers, pr, COMMENT_MESSAGES.build_request_accepted
-    #             )
-    #             if not (branch_name := get_branch_name(github_headers, pr)):
-    #                 continue
-    #             check_running_pipeline(gitlab_headers, branch_name)
-    #             trigger_build_for_contribution_pr(github_headers, branch_name)
-    #             delete_label_from_contribution_pr(github_headers, pr)
-    #             post_comment_to_contribution_pr(
-    #                 github_headers, pr, COMMENT_MESSAGES.build_triggered
-    #             )
-    #             pr_numbers.append(str(pr.get("number")))
-    #     print(f"Build triggered for the following contribution PRs: {pr_numbers}")
-    # else:
-    #     print("No contribution PRs builds were trigger.")
-    #     return
+    if items := response.get("items"):
+        pr_numbers: list[str] = []
+        for pr in items:
+            if str(pr.get("number")) == "33308":  # FIX: if statement for testing only
+                post_comment_to_contribution_pr(
+                    github_headers, pr, COMMENT_MESSAGES.build_request_accepted
+                )
+                if not (branch_name := get_branch_name(github_headers, pr)):
+                    continue
+                # check_running_pipeline(gitlab_headers, branch_name)
+                trigger_build_for_contribution_pr(github_headers, branch_name)
+                delete_label_from_contribution_pr(github_headers, pr)
+                post_comment_to_contribution_pr(
+                    github_headers, pr, COMMENT_MESSAGES.build_triggered
+                )
+                pr_numbers.append(str(pr.get("number")))
+        print(f"Build triggered for the following contribution PRs: {pr_numbers}")
+    else:
+        print("No contribution PRs builds were trigger.")
+        return
 
 
 if __name__ == "__main__":
