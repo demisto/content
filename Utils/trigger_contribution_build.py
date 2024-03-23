@@ -314,7 +314,7 @@ def main():
                     # Trigger a new pipeline
                     new_pipeline = latest_mr.trigger_pipeline()
 
-                    print("New pipeline triggered.")
+                    print(f"New pipeline triggered. URL: {new_pipeline.web_url}")
             else:
                 print("No Merge Requests found for the branch:", branch_name)
 
