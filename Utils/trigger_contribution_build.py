@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 import argparse
-import json
 import os
-import sys
 from collections import namedtuple
+
+import urllib3
 from github import Github
-from gitlab import Gitlab
 from github.Issue import Issue
 from github.PaginatedList import PaginatedList
-import requests
-import urllib3
+from gitlab import Gitlab
 
 urllib3.disable_warnings()
 
@@ -255,16 +253,14 @@ def main():
     github_issues: PaginatedList[Issue] = github_client.search_issues(FIND_CONTRIBUTION_PRS_QUERY)
     gitlab_merge_requests = gitlab_client.projects.get(GITLAB_PROJECT_ID).mergerequests
 
-
     # TODO: for testing only - remove
     for issue in github_issues:
-    # Print some basic information about the issue
+        # Print some basic information about the issue
         print("Title:", issue.title)
         print("URL:", issue.html_url)
         print("Created By:", issue.user.login)
         print("Labels:", [label.name for label in issue.labels])
         print("-------------------------------------")
-
 
     for issue in github_issues:
         issue.create_comment(COMMENT_MESSAGES.build_request_accepted)
@@ -272,21 +268,25 @@ def main():
         pull_request = issue.as_pull_request() # Get the github pull request object
         branch_name = pull_request.head.ref
 
-        if branch_name == 'test-pr/add-trigger-contribution-build-job': # TODO: remove this if statement when done testing
+        # TODO: remove this specific if statement when done testing
+        if branch_name == "test-pr/add-trigger-contribution-build-job":  # noqa: SIM102
+
             # TODO: transfer if statement logic below to a helper function
             if merge_requests := gitlab_merge_requests.list(source_branch=branch_name):
-                # Assuming there's only one MR for a branch
-                mr = merge_requests[0] #FIX: fix `getitem` error
+                # find latest MR for this branch name in the Gitlab project
+                latest_mr = max(merge_requests, key=lambda mr: mr.created_at)
 
                 # Get pipelines for the MR
-                pipelines = mr.pipelines.list()
+                pipelines = latest_mr.pipelines.list()
 
                 if pipelines:
                     # Get the most recent pipeline
                     latest_pipeline = pipelines[0]
 
                     if latest_pipeline.status == 'running':
-                        print(f"Pipeline is running for MR {mr.iid}. Cancelling current pipeline...")
+                        print(
+                            f"Pipeline is running for MR {latest_mr.iid}. Cancelling current pipeline..."
+                        )
 
                         # Cancel the current pipeline
                         latest_pipeline.cancel()
@@ -294,21 +294,25 @@ def main():
                         print("Current pipeline cancelled. Triggering a new pipeline...")
 
                         # Trigger a new pipeline
-                        new_pipeline = mr.trigger_pipeline()
+                        new_pipeline = latest_mr.trigger_pipeline()
 
                         print("New pipeline triggered.")
                     else:
-                        print(f"No running pipeline found for MR {mr.iid}. Triggering a new pipeline...")
+                        print(
+                            f"No running pipeline found for MR {latest_mr.iid}. Triggering a new pipeline..."
+                        )
 
                         # Trigger a new pipeline
-                        new_pipeline = mr.trigger_pipeline()
+                        new_pipeline = latest_mr.trigger_pipeline()
 
                         print("New pipeline triggered.")
                 else:
-                    print(f"No pipeline found for MR {mr.iid}. Triggering a new pipeline...")
+                    print(
+                        f"No pipeline found for MR {latest_mr.iid}. Triggering a new pipeline..."
+                    )
 
                     # Trigger a new pipeline
-                    new_pipeline = mr.trigger_pipeline()
+                    new_pipeline = latest_mr.trigger_pipeline()
 
                     print("New pipeline triggered.")
             else:
@@ -316,7 +320,6 @@ def main():
 
         issue.create_comment(COMMENT_MESSAGES.build_triggered)
         issue.remove_from_labels(GITHUB_TRIGGER_BUILD_LABEL)
-
 
     # response = get_contribution_prs(github_headers)
 
