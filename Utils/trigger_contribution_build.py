@@ -127,12 +127,10 @@ def main():
         # TODO: remove this specific if statement when done testing
         if branch_name == "test-pr/add-trigger-contribution-build-job":  # noqa: SIM102
 
-            # TODO: transfer if statement logic below to a helper function
-
-            # get MRs that are relevant for the specific branch name
+            # get the GitLab branch object matching the GitHub branch
             if branch := gitlab_project.branches.get(branch_name):
 
-                # Get all active pipelines of the branch and cancel them
+                # find all active pipelines for this branch and cancel them
                 pipelines = gitlab_project.pipelines.list(
                     ref=branch.name, status="running"
                 )
