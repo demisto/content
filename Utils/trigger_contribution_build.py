@@ -105,7 +105,12 @@ def main():
     gitlab_client = Gitlab(oauth_token=args.gitlab_api_token, url=GITLAB_SERVER_URL, ssl_verify=False)
 
     github_issues: PaginatedList[Issue] = github_client.search_issues(FIND_CONTRIBUTION_PRS_QUERY)
+    project = gitlab_client.projects.get(GITLAB_PROJECT_ID)
     gitlab_merge_requests: ProjectMergeRequestManager = gitlab_client.projects.get(GITLAB_PROJECT_ID).mergerequests
+
+    print("project:", project)
+    merge_requests = project.mergerequests.list(all=True)
+    print(len(merge_requests))
 
     # TODO: for testing only - remove
     for issue in github_issues:
@@ -128,18 +133,6 @@ def main():
             # TODO: transfer if statement logic below to a helper function
 
             # get MRs that are relevant for the specific branch name
-            print(
-                "merge_requests 1:",
-                gitlab_merge_requests.list(source_branch=branch_name),
-            )
-            print(
-                "merge_requests 2:",
-                [
-                    mr
-                    for mr in gitlab_merge_requests.list(all=True)
-                    if mr.source_branch == branch_name
-                ],
-            )
             if merge_requests := gitlab_merge_requests.list(source_branch=branch_name):
 
                 # find latest MR for this branch name in the Gitlab project
