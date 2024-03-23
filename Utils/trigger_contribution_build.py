@@ -249,11 +249,16 @@ def main():
     g = Github(args.github_token)
     repo = g.get_repo("demisto/content")
 
-    issues = repo.get_issues(state="open", labels=["ready-for-instance-test", "Contribution"])
+    query = 'is:pull-request state:open label:ready-for-instance-test label:Contribution -label:"Interanl PR"'
+
+    issues = g.search_issues(query)
 
     for issue in issues:
-        number = str(issue._number)
-        print(number + ', ')
+        print("Title:", issue.title)
+        print("URL:", issue.html_url)
+        print("Created By:", issue.user.login)
+        print("Labels:", [label.name for label in issue.labels])
+        print("-------------------------------------")
 
     # response = get_contribution_prs(github_headers)
 
