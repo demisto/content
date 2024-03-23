@@ -135,7 +135,7 @@ def dedup_fetched_events(
     Args:
         events: the events to deduplicate
         last_run_fetched_event_ids: a list of already fetched IDs from previous run
-        keys_list_to_id (list): a list of keys to retrieve the ID from
+        keys_list_to_id (list): a list of keys to retrieve the ID from the event
     """
     un_fetched_events = []
 
@@ -156,6 +156,10 @@ def dedup_fetched_events(
 def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> tuple[List[str], str]:
     """
     Get the latest event IDs and get latest time
+
+    Args:
+        events: list of events
+        keys_to_id: a list of nested keys to get into the event ID
     """
     latest_time_event: datetime = events[0]["_time"]
 
@@ -172,6 +176,12 @@ def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> 
 
 
 def datetime_to_date_string(events: List[Dict[str, Any]]):
+    """
+    Recursively convert all datetime fields inside an event to date-strings
+
+    Args:
+        events: list of events
+    """
 
     def _datetime_to_date_string(_event: Dict[str, Any]):
         for key in _event:
@@ -267,6 +277,9 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
 
 
 def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max_fetch_audit_events: int):
+    """
+    Fetch audit-logs & file-events
+    """
     file_events, file_events_last_run = fetch_file_events(client, last_run=last_run, max_fetch_file_events=max_fetch_file_events)
     audit_logs, audit_logs_last_run = fetch_audit_logs(client, last_run=last_run, max_fetch_audit_events=max_fetch_audit_events)
 
@@ -352,9 +365,6 @@ def main() -> None:
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command} command.\nError:\ntype:{type(e)}, error:{str(e)}")
-
-
-''' ENTRY POINT '''
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
