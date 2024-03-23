@@ -20,7 +20,7 @@ def create_file_events(start_id: int, start_date: str, num_of_file_events: int) 
     return [
         {
             "event": {
-                "id": f'{start_id}',
+                "id": f'{i}',
                 "inserted": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT)
             }
         } for i in range(start_id, start_id + num_of_file_events)
@@ -30,7 +30,7 @@ def create_file_events(start_id: int, start_date: str, num_of_file_events: int) 
 def create_audit_logs(start_id: int, start_date: str, num_of_audit_logs: int) -> List[Dict[str, Any]]:
     return [
         {
-            "id": f'{start_id}',
+            "id": f'{i}',
             "timestamp": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT)
         } for i in range(start_id, start_id + num_of_audit_logs)
     ]
@@ -63,7 +63,7 @@ class HttpRequestsMocker:
                 return create_mocked_response(response={"events": []})
 
             audit_logs = create_audit_logs(
-                self.latest_file_event_id,
+                self.latest_audit_log_id,
                 start_date=(datetime.utcfromtimestamp(kwargs["json"]["dateRange"]["startTime"])).strftime(DATE_FORMAT),
                 num_of_audit_logs=min(kwargs["json"]["pageSize"], self.num_of_audit_logs)
             )
@@ -173,6 +173,69 @@ def test_fetch_events_no_last_run(mocker):
     audit_logs = send_events_mocker.call_args_list[1][0][0]
     assert len(audit_logs) == 1
     assert audit_logs[0]["type"] == Code42EventCollector.EventType.AUDIT
+
+    assert set_last_run_mocker.call_args_list[1][0][0]["nextTrigger"] == "0"
+
+    last_run_expected_keys = {
+        Code42EventCollector.FileEventLastRun.FETCHED_IDS,
+        Code42EventCollector.FileEventLastRun.TIME,
+        Code42EventCollector.AuditLogLastRun.FETCHED_IDS,
+        Code42EventCollector.AuditLogLastRun.TIME
+    }
+
+    # make sure all keys in last run are valid
+    assert last_run_expected_keys.issubset(set(set_last_run_mocker.call_args_list[1][0][0].keys()))
+
+
+def test_fetch_events_no_last_run_max_fetch_lower_than_available_events(mocker):
+    """
+    Given:
+     - 550 audit logs and 550 file events
+     - api returns 200 ok
+     - max fetch = 500
+
+    When:
+     - running fetch events
+
+    Then:
+     - make sure 500 events are sent successfully
+     - make sure last run is populated correctly
+    """
+    import Code42EventCollector
+
+    send_events_mocker: MagicMock = mocker.patch.object(Code42EventCollector, 'send_events_to_xsiam')
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            "url": TEST_URL,
+            "credentials": {
+                "identifier": "1234",
+                "password": "1234",
+            },
+            "max_file_events_per_fetch": 500,
+            "max_audit_events_per_fetch": 500
+        }
+    )
+    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(
+        requests_toolbelt.sessions.BaseUrlSession,
+        "request",
+        side_effect=HttpRequestsMocker(num_of_file_events=550, num_of_audit_logs=550).valid_http_request_side_effect
+    )
+
+    Code42EventCollector.main()
+    file_events = send_events_mocker.call_args_list[0][0][0]
+    assert len(file_events) == 500
+    for file_event in file_events:
+        assert file_event["type"] == Code42EventCollector.EventType.FILE
+
+    audit_logs = send_events_mocker.call_args_list[1][0][0]
+    assert len(audit_logs) == 500
+    for audit_log in audit_logs:
+        assert audit_log["type"] == Code42EventCollector.EventType.AUDIT
 
     assert set_last_run_mocker.call_args_list[1][0][0]["nextTrigger"] == "0"
 
