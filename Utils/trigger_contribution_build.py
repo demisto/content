@@ -106,11 +106,8 @@ def main():
 
     github_issues: PaginatedList[Issue] = github_client.search_issues(FIND_CONTRIBUTION_PRS_QUERY)
     project = gitlab_client.projects.get(GITLAB_PROJECT_ID)
-    gitlab_merge_requests: ProjectMergeRequestManager = gitlab_client.projects.get(GITLAB_PROJECT_ID).mergerequests
-
-    print("project:", project)
-    merge_requests = project.mergerequests.list(all=True)
-    print(len(merge_requests))
+    # gitlab_merge_requests: ProjectMergeRequestManager = gitlab_client.projects.get(GITLAB_PROJECT_ID).mergerequests
+    gitlab_project = gitlab_client.projects.get(GITLAB_PROJECT_ID)
 
     # TODO: for testing only - remove
     for issue in github_issues:
@@ -133,50 +130,19 @@ def main():
             # TODO: transfer if statement logic below to a helper function
 
             # get MRs that are relevant for the specific branch name
-            if merge_requests := gitlab_merge_requests.list(source_branch=branch_name):
+            if branch := project.branches.get(branch_name):
 
-                # find latest MR for this branch name in the Gitlab project
-                latest_mr = max(merge_requests, key=lambda mr: mr.created_at)
-
-                # Get pipelines for the MR
-                pipelines = latest_mr.pipelines.list()
-
+                # Get all active pipelines of the branch and cancel them
+                pipelines = project.pipelines.list(ref=branch.name, status="running")
                 if pipelines:
-                    # Get the most recent pipeline
-                    latest_pipeline = pipelines[0]
+                    for pipeline in pipelines:
+                        print(f"Canceling active pipeline: {pipeline.id}")
+                        pipeline.cancel()
 
-                    if latest_pipeline.status == 'running':
-                        print(
-                            f"Pipeline is running for MR {latest_mr.iid}. Cancelling current pipeline..."
-                        )
+                pipeline = project.pipelines.create({"ref": branch.name})
 
-                        # Cancel the current pipeline
-                        latest_pipeline.cancel()
+                print(f"New pipeline triggered: {pipeline.web_url}")
 
-                        print("Current pipeline cancelled. Triggering a new pipeline...")
-
-                        # Trigger a new pipeline
-                        new_pipeline = latest_mr.trigger_pipeline()
-
-                        print("New pipeline triggered.")
-                    else:
-                        print(
-                            f"No running pipeline found for MR {latest_mr.iid}. Triggering a new pipeline..."
-                        )
-
-                        # Trigger a new pipeline
-                        new_pipeline = latest_mr.trigger_pipeline()
-
-                        print("New pipeline triggered.")
-                else:
-                    print(
-                        f"No pipeline found for MR {latest_mr.iid}. Triggering a new pipeline..."
-                    )
-
-                    # Trigger a new pipeline
-                    new_pipeline = latest_mr.trigger_pipeline()
-
-                    print(f"New pipeline triggered. URL: {new_pipeline.web_url}")
             else:
                 print("No Merge Requests found for the branch:", branch_name)
 
