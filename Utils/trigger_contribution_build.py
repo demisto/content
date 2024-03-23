@@ -248,7 +248,7 @@ def main():
     # }
 
     github_client = Github(login_or_token=args.github_token)
-    gitlab_client = Gitlab(oauth_token=args.gitlab_api_token, url=GITLAB_SERVER_URL)
+    gitlab_client = Gitlab(private_token=args.gitlab_api_token, url=GITLAB_SERVER_URL)
 
     github_issues: PaginatedList[Issue] = github_client.search_issues(FIND_CONTRIBUTION_PRS_QUERY)
     gitlab_merge_requests = gitlab_client.projects.get(GITLAB_PROJECT_ID).mergerequests
