@@ -180,11 +180,12 @@ def test_fetch_events_no_last_run(mocker):
         Code42EventCollector.FileEventLastRun.FETCHED_IDS,
         Code42EventCollector.FileEventLastRun.TIME,
         Code42EventCollector.AuditLogLastRun.FETCHED_IDS,
-        Code42EventCollector.AuditLogLastRun.TIME
+        Code42EventCollector.AuditLogLastRun.TIME,
+        "nextTrigger"
     }
 
-    # make sure all keys in last run are valid
-    assert last_run_expected_keys.issubset(set(set_last_run_mocker.call_args_list[1][0][0].keys()))
+    assert last_run_expected_keys == set(set_last_run_mocker.call_args_list[1][0][0].keys())
+
 
 
 def test_fetch_events_no_last_run_max_fetch_lower_than_available_events(mocker):
