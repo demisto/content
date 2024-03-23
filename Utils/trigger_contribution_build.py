@@ -13,7 +13,7 @@ import urllib3
 
 urllib3.disable_warnings()
 
-FIND_CONTRIBUTION_PRS_QUERY = 'is:pull-request state:open label:ready-for-instance-test label:Contribution -label:"Interanl PR"'
+FIND_CONTRIBUTION_PRS_QUERY = 'is:pull-request state:open label:ready-for-instance-test label:Contribution label:"External PR"'
 
 # OWNER = "demisto"
 # REPO = "content"
