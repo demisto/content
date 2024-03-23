@@ -147,9 +147,50 @@ def trigger_build_for_contribution_pr(headers: dict[str, str], branch_name: str)
         print(f"Failed to trigger pipeline. Status code: {response.status_code}")
 
 
+def get_merge_request_iid(headers: dict[str, str], project_id, branch_name):
+    url = f"{GITLAB_API_URL}/projects/{project_id}/merge_requests?source_branch={branch_name}&state=opened"
+
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        merge_requests = response.json()
+        if merge_requests:
+            return merge_requests[0]["iid"]  # Assuming the first MR is the latest one
+        else:
+            print("No open merge requests found for the branch.")
+            return None
+    else:
+        print(f"Failed to fetch merge requests. Status code: {response.status_code}")
+        return None
+
+
+def is_pipeline_running(headers: dict[str, str], project_id, merge_request_iid):
+    url = f"{GITLAB_API_URL}/projects/{project_id}/merge_requests/{merge_request_iid}/pipelines"
+
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        pipelines = response.json()
+        for pipeline in pipelines:
+            if pipeline["status"] == "running":
+                return True
+        return False
+    else:
+        print(f"Failed to fetch pipelines. Status code: {response.status_code}")
+        return None
+
+
 def check_running_pipeline(headers: dict[str, str], branch_name: str):
-    print("check_running_pipeline not implemented")
-    # will check for running pipeline, if so, will stop its running.
+    merge_request_iid = get_merge_request_iid(headers, GITLAB_PROJECT_ID, branch_name)
+    if merge_request_iid is not None:
+        running = is_pipeline_running(headers, GITLAB_PROJECT_ID, merge_request_iid)
+        if running is not None:
+            if running:
+                print(
+                    "Pipeline is running for the latest merge request associated with the branch."
+                )
+            else:
+                print(
+                    "No pipeline is running for the latest merge request associated with the branch."
+                )
 
 
 def arguments_handler() -> argparse.Namespace:
@@ -191,9 +232,6 @@ def get_branch_name(headers: dict[str, str], pr: dict) -> str | None:
         return None
 
 
-def get_gitlab_merge_request(headers: dict[str, str]):
-
-
 def main():
     args = arguments_handler()
 
@@ -218,7 +256,7 @@ def main():
                 )
                 if not (branch_name := get_branch_name(github_headers, pr)):
                     continue
-                # check_running_pipeline(gitlab_headers, branch_name)
+                check_running_pipeline(gitlab_headers, branch_name)
                 trigger_build_for_contribution_pr(github_headers, branch_name)
                 delete_label_from_contribution_pr(github_headers, pr)
                 post_comment_to_contribution_pr(
