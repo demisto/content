@@ -104,9 +104,9 @@ def main():
     github_client = Github(login_or_token=args.github_token)
     gitlab_client = Gitlab(oauth_token=args.gitlab_api_token, url=GITLAB_SERVER_URL, ssl_verify=False)
 
-    github_issues: PaginatedList[Issue] = github_client.search_issues(FIND_CONTRIBUTION_PRS_QUERY)
-    project = gitlab_client.projects.get(GITLAB_PROJECT_ID)
-    # gitlab_merge_requests: ProjectMergeRequestManager = gitlab_client.projects.get(GITLAB_PROJECT_ID).mergerequests
+    github_issues: PaginatedList[Issue] = github_client.search_issues(
+        FIND_CONTRIBUTION_PRS_QUERY
+    )
     gitlab_project = gitlab_client.projects.get(GITLAB_PROJECT_ID)
 
     # TODO: for testing only - remove
@@ -130,18 +130,22 @@ def main():
             # TODO: transfer if statement logic below to a helper function
 
             # get MRs that are relevant for the specific branch name
-            if branch := project.branches.get(branch_name):
+            if branch := gitlab_project.branches.get(branch_name):
 
                 # Get all active pipelines of the branch and cancel them
-                pipelines = project.pipelines.list(ref=branch.name, status="running")
+                pipelines = gitlab_project.pipelines.list(
+                    ref=branch.name, status="running"
+                )
                 if pipelines:
                     for pipeline in pipelines:
                         print(f"Canceling active pipeline: {pipeline.id}")
                         pipeline.cancel()
 
-                pipeline = project.pipelines.create({"ref": branch.name})
+                new_pipeline = gitlab_project.trigger_pipeline(
+                    ref=branch.name, token=args.gitlab_api_token
+                )
 
-                print(f"New pipeline triggered: {pipeline.web_url}")
+                print(f"New pipeline triggered: {new_pipeline.web_url}")
 
             else:
                 print("No Merge Requests found for the branch:", branch_name)
