@@ -63,10 +63,10 @@ class HttpRequestsMocker:
                 return create_mocked_response(response={"events": []})
 
             audit_logs = create_audit_logs(
-                        self.latest_file_event_id,
-                        start_date=(datetime.utcfromtimestamp(kwargs["json"]["dateRange"]["startTime"])).strftime(DATE_FORMAT),
-                        num_of_audit_logs=min(kwargs["json"]["pageSize"], self.num_of_audit_logs)
-                    )
+                self.latest_file_event_id,
+                start_date=(datetime.utcfromtimestamp(kwargs["json"]["dateRange"]["startTime"])).strftime(DATE_FORMAT),
+                num_of_audit_logs=min(kwargs["json"]["pageSize"], self.num_of_audit_logs)
+            )
 
             self.fetched_audit_logs += len(audit_logs)
 
@@ -78,15 +78,16 @@ class HttpRequestsMocker:
                 return create_mocked_response({"fileEvents": []})
 
             file_events = create_file_events(
-                        self.latest_file_event_id,
-                        start_date="2024-01-24 12:30:45.123456Z",
-                        num_of_file_events=min(kwargs["json"]["pgSize"], self.num_of_file_events)
-                    )
+                self.latest_file_event_id,
+                start_date="2024-01-24 12:30:45.123456Z",
+                num_of_file_events=min(kwargs["json"]["pgSize"], self.num_of_file_events)
+            )
 
             self.fetched_file_events += len(file_events)
 
             self.latest_file_event_id = int(file_events[-1]["event"]["id"]) + 1
             return create_mocked_response(response={"fileEvents": file_events, "totalCount": self.num_of_file_events})
+        return None
 
 
 def test_the_test_module(mocker):

@@ -195,7 +195,9 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
     )
 
     file_events = client.get_file_events(file_event_time, limit=max_fetch_file_events)
-    last_fetched_event_file_ids = last_run.get(FileEventLastRun.FETCHED_IDS) or set()
+    last_fetched_event_file_ids = set(
+        last_run[FileEventLastRun.FETCHED_IDS]
+    ) if FileEventLastRun.FETCHED_IDS in last_run else set()
     file_events = dedup_fetched_events(
         file_events, last_run_fetched_event_ids=last_fetched_event_file_ids, keys_list_to_id=["event", "id"]
     )
@@ -224,7 +226,9 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
     audit_log_time = dateparser.parse(last_run[AuditLogLastRun.TIME]) if AuditLogLastRun.TIME in last_run else (
         datetime.now() - timedelta(minutes=240)
     )
-    last_fetched_audit_log_ids = AuditLogLastRun.FETCHED_IDS or set()
+    last_fetched_audit_log_ids = set(
+        last_run[AuditLogLastRun.FETCHED_IDS]
+    ) if AuditLogLastRun.FETCHED_IDS in last_run else set()
     audit_logs = client.get_audit_logs(audit_log_time, limit=max_fetch_audit_events)
     audit_logs = dedup_fetched_events(audit_logs, last_run_fetched_event_ids=last_fetched_audit_log_ids, keys_list_to_id=["id"])
 
@@ -265,7 +269,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get events command, used mainly for debugging
     """
-    start_date = args.get("start_date")
+    start_date = args["start_date"]
     end_date = args.get("end_date")
     limit = arg_to_number(args.get("limit")) or 100
     event_type = args.get("event_type")
