@@ -3,12 +3,12 @@ import argparse
 import os
 from collections import namedtuple
 
-from gitlab.v4.objects.merge_requests import ProjectMergeRequestManager
 import urllib3
 from github import Github
 from github.Issue import Issue
 from github.PaginatedList import PaginatedList
 from gitlab import Gitlab
+from gitlab.v4.objects.merge_requests import ProjectMergeRequestManager
 
 urllib3.disable_warnings()
 
@@ -22,12 +22,11 @@ GITHUB_TRIGGER_BUILD_LABEL = "ready-for-instance-test"
 
 MESSAGES = namedtuple(
     "MESSAGES",
-    ["build_request_accepted", "build_triggered", "cant_trigger_build"],
+    ["build_request_accepted", "build_triggered"],
 )
 COMMENT_MESSAGES = MESSAGES(
     "For the Reviewer: Trigger build request has been accepted for this contribution PR.",
     "For the Reviewer: Successfully created a pipeline in GitLab with url: {url}",
-    "For the Reviewer: Build was not triggered for this PR since a current pipeline already running.", # TODO: remove
 )
 
 
@@ -51,55 +50,52 @@ def handle_issues(github_issues: PaginatedList[Issue], gitlab_merge_requests: Pr
         pull_request = issue.as_pull_request() # Get the github pull request object
         branch_name = pull_request.head.ref
 
-        # TODO: remove this specific if statement when done testing
-        if branch_name == "test-pr/add-trigger-contribution-build-job":  # noqa: SIM102
+        # get MRs that are relevant for the specific branch name
+        if merge_requests := gitlab_merge_requests.list(source_branch=branch_name):
+            # find latest MR for this branch name in the Gitlab project
+            latest_mr = max(merge_requests, key=lambda mr: mr.created_at)
 
-            # get MRs that are relevant for the specific branch name
-            if merge_requests := gitlab_merge_requests.list(source_branch=branch_name):
-                # find latest MR for this branch name in the Gitlab project
-                latest_mr = max(merge_requests, key=lambda mr: mr.created_at)
+            # Get pipelines for the MR
+            pipelines = latest_mr.pipelines.list()
 
-                # Get pipelines for the MR
-                pipelines = latest_mr.pipelines.list()
+            if pipelines:
+                # Get the most recent pipeline
+                latest_pipeline = pipelines[0]
 
-                if pipelines:
-                    # Get the most recent pipeline
-                    latest_pipeline = pipelines[0]
+                if latest_pipeline.status == "running":
+                    print(
+                        f"Pipeline is running for MR {latest_mr.iid}. Cancelling current pipeline..."
+                    )
 
-                    if latest_pipeline.status == 'running':
-                        print(
-                            f"Pipeline is running for MR {latest_mr.iid}. Cancelling current pipeline..."
-                        )
+                    # Cancel the current pipeline
+                    latest_pipeline.cancel()
 
-                        # Cancel the current pipeline
-                        latest_pipeline.cancel()
+                    print("Current pipeline cancelled. Triggering a new pipeline...")
 
-                        print("Current pipeline cancelled. Triggering a new pipeline...")
+                    # Trigger a new pipeline
+                    new_pipeline = latest_mr.trigger_pipeline()
 
-                        # Trigger a new pipeline
-                        new_pipeline = latest_mr.trigger_pipeline()
-
-                        print("New pipeline triggered.")
-                    else:
-                        print(
-                            f"No running pipeline found for MR {latest_mr.iid}. Triggering a new pipeline..."
-                        )
-
-                        # Trigger a new pipeline
-                        new_pipeline = latest_mr.trigger_pipeline()
-
-                        print("New pipeline triggered.")
+                    print("New pipeline triggered.")
                 else:
                     print(
-                        f"No pipeline found for MR {latest_mr.iid}. Triggering a new pipeline..."
+                        f"No running pipeline found for MR {latest_mr.iid}. Triggering a new pipeline..."
                     )
 
                     # Trigger a new pipeline
                     new_pipeline = latest_mr.trigger_pipeline()
 
-                    print(f"New pipeline triggered. URL: {new_pipeline.web_url}")
+                    print("New pipeline triggered.")
             else:
-                print("No Merge Requests found for the branch:", branch_name)
+                print(
+                    f"No pipeline found for MR {latest_mr.iid}. Triggering a new pipeline..."
+                )
+
+                # Trigger a new pipeline
+                new_pipeline = latest_mr.trigger_pipeline()
+
+                print(f"New pipeline triggered. URL: {new_pipeline.web_url}")
+        else:
+            print("No Merge Requests found for the branch:", branch_name)
 
 
 def main():
@@ -132,6 +128,18 @@ def main():
             # TODO: transfer if statement logic below to a helper function
 
             # get MRs that are relevant for the specific branch name
+            print(
+                "merge_requests 1:",
+                gitlab_merge_requests.list(source_branch=branch_name),
+            )
+            print(
+                "merge_requests 2:",
+                [
+                    mr
+                    for mr in gitlab_merge_requests.list(all=True)
+                    if mr.source_branch == branch_name
+                ],
+            )
             if merge_requests := gitlab_merge_requests.list(source_branch=branch_name):
 
                 # find latest MR for this branch name in the Gitlab project
