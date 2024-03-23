@@ -3,6 +3,7 @@ import argparse
 import os
 from collections import namedtuple
 
+from gitlab.v4.objects.projects import Project
 import urllib3
 from github import Github
 from github.Issue import Issue
@@ -107,7 +108,8 @@ def main():
     github_issues: PaginatedList[Issue] = github_client.search_issues(
         FIND_CONTRIBUTION_PRS_QUERY
     )
-    gitlab_project = gitlab_client.projects.get(GITLAB_PROJECT_ID)
+
+    gitlab_project: Project = gitlab_client.projects.get(GITLAB_PROJECT_ID)
 
     # TODO: for testing only - remove
     for issue in github_issues:
@@ -130,6 +132,8 @@ def main():
             # get the GitLab branch object matching the GitHub branch
             if branch := gitlab_project.branches.get(branch_name):
 
+                print('branch:', branch)
+
                 # find all active pipelines for this branch and cancel them
                 pipelines = gitlab_project.pipelines.list(
                     ref=branch.name, status="running"
@@ -146,7 +150,7 @@ def main():
                 print(f"New pipeline triggered: {new_pipeline.web_url}")
 
             else:
-                print("No Merge Requests found for the branch:", branch_name)
+                print("No branch was found with the name:", branch_name)
 
         issue.create_comment(COMMENT_MESSAGES.build_triggered)
         issue.remove_from_labels(GITHUB_TRIGGER_BUILD_LABEL)
