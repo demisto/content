@@ -13,17 +13,22 @@ urllib3.disable_warnings()
 
 OWNER = "demisto"
 REPO = "content"
-GITHUB_TRIGGER_BUILD_LABEL = "ready-for-instance-test"
+GITLAB_PROJECT_ID = os.getenv("CI_PROJECT_ID") or 1061
 GITLAB_SERVER_URL = os.getenv(
     "CI_SERVER_URL", "https://gitlab.xdr.pan.local"
 )  # disable-secrets-detection
+GITHUB_TRIGGER_BUILD_LABEL = "ready-for-instance-test"
 GITHUB_SEARCH_REQUEST_ENDPOINT = "https://api.github.com/search/issues"
+GITHUB_GET_PR_ENDPOINT = "https://api.github.com/repos/{owner}/{repo}/pulls/{pr_number}"
 GITHUB_DELETE_LABEL_ENDPOINT = "https://api.github.com/repos/{owner}/{repo}/issues/{issue_number}/labels/{label_name}"
 GITHUB_POST_COMMENT_ENDPOINT = "https://api.github.com/repos/{owner}/{repo}/issues/{issue_number}/comments"
 GITHUB_QUERY_LABELS = {
     "label": ["Contribution", GITHUB_TRIGGER_BUILD_LABEL],
     "-label": ["Internal PR"],
 }
+GITLAB_TRIGGER_PIPELINE_ENDPOINT = (
+    "https://gitlab.com/api/v4/projects/{project_id}/trigger/pipeline"
+)
 
 MESSAGES = namedtuple(
     "MESSAGES",
@@ -123,12 +128,28 @@ def post_comment_to_contribution_pr(
     )
 
 
-def trigger_build_for_contribution_pr(headers: dict[str, str], pr: dict):
-    print("trigger_build_for_contribution_pr not implemented")
+def trigger_build_for_contribution_pr(headers: dict[str, str], branch_name: str):
+    """ Trigger pipeline for a contribution PR in GitLab.
+
+    Args:
+        headers (dict[str, str]):  GitLab API request headers.
+        branch_name (str): PR branch name
+    """
+    response = requests.post(
+        GITLAB_TRIGGER_PIPELINE_ENDPOINT.format(project_id=GITLAB_PROJECT_ID),
+        headers=headers,
+        data={"ref": branch_name},
+    )
+
+    if response.status_code == 201:
+        print("Pipeline triggered successfully.")
+    else:
+        print(f"Failed to trigger pipeline. Status code: {response.status_code}")
 
 
-def check_running_pipeline(headers: dict[str, str], pr: dict):
+def check_running_pipeline(headers: dict[str, str], branch_name: str):
     print("check_running_pipeline not implemented")
+    # will check for running pipeline, if so, will stop its running.
 
 
 def arguments_handler() -> argparse.Namespace:
@@ -142,6 +163,32 @@ def arguments_handler() -> argparse.Namespace:
     parser.add_argument("--github-token", help="Github api token")
     parser.add_argument("--gitlab-api-token", help="Gitlab api token")
     return parser.parse_args()
+
+
+def get_branch_name(headers: dict[str, str], pr: dict) -> str | None:
+    """Get branch name (also known as 'ref') of a GitHub PR.
+    This helper function is needed since the response returned from `get_contribution_prs` function
+    do not contain this information which is needed for the GitLab requests.
+
+    Args:
+        headers (dict[str, str]):  GitHub API request headers.
+        pr (dict): Dictionary representing a contribution PR.
+
+    Returns:
+        str | None: branch name if request was successful, None otherwise.
+    """
+    issue_number = str(pr.get("number"))
+
+    response = requests.get(
+        GITHUB_GET_PR_ENDPOINT.format(owner=OWNER, repo=REPO, pr_number=issue_number),
+        headers=headers,
+    ).json()
+
+    if response.status_code == 200:
+        return response.get("head", {}).get("ref")
+    else:
+        print("")  # TODO: add error message
+        return None
 
 
 def main():
@@ -162,12 +209,14 @@ def main():
     if items := response.get("items"):
         pr_numbers: list[str] = []
         for pr in items:
-            if str(pr.get("number")) == "33308":  # for testing only
+            if str(pr.get("number")) == "33308":  # FIX: if statement for testing only
                 post_comment_to_contribution_pr(
                     github_headers, pr, COMMENT_MESSAGES.build_request_accepted
                 )
-                check_running_pipeline(gitlab_headers, pr)
-                trigger_build_for_contribution_pr(github_headers, pr)
+                if not (branch_name := get_branch_name(github_headers, pr)):
+                    continue
+                check_running_pipeline(gitlab_headers, branch_name)
+                trigger_build_for_contribution_pr(github_headers, branch_name)
                 delete_label_from_contribution_pr(github_headers, pr)
                 post_comment_to_contribution_pr(
                     github_headers, pr, COMMENT_MESSAGES.build_triggered
