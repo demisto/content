@@ -253,11 +253,11 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
         last_run["nextTrigger"] = "30"
 
     last_run.update(file_events_last_run)
-    # send_events_to_xsiam(file_events, vendor=VENDOR, product=PRODUCT)
+    send_events_to_xsiam(file_events, vendor=VENDOR, product=PRODUCT)
     demisto.setLastRun(last_run)
 
     last_run.update(audit_logs_last_run)
-    # send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
+    send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
     demisto.setLastRun(last_run)
 
 
