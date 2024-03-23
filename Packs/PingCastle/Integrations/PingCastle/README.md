@@ -11,7 +11,7 @@ This integration was integrated and tested with version 6.0.0 of PingCastle.
     | --- | --- | --- |
     | API Key | The API Key PingCastle must use to send reports. | True |
     | Long running instance | Whether this instance should listen for reports. | False |
-    | Listen port, e.g. 7000 | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for Ping Castle will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port.  | False |
+    | Listen port, e.g. 7000 | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. <br>Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use.  <br> (For Cortex XSOAR 8 and Cortex XSIAM) If using an engine, you must enter a Listen Port. If not using an engine, do not enter a Listen Port and an unused port will automatically be generated when the instance is saved.              | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
