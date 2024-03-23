@@ -171,6 +171,23 @@ def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> 
     return latest_event_ids, latest_time_event.strftime(DATE_FORMAT)
 
 
+def datetime_to_date_string(events: List[Dict[str, Any]]):
+
+    def _datetime_to_date_string(_event: Dict[str, Any]):
+        for key in _event.keys():
+            if isinstance(_event[key], datetime):
+                _event[key] = _event[key].strftime(DATE_FORMAT)
+            elif isinstance(_event[key], dict):
+                _datetime_to_date_string(_event[key])
+            elif isinstance(_event[key], list):
+                for k in _event[key]:
+                    if isinstance(k, dict):
+                        _datetime_to_date_string(k)
+
+    for event in events:
+        _datetime_to_date_string(event)
+
+
 def test_module(client: Client) -> str:
     """
     Tests that it is possible to retrieve file events and audit logs and credentials are valid
@@ -203,6 +220,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
     )
     if file_events:
         latest_file_event_ids, latest_file_event_time = get_latest_event_ids_and_time(file_events, keys_to_id=["event", "id"])
+        datetime_to_date_string(file_events)
         new_last_run.update(
             {
                 FileEventLastRun.TIME.value: latest_file_event_time,
@@ -234,6 +252,7 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
 
     if audit_logs:
         latest_audit_log_ids, latest_audit_log_time = get_latest_event_ids_and_time(audit_logs, keys_to_id=["id"])
+        datetime_to_date_string(audit_logs)
         new_last_run.update(
             {
                 AuditLogLastRun.TIME.value: latest_audit_log_time,
