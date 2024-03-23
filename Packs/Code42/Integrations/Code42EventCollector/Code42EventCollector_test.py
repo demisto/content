@@ -184,3 +184,50 @@ def test_fetch_events_no_last_run(mocker):
 
     # make sure all keys in last run are valid
     assert last_run_expected_keys.issubset(set(set_last_run_mocker.call_args_list[1][0][0].keys()))
+
+
+def test_fetch_events_no_last_run_no_events(mocker):
+    """
+    Given:
+     - no audit logs | no file events
+     - api returns 200 ok
+
+    When:
+     - running fetch events
+
+    Then:
+     - make sure no events were sent
+     - make sure last run is populated with nextTrigger = "30" (seconds)
+    """
+    import Code42EventCollector
+
+    send_events_mocker: MagicMock = mocker.patch.object(Code42EventCollector, 'send_events_to_xsiam')
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            "url": TEST_URL,
+            "credentials": {
+                "identifier": "1234",
+                "password": "1234",
+            },
+        }
+    )
+    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mocker.patch.object(demisto, 'command', return_value='fetch-events')
+    mocker.patch.object(
+        requests_toolbelt.sessions.BaseUrlSession,
+        "request",
+        side_effect=HttpRequestsMocker(num_of_file_events=0, num_of_audit_logs=0).valid_http_request_side_effect
+    )
+
+    Code42EventCollector.main()
+
+    file_events = send_events_mocker.call_args_list[0][0][0]
+    assert len(file_events) == 0
+
+    audit_logs = send_events_mocker.call_args_list[1][0][0]
+    assert len(audit_logs) == 0
+
+    assert set_last_run_mocker.call_args_list[1][0][0] == {'nextTrigger': '30'}
