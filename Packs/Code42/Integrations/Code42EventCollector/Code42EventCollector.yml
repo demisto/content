@@ -55,8 +55,8 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-        - "audit-logs"
-        - "file-events"
+        - "audit"
+        - "file"
     description: 'Manual command to get events, used mainly for debugging'
     name: code42-get-events
     outputs: []

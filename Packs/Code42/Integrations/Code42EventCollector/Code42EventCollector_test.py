@@ -232,3 +232,73 @@ def test_fetch_events_no_last_run_no_events(mocker):
     assert len(audit_logs) == 0
 
     assert set_last_run_mocker.call_args_list[1][0][0] == {'nextTrigger': '30'}
+
+
+def test_get_events_command(mocker):
+    """
+    Given:
+     - 1 audit log / 1 file event
+     - api returns 200 ok
+
+    When:
+     - running get_events_command
+
+    Then:
+     - make sure the events are returned as expected
+    """
+    import Code42EventCollector
+
+    return_results_mocker: MagicMock = mocker.patch.object(Code42EventCollector, 'return_results')
+
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            "url": TEST_URL,
+            "credentials": {
+                "identifier": "1234",
+                "password": "1234",
+            },
+        }
+    )
+
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            "start_date": datetime.utcnow() - timedelta(minutes=1),
+            "event_type": "audit"
+        }
+    )
+
+    mocker.patch.object(demisto, 'command', return_value='code42-get-events')
+    mocker.patch.object(
+        requests_toolbelt.sessions.BaseUrlSession,
+        "request",
+        side_effect=HttpRequestsMocker(num_of_file_events=1, num_of_audit_logs=1).valid_http_request_side_effect
+    )
+
+    Code42EventCollector.main()
+
+    command_result = return_results_mocker.call_args_list[0][0][0]
+    assert command_result.outputs[0]["type"] == Code42EventCollector.EventType.AUDIT
+    assert len(command_result.outputs) == 1
+    assert command_result.outputs
+    assert command_result.readable_output
+
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            "start_date": datetime.utcnow() - timedelta(minutes=1),
+            "event_type": "file"
+        }
+    )
+
+    Code42EventCollector.main()
+
+    command_result = return_results_mocker.call_args_list[1][0][0]
+    assert len(command_result.outputs) == 1
+    assert command_result.outputs[0]["type"] == Code42EventCollector.EventType.FILE
+    assert command_result.outputs
+    assert command_result.readable_output

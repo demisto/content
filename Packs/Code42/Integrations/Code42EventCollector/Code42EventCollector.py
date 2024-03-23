@@ -272,7 +272,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     start_date = args["start_date"]
     end_date = args.get("end_date")
     limit = arg_to_number(args.get("limit")) or 100
-    event_type = args.get("event_type")
+    event_type = args["event_type"]
 
     if event_type == "audit":
         events = client.get_audit_logs(start_date, end_time=end_date, limit=limit)
