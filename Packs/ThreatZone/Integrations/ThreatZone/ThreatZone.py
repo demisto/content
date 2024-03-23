@@ -13,9 +13,6 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
-glob_HEADERS: dict
-glob_BASEURL: str
-glob_VERIFY: bool
 
 """ CLIENT CLASS """
 
@@ -63,10 +60,10 @@ class Client(BaseClient):
     def threatzone_get_sanitized(self, submission_uuid) -> dict:
         filename = f"sanitized-{submission_uuid}.zip"
         r = requests.get(
-            url=glob_BASEURL + "/public-api/download/cdr/" + submission_uuid,
-            headers=glob_HEADERS,
+            url=self._base_url + "/public-api/download/cdr/" + submission_uuid,
+            headers=self._headers,
             stream=True,
-            verify=glob_VERIFY,
+            verify=self._verify,
         )
         if r.status_code < 200 or r.status_code > 299:
             raise DemistoException(f"Bad HTTP response [{r.status_code}] - {r.text}")
@@ -519,11 +516,6 @@ def main() -> None:
         credentials: str = str(params.get("apikey"))
         creds = "Bearer " + credentials
         headers = {"Authorization": creds}
-        global glob_HEADERS, glob_BASEURL, glob_VERIFY
-        headers = {"Authorization": creds}
-        glob_HEADERS = headers
-        glob_BASEURL = base_url
-        glob_VERIFY = verify_certificate
         client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if command == "test-module":

@@ -1,6 +1,6 @@
 from CommonServerPython import *
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock, ANY
 from ThreatZone import (
     generate_dbotscore,
     threatzone_return_results,
@@ -12,6 +12,7 @@ from ThreatZone import (
     get_reputation_reliability,
     translate_score,
     threatzone_get_result,
+    threatzone_get_sanitized_file,
 )
 from ThreatZone import Client as tz_client
 
@@ -200,6 +201,9 @@ class TestGenerateIndicator(unittest.TestCase):
 
 class TestClient(unittest.TestCase):
     def setUp(self):
+        self._base_url = "https://example.com"
+        self._headers = None
+        self._verify = False
         self.client = tz_client(base_url="https://example.com", verify=False)
 
     @patch("ThreatZone.BaseClient._http_request")
@@ -284,6 +288,26 @@ class TestClient(unittest.TestCase):
                 "API_Limit": "5/9999",
             },
         }
+
+    @patch("ThreatZone.requests.get")
+    @patch("ThreatZone.shutil.copyfileobj")
+    @patch("ThreatZone.file_result_existing_file")
+    def test_threatzone_get_sanitized(self, mock_file_result_existing_file, mock_copyfileobj, mock_requests_get):
+        submission_uuid = "test_uuid"
+        response_mock = MagicMock()
+        response_mock.status_code = 200
+        response_mock.raw.decode_content = True
+        mock_requests_get.return_value = response_mock
+        result = self.client.threatzone_get_sanitized(submission_uuid)
+        mock_requests_get.assert_called_once_with(
+            url=f"{self._base_url}/public-api/download/cdr/{submission_uuid}",
+            headers=self._headers,
+            stream=True,
+            verify=self._verify,
+        )
+        mock_copyfileobj.assert_called_once_with(response_mock.raw, ANY)  # Use ANY here
+        mock_file_result_existing_file.assert_called_once_with(ANY)  # Use ANY here
+        assert result == mock_file_result_existing_file.return_value
 
 
 @patch("ThreatZone.Client.threatzone_me", return_value=MockClient.threatzone_me)
@@ -396,6 +420,22 @@ class Test_ThreatZone_Main_Functions(unittest.TestCase):
 
         assert len(results) == 2
         assert isinstance(results[0], CommandResults)
+
+    @patch("ThreatZone.Client.threatzone_get_sanitized")
+    def test_threatzone_get_sanitized_file(self, mock_threatzone_get_sanitized, _, __):
+        # Arrange
+        submission_uuid = "test_uuid"
+        args = {"uuid": submission_uuid}
+        sanitized_file_data = {"filename": "sanitized_file.zip", "contents": "file contents"}
+        mock_threatzone_get_sanitized.return_value = sanitized_file_data
+        client_mock = MagicMock()
+        client_mock.threatzone_get_sanitized.return_value = sanitized_file_data
+
+        # Act
+        result = threatzone_get_sanitized_file(client_mock, args)
+
+        # Assert
+        assert result == sanitized_file_data
 
 
 if __name__ == "__main__":
