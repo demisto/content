@@ -210,7 +210,7 @@ def arguments_handler() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def get_branch_name(headers: dict[str, str], pr: dict) -> str | None:
+# def get_branch_name(headers: dict[str, str], pr: dict) -> str | None:
 #     """Get branch name (also known as 'ref') of a GitHub PR.
 #     This helper function is needed since the response returned from `get_contribution_prs` function
 #     do not contain this information which is needed for the GitLab requests.
@@ -254,6 +254,17 @@ def main():
 
     github_issues: PaginatedList[Issue] = github_client.search_issues(FIND_CONTRIBUTION_PRS_QUERY)
     gitlab_merge_requests = gitlab_client.projects.get(GITLAB_PROJECT_ID).mergerequests
+
+
+    # TODO: for testing only - remove
+    for issue in github_issues:
+    # Print some basic information about the issue
+        print("Title:", issue.title)
+        print("URL:", issue.html_url)
+        print("Created By:", issue.user.login)
+        print("Labels:", [label.name for label in issue.labels])
+        print("-------------------------------------")
+
 
     for issue in github_issues:
         issue.create_comment(COMMENT_MESSAGES.build_request_accepted)
