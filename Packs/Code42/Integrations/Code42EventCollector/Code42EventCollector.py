@@ -174,7 +174,7 @@ def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> 
 def datetime_to_date_string(events: List[Dict[str, Any]]):
 
     def _datetime_to_date_string(_event: Dict[str, Any]):
-        for key in _event.keys():
+        for key in _event:
             if isinstance(_event[key], datetime):
                 _event[key] = _event[key].strftime(DATE_FORMAT)
             elif isinstance(_event[key], dict):
@@ -211,7 +211,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
         datetime.now() - timedelta(minutes=240)
     )
 
-    file_events = client.get_file_events(file_event_time, limit=max_fetch_file_events)
+    file_events = client.get_file_events(file_event_time, limit=max_fetch_file_events)  # type: ignore[arg-type]
     last_fetched_event_file_ids = set(
         last_run[FileEventLastRun.FETCHED_IDS]
     ) if FileEventLastRun.FETCHED_IDS in last_run else set()
@@ -247,7 +247,7 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
     last_fetched_audit_log_ids = set(
         last_run[AuditLogLastRun.FETCHED_IDS]
     ) if AuditLogLastRun.FETCHED_IDS in last_run else set()
-    audit_logs = client.get_audit_logs(audit_log_time, limit=max_fetch_audit_events)
+    audit_logs = client.get_audit_logs(audit_log_time, limit=max_fetch_audit_events)  # type: ignore[arg-type]
     audit_logs = dedup_fetched_events(audit_logs, last_run_fetched_event_ids=last_fetched_audit_log_ids, keys_list_to_id=["id"])
 
     if audit_logs:

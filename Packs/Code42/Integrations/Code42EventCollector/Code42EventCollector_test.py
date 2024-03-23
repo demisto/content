@@ -310,7 +310,6 @@ def test_fetch_events_no_last_run_no_audit_logs_yes_file_events(mocker):
     assert last_run_expected_keys == set(set_last_run_mocker.call_args_list[1][0][0].keys())
 
 
-
 def test_fetch_events_no_last_run_yes_audit_logs_no_file_events(mocker):
     """
     Given:
