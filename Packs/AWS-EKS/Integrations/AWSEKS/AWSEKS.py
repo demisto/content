@@ -231,16 +231,7 @@ def create_access_entry_command(aws_client: AWSClient, args: dict) -> CommandRes
     username = args.get('username', '')
     type_arg = args.get('type', '').upper()
 
-    if not username:
-        response = client.create_access_entry(
-            clusterName=cluster_name,
-            principalArn=principal_arn,
-            kubernetesGroups=kubernetes_groups,
-            tags=tags,
-            clientRequestToken=client_request_token,
-            type=type_arg
-        )
-    else:
+    if username:
         response = client.create_access_entry(
             clusterName=cluster_name,
             principalArn=principal_arn,
@@ -249,8 +240,16 @@ def create_access_entry_command(aws_client: AWSClient, args: dict) -> CommandRes
             clientRequestToken=client_request_token,
             username=username,
             type=type_arg
-        )
-    response = response.get('accessEntry')
+        ).get('accessEntry')
+    else:
+        response = client.create_access_entry(
+            clusterName=cluster_name,
+            principalArn=principal_arn,
+            kubernetesGroups=kubernetes_groups,
+            tags=tags,
+            clientRequestToken=client_request_token,
+            type=type_arg
+        ).get('accessEntry')
 
     datetime_to_str(response, 'createdAt')
     datetime_to_str(response, 'modifiedAt')
@@ -280,7 +279,7 @@ def create_access_entry_command(aws_client: AWSClient, args: dict) -> CommandRes
     )
 
 
-def associate_access_entry_command(aws_client: AWSClient, args: dict) -> CommandResults:
+def associate_access_policy_command(aws_client: AWSClient, args: dict) -> CommandResults:
     """
     Associates an access policy and its scope to an access entry.
     Args:
@@ -335,7 +334,7 @@ def associate_access_entry_command(aws_client: AWSClient, args: dict) -> Command
         readable_output=readable_output,
         outputs_prefix='AWS.EKS.AssociatedAccessPolicy',
         outputs=response_data,
-        raw_response=response,
+        raw_response=response_data,
         outputs_key_field='clusterName'
     )
 
@@ -431,7 +430,7 @@ def test_module(aws_client: AWSClient) -> str:
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     aws_default_region = params.get('defaultRegion')
     aws_access_key_id = params.get('credentials', {}).get('identifier')
@@ -467,7 +466,7 @@ def main():
             return_results(create_access_entry_command(aws_client, args))
 
         elif demisto.command() == 'aws-eks-associate-access-policy':
-            return_results(associate_access_entry_command(aws_client, args))
+            return_results(associate_access_policy_command(aws_client, args))
 
         elif demisto.command() == 'aws-eks-update-access-entry':
             return_results(update_access_entry_command(aws_client, args))

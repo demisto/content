@@ -1,0 +1,13 @@
+{
+    "expected_readable_output": "### The access policy was associated to the access entry successfully.\n|Cluster Name|Principal ARN|Policy ARN|Associated At|\n|---|---|---|---|\n| clusterName | principalArn | policyArn | 2024-01-01T00:00:00Z |\n",
+    "expected_outputs": {
+        "policyArn": "policyArn",
+        "accessScope": {
+            "type": "cluster"
+        },
+        "associatedAt": "2024-01-01T00:00:00Z",
+        "modifiedAt": "2024-01-01T00:00:00Z",
+        "clusterName": "clusterName",
+        "principalArn": "principalArn"
+    }
+}

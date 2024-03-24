@@ -16,6 +16,22 @@ UPDATE_CLUSTER_CONFIG_LOGGING_RESPONSE = {
     }
 }
 
+UPDATE_CLUSTER_CONFIG_ACCESS_CONFIG_RESPONSE = {
+    "update": {
+        "createdAt": datetime(2024, 1, 1),
+        "error": [],
+        "id": "11111111-1111-1111-1111-111111111111",
+        "params": [
+            {
+                "type": "AuthenticationMode",
+                "value": "{\"authenticationMode\": \"API_AND_CONFIG_MAP\"}"
+            }
+        ],
+        "status": "InProgress",
+        "type": "AccessConfigUpdate"
+    }
+}
+
 DESCRIBE_CLUSTER_RESPONSE = {
     'cluster': {
         'name': 'cluster_name',
@@ -99,5 +115,50 @@ DESCRIBE_CLUSTER_RESPONSE = {
             'bootstrapClusterCreatorAdminPermissions': True,
             'authenticationMode': 'API'
         }
+    }
+}
+
+CREATE_ACCESS_ENTRY_RESPONSE = {
+    'accessEntry': {
+        'clusterName': 'cluster_name',
+        'principalArn': 'principal_arn',
+        'kubernetesGroups': [
+            'kubernetesGroup',
+        ],
+        'accessEntryArn': 'accessEntryArn',
+        'createdAt': datetime(2024, 1, 1),
+        'modifiedAt': datetime(2024, 1, 1),
+        'tags': {},
+        'username': 'username',
+        'type': 'STANDARD'
+    }
+}
+
+ASSOCIATE_ACCESS_POLICY_RESPONSE = {
+    'clusterName': 'clusterName',
+    'principalArn': 'principalArn',
+    'associatedAccessPolicy': {
+        'policyArn': 'policyArn',
+        'accessScope': {
+            'type': 'cluster'
+        },
+        'associatedAt': datetime(2024, 1, 1),
+        'modifiedAt': datetime(2024, 1, 1)
+    }
+}
+
+UPDATE_ACCESS_ENTRY_RESPONSE = {
+    'accessEntry': {
+        'clusterName': 'cluster_name',
+        'principalArn': 'principal_arn',
+        'kubernetesGroups': [
+            'kubernetesGroup',
+        ],
+        'accessEntryArn': 'accessEntryArn',
+        'createdAt': datetime(2024, 1, 1),
+        'modifiedAt': datetime(2024, 1, 1),
+        'tags': {},
+        'username': 'username',
+        'type': 'STANDARD'
     }
 }
