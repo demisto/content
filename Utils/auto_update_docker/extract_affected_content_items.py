@@ -2,7 +2,7 @@ import logging
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
-
+import os
 import typer
 from dotenv import load_dotenv
 from neo4j import Transaction
@@ -16,6 +16,7 @@ from demisto_sdk.commands.common.docker.docker_image import (DockerImage)
 logging.basicConfig(level=logging.INFO)
 load_dotenv()
 app = typer.Typer(no_args_is_help=True)
+CWD = os.getcwd()
 
 def load_json(path: str) -> dict[str, Any]:
     with open(path, encoding="utf-8") as f:
@@ -211,7 +212,7 @@ def get_affected_content_items(
     ),
 ):
     # https://gitlab.xdr.pan.local/xdr/cortex-content/dockerfiles-cicd/-/blob/main/scripts/CVE_report/create_cve_report_json.py?ref_type=heads
-    docker_images_latest_tag_path = "/Users/ayousef/dev/demisto/content/Utils/auto_update_docker/images_tag.json"
+    docker_images_latest_tag_path = f"{CWD}/Utils/auto_update_docker/images_tag.json"
     images_tag: dict[str, str] = {}
     tests_conf = load_json('Tests/conf.json')
     nightly_packs: list[str] = tests_conf.get('nightly_packs', [])
@@ -244,10 +245,10 @@ def get_affected_content_items(
     )
     docker_images_target_tag = {docker_image: affected_items["target_tag"] for docker_image, affected_items in
                                 affected_content_items_by_docker_image.items()}
-    with open("/Users/ayousef/dev/demisto/content/Utils/auto_update_docker/images_tag_output.json", "w") as images_tag_output:
+    with open(f"{CWD}/Utils/auto_update_docker/images_tag_output.json", "w") as images_tag_output:
         json.dump(docker_images_target_tag, images_tag_output)
     
-    with open("/Users/ayousef/dev/demisto/content/Utils/auto_update_docker/affected_content_items.json", "w") as affected_content_items:
+    with open(f"{CWD}/content/Utils/auto_update_docker/affected_content_items.json", "w") as affected_content_items:
         json.dump(affected_content_items_by_docker_image, affected_content_items)
 
 def main():
