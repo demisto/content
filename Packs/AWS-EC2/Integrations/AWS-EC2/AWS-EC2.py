@@ -3043,7 +3043,7 @@ def create_vpc_endpoint_command(args: dict) -> CommandResults:
     if (policy_document := args.get('policy-document')) is not None:
         kwargs.update({'PolicyDocument': policy_document})
     if (route_table_ids := args.get('route-table-ids')) is not None:
-        kwargs.update({'SecurityGroupIds': argToList(route_table_ids)})
+        kwargs.update({'RouteTableIds': argToList(route_table_ids)})
     if (client_token := args.get('client-token')) is not None:
         kwargs.update({'ClientToken': client_token})
     if (private_dns_enabled := args.get('private-dns-enabled')) is not None:
