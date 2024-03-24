@@ -892,7 +892,8 @@ def file_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
 
         command_results.append(command_result)
 
-    command_results.append(EXECUTION_METRICS.metrics)
+    if metrics := EXECUTION_METRICS.metrics:
+        command_results.append(metrics)
 
     return command_results
 
@@ -943,7 +944,8 @@ def url_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
 
         command_results.append(command_result)
 
-    command_results.append(EXECUTION_METRICS.metrics)
+    if metrics := EXECUTION_METRICS.metrics:
+        command_results.append(metrics)
 
     return command_results
 
