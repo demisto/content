@@ -146,7 +146,7 @@ def create_test_incident_from_json_command(args):
     return CommandResults(readable_output=f'Loaded {len(ready_incidents)} incidents from json.')
 
 
-def get_incidents_from_file(client: Client, incidents_path: str, attachment_path: List[str] = None):  # pragma: no cover
+def get_incidents_from_file(client: Client, incidents_path: str, attachment_path: List[str] = None):
     """
     This function retrieves the incidents from the file provided using the relevant client,
     handling the case of a single incident, it returns formatted incidents.
