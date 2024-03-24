@@ -842,6 +842,12 @@ script:
     description: Deletes a ticket from ServiceNow.
     name: servicenow-delete-ticket
   - arguments:
+    - description: Attachment File ID.
+      name: file_sys_id
+      required: true
+    description: Delete an attachment from a ticket.
+    name: servicenow-delete-file
+  - arguments:
     - defaultValue: '10'
       description: The maximum number of tickets to retrieve.
       name: limit
