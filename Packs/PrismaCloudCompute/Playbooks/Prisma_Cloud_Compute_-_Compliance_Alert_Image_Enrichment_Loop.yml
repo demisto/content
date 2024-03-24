@@ -1,0 +1,831 @@
+id: Prisma Cloud Compute - Compliance Alert Image Enrichment Loop
+version: -1
+name: Prisma Cloud Compute - Compliance Alert Image Enrichment Loop
+description: |-
+  This is a sub playbook of the "Prisma Cloud Compute - Compliance Alert v2" playbook.
+  It will loop through all of the given compliance issue IDs and will retrieve the following information for each affected image based on the compliance issue ID:
+  - Image ID
+  - Compliance Issues
+  - Compliance Distribution
+  - Hosts
+  - Image Instances
+  - Cloud MetaData
+
+  The enriched information will be displayed in the layout in a dedicated table under the "Image Compliance Information" tab.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a32eb95f-96d5-4559-8574-f3b909791cc8
+    type: start
+    task:
+      id: a32eb95f-96d5-4559-8574-f3b909791cc8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3496cd34-109c-4236-830c-8703ef0b7c07
+    type: regular
+    task:
+      id: 3496cd34-109c-4236-830c-8703ef0b7c07
+      version: -1
+      name: Get images information based on compliance ID
+      description: This task will retrieve the "compact" information for all of the affected resources. In order to avoid performance issues, which can happen with large environments, the task won't retrieve the full information for each resource which includes all vulnerabilities, compliance issues, binaries etc.
+      script: '|||prisma-cloud-compute-images-scan-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all_results:
+        simple: "true"
+      compact:
+        simple: "true"
+      compliance_ids:
+        complex:
+          root: inputs.ComplianceIssue
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a0f0d5fb-ea2a-4402-8f2b-966346972a46
+    type: title
+    task:
+      id: a0f0d5fb-ea2a-4402-8f2b-966346972a46
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 3040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 1a28cc13-b685-407e-893f-996683d4f57e
+    type: regular
+    task:
+      id: 1a28cc13-b685-407e-893f-996683d4f57e
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: PrismaCloudCompute.ComplianceTable.Image
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 0ce0ddd1-dcf7-45da-8e98-4afec2167e60
+    type: condition
+    task:
+      id: 0ce0ddd1-dcf7-45da-8e98-4afec2167e60
+      version: -1
+      name: Is it the last playbook loop?
+      description: Check if the current loop is the last one. If it is, the next task will delete the context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.LastComplianceID
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.ComplianceIssue
+                transformers:
+                - operator: getField
+                  args:
+                    field:
+                      value:
+                        simple: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: fc5b8730-6224-4ec9-8bc2-b99bacdd8c0f
+    type: regular
+    task:
+      id: fc5b8730-6224-4ec9-8bc2-b99bacdd8c0f
+      version: -1
+      name: Get full data from one host
+      description: In order to get more details about the compliance issue, we can retrieve the full details of 1 resource, which includes more details about each compliance issue like title, severity etc.
+      script: '|||prisma-cloud-compute-images-scan-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      all_results:
+        simple: "true"
+      compact:
+        simple: "false"
+      compliance_ids:
+        complex:
+          root: inputs.ComplianceIssue
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+      id:
+        complex:
+          root: PrismaCloudCompute.ReportsImagesScan
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 59771eb0-9689-4fca-8edc-2bfc37d74a30
+    type: regular
+    task:
+      id: 59771eb0-9689-4fca-8edc-2bfc37d74a30
+      version: -1
+      name: Set EnrichedComplianceIssue
+      description: The key "EnrichedComplianceIssue" will hold all of the enriched compliance issue information. This will be used in the next task in order to create the compliance issues table, which will then be displayed in the incident's layout.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      key:
+        simple: EnrichedComplianceIssue
+      value:
+        complex:
+          root: PrismaCloudCompute.ReportsImagesScan.complianceIssues
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PrismaCloudCompute.ReportsImagesScan.complianceIssues.id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.ComplianceIssue.id
+                iscontext: true
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 73330d89-9046-49f6-82ca-5e3ab0b368ef
+    type: regular
+    task:
+      id: 73330d89-9046-49f6-82ca-5e3ab0b368ef
+      version: -1
+      name: Prepare Compliance Table
+      description: Iterate over input information and add to output table context keys.
+      scriptName: PrismaCloudComputeComplianceTable
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      gridID:
+        simple: prismacloudcomputeimagecomplianceissues
+      resourceType:
+        simple: Image
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 577ed6ad-0157-415b-87b3-c039025e20aa
+    type: regular
+    task:
+      id: 577ed6ad-0157-415b-87b3-c039025e20aa
+      version: -1
+      name: Delete context and keep ComplianceTableOutput
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 5f140456-01b8-4f5f-8d32-7e528d913440
+    type: condition
+    task:
+      id: 5f140456-01b8-4f5f-8d32-7e528d913440
+      desription: ""
+      version: -1
+      name: Any images were retrieved?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloudCompute.ReportsImagesScan
+                accessor: _id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 38f5c93d-0de3-40d6-895c-02dff4f9dcf9
+    type: condition
+    task:
+      id: 38f5c93d-0de3-40d6-895c-02dff4f9dcf9
+      desription: ""
+      version: -1
+      name: Any results returned?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "14"
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident.prismacloudcomputeimagecomplianceissues
+                accessor: imageid
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: e62228b8-fd92-4928-8f31-d0a1c8c3531e
+    type: regular
+    task:
+      id: e62228b8-fd92-4928-8f31-d0a1c8c3531e
+      version: -1
+      name: Show tab in layout
+      description: The Compliance Alert incident layout displays several tabs based on different filtering conditions. This task sets a value in the “prismacloudcomputeshowcompliancetab” incident field, which will cause the “Image Compliance Information” tab to be visible.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      prismacloudcomputeshowcompliancetab:
+        simple: image
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 195e26b9-1ebd-4132-86fa-e663b1f62076
+    type: playbook
+    task:
+      id: 195e26b9-1ebd-4132-86fa-e663b1f62076
+      version: -1
+      name: Prisma Cloud Compute - Jira Compliance Issue
+      description: |
+        This playbook is a sub playbook of the "Prisma Cloud Compute - Compliance Alert Host Enrichment Loop" playbook.
+        It create or update existing Jira issue for each compliance ID retrieved in the original Prisma Cloud compliance alert, with enriched data for each resource (host, image or container).
+      playbookName: Prisma Cloud Compute - Jira Compliance Issue
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      ComplianceIssueDescription:
+        complex:
+          root: EnrichedComplianceIssue
+          accessor: description
+      ComplianceIssueID:
+        complex:
+          root: EnrichedComplianceIssue
+          accessor: id
+      ComplianceIssueSeverity:
+        complex:
+          root: EnrichedComplianceIssue
+          accessor: severity
+      JiraIssueTypeName:
+        complex:
+          root: inputs.JiraIssueTypeName
+      JiraProjectName:
+        complex:
+          root: inputs.JiraProjectName
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 20b507cf-3d36-419a-84b6-bd2c34a94479
+    type: title
+    task:
+      id: 20b507cf-3d36-419a-84b6-bd2c34a94479
+      version: -1
+      name: Create external ticket
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 2150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 2417b1e5-4e6a-47b0-83ed-5d58583fc835
+    type: condition
+    task:
+      id: 2417b1e5-4e6a-47b0-83ed-5d58583fc835
+      desription: ""
+      version: -1
+      name: Which external ticketing system should be used?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      Jira:
+      - "13"
+      ServiceNow:
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: Jira
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.TicketingSystem
+            iscontext: true
+          right:
+            value:
+              simple: Jira
+          ignorecase: true
+    - label: ServiceNow
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.TicketingSystem
+            iscontext: true
+          right:
+            value:
+              simple: ServiceNow
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 9d795c97-e62d-4f5c-8cf5-bd978fb594cd
+    type: playbook
+    task:
+      id: 9d795c97-e62d-4f5c-8cf5-bd978fb594cd
+      version: -1
+      name: Prisma Cloud Compute - ServiceNow Compliance Ticket
+      playbookName: Prisma Cloud Compute - ServiceNow Compliance Ticket
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AttachFileByDefault:
+        simple: "False"
+      ComplianceIssueDescription:
+        complex:
+          root: EnrichedComplianceIssue
+          accessor: description
+      ComplianceIssueID:
+        complex:
+          root: EnrichedComplianceIssue
+          accessor: id
+      ComplianceIssueSeverity:
+        complex:
+          root: EnrichedComplianceIssue
+          accessor: severity
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 8e813b27-38fb-4002-8ecb-a1db229cad4c
+    type: condition
+    task:
+      id: 8e813b27-38fb-4002-8ecb-a1db229cad4c
+      version: -1
+      name: Check if compliance tab is already visible
+      description: The Compliance Alert incident layout displays several tabs based on different filtering conditions. This task checks if the “Image Compliance Information” tab should be visible or not, based on previous tasks results.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: prismacloudcomputeshowcompliancetab
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 2185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_2_#default#": 0.1,
+      "10_6_yes": 0.41,
+      "11_4_#default#": 0.13,
+      "15_4_#default#": 0.12,
+      "4_2_#default#": 0.37
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2445,
+        "width": 1490,
+        "x": 210,
+        "y": 660
+      }
+    }
+  }
+inputs:
+- key: ComplianceIssue
+  value: {}
+  required: false
+  description: A compliance issue. This list is used to filter relevant hostnames for enrichment.
+  playbookInputQuery:
+- key: LastComplianceID
+  value: {}
+  required: false
+  description: |-
+    The ID of the last compliance issue fetched in the incidents.
+    Used to know when to set the output after the loops end.
+  playbookInputQuery:
+- key: TicketingSystem
+  value: {}
+  required: false
+  description: |-
+    Which ticketing system should be used to create an external ticket.
+    Available options:
+    - Jira
+    - ServiceNow
+
+    If none of the above selected, no external ticket will get created.
+    For Jira, please also set the "JiraProjectName" and "JiraIssueTypeName" playbook inputs.
+  playbookInputQuery:
+- key: JiraIssueTypeName
+  value: {}
+  required: false
+  description: 'Issue type name. For example: "Task".'
+  playbookInputQuery:
+- key: JiraProjectName
+  value: {}
+  required: false
+  description: The project name with which to associate the issue.
+  playbookInputQuery:
+outputs:
+- contextPath: ComplianceTableOutput
+  description: Compliance issues table.
+  type: unknown
+quiet: true
+tests:
+- PaloAltoNetworks_PrismaCloudCompute-Test
+fromversion: 6.10.0
