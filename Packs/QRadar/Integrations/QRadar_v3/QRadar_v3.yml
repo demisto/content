@@ -1510,7 +1510,7 @@ script:
       description: 'The description of the disconnected log collector.'
       type: String
     - contextPath: QRadar.DisconnectedLogCollector.Protocol
-      description: 'The transport protocol used by the Disconnected Log Collector to send events to QRadar. Possible Values are TLS and UDP.'
+      description: 'The transport protocol used by the disconnected log collector to send events to QRadar. Possible values are TLS and UDP.'
       type: String
     - contextPath: QRadar.DisconnectedLogCollector.UUID
       description: 'The UUID of the disconnected log collector.'
