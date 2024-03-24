@@ -4840,7 +4840,6 @@ def qradar_log_source_create_command(client: Client, args: dict) -> CommandResul
     - parsing_order: The order in which log sources will parse if multiple exists with a common identifier.
     - group_ids: Required. The set of log source group IDs this log source is a member of.
       Each ID must correspond to an existing log source group.
-      See the Log Source Group API (https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html).
     - credibility: On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source
     - store_event_payload: If the payloads of events that are collected by this log source are stored, the condition is set to
       'true'. If only the normalized event records are stored, then the condition is set to 'false'.
@@ -4906,7 +4905,6 @@ def qradar_log_source_update_command(client: Client, args: dict) -> CommandResul
     - parsing_order: The order in which log sources will parse if multiple exists with a common identifier.
     - group_ids: The set of log source group IDs this log source is a member of.
       Each ID must correspond to an existing log source group.
-      See the Log Source Group API (https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html).
     - credibility: On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source
     - store_event_payload: If the payloads of events that are collected by this log source are stored, the condition is set to
       'true'. If only the normalized event records are stored, then the condition is set to 'false'.
