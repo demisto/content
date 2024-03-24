@@ -10,7 +10,7 @@ from typing import Any
 """ Global Variables """
 
 INTEGRATION_NAME = "FortiSandbox"
-INTEGRATION_PREFIX = INTEGRATION_NAME.lower()
+INTEGRATION_PREFIX = "fortisandbox"
 OUTPUTS_PREFIX = f"{INTEGRATION_NAME}.Submission"
 SUBMISSION = "submission"
 STEP_TO_NUMBER = {
