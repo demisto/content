@@ -3527,10 +3527,11 @@ def qradar_log_sources_list_command(client: Client, args: dict) -> CommandResult
     # if this call fails, raise an error and stop command execution
     response = client.get_resource(id, range_, endpoint, filter_, fields, additional_headers)
     outputs = sanitize_outputs(response, LOG_SOURCES_RAW_FORMATTED)
+    readable_outputs = [{k: v for k, v in output.items() if k != 'ProtocolParameters'} for output in outputs]
     headers = build_headers(['ID', 'Name', 'Description'], set(LOG_SOURCES_RAW_FORMATTED.values()))
 
     return CommandResults(
-        readable_output=tableToMarkdown('Log Sources List', outputs, headers, removeNull=True),
+        readable_output=tableToMarkdown('Log Sources List', readable_outputs, headers, removeNull=True),
         outputs_prefix='QRadar.LogSource',
         outputs_key_field='ID',
         outputs=outputs,
@@ -4234,6 +4235,7 @@ def qradar_search_retrieve_events_command(
     }
     scheduled_command = ScheduledCommand(
         command='qradar-search-retrieve-events',
+        timeout_in_seconds=timeout_in_seconds,
         next_run_in_seconds=interval_in_secs,
         args=polling_args,
     )
