@@ -1,24 +1,96 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: CensysV2
+  id: CensysV2 -dev
   version: -1
 configuration:
+- display: Server URL
+  name: server_url
+  defaultvalue: https://search.censys.io
+  type: 0
+  required: true
+  section: Connect
 - display: App ID
   displaypassword: Secret
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+- display: IP and Domain Malicious labels
+  name: malicious_labels
+  type: 16
+  required: false
+  options:
+  - database
+  - email
+  - file-sharing
+  - iot
+  - login-page
+  - network-administration
+  - network.device
+  - network.device.firewall
+  - network.device.soho
+  - network.device.vpn
+  - network.device.web-ui
+  - onion-enabled
+  - out-of-band-management
+  - remote-access
+  - scada
+  - voip
+  - web.control-panel.hosting
+  additionalinfo: 'IP and Domain Malicious labels Free text, array, separated by comma. '
+  section: Collect-  advanced
+- display: IP and Domain Suspicious labels
+  name: suspicious_labels
+  type: 16
+  required: false
+  options:
+  - database
+  - email
+  - file-sharing
+  - iot
+  - login-page
+  - network-administration
+  - network.device
+  - network.device.firewall
+  - network.device.soho
+  - network.device.vpn
+  - network.device.web-ui
+  - onion-enabled
+  - out-of-band-management
+  - remote-access
+  - scada
+  - voip
+  - web.control-panel.hosting
+  additionalinfo: 'IP and Domain Suspicious labels Free text, array, separated by comma. '
+  section: Collect-  advanced
+- display: Source Reliability
+  name: integrationReliability
+  defaultvalue: C - Fairly reliable
+  required: true
+  type: 15
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data.
+  section: Connect
 description: Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the internet. Driven by internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, and certificates are configured and deployed.
-display: Censys v2
-name: CensysV2
+display: Censys v2 -dev
+name: CensysV2 -dev
 script:
   commands:
   - arguments:
@@ -381,6 +453,27 @@ script:
     - contextPath: Censys.Search.parsed.issuer_dn
       description: Distinguished name of the entity that has signed and issued the certificate.
       type: String
+  - name: cen-host-history
+    arguments:
+    - name: ip
+      required: true
+      description: The IP Address of the original host. Referred to as Host A.
+      type: textArea
+    - name: ip_b
+      description: The IP Address of the other host. If not set, defaults to the host
+        provided in the path. Referred to as Host B.
+      type: textArea
+    - name: at_time
+      description: The point in time used as the basis for Host A. Requires historical
+        API access. Nanosecond precision is allowed. Uses RFC3339 Timestamp.
+      type: textArea
+    - name: at_time_b
+      description: Requires historical API access. Nanosecond precision is allowed.
+        Uses RFC3339 Timestamp.
+      type: textArea
+    description: The diff endpoint generates a JSONPatch (RFC6902) formatted patch
+      by comparing a host against another host (or itself) at optionally given points
+      in time.
   dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'

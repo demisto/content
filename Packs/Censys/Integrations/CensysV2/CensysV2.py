@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -13,17 +13,17 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 class Client(BaseClient):
 
-    def censys_view_request(self, index: str, query: str) -> Dict:
+    def censys_view_request(self, index: str, query: str) -> dict:
 
         if index == 'ipv4':
-            url_suffix = f'v2/hosts/{query}'
+            url_suffix = f'/api/v2/hosts/{query}'
         else:
-            url_suffix = f'v1/view/certificates/{query}'
+            url_suffix = f'/api/v2/certificates/{query}'
         res = self._http_request('GET', url_suffix)
         return res
 
-    def censys_search_ip_request(self, query: Dict, page_size: int) -> Dict:
-        url_suffix = 'v2/hosts/search'
+    def censys_search_ip_request(self, query: dict, page_size: int) -> dict:
+        url_suffix = '/api/v2/hosts/search'
         params = {
             'q': query,
             'per_page': page_size
@@ -31,9 +31,30 @@ class Client(BaseClient):
         res = self._http_request('GET', url_suffix, params=params)
         return res
 
-    def censys_search_certs_request(self, data: Dict) -> Dict:
-        url_suffix = 'v1/search/certificates'
-        res = self._http_request('POST', url_suffix, json_data=data)
+    def censys_search_certs_request(self, data: dict) -> dict:
+        url_suffix = '/api/v2/certificates/search'
+        res = self._http_request('GET', url_suffix, json_data=data)
+        return res
+
+    def censys_host_history_request(self, ip: str, ip_b: str = '', at_time: str = '', at_time_b: str = '') -> dict:
+        """
+        Retrieve the diff between two hosts (or the same host at different times).
+
+        :param ip: The IP Address of the original host (Host A).
+        :param ip_b: The IP Address of the other host (Host B). Defaults to the host provided in the path if not set.
+        :param at_time: The point in time used as the basis for Host A.
+        :param at_time_b: The point in time used as the basis for Host B.
+        :return: The diff between the hosts.
+        """
+        url_suffix = f'/api/v2/hosts/{ip}/diff'
+        params = {}
+        if ip_b:
+            params['ip_b'] = ip_b
+        if at_time:
+            params['at_time'] = at_time
+        if at_time_b:
+            params['at_time_b'] = at_time_b
+        res = self._http_request('GET', url_suffix, params=params)
         return res
 
 
@@ -45,7 +66,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def censys_view_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def censys_view_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns host information for the specified IP address or structured certificate data for the specified SHA-256
     """
@@ -115,7 +136,7 @@ def censys_view_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         )
 
 
-def censys_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def censys_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Returns previews of hosts matching a specified search query or a list of certificates that match the given query.
     """
@@ -155,7 +176,7 @@ def censys_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
         return response
 
 
-def search_certs_command(client: Client, args: Dict[str, Any], query: str, limit: Optional[int]):
+def search_certs_command(client: Client, args: dict[str, Any], query: str, limit: Optional[int]):
     fields = ['parsed.fingerprint_sha256', 'parsed.subject_dn', 'parsed.issuer_dn', 'parsed.issuer.organization',
               'parsed.validity.start', 'parsed.validity.end', 'parsed.names']
     search_fields = argToList(args.get('fields'))
@@ -191,6 +212,30 @@ def search_certs_command(client: Client, args: Dict[str, Any], query: str, limit
     )
 
 
+def censys_host_history_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the diff between two hosts (or the same host at different times).
+
+    :param client: The Censys client.
+    :param args: Command arguments.
+    :return: Command results.
+    """
+    ip = args.get("ip", '')
+    ip_b = args.get("ip_b", ip)
+    at_time = args.get("at_time", '')
+    at_time_b = args.get("at_time_b", '')
+
+    res = client.censys_host_history_request(ip, ip_b, at_time, at_time_b)
+    human_readable = tableToMarkdown(f'Host Diff for IP {ip}', res)
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_prefix='Censys.HostHistory',
+        outputs_key_field='ip',
+        outputs=res,
+        raw_response=res
+    )
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -200,8 +245,8 @@ def main() -> None:
     password = params.get('credentials', {}).get('password')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    base_url = params.get("server_url") or 'https://search.censys.io'
 
-    base_url = 'https://search.censys.io/api/'
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
@@ -213,8 +258,7 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            return_results(test_module(client))
 
         elif command == 'cen-view':
             return_results(censys_view_command(client, demisto.args()))
