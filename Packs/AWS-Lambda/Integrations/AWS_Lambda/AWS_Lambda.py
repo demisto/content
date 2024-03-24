@@ -165,13 +165,13 @@ def prepare_create_function_kwargs(args: dict[str, str]):
         raise DemistoException('code or S3-bucket must be provided.')
 
     kwargs['TracingConfig'] = {'Mode': args.get('tracingConfig') or "Active"}
-    kwargs['MemorySize'] = arg_to_number(args.get('memorySize')) or 128
-    kwargs['Timeout'] = arg_to_number(args.get('timeout')) or 3
+    kwargs['MemorySize'] = arg_to_number(args.get('memorySize')) or 128  # type: ignore
+    kwargs['Timeout'] = arg_to_number(args.get('functionTimeout')) or 3  # type: ignore
 
     for key in create_function_api_keys:
         arg_name = key[0].lower() + key[1:]
         if arg_name in args:
-            kwargs.update({key: args.get(arg_name)})
+            kwargs.update({key: args.get(arg_name)})  # type: ignore
 
     if publish := args.get('publish'):
         kwargs['Publish'] = argToBoolean(publish)
@@ -585,7 +585,7 @@ def create_function_command(args: dict[str, str], aws_client) -> CommandResults:
     Returns:
         CommandResults: An object containing the result of the creation operation.
     """
-    output_headers = ['FunctionName', 'FunctionArn', 'Runtime', 'Role', 'Handler', 'CodeSize', 'Description', 'Timeout',
+    output_headers = ['FunctionName', 'FunctionArn', 'Runtime', 'Role', 'Handler', 'CodeSize', 'Description',
                       'MemorySize', 'Version', 'PackageType', 'LastModified', 'VpcConfig', ]
 
     kwargs = prepare_create_function_kwargs(args)

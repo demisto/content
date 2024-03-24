@@ -1001,7 +1001,7 @@ script:
       predefined:
       - ""
     - name: handler
-      description: " The name of the method within your code that Lambda calls to execute your function."
+      description: " The name of the method within your code that Lambda calls to execute your function. Example: lambda_function.lambda_handler'"
       required: true
       isArray: false
       defaultValue: ""
@@ -1028,7 +1028,7 @@ script:
       defaultValue: ""
       predefined:
       - ""
-    - name: timeout
+    - name: functionTimeout
       description: The amount of time that Lambda allows a function to run before stopping it.
       required: false
       isArray: false
@@ -1089,7 +1089,7 @@ script:
       predefined:
       - ""
     - name: role
-      description: The Amazon Resource Name (ARN) of the function’s execution role..
+      description: The Amazon Resource Name (ARN) of the function’s execution role.
       required: true
       isArray: false
       defaultValue: ""
