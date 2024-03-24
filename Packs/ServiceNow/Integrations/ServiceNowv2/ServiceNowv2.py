@@ -3112,7 +3112,6 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     command = demisto.command()
-    demisto.debug(f'Executing command {command}')
     LOG(f'Executing command {command}')
 
     params = demisto.params()
@@ -3175,7 +3174,6 @@ def main():
     timestamp_field = params.get('timestamp_field', 'opened_at')
     params_ticket_type = params.get('ticket_type')
     demisto.debug(f'{params_ticket_type=}')
-    # TODO do the default ticket_type in the code and not from the yml
     ticket_type = params.get('ticket_type', INCIDENT)
     demisto.debug(f'{params_ticket_type=}, {ticket_type=}')
     incident_name = params.get('incident_name', 'number') or 'number'
