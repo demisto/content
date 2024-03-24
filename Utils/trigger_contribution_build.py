@@ -72,28 +72,25 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
         pull_request = issue.as_pull_request()
         github_branch_name = pull_request.head.ref
 
-        # TODO: remove this specific if statement when done testing
-        if (github_branch_name == "test-pr/add-trigger-contribution-build-job"):  # noqa: SIM102
+        # get the corresponding GitLab branch object corresponding to the GitHub branch
+        if branch := gitlab_project.branches.get(github_branch_name):
+            print(f'--- Handling branch: {branch.name}. ---')
 
-            # get the corresponding GitLab branch object corresponding to the GitHub branch
-            if branch := gitlab_project.branches.get(github_branch_name):
-                print(f'Handling branch: {branch.name}.')
+            cancel_active_pipelines(gitlab_project, branch)
 
-                cancel_active_pipelines(gitlab_project, branch)
+            new_pipeline = gitlab_project.trigger_pipeline(
+                ref=branch.name,
+                token=args.gitlab_trigger_token,
+            )
 
-                new_pipeline = gitlab_project.trigger_pipeline(
-                    ref=branch.name,
-                    token=args.gitlab_trigger_token,
-                )
+            print(f"New pipeline triggered: {new_pipeline.web_url}")
+            issue.create_comment(COMMENT_MESSAGES.build_triggered.format(url=new_pipeline.web_url))
 
-                print(f"New pipeline triggered: {new_pipeline.web_url}")
-                issue.create_comment(COMMENT_MESSAGES.build_triggered.format(url=new_pipeline.web_url))
+        else:
+            print(f"No branch was found with the name: {github_branch_name}. New pipeline was not created.")
+            issue.create_comment(COMMENT_MESSAGES.build_trigger_failed.format(branch=github_branch_name))
 
-            else:
-                print(f"No branch was found with the name: {github_branch_name}. New pipeline was not created.")
-                issue.create_comment(COMMENT_MESSAGES.build_trigger_failed.format(branch=github_branch_name))
-
-        issue.remove_from_labels(GITHUB_TRIGGER_BUILD_LABEL)
+    issue.remove_from_labels(GITHUB_TRIGGER_BUILD_LABEL)
 
 
 def main():
