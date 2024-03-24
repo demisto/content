@@ -231,7 +231,7 @@ tasks:
       deviceid:
         simple: AEEC6A2CC92E46FAB3B6F621722E9916
       filesha256:
-        simple: 07dc0e82e198278b8b7179b01dd69f6203fb128b20484edbcdbaa19ec2ee09f0
+        simple: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       name:
         simple: Test Incident for Cortex XDR - Retrieve File by sha256
       type:
@@ -2315,7 +2315,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: No Path was provided for 07dc0e82e198278b8b7179b01dd69f6203fb128b20484edbcdbaa19ec2ee09f0. Cannot retrieve the file without a proper path.
+              simple: No Path was provided for e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855. Cannot retrieve the file without a proper path.
           ignorecase: true
     continueonerrortype: ""
     view: |-

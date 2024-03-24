@@ -968,7 +968,7 @@ tasks:
       - "246"
     scriptarguments:
       filesha1:
-        simple: '["6d9d0be989c8383c06b279a71f770edad617af27", "a1385ce20ad79f55df235effd9780c31442aa234"]'
+        simple: '["6d9d0be989c8383c06b279a71f770edad617af27", "a1385ce20ad79f55df235effd9780c31442aa234", "445f5f38365af88ec29b357f4696f0e3ee50a1d8", "1bc5066ddf693fc034d6514618854e26a84fd0d1", "75c5a97f521f760e32a4a9639a653eed862e9c61", "9045cdae98f522da34be67f29125e6654963f35e"]'
     separatecontext: false
     continueonerrortype: ""
     view: |-
