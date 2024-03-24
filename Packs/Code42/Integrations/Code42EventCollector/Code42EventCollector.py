@@ -72,6 +72,7 @@ class Client:
             limit: maximum events to retrieve
             page_size: the page size per single request
         """
+        demisto.debug(f'Audit logs: {start_time=}, {end_time=}, {limit=}')
         audit_logs = []
 
         for audit_log in self.code42_client.audit_log.v1.iter_all(
@@ -104,6 +105,7 @@ class Client:
             limit: maximum events to retrieve
             page_size: the page size per single request
         """
+        demisto.debug(f'File Events: {start_time=}, {end_time=}, {limit=}')
         query = EventQuery(start_date=start_time, end_date=end_time, srtDir="asc", pgSize=page_size)
         response = self.code42_client.file_events.v2.search(
             query
