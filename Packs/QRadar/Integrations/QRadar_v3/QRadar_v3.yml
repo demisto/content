@@ -2887,9 +2887,6 @@ script:
       description: List of source address IDs associated with the destination address.
       type: Unknown
   - arguments:
-    - name: timeout
-      defaultValue: '600'
-      description: Indicates the time in seconds until the polling sequence times out.
     - name: offense_id
       type: Number
       description: The ID of the offense to retrieve. Mutually exclusive with query_expression.

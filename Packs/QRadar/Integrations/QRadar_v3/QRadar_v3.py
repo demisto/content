@@ -4160,7 +4160,6 @@ def qradar_search_retrieve_events_command(
     interval_in_secs = int(args.get('interval_in_seconds', 30))
     search_id = args.get('search_id')
     is_polling = argToBoolean(args.get('polling', True))
-    timeout_in_seconds = int(args.get('timeout', 600))
     search_command_results = None
     if not search_id:
         search_command_results = qradar_search_create_command(client, params, args)
@@ -4174,7 +4173,7 @@ def qradar_search_retrieve_events_command(
     is_last_run = (datetime.now() + timedelta(seconds=interval_in_secs)).timestamp() >= end_date.timestamp() \
         if end_date else False
     try:
-        events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id', ''))
+        events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id'))
     except (DemistoException, requests.Timeout) as e:
         if is_last_run:
             raise e
@@ -4208,7 +4207,6 @@ def qradar_search_retrieve_events_command(
             scheduled_command = ScheduledCommand(
                 command='qradar-search-retrieve-events',
                 next_run_in_seconds=interval_in_secs,
-                timeout_in_seconds=timeout_in_seconds,
                 args=polling_args,
             )
             return CommandResults(scheduled_command=scheduled_command if is_polling else None,
@@ -4235,7 +4233,6 @@ def qradar_search_retrieve_events_command(
     }
     scheduled_command = ScheduledCommand(
         command='qradar-search-retrieve-events',
-        timeout_in_seconds=timeout_in_seconds,
         next_run_in_seconds=interval_in_secs,
         args=polling_args,
     )
