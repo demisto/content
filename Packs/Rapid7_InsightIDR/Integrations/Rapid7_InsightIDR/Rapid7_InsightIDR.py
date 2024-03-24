@@ -1731,7 +1731,7 @@ def main():
             else (demisto.args().get("api_version", "V1") or "V1")
         )
 
-        headers_class: Constants = {
+        api_version_constants: Constants = {
             "V1": ConstantsV1,
             "V2": ConstantsV2,
         }.get(api_version, ConstantsV1)()
@@ -1754,7 +1754,7 @@ def main():
                 insight_idr_list_investigations_command(
                     client=client,
                     args=demisto.args(),
-                    constants=headers_class,
+                    constants=api_version_constants,
                 )
             )
 
@@ -1763,7 +1763,7 @@ def main():
                 insight_idr_get_investigation_command(
                     client,
                     demisto.args(),
-                    constants=headers_class,
+                    constants=api_version_constants,
                 )
             )
 
@@ -1780,7 +1780,7 @@ def main():
                 insight_idr_assign_user_command(
                     client=client,
                     args=demisto.args(),
-                    constants=headers_class,
+                    constants=api_version_constants,
                 )
             )
 
@@ -1789,7 +1789,7 @@ def main():
                 insight_idr_set_status_command(
                     client=client,
                     args=demisto.args(),
-                    constants=headers_class,
+                    constants=api_version_constants,
                 )
             )
 
