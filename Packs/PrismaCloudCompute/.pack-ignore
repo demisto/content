@@ -46,6 +46,9 @@ ignore=BA124
 [file:1_5_0.md]
 ignore=RN115
 
+[file:Prisma_Cloud_Compute_-_Compliance_Alert_Host_Enrichment_Loop.yml]
+ignore=PB105
+
 [known_words]
 resourceType
 resourceID
