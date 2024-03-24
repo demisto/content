@@ -1511,3 +1511,462 @@
         ]
     }
 }
+
+
+
+{'sha': '58594110422a572b37faf18ccb850a03edff8518', 'node_id': 'C_kwDOAxWMjdoAKDU4NTk0MTEwNDIyYTU3MmIzN2ZhZjE4Y2NiODUwYTAzZWRmZjg1MTg', 'commit': {'author': {...
+        }, 'committer': {...
+        }, 'message': 'Update expl_connectwise_screenconnect_vuln_feb24.yar', 'tree': {...
+        }, 'url': 'https: //api.github.com/repos/Neo23x0/signature-base/git/commits/58594110422a572b37faf18ccb850a03edff8518', 'comment_count': 0, 'verification': {...}}, 'url': 'https://api.github.com/repos/Neo23x0/signature-base/commits/58594110422a572b37faf18ccb850a03edff8518', 'html_url': 'https://github.com/Neo23x0/signature-base/commit/58594110422a572b37faf18ccb850a03edff8518', 'comments_url': 'https://api.github.com/repos/Neo23x0/signature-base/commits/58594110422a572b37faf18ccb850a03edff8518/comments', 'author': {'login': 'Neo23x0', 'id': 2851492, 'node_id': 'MDQ6VXNlcjI4NTE0OTI=', 'avatar_url': 'https://avatars.githubusercontent.com/u/2851492?v=4', 'gravatar_id': '', 'url': 'https://api.github.com/users/Neo23x0', 'html_url': 'https://github.com/Neo23x0', 'followers_url': 'https://api.github.com/users/Neo23x0/followers', 'following_url': 'https://api.github.com/users/Neo23x0/following{/other_user}', 'gists_url': 'https://api.github.com/users/Neo23x0/gists{/gist_id}', 'starred_url': 'https://api.github.com/users/Neo23x0/starred{/owner}{/repo}', 'subscriptions_url': 'https://api.github.com/users/Neo23x0/subscriptions', 'organizations_url': 'https://api.github.com/users/Neo23x0/orgs', 'repos_url': 'https://api.github.com/users/Neo23x0/repos', 'events_url': 'https://api.github.com/users/Neo23x0/events{/privacy}', 'received_events_url': 'https://api.github.com/users/Neo23x0/received_events', 'type': 'User', 'site_admin': False}, 'committer': {'login': 'Neo23x0', 'id': 2851492, 'node_id': 'MDQ6VXNlcjI4NTE0OTI=', 'avatar_url': 'https://avatars.githubusercontent.com/u/2851492?v=4', 'gravatar_id': '', 'url': 'https://api.github.com/users/Neo23x0', 'html_url': 'https://github.com/Neo23x0', 'followers_url': 'https://api.github.com/users/Neo23x0/followers', 'following_url': 'https://api.github.com/users/Neo23x0/following{/other_user}', 'gists_url': 'https://api.github.com/users/Neo23x0/gists{/gist_id}', 'starred_url': 'https://api.github.com/users/Neo23x0/starred{/owner}{/repo}', 'subscriptions_url': 'https://api.github.com/users/Neo23x0/subscriptions', 'organizations_url': 'https://api.github.com/users/Neo23x0/orgs', 'repos_url': 'https://api.github.com/users/Neo23x0/repos', 'events_url': 'https://api.github.com/users/Neo23x0/events{/privacy}', 'received_events_url': 'https://api.github.com/users/Neo23x0/received_events', 'type': 'User', 'site_admin': False}, 'parents': [{...}]}
+        /*\n\tYara Rule Set\n\tAuthor: Florian Roth\n\tDate: 2016-03-26\n\tIdentifier: Windows Shells\n*/\n\n /* Rule Set ----------------------------------------------------------------- */\n\nrule WindowsShell_s3 {\n\tmeta:\n\t\tdescription = "Detects simple Windows shell - file s3.exe"\n\t\tlicense = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"\n\t\tauthor = "Florian Roth (Nextron Systems)"\n\t\treference = "https://github.com/odzhan/shells/"\n\t\tdate = "2016-03-26"\n\t\thash = "344575a58db288c9b5dacc654abc36d38db2e645acff05e894ff51183c61357d"\n\t\tid = "064754a7-8639-5dbd-93f3-906662b8e9bc"\n\tstrings:\n\t\t$s1 = "cmd                  - execute cmd.exe" fullword ascii\n\t\t$s2 = "\\\\\\\\.\\\\pipe\\\\%08X" fullword ascii\n\t\t$s3 = "get <remote> <local> - download file" fullword ascii\n\t\t$s4 = "[ simple remote shell for windows v3" fullword ascii\n\t\t$s5 = "REMOTE: CreateFile(\\"%s\\")" fullword ascii\n\t\t$s6 = "put <local> <remote> - upload file" fullword ascii\...
+
+
+
+
+        {'9a07b09b8e7a14e583e27e07e4fd6098a03e28b4': [
+                    {...
+                    }
+                ], 'a96d4cfd3cd80e128112c64691172452e5c55865': []
+            }
+
+
+' /*\n\tYara Rule Set\n\tAuthor: Florian Roth\n\tDate: 2016-03-26\n\tIdentifier: Windows Shells\n*/\n\n /* Rule Set ----------------------------------------------------------------- */\n\nrule WindowsShell_s3 {\n\tmeta:\n\t\tdescription = "Detects simple Windows shell - file s3.exe"\n\t\tlicense = "Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE"\n\t\tauthor = "Florian Roth (Nextron Systems)"\n\t\treference = "https://github.com/odzhan/shells/"\n\t\tdate = "2016-03-26"\n\t\thash = "344575a58db288c9b5dacc654abc36d38db2e645acff05e894ff51183c61357d"\n\t\tid = "064754a7-8639-5dbd-93f3-906662b8e9bc"\n\tstrings:\n\t\t$s1 = "cmd                  - execute cmd.exe" fullword ascii\n\t\t$s2 = "\\\\\\\\.\\\\pipe\\\\%08X" fullword ascii\n\t\t$s3 = "get <remote> <local> - download file" fullword ascii\n\t\t$s4 = "[ simple remote shell for windows v3" fullword ascii\n\t\t$s5 = "REMOTE: CreateFile(\\"%s\\")" fullword ascii\n\t\t$s6 = "put <local> <remote> - upload file" fullword ascii\...
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{
+                    "9a07b09b8e7a14e583e27e07e4fd6098a03e28b4": {
+                        "space_invaders-main/yara_test.yar": [
+                            {
+                                "author": [],
+                                "condition": [],
+                                "description": [],
+                                "id": [],
+                                "raw_rule": "/*\n\tYara Rule Set\n\tAuthor: Florian Roth\n\tDate: 2016-03-26\n\tIdentifier: Windows Shells\n*/\n\n/* Rule Set ----------------------------------------------------------------- */\n\n",
+                                "references": [],
+                                "rule_strings": [],
+                                "sourcetimestamp": [],
+                                "value": []
+                            },
+                            {
+                                "author": [
+                                    "Florian Roth (Nextron Systems)"
+                                ],
+                                "condition": [],
+                                "description": [
+                                    "Detects simple Windows shell - file s3.exe"
+                                ],
+                                "id": [
+                                    "064754a7-8639-5dbd-93f3-906662b8e9bc"
+                                ],
+                                "raw_rule": "rule WindowsShell_s3 {\n\tmeta:\n\t\tdescription = \"Detects simple Windows shell - file s3.exe\"\n\t\tlicense = \"Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE\"\n\t\tauthor = \"Florian Roth (Nextron Systems)\"\n\t\treference = \"https://github.com/odzhan/shells/\"\n\t\tdate = \"2016-03-26\"\n\t\thash = \"344575a58db288c9b5dacc654abc36d38db2e645acff05e894ff51183c61357d\"\n\t\tid = \"064754a7-8639-5dbd-93f3-906662b8e9bc\"\n\tstrings:\n\t\t$s1 = \"cmd                  - execute cmd.exe\" fullword ascii\n\t\t$s2 = \"\\\\\\\\.\\\\pipe\\\\%08X\" fullword ascii\n\t\t$s3 = \"get \u003cremote\u003e \u003clocal\u003e - download file\" fullword ascii\n\t\t$s4 = \"[ simple remote shell for windows v3\" fullword ascii\n\t\t$s5 = \"REMOTE: CreateFile(\\\"%s\\\")\" fullword ascii\n\t\t$s6 = \"put \u003clocal\u003e \u003cremote\u003e - upload file\" fullword ascii\n\t\t$s7 = \"term                 - terminate remote client\" fullword ascii\n\t\t$s8 = \"[ downloading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii\n\t\t$s9 = \"-l           Listen for incoming connections\" fullword ascii\n\tcondition:\n\t\t( uint16(0) == 0x5a4d and filesize \u003c 150KB and 2 of them ) or ( 5 of them )\n}\n\n",
+                                "references": [
+                                    "https://github.com/odzhan/shells/"
+                                ],
+                                "rule_strings": [
+                                    "\"cmd                  - execute cmd.exe\" fullword ascii",
+                                    "\"\\\\\\\\.\\\\pipe\\\\%08X\" fullword ascii",
+                                    "\"get \u003cremote\u003e \u003clocal\u003e - download file\" fullword ascii",
+                                    "\"[ simple remote shell for windows v3\" fullword ascii",
+                                    "\"REMOTE: CreateFile(\\\"%s\\\")\" fullword ascii",
+                                    "\"put \u003clocal\u003e \u003cremote\u003e - upload file\" fullword ascii",
+                                    "\"term                 - terminate remote client\" fullword ascii",
+                                    "\"[ downloading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii",
+                                    "\"-l           Listen for incoming connections\" fullword ascii"
+                                ],
+                                "sourcetimestamp": [
+                                    "2016-03-26"
+                                ],
+                                "value": [
+                                    "WindowsShell_s3"
+                                ]
+                            },
+                            {
+                                "author": [
+                                    "Florian Roth (Nextron Systems)"
+                                ],
+                                "condition": [],
+                                "description": [
+                                    "Detects simple Windows shell - file s1.exe"
+                                ],
+                                "id": [
+                                    "b4e783a2-4a93-5c72-9b09-4692b383ac00"
+                                ],
+                                "raw_rule": "rule WindosShell_s1 {\n\tmeta:\n\t\tdescription = \"Detects simple Windows shell - file s1.exe\"\n\t\tlicense = \"Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE\"\n\t\tauthor = \"Florian Roth (Nextron Systems)\"\n\t\treference = \"https://github.com/odzhan/shells/\"\n\t\tdate = \"2016-03-26\"\n\t\thash = \"4a397497cfaf91e05a9b9d6fa6e335243cca3f175d5d81296b96c13c624818bd\"\n\t\tid = \"b4e783a2-4a93-5c72-9b09-4692b383ac00\"\n\tstrings:\n\t\t$s1 = \"[ executing cmd.exe\" fullword ascii\n\t\t$s2 = \"[ simple remote shell for windows v1\" fullword ascii\n\t\t$s3 = \"-p \u003cnumber\u003e  Port number to use (default is 443)\" fullword ascii\n\t\t$s4 = \"usage: s1 \u003caddress\u003e [options]\" fullword ascii\n\t\t$s5 = \"[ waiting for connections on %s\" fullword ascii\n\t\t$s6 = \"-l           Listen for incoming connections\" fullword ascii\n\t\t$s7 = \"[ connection from %s\" fullword ascii\n\t\t$s8 = \"[ %c%c requires parameter\" fullword ascii\n\tcondition:\n\t\t( uint16(0) == 0x5a4d and filesize \u003c 150KB and 2 of them ) or ( 5 of them )\n}\n\n",
+                                "references": [
+                                    "https://github.com/odzhan/shells/"
+                                ],
+                                "rule_strings": [
+                                    "\"[ executing cmd.exe\" fullword ascii",
+                                    "\"[ simple remote shell for windows v1\" fullword ascii",
+                                    "\"-p \u003cnumber\u003e  Port number to use (default is 443)\" fullword ascii",
+                                    "\"usage: s1 \u003caddress\u003e [options]\" fullword ascii",
+                                    "\"[ waiting for connections on %s\" fullword ascii",
+                                    "\"-l           Listen for incoming connections\" fullword ascii",
+                                    "\"[ connection from %s\" fullword ascii",
+                                    "\"[ %c%c requires parameter\" fullword ascii"
+                                ],
+                                "sourcetimestamp": [
+                                    "2016-03-26"
+                                ],
+                                "value": [
+                                    "WindosShell_s1"
+                                ]
+                            },
+                            {
+                                "author": [
+                                    "Florian Roth (Nextron Systems)"
+                                ],
+                                "condition": [],
+                                "description": [
+                                    "Detects simple Windows shell - file s4.exe"
+                                ],
+                                "id": [
+                                    "838771dc-f885-5332-9813-2bc01af8e5fe"
+                                ],
+                                "raw_rule": "rule WindowsShell_s4 {\n\tmeta:\n\t\tdescription = \"Detects simple Windows shell - file s4.exe\"\n\t\tlicense = \"Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE\"\n\t\tauthor = \"Florian Roth (Nextron Systems)\"\n\t\treference = \"https://github.com/odzhan/shells/\"\n\t\tdate = \"2016-03-26\"\n\t\thash = \"f00a1af494067b275407c449b11dfcf5cb9b59a6fac685ebd3f0eb193337e1d6\"\n\t\tid = \"838771dc-f885-5332-9813-2bc01af8e5fe\"\n\tstrings:\n\t\t$s1 = \"cmd                  - execute cmd.exe\" fullword ascii\n\t\t$s2 = \"\\\\\\\\.\\\\pipe\\\\%08X\" fullword ascii\n\t\t$s3 = \"get \u003cremote\u003e \u003clocal\u003e - download file\" fullword ascii\n\t\t$s4 = \"[ simple remote shell for windows v4\" fullword ascii\n\t\t$s5 = \"REMOTE: CreateFile(\\\"%s\\\")\" fullword ascii\n\t\t$s6 = \"[ downloading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii\n\t\t$s7 = \"[ uploading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii\n\t\t$s8 = \"-l           Listen for incoming connections\" fullword ascii\n\tcondition:\n\t\t( uint16(0) == 0x5a4d and filesize \u003c 175KB and 2 of them ) or ( 5 of them )\n}\n\n/* Super Rules ------------------------------------------------------------- */\n\n",
+                                "references": [
+                                    "https://github.com/odzhan/shells/"
+                                ],
+                                "rule_strings": [
+                                    "\"cmd                  - execute cmd.exe\" fullword ascii",
+                                    "\"\\\\\\\\.\\\\pipe\\\\%08X\" fullword ascii",
+                                    "\"get \u003cremote\u003e \u003clocal\u003e - download file\" fullword ascii",
+                                    "\"[ simple remote shell for windows v4\" fullword ascii",
+                                    "\"REMOTE: CreateFile(\\\"%s\\\")\" fullword ascii",
+                                    "\"[ downloading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii",
+                                    "\"[ uploading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii",
+                                    "\"-l           Listen for incoming connections\" fullword ascii"
+                                ],
+                                "sourcetimestamp": [
+                                    "2016-03-26"
+                                ],
+                                "value": [
+                                    "WindowsShell_s4"
+                                ]
+                            },
+                            {
+                                "author": [
+                                    "Florian Roth (Nextron Systems)"
+                                ],
+                                "condition": [],
+                                "description": [
+                                    "Detects simple Windows shell - from files keygen.exe, s1.exe, s2.exe, s3.exe, s4.exe"
+                                ],
+                                "id": [],
+                                "raw_rule": "rule WindowsShell_Gen {\n\tmeta:\n\t\tdescription = \"Detects simple Windows shell - from files keygen.exe, s1.exe, s2.exe, s3.exe, s4.exe\"\n\t\tlicense = \"Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE\"\n\t\tauthor = \"Florian Roth (Nextron Systems)\"\n\t\treference = \"https://github.com/odzhan/shells/\"\n\t\tdate = \"2016-03-26\"\n\t\tsuper_",
+                                "references": [
+                                    "https://github.com/odzhan/shells/"
+                                ],
+                                "rule_strings": [],
+                                "sourcetimestamp": [
+                                    "2016-03-26"
+                                ],
+                                "value": [
+                                    "WindowsShell_Gen"
+                                ]
+                            },
+                            {
+                                "author": [],
+                                "condition": [],
+                                "description": [],
+                                "id": [
+                                    "6b871e8a-8fe3-5cc6-9f2c-ba2359861ea1"
+                                ],
+                                "raw_rule": "rule = 1\n\t\thash1 = \"a7c3d85eabac01e7a7ec914477ea9f17e3020b3b2f8584a46a98eb6a2a7611c5\"\n\t\thash2 = \"4a397497cfaf91e05a9b9d6fa6e335243cca3f175d5d81296b96c13c624818bd\"\n\t\thash3 = \"df0693caae2e5914e63e9ee1a14c1e9506f13060faed67db5797c9e61f3907f0\"\n\t\thash4 = \"344575a58db288c9b5dacc654abc36d38db2e645acff05e894ff51183c61357d\"\n\t\thash5 = \"f00a1af494067b275407c449b11dfcf5cb9b59a6fac685ebd3f0eb193337e1d6\"\n\t\tid = \"6b871e8a-8fe3-5cc6-9f2c-ba2359861ea1\"\n\tstrings:\n\t\t$s0 = \"[ %c%c requires parameter\" fullword ascii\n\t\t$s1 = \"[ %s : %i\" fullword ascii\n\t\t$s2 = \"[ %s : %s\" fullword ascii\n\tcondition:\n\t\t( uint16(0) == 0x5a4d and filesize \u003c 175KB and 2 of them ) or ( all of them )\n}\n\n",
+                                "references": [],
+                                "rule_strings": [
+                                    "\"[ %c%c requires parameter\" fullword ascii",
+                                    "\"[ %s : %i\" fullword ascii",
+                                    "\"[ %s : %s\" fullword ascii"
+                                ],
+                                "sourcetimestamp": [],
+                                "value": [
+                                    "="
+                                ]
+                            },
+                            {
+                                "author": [
+                                    "Florian Roth (Nextron Systems)"
+                                ],
+                                "condition": [],
+                                "description": [
+                                    "Detects simple Windows shell - from files s3.exe, s4.exe"
+                                ],
+                                "id": [],
+                                "raw_rule": "rule WindowsShell_Gen2 {\n\tmeta:\n\t\tdescription = \"Detects simple Windows shell - from files s3.exe, s4.exe\"\n\t\tlicense = \"Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE\"\n\t\tauthor = \"Florian Roth (Nextron Systems)\"\n\t\treference = \"https://github.com/odzhan/shells/\"\n\t\tdate = \"2016-03-26\"\n\t\tsuper_",
+                                "references": [
+                                    "https://github.com/odzhan/shells/"
+                                ],
+                                "rule_strings": [],
+                                "sourcetimestamp": [
+                                    "2016-03-26"
+                                ],
+                                "value": [
+                                    "WindowsShell_Gen2"
+                                ]
+                            },
+                            {
+                                "author": [],
+                                "condition": [],
+                                "description": [],
+                                "id": [
+                                    "8ed8443d-491b-5cb0-b12b-0d25267ba462"
+                                ],
+                                "raw_rule": "rule = 1\n\t\thash1 = \"344575a58db288c9b5dacc654abc36d38db2e645acff05e894ff51183c61357d\"\n\t\thash2 = \"f00a1af494067b275407c449b11dfcf5cb9b59a6fac685ebd3f0eb193337e1d6\"\n\t\tid = \"8ed8443d-491b-5cb0-b12b-0d25267ba462\"\n\tstrings:\n\t\t$s1 = \"cmd                  - execute cmd.exe\" fullword ascii\n\t\t$s2 = \"get \u003cremote\u003e \u003clocal\u003e - download file\" fullword ascii\n\t\t$s3 = \"REMOTE: CreateFile(\\\"%s\\\")\" fullword ascii\n\t\t$s4 = \"put \u003clocal\u003e \u003cremote\u003e - upload file\" fullword ascii\n\t\t$s5 = \"term                 - terminate remote client\" fullword ascii\n\t\t$s6 = \"[ uploading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii\n\t\t$s7 = \"[ error : received %i bytes\" fullword ascii\n\tcondition:\n\t\t( uint16(0) == 0x5a4d and filesize \u003c 175KB and 2 of them ) or ( 5 of them )\n}",
+                                "references": [],
+                                "rule_strings": [
+                                    "\"cmd                  - execute cmd.exe\" fullword ascii",
+                                    "\"get \u003cremote\u003e \u003clocal\u003e - download file\" fullword ascii",
+                                    "\"REMOTE: CreateFile(\\\"%s\\\")\" fullword ascii",
+                                    "\"put \u003clocal\u003e \u003cremote\u003e - upload file\" fullword ascii",
+                                    "\"term                 - terminate remote client\" fullword ascii",
+                                    "\"[ uploading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii",
+                                    "\"[ error : received %i bytes\" fullword ascii"
+                                ],
+                                "sourcetimestamp": [],
+                                "value": [
+                                    "="
+                                ]
+                            }
+                        ]
+                    },
+                    "a96d4cfd3cd80e128112c64691172452e5c55865": {
+                        "space_invaders-main/yara_test.yar": [
+                            {
+                                "author": [],
+                                "condition": [],
+                                "description": [],
+                                "id": [],
+                                "raw_rule": "/*\n\tYara Rule Set\n\tAuthor: Florian Roth\n\tDate: 2016-03-26\n\tIdentifier: Windows Shells\n*/\n\n/* Rule Set ----------------------------------------------------------------- */\n\n",
+                                "references": [],
+                                "rule_strings": [],
+                                "sourcetimestamp": [],
+                                "value": []
+                            },
+                            {
+                                "author": [
+                                    "Florian Roth (Nextron Systems)"
+                                ],
+                                "condition": [],
+                                "description": [
+                                    "Detects simple Windows shell - file s3.exe"
+                                ],
+                                "id": [
+                                    "064754a7-8639-5dbd-93f3-906662b8e9bc"
+                                ],
+                                "raw_rule": "rule WindowsShell_s3 {\n\tmeta:\n\t\tdescription = \"Detects simple Windows shell - file s3.exe\"\n\t\tlicense = \"Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE\"\n\t\tauthor = \"Florian Roth (Nextron Systems)\"\n\t\treference = \"https://github.com/odzhan/shells/\"\n\t\tdate = \"2016-03-26\"\n\t\thash = \"344575a58db288c9b5dacc654abc36d38db2e645acff05e894ff51183c61357d\"\n\t\tid = \"064754a7-8639-5dbd-93f3-906662b8e9bc\"\n\tstrings:\n\t\t$s1 = \"cmd                  - execute cmd.exe\" fullword ascii\n\t\t$s2 = \"\\\\\\\\.\\\\pipe\\\\%08X\" fullword ascii\n\t\t$s3 = \"get \u003cremote\u003e \u003clocal\u003e - download file\" fullword ascii\n\t\t$s4 = \"[ simple remote shell for windows v3\" fullword ascii\n\t\t$s5 = \"REMOTE: CreateFile(\\\"%s\\\")\" fullword ascii\n\t\t$s6 = \"put \u003clocal\u003e \u003cremote\u003e - upload file\" fullword ascii\n\t\t$s7 = \"term                 - terminate remote client\" fullword ascii\n\t\t$s8 = \"[ downloading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii\n\t\t$s9 = \"-l           Listen for incoming connections\" fullword ascii\n\tcondition:\n\t\t( uint16(0) == 0x5a4d and filesize \u003c 150KB and 2 of them ) or ( 5 of them )\n}\n\n",
+                                "references": [
+                                    "https://github.com/odzhan/shells/"
+                                ],
+                                "rule_strings": [
+                                    "\"cmd                  - execute cmd.exe\" fullword ascii",
+                                    "\"\\\\\\\\.\\\\pipe\\\\%08X\" fullword ascii",
+                                    "\"get \u003cremote\u003e \u003clocal\u003e - download file\" fullword ascii",
+                                    "\"[ simple remote shell for windows v3\" fullword ascii",
+                                    "\"REMOTE: CreateFile(\\\"%s\\\")\" fullword ascii",
+                                    "\"put \u003clocal\u003e \u003cremote\u003e - upload file\" fullword ascii",
+                                    "\"term                 - terminate remote client\" fullword ascii",
+                                    "\"[ downloading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii",
+                                    "\"-l           Listen for incoming connections\" fullword ascii"
+                                ],
+                                "sourcetimestamp": [
+                                    "2016-03-26"
+                                ],
+                                "value": [
+                                    "WindowsShell_s3"
+                                ]
+                            },
+                            {
+                                "author": [
+                                    "Florian Roth (Nextron Systems)"
+                                ],
+                                "condition": [],
+                                "description": [
+                                    "Detects simple Windows shell - file s1.exe"
+                                ],
+                                "id": [
+                                    "b4e783a2-4a93-5c72-9b09-4692b383ac00"
+                                ],
+                                "raw_rule": "rule WindosShell_s1 {\n\tmeta:\n\t\tdescription = \"Detects simple Windows shell - file s1.exe\"\n\t\tlicense = \"Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE\"\n\t\tauthor = \"Florian Roth (Nextron Systems)\"\n\t\treference = \"https://github.com/odzhan/shells/\"\n\t\tdate = \"2016-03-26\"\n\t\thash = \"4a397497cfaf91e05a9b9d6fa6e335243cca3f175d5d81296b96c13c624818bd\"\n\t\tid = \"b4e783a2-4a93-5c72-9b09-4692b383ac00\"\n\tstrings:\n\t\t$s1 = \"[ executing cmd.exe\" fullword ascii\n\t\t$s2 = \"[ simple remote shell for windows v1\" fullword ascii\n\t\t$s3 = \"-p \u003cnumber\u003e  Port number to use (default is 443)\" fullword ascii\n\t\t$s4 = \"usage: s1 \u003caddress\u003e [options]\" fullword ascii\n\t\t$s5 = \"[ waiting for connections on %s\" fullword ascii\n\t\t$s6 = \"-l           Listen for incoming connections\" fullword ascii\n\t\t$s7 = \"[ connection from %s\" fullword ascii\n\t\t$s8 = \"[ %c%c requires parameter\" fullword ascii\n\tcondition:\n\t\t( uint16(0) == 0x5a4d and filesize \u003c 150KB and 2 of them ) or ( 5 of them )\n}\n\n",
+                                "references": [
+                                    "https://github.com/odzhan/shells/"
+                                ],
+                                "rule_strings": [
+                                    "\"[ executing cmd.exe\" fullword ascii",
+                                    "\"[ simple remote shell for windows v1\" fullword ascii",
+                                    "\"-p \u003cnumber\u003e  Port number to use (default is 443)\" fullword ascii",
+                                    "\"usage: s1 \u003caddress\u003e [options]\" fullword ascii",
+                                    "\"[ waiting for connections on %s\" fullword ascii",
+                                    "\"-l           Listen for incoming connections\" fullword ascii",
+                                    "\"[ connection from %s\" fullword ascii",
+                                    "\"[ %c%c requires parameter\" fullword ascii"
+                                ],
+                                "sourcetimestamp": [
+                                    "2016-03-26"
+                                ],
+                                "value": [
+                                    "WindosShell_s1"
+                                ]
+                            },
+                            {
+                                "author": [
+                                    "Florian Roth (Nextron Systems)"
+                                ],
+                                "condition": [],
+                                "description": [
+                                    "Detects simple Windows shell - file s4.exe"
+                                ],
+                                "id": [
+                                    "838771dc-f885-5332-9813-2bc01af8e5fe"
+                                ],
+                                "raw_rule": "rule WindowsShell_s4 {\n\tmeta:\n\t\tdescription = \"Detects simple Windows shell - file s4.exe\"\n\t\tlicense = \"Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE\"\n\t\tauthor = \"Florian Roth (Nextron Systems)\"\n\t\treference = \"https://github.com/odzhan/shells/\"\n\t\tdate = \"2016-03-26\"\n\t\thash = \"f00a1af494067b275407c449b11dfcf5cb9b59a6fac685ebd3f0eb193337e1d6\"\n\t\tid = \"838771dc-f885-5332-9813-2bc01af8e5fe\"\n\tstrings:\n\t\t$s1 = \"cmd                  - execute cmd.exe\" fullword ascii\n\t\t$s2 = \"\\\\\\\\.\\\\pipe\\\\%08X\" fullword ascii\n\t\t$s3 = \"get \u003cremote\u003e \u003clocal\u003e - download file\" fullword ascii\n\t\t$s4 = \"[ simple remote shell for windows v4\" fullword ascii\n\t\t$s5 = \"REMOTE: CreateFile(\\\"%s\\\")\" fullword ascii\n\t\t$s6 = \"[ downloading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii\n\t\t$s7 = \"[ uploading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii\n\t\t$s8 = \"-l           Listen for incoming connections\" fullword ascii\n\tcondition:\n\t\t( uint16(0) == 0x5a4d and filesize \u003c 175KB and 2 of them ) or ( 5 of them )\n}\n\n/* Super Rules ------------------------------------------------------------- */\n\n",
+                                "references": [
+                                    "https://github.com/odzhan/shells/"
+                                ],
+                                "rule_strings": [
+                                    "\"cmd                  - execute cmd.exe\" fullword ascii",
+                                    "\"\\\\\\\\.\\\\pipe\\\\%08X\" fullword ascii",
+                                    "\"get \u003cremote\u003e \u003clocal\u003e - download file\" fullword ascii",
+                                    "\"[ simple remote shell for windows v4\" fullword ascii",
+                                    "\"REMOTE: CreateFile(\\\"%s\\\")\" fullword ascii",
+                                    "\"[ downloading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii",
+                                    "\"[ uploading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii",
+                                    "\"-l           Listen for incoming connections\" fullword ascii"
+                                ],
+                                "sourcetimestamp": [
+                                    "2016-03-26"
+                                ],
+                                "value": [
+                                    "WindowsShell_s4"
+                                ]
+                            },
+                            {
+                                "author": [
+                                    "Florian Roth (Nextron Systems)"
+                                ],
+                                "condition": [],
+                                "description": [
+                                    "Detects simple Windows shell - from files keygen.exe, s1.exe, s2.exe, s3.exe, s4.exe"
+                                ],
+                                "id": [],
+                                "raw_rule": "rule WindowsShell_Gen {\n\tmeta:\n\t\tdescription = \"Detects simple Windows shell - from files keygen.exe, s1.exe, s2.exe, s3.exe, s4.exe\"\n\t\tlicense = \"Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE\"\n\t\tauthor = \"Florian Roth (Nextron Systems)\"\n\t\treference = \"https://github.com/odzhan/shells/\"\n\t\tdate = \"2016-03-26\"\n\t\tsuper_",
+                                "references": [
+                                    "https://github.com/odzhan/shells/"
+                                ],
+                                "rule_strings": [],
+                                "sourcetimestamp": [
+                                    "2016-03-26"
+                                ],
+                                "value": [
+                                    "WindowsShell_Gen"
+                                ]
+                            },
+                            {
+                                "author": [],
+                                "condition": [],
+                                "description": [],
+                                "id": [
+                                    "6b871e8a-8fe3-5cc6-9f2c-ba2359861ea1"
+                                ],
+                                "raw_rule": "rule = 1\n\t\thash1 = \"a7c3d85eabac01e7a7ec914477ea9f17e3020b3b2f8584a46a98eb6a2a7611c5\"\n\t\thash2 = \"4a397497cfaf91e05a9b9d6fa6e335243cca3f175d5d81296b96c13c624818bd\"\n\t\thash3 = \"df0693caae2e5914e63e9ee1a14c1e9506f13060faed67db5797c9e61f3907f0\"\n\t\thash4 = \"344575a58db288c9b5dacc654abc36d38db2e645acff05e894ff51183c61357d\"\n\t\thash5 = \"f00a1af494067b275407c449b11dfcf5cb9b59a6fac685ebd3f0eb193337e1d6\"\n\t\tid = \"6b871e8a-8fe3-5cc6-9f2c-ba2359861ea1\"\n\tstrings:\n\t\t$s0 = \"[ %c%c requires parameter\" fullword ascii\n\t\t$s1 = \"[ %s : %i\" fullword ascii\n\t\t$s2 = \"[ %s : %s\" fullword ascii\n\tcondition:\n\t\t( uint16(0) == 0x5a4d and filesize \u003c 175KB and 2 of them ) or ( all of them )\n}\n\n",
+                                "references": [],
+                                "rule_strings": [
+                                    "\"[ %c%c requires parameter\" fullword ascii",
+                                    "\"[ %s : %i\" fullword ascii",
+                                    "\"[ %s : %s\" fullword ascii"
+                                ],
+                                "sourcetimestamp": [],
+                                "value": [
+                                    "="
+                                ]
+                            },
+                            {
+                                "author": [
+                                    "Florian Roth (Nextron Systems)"
+                                ],
+                                "condition": [],
+                                "description": [
+                                    "Detects simple Windows shell - from files s3.exe, s4.exe"
+                                ],
+                                "id": [],
+                                "raw_rule": "rule WindowsShell_Gen2 {\n\tmeta:\n\t\tdescription = \"Detects simple Windows shell - from files s3.exe, s4.exe\"\n\t\tlicense = \"Detection Rule License 1.1 https://github.com/Neo23x0/signature-base/blob/master/LICENSE\"\n\t\tauthor = \"Florian Roth (Nextron Systems)\"\n\t\treference = \"https://github.com/odzhan/shells/\"\n\t\tdate = \"2016-03-26\"\n\t\tsuper_",
+                                "references": [
+                                    "https://github.com/odzhan/shells/"
+                                ],
+                                "rule_strings": [],
+                                "sourcetimestamp": [
+                                    "2016-03-26"
+                                ],
+                                "value": [
+                                    "WindowsShell_Gen2"
+                                ]
+                            },
+                            {
+                                "author": [],
+                                "condition": [],
+                                "description": [],
+                                "id": [
+                                    "8ed8443d-491b-5cb0-b12b-0d25267ba462"
+                                ],
+                                "raw_rule": "rule = 1\n\t\thash1 = \"344575a58db288c9b5dacc654abc36d38db2e645acff05e894ff51183c61357d\"\n\t\thash2 = \"f00a1af494067b275407c449b11dfcf5cb9b59a6fac685ebd3f0eb193337e1d6\"\n\t\tid = \"8ed8443d-491b-5cb0-b12b-0d25267ba462\"\n\tstrings:\n\t\t$s1 = \"cmd                  - execute cmd.exe\" fullword ascii\n\t\t$s2 = \"get \u003cremote\u003e \u003clocal\u003e - download file\" fullword ascii\n\t\t$s3 = \"REMOTE: CreateFile(\\\"%s\\\")\" fullword ascii\n\t\t$s4 = \"put \u003clocal\u003e \u003cremote\u003e - upload file\" fullword ascii\n\t\t$s5 = \"term                 - terminate remote client\" fullword ascii\n\t\t$s6 = \"[ uploading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii\n\t\t$s7 = \"[ error : received %i bytes\" fullword ascii\n\tcondition:\n\t\t( uint16(0) == 0x5a4d and filesize \u003c 175KB and 2 of them ) or ( 5 of them )\n}",
+                                "references": [],
+                                "rule_strings": [
+                                    "\"cmd                  - execute cmd.exe\" fullword ascii",
+                                    "\"get \u003cremote\u003e \u003clocal\u003e - download file\" fullword ascii",
+                                    "\"REMOTE: CreateFile(\\\"%s\\\")\" fullword ascii",
+                                    "\"put \u003clocal\u003e \u003cremote\u003e - upload file\" fullword ascii",
+                                    "\"term                 - terminate remote client\" fullword ascii",
+                                    "\"[ uploading \\\"%s\\\" to \\\"%s\\\"\" fullword ascii",
+                                    "\"[ error : received %i bytes\" fullword ascii"
+                                ],
+                                "sourcetimestamp": [],
+                                "value": [
+                                    "="
+                                ]
+                            }
+                        ]
+                    }
+                }

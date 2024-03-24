@@ -6,11 +6,6 @@ from enum import Enum
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
-# class FormatFiles(Enum):
-#     YARA = 'yar'
-#     STIX = 'json'
-#     AUTO = 'txt'
-
 
 class Client(BaseClient):
     """Client class to interact with the service API
@@ -117,19 +112,25 @@ def parsing_files_by_status(commits_files: dict[str, list]) -> dict[str, list]:
 
     return relevant_files
 
-def parsing_files_by_feed_type(commits_files: dict[str, list], feed_type: str) -> dict[str, list]:
+def parsing_files_by_feed_type(client:Client, commits_files: dict[str, list], feed_type: str) -> dict[str, list]:
     relevant_files: dict[str, list[dict]] = {}
     for commit, files in commits_files.items():
         raw_files_data_list = []
         for file in files:
             format_file = file.get("filename").split(".")[-1]
             if format_file == feed_type:
-                raw_files_data_list.append({file.get("filename"): requests.get(file.get("raw_url"))})
+                url = file.get("raw_url")
+                res = client._http_request('GET', full_url=url)
+                x = {file.get("filename"): res.text}
+                raw_files_data_list.append(x)
+                
+
+                # raw_files_data_list.append({file.get("filename"): file.get("patch")})
         relevant_files[commit] = raw_files_data_list
     return relevant_files
 
         
-def pars_yara(data: dict[str, list[dict[str,str]]]):
+def parse_yara(data: dict[str, list[dict[str,str]]]):
     mapping_result: dict[str, dict] = {}
     for commit_sha , files in data.items():
         for file in files:
@@ -152,19 +153,19 @@ def pars_and_map_yara_content(content_item:str) -> list:
 def mapping_yara_rule(raw_rule: str) -> dict:
     raw_rule.replace("condition:\n+\t\t( ", "condition:")
     patterns = {
-        "value": r"rule\s+?(\S*?)\s",
-        "description": r"description\s*?=\s*[\"](.*?)[\"]",
-        "author": r"author\s*?=\s*[\"](.*?)[\"]",
-        "references": r"reference\s*?=\s*[\"](.*?)[\"]",
-        "sourcetimestamp": r"date\s*?=\s*[\"](.*?)[\"]",
-        "id": r"id\s*?=\s*[\"](.*?)[\"]",
-        "rule_strings": r"[$]s\d+?\s*=\s*?(\S.*?)$",
-        "condition": r"condition:\s*?(\w.*?)(?:$|})",
+        "value": re.compile(r"rule\s+?(\S*?)\s"),
+        "description": re.compile(r"description\s*?=\s*[\"](.*?)[\"]"),
+        "author": re.compile(r"author\s*?=\s*[\"](.*?)[\"]"),
+        "references": re.compile(r"reference\s*?=\s*[\"](.*?)[\"]"),
+        "sourcetimestamp": re.compile(r"date\s*?=\s*[\"](.*?)[\"]"),
+        "id": re.compile(r"id\s*?=\s*[\"](.*?)[\"]"),
+        "rule_strings": re.compile(r"[$]s\d+?\s*=\s*?(\S.*?)$"),
+        "condition": re.compile(r"condition:\s*?(\w.*?)(?:$|})"),
         # "raw_rule": r".*",  # For the entire text
     }
     results = {}
     for field, pattern in patterns.items():
-        matches = re.findall(pattern, raw_rule, re.MULTILINE)
+        matches = pattern.findall(raw_rule, re.MULTILINE)
         results[field] = matches
     results["raw_rule"] = raw_rule
     return results
@@ -173,9 +174,9 @@ def get_commits_files(client: Client, feed_type: str) -> dict[str, list]:
     list_commits = client.get_list_commits()
     all_commits_files = client.get_files_per_commit(list_commits)
     relevant_files = parsing_files_by_status(all_commits_files)
-    yara_files_data = parsing_files_by_feed_type(relevant_files, "yar")
-    pars_yara(yara_files_data)
-    return yara_files_data
+    yara_files_data = parsing_files_by_feed_type(client, relevant_files, "yar")
+    indicators = parse_yara(yara_files_data)
+    return indicators # type: ignore
 
 
 def get_yara_indicator(client: Client, feed_type: str = "AUTO"):
@@ -251,7 +252,7 @@ def fetch_indicators(client: Client, tlp_color: Optional[str] = None, feed_tags:
     return indicators
 
 
-def get_indicators_command(client: Client, args: Dict[str, str], feed_type: str='AUTO') -> CommandResults:
+def get_indicators_command(client: Client, feed_type: str='AUTO') -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
@@ -260,11 +261,13 @@ def get_indicators_command(client: Client, args: Dict[str, str], feed_type: str=
     Returns:
         Outputs.
     """
+    args = demisto.args()
+
     indicators = {}
     try:
         if feed_type == "YARA":
             indicators=get_yara_indicator(client, feed_type)
-            demisto.debug(str(indicators))
+            demisto.debug(indicators)
 
         if feed_type == "STIX":
             demisto.results("@@@@@@@@@")
@@ -318,7 +321,6 @@ def main():
     # out of the box by it, just pass ``proxy`` to the Client constructor
 
     command = demisto.command()
-    args = demisto.args()
 
     # INTEGRATION DEVELOPER TIP
     # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
@@ -349,7 +351,7 @@ def main():
             return_results(test_module(client))
 
         elif command == "github-get-indicators":
-            return_results(get_indicators_command(client, params, args)) # type: ignore
+            return_results(get_indicators_command(client, feed_type)) # type: ignore
 
         elif command == "fetch-indicators":
             # This is the command that initiates a request to the feed endpoint and create new indicators objects from
