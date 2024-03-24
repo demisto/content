@@ -1001,7 +1001,7 @@ script:
       predefined:
       - ""
     - name: handler
-      description: " The name of the method within your code that Lambda calls to execute your function. Example: lambda_function.lambda_handler'"
+      description: "The name of the method within your code that Lambda calls to execute your function. Example: lambda_function.lambda_handler'."
       required: true
       isArray: false
       defaultValue: ""
