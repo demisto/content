@@ -80,7 +80,7 @@ class Client:
             encoded_audit_log = json.dumps(audit_log, sort_keys=True).encode()
             audit_log["id"] = hashlib.sha256(encoded_audit_log).hexdigest()
             audit_log["_time"] = dateparser.parse(audit_log["timestamp"])
-            audit_log["type"] = EventType.AUDIT
+            audit_log["eventType"] = EventType.AUDIT
             audit_logs.append(audit_log)
 
         audit_logs = sorted(
@@ -113,12 +113,14 @@ class Client:
             return []
         file_events = response.file_events
         while query.page_token is not None and len(file_events) < limit:
-            file_events.extend(self.code42_client.file_events.v2.search(query))
+            response = self.code42_client.file_events.v2.search(query)
+            if current_events := response.file_events:
+                file_events.extend(current_events)
 
         file_events = file_events[:limit]
 
         for event in file_events:
-            event.type = EventType.FILE
+            event.eventType = EventType.FILE
             event._time = event.event.inserted
 
         return [event.dict() for event in file_events]
@@ -141,11 +143,12 @@ def dedup_fetched_events(
 
     for event in events:
         event_id = dict_safe_get(event, keys=keys_list_to_id)
+        event_type = event["eventType"]
         if event_id not in last_run_fetched_event_ids:
-            demisto.debug(f'event {event["type"]} with ID {event_id} has not been fetched.')
+            demisto.debug(f'event {event_type} with ID {event_id} has not been fetched.')
             un_fetched_events.append(event)
         else:
-            demisto.debug(f'event {event["type"]} with ID {event_id} for has been fetched')
+            demisto.debug(f'event {event_type} with ID {event_id} for has been fetched')
 
     un_fetched_event_ids = {dict_safe_get(event, keys=keys_list_to_id) for event in un_fetched_events}
     demisto.debug(f'{un_fetched_event_ids=}')
@@ -340,7 +343,7 @@ def main() -> None:
     base_url: str = params.get('url', '').rstrip('/')
     verify_certificate = not params.get('insecure', False)
     max_fetch_file_events = arg_to_number(params.get("max_file_events_per_fetch")) or DEFAULT_FILE_EVENTS_MAX_FETCH
-    max_fetch_audit_events = params.get("max_audit_events_per_fetch") or DEFAULT_AUDIT_EVENTS_MAX_FETCH
+    max_fetch_audit_events = arg_to_number(params.get("max_audit_events_per_fetch")) or DEFAULT_AUDIT_EVENTS_MAX_FETCH
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')

@@ -3,7 +3,7 @@ commonfields:
   id: Code42EventCollector
   version: -1
 configuration:
-- defaultvalue: api.us.code42.com
+- defaultvalue: https://api.us.code42.com
   display: Server URL (e.g. https://api.us.code42.com, see help section)
   name: url
   required: true
