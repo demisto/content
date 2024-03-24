@@ -168,11 +168,11 @@ def test_fetch_events_no_last_run(mocker):
     Code42EventCollector.main()
     file_events = send_events_mocker.call_args_list[0][0][0]
     assert len(file_events) == 1
-    assert file_events[0]["type"] == Code42EventCollector.EventType.FILE
+    assert file_events[0]["eventType"] == Code42EventCollector.EventType.FILE
 
     audit_logs = send_events_mocker.call_args_list[1][0][0]
     assert len(audit_logs) == 1
-    assert audit_logs[0]["type"] == Code42EventCollector.EventType.AUDIT
+    assert audit_logs[0]["eventType"] == Code42EventCollector.EventType.AUDIT
 
     assert set_last_run_mocker.call_args_list[1][0][0]["nextTrigger"] == "0"
 
@@ -231,12 +231,12 @@ def test_fetch_events_no_last_run_max_fetch_lower_than_available_events(mocker):
     file_events = send_events_mocker.call_args_list[0][0][0]
     assert len(file_events) == 500
     for file_event in file_events:
-        assert file_event["type"] == Code42EventCollector.EventType.FILE
+        assert file_event["eventType"] == Code42EventCollector.EventType.FILE
 
     audit_logs = send_events_mocker.call_args_list[1][0][0]
     assert len(audit_logs) == 500
     for audit_log in audit_logs:
-        assert audit_log["type"] == Code42EventCollector.EventType.AUDIT
+        assert audit_log["eventType"] == Code42EventCollector.EventType.AUDIT
 
     assert set_last_run_mocker.call_args_list[1][0][0]["nextTrigger"] == "0"
 
@@ -295,7 +295,7 @@ def test_fetch_events_no_last_run_no_audit_logs_yes_file_events(mocker):
     file_events = send_events_mocker.call_args_list[0][0][0]
     assert len(file_events) == 100
     for file_event in file_events:
-        assert file_event["type"] == Code42EventCollector.EventType.FILE
+        assert file_event["eventType"] == Code42EventCollector.EventType.FILE
 
     audit_logs = send_events_mocker.call_args_list[1][0][0]
     assert len(audit_logs) == 0
@@ -358,7 +358,7 @@ def test_fetch_events_no_last_run_yes_audit_logs_no_file_events(mocker):
     audit_logs = send_events_mocker.call_args_list[1][0][0]
     assert len(audit_logs) == 100
     for audit_log in audit_logs:
-        assert audit_log["type"] == Code42EventCollector.EventType.AUDIT
+        assert audit_log["eventType"] == Code42EventCollector.EventType.AUDIT
 
     assert set_last_run_mocker.call_args_list[1][0][0]["nextTrigger"] == "0"
 
@@ -465,7 +465,7 @@ def test_get_events_command(mocker):
     Code42EventCollector.main()
 
     command_result = return_results_mocker.call_args_list[0][0][0]
-    assert command_result.outputs[0]["type"] == Code42EventCollector.EventType.AUDIT
+    assert command_result.outputs[0]["eventType"] == Code42EventCollector.EventType.AUDIT
     assert len(command_result.outputs) == 1
     assert command_result.outputs
     assert command_result.readable_output
@@ -483,6 +483,6 @@ def test_get_events_command(mocker):
 
     command_result = return_results_mocker.call_args_list[1][0][0]
     assert len(command_result.outputs) == 1
-    assert command_result.outputs[0]["type"] == Code42EventCollector.EventType.FILE
+    assert command_result.outputs[0]["eventType"] == Code42EventCollector.EventType.FILE
     assert command_result.outputs
     assert command_result.readable_output

@@ -284,16 +284,21 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
     Fetch audit-logs & file-events
     """
     file_events, file_events_last_run = fetch_file_events(client, last_run=last_run, max_fetch_file_events=max_fetch_file_events)
-    audit_logs, audit_logs_last_run = fetch_audit_logs(client, last_run=last_run, max_fetch_audit_events=max_fetch_audit_events)
-
-    if file_events or audit_logs:
-        last_run["nextTrigger"] = "0"
+    if file_events:
+        file_events_last_run["nextTrigger"] = "0"
     else:
-        last_run["nextTrigger"] = "30"
+        file_events_last_run["nextTrigger"] = "30"
 
     last_run.update(file_events_last_run)
     send_events_to_xsiam(file_events, vendor=VENDOR, product=PRODUCT)
     demisto.setLastRun(last_run)
+
+    audit_logs, audit_logs_last_run = fetch_audit_logs(client, last_run=last_run, max_fetch_audit_events=max_fetch_audit_events)
+
+    if file_events or audit_logs:
+        audit_logs_last_run["nextTrigger"] = "0"
+    else:
+        audit_logs_last_run["nextTrigger"] = "30"
 
     last_run.update(audit_logs_last_run)
     send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
