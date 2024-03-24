@@ -26,4 +26,4 @@ trigger-contribution-build:
     - .trigger-contribution-build-role
   script:
     - pip install PyGithub python-gitlab
-    - python3 ./Utils/trigger_contribution_build.py --github-token "${GITHUB_TOKEN}" --gitlab-api-token "${GITLAB_API_TOKEN} --gitlab-trigger-token "${TRIGGER_CONTRIBUTION}"
+    - python3 ./Utils/trigger_contribution_build.py --github-token "${GITHUB_TOKEN}" --gitlab-api-token "${GITLAB_API_TOKEN}" --gitlab-trigger-token "${TRIGGER_CONTRIBUTION}"

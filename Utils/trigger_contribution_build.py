@@ -97,8 +97,8 @@ def main():
 
                 print(f"New pipeline triggered: {new_pipeline.web_url}")
 
-        else:
-            print("No branch was found with the name:", branch_name)
+            else:
+                print("No branch was found with the name:", branch_name)
 
         issue.create_comment(COMMENT_MESSAGES.build_triggered)
         issue.remove_from_labels(GITHUB_TRIGGER_BUILD_LABEL)
