@@ -19,7 +19,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, get_timezone_offset, \
     converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS, \
-    format_incidents_response_with_display_values, get_entries_for_notes, is_time_field
+    format_incidents_response_with_display_values, get_entries_for_notes, is_time_field, delete_attachment_command
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -577,6 +577,27 @@ def test_no_ec_commands(command, args, response, expected_hr, expected_auto_extr
     result = command(client, args)
     assert expected_hr in result[0]  # HR is found in the 1st place in the result of the command
     assert expected_auto_extract == result[3]  # ignore_auto_extract is in the 4th place in the result of the command
+
+
+def test_delete_attachment_command(mocker):
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
+
+    mocker.patch.object(client, 'delete_attachment', return_value=None)
+    result = delete_attachment_command(client=client, args={"file_sys_id": "1234"})
+    assert 'Attachment with Sys ID 1234 was successfully deleted.' in result[0]
+
+
+def test_delete_attachment_command_failed(mocker):
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
+
+    mocker.patch.object(client, 'delete_attachment', return_value="Error")
+    with pytest.raises(DemistoException) as e:
+        delete_attachment_command(client=client, args={"file_sys_id": "1234"})
+    assert "Error: No record found. Record doesn't exist or ACL restricts the record retrieval." in str(e)
 
 
 @freeze_time('2022-05-01 12:52:29')
