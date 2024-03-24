@@ -46,11 +46,11 @@ class Client(BaseClient):
             expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)
             try:
                 res = self._http_request(method='POST',
-                                            full_url='https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token',
-                                            auth=(self._client_id, self._client_secret),
-                                            resp_type='response',
-                                            headers=headers,
-                                            data=data)
+                                         full_url='https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token',
+                                         auth=(self._client_id, self._client_secret),
+                                         resp_type='response',
+                                         headers=headers,
+                                         data=data)
             except DemistoException as e:
                 raise DemistoException(f'Error occurred while creating an access token. Please check the instance'
                                        f' configuration.\n\n{e}')
@@ -58,7 +58,7 @@ class Client(BaseClient):
                 res = res.json()
             except ValueError as exception:
                 raise DemistoException(f'Failed to parse json object from response: {res.text}.\n'
-                                        f'Error: {exception}')
+                                       f'Error: {exception}')
 
             if access_token := res.get('access_token'):
                 expiry_time += (res.get('expires_in', 0) * 1000)
@@ -71,25 +71,24 @@ class Client(BaseClient):
                 self._access_token = new_token.get(tsg_access_token, {})
             else:
                 raise DemistoException('Error occurred while creating an access token. Access token field has not'
-                                        ' found in the response data. Please check the instance configuration.\n')
+                                       ' found in the response data. Please check the instance configuration.\n')
 
     def get_info_about_device_request(self):
         headers = {'Content-Type': 'application/xml'}
         params = assign_params(type='op', cmd='<show><system><info></info></system></show>', key=self._api_key)
         try:
             response = self._http_request('GET', '/api', params=params, headers=headers, resp_type='xml')
-        except DemistoException as e:
+        except DemistoException:
             raise DemistoException("Could not get info about device. Request finished with an error {e}.")
         formated_xml = adjust_xml_format(response.text, 'system')
         return formated_xml
-
 
     def get_config_file_request(self):
         headers = {'Content-Type': 'application/xml'}
         params = assign_params(type='config', action='show', key=self._api_key)
         try:
             response = self._http_request('GET', '/api', params=params, headers=headers, resp_type='xml')
-        except DemistoException as e:
+        except DemistoException:
             raise DemistoException("Could not get config file. Request finished with an error {e}.")
         formated_xml = adjust_xml_format(response.text, 'config')
         return formated_xml
@@ -248,12 +247,15 @@ def convert_response_for_hr(response_json):
                         converted_array.append(note)
     return converted_array
 
+
 def create_markdown(original_dict):
     headers = ['check_id', 'check_category', 'check_feature', 'check_message', 'check_name', 'check_passed', 'check_type',
-            'check_severity']
+               'check_severity']
     return tableToMarkdown('BPA results:', original_dict,
-                                         headers=headers, removeNull=True, headerTransform=string_to_table_header
-                                         )
+                           headers=headers, removeNull=True, headerTransform=string_to_table_header
+                           )
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -319,7 +321,7 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
         converted_json = convert_response_for_hr(downloaded_BPA_json)
         human_readable_markdown = create_markdown(converted_json)
         # added for context data
-        converted_json.append({'report_id': report_id}) # type: ignore
+        converted_json.append({'report_id': report_id})  # type: ignore
         converted_json.append({'report_status': upload_status})  # type: ignore
         return PollResult(
             response=CommandResults(
@@ -347,9 +349,9 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
         fail_output = {"report_id": report_id, "report_status": upload_status}
         return PollResult(
             response=CommandResults(
-            outputs=fail_output,
-            raw_response=fail_output,
-            readable_output=f'The report with id {report_id} could not be generated- finished with an error.'
+                outputs=fail_output,
+                raw_response=fail_output,
+                readable_output=f'The report with id {report_id} could not be generated- finished with an error.'
             ),
             continue_to_poll=False,
         )

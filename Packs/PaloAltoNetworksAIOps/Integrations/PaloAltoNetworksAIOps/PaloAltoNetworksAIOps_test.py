@@ -1,4 +1,3 @@
-import json
 from unittest.mock import mock_open, patch
 import pytest
 from PaloAltoNetworksAIOps import Client
@@ -13,6 +12,7 @@ def AIOps_client(base_url='base_url', api_key='api_key', tsg_id='tsg_id', client
 
 
 ''' COMMAND FUNCTIONS TESTS '''
+
 
 def test_generate_access_token_request_called_with(mocker, AIOps_client):
     with patch('CommonServerPython.get_integration_context', return_value={}):
@@ -38,7 +38,7 @@ def test_generate_access_token_request_check_return(mocker, AIOps_client):
         http_request_mock.return_value = response_mock
         AIOps_client.generate_access_token_request()
         assert AIOps_client._access_token == '123'
-        
+
 
 def test_polling_until_upload_report_command_upload_initiated_status(mocker, AIOps_client):
     from PaloAltoNetworksAIOps import polling_until_upload_report_command
@@ -463,7 +463,7 @@ def test_adjust_xml_format_invalid():
     with pytest.raises(DemistoException) as e:
         adjust_xml_format(xml_data, new_root_tag)
     assert e.value.message == ('Request Succeeded, A parse error occurred- could not find {new_root_tag} tag to adjust to AIOps '
-    'API.')
+                               'API.')
 
 
 def test_get_values_from_xml():
@@ -508,7 +508,7 @@ def test_get_values_from_xml_invalid():
     with pytest.raises(DemistoException) as e:
         get_values_from_xml(xml_string, tags)
     assert e.value.message == ("Could not find the required tags in the System file. Error: 'NoneType' object has no attribute "
-    "'text'")
+                               "'text'")
 
 
 def test_convert_config_to_bytes_with_user_flag(mocker, AIOps_client):
@@ -550,7 +550,7 @@ def test_convert_config_to_bytes_get_path_exception():
         convert_config_to_bytes('config_file.txt', 'User')
     assert e.value.message == 'The config file upload was unsuccessful or the file could not be converted.'
 
-    
+
 def test_convert_config_to_bytes_invalid_getFilePath_response():
     """
     Given:
@@ -615,7 +615,7 @@ def test_create_readable_output_checks_result():
                     {
                         'warnings': [{'check_id': 1, 'check_message': 'Warning message 1'}],
                         'notes': [{'check_id': 2, 'check_message': 'Note message 1'}],
-                        'random_field':[],
+                        'random_field': [],
                     }
                 ],
                 'feature2': [
@@ -638,19 +638,25 @@ def test_create_readable_output_checks_result():
          'check_category': 'device'},
         {'check_id': 4, 'check_message': 'Note message 2', 'check_type': 'note', 'check_feature': 'feature2',
          'check_category': 'device'}
-        ]
-    
+    ]
+
+
 def test_create_markdown():
     from PaloAltoNetworksAIOps import create_markdown
-    response_array = [{'check_id': 1, 'check_message': 'Warning message 1', 'check_type': 'warning', 'check_feature': 'feature1', 'check_category': 'device'},
-                      {'check_id': 2, 'check_message': 'Note message 1', 'check_type': 'note', 'check_feature': 'feature1', 'check_category': 'device'},
-                      {'check_id': 3, 'check_message': 'Warning message 2', 'check_type': 'warning', 'check_feature': 'feature2', 'check_category': 'device'},
-                      {'check_id': 4, 'check_message': 'Note message 2', 'check_type': 'note', 'check_feature': 'feature2', 'check_category': 'device'}
+    response_array = [{'check_id': 1, 'check_message': 'Warning message 1', 'check_type': 'warning', 'check_feature': 'feature1',
+                       'check_category': 'device'},
+                      {'check_id': 2, 'check_message': 'Note message 1', 'check_type': 'note',
+                          'check_feature': 'feature1', 'check_category': 'device'},
+                      {'check_id': 3, 'check_message': 'Warning message 2', 'check_type': 'warning',
+                          'check_feature': 'feature2', 'check_category': 'device'},
+                      {'check_id': 4, 'check_message': 'Note message 2', 'check_type': 'note',
+                          'check_feature': 'feature2', 'check_category': 'device'}
                       ]
     assert create_markdown(response_array) == ('### BPA results:\n|Check Id|Check Category|Check Feature|Check Message|Check Type'
-    '|\n|---|---|---|---|---|\n| 1 | device | feature1 | Warning message 1 | warning |\n| 2 | device | feature1 | Note message 1 '
-    '| note |\n| 3 | device | feature2 | Warning message 2 | warning |\n| 4 | device | feature2 | Note message 2 | note |\n')
-    
+                                               '|\n|---|---|---|---|---|\n| 1 | device | feature1 | Warning message 1 | warning |\n| 2 | device | feature1 | Note message 1 '
+                                               '| note |\n| 3 | device | feature2 | Warning message 2 | warning |\n| 4 | device | feature2 | Note message 2 | note |\n')
+
+
 def test_create_markdown_empty_array():
     from PaloAltoNetworksAIOps import create_markdown
     response_array = []

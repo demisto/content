@@ -68,7 +68,6 @@ script:
     description: Polling mechanism to upload report.
     polling: true
     hidden: true
-    hide_polling_output: true
   runonce: false
   script: '-'
   type: python
