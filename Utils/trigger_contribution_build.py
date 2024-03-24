@@ -48,8 +48,8 @@ def cancel_active_pipelines(gitlab_project: Project, branch: ProjectBranch) -> N
     """Find all active pipelines for a given branch and cancel them.
 
     Args:
-        gitlab_project (Project): The GitLab Project.
-        branch (ProjectBranch): The Gitlab branch.
+        gitlab_project (Project): GitLab Project object.
+        branch (ProjectBranch): Gitlab branch object.
     """
     pipelines = gitlab_project.pipelines.list(ref=branch.name, status="running")
     if pipelines:
@@ -59,6 +59,13 @@ def cancel_active_pipelines(gitlab_project: Project, branch: ProjectBranch) -> N
 
 
 def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_project: Project) -> None:
+    """ Create new pipelines for given github issues (prs). Will cancel older active pipelines for each branch if exists.
+
+    Args:
+        args (Namespace): Script arguments.
+        github_issues (PaginatedList[Issue]): List of GitHub PRs returned from the contribution PRs query.
+        gitlab_project (Project): GitLab project object.
+    """
     for issue in github_issues:
         issue.create_comment(COMMENT_MESSAGES.build_request_accepted)
         pull_request = issue.as_pull_request()  # Get the github pull request object
@@ -88,7 +95,7 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
 
 
 def main():
-    args = arguments_handler()
+    args: argparse.Namespace = arguments_handler()
 
     github_client = Github(login_or_token=args.github_token)
     gitlab_client = Gitlab(oauth_token=args.gitlab_api_token, url=GITLAB_SERVER_URL, ssl_verify=False)
