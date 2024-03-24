@@ -4050,6 +4050,47 @@ script:
       type: string
     description: Gets the public IP addresses that have been discovered by IPAM.
     name: aws-ec2-get-ipam-discovered-public-addresses
+  - arguments:
+      - description: The ID of the VPC in which the endpoint will be used.
+        name: vpc-id
+        required: true
+      - description: The service name for the service that you want to create an endpoint.
+        name: service-name
+        required: true
+      - description: The type of endpoint.
+        name: endpoint-type
+      - description: One or more subnet IDs in which to create the endpoint.
+        name: subnet-ids
+        isArray: true
+      - description: One or more security group IDs to associate with the endpoint.
+        name: security-group-ids
+        isArray: true
+      - description: The AWS Region, if not specified the default region will be used.
+        name: region
+      - description: The Amazon Resource Name (ARN) of the role to assume.
+        name: roleArn
+      - description: An identifier for the assumed role session.
+        name: roleSessionName
+      - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+        name: roleSessionDuration
+    outputs:
+      - contextPath: AWS.EC2.Vpcs.VpcEndpoint.VpcEndpointId
+        description: The ID of the endpoint.
+        type: String
+      - contextPath: AWS.EC2.Vpcs.VpcEndpoint.State
+        description: The state of the VPC endpoint.
+        type: String
+      - contextPath: AWS.EC2.Vpcs.VpcEndpoint.ServiceName
+        description: The service name of the VPC endpoint.
+        type: String
+      - contextPath: AWS.EC2.Vpcs.VpcEndpoint.VpcId
+        description: The ID of the VPC to which the endpoint is associated.
+        type: String
+      - contextPath: AWS.EC2.Vpcs.VpcEndpoint.EndpointType
+        description: The type of the VPC endpoint.
+        type: String
+    description: Creates a VPC endpoint.
+    name: aws-ec2-aws-ec2-create-vpc-endpoint
   dockerimage: demisto/boto3py3:1.0.0.87088
   runonce: false
   script: '-'
