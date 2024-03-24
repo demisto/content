@@ -4792,10 +4792,16 @@ def qradar_log_source_delete_command(client: Client, args: dict) -> CommandResul
     id = args.get('id')
 
     if id is not None:
-        client.delete_log_source(id)
-        return CommandResults(
-            readable_output=f'Log source {id} was deleted successfully'
-        )
+        try:
+            client.delete_log_source(id)
+            return CommandResults(
+                readable_output=f'Log source {id} was deleted successfully'
+            )
+        except DemistoException as e:
+            if e.res.status_code == 404:
+                return CommandResults(
+                    readable_output=f'Log source with id {id} does not exist'
+                )
     if name is not None:
         log_source_list = client.get_resource_list(
             'items=0-0',
