@@ -1516,7 +1516,7 @@ script:
       description: 'The UUID of the disconnected log collector.'
       type: String
     - contextPath: QRadar.DisconnectedLogCollector.Version
-      description: ' The version of the Disconnected Log Collector.'
+      description: 'The version of the Disconnected Log Collector.'
       type: String
   - arguments:
     - description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
@@ -1533,10 +1533,10 @@ script:
     name: qradar-log-source-types-list
     outputs:
     - contextPath: QRadar.LogSourceTypesList.Custom
-      description: ''
+      description: 'The condition is set to true if this is a custom log source type; otherwise, the condition is set to false.'
       type: Boolean
     - contextPath: QRadar.LogSourceTypesList.DefaultProtocolID
-      description: ''
+      description: 'The ID of the default protocol type for this log source type. The ID must correspond to an existing protocol type. See the Protocol Type API (/api/config/event_sources/log_source_management/protocol_types/).'
       type: Number
     - contextPath: QRadar.LogSourceTypesList.ID
       description: 'The ID of the log source type.'
@@ -1560,7 +1560,7 @@ script:
       description: 'ID of the protocol type.'
       type: Number
     - contextPath: QRadar.LogSourceTypesList.supported_language_ids
-      description: 'The IDs of the languages supported by this log source type. Each ID must correspond to an existing log source language. See the Log Source Language API.'
+      description: 'The IDs of the languages supported by this log source type. Each ID must correspond to an existing log source language. See the Log Source Language API: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_languages-id-GET.html'
       type: List
     - contextPath: QRadar.LogSourceTypesList.uuid
       description: 'A string uuid the log source type.'
@@ -1691,13 +1691,13 @@ script:
       description: 'If at least one parameter in this group must be set, the condition is set to true; otherwise, the condition is set to false.'
       type: Boolean
     - contextPath: QRadar.LogSourceProtocolType.Parameters.allowed_values.name
-      description: ''
+      description: 'An allowed value for the name of the parameter.'
       type: String
     - contextPath: QRadar.LogSourceProtocolType.Parameters.allowed_values.value
-      description: 'The name of the parameter.'
+      description: 'An allowed value for the value of the parameter.'
       type: String
     - contextPath: QRadar.LogSourceProtocolType.Parameters.default_value
-      description: ' The optional default parameter value.'
+      description: 'The optional default parameter value.'
       type: String
     - contextPath: QRadar.LogSourceProtocolType.Parameters.description
       description: 'The description of the parameter.'
@@ -1739,7 +1739,7 @@ script:
       description: 'The affected property. For possibile values visit: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html'
       type: String
     - contextPath: QRadar.LogSourceProtocolType.Parameters.rules.affected_property_value
-      description: ' The value to be applied to the affected parameter when the rule is triggered. For further info visit: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html'
+      description: 'The value to be applied to the affected parameter when the rule is triggered. For further info visit: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html'
       type: String
     - contextPath: QRadar.LogSourceProtocolType.Parameters.rules.parameter_id
       description: 'The ID of the parameter affected by the rule.'
