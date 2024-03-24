@@ -481,7 +481,7 @@ tasks:
       id: d22ac09b-779f-424b-8a75-44095a40c450
       version: -1
       name: Choose manually the cloud provider
-      description: Choose which cloud provider XSOAR should handle this incident.
+      description: Select which cloud provider XSOAR should handle this incident.
       type: collection
       iscommand: false
       brand: ""
@@ -542,7 +542,7 @@ tasks:
         tooltip: ""
         readonly: false
       title: 'Choose the Cloud Provider to react upon:'
-      description: Choose which cloud provider XSOAR should handle this incident.
+      description: Select which cloud provider XSOAR should handle this incident.
       sender: ""
       expired: false
       totalanswers: 0
