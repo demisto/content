@@ -1507,16 +1507,16 @@ script:
       description: 'The name of the Disconnected Log Collector.'
       type: String
     - contextPath: QRadar.DisconnectedLogCollector.Description
-      description: 'The description of the Disconnected Log Collector.'
+      description: 'The description of the disconnected log collector.'
       type: String
     - contextPath: QRadar.DisconnectedLogCollector.Protocol
-      description: 'The transport protocol used by the Disconnected Log Collector to send events to QRadar. Possible Values are TLS and UDP.'
+      description: 'The transport protocol used by the disconnected log collector to send events to QRadar. Possible values are TLS and UDP.'
       type: String
     - contextPath: QRadar.DisconnectedLogCollector.UUID
       description: 'The UUID of the disconnected log collector.'
       type: String
     - contextPath: QRadar.DisconnectedLogCollector.Version
-      description: 'The version of the Disconnected Log Collector.'
+      description: 'The version of the disconnected log collector.'
       type: String
   - arguments:
     - description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
@@ -2247,7 +2247,7 @@ script:
       default: true
     - description: 'Range of results to return. e.g.: 0-20.'
       name: range
-    - description: "Table headers to use the human readable output (if none provided, will show all table headers)."
+    - description: "Table headers to use in the human readable output (if none provided, will show all table headers)."
       name: headers
     - description: Replaces the default context output path for the query result (QRadar.Search.Result). e.g. for output_path=QRadar.Correlations the result will be under the key "QRadar.Correlations" in the context data.
       name: output_path
@@ -2419,7 +2419,7 @@ script:
       name: note_id
     - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html"
       name: fields
-    - description: 'Table headers to use the human readable output (if none provided, will show all table headers).'
+    - description: 'Table headers to use in the human readable output (if none provided, will show all table headers).'
       name: headers
 
     description: Retrieve a note for an offense.
@@ -2448,7 +2448,7 @@ script:
       required: true
     - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html"
       name: fields
-    - description: 'Table headers to use the human readable output (if none provided, will show all table headers).'
+    - description: 'Table headers to use in the human readable output (if none provided, will show all table headers).'
       name: headers
     description: Create a note on an offense.
     name: qradar-create-note
