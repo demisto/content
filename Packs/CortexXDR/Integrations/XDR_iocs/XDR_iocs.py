@@ -208,16 +208,20 @@ def get_iocs_generator(size=200, query=None) -> Iterable:
     except StopIteration:
         pass
 
-
+class InvalidExpirationException(Exception):
+    ...
+    
 def demisto_expiration_to_xdr(expiration) -> int:
-    if expiration and not expiration.startswith('0001'):
-        try:
-            expiration_date = parse(expiration)
-            assert expiration_date is not None, f'could not parse {expiration}'
-            return int(expiration_date.astimezone(timezone.utc).timestamp() * 1000)
-        except (ValueError, AssertionError):
-            pass
-    return -1
+    if (not expiration) or expiration.startswith('0001'):
+        raise InvalidExpirationException
+
+    try:
+        expiration_date = parse(expiration)
+        assert expiration_date is not None, f'could not parse {expiration}'
+        return int(expiration_date.astimezone(timezone.utc).timestamp() * 1000)
+
+    except (ValueError, AssertionError):
+        raise InvalidExpirationException
 
 
 def demisto_reliability_to_xdr(reliability: str) -> str:
@@ -321,14 +325,23 @@ def parse_demisto_single_comments(ioc: dict, comment_field_name: list[str] | str
 
 
 def demisto_ioc_to_xdr(ioc: dict) -> dict:
+    ioc_type = demisto_types_to_xdr(str(ioc['indicator_type']))
     try:
         # demisto.debug(f'Raw outgoing IOC: {ioc}') # uncomment to debug, otherwise spams the log
+        try:
+            # This try block ensures we log the expiration error together with the ioc value and type
+            expiration_date = demisto_expiration_to_xdr(ioc.get('expiration'))
+        except InvalidExpirationException:
+            demisto.debug("cannot parse time from the expiration"
+                          f"{ioc.get('expiration')} for value {ioc_type} {ioc['value']}, using -1 instead")
+            expiration_date = -1 # default. Shows as expired
+            
         xdr_ioc: dict = {
             'indicator': ioc['value'],
             'severity': Client.severity,  # default, may be overwritten, see below
-            'type': demisto_types_to_xdr(str(ioc['indicator_type'])),
+            'type': ioc_type,
             'reputation': demisto_score_to_xdr.get(ioc.get('score', 0), 'UNKNOWN'),
-            'expiration_date': demisto_expiration_to_xdr(ioc.get('expiration'))
+            'expiration_date': expiration_date
         }
         if aggregated_reliability := ioc.get('aggregatedReliability'):
             xdr_ioc['reliability'] = aggregated_reliability[0]
