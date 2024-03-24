@@ -38,65 +38,61 @@ class Client(BaseClient):
                 'grant_type': 'client_credentials',
                 'scope': f'tsg_id:{self._tsg_id}'
             }
+            headers = {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Accept': 'application/json',
+            }
+            # Trying to be as accurate as possible with the time of the request
+            expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)
             try:
-                headers = {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Accept': 'application/json',
-                }
-                # Trying to be as accurate as possible with the time of the request
-                expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)
-
                 res = self._http_request(method='POST',
-                                         full_url='https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token',
-                                         auth=(self._client_id, self._client_secret),
-                                         resp_type='response',
-                                         headers=headers,
-                                         data=data)
-                try:
-                    res = res.json()
-                except ValueError as exception:
-                    raise DemistoException(f'Failed to parse json object from response: {res.text}.\n'
-                                           f'Error: {exception}')
-
-                if access_token := res.get('access_token'):
-                    expiry_time += (res.get('expires_in', 0) * 1000)
-                    new_token = {
-                        tsg_access_token: access_token,
-                        tsg_expiry_time: expiry_time
-                    }
-                    # stores received token and expiration time in the integration context
-                    set_integration_context(new_token)
-                    self._access_token = new_token.get(tsg_access_token, {})
-                else:
-                    raise DemistoException('Error occurred while creating an access token. Access token field has not'
-                                           ' found in the response data. Please check the instance configuration.\n')
-            except Exception as e:
+                                            full_url='https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token',
+                                            auth=(self._client_id, self._client_secret),
+                                            resp_type='response',
+                                            headers=headers,
+                                            data=data)
+            except DemistoException as e:
                 raise DemistoException(f'Error occurred while creating an access token. Please check the instance'
                                        f' configuration.\n\n{e}')
+            try:
+                res = res.json()
+            except ValueError as exception:
+                raise DemistoException(f'Failed to parse json object from response: {res.text}.\n'
+                                        f'Error: {exception}')
+
+            if access_token := res.get('access_token'):
+                expiry_time += (res.get('expires_in', 0) * 1000)
+                new_token = {
+                    tsg_access_token: access_token,
+                    tsg_expiry_time: expiry_time
+                }
+                # stores received token and expiration time in the integration context
+                set_integration_context(new_token)
+                self._access_token = new_token.get(tsg_access_token, {})
+            else:
+                raise DemistoException('Error occurred while creating an access token. Access token field has not'
+                                        ' found in the response data. Please check the instance configuration.\n')
 
     def get_info_about_device_request(self):
+        headers = {'Content-Type': 'application/xml'}
+        params = assign_params(type='op', cmd='<show><system><info></info></system></show>', key=self._api_key)
         try:
-            headers = {'Content-Type': 'application/xml'}
-            params = assign_params(type='op', cmd='<show><system><info></info></system></show>', key=self._api_key)
             response = self._http_request('GET', '/api', params=params, headers=headers, resp_type='xml')
-            formated_xml = adjust_xml_format(response.text, 'system')
-            return formated_xml
         except DemistoException as e:
-            if e.message == 'Request Succeeded, A parse error occurred.':
-                raise e
-            raise DemistoException("Could not get info about device.")
+            raise DemistoException("Could not get info about device. Request finished with an error {e}.")
+        formated_xml = adjust_xml_format(response.text, 'system')
+        return formated_xml
+
 
     def get_config_file_request(self):
+        headers = {'Content-Type': 'application/xml'}
+        params = assign_params(type='config', action='show', key=self._api_key)
         try:
-            headers = {'Content-Type': 'application/xml'}
-            params = assign_params(type='config', action='show', key=self._api_key)
             response = self._http_request('GET', '/api', params=params, headers=headers, resp_type='xml')
-            formated_xml = adjust_xml_format(response.text, 'config')
-            return formated_xml
         except DemistoException as e:
-            if e.message == 'Request Succeeded, A parse error occurred.':
-                raise e
-            raise DemistoException("Could not get config file.")
+            raise DemistoException("Could not get config file. Request finished with an error {e}.")
+        formated_xml = adjust_xml_format(response.text, 'config')
+        return formated_xml
 
     def generate_bpa_report_request(self, requester_email, requester_name, system_info):
         body = {
@@ -181,29 +177,28 @@ class Client(BaseClient):
 
 
 def adjust_xml_format(xml_string, new_root_tag):
-    try:
-        root = ET.fromstring(xml_string)
-        sub_tags = root.find(f'.//{new_root_tag}')
-        if sub_tags is not None:
-            attributes = ' '.join([f'{k}="{v}"' for k, v in sub_tags.attrib.items()])
-        new_xml = f"<{new_root_tag} {attributes}>"
-        for child in sub_tags:  # type: ignore
-            new_xml += ET.tostring(child, encoding="unicode")
-        new_xml += f"</{new_root_tag}>"
-        return new_xml
-    except Exception:
-        raise DemistoException("Request Succeeded, A parse error occurred.")
+    root = ET.fromstring(xml_string)
+    sub_tags = root.find(f'.//{new_root_tag}')
+    if not sub_tags:
+        raise DemistoException("Request Succeeded, A parse error occurred- could not find {new_root_tag} tag to adjust to AIOps "
+                               "API.")
+    attributes = ' '.join([f'{k}="{v}"' for k, v in sub_tags.attrib.items()])
+    new_xml = f"<{new_root_tag} {attributes}>"
+    for child in sub_tags:  # type: ignore
+        new_xml += ET.tostring(child, encoding="unicode")
+    new_xml += f"</{new_root_tag}>"
+    return new_xml
 
 
 def get_values_from_xml(xml_string, tags):
-    try:
-        result = []
-        root = ET.fromstring(xml_string)
-        for tag in tags:
+    result = []
+    root = ET.fromstring(xml_string)
+    for tag in tags:
+        try:
             result.append(root.find(tag).text)  # type: ignore
-        return result
-    except Exception:
-        raise DemistoException("Could not find the required tags in the System file.")
+        except Exception as e:
+            raise DemistoException(f"Could not find the required tags in the System file. Error: {e}")
+    return result
 
 
 def convert_config_to_bytes(config_file, origin_flag):
@@ -226,44 +221,39 @@ def convert_config_to_bytes(config_file, origin_flag):
             xml_in_bytes = sio_xml.read().encode()
             return xml_in_bytes
         except Exception:
-            raise DemistoException("The downloaded config file could not be converted.")
+            raise DemistoException("The downloaded config file from Panorama/Pan-os could not be converted.")
 
 
-def create_readable_output(response_json):
-    try:
-        dict_to_markdown = []
-        headers = ['check_id', 'check_category', 'check_feature', 'check_message', 'check_name', 'check_passed', 'check_type',
-                   'check_severity']
-        check_category_options = ['device', 'service_health', 'objects', 'network', 'policies']
-        # Get best_practices elements (only warnings and notes)
-        best_practices = response_json.get('best_practices', {})
-        for category in check_category_options:
-            category_objects = best_practices.get(category, None)
-            if category_objects:
-                for key, value in category_objects.items():
-                    if value:
-                        warnings = value[0].get('warnings')
-                        notes = value[0].get('notes')
-                        for warning in warnings:
-                            warning['check_type'] = 'warning'
-                            warning['check_feature'] = key
-                            warning['check_category'] = category
-                            dict_to_markdown.append(warning)
-                        for note in notes:
-                            note['check_type'] = 'note'
-                            note['check_feature'] = key
-                            note['check_category'] = category
-                            dict_to_markdown.append(note)
+def convert_response_for_hr(response_json):
+    converted_array = []
+    check_category_options = ['device', 'service_health', 'objects', 'network', 'policies']
+    # Get best_practices elements (only warnings and notes)
+    best_practices = response_json.get('best_practices', {})
+    for category in check_category_options:
+        category_objects = best_practices.get(category, None)
+        if category_objects:
+            for key, value in category_objects.items():
+                if value:
+                    warnings = value[0].get('warnings')
+                    notes = value[0].get('notes')
+                    for warning in warnings:
+                        warning['check_type'] = 'warning'
+                        warning['check_feature'] = key
+                        warning['check_category'] = category
+                        converted_array.append(warning)
+                    for note in notes:
+                        note['check_type'] = 'note'
+                        note['check_feature'] = key
+                        note['check_category'] = category
+                        converted_array.append(note)
+    return converted_array
 
-        markdown_table = tableToMarkdown('BPA results:', dict_to_markdown,
+def create_markdown(original_dict):
+    headers = ['check_id', 'check_category', 'check_feature', 'check_message', 'check_name', 'check_passed', 'check_type',
+            'check_severity']
+    return tableToMarkdown('BPA results:', original_dict,
                                          headers=headers, removeNull=True, headerTransform=string_to_table_header
                                          )
-
-        return markdown_table
-    except Exception:
-        raise DemistoException("BPA was created but was unsuccessfully converted. Error: parse error.")
-
-
 ''' COMMAND FUNCTIONS '''
 
 
@@ -272,20 +262,20 @@ def test_module(client: Client) -> str:
     try:
         client.generate_access_token_request()
     except DemistoException as e:
-        if 'access token' in str(e) or 'Forbidden' in str(e) or 'Authorization' in str(e):
-            raise DemistoException(f"Authorization Error: make sure your tsg_id, client_id, client_secret are correctly set. With error {e}")
+        if 'access token' in str(e) or 'Forbidden' in str(e) or 'Authorization' in str(e) or 'access token' in str(e):
+            raise DemistoException(f"Authorization Error: make sure your tsg_id, client_id, client_secret are correctly set. "
+                                   f"With error {e}")
         else:
             raise e
     try:
         client.get_info_about_device_request()
         message = 'ok'
     except Exception as e:
-        raise DemistoException(f"Authorization Error: make sure your servel_url and API_key are correctly set. With error {e}")
+        raise DemistoException(f"Authorization Error: make sure your server_url and API_key are correctly set. With error {e}")
     return message
 
 
 def generate_report_command(client: Client, args: dict[str, Any]):
-    # Take args out
     config_file_from_user = args.get('entry_id')
     requester_email = args.get('requester_email')
     requester_name = args.get('requester_name')
@@ -303,15 +293,15 @@ def generate_report_command(client: Client, args: dict[str, Any]):
 
     tags = ['family', 'model', 'serial', 'sw-version']
     xml_tags_values = get_values_from_xml(system_info_xml, tags)
-    upload_url, report_id = client.generate_bpa_report_request(requester_email, requester_name, dict(zip(tags, xml_tags_values)))
     if config_file_from_user:
         config_in_binary = convert_config_to_bytes(config_file_from_user, 'User')
     elif config_file:
         config_in_binary = convert_config_to_bytes(config_file, 'Download')
     else:
         raise DemistoException("Can not uplaod a config file since it was not provided.")
+    upload_url, report_id = client.generate_bpa_report_request(requester_email, requester_name, dict(zip(tags, xml_tags_values)))
     client.config_file_to_report_request(upload_url, config_in_binary)
-    return_results(polling_until_upload_report_command({'report_id': report_id}, client))
+    return_results(polling_until_upload_report_command({'report_id': report_id, 'hide_polling_output': True}, client))
 
 
 @polling_function(
@@ -326,9 +316,18 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
     if upload_status == 'COMPLETED_WITH_SUCCESS':
         downloaded_BPA_url = client.download_bpa_request(report_id)
         downloaded_BPA_json = client.data_of_download_bpa_request(downloaded_BPA_url)
+        converted_json = convert_response_for_hr(downloaded_BPA_json)
+        human_readable_markdown = create_markdown(converted_json)
+        # added for context data
+        converted_json.append({'report_id': report_id}) # type: ignore
+        converted_json.append({'report_status': upload_status})  # type: ignore
         return PollResult(
             response=CommandResults(
-                readable_output=create_readable_output(downloaded_BPA_json)
+                outputs_prefix='AiOps.BPAReport',
+                outputs_key_field='report_id',
+                outputs=converted_json,
+                raw_response=downloaded_BPA_json,
+                readable_output=human_readable_markdown
             ),
             continue_to_poll=False,
         )
@@ -345,19 +344,21 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
         )
 
     elif upload_status == 'COMPLETED_WITH_ERROR':
+        fail_output = {"report_id": report_id, "report_status": upload_status}
         return PollResult(
             response=CommandResults(
-                readable_output=f'The report with id {report_id} could not be uploaded- finished with an error.'
+            outputs=fail_output,
+            raw_response=fail_output,
+            readable_output=f'The report with id {report_id} could not be generated- finished with an error.'
             ),
             continue_to_poll=False,
         )
 
     else:
-        results = CommandResults(readable_output="Polling job failed.")
         return PollResult(
             continue_to_poll=True,
-            args_for_next_run={'report_id': report_id},
-            response=results,
+            args_for_next_run={'report_id': report_id, 'hide_polling_output': True},
+            response=None,
         )
 
 
