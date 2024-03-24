@@ -1233,7 +1233,7 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     result = client.update(ticket_type, ticket_id, fields, custom_fields, input_display_value)
-    if not result or 'result' not in result or result.status_code < 200 or result.status_code >= 400:
+    if not result or 'result' not in result:
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
 
