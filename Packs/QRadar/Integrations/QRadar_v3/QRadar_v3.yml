@@ -2247,7 +2247,7 @@ script:
       default: true
     - description: 'Range of results to return. e.g.: 0-20.'
       name: range
-    - description: "Table headers to use the human readable output (if none provided, will show all table headers)."
+    - description: "Table headers to use in the human readable output (if none provided, will show all table headers)."
       name: headers
     - description: Replaces the default context output path for the query result (QRadar.Search.Result). e.g. for output_path=QRadar.Correlations the result will be under the key "QRadar.Correlations" in the context data.
       name: output_path
