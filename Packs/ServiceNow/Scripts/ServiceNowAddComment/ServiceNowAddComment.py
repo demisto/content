@@ -32,9 +32,9 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
         else:
             result = resp['Contents']['result']
             if not result:
-                message = "Empty result. Please check your input. e.g. the ticket_id"
+                message = "Empty result. Please check your input. e.g. the ticket_id, or table_name."
                 demisto.info(message)
-                return CommandResults(readable_output=message)
+                return_error(message)
 
             output_results = {}
 
