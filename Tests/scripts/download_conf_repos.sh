@@ -117,9 +117,9 @@ CI_SERVER_HOST=${CI_SERVER_HOST:-gitlab.xdr.pan.local} # disable-secrets-detecti
 
 clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
 
-cp ./content-test-conf/SecretActions/google_secret_manager_handler.py ./Tests/scripts
-cp ./content-test-conf/SecretActions/SecretsBuild/add_secrets_file_to_build.py ./Tests/scripts
-cp ./content-test-conf/SecretActions/SecretsBuild/merge_and_delete_dev_secrets.py ./Tests/scripts
+cp ./content-test-conf/SecretActions/google_secret_manager_handler.py ./Tests/scripts/SecretActions
+cp ./content-test-conf/SecretActions/SecretsBuild/add_secrets_file_to_build.py ./Tests/scripts/SecretActions/SecretsBuild
+cp ./content-test-conf/SecretActions/SecretsBuild/merge_and_delete_dev_secrets.py ./Tests/scripts/SecretActions/SecretsBuild
 cp -r ./content-test-conf/demisto.lic ${DEMISTO_LIC_PATH}
 cp -r ./content-test-conf/signDirectory ${DEMISTO_PACK_SIGNATURE_UTIL_PATH}
 
