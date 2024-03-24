@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The script ReadPDFFileV2 now uses the argument *unescape*, with a default value of *True*. This update will change the default behavior of the script. System playbooks such as: *Extract Indicators From File - Generic v2*, and custom playbooks that use this script will be affected."
+    "breakingChangesNotes": "The ***ReadPDFFileV2*** script now unescapes special character when extracting URLs by default. This update will affect the behavior of the script and of playbooks using it such as *Extract Indicators From File - Generic v2*, or any custom playbooks using it. In order to disable this behavior, set the *unescape* argument to `false`."
 }
