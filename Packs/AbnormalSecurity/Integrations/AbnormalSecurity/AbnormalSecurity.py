@@ -71,9 +71,11 @@ class Client(BaseClient):
         return response
 
     def get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(self, filter_='', page_size=None, page_number=None,
-                                                                   subtenant=None, subject=None, sender=None, recipient=None, reporter=None, attackType=None, threatType=None):
+                                                                   subtenant=None, subject=None, sender=None, recipient=None,
+                                                                   reporter=None, attackType=None, threatType=None):
         params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, subtenant=subtenant, subject=subject,
-                               sender=sender, recipient=recipient, reporter=reporter, attackType=attackType, threatType=threatType)
+                               sender=sender, recipient=recipient, reporter=reporter, attackType=attackType,
+                               threatType=threatType)
 
         headers = self._headers
 
@@ -81,9 +83,11 @@ class Client(BaseClient):
 
         return response
 
-    def get_a_list_of_threats_request(self, filter_='', page_size=None, page_number=None, source=None, subtenant=None, subject=None, sender=None, recipient=None, topic=None, attackType=None, attackVector=None):
+    def get_a_list_of_threats_request(self, filter_='', page_size=None, page_number=None, source=None, subtenant=None,
+                                      subject=None, sender=None, recipient=None, topic=None, attackType=None, attackVector=None):
         params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, source=source, subtenant=subtenant,
-                               subject=subject, sender=sender, recipient=recipient, topic=topic, attackType=attackType, attackVector=attackVector)
+                               subject=subject, sender=sender, recipient=recipient, topic=topic, attackType=attackType,
+                               attackVector=attackVector)
 
         headers = self._headers
 
