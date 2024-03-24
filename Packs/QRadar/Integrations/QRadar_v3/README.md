@@ -8384,7 +8384,7 @@ In order to get wincollect_external_destination_ids - filter internal=false need
         "WinCollectDestination": [
             {
                 "EventRateThrottle": 5000,
-                "Host": "172.31.17.10",
+                "Host": "1.1.1.1",
                 "ID": 1,
                 "Name": "eventcollector0 :: ip-172-31-17-10 :: UDP",
                 "Port": 514,
@@ -8392,7 +8392,7 @@ In order to get wincollect_external_destination_ids - filter internal=false need
             },
             {
                 "EventRateThrottle": 5000,
-                "Host": "172.31.17.10",
+                "Host": "1.1.1.1",
                 "ID": 2,
                 "Name": "eventcollector0 :: ip-172-31-17-10 :: TCP",
                 "Port": 514,
@@ -8408,8 +8408,8 @@ In order to get wincollect_external_destination_ids - filter internal=false need
 >### WinCollect Destinations List
 >|ID|Name|Host|EventRateThrottle|TransportProtocol|Port|
 >|---|---|---|---|---|---|
->| 1 | eventcollector0 :: ip-172-31-17-10 :: UDP | 172.31.17.10 | 5000 | UDP | 514 |
->| 2 | eventcollector0 :: ip-172-31-17-10 :: TCP | 172.31.17.10 | 5000 | TCP | 514 |
+>| 1 | eventcollector0 :: ip-172-31-17-10 :: UDP | 1.1.1.1 | 5000 | UDP | 514 |
+>| 2 | eventcollector0 :: ip-172-31-17-10 :: TCP | 1.1.1.1 | 5000 | TCP | 514 |
 
 
 ### qradar-log-source-groups-list
