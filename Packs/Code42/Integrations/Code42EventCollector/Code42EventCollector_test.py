@@ -187,7 +187,6 @@ def test_fetch_events_no_last_run(mocker):
     assert last_run_expected_keys == set(set_last_run_mocker.call_args_list[1][0][0].keys())
 
 
-
 def test_fetch_events_no_last_run_max_fetch_lower_than_available_events(mocker):
     """
     Given:
