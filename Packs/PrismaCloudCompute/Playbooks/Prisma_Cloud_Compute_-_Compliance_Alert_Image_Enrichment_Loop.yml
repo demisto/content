@@ -402,7 +402,7 @@ tasks:
     type: condition
     task:
       id: 5f140456-01b8-4f5f-8d32-7e528d913440
-      desription: ""
+      description: ""
       version: -1
       name: Any images were retrieved?
       type: condition
@@ -447,7 +447,7 @@ tasks:
     type: condition
     task:
       id: 38f5c93d-0de3-40d6-895c-02dff4f9dcf9
-      desription: ""
+      description: ""
       version: -1
       name: Any results returned?
       type: condition
@@ -617,7 +617,7 @@ tasks:
     type: condition
     task:
       id: 2417b1e5-4e6a-47b0-83ed-5d58583fc835
-      desription: ""
+      description: ""
       version: -1
       name: Which external ticketing system should be used?
       type: condition
