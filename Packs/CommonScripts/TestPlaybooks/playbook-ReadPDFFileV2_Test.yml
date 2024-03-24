@@ -91,7 +91,7 @@ tasks:
     scriptarguments:
       entryID:
         simple: ${File.EntryID}
-      unescape:
+      unescape_url:
         simple: true
     continueonerror: true
     separatecontext: false
@@ -278,7 +278,7 @@ tasks:
     scriptarguments:
       entryID:
         simple: ${File.EntryID}
-      unescape:
+      unescape_url:
         simple: true
     separatecontext: false
     view: |-
@@ -413,7 +413,7 @@ tasks:
     scriptarguments:
       entryID:
         simple: ${File.EntryID}
-      unescape:
+      unescape_url:
         simple: true
     reputationcalc: 1
     separatecontext: false

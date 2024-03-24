@@ -262,7 +262,7 @@ tasks:
           accessor: EntryID
       maxImages:
         simple: "0"
-      unescape:
+      unescape_url:
         simple: true
       userPassword: {}
     separatecontext: false

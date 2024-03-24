@@ -23,7 +23,7 @@ opswat
 filescan
 Stringify
 QR
-unescape
+unescape_url
 
 [file:playbook-File_Enrichment_-_File_reputation.yml]
 ignore=BA101

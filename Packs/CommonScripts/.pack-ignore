@@ -171,7 +171,7 @@ indexerror
 gTLD
 qr
 cv
-unescape
+unescape_url
 
 [file:ScheduleGenericPolling.yml]
 ignore=BA124
