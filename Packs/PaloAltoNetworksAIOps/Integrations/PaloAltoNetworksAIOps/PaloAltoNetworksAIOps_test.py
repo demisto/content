@@ -264,7 +264,7 @@ def test_generate_bpa_report_request_called_with(mocker, AIOps_client):
     Then:
         - Checks the generate_bpa_report_request request (the request that is calles)
     """
-    requester_email = "test@gamil.com"
+    requester_email = "test@gmail.com"
     requester_name = "test"
     dict_for_request = {"family": "test1", "model": "test2", "serial": "test3", "sw-version": "test4"}
     http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
@@ -275,7 +275,7 @@ def test_generate_bpa_report_request_called_with(mocker, AIOps_client):
                                               full_url='https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/requests',
                                               headers={'Content-Type': 'application/json', 'Accept': 'application/json',
                                                        'Authorization': 'Bearer {}'}, json_data={'requester-email':
-                                                                                                 'test@gamil.com',
+                                                                                                 'test@gmail.com',
                                                                                                  'requester-name': 'test',
                                                                                                  'serial': 'test3',
                                                                                                  'version': 'test4',
@@ -294,7 +294,7 @@ def test_generate_bpa_report_request_return(mocker, AIOps_client):
     Then:
         - Checks the generate_bpa_report_request output (using adjust_xml_format)
     """
-    requester_email = "test@gamil.com"
+    requester_email = "test@gmail.com"
     requester_name = "test"
     dict_for_request = {"family": "test1", "model": "test2", "serial": "test3", "sw-version": "test4"}
     http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
@@ -316,7 +316,7 @@ def test_generate_bpa_report_request_fails(mocker: MockerFixture, AIOps_client):
         - Raise an error since response not in format
     """
     from CommonServerPython import DemistoException
-    requester_email = "test@gamil.com"
+    requester_email = "test@gmail.com"
     requester_name = "test"
     dict_for_request = {"family": "test1", "model": "test2", "serial": "test3", "sw-version": "test4"}
     http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
@@ -653,8 +653,10 @@ def test_create_markdown():
                           'check_feature': 'feature2', 'check_category': 'device'}
                       ]
     assert create_markdown(response_array) == ('### BPA results:\n|Check Id|Check Category|Check Feature|Check Message|Check Type'
-                                               '|\n|---|---|---|---|---|\n| 1 | device | feature1 | Warning message 1 | warning |\n| 2 | device | feature1 | Note message 1 '
-                                               '| note |\n| 3 | device | feature2 | Warning message 2 | warning |\n| 4 | device | feature2 | Note message 2 | note |\n')
+                                               '|\n|---|---|---|---|---|\n| 1 | device | feature1 | Warning message 1 | warning |'
+                                               '\n| 2 | device | feature1 | Note message 1 '
+                                               '| note |\n| 3 | device | feature2 | Warning message 2 | warning |\n| 4 | device '
+                                               '| feature2 | Note message 2 | note |\n')
 
 
 def test_create_markdown_empty_array():
