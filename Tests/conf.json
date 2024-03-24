@@ -95,7 +95,8 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE - Retrieve File",
-            "instance_names": "microsoft_defender_atp_dev"
+            "instance_names": "microsoft_defender_atp_dev",
+            "timeout": 700
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -122,7 +123,10 @@
             "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment"
         },
         {
-            "integrations": "Cortex XDR - IR",
+            "integrations": [
+                "Cortex XDR - IR",
+                "Core REST API"
+            ],
             "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256"
         },
         {
