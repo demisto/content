@@ -11,7 +11,7 @@ args:
 - auto: PREDEFINED
   defaultValue: 'true'
   description: To unescape URLs that have been escaped as part of the URLs extraction. Invalid characters will be ignored.
-  name: unescape
+  name: unescape_url
   predefined:
   - 'true'
   - 'false'

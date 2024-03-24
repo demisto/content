@@ -61,8 +61,8 @@ UNESCAPE_CASES = [
 ]
 
 
-@pytest.mark.parametrize('unescape, urls_set', UNESCAPE_CASES)
-def test_urls_are_unescaped(unescape, urls_set):
+@pytest.mark.parametrize('unescape_url, urls_set', UNESCAPE_CASES)
+def test_urls_are_unescaped(unescape_url, urls_set):
     """
     Given
         - A pdf file that has xml content in it.
@@ -73,7 +73,7 @@ def test_urls_are_unescaped(unescape, urls_set):
         - The set of urls are extracted correctly, with respect to whether to unescape them or not.
     """
     from ReadPDFFileV2 import get_urls_and_emails_from_pdf_html_content
-    urls, _ = get_urls_and_emails_from_pdf_html_content(f'{CWD}/xml_with_urls.pdf', CWD, unescape)
+    urls, _ = get_urls_and_emails_from_pdf_html_content(f'{CWD}/xml_with_urls.pdf', CWD, unescape_url)
     assert urls == urls_set
 
 

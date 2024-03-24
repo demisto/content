@@ -229,7 +229,7 @@ def get_pdf_text(file_path: str, pdf_text_output_path: str) -> str:
     return text
 
 
-def get_pdf_htmls_content(pdf_path: str, output_folder: str, unescape: bool = True) -> str:
+def get_pdf_htmls_content(pdf_path: str, output_folder: str, unescape_url: bool = True) -> str:
     """Creates an html file and images from the pdf in output_folder and returns the text content of the html files"""
     pdf_html_output_path = f'{output_folder}/PDF_html'
     try:
@@ -242,7 +242,7 @@ def get_pdf_htmls_content(pdf_path: str, output_folder: str, unescape: bool = Tr
     for file_name in html_file_names:
         with open(file_name) as f:
             for line in f:
-                html_content += html.unescape(line) if unescape else line
+                html_content += html.unescape_url(line) if unescape_url else line
     return html_content
 
 
@@ -354,7 +354,7 @@ def get_urls_from_binary_file(file_path: str) -> set:
 
 
 def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder: str,
-                                              unescape: bool = True) -> tuple[set, set]:
+                                              unescape_url: bool = True) -> tuple[set, set]:
     """
     Extract the URLs and emails from the pdf html content.
 
@@ -364,7 +364,7 @@ def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder:
     Returns:
         tuple[set, set]: The URLs and emails that were found.
     """
-    pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder, unescape)
+    pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder, unescape_url)
     return set(re.findall(URL_EXTRACTION_REGEX, pdf_html_content)), set(re.findall(EMAIL_REGXEX, pdf_html_content))
 
 
@@ -516,7 +516,7 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> tuple[set, set]:
 
 
 def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str,
-                                          unescape: bool = True) -> tuple[list, list]:
+                                          unescape_url: bool = True) -> tuple[list, list]:
     """
     Extract URLs and Emails from the PDF file.
     Args:
@@ -532,7 +532,7 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str,
 
     # Get URLS + emails:
     annots_urls, annots_emails = get_urls_and_emails_from_pdf_annots(file_path)
-    html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(file_path, output_folder, unescape)
+    html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(file_path, output_folder, unescape_url)
 
     # This url might be generated with the pdf html file, if so, we remove it
     html_urls.discard('http://www.w3.org/1999/xhtml')
@@ -618,7 +618,7 @@ def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, encrypted: 
 
 
 def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_images: int | None, working_dir: str,
-                          unescape: bool = True) -> None:
+                          unescape_url: bool = True) -> None:
     max_images = max_images if max_images else DEFAULT_NUM_IMAGES
     if path:
         cpy_file_path = f'{working_dir}/WorkingReadPDF.pdf'
@@ -639,7 +639,7 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
         hash_contexts = extract_hash_contexts_from_pdf_file(text)
 
         # Get URLS + emails:
-        urls_ec, emails_ec = extract_urls_and_emails_from_pdf_file(cpy_file_path, working_dir, unescape)
+        urls_ec, emails_ec = extract_urls_and_emails_from_pdf_file(cpy_file_path, working_dir, unescape_url)
 
         # Get images:
         images = get_images_paths_in_path(working_dir)
@@ -659,7 +659,7 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
 
 def main():  # pragma: no cover
     args = demisto.args()
-    unescape: bool = argToBoolean(args.get("unescape", "true"))
+    unescape_url: bool = argToBoolean(args.get("unescape_url", "true"))
     working_dir = 'ReadPDFTemp'
     try:
         if not os.path.exists(working_dir):
@@ -671,7 +671,7 @@ def main():  # pragma: no cover
         path = demisto.getFilePath(entry_id).get('path')
 
         extract_data_from_pdf(path=path, user_password=user_password, entry_id=entry_id, max_images=max_images,
-                              working_dir=working_dir, unescape=unescape)
+                              working_dir=working_dir, unescape_url=unescape_url)
     except PdfPermissionsException as e:
         return_warning(str(e))
     except ShellException as e:
