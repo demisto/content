@@ -46,58 +46,7 @@ def arguments_handler() -> argparse.Namespace:
 
 
 def handle_issues(github_issues: PaginatedList[Issue], gitlab_merge_requests: ProjectMergeRequestManager):
-    for issue in github_issues:
-        issue.create_comment(COMMENT_MESSAGES.build_request_accepted)
-
-        pull_request = issue.as_pull_request() # Get the github pull request object
-        branch_name = pull_request.head.ref
-
-        # get MRs that are relevant for the specific branch name
-        if merge_requests := gitlab_merge_requests.list(source_branch=branch_name):
-            # find latest MR for this branch name in the Gitlab project
-            latest_mr = max(merge_requests, key=lambda mr: mr.created_at)
-
-            # Get pipelines for the MR
-            pipelines = latest_mr.pipelines.list()
-
-            if pipelines:
-                # Get the most recent pipeline
-                latest_pipeline = pipelines[0]
-
-                if latest_pipeline.status == "running":
-                    print(
-                        f"Pipeline is running for MR {latest_mr.iid}. Cancelling current pipeline..."
-                    )
-
-                    # Cancel the current pipeline
-                    latest_pipeline.cancel()
-
-                    print("Current pipeline cancelled. Triggering a new pipeline...")
-
-                    # Trigger a new pipeline
-                    new_pipeline = latest_mr.trigger_pipeline()
-
-                    print("New pipeline triggered.")
-                else:
-                    print(
-                        f"No running pipeline found for MR {latest_mr.iid}. Triggering a new pipeline..."
-                    )
-
-                    # Trigger a new pipeline
-                    new_pipeline = latest_mr.trigger_pipeline()
-
-                    print("New pipeline triggered.")
-            else:
-                print(
-                    f"No pipeline found for MR {latest_mr.iid}. Triggering a new pipeline..."
-                )
-
-                # Trigger a new pipeline
-                new_pipeline = latest_mr.trigger_pipeline()
-
-                print(f"New pipeline triggered. URL: {new_pipeline.web_url}")
-        else:
-            print("No Merge Requests found for the branch:", branch_name)
+    ...
 
 
 def main():
@@ -148,8 +97,8 @@ def main():
 
                 print(f"New pipeline triggered: {new_pipeline.web_url}")
 
-            else:
-                print("No branch was found with the name:", branch_name)
+        else:
+            print("No branch was found with the name:", branch_name)
 
         issue.create_comment(COMMENT_MESSAGES.build_triggered)
         issue.remove_from_labels(GITHUB_TRIGGER_BUILD_LABEL)
