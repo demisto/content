@@ -499,8 +499,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 1365
+          "x": 630,
+          "y": 1220
         }
       }
     note: false
@@ -571,8 +571,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 1890
+          "x": 630,
+          "y": 1750
         }
       }
     note: false
@@ -584,10 +584,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 558e417d-373a-4ea6-825f-c70a2f85bad8
+    taskid: 1bde297b-0d24-4663-8b78-6034dc4c26ea
     type: regular
     task:
-      id: 558e417d-373a-4ea6-825f-c70a2f85bad8
+      id: 1bde297b-0d24-4663-8b78-6034dc4c26ea
       version: -1
       name: Delete the user
       description: Deletes a service account.
@@ -609,16 +609,30 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: inputs.username
+                  simple: username
+                iscontext: true
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: service_account
                 iscontext: true
           - operator: uniq
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
+                iscontext: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 2160
+          "x": 630,
+          "y": 1960
         }
       }
     note: false
@@ -645,8 +659,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -40,
-          "y": 2350
+          "x": -50,
+          "y": 2210
         }
       }
     note: false
@@ -834,34 +848,14 @@ tasks:
                 iscontext: true
       zone:
         complex:
-          root: alertJson._all_events
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: alertJson._all_events.referenced_resource_name
-                iscontext: true
-              right:
-                value:
-                  simple: Manual resource remediation.Answers.0
-                iscontext: true
-              ignorecase: true
-          accessor: zone
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: inputs.resourceZone
-                iscontext: true
+          root: inputs.resourceZone
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1980,
-          "y": 1780
+          "x": 1730,
+          "y": 1800
         }
       }
     note: false
@@ -901,34 +895,14 @@ tasks:
                 iscontext: true
       zone:
         complex:
-          root: alertJson._all_events
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: alertJson._all_events.referenced_resource_name
-                iscontext: true
-              right:
-                value:
-                  simple: Manual resource remediation.Answers.0
-                iscontext: true
-              ignorecase: true
-          accessor: zone
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: inputs.resourceZone
-                iscontext: true
+          root: inputs.resourceZone
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2400,
-          "y": 1785
+          "x": 2250,
+          "y": 1800
         }
       }
     note: false
@@ -956,7 +930,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 2060
+          "y": 2145
         }
       }
     note: false
@@ -968,10 +942,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 01a85d52-812b-4dee-8595-80918e4ee424
+    taskid: 085fbe39-ffbe-4094-8566-f791528d9a3f
     type: regular
     task:
-      id: 01a85d52-812b-4dee-8595-80918e4ee424
+      id: 085fbe39-ffbe-4094-8566-f791528d9a3f
       version: -1
       name: Disable the user
       description: Disables a project service account.
@@ -995,14 +969,27 @@ tasks:
                 value:
                   simple: inputs.username
                 iscontext: true
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: service_account
+                iscontext: true
           - operator: uniq
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 2160
+          "x": 1050,
+          "y": 1960
         }
       }
     note: false
@@ -1043,7 +1030,7 @@ tasks:
       to:
         simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - Resource Remediation
+        simple: Cloud Response - GCP - Resource Remediation
       body:
         simple: Analyst interaction is needed for the resource remediation.
       methods:
@@ -1190,12 +1177,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 4c9b32a7-b338-42fa-8bea-2fe0e27534e4
+    taskid: 52e5c7ce-7d4a-4b74-8761-9c3d05929209
     type: collection
     task:
-      id: 4c9b32a7-b338-42fa-8bea-2fe0e27534e4
+      id: 52e5c7ce-7d4a-4b74-8761-9c3d05929209
       version: -1
-      name: Choose user to remediate
+      name: Choose a user to remediate
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, nothing is returned.
       type: collection
       iscommand: false
@@ -1208,8 +1195,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 190,
-          "y": 1535
+          "x": 180,
+          "y": 1400
         }
       }
     note: false
@@ -1219,7 +1206,7 @@ tasks:
       to:
         simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - User Remediation
+        simple: Cloud Response - GCP - User Remediation
       body:
         simple: Analyst interaction is needed for the user remediation.
       methods:
@@ -1246,9 +1233,21 @@ tasks:
         options: []
         optionsarg:
         - complex:
-            root: inputs.username
+            root: username
             transformers:
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: service_account
+                  iscontext: true
             - operator: uniq
+            - operator: RemoveEmpty
+              args:
+                empty_values: {}
+                remove_keys:
+                  value:
+                    simple: "true"
         fieldassociated: ""
         placeholder: ""
         tooltip: ""
@@ -1296,8 +1295,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 190,
-          "y": 1700
+          "x": 180,
+          "y": 1560
         }
       }
     note: false
@@ -1338,7 +1337,7 @@ tasks:
       to:
         simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - Access Key Remediation
+        simple: Cloud Response - GCP - Access Key Remediation
       body:
         simple: Analyst interaction is needed for the user's access key remediation.
       methods:
@@ -1592,9 +1591,9 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Administrator,Analyst,Read-Only
+        simple: ${incident.assigneduser}
       subject:
-        simple: XCLOUD Cryptominig Alert - Block Indicators
+        simple: Cloud Response - GCP - Block Indicators
       body:
         simple: Analyst interaction is needed for the indicators remediation.
       methods:
@@ -1725,10 +1724,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: b2145ba5-f7bd-4cb8-84d3-2f18fcb9e5e2
+    taskid: cae32c6c-c9f5-4392-87ea-4fd3d72f588c
     type: regular
     task:
-      id: b2145ba5-f7bd-4cb8-84d3-2f18fcb9e5e2
+      id: cae32c6c-c9f5-4392-87ea-4fd3d72f588c
       version: -1
       name: Delete regular user
       description: Deletes a user.
@@ -1750,16 +1749,29 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: inputs.username
+                  simple: username
+                iscontext: true
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: service_account
                 iscontext: true
           - operator: uniq
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys:
+                value:
+                  simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 2160
+          "x": 210,
+          "y": 1960
         }
       }
     note: false
@@ -1785,7 +1797,7 @@ tasks:
       '#default#':
       - "50"
       "yes":
-      - "49"
+      - "51"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1793,7 +1805,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: identity_invoked_by_type
+              simple: inputs.accountType
             iscontext: true
           right:
             value:
@@ -1804,62 +1816,13 @@ tasks:
       {
         "position": {
           "x": 640,
-          "y": 830
+          "y": 870
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "49":
-    id: "49"
-    taskid: c48218de-5d85-42d3-82d3-b87162484d24
-    type: regular
-    task:
-      id: c48218de-5d85-42d3-82d3-b87162484d24
-      version: -1
-      name: Extract project name
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "51"
-    scriptarguments:
-      key:
-        simple: projectName
-      value:
-        complex:
-          root: alertJson._all_events
-          accessor: identity_name
-          transformers:
-          - operator: RegexGroups
-            args:
-              flags: {}
-              groups: {}
-              keys: {}
-              regex:
-                value:
-                  simple: projects\/([a-zA-Z0-9]+)
-          - operator: uniq
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1050,
-          "y": 1015
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1890,8 +1853,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 640,
-          "y": 1015
+          "x": 430,
+          "y": 1040
         }
       }
     note: false
@@ -1903,10 +1866,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: d6226a94-5889-4e2a-87ff-2c90164471b8
+    taskid: 64c46d68-3417-4cf5-8d7c-a0b7c03ef352
     type: regular
     task:
-      id: d6226a94-5889-4e2a-87ff-2c90164471b8
+      id: 64c46d68-3417-4cf5-8d7c-a0b7c03ef352
       version: -1
       name: Set service account user pattern
       description: Set a value in context under the key you entered.
@@ -1919,16 +1882,16 @@ tasks:
       - "18"
     scriptarguments:
       key:
-        simple: username
+        simple: service_account
       value:
-        simple: projects/${projectName}/serviceAccount/${inputs.username}
+        simple: projects/${inputs.GCPprojectID}/serviceAccount/${inputs.username}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1050,
-          "y": 1185
+          "x": 840,
+          "y": 1040
         }
       }
     note: false
@@ -1961,8 +1924,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2045,
-        "width": 5190,
+        "height": 1905,
+        "width": 5040,
         "x": -2410,
         "y": 370
       }
@@ -2047,6 +2010,17 @@ inputs:
   required: false
   description: The source IP address of the attacker.
   playbookInputQuery:
+- description: "The GCP Project ID. Will be used for handling service account"
+  key: GCPprojectID
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: "Determine the account type you are dealing with: \"user\" / \"service_account\". Default: \"user\""
+  key: accountType
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "user"
 outputs: []
 tests:
 - No tests (auto formatted)
