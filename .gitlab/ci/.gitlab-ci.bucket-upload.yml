@@ -160,7 +160,7 @@ xpanse-prepare-testing-bucket-upload-flow:
     - !reference [.download-demisto-conf]
     - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
-    - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
+    - python3 Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
     - section_end "Secrets Fetch"
     - !reference [.ssh-config-setup]
     - section_start "Check if should run Instance role"
@@ -260,7 +260,7 @@ install-packs-in-server-master:
     - !reference [.download-demisto-conf]
     - section_start "Secrets Fetch" --collapsed
     - SECRET_CONF_PATH=$(cat secret_conf_path)
-    - python3 ./Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
+    - python3 Tests/scripts/add_secrets_file_to_build.py -sa "$GSM_SERVICE_ACCOUNT" -sf "$SECRET_CONF_PATH" -u "$DEMISTO_USERNAME" -p "$DEMISTO_PASSWORD" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> $ARTIFACTS_FOLDER/logs/handle_secrets.log
     - section_end "Secrets Fetch"
     - section_start "Lock Machine"
     - echo "Authenticating GCP"
