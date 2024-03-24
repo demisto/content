@@ -44,7 +44,7 @@ class AuditLogLastRun(str, Enum):
 
 
 class EventType(str, Enum):
-    FILE = "file-event"
+    FILE = "file"
     AUDIT = "audit"
 
 
@@ -156,6 +156,10 @@ def dedup_fetched_events(
     return un_fetched_events
 
 
+def get_event_ids(events: List[Dict[str, Any]], keys_to_id: List[str]) -> List[str]:
+    return [dict_safe_get(event, keys=keys_to_id) for event in events]
+
+
 def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> tuple[List[str], str]:
     """
     Get the latest event IDs and get latest time
@@ -165,6 +169,7 @@ def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> 
         keys_to_id: a list of nested keys to get into the event ID
     """
     latest_time_event: datetime = events[0]["_time"]
+    event_type = events[0]["eventType"]
 
     for i in range(1, len(events)):
         event = events[i]
@@ -175,6 +180,7 @@ def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> 
         dict_safe_get(event, keys=keys_to_id)
         for event in events if event["_time"] == latest_time_event
     ]
+    demisto.debug(f'Latest {event_type}s event IDs {latest_event_ids} occurred in {latest_time_event}')
     return latest_event_ids, latest_time_event.strftime(DATE_FORMAT)
 
 
@@ -219,6 +225,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
         last_run: Last run object
         max_fetch_file_events: the maximum number of file events to return
     """
+    demisto.debug(f'last run before getting {EventType.FILE} logs: {last_run}')
     new_last_run = last_run.copy()
     file_event_time = dateparser.parse(last_run[FileEventLastRun.TIME]) if FileEventLastRun.TIME in last_run else (
         datetime.now() - timedelta(minutes=240)
@@ -241,6 +248,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
             }
         )
 
+    demisto.debug(f'updated last run of {EventType.FILE} events to {new_last_run}')
     return file_events, new_last_run
 
 
@@ -253,6 +261,7 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
         last_run: Last run object
         max_fetch_audit_events: the maximum number of audit logs to return
     """
+    demisto.debug(f'last run before getting {EventType.AUDIT} logs: {last_run}')
     new_last_run = last_run.copy()
     audit_log_time = dateparser.parse(last_run[AuditLogLastRun.TIME]) if AuditLogLastRun.TIME in last_run else (
         datetime.now() - timedelta(minutes=240)
@@ -273,9 +282,7 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
             }
         )
 
-    for log in audit_logs:
-        log.pop("id", None)
-
+    demisto.debug(f'updated last run of {EventType.AUDIT} logs to {new_last_run}')
     return audit_logs, new_last_run
 
 
@@ -291,9 +298,16 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
 
     last_run.update(file_events_last_run)
     send_events_to_xsiam(file_events, vendor=VENDOR, product=PRODUCT)
+    demisto.debug(
+        f'Fetched the following {EventType.FILE} events event IDs {get_event_ids(file_events, ["event", "id"])}'
+    )
     demisto.setLastRun(last_run)
+    demisto.debug(f'Updated the last run to {last_run} after fetching {EventType.FILE} events')
 
     audit_logs, audit_logs_last_run = fetch_audit_logs(client, last_run=last_run, max_fetch_audit_events=max_fetch_audit_events)
+    audit_log_ids = get_event_ids(audit_logs, keys_to_id=["id"])
+    for log in audit_logs:
+        log.pop("id", None)
 
     if file_events or audit_logs:
         audit_logs_last_run["nextTrigger"] = "0"
@@ -302,7 +316,12 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
 
     last_run.update(audit_logs_last_run)
     send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
+    demisto.debug(
+        f'Fetched the following {EventType.AUDIT} events event IDs {audit_log_ids}'
+    )
     demisto.setLastRun(last_run)
+
+    demisto.debug(f'Updated the last run to {last_run} after fetching {EventType.AUDIT} logs')
 
 
 def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
