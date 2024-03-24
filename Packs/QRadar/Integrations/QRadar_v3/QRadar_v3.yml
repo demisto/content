@@ -1516,7 +1516,7 @@ script:
       description: 'The UUID of the disconnected log collector.'
       type: String
     - contextPath: QRadar.DisconnectedLogCollector.Version
-      description: ' The version of the Disconnected Log Collector.'
+      description: 'The version of the disconnected log collector.'
       type: String
   - arguments:
     - description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
