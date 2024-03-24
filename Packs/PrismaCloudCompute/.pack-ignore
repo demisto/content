@@ -55,6 +55,9 @@ ignore=PB105
 [file:Prisma_Cloud_Compute_-_Compliance_Alert_Container_Enrichment_Loop.yml]
 ignore=PB105
 
+[file:Prisma_Cloud_Compute_-_Jira_Compliance_Issue.yml]
+ignore=PB105
+
 [known_words]
 resourceType
 resourceID
