@@ -36,8 +36,8 @@ configuration:
   type: 8
 
   required: false
-description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
-display: Palo Alto Networks BPA
+description: Deprecated. Use Palo Alto Networks AIOps instead.
+display: Palo Alto Networks BPA (Deprecated)
 name: BPA
 script:
   commands:
@@ -95,6 +95,7 @@ script:
     - contextPath: PAN-OS-BPA.Documentation
       description: The list of BPA checks.
       type: Unknown
+    deprecated: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
@@ -112,6 +113,7 @@ script:
     - contextPath: PAN-OS-BPA.SubmittedJob.JobID
       description: Submitted job ID, used to query results when the job is done.
       type: String
+    deprecated: true
   - arguments:
     - description: The job ID for which to return results.
       name: task_id
@@ -157,11 +159,13 @@ script:
     - contextPath: InfoFile.Extension
       description: File extension.
       type: string
+    deprecated: true
   dockerimage: demisto/python3:3.10.12.68714
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
-- Test-BPA
+- No tests (deprecated)
 fromversion: 5.0.0
+deprecated: true
