@@ -3,17 +3,17 @@ import argparse
 import os
 from collections import namedtuple
 
-from gitlab.v4.objects.projects import Project
 import urllib3
 from github import Github
 from github.Issue import Issue
 from github.PaginatedList import PaginatedList
 from gitlab import Gitlab
 from gitlab.v4.objects.merge_requests import ProjectMergeRequestManager
+from gitlab.v4.objects.projects import Project
 
 urllib3.disable_warnings()
 
-FIND_CONTRIBUTION_PRS_QUERY = 'is:pull-request state:open label:ready-for-instance-test label:Contribution label:"External PR"'
+CONTRIBUTION_PRS_QUERY = 'is:pull-request state:open label:ready-for-instance-test label:Contribution label:"External PR"'
 
 GITLAB_PROJECT_ID = os.getenv("CI_PROJECT_ID") or 1061
 GITLAB_SERVER_URL = os.getenv(
@@ -41,6 +41,7 @@ def arguments_handler() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Trigger contribution build.")
     parser.add_argument("--github-token", help="Github api token")
     parser.add_argument("--gitlab-api-token", help="Gitlab api token")
+    parser.add_argument("--gitlab-trigger-token", help='Gitlab trigger token')
     return parser.parse_args()
 
 
@@ -105,10 +106,7 @@ def main():
     github_client = Github(login_or_token=args.github_token)
     gitlab_client = Gitlab(oauth_token=args.gitlab_api_token, url=GITLAB_SERVER_URL, ssl_verify=False)
 
-    github_issues: PaginatedList[Issue] = github_client.search_issues(
-        FIND_CONTRIBUTION_PRS_QUERY
-    )
-
+    github_issues: PaginatedList[Issue] = github_client.search_issues(CONTRIBUTION_PRS_QUERY)
     gitlab_project: Project = gitlab_client.projects.get(GITLAB_PROJECT_ID)
 
     # TODO: for testing only - remove
@@ -144,7 +142,8 @@ def main():
                         pipeline.cancel()
 
                 new_pipeline = gitlab_project.trigger_pipeline(
-                    ref=branch.name, token=args.gitlab_api_token
+                    ref=branch.name,
+                    token=args.gitlab_trigger_token,  # FIX: need trigger token here!
                 )
 
                 print(f"New pipeline triggered: {new_pipeline.web_url}")

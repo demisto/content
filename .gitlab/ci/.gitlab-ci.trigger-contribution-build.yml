@@ -17,11 +17,13 @@ trigger-contribution-build:
   variables:
     WORKFLOW: 'Trigger contribution build test'
     GITHUB_TOKEN: $GITHUB_TOKEN
+    GITLAB_API_TOKEN: $GITLAB_API_TOKEN
     PR_NUMBER: $PR_NUMBER
     BASE_BRANCH: $BASE_BRANCH
+    TRIGGER_CONTRIBUTION: $TRIGGER_CONTRIBUTION
     CONTRIB_BRANCH: $CONTRIB_BRANCH
   extends:
     - .trigger-contribution-build-role
   script:
     - pip install PyGithub python-gitlab
-    - python3 ./Utils/trigger_contribution_build.py --github-token "${GITHUB_TOKEN}" --gitlab-api-token "${GITLAB_API_TOKEN}"
+    - python3 ./Utils/trigger_contribution_build.py --github-token "${GITHUB_TOKEN}" --gitlab-api-token "${GITLAB_API_TOKEN} --gitlab-trigger-token "${TRIGGER_CONTRIBUTION}"
