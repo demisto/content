@@ -1568,6 +1568,16 @@ def handle_user_search(args: dict[str, Any], filter: list[str]) -> list[dict[str
 def handle_sort(args: dict[str, Any]) -> list[dict[str, Any]]:
     """
     Handle sort criteria - from user input to API input.
+    For example, for the input:
+        args = {"sort": "Priority,Created time", "sort_direction": "ASC"}
+    The output will be
+        [{
+            "field": "priority",
+            "order": "ASC"
+        },{
+            "field": "created_time",
+            "order": "ASC"
+        }]
 
     Args:
         args (dict[str, Any]): Command arguments from XSOAR.
