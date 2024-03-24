@@ -1648,30 +1648,28 @@ tasks:
     task:
       id: 3ba84f9e-aaf6-4bd3-8d22-cfc00499e075
       version: -1
-      name: Should continue with the playbook's investigation and response?
-      description: Checks if the playbook should continue or exit.
+      name: Check whether there are any unhandled alerts?
+      description: Checks if there are any unhandled alerts and the playbook should continue with the investigation and response or exit.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "20"
-      "yes":
       - "87"
+      "yes":
+      - "20"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: inList
+      - - operator: isExists
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
-                accessor: name
+                root: ContinueResponseForAlerts
             iscontext: true
           right:
-            value:
-              simple: Unusual allocation of multiple cloud compute resources
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1981,9 +1979,7 @@ view: |-
       "44_46_yes": 0.41,
       "52_11_#default#": 0.43,
       "52_53_yes": 0.63,
-      "53_11_#default#": 0.31,
-      "79_20_#default#": 0.35,
-      "79_87_yes": 0.89
+      "53_11_#default#": 0.31
     },
     "paper": {
       "dimensions": {
@@ -2050,18 +2046,23 @@ inputs:
       root: lists
       accessor: PrivateIPs
       transformers:
-      - operator: RegexReplace
+      - operator: RegexExtractAll
         args:
-          action_dt: {}
+          error_if_no_match: {}
           ignore_case: {}
           multi_line: {}
-          output_format: {}
           period_matches_newline: {}
           regex:
             value:
-              simple: IANA_Private_Address
+              simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+          unpack_matches: {}
+      - operator: join
+        args:
+          separator:
+            value:
+              simple: ','
   required: false
-  description: "A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. An example of a list \n\"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes). \nIf a list is not provided, will use the default list provided in the IsIPInRanges."
+  description: "A comma-separated list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation. For example, \n\"172.16.0.0/12,10.0.0.0/8,192.168.0.0/16\" (without quotes)."
   playbookInputQuery:
 - key: InternalDomainName
   value: {}
