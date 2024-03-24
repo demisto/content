@@ -3331,11 +3331,6 @@
             "playbookID": "Infoblox Test"
         },
         {
-            "integrations": "BPA",
-            "playbookID": "Test-BPA",
-            "fromversion": "4.5.0"
-        },
-        {
             "playbookID": "GetValuesOfMultipleFIelds Test",
             "fromversion": "4.5.0"
         },
@@ -3355,11 +3350,6 @@
             "memory_threshold": 500,
             "instance_names": "use_default_handler",
             "is_mockable": false
-        },
-        {
-            "integrations": "BPA",
-            "playbookID": "Test-BPA_Integration",
-            "fromversion": "4.5.0"
         },
         {
             "integrations": "AutoFocus Feed",
