@@ -748,7 +748,7 @@ script:
         - name: threat_command_free_text
           description: Additional information provided by the user when closing a Threat Command alert. Relevant when status=Closed.
         - name: threat_command_close_reason
-          description: The Threat Command reason for closing, applicable only if the investigation being closed has an associated alert in Threat Command. The Close Reason description depends on the Threat Command alert type.  Relevant when status=Closed.
+          description: The Threat Command reason for closing, applicable only if the investigation being closed has an associated alert in Threat Command. The Close Reason description depends on the Threat Command alert type. Relevant when status=Closed.
           auto: PREDEFINED
           predefined:
             - Problem Solved
@@ -828,16 +828,16 @@ script:
           description: Filter investigations by comma-separated values to include only those equals the specified values in the 'organization_id' field.
           isArray: true
         - name: priority
-          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'priority' field.
+          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'priority' field. Valid values - UNSPECIFIED, LOW, MEDIUM, HIGH, CRITICAL.
           isArray: true
         - name: rrn
           description: Filter investigations by comma-separated values to include only those equals the specified values in the 'rrn' field.
           isArray: true
         - name: source
-          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'source' field.
+          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'source' field. Valid values - USER, ALERT.
           isArray: true
         - name: status
-          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'status' field.
+          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'status' field. Valid values - OPEN, CLOSED, INVESTIGATING, WAITING.
           isArray: true
         - name: title
           description: Filter investigations by comma-separated values to include only those containing the specified values in the 'title' field.
