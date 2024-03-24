@@ -357,3 +357,17 @@ def test_add_filename_suffix():
     assert len(my_list) == len(my_list_with_suffix)
     for current_element_index, _ in enumerate(my_list):
         assert f'{my_list[current_element_index]}.sfx' == my_list_with_suffix[current_element_index]
+
+
+def test_get_output_filenames():
+    from rasterize import get_list_item, add_filename_suffix
+
+    file_name = ['foo_01', 'foo_02', 'foo_03']
+    file_names = argToList(file_name)
+    file_names = add_filename_suffix(file_names, 'png')
+
+    assert get_list_item(file_names, 0, "FOO") == 'foo_01.png'
+    assert get_list_item(file_names, 1, "FOO") == 'foo_02.png'
+    assert get_list_item(file_names, 2, "FOO") == 'foo_03.png'
+    assert get_list_item(file_names, 3, "FOO") == 'FOO.png'
+    assert get_list_item(file_names, 4, "FOO") == 'FOO.png'
