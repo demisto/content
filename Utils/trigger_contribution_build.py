@@ -45,7 +45,7 @@ def arguments_handler() -> argparse.Namespace:
 
 
 def cancel_active_pipelines(gitlab_project: Project, branch: ProjectBranch) -> None:
-    """Find all currently active pipelines for a given GitLab branch and cancel them.
+    """Find and cancel all currently active pipelines for a given GitLab branch.
 
     Args:
         gitlab_project (Project): GitLab Project object.
@@ -77,6 +77,7 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
 
             # get the corresponding GitLab branch object corresponding to the GitHub branch
             if branch := gitlab_project.branches.get(github_branch_name):
+                print(f'Handling branch: {branch.name}.')
 
                 cancel_active_pipelines(gitlab_project, branch)
 
