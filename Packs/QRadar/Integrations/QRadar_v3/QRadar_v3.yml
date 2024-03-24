@@ -2448,7 +2448,7 @@ script:
       required: true
     - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html"
       name: fields
-    - description: 'Table headers to use the human readable output (if none provided, will show all table headers).'
+    - description: 'Table headers to use in the human readable output (if none provided, will show all table headers).'
       name: headers
     description: Create a note on an offense.
     name: qradar-create-note
