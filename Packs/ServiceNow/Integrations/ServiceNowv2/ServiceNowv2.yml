@@ -605,7 +605,6 @@ script:
     - description: Short description of the ticket.
       name: short_description
     - auto: PREDEFINED
-      defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:

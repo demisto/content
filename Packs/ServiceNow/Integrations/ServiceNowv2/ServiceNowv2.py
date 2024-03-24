@@ -618,6 +618,7 @@ class Client(BaseClient):
         self.fetch_time = fetch_time
         self.timestamp_field = timestamp_field
         self.ticket_type = ticket_type
+        demisto.debug(f'Client, {ticket_type=}, {self.ticket_type=}')
         self.get_attachments = get_attachments
         self.incident_name = incident_name
         self.sys_param_query = sysparm_query
@@ -807,6 +808,7 @@ class Client(BaseClient):
         Returns:
             the ticket_type if given or the client ticket type
         """
+        demisto.debug(f'get_table_name, {ticket_type=}, {self.ticket_type=}')
         if ticket_type:
             return ticket_type
         return self.ticket_type
@@ -1222,7 +1224,7 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     if not ticket_type_value:
         ticket_type_value = demisto.params().get('ticket_type')
     ticket_type = client.get_table_name(str(ticket_type_value))
-    demisto.debug(f'Using ticket_type: {ticket_type}, from {ticket_type_value}')
+    demisto.debug(f'Using ticket_type: {ticket_type}, from {ticket_type_value} and {args.get("ticket_type")=}')
     ticket_id = str(args.get('id', ''))
     additional_fields = split_fields(str(args.get('additional_fields', '')), fields_delimiter)
     additional_fields_keys = list(additional_fields.keys())
@@ -1231,7 +1233,7 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     input_display_value = argToBoolean(args.get('input_display_value', 'false'))
 
     result = client.update(ticket_type, ticket_id, fields, custom_fields, input_display_value)
-    if not result or 'result' not in result:
+    if not result or 'result' not in result or result.status_code < 200 or result.status_code >= 400:
         raise Exception('Unable to retrieve response.')
     ticket = result['result']
 
@@ -3110,6 +3112,7 @@ def main():
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     command = demisto.command()
+    demisto.debug(f'Executing command {command}')
     LOG(f'Executing command {command}')
 
     params = demisto.params()
@@ -3170,7 +3173,11 @@ def main():
     sysparm_query = params.get('sysparm_query')
     sysparm_limit = int(params.get('fetch_limit', 10))
     timestamp_field = params.get('timestamp_field', 'opened_at')
+    params_ticket_type = params.get('ticket_type')
+    demisto.debug(f'{params_ticket_type=}')
+    # TODO do the default ticket_type in the code and not from the yml
     ticket_type = params.get('ticket_type', INCIDENT)
+    demisto.debug(f'{params_ticket_type=}, {ticket_type=}')
     incident_name = params.get('incident_name', 'number') or 'number'
     get_attachments = params.get('get_attachments', False)
     update_timestamp_field = params.get('update_timestamp_field', 'sys_updated_on') or 'sys_updated_on'
