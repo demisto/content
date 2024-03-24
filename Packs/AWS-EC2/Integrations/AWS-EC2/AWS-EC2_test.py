@@ -445,5 +445,6 @@ def test_create_vpc_endpoint_command(mocker):
     }
     mocker.patch.object(Boto3Client, 'create_vpc_endpoint', return_value=return_boto)
     results = AWS_EC2.create_vpc_endpoint_command({'vpc-id': 'test_endpoint_id',
-                                                   'service-name': 'test'})
+                                                   'service-name': 'test',
+                                                   'tag-specifications': '{"test": "test-tag"}'})
     assert results.outputs == expected_output

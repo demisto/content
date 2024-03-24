@@ -3036,6 +3036,20 @@ def create_vpc_endpoint_command(args: dict) -> CommandResults:
         kwargs.update({'SubnetIds': argToList(subnet_ids)})
     if (security_group_ids := args.get('security-group-ids')) is not None:
         kwargs.update({'SecurityGroupIds': argToList(security_group_ids)})
+    if (dry_run := args.get('dry-run')) is not None:
+        kwargs.update({'DryRun': argToBoolean(dry_run)})
+    if (vpc_endpoint_type := args.get('vpc-endpoint-type')) is not None:
+        kwargs.update({'VpcEndpointType': vpc_endpoint_type})
+    if (policy_document := args.get('policy-document')) is not None:
+        kwargs.update({'PolicyDocument': policy_document})
+    if (route_table_ids := args.get('route-table-ids')) is not None:
+        kwargs.update({'SecurityGroupIds': argToList(route_table_ids)})
+    if (client_token := args.get('client-token')) is not None:
+        kwargs.update({'ClientToken': client_token})
+    if (private_dns_enabled := args.get('private-dns-enabled')) is not None:
+        kwargs.update({'PrivateDnsEnabled': argToBoolean(private_dns_enabled)})
+    if (tag_specifications := args.get('tag-specifications')) is not None:
+        kwargs.update({'TagSpecifications': {'Tags': json.loads(tag_specifications)}})
 
     response = client.create_vpc_endpoint(**kwargs).get('VpcEndpoint')
     outputs = {key: response[key] for key in output_headers if key in response}

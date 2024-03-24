@@ -3557,6 +3557,13 @@ Creates a VPC endpoint.
 | endpoint-type | The type of endpoint. | Optional | 
 | subnet-ids | One or more subnet IDs in which to create the endpoint. | Optional | 
 | security-group-ids | One or more security group IDs to associate with the endpoint. | Optional | 
+| dry-run | Checks whether you have the required permissions for the action, without actually making the request. Possible values are: true, false. | Optional | 
+| vpc-endpoint-type | The type of endpoint. Possible values are: Interface, Gateway, GatewayLoadBalancer. | Optional | 
+| policy-document | A policy document to attach to the endpoint. A JSON policy document that controls access to the service from the endpoint. | Optional | 
+| route-table-ids | One or more route table IDs. | Optional | 
+| client-token | Unique, case-sensitive identifier to ensure the idempotency of the request. | Optional | 
+| private-dns-enabled | Indicates whether to associate a private hosted zone with the specified VPC. Possible values are: true, false. | Optional | 
+| tag-specifications | One or more tags to associate with the endpoint. Should be Json string of key-value tags. | Optional |
 | region | The AWS Region, if not specified the default region will be used. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
