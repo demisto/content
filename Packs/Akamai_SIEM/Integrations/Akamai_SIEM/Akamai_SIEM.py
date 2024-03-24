@@ -365,7 +365,11 @@ def main():
     }
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
+
     try:
+        if params.get("isFetch") and not (0 < arg_to_number(params.get('fetchLimit')) <= 2000):
+            raise DemistoException('Fetch limit must be an integer between 1 and 2000')
+
         if command == 'fetch-incidents':
             incidents, new_last_run = fetch_incidents_command(client,
                                                               fetch_time=params.get('fetchTime'),
