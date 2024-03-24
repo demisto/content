@@ -366,8 +366,8 @@ def test_get_output_filenames():
     file_names = argToList(file_name)
     file_names = add_filename_suffix(file_names, 'png')
 
-    assert get_list_item(file_names, 0, "FOO") == 'foo_01.png'
-    assert get_list_item(file_names, 1, "FOO") == 'foo_02.png'
-    assert get_list_item(file_names, 2, "FOO") == 'foo_03.png'
-    assert get_list_item(file_names, 3, "FOO") == 'FOO.png'
-    assert get_list_item(file_names, 4, "FOO") == 'FOO.png'
+    assert get_list_item(file_names, 0, "FOO.png") == 'foo_01.png'
+    assert get_list_item(file_names, 1, "FOO.png") == 'foo_02.png'
+    assert get_list_item(file_names, 2, "FOO.png") == 'foo_03.png'
+    assert get_list_item(file_names, 3, "FOO.png") == 'FOO.png'
+    assert get_list_item(file_names, 4, "FOO.png") == 'FOO.png'
