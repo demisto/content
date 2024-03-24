@@ -598,8 +598,8 @@ def insight_idr_list_investigations_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    start_time = is_valid_time(args.get("start_time"))
-    end_time = is_valid_time(args.get("end_time"))
+    start_time = raise_on_invalid_time (args.get("start_time"))
+    end_time = raise_on_invalid_time (args.get("end_time"))
 
     # start_time and end_time can come in "last 1 day" format, so we parse it
 
@@ -1403,8 +1403,8 @@ def insight_idr_search_investigation_command(
     """
     search = handle_investigation_search(args, INVESTIGATION_SEARCH)
     sort = handle_sort(args)
-    start_time = is_valid_time(time_str=args.get("start_time"))
-    end_time = is_valid_time(args.get("end_time"))
+    start_time = raise_on_invalid_time (time_str=args.get("start_time"))
+    end_time = raise_on_invalid_time (args.get("end_time"))
 
     results = client.search_investigations(
         search=search,
@@ -1668,7 +1668,7 @@ def to_camel_case(text: str | None) -> str | None:
     return camelize_string(text, " ") if text else None
 
 
-def is_valid_time(time_str: str | None) -> str | None:
+def raise_on_invalid_time (time_str: str | None) -> str | None:
     """
     Validate a time string is a correct time.
 

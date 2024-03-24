@@ -995,19 +995,19 @@ def test_to_camel_case(text, expected):
         ("2001-12-06T16:56:42Z"),
     ],
 )
-def test_is_valid_time(text):
+def test_raise_on_invalid_time(text):
     """
-    Scenario: Test is_valid_time.
+    Scenario: Test raise_on_invalid_time.
     Given:
      - User has provided correct input.
     When:
-     - is_valid_time is called
+     - raise_on_invalid_time is called
     Then:
      - Ensure return values correct.
     """
-    from Rapid7_InsightIDR import is_valid_time
+    from Rapid7_InsightIDR import raise_on_invalid_time
 
-    result = is_valid_time(time_str=text)
+    result = raise_on_invalid_time (time_str=text)
     assert result
 
 
@@ -1017,20 +1017,20 @@ def test_is_valid_time(text):
         ("2018-06-06T16:5611:42Z"),
     ],
 )
-def test_fail_is_valid_time(text):
+def test_fail_raise_on_invalid_time(text):
     """
-    Scenario: Test is_valid_time failed.
+    Scenario: Test raise_on_invalid_time failed.
     Given:
      - User has provided wrong input.
     When:
-     - is_valid_time is called
+     - raise_on_invalid_time is called
     Then:
      - Ensure return values correct.
     """
-    from Rapid7_InsightIDR import is_valid_time
+    from Rapid7_InsightIDR import raise_on_invalid_time
 
     with pytest.raises(ValueError) as error_info:
-        is_valid_time(time_str=text)
+        raise_on_invalid_time (time_str=text)
     assert f'"{text}" is not a valid date' in str(object=error_info.value)
 
 
