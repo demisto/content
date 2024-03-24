@@ -6,7 +6,6 @@ import urllib3
 
 from zipfile import ZipFile
 
-import requests
 
 ''' GLOBAL PARAMS '''
 API_KEY = demisto.params().get('api_key') or demisto.params().get('credentials', {}).get('password')
@@ -1387,7 +1386,7 @@ def vmray_get_license_usage_verdicts_command():     # pragma: no cover
     raw_response = http_request('GET', suffix)
     data = raw_response.get('data')
 
-    entry = dict()
+    entry = {}
     entry['VerdictsQuota'] = data.get('verdict_quota')
     entry['VerdictsRemaining'] = data.get('verdict_remaining')
     entry['VerdictsUsage'] = round((100 / float(data.get('verdict_quota')))
@@ -1417,7 +1416,7 @@ def vmray_get_license_usage_reports_command():      # pragma: no cover
     raw_response = http_request('GET', suffix)
     data = raw_response.get('data')
 
-    entry = dict()
+    entry = {}
     entry['ReportQuota'] = data.get('report_quota')
     entry['ReportRemaining'] = data.get('report_remaining')
     entry['ReportUsage'] = round((100 / float(data.get('report_quota')))

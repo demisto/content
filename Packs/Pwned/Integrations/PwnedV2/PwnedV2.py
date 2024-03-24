@@ -37,12 +37,12 @@ RETRIES_END_TIME = datetime.min
 
 def error_handler(res):
     if res.status_code == 404:
-        return None
+        return
     else:
         demisto.error(
             'Error in API call to Pwned Integration [%d]. Full text: %s' % (res.status_code, res.text))
     return_error('Error in API call to Pwned Integration [%d] - %s' % (res.status_code, res.reason))
-    return None
+    return
 
 
 def http_request(method, url_suffix, params=None, data=None):
@@ -136,7 +136,7 @@ def create_dbot_score_dictionary(indicator_value, indicator_type, dbot_score):
 
 
 def create_context_entry(context_type, context_main_value, comp_sites, comp_pastes, malicious_score):
-    context_dict = dict()  # dict
+    context_dict = {}  # dict
 
     if context_type == 'email':
         context_dict['Address'] = context_main_value
@@ -165,9 +165,9 @@ def add_malicious_to_context(malicious_type):
 
 def email_to_entry_context(email, api_email_res, api_paste_res):
     dbot_score = 0
-    comp_email = dict()  # type: dict
+    comp_email = {}  # type: dict
     comp_sites = sorted([item['Title'] for item in api_email_res])
-    comp_pastes = sorted(set(item['Source'] for item in api_paste_res))
+    comp_pastes = sorted({item['Source'] for item in api_paste_res})
 
     if len(comp_sites) > 0:
         dbot_score = DEFAULT_DBOT_SCORE_EMAIL
@@ -182,7 +182,7 @@ def email_to_entry_context(email, api_email_res, api_paste_res):
 def domain_to_entry_context(domain, api_res):
     comp_sites = [item['Title'] for item in api_res]
     comp_sites = sorted(comp_sites)
-    comp_domain = dict()  # type: dict
+    comp_domain = {}  # type: dict
     dbot_score = 0
 
     if len(comp_sites) > 0:

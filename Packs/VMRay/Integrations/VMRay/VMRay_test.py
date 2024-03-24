@@ -1,7 +1,5 @@
 import time
-import sys
 
-import urllib3
 
 import demistomock as demisto
 import requests_mock
@@ -154,6 +152,7 @@ def test_build_finished_job():
     from VMRay import build_finished_job
 
     assert build_finished_job('test', 'test') == {'JobID': 'test', 'SampleID': 'test', 'Status': 'Finished/NotExists'}
+
 
 def test_billing_type(requests_mock):
     requests_mock.get(
