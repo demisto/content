@@ -60,9 +60,8 @@ configuration:
   - display: Force Use for API Version 2
     name: is_v2
     type: 8
-
     required: false
-    additionalinfo: Whether to force the use of API version 2 in commands that allow choosing the API version.
+    additionalinfo: Whether to force the use of API version 2 in commands that allow choosing the API version. Relevant for investigation commands only.
   - display: Trust any certificate (not secure)
     name: insecure
     type: 8
