@@ -1504,7 +1504,7 @@ script:
       description: 'The ID of the disconnected log collector.'
       type: Number
     - contextPath: QRadar.DisconnectedLogCollector.Name
-      description: 'The name of the Disconnected Log Collector.'
+      description: 'The name of the disconnected log Collector.'
       type: String
     - contextPath: QRadar.DisconnectedLogCollector.Description
       description: 'The description of the disconnected log collector.'
