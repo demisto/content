@@ -38,14 +38,14 @@ def arguments_handler() -> argparse.Namespace:
 
     """
     parser = argparse.ArgumentParser(description="Trigger contribution build.")
-    parser.add_argument("--github-token", help="Github api token")
-    parser.add_argument("--gitlab-api-token", help="Gitlab api token")
+    parser.add_argument("--github-token", help="Github API token")
+    parser.add_argument("--gitlab-api-token", help="Gitlab API token")
     parser.add_argument("--gitlab-trigger-token", help='Gitlab trigger token')
     return parser.parse_args()
 
 
 def cancel_active_pipelines(gitlab_project: Project, branch: ProjectBranch) -> None:
-    """Find all active pipelines for a given branch and cancel them.
+    """Find all currently active pipelines for a given GitLab branch and cancel them.
 
     Args:
         gitlab_project (Project): GitLab Project object.
@@ -59,7 +59,8 @@ def cancel_active_pipelines(gitlab_project: Project, branch: ProjectBranch) -> N
 
 
 def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_project: Project) -> None:
-    """ Create new pipelines for given github issues (prs). Will cancel older active pipelines for each branch if exists.
+    """Given a list of github issues (PRs), create new pipelines for their mirrored GitLab branches.
+    Older active pipelines for each branch will be canceled.
 
     Args:
         args (Namespace): Script arguments.
@@ -68,13 +69,13 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
     """
     for issue in github_issues:
         issue.create_comment(COMMENT_MESSAGES.build_request_accepted)
-        pull_request = issue.as_pull_request()  # Get the github pull request object
+        pull_request = issue.as_pull_request()
         github_branch_name = pull_request.head.ref
 
         # TODO: remove this specific if statement when done testing
         if (github_branch_name == "test-pr/add-trigger-contribution-build-job"):  # noqa: SIM102
 
-            # get the GitLab branch object matching the GitHub branch
+            # get the corresponding GitLab branch object corresponding to the GitHub branch
             if branch := gitlab_project.branches.get(github_branch_name):
 
                 cancel_active_pipelines(gitlab_project, branch)
@@ -88,7 +89,7 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
                 issue.create_comment(COMMENT_MESSAGES.build_triggered.format(url=new_pipeline.web_url))
 
             else:
-                print(f"No branch was found with the name: {github_branch_name}. Pipeline was not triggered.")
+                print(f"No branch was found with the name: {github_branch_name}. New pipeline was not created.")
                 issue.create_comment(COMMENT_MESSAGES.build_trigger_failed.format(branch=github_branch_name))
 
         issue.remove_from_labels(GITHUB_TRIGGER_BUILD_LABEL)
