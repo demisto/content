@@ -33,6 +33,6 @@
 !qradar-log-source-extensions-list
 !qradar-log-source-languages-list
 !qradar-log-source-groups-list
-!qradar-log-source-delete id=1900
-!qradar-log-source-create name=log_source_1 protocol_parameters="param_name_1=param_value_1,param_name_2=param_value_2,...,param_name_n=param_value_n" protocol_type_id=0 target_event_collector_id=7 type_id=11
+!qradar-log-source-delete name=example
+!qradar-log-source-create type_id=11 name=example protocol_type_id=0 protocol_parameters="identifier=id,incomingPayloadEncoding=UTF-8" target_event_collector_id=7
 !qradar-log-source-update id=1900 description="A demo log source"
