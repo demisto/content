@@ -585,7 +585,7 @@ def create_function_command(args: dict[str, str], aws_client) -> CommandResults:
     Returns:
         CommandResults: An object containing the result of the creation operation.
     """
-    output_headers = ['FunctionName', 'FunctionArn', 'Runtime', 'Role', 'Handler', 'CodeSize', 'Description',
+    output_headers = ['FunctionName', 'FunctionArn', 'Runtime', 'Role', 'Handler', 'CodeSize', 'Description', 'Timeout',
                       'MemorySize', 'Version', 'PackageType', 'LastModified', 'VpcConfig', ]
 
     kwargs = prepare_create_function_kwargs(args)
