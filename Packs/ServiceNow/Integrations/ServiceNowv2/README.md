@@ -1099,7 +1099,29 @@ Uploads a file to the specified ticket.
 
 #### Human Readable Output
 
+### servicenow-delete-file
 
+***
+Delete an attachment from a ticket.
+
+#### Base Command
+
+`servicenow-delete-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_sys_id | Attachment File ID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!servicenow-delete-file file_sys_id=1234```
+#### Human Readable Output
+
+>Attachment with Sys ID 1234 was successfully deleted.
 
 ### servicenow-get-record
 ***
