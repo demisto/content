@@ -118,6 +118,16 @@ repos:
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
+  - id: validate-deleted-files
+    name: validate-deleted-files
+    entry: validate-deleted-files
+    language: system
+    require_serial: true
+    pass_filenames: false
+    args:
+      - Packs
+      - Tests
+      - Utils
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker
     description: Run powershell tests
@@ -297,7 +307,7 @@ repos:
     - decorator==5.1.1 ; python_version >= "3.8" and python_version < "3.11"
     - defusedxml==0.7.1 ; python_version >= "3.8" and python_version < "3.11"
     - demisto-py==3.2.13 ; python_version >= "3.8" and python_version < "3.11"
-    - demisto-sdk==1.27.2 ; python_version >= "3.8" and python_version < "3.11"
+    - demisto-sdk==1.27.4 ; python_version >= "3.8" and python_version < "3.11"
     - dictdiffer==0.9.0 ; python_version >= "3.8" and python_version < "3.11"
     - dictor==0.1.12 ; python_version >= "3.8" and python_version < "3.11"
     - distlib==0.3.7 ; python_version >= "3.8" and python_version < "3.11"
