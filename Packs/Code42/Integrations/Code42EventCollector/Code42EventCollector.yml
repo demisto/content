@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Code42EventCollector
+  id: Code42 Event Collector
   version: -1
 configuration:
 - defaultvalue: https://api.us.code42.com
@@ -35,8 +35,8 @@ configuration:
   section: Connect
   advanced: true
 description: 'Code42 Insider Risk software solutions provide the right balance of transparency, technology and training to detect and appropriately respond to data risk. Use the Code42EventCollector integration to fetch file events and audit logs.'
-display: Code42EventCollector
-name: Code42EventCollector
+display: Code42 Event Collector
+name: Code42 Event Collector
 script:
   commands:
   - arguments:

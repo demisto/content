@@ -1,5 +1,5 @@
 Code42 Insider Risk software solutions provide the right balance of transparency, technology and training to detect and appropriately respond to data risk. Use the Code42EventCollector integration to fetch file events and audit logs.
-This integration was integrated and tested with version xx of Code42EventCollector.
+
 
 ## Configure Code42EventCollector on Cortex XSOAR
 
