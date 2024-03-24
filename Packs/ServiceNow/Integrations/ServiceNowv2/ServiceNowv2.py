@@ -529,6 +529,7 @@ def split_notes(raw_notes, note_type, time_info):
         # convert note creation time to UTC
         try:
             display_date_format = time_info.get('display_date_format')
+            display_date_format = (display_date_format.replace('AM', '').replace('PM', '')).strip()
             created_on_UTC = datetime.strptime(created_on, display_date_format) + time_info.get('timezone_offset')
         except ValueError as e:
             raise Exception(f'Failed to convert {created_on} to a datetime object. Error: {e}')
