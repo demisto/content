@@ -173,7 +173,7 @@
                 "native:8.6",
                 "native:candidate"
             ]
-        },
+        }
     ],
     "flags_versions_mapping":{
         "native:dev":"native:dev",
