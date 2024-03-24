@@ -90,7 +90,7 @@ script:
       name: to_epoch
     - description: Timestamp of events (<number> <time unit>. For example, 12 hours, 7 days.
       name: time_stamp
-    description: Get security events from Akamai WAF
+    description: Get security events from Akamai WAF.
     name: akamai-siem-get-events
     outputs:
     - contextPath: Akamai.SIEM.AttackData.clientIP
@@ -165,7 +165,7 @@ script:
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
-  dockerimage: demisto/auth-utils:1.0.0.76157
+  dockerimage: demisto/auth-utils:1.0.0.90978
   isfetch: true
   runonce: false
   script: '-'
