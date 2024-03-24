@@ -84,6 +84,10 @@ def list_clusters_command(aws_client: AWSClient, args: dict) -> CommandResults:
 
     md_table = {
         'ClustersNames': list_clusters,
+    }
+
+    outputs = {
+        'ClustersNames': list_clusters,
         'NextToken': next_token
     }
 
@@ -95,8 +99,8 @@ def list_clusters_command(aws_client: AWSClient, args: dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='AWS.EKS.Cluster',
-        outputs=md_table,
-        raw_response=md_table,
+        outputs=outputs,
+        raw_response=outputs,
     )
 
 

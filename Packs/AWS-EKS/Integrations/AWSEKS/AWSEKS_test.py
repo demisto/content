@@ -167,6 +167,7 @@ def test_list_clusters_command(mocker):
                        None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
     result = list_clusters_command(client, {})
     assert result.readable_output == '### The list of clusters\n|ClustersNames|\n|---|\n| cluster_name_1 |\n'
+    assert result.outputs == {'ClustersNames': ['cluster_name_1'], 'NextToken': None}
 
 
 def test_list_clusters_command_with_next_token(mocker):
@@ -190,8 +191,8 @@ def test_list_clusters_command_with_next_token(mocker):
     client = AWSClient("aws_default_region", None, None, None,
                        None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
     result = list_clusters_command(client, {'limit': '1'})
-    assert result.readable_output == ('### The list of clusters\n|ClustersNames|NextToken|\n|---|---|\n'
-                                      '| cluster_name_1 | NextToken |\n')
+    assert result.readable_output == '### The list of clusters\n|ClustersNames|\n|---|\n| cluster_name_1 |\n'
+    assert result.outputs == {'ClustersNames': ['cluster_name_1'], 'NextToken': 'NextToken'}
 
 
 def test_list_clusters_command_with_pagination(mocker):
@@ -211,8 +212,10 @@ def test_list_clusters_command_with_pagination(mocker):
     client = AWSClient("aws_default_region", None, None, None,
                        None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
     result = list_clusters_command(client, {'limit': '200'})
-    assert result.readable_output == ('### The list of clusters\n|ClustersNames|\n|---|\n| '
-                                      'cluster_name_1,<br>cluster_name_100,<br>cluster_name_101 |\n')
+    assert result.readable_output == ('### The list of clusters\n|ClustersNames|\n|---|\n| cluster_name_1 |\n| cluster_name_100 '
+                                      '|\n| cluster_name_101 |\n')
+    assert result.outputs == {'ClustersNames': ['cluster_name_1', 'cluster_name_100', 'cluster_name_101'],
+                              'NextToken': None}
 
 
 def test_update_cluster_config_command(mocker):
@@ -250,8 +253,8 @@ def test_describe_cluster_command(mocker):
             - assert that the readable output and outputs are correct.
     """
     from AWSEKS import describe_cluster_command
-    expected_readable_output = ""
-    expected_output = ""
+    expected_readable_output = util_load_json("test_data/describe_cluster.json").get('expected_readable_output')
+    expected_output = util_load_json("test_data/describe_cluster.json").get('expected_outputs')
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "describe_cluster", return_value=DESCRIBE_CLUSTER_RESPONSE)
     client = AWSClient("aws_default_region", None, None, None,
