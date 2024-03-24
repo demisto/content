@@ -866,6 +866,24 @@ class TestJiraDeleteIssueCommand:
         assert 'Issue deleted successfully' in command_result.to_context().get('HumanReadable')
 
 
+class TestJiraDeleteAttachmentFileCommand:
+    def test_delete_attachment_file_command(self, mocker: MockerFixture):
+        """
+        Given:
+            - A Jira client.
+        When
+            - Calling the delete attachment file command.
+        Then
+            - Validate that the correct readable output is outputted to the user.
+        """
+        from JiraV3 import delete_attachment_file_command
+        attachment_id = "dummy_id"
+        client = jira_base_client_mock()
+        mocker.patch.object(client, 'delete_attachment_file', return_value=requests.Response())
+        command_result = delete_attachment_file_command(client=client, args={'attachment_id': attachment_id})
+        assert f'Attachment id {attachment_id} was deleted successfully' in command_result.to_context().get('HumanReadable')
+
+
 class TestJiraGetTransitionsCommand:
     def test_get_transitions_command(self, mocker):
         """

@@ -807,6 +807,12 @@ script:
     description: Delete a comment from an issue.
     name: jira-issue-delete-comment
   - arguments:
+    - description: The attachment ID. In order to see the attachment ID please use the jira-get-issue command.
+      name: attachment_id
+      required: true
+    description: Delete an attachment from an issue.
+    name: jira-issue-delete-file
+  - arguments:
     - description: The issue ID (Issue ID or key is required).
       name: issue_id
     - description: The issue key (Issue ID or key is required).
@@ -1462,7 +1468,7 @@ script:
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
     arguments: []
-  dockerimage: demisto/btfl-soup:1.0.1.87353
+  dockerimage: demisto/btfl-soup:1.0.1.89280
   isfetch: true
   ismappable: true
   isremotesyncin: true

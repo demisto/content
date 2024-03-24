@@ -2319,6 +2319,41 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 80d1c831-18ef-487b-8de9-4b1d47576ff3
+    type: regular
+    task:
+      id: 80d1c831-18ef-487b-8de9-4b1d47576ff3
+      version: -1
+      name: Delete file from issue
+      description: Deletes an attachment from an issue.
+      script: '|||jira-issue-delete-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      attachment_id:
+        simple: ${Ticket.Attachments.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 4160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
