@@ -2288,6 +2288,41 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: e7e61a8a-dc8e-484a-8127-69f0e6b049bb
+    type: regular
+    task:
+      id: e7e61a8a-dc8e-484a-8127-69f0e6b049bb
+      version: -1
+      name: Delete attachment file
+      description: Delete an attachment from a ticket.
+      script: '|||servicenow-delete-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      file_sys_id:
+        simple: ${ServiceNow.Ticket.File.SystemID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 5850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
