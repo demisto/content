@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-from typing import Dict, Any
+from typing import Any
 import logging
 from datetime import datetime
 
@@ -30,7 +30,6 @@ ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 class FetchIncidentsError(Exception):
     """Raised when there's an error in fetching incidents."""
-    pass
 
 
 class Client(BaseClient):
@@ -788,7 +787,7 @@ def generate_account_takeover_cases_incidents(client, cases):
 
 def fetch_incidents(
         client: Client,
-        last_run: Dict[str, Any],
+        last_run: dict[str, Any],
         first_fetch_time: str,
         fetch_threats: bool,
         fetch_abuse_campaigns: bool,

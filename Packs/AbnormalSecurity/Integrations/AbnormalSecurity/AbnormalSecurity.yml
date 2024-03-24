@@ -65,24 +65,24 @@ script:
   - arguments:
     - description: Value must be of the format `filter={FILTER KEY} gte YYYY-MM-DDTHH:MM:SSZ lte YYYY-MM-DDTHH:MM:SSZ`. A `{FILTER KEY}` must be specified, and currently the only keys that are supported for `/threats` are `receivedTime` and `lastModifiedTime`. At least 1 of `gte`/`lte` must be specified, with a datetime string following the `YYYY-MM-DDTHH:MM:SSZ format`.
       name: filter
-    - description: Filters threats based on the email subject
+    - description: Filters threats based on the email subject.
       name: subject
-    - description: Filters threats based on the name or email address of the sender
+    - description: Filters threats based on the name or email address of the sender.
       name: sender
-    - description: Filters threats based on the name or email address of the recipient
+    - description: Filters threats based on the name or email address of the recipient.
       name: recipient
-    - description: 'Filters threats based on the topic of email contents  Available values : Billing Account Update, Covid-19 Related Attack, Cryptocurrency, Invoice, Invoice Inquiry'
+    - description: 'Filters threats based on the topic of email contents  Available values : Billing Account Update, Covid-19 Related Attack, Cryptocurrency, Invoice, Invoice Inquiry.'
       name: topic
       auto: PREDEFINED
       predefined:
       - Billing Account Update
-    - description: 'Filters threats based on the type of attack  Available values : Internal-to-Internal Attacks (Email Account Takeover), Spam, Reconnaissance, Scam, Social Engineering (BEC), Phishing: Credential, Invoice/Payment Fraud (BEC), Malware, Extortion, Phishing: Sensitive Data, Other'
+    - description: 'Filters threats based on the type of attack  Available values : Internal-to-Internal Attacks (Email Account Takeover), Spam, Reconnaissance, Scam, Social Engineering (BEC), Phishing: Credential, Invoice/Payment Fraud (BEC), Malware, Extortion, Phishing: Sensitive Data, Other.'
       name: attackType
       auto: PREDEFINED
       predefined:
       - Internal-to-Internal Attacks (Email Account Takeover)
     - auto: PREDEFINED
-      description: 'Filters threats based on the attack vector  Available values : Link, Attachment, Text, Others, Attachment with Zipped File'
+      description: 'Filters threats based on the attack vector  Available values : Link, Attachment, Text, Others, Attachment with Zipped File.'
       name: attackVector
       predefined:
       - Link
@@ -403,16 +403,16 @@ script:
       name: mock-data
     - description: Subtenant of the user (if applicable).
       name: subtenant
-    - description: Filters threats based on the email subject
+    - description: Filters threats based on the email subject.
       name: subject
-    - description: Filters threats based on the name or email address of the sender
+    - description: Filters threats based on the name or email address of the sender.
       name: sender
-    - description: Filters threats based on the name or email address of the recipient
+    - description: Filters threats based on the name or email address of the recipient.
       name: recipient
-    - description: Filters threats based on the reporter name or email address
+    - description: Filters threats based on the reporter name or email address.
       name: reporter
     - auto: PREDEFINED
-      description: Filters threats based on the type of attack
+      description: Filters threats based on the type of attack.
       name: attackType
       predefined:
       - Internal-to-Internal Attacks (Email Account Takeover)
@@ -427,7 +427,7 @@ script:
       - 'Phishing: Sensitive Data'
       - Other
     - auto: PREDEFINED
-      description: Filters threats based on the type of attack
+      description: Filters threats based on the type of attack.
       name: threatType
       predefined:
       - All
@@ -753,13 +753,13 @@ script:
       description: The reason the message was not analyzed.
       type: String
 
-    - arguments:
-        - description: Returns test data if set to `True`.
-          name: mock-data
-      description: Get the latest threat intel feed.
-      name: abnormal-security-get-latest-threat-intel-feed
-      deprecated: true
-  dockerimage: demisto/python3:3.10.13.88772
+  - arguments:
+    - description: Returns test data if set to `True`.
+      name: mock-data
+    description: Get the latest threat intel feed.
+    name: abnormal-security-get-latest-threat-intel-feed
+    deprecated: true
+  dockerimage: demisto/python3:3.10.14.90585
   script: ""
   subtype: python3
   type: python
