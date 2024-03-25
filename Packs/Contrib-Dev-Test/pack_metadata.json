@@ -1,0 +1,21 @@
+{
+    "name": "contrib-dev-test",
+    "description": "Test new pack from local dev env",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Kobbi Gal",
+    "url": "",
+    "email": "",
+    "created": "2024-03-25T15:12:07Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "kgal-pan"
+    ]
+}
