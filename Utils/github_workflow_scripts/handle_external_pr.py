@@ -87,7 +87,7 @@ def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
         equal = all(reviewer == values[0] for reviewer in values)
         if equal:
             return randint(0, len(values) - 1)
-        values.pop(len(values)-1)
+        values.pop(len(values) - 1)
     return 0
 
 
