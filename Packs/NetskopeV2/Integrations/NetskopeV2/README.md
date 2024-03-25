@@ -11,7 +11,6 @@ This integration was integrated and tested with version 91.0.6.575 of Netskope (
     | --- | --- |
     | URL of Netskope Tenant (e.g. https://tenant.goskope.com) | True |
     | API Key | False |
-    | API Key | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
