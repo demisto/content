@@ -1,4 +1,4 @@
-[file:Packs/GoogleCloudCompute/README.md]
+[file:README.md]
 ignore=RM104
 
 [file:playbook-IP_Whitelist_-_GCP_Firewall.yml]
