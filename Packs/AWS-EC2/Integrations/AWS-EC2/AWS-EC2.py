@@ -3056,12 +3056,12 @@ def create_vpc_endpoint_command(args: dict) -> CommandResults:
 
     outputs = {key: response[key] for key in output_headers if key in response}
 
-    human_readable = tableToMarkdown('VPC Endpoint', outputs, headerTransform=pascalToSpace)
+    human_readable = tableToMarkdown('VPC Endpoint', outputs, headerTransform=pascalToSpace, removeNull=True)
 
     command_results = CommandResults(
         outputs_prefix="AWS.EC2.Vpcs.VpcEndpoint",
         outputs_key_field="VpcEndpointId",
-        outputs=outputs,
+        outputs=remove_empty_elements(response),
         raw_response=response,
         readable_output=human_readable,
     )
