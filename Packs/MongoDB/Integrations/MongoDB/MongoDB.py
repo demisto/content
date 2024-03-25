@@ -82,7 +82,7 @@ class Client:
             entry:
 
         Returns:
-            object with `_id` key as str.
+            object with `_id` key as str .
 
         Examples:
             >>> Client.normalize_id({'_id': ObjectId('5e4412f230c5b8f63a7356ba')})
