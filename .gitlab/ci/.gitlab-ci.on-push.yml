@@ -99,6 +99,28 @@ run-unittests-and-lint:
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
+run-pre-commit:
+  extends:
+    - .run-pre-commit
+  cache:
+    policy: pull-push
+
+  rules:
+    - if: '$BUCKET_UPLOAD == "true"'
+      when: never
+    - if: '$SECURITY_SCANS == "true"'
+      when: never
+    - if: '$BUILD_MACHINES_CLEANUP == "true"'
+      when: never
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
+      when: never
+    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
+      when: never
+
+    # In sdk nighly we run this separately 
+    - if: '$DEMISTO_SDK_NIGHTLY != "true"'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
   extends:
