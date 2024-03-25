@@ -9,10 +9,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 349eb7a2-d444-4f0d-8d6a-ba203979514c
+    taskid: 3a991b4c-240f-49c3-88b8-43b0ab5043b4
     type: start
     task:
-      id: 349eb7a2-d444-4f0d-8d6a-ba203979514c
+      id: 3a991b4c-240f-49c3-88b8-43b0ab5043b4
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 186a7d07-7e23-44a1-8475-ce9ab2b98044
+    taskid: a05cdba9-c578-4dbf-8ed9-084c27b9c48b
     type: regular
     task:
-      id: 186a7d07-7e23-44a1-8475-ce9ab2b98044
+      id: a05cdba9-c578-4dbf-8ed9-084c27b9c48b
       version: -1
       name: Delete context
       scriptName: DeleteContext
@@ -73,10 +73,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 972aa8d4-23ac-40c8-8d7e-8f3079c5eec4
+    taskid: f4b72821-0066-4501-8f10-b92588ff0666
     type: regular
     task:
-      id: 972aa8d4-23ac-40c8-8d7e-8f3079c5eec4
+      id: f4b72821-0066-4501-8f10-b92588ff0666
       version: -1
       name: Send mail using Mail Sender With attachments
       script: Mail Sender (New)|||send-mail
@@ -116,10 +116,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 8baccd56-c2b3-4051-8b7b-9ac399353b8a
+    taskid: 39c0ab1f-87eb-4490-8019-6b8b3a343da1
     type: regular
     task:
-      id: 8baccd56-c2b3-4051-8b7b-9ac399353b8a
+      id: 39c0ab1f-87eb-4490-8019-6b8b3a343da1
       version: -1
       name: Wait for mail to be received (Sleep)
       scriptName: Sleep
@@ -150,10 +150,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 27ed1a03-578a-4b5d-8297-6ecb397581de
+    taskid: a0221df8-22b7-43da-8dc5-acb6f53e9259
     type: regular
     task:
-      id: 27ed1a03-578a-4b5d-8297-6ecb397581de
+      id: a0221df8-22b7-43da-8dc5-acb6f53e9259
       version: -1
       name: Search for email sent and get ID
       description: Searches for Gmail records of a specified Google user.
@@ -203,10 +203,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 4f67a891-e739-4e9a-8d27-b53c83de59d4
+    taskid: 2f9a7214-8356-4c26-8fb5-9af949dca56d
     type: condition
     task:
-      id: 4f67a891-e739-4e9a-8d27-b53c83de59d4
+      id: 2f9a7214-8356-4c26-8fb5-9af949dca56d
       version: -1
       name: Check if email was found (if ID exists)
       type: condition
@@ -243,10 +243,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 6dad4817-a93e-46da-8b8d-29d09977dd29
+    taskid: af0a1c80-7657-4004-8046-4693fe7d7d34
     type: regular
     task:
-      id: 6dad4817-a93e-46da-8b8d-29d09977dd29
+      id: af0a1c80-7657-4004-8046-4693fe7d7d34
       version: -1
       name: Delete email list from context
       description: |-
@@ -281,10 +281,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 8da6b4c1-cda6-479f-8d14-4f35252187a8
+    taskid: 11f8d392-21e4-48ab-830b-1e75020c0a69
     type: regular
     task:
-      id: 8da6b4c1-cda6-479f-8d14-4f35252187a8
+      id: 11f8d392-21e4-48ab-830b-1e75020c0a69
       version: -1
       name: Save the retrieved mail's ID under a key for search in inbox
       scriptName: Set
@@ -319,10 +319,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: c347110b-3747-40c8-8ea9-666df07befc4
+    taskid: 57ee62eb-3826-443e-8f73-02238b629959
     type: regular
     task:
-      id: c347110b-3747-40c8-8ea9-666df07befc4
+      id: 57ee62eb-3826-443e-8f73-02238b629959
       version: -1
       name: Wait for mail to receive
       scriptName: Sleep
@@ -353,10 +353,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 55126a7c-5c19-4dcf-8ec2-dfb05b5473a6
+    taskid: 37c68a07-5ed8-4388-85c1-71632175b1ff
     type: condition
     task:
-      id: 55126a7c-5c19-4dcf-8ec2-dfb05b5473a6
+      id: 37c68a07-5ed8-4388-85c1-71632175b1ff
       version: -1
       name: Check if email was found
       type: condition
@@ -393,10 +393,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: ed4f1584-acf1-4d44-8119-529bffea7906
+    taskid: c2aa3e61-4d99-4644-8f47-9cc09bee64c2
     type: regular
     task:
-      id: ed4f1584-acf1-4d44-8119-529bffea7906
+      id: c2aa3e61-4d99-4644-8f47-9cc09bee64c2
       version: -1
       name: Fetch email from google mail using message ID
       description: Retrieves the Gmail message sent to a specified user.
@@ -434,10 +434,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: f0d34a8d-5e2a-48e4-8c2e-610350567bee
+    taskid: 2caa9f8e-32dc-43a3-8f11-dea0d78b59a1
     type: condition
     task:
-      id: f0d34a8d-5e2a-48e4-8c2e-610350567bee
+      id: 2caa9f8e-32dc-43a3-8f11-dea0d78b59a1
       version: -1
       name: Check for attachments
       type: condition
@@ -474,10 +474,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 3601f097-7e1b-4c01-89e1-259f6d888da7
+    taskid: 6b3a09d2-9307-42c1-8ae3-d06fb0973695
     type: title
     task:
-      id: 3601f097-7e1b-4c01-89e1-259f6d888da7
+      id: 6b3a09d2-9307-42c1-8ae3-d06fb0973695
       version: -1
       name: Test email was found with the attachment!
       type: title
@@ -505,10 +505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: c477e747-1bd6-4de9-82b1-a279b71dde71
+    taskid: 4e123114-b8c5-4ba7-8baa-eaff62476507
     type: regular
     task:
-      id: c477e747-1bd6-4de9-82b1-a279b71dde71
+      id: 4e123114-b8c5-4ba7-8baa-eaff62476507
       version: -1
       name: Email found without attachment
       type: regular
@@ -536,10 +536,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 2f0799d4-93ff-42c2-8b32-5fea8b940e50
+    taskid: ca75ac43-ee74-4cfe-8326-1fb33376384c
     type: regular
     task:
-      id: 2f0799d4-93ff-42c2-8b32-5fea8b940e50
+      id: ca75ac43-ee74-4cfe-8326-1fb33376384c
       version: -1
       name: Test failed
       type: regular
@@ -567,10 +567,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 242eef29-3f40-44f2-8b50-edabdabdebd0
+    taskid: 9a76cc77-d78a-49c7-8ef3-27df6756610b
     type: regular
     task:
-      id: 242eef29-3f40-44f2-8b50-edabdabdebd0
+      id: 9a76cc77-d78a-49c7-8ef3-27df6756610b
       version: -1
       name: Wait for mail to receive
       scriptName: Sleep
@@ -601,10 +601,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: deaa034f-5bd7-4168-8ef4-d1afc3025b96
+    taskid: 52ae122f-c942-40f1-8a5a-1b19f9dc7abc
     type: regular
     task:
-      id: deaa034f-5bd7-4168-8ef4-d1afc3025b96
+      id: 52ae122f-c942-40f1-8a5a-1b19f9dc7abc
       version: -1
       name: Search for email sent (ID)
       description: Searches for Gmail records of a specified Google user.
@@ -654,10 +654,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: b7628a7e-45b5-4a0c-89e2-9e480ca734d0
+    taskid: 50b0f4a0-5616-4cbe-85d3-9f8dc24c4f5e
     type: condition
     task:
-      id: b7628a7e-45b5-4a0c-89e2-9e480ca734d0
+      id: 50b0f4a0-5616-4cbe-85d3-9f8dc24c4f5e
       version: -1
       name: Check if email was found
       type: condition
@@ -694,10 +694,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 3d2cc0ce-3253-451e-8b0e-023b281e9bf7
+    taskid: 7192281b-b85a-49bd-8ed7-36a5d2c2f48a
     type: regular
     task:
-      id: 3d2cc0ce-3253-451e-8b0e-023b281e9bf7
+      id: 7192281b-b85a-49bd-8ed7-36a5d2c2f48a
       version: -1
       name: Start Over - Send several files
       scriptName: DeleteContext
@@ -728,10 +728,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: da598d63-fefb-48fa-890c-420a43e097e2
+    taskid: c3e76a7d-189b-420a-8334-c91d954d8369
     type: regular
     task:
-      id: da598d63-fefb-48fa-890c-420a43e097e2
+      id: c3e76a7d-189b-420a-8334-c91d954d8369
       version: -1
       name: Send mail using python
       script: Mail Sender (New)|||send-mail
@@ -777,10 +777,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 8c726ccf-e281-4112-8e0c-8ec62ed2dcd2
+    taskid: d846195d-6d63-4f21-8a75-08ea99edb7a6
     type: regular
     task:
-      id: 8c726ccf-e281-4112-8e0c-8ec62ed2dcd2
+      id: d846195d-6d63-4f21-8a75-08ea99edb7a6
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
@@ -811,10 +811,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: e756d102-75c1-428a-8d0e-f3ccce125f62
+    taskid: f2814475-3437-48b7-83ab-997404850240
     type: condition
     task:
-      id: e756d102-75c1-428a-8d0e-f3ccce125f62
+      id: f2814475-3437-48b7-83ab-997404850240
       version: -1
       name: Check if email was found (if ID exists)
       type: condition
@@ -851,10 +851,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 13d6f404-689d-4738-85c1-f1d11409afe6
+    taskid: 105b5de8-ed3b-4590-8d02-d0c30cc8ad67
     type: regular
     task:
-      id: 13d6f404-689d-4738-85c1-f1d11409afe6
+      id: 105b5de8-ed3b-4590-8d02-d0c30cc8ad67
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
@@ -885,10 +885,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 33d2d1d3-13dc-4260-884b-f872fa97cdc3
+    taskid: cf4e7770-d5d8-49ea-84f7-131160da4919
     type: condition
     task:
-      id: 33d2d1d3-13dc-4260-884b-f872fa97cdc3
+      id: cf4e7770-d5d8-49ea-84f7-131160da4919
       version: -1
       name: Check if email was found (if ID exists)
       type: condition
@@ -925,10 +925,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 07a88123-47b3-43fe-8ec6-13a81df3a896
+    taskid: 6470698d-bdec-4fbf-814f-13058a712c7b
     type: condition
     task:
-      id: 07a88123-47b3-43fe-8ec6-13a81df3a896
+      id: 6470698d-bdec-4fbf-814f-13058a712c7b
       version: -1
       name: Check if email was found (if ID exists)
       type: condition
@@ -965,10 +965,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 5826b16b-3a76-4422-85ee-240d9428a1e5
+    taskid: 4c43895d-b5aa-4ccc-8ade-52b50b59d88a
     type: regular
     task:
-      id: 5826b16b-3a76-4422-85ee-240d9428a1e5
+      id: 4c43895d-b5aa-4ccc-8ade-52b50b59d88a
       version: -1
       name: Wait for mail to be received
       scriptName: Sleep
@@ -999,10 +999,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: fe11fadc-9e06-4c85-80cb-82e41e706207
+    taskid: 59dc960a-38c8-4709-849d-d8f29b9f9f20
     type: regular
     task:
-      id: fe11fadc-9e06-4c85-80cb-82e41e706207
+      id: 59dc960a-38c8-4709-849d-d8f29b9f9f20
       version: -1
       name: Save the retrieved mail's ID under a key for search in inbox
       scriptName: Set
@@ -1037,10 +1037,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 360096ba-0c33-4a04-8a49-0c9a6d6797c4
+    taskid: 6c9a344d-9808-4b89-8a6a-ea58659f063e
     type: regular
     task:
-      id: 360096ba-0c33-4a04-8a49-0c9a6d6797c4
+      id: 6c9a344d-9808-4b89-8a6a-ea58659f063e
       version: -1
       name: Delete email list from context
       description: |-
@@ -1075,10 +1075,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: b28db34e-8a66-4324-8c8a-0ebd1f21472c
+    taskid: 43ea1310-7fef-4e3d-88a0-24402ee1114c
     type: regular
     task:
-      id: b28db34e-8a66-4324-8c8a-0ebd1f21472c
+      id: 43ea1310-7fef-4e3d-88a0-24402ee1114c
       version: -1
       name: Fetch email from google mail using message ID
       description: Retrieves the Gmail message sent to a specified user.
@@ -1114,10 +1114,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 008b8283-9c81-42c8-8607-e3bc48b30127
+    taskid: dc37b6d4-f319-4948-8306-3fb1e9db5f5f
     type: regular
     task:
-      id: 008b8283-9c81-42c8-8607-e3bc48b30127
+      id: dc37b6d4-f319-4948-8306-3fb1e9db5f5f
       version: -1
       name: Create a new File
       scriptName: FileCreateAndUploadV2
@@ -1152,10 +1152,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 8543b006-fe28-492a-8c01-0afacd1c6190
+    taskid: b3ba9e7b-4c40-460d-8f74-0a2bf13c96c9
     type: condition
     task:
-      id: 8543b006-fe28-492a-8c01-0afacd1c6190
+      id: b3ba9e7b-4c40-460d-8f74-0a2bf13c96c9
       version: -1
       name: Check for attachments
       type: condition
@@ -1192,10 +1192,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: abf3b41f-a997-47d5-813a-ec1f45c65ece
+    taskid: 0f047b64-20ba-4805-8da1-1048b6e6e8ff
     type: regular
     task:
-      id: abf3b41f-a997-47d5-813a-ec1f45c65ece
+      id: 0f047b64-20ba-4805-8da1-1048b6e6e8ff
       version: -1
       name: Email found without attachment
       type: regular
@@ -1236,10 +1236,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: a1fe8b99-6918-440a-8375-fd68be3e9aa9
+    taskid: 7077a00c-3c9b-4114-8362-f480536b3292
     type: title
     task:
-      id: a1fe8b99-6918-440a-8375-fd68be3e9aa9
+      id: 7077a00c-3c9b-4114-8362-f480536b3292
       version: -1
       name: Finished Successfully
       type: title
@@ -1264,10 +1264,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: a23d4b02-969b-4929-88cb-34b39326ce26
+    taskid: b960e19c-88d7-4ec3-8a41-2ec7535a8680
     type: condition
     task:
-      id: a23d4b02-969b-4929-88cb-34b39326ce26
+      id: b960e19c-88d7-4ec3-8a41-2ec7535a8680
       version: -1
       name: Check for attachments
       type: condition
@@ -1316,10 +1316,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: a187e032-a928-4afa-890a-0ad95397506d
+    taskid: 074b4fcc-2968-4d13-8ebd-0861d33eccf7
     type: regular
     task:
-      id: a187e032-a928-4afa-890a-0ad95397506d
+      id: 074b4fcc-2968-4d13-8ebd-0861d33eccf7
       version: -1
       name: Get Time Now
       description: |
@@ -1352,10 +1352,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 5a6a99a2-c0d0-4cd4-80e3-55a22c46c58f
+    taskid: ce86b1fc-8b11-41f0-8439-28c9df2759b7
     type: regular
     task:
-      id: 5a6a99a2-c0d0-4cd4-80e3-55a22c46c58f
+      id: ce86b1fc-8b11-41f0-8439-28c9df2759b7
       version: -1
       name: Search for email sent and get ID
       description: Searches for Gmail records of a specified Google user.
@@ -1405,10 +1405,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 9e60c2a8-ead2-4144-8d6a-95f5455607ed
+    taskid: 8cc20a39-8e6e-419b-8f09-2d83dd3cc19d
     type: regular
     task:
-      id: 9e60c2a8-ead2-4144-8d6a-95f5455607ed
+      id: 8cc20a39-8e6e-419b-8f09-2d83dd3cc19d
       version: -1
       name: Get Time Now
       description: |
@@ -1443,10 +1443,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 4971e278-265c-41b5-841b-28922844726f
+    taskid: 5f071502-41bc-45ff-8247-b9d85a954a1e
     type: regular
     task:
-      id: 4971e278-265c-41b5-841b-28922844726f
+      id: 5f071502-41bc-45ff-8247-b9d85a954a1e
       version: -1
       name: Search for email sent and get ID
       description: Searches for Gmail records of a specified Google user.
@@ -1496,10 +1496,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: aaa59540-cabf-48e7-80b1-807c057c4356
+    taskid: b6b4b7e8-236c-434c-8bf7-182b3bff0975
     type: regular
     task:
-      id: aaa59540-cabf-48e7-80b1-807c057c4356
+      id: b6b4b7e8-236c-434c-8bf7-182b3bff0975
       version: -1
       name: Search for email sent and get ID
       description: Searches for Gmail records of a specified Google user.
@@ -1549,10 +1549,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 3fd98f50-c29a-4c49-8260-e01cb641ba07
+    taskid: 632ce9f7-f175-432c-84b0-239188fb1beb
     type: regular
     task:
-      id: 3fd98f50-c29a-4c49-8260-e01cb641ba07
+      id: 632ce9f7-f175-432c-84b0-239188fb1beb
       version: -1
       name: Search for email sent and get ID
       description: Searches for Gmail records of a specified Google user.
@@ -1602,10 +1602,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: c0c83903-d575-4ff3-85f0-19eccf4f92e7
+    taskid: a38eb090-2b2f-4ea6-85b5-80bc1598674d
     type: condition
     task:
-      id: c0c83903-d575-4ff3-85f0-19eccf4f92e7
+      id: a38eb090-2b2f-4ea6-85b5-80bc1598674d
       version: -1
       name: Check for attachments
       type: condition
@@ -1654,10 +1654,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 5abcf484-cc7b-4fca-82f6-5b6d1365832a
+    taskid: fbeaed8b-5cf8-449c-838e-691f31ad7391
     type: regular
     task:
-      id: 5abcf484-cc7b-4fca-82f6-5b6d1365832a
+      id: fbeaed8b-5cf8-449c-838e-691f31ad7391
       version: -1
       name: Set eml content
       description: Set a value in context under the key you entered.
@@ -1691,10 +1691,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 0dd26e83-57f4-4c02-8090-44d711118e09
+    taskid: da7500b0-4d4d-4b26-851c-d2761d5a60bb
     type: regular
     task:
-      id: 0dd26e83-57f4-4c02-8090-44d711118e09
+      id: da7500b0-4d4d-4b26-851c-d2761d5a60bb
       version: -1
       name: Read txt File Attachment
       description: Load the contents of a file into context.
@@ -1737,10 +1737,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: 31bb831d-5bb7-4777-8a87-99ba8442b4d5
+    taskid: 1d2092ef-d6ce-4be3-8145-63299948ae8c
     type: condition
     task:
-      id: 31bb831d-5bb7-4777-8a87-99ba8442b4d5
+      id: 1d2092ef-d6ce-4be3-8145-63299948ae8c
       version: -1
       name: Verify Attachment txt File Unchanged
       type: condition
@@ -1756,7 +1756,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ReadFile.Data
+              simple: FileData
             iscontext: true
           right:
             value:
@@ -1779,10 +1779,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: e0cec10b-0a4e-463c-852e-d251ef960a8f
+    taskid: 12b4bf74-2a01-4510-8737-768d6ea93f7d
     type: regular
     task:
-      id: e0cec10b-0a4e-463c-852e-d251ef960a8f
+      id: 12b4bf74-2a01-4510-8737-768d6ea93f7d
       version: -1
       name: Set txt content
       description: Set a value in context under the key you entered.
@@ -1816,10 +1816,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: a4df890c-583e-4eb1-8383-f0682bce1464
+    taskid: 87d1836d-7ee0-4361-81c6-8e0b0a245a45
     type: regular
     task:
-      id: a4df890c-583e-4eb1-8383-f0682bce1464
+      id: 87d1836d-7ee0-4361-81c6-8e0b0a245a45
       version: -1
       name: Read eml File Attachment
       description: Load the contents of a file into context.
@@ -1862,12 +1862,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: f0a77cc4-bac2-4081-8a4e-77600a9cc7c5
+    taskid: e1a3e52d-3c49-47f1-84f3-39e4319bff5f
     type: regular
     task:
-      id: f0a77cc4-bac2-4081-8a4e-77600a9cc7c5
+      id: e1a3e52d-3c49-47f1-84f3-39e4319bff5f
       version: -1
-      name: Delete Context Key ReadFile.Data
+      name: Delete Context Key FileData
       description: |-
         Delete field from context.
 
@@ -1885,7 +1885,7 @@ tasks:
       all:
         simple: "no"
       key:
-        simple: ReadFile.Data
+        simple: FileData
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1904,10 +1904,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 88c66c51-367d-48af-80b7-9535a1729258
+    taskid: 613c9fd0-ca94-4891-873b-d8b5fa09317a
     type: condition
     task:
-      id: 88c66c51-367d-48af-80b7-9535a1729258
+      id: 613c9fd0-ca94-4891-873b-d8b5fa09317a
       version: -1
       name: Verify Attachment eml File Unchanged
       type: condition
@@ -1923,7 +1923,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: ReadFile.Data
+              simple: FileData
             iscontext: true
           right:
             value:
