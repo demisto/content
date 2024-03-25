@@ -25,6 +25,7 @@ API_VER = API_V2
 PAGE_SIZE_LIMIT_DICT = {API_V2: 2000, API_V1: 1000}
 API_V1_PAGE_LIMIT = 500
 THREAT_ASSESSMENT_URL_PREFIX = 'informationProtection/threatAssessmentRequests'
+MAX_ITEMS_PER_RESPONSE = 50
 
 DataSourceType = {
     'USER': {
@@ -339,43 +340,19 @@ class MsGraphClient:
         return self.ms_client.http_request(method='POST', url_suffix='security/runHuntingQuery', json_data={"Query": query},
                                            timeout=timeout)
 
-    def get_incidents_request(self, incident_id: Optional[int], limit: int, timeout: int, args_for_filter: dict) -> dict:
+    def get_incidents_request(self, url_suffix: str, timeout: int, ) -> dict:
         """
         Perform a GET request to retrieve incidents.
 
         Args:
-            incident_id (int): The ID of the incident to retrieve. If None, retrieves a list of incidents.
-            limit (int): The maximum number of incidents to retrieve.
+            url_suffix (str): The URL suffix for the request, including any filters or additional parameters.
             timeout (int): The timeout for the request in seconds.
-            args_for_filter (dict): A dictionary containing filters for the request:
-                - status (str): Filter by status.
-                - assigned_to (str): Filter by assigned user.
-                - severity (str): Filter by severity.
-                - classification (str): Filter by classification.
-                - odata (str): Filter by odata.
 
         Returns:
             dict: The request results as a dictionary, containing:
                 - '@odata.context'
                 - 'value': The updated incident(s).
         """
-
-        if incident_id:
-            url_suffix = f'security/incidents/{incident_id}'
-        else:
-            url_suffix = 'security/incidents?$count=true'
-            if limit:
-                url_suffix += f'&$top={str(limit)}'
-            if args_for_filter['status']:
-                url_suffix += f'&$filter=status+eq+\'{args_for_filter["status"]}\''
-            if args_for_filter['assigned_to']:
-                url_suffix += f'&$filter=assigned_to+eq+\'{args_for_filter["assigned_to"]}\''
-            if args_for_filter['severity']:
-                url_suffix += f'&$filter=severity+eq+\'{args_for_filter["severity"]}\''
-            if args_for_filter['classification']:
-                url_suffix += f'&$filter=classification+eq+\'{args_for_filter["classification"]}\''
-            if args_for_filter['odata']:
-                url_suffix += f'&$filter=odata+eq+\'{args_for_filter["odata"]}\''
 
         incident = self.ms_client.http_request(
             method='GET', url_suffix=url_suffix, timeout=timeout)
@@ -767,7 +744,7 @@ def query_set_limit(query: str, limit: int) -> str:
     return f"{query} | limit {limit}"
 
 
-def convert_list_incidents_to_readable(raw_incidents: dict) -> dict:
+def convert_list_incidents_to_readable(incidents_list: list) -> list:
     """
     Convert a list of raw incidents to a list of readable incidents.
 
@@ -777,14 +754,12 @@ def convert_list_incidents_to_readable(raw_incidents: dict) -> dict:
     Returns:
         dict: A dictionary containing the converted readable incidents in the format {'value': [readable_incident1, ...]}.
     """
-    if not raw_incidents:
-        raw_incidents = {}
+    if not incidents_list:
+        incidents_list = []
 
-    list_incidents = raw_incidents.get('value', {})
-
-    for i in range(len(list_incidents)):
-        list_incidents[i] = convert_single_incident_to_readable(list_incidents[i])
-    return list_incidents
+    for i in range(len(incidents_list)):
+        incidents_list[i] = convert_single_incident_to_readable(incidents_list[i])
+    return incidents_list
 
 
 def convert_single_incident_to_readable(raw_incident: dict) -> dict:
@@ -812,6 +787,43 @@ def convert_single_incident_to_readable(raw_incident: dict) -> dict:
         'Created date time': raw_incident.get('createdDateTime'),
         'Updated date time': raw_incident.get('lastUpdateDateTime'),
     }
+
+
+def set_url_suffix_incident(incident_id: Optional[int], top: int, args_for_filter: dict):
+    """
+    Generate the URL suffix for retrieving security incidents based on the provided parameters.
+
+    Args:
+        incident_id (Optional[int]): The ID of the incident to retrieve. If None, retrieves a list of incidents.
+        top (Optional[int]): The maximum number of incidents to retrieve.
+        args_for_filter (Optional[dict]): A dictionary containing filters for the request:
+            - status (str): Filter by status.
+            - assigned_to (str): Filter by assigned user.
+            - severity (str): Filter by severity.
+            - classification (str): Filter by classification.
+            - odata (str): Filter by odata.
+
+    Returns:
+        str: The URL suffix for the request.
+    """
+
+    base_url = 'security/incidents'
+    filters = []
+
+    if incident_id:
+        url_suffix = f'{base_url}/{incident_id}'
+    else:
+        url_suffix = f'{base_url}?'
+        if top:
+            url_suffix += f'$top={str(top)}'
+        if any(args_for_filter.values()):
+            url_suffix += '&$filter='
+            for key, value in args_for_filter.items():
+                if value:
+                    filters.append(f'{key} eq \'{value}\'')
+            url_suffix += ' and '.join(filters)
+
+    return url_suffix
 
 
 ''' COMMAND FUNCTIONS '''
@@ -1492,18 +1504,27 @@ def advanced_hunting_command(client: MsGraphClient, args: dict) -> list[CommandR
 
 def get_list_security_incident_command(client: MsGraphClient, args: dict) -> CommandResults:
     """
-    Get an incident.
-    Args:
-        client(Client): Microsoft Graph Security's client to preform the API calls.
-        args(Dict): Demisto arguments:
-              - id (int)        - incident's id.
-              - timeout (int)   - waiting time for command execution
+    Retrieve a list of security incidents based on the provided arguments.
 
-    Returns: CommandResults
+    Args:
+        client (MsGraphClient): The Microsoft Graph client instance.
+        args (dict): A dictionary containing the command arguments:
+            - 'timeout' (str): The timeout for the request in seconds.
+            - 'incident_id' (str): The ID of the incident to retrieve.
+            - 'limit' (str): The maximum number of incidents to retrieve.
+            - 'status' (str): Filter by status.
+            - 'assigned_to' (str): Filter by assigned user.
+            - 'severity' (str): Filter by severity.
+            - 'classification' (str): Filter by classification.
+            - 'odata' (str): Filter by odata.
+
+    Returns:
+        CommandResults: The command results, including the list of incidents.
     """
+    timeout = arg_to_number(args['timeout'])  # default value is defined
     incident_id = arg_to_number(args.get('incident_id'))
-    limit = arg_to_number(args['limit'])
-    timeout = arg_to_number(args['timeout'])
+    limit = arg_to_number(args['limit'])  # default value is defined
+    top = limit if limit <= MAX_ITEMS_PER_RESPONSE else 0  # type:ignore[operator]
     args_for_filter = {
         'status': args.get('status'),
         'assigned_to': args.get('assigned_to'),
@@ -1512,26 +1533,45 @@ def get_list_security_incident_command(client: MsGraphClient, args: dict) -> Com
         'odata': args.get('odata')
     }
 
-    incidents = client.get_incidents_request(incident_id=incident_id, limit=limit, timeout=timeout,  # type:ignore[arg-type]
-                                             args_for_filter=args_for_filter)
-    if incidents.get('@odata.context'):
-        del incidents['@odata.context']
+    url_suffix = set_url_suffix_incident(incident_id=incident_id, top=top,  # type:ignore[arg-type]
+                                         args_for_filter=args_for_filter)  # type:ignore[arg-type]
 
-    # Case of single incident
-    if incident_id:
+    incidents_respond = client.get_incidents_request(url_suffix, timeout)  # type:ignore[arg-type]
+
+    if incident_id:  # Case of single incident
         name = f'Incident No. {incident_id}:'
-        readable_incident = convert_single_incident_to_readable(incidents)
+        readable_incident = convert_single_incident_to_readable(incidents_respond)
         headers = list(readable_incident)
 
-    # Case of incidents list
-    else:
+    else:           # Case of list incidents
+        incidents_list = incidents_respond.get("value", [])
+        count_incidents = len(incidents_list)
+
+        nextLink = incidents_respond.get("@odata.nextLink")
+
+        while nextLink and count_incidents < limit:  # type:ignore[operator]
+            url_suffix = "security/" + nextLink.split("/")[-1]
+            top = limit - count_incidents  # type:ignore[operator]
+            if top <= MAX_ITEMS_PER_RESPONSE:
+                url_suffix += f"&$top={top}"
+            new_incidents_respond = client.get_incidents_request(url_suffix, timeout)  # type:ignore[arg-type]
+
+            incidents_list += new_incidents_respond["value"]
+            count_incidents = len(incidents_list)
+
+            nextLink = new_incidents_respond.get("@odata.nextLink")
+
         name = 'Incidents:'
-        readable_incident = convert_list_incidents_to_readable(incidents)
+        readable_incident = convert_list_incidents_to_readable(incidents_list)  # type:ignore[assignment]
+
         headers = list(readable_incident[0])
+
+    if incidents_respond.get('@odata.context'):
+        del incidents_respond['@odata.context']
 
     human_readable_table = tableToMarkdown(name=name, t=readable_incident, headers=headers)
     return CommandResults(outputs_prefix='MsGraph.Incident', outputs_key_field='incident_id',
-                          outputs=incidents, readable_output=human_readable_table)
+                          outputs=incidents_respond, readable_output=human_readable_table)
 
 
 def update_incident_command(client: MsGraphClient, args: dict) -> CommandResults:
