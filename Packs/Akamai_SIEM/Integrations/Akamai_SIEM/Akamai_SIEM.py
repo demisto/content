@@ -418,13 +418,12 @@ def main():
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "fetch-events":
-            ctx = get_integration_context() or {}
             for events, offset in fetch_events_command(
                 client,
                 params.get("fetchTime"),
                 params.get("fetchLimit"),
                 params.get("configIds"),
-                ctx,
+                ctx=get_integration_context() or {},
             ):
                 send_events_to_xsiam(events, VENDOR, PRODUCT)
                 set_integration_context({"offset": offset})
