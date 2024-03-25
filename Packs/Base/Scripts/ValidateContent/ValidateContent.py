@@ -436,7 +436,7 @@ def main():
         result = validate_content(filename, file_contents, content_tmp_dir.name)
         outputs = []
         for validation in result:
-            if validation.get('ui') or validation.get('fileType') in {'py', 'ps1'}:
+            if validation.get('ui') or validation.get('fileType') in {'py', 'ps1', 'yml'}:
                 outputs.append({
                     'Name': validation.get('name'),
                     'Error': validation.get('message'),
