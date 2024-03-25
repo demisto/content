@@ -31,9 +31,6 @@ Attributes:
 INTEGRATION_NAME = 'Akamai SIEM'
 INTEGRATION_COMMAND_NAME = 'akamai-siem'
 INTEGRATION_CONTEXT_NAME = 'Akamai'
-PRODUCT = "akamai"
-VENDOR = "waf"
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -244,16 +241,10 @@ def test_module_command(client: Client) -> tuple[None, None, str]:
     Raises:
         DemistoException: If test failed.
     """
-    params = demisto.params()
-    if is_xsiam_or_xsoar_saas():
-        events, _ = client.get_events(config_ids=params.get('event_configIds'),
-                                      from_epoch='1488816442',
-                                      limit='1')
-    elif is_xsoar():
-        # Test on the following date Monday, 6 March 2017 16:07:22
-        events, _ = client.get_events(config_ids=params.get('configIds'),
-                                      from_epoch='1488816442',
-                                      limit='1')
+    # Test on the following date Monday, 6 March 2017 16:07:22
+    events, offset = client.get_events(config_ids=demisto.params().get('configIds'),
+                                       from_epoch='1488816442',
+                                       limit='1')
     if isinstance(events, list):
         return None, None, 'ok'
     raise DemistoException(f'Test module failed, {events}')
@@ -295,35 +286,6 @@ def fetch_incidents_command(
             })
 
     return incidents, {'lastRun': offset}
-
-
-def fetch_events_command(
-        client: Client,
-        last_run: dict,
-        fetch_limit: str | int,
-        config_ids: str) -> tuple[list[dict[str, Any]], dict]:
-    """Uses to fetch incidents into Demisto
-    Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
-
-    Args:
-        client: Client object with request.
-        last_run: Last fetch object occurs.
-        fetch_limit: limit of incidents in a fetch.
-        config_ids: security configuration ids to fetch, e.g. `51000;56080`
-
-    Returns:
-        incidents, new last_run
-    """
-    events: list | None = []
-    from_time: str = last_run.get("events_last_run", "")
-    if not from_time:
-        from_time, _ = parse_date_range(date_range=datetime.now(), date_format='%s')
-    events, offset = client.get_events(config_ids=config_ids, from_epoch=from_time, limit=fetch_limit)
-
-    for event in events:
-        event["_time"] = event["_time"]
-
-    return events, {'events_last_run': offset}
 
 
 def get_events_command(client: Client, config_ids: str, offset: str | None = None, limit: str | None = None,
@@ -388,9 +350,6 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
 
 def main():
     params = demisto.params()
-    if is_xsiam_or_xsoar_saas() and not params.get("event_configIds"):
-        raise DemistoException(
-            "'Config IDs to fetch (Relevant only for xsiam)' must be given when when setting an instance in xsiam.")
     client = Client(
         base_url=urljoin(params.get('host'), '/siem/v1/configs'),
         verify=not params.get('insecure', False),
@@ -407,7 +366,11 @@ def main():
     }
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
+
     try:
+        if params.get("isFetch") and not (0 < (arg_to_number(params.get('fetchLimit')) or 20) <= 2000):
+            raise DemistoException('Fetch limit must be an integer between 1 and 2000')
+
         if command == 'fetch-incidents':
             incidents, new_last_run = fetch_incidents_command(client,
                                                               fetch_time=params.get('fetchTime'),
@@ -416,17 +379,6 @@ def main():
                                                               last_run=demisto.getLastRun().get('lastRun'))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
-
-        elif command == 'fetch-events':
-            last_run = demisto.getLastRun()
-            demisto.debug(f'Starting a new fetch interval with {last_run=}')
-            events, new_last_run = fetch_events_command(client,
-                                                        last_run,
-                                                        fetch_limit=params.get("max_fetch", "50"),
-                                                        config_ids=params.get("event_configIds"))
-            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
-            demisto.setLastRun(new_last_run)
-            demisto.debug(f'{new_last_run=}')
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
             return_outputs(human_readable, entry_context, raw_response)
@@ -436,5 +388,5 @@ def main():
         return_error(err_msg, error=e)
 
 
-if __name__ == 'builtins':
+if __name__ in ["__builtin__", "builtins", '__main__']:  # pragma: no cover
     main()

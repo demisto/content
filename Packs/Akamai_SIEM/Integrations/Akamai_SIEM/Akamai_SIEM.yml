@@ -1,7 +1,4 @@
 category: Analytics & SIEM
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Akamai WAF SIEM
   version: -1
@@ -11,104 +8,68 @@ configuration:
   name: host
   required: true
   type: 0
-  section: Connect
 - display: Client token
   name: clientToken
   type: 4
   hidden: true
   required: false
-  section: Connect
 - name: clienttoken_creds
   type: 9
   displaypassword: Client token
   hiddenusername: true
   required: false
-  section: Connect
 - display: Access token
   name: accessToken
   type: 4
   hidden: true
   required: false
-  section: Connect
 - name: accesstoken_creds
   type: 9
   displaypassword: Access token
   hiddenusername: true
   required: false
-  section: Connect
 - display: Client secret
   name: clientSecret
   type: 4
   hidden: true
   required: false
-  section: Connect
 - name: clientsecret_creds
   type: 9
   displaypassword: Client secret
   hiddenusername: true
   required: false
-  section: Connect
 - defaultvalue: '50170'
-  display: Config IDs to fetch for alerts fetch
+  display: Config IDs to fetch
   name: configIds
+  required: true
   type: 0
-  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
-  section: Collect
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetchTime
   type: 0
   defaultvalue: 1 hours
   required: false
-  section: Collect
-- display: Fetch limit for fetch alerts (minimum is 20)
+- display: Fetch limit (minimum is 20)
   name: fetchLimit
   type: 0
   defaultvalue: '20'
   required: false
-  section: Collect
+  additionalinfo: Limit on the number of incidents retrieved in a single fetch. Must be an integer between 1 and 2000 inclusive.
 - display: Fetch incidents
   name: isFetch
   type: 8
-  required: false
-  section: Collect
-- display: Fetch Events
-  additionalinfo: Fetch events as incidents, in addition to the alerts.
-  name: fetch_events
-  type: 8
-  defaultvalue: 'true'
-- section: Collect
-  advanced: true
-  display: Events Fetch Interval
-  additionalinfo: Alerts and activity events.
-  name: eventFetchInterval
-  defaultvalue: "1"
-  type: 19
-  required: false
-- display: Config IDs to fetch (Relevant only for xsiam)
-  additionalinfo:  Config IDs to fetch - mandatory field when setting integration in xsiam.
-  name: event_configIds
-  type: 0
-  section: Collect
-- additionalinfo: Maximum number of events per fetch for fetch events (XSIAM)
-  defaultvalue: 50
-  display: Maximum events to fetch (Relevant only for xsiam)
-  name: max_fetch
-  type: 0
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
-  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-  section: Connect
 description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
 display: Akamai WAF SIEM
 name: Akamai WAF SIEM
@@ -129,7 +90,7 @@ script:
       name: to_epoch
     - description: Timestamp of events (<number> <time unit>. For example, 12 hours, 7 days.
       name: time_stamp
-    description: Get security events from Akamai WAF
+    description: Get security events from Akamai WAF.
     name: akamai-siem-get-events
     outputs:
     - contextPath: Akamai.SIEM.AttackData.clientIP
@@ -199,14 +160,13 @@ script:
       description: IP address.
       type: String
     - contextPath: IP.ASN
-      description: 'The autonomous system name for the IP address, for example: "AS8948".'
+      description: 'The autonomous system name for the IP address, for example: "AS8948"."'
       type: String
     - contextPath: IP.Geo.Country
       description: The country in which the IP address is located.
       type: String
-  dockerimage: demisto/auth-utils:1.0.0.90491
+  dockerimage: demisto/auth-utils:1.0.0.90978
   isfetch: true
-  isfetchevents: true
   runonce: false
   script: '-'
   subtype: python3
