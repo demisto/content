@@ -3052,6 +3052,8 @@ def create_vpc_endpoint_command(args: dict) -> CommandResults:
         kwargs.update({'TagSpecifications': {'Tags': json.loads(tag_specifications)}})
 
     response = client.create_vpc_endpoint(**kwargs).get('VpcEndpoint')
+    response["CreationTimestamp"] = datetime_to_string(response.get('CreationTimestamp')) # Parse timestamp to string
+
     outputs = {key: response[key] for key in output_headers if key in response}
 
     human_readable = tableToMarkdown('VPC Endpoint', outputs, headerTransform=pascalToSpace)
