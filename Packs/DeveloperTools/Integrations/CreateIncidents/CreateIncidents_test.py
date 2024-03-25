@@ -93,13 +93,9 @@ PARSED_INCIDENT = [(context_list.get("CONTEXT_WITH_ATTACHMENT_AS_ENTRY_ID"), [
 @pytest.mark.parametrize('context, expected', PARSED_INCIDENT)
 def test_fetch_incident_command_with_file(mocker, context, expected):
     """
-    Given:  a list of valid incident with labels and attachment,
-            a list of valid incidents without labels but with attachment,
-            a list of 2 valid incidents without labels, one with attachment,
-            a list without incidents
+    Given:  a list of valid incident with one attachment
     When:   running fetch-incident flow using the instance context
-    Then:   validates the integration remain empty after reading the incidents
-            validates the incident list was read properly and files where attached if needed to.
+    Then:   validates the file result method is being executed to create a file in XSOAR
 
     """
 
