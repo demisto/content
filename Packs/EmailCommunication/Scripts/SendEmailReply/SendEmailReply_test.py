@@ -1,7 +1,10 @@
 import pytest
+from freezegun import freeze_time
+
 from CommonServerPython import *
 import json
 import demistomock as demisto
+from SendEmailReply import get_unique_code
 
 
 def util_open_file(path):
@@ -650,7 +653,7 @@ def test_multi_thread_new(scenario, mocker):
     reset_fields_mocker = mocker.patch.object(SendEmailReply, 'reset_fields', return_value=True)
     if scenario == 'required_fields_missing':
         # Test Scenario 1
-        expected = "The following required fields have not been set.  Please set them and try again. " \
+        expected = "The following required fields have not been set. Please set them and try again. " \
                    "['New Email Subject', 'New Email Recipients', 'New Email Body']"
         multi_thread_new('', False, '', '', 'html', 1, '12345678', '', '', 'soc_sender@company.com', 'cc_user@company.com',
                          'bcc_user@company.com', 'soc_sender@company.com', '')
@@ -971,3 +974,49 @@ def test_demisto_custom_markdown_syntax(input_md, expected_html, test_id):
 
     # Assert
     assert result == expected_html, f"Test failed for {test_id}"
+
+
+@freeze_time("2024-02-22 10:00:00 UTC")
+def test_get_unique_code_happy_path(mocker):
+    # Arrange
+    incident_id = "123"
+    max_tries = 1000
+    expected_code = "1231708596000000"
+    mocker.patch('SendEmailReply.demisto', return_value=None)
+    mocker.patch('SendEmailReply.get_incident_by_query', return_value=None)
+
+    # Act
+    code = get_unique_code(incident_id, max_tries)
+
+    # Assert
+    assert code == expected_code
+
+
+@freeze_time("2024-02-22 10:00:00 UTC")
+def test_get_unique_code_edge_cases(mocker):
+    # Arrange
+    incident_id = "1"
+    max_tries = 1000
+    expected_code = "0011708596000000"
+    mocker.patch('SendEmailReply.get_incident_by_query', return_value=None)
+
+    # Act
+    code = get_unique_code(incident_id, max_tries)
+
+    # Assert
+    assert code == expected_code
+
+
+@freeze_time("2024-02-22 10:00:00 UTC")
+def test_get_unique_code_error_case(mocker):
+    # Arrange
+    incident_id = "123"
+    max_tries = 0
+    mocker.patch('SendEmailReply.get_incident_by_query', return_value=[{"id": "existing_incident"}])
+    mocked_return_error = mocker.patch('SendEmailReply.return_error', side_effect=Exception('Error'))
+
+# Act and Assert
+    with pytest.raises(Exception):
+        get_unique_code(incident_id, max_tries)
+    mocked_return_error.assert_called_once_with(
+        f'Failed to generate unique code for incident {incident_id} after {max_tries} tries')
