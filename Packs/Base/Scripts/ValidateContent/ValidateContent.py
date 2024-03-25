@@ -421,7 +421,7 @@ def main():
         content_repo = git.Repo.init(content_tmp_dir.name)
         content_repo.create_remote('origin', 'https://github.com/demisto/content.git')
         os.makedirs(CACHED_MODULES_DIR, exist_ok=True)
-        os.putenv('DEMISTO_SDK_LOG_FILE_PATH', content_tmp_dir.name)
+
         get_content_modules(content_tmp_dir.name, verify_ssl)
 
         filename, file_contents = get_file_name_and_contents(
