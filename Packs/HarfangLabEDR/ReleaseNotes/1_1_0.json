@@ -1,1 +1,4 @@
-{"breakingChanges": true, "breakingChangesNotes": "Changed the ״action״ output context path to ״Harfanglab.Job.Action״ output context path in the ״harfanglab-job-xxx״ commands"}
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Changed the \u05f4action\u05f4 output context path to \u05f4Harfanglab.Job.Action\u05f4 output context path in the \u05f4harfanglab-job-xxx\u05f4 commands"
+}
