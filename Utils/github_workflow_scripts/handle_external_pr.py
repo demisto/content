@@ -83,10 +83,10 @@ def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
             int: The location of the chosen assignee in the sorted array.
     """
     values = sorted([assigned_prs_per_potential_reviewer[key] for key in assigned_prs_per_potential_reviewer])
-    if values[0] == values[1] == values[2]:
+    if len(values) == 3 and values[0] == values[1] == values[2]:
         # choose randomly between 0-2
         return randint(1, 3) - 1
-    elif values[0] == values[1]:
+    elif len(values) >= 2 and values[0] == values[1]:
         # choose randomly between 0-1
         return randint(1, 2) - 1
     else:
