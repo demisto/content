@@ -1132,7 +1132,8 @@ def get_incidents_data(
         next_offset = parsed_query.get("offset", ["0"])[0]
 
     # last_alert_timestamp is the oldest timestamp in alerts
-    parsed_last_alert: str = params.get('min_timestamp') or params.get('last_modified_min_date') or ""
+    parsed_last_alert: str = params.get(
+        'min_timestamp') or params.get('last_modified_min_date') or ""
     parsed_last_alert_timestamp = parse_date(
         parsed_last_alert,
         date_formats=(DATE_FORMAT,),
@@ -1154,14 +1155,16 @@ def get_incidents_data(
     # add 1 millisecond to last alert timestamp,
     # in order to prevent duplicated alerts
     if parsed_last_alert_timestamp is None:
-        raise ValueError("Incorrect timestamp in last alert of fetch-incidents")
+        raise ValueError(
+            "Incorrect timestamp in last alert of fetch-incidents")
     max_update_time = (
         parsed_last_alert_timestamp + timedelta(milliseconds=1)
     ).strftime(DATE_FORMAT)
 
     def get_alert_ids(alert: dict[str, Any]) -> str:
         return str(alert.get("id")) or ""
-    processed_alerts_ids: list[str] = list(map(get_alert_ids, processed_alerts))
+    processed_alerts_ids: list[str] = list(
+        map(get_alert_ids, processed_alerts))
 
     return incidents, next_offset, max_update_time, processed_alerts_ids
 
@@ -1198,7 +1201,8 @@ def fetch_incidents(
 ) -> tuple[FetchIncidentsStorage, list[dict[str, Any]]]:
     # Last modified fetch date
     last_modified_fetched_str = last_run.get("last_modified_fetched", "")
-    last_modified_fetched = parse_last_fetched_date(last_modified_fetched_str, first_fetch_time)
+    last_modified_fetched = parse_last_fetched_date(
+        last_modified_fetched_str, first_fetch_time)
     last_modified_fetched_str = last_modified_fetched.strftime(DATE_FORMAT)
 
     # Saved modified alerts offset of last run
@@ -1707,6 +1711,34 @@ def send_alert_attachment_command(
     )
 
 
+def get_alert_attachments_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    alert_id: int = args.get("alert_id", "")
+    response_content = client.get_alert_attachments(alert_id)
+    attachments: list[dict[str, Any]] = response_content.get("attachments", [])
+    human_readable = []
+    for attachment in attachments:
+        attachment_id: int = attachment.get("id", "")
+        attachment_name: str = attachment.get("name", "")
+        human_readable.append({
+            "ID": attachment_id,
+            "Name": attachment_name,
+        })
+    headers = ["ID", "Name"]
+    return CommandResults(
+        outputs=attachments,
+        readable_output=tableToMarkdown(
+            "ZeroFox Alert Attachments",
+            human_readable,
+            headers=headers,
+            removeNull=True,
+        ),
+        outputs_prefix="ZeroFox.AlertAttachments",
+    )
+
+
 def compromised_domain_command(
     client: ZFClient,
     args: dict[str, Any]
@@ -1880,6 +1912,7 @@ def main():
         "zerofox-modify-alert-notes": modify_alert_notes_command,
         "zerofox-submit-threat": submit_threat_command,
         "zerofox-send-alert-attachment": send_alert_attachment_command,
+        "zerofox-get-alert-attachments": get_alert_attachments_command,
 
         # ZeroFox CTI Feed
         "zerofox-search-compromised-domain": compromised_domain_command,

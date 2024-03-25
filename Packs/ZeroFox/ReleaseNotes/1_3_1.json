@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The zerofox-get-alert-attachments command was deleted to avoid confusion from customers on its usage."
+    "breakingChangesNotes": "Deprecated the ***zerofox-get-alert-attachments*** command due to unintended behavior."
 }
