@@ -1491,11 +1491,11 @@ class TestParsingIndicators:
             },
         }
     ]
-    
+
     @pytest.mark.parametrize('x509_certificate_object, xsoar_expected_response',
-                            [(x509_certificate, expected_result),
-                            (x509_certificate_without_serial_number, [])])
-    def test_parse_x509_certificate(self,taxii_2_client, x509_certificate_object, xsoar_expected_response):
+                             [(x509_certificate, expected_result),
+                              (x509_certificate_without_serial_number, [])])
+    def test_parse_x509_certificate(self, taxii_2_client, x509_certificate_object, xsoar_expected_response):
         """
         Given:
          - x509 certificate object.

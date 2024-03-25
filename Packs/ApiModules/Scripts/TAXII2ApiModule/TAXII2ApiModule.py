@@ -1,4 +1,3 @@
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # pylint: disable=E9010, E9011
@@ -744,7 +743,7 @@ class XSOAR2STIXParser:
             custom_fields = xsoar_indicator.get("CustomFields", {}) or {}
             stix_type = stix_object['type']
             if stix_type in {"indicator", "malware", "report", "threat-actor", "tool"}:
-                tags = custom_fields.get('tags', []) if custom_fields.get('tags',[]) != [] else [stix_object['type']]
+                tags = custom_fields.get('tags', []) if custom_fields.get('tags', []) != [] else [stix_object['type']]
                 stix_object['labels'] = [x.lower().replace(" ", "-") for x in tags]
             if stix_type == 'identity' and (identity_class := custom_fields.get('identityclass', 'unknown')):
                 stix_object['identity_class'] = identity_class
@@ -788,7 +787,7 @@ class XSOAR2STIXParser:
         stix_object['issuer'] = self.create_x509_certificate_subject_issuer(custom_fields.get('issuer', []))
         remove_nulls_from_dictionary(stix_object)
         return stix_object
-        
+
     def build_sco_object(self, stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:
         """
         Builds a correct JSON object for specific SCO types
@@ -1469,7 +1468,7 @@ class STIX2XSOARParser(BaseClient):
             }
         )
         return account_indicator
-    
+
     def create_keyvalue_dict(self, registry_key_obj_values: list[dict[str, Any]]) -> list:
         returned_grid = []
         for stix_values_entry in registry_key_obj_values:
@@ -1486,11 +1485,13 @@ class STIX2XSOARParser(BaseClient):
             registry_key_obj (dict): indicator as an observable object of registry_key type.
         """
         registry_key_indicator = self.parse_general_sco_indicator(registry_key_obj, value_mapping='key')
-        registry_key_indicator[0]['fields'].update(
+        registry_key_indicator[0]["fields"].update(
             {
-                'keyvalue': self.create_keyvalue_dict(registry_key_obj.get('values', [])),
-                'modified_time': registry_key_obj.get('modified_time'),
-                'numberofsubkeys': registry_key_obj.get('number_of_subkeys')
+                "keyvalue": self.create_keyvalue_dict(
+                    registry_key_obj.get("values", [])
+                ),
+                "modified_time": registry_key_obj.get("modified_time"),
+                "numberofsubkeys": registry_key_obj.get("number_of_subkeys"),
             }
         )
         return registry_key_indicator
