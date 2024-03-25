@@ -58,6 +58,7 @@ script:
     - description: 'The enry IDs of the incident attachments.'
       name: attachment_entry_ids
       required: false
+      isArray: true
     - description: 'The json object that represents the incident.'
       name: incident_raw_json
       required: false
@@ -65,7 +66,7 @@ script:
       name: attachment_paths
     description: Creates incidents from json file, and stores it in the instance context.
     name: create-test-incident-from-raw-json
-  dockerimage: demisto/python3:3.10.13.88772
+  dockerimage: demisto/python3:3.10.14.90585
   isfetch: true
   runonce: false
   script: '-'
