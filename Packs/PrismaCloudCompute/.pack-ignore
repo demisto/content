@@ -73,6 +73,9 @@ ignore=PB105
 [file:Prisma_Cloud_Compute_-_ServiceNow_Ticket_(HTML_Table).yml]
 ignore=PB105
 
+[file:1_7_0.md]
+ignore=RN115
+
 [known_words]
 resourceType
 resourceID
