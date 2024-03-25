@@ -857,6 +857,20 @@ def module_test():  # pragma: no cover
     demisto.results('ok')
 
 
+def get_list_item(list_of_items: list, index: int, default_value: str):
+    if index >= len(list_of_items):
+        return default_value
+
+    return list_of_items[index]
+
+
+def add_filename_suffix(file_names: list, file_extension: str):
+    ret_value = []
+    for current_filename in file_names:
+        ret_value.append(f'{current_filename}.{file_extension}')
+    return ret_value
+
+
 def rasterize_command():  # pragma: no cover
     urls = argToList(demisto.getArg('url'))
     width, height = get_width_height(demisto.args())
@@ -870,14 +884,17 @@ def rasterize_command():  # pragma: no cover
     file_extension = "png"
     if rasterize_type == RasterizeType.PDF or str(rasterize_type).lower() == RasterizeType.PDF.value:
         file_extension = "pdf"
-    file_name = f'{file_name}.{file_extension}'  # type: ignore
+
+    demisto.debug(f'file_name type is: {type(file_name)}')
+    file_names = argToList(file_name)
+    file_names = add_filename_suffix(file_names, file_extension)
 
     rasterize_output = perform_rasterize(path=urls, rasterize_type=rasterize_type, wait_time=wait_time,
                                          navigation_timeout=navigation_timeout, include_url=include_url,
                                          full_screen=full_screen, return_errors=True)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
 
-    for current_rasterize_output, current_url in zip(rasterize_output, urls):
+    for index, (current_rasterize_output, current_url) in enumerate(zip(rasterize_output, urls)):
         if isinstance(current_rasterize_output, str):
             return_results(CommandResults(
                 readable_output=f'Error for URL {current_url!r}:\n{current_rasterize_output}',
@@ -890,7 +907,8 @@ def rasterize_command():  # pragma: no cover
             return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {current_url}"))
         else:
             res = []
-            current_res = fileResult(filename=file_name, data=current_rasterize_output[0], file_type=entryTypes['entryInfoFile'])
+            current_res = fileResult(filename=get_list_item(file_names, index, f'url.{file_extension}'),
+                                     data=current_rasterize_output[0], file_type=entryTypes['entryInfoFile'])
 
             if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower() == RasterizeType.PNG.value:
                 current_res['Type'] = entryTypes['image']

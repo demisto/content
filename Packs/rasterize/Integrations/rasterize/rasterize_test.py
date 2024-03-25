@@ -349,3 +349,40 @@ def test_poppler_version():
     import pdf2image
     poppler_version = pdf2image.pdf2image._get_poppler_version("pdftoppm")
     assert poppler_version[0] > 20
+
+
+def test_get_list_item():
+    from rasterize import get_list_item
+
+    my_list = ['a', 'b', 'c']
+
+    assert get_list_item(my_list, 0, "FOO") == 'a'
+    assert get_list_item(my_list, 1, "FOO") == 'b'
+    assert get_list_item(my_list, 2, "FOO") == 'c'
+    assert get_list_item(my_list, 3, "FOO") == 'FOO'
+    assert get_list_item(my_list, 4, "FOO") == 'FOO'
+
+
+def test_add_filename_suffix():
+    from rasterize import add_filename_suffix
+
+    my_list = ['a', 'b', 'c']
+    my_list_with_suffix = add_filename_suffix(my_list, 'sfx')
+
+    assert len(my_list) == len(my_list_with_suffix)
+    for current_element_index, _ in enumerate(my_list):
+        assert f'{my_list[current_element_index]}.sfx' == my_list_with_suffix[current_element_index]
+
+
+def test_get_output_filenames():
+    from rasterize import get_list_item, add_filename_suffix
+
+    file_name = ['foo_01', 'foo_02', 'foo_03']
+    file_names = argToList(file_name)
+    file_names = add_filename_suffix(file_names, 'png')
+
+    assert get_list_item(file_names, 0, "FOO.png") == 'foo_01.png'
+    assert get_list_item(file_names, 1, "FOO.png") == 'foo_02.png'
+    assert get_list_item(file_names, 2, "FOO.png") == 'foo_03.png'
+    assert get_list_item(file_names, 3, "FOO.png") == 'FOO.png'
+    assert get_list_item(file_names, 4, "FOO.png") == 'FOO.png'

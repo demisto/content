@@ -1206,7 +1206,13 @@ class TestParsingIndicators:
         xsoar_expected_response = [
             {
                 'fields': {
+                    'confidence': 85,
                     'description': 'TS ID: 55475482483; iType: suspicious_domain; ',
+                    'firstseenbysource': '2020-05-14T00:14:05.401Z',
+                    'languages': 'en',
+                    'modified': '2020-05-14T00:14:05.401Z',
+                    'publications': [],
+                    'stixid': 'indicator--1234',
                     'tags': ['medium'],
                     'trafficlightprotocol': 'GREEN'
                 },
@@ -1219,7 +1225,13 @@ class TestParsingIndicators:
         xsoar_expected_response_with_update_custom_fields = [
             {
                 'fields': {
+                    'confidence': 85,
                     'description': 'test',
+                    'firstseenbysource': '2020-05-14T00:14:05.401Z',
+                    'languages': 'en',
+                    'modified': '2020-05-14T00:14:05.401Z',
+                    'publications': [],
+                    'stixid': 'indicator--1234',
                     'tags': ['medium'],
                     'trafficlightprotocol': 'GREEN'
                 },
