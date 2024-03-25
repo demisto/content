@@ -1,0 +1,79 @@
+{
+   "reply":{
+      "result_count":39,
+      "alerts":[
+         {
+            "alert_fields":{
+               "events":[
+                  {
+                     "module_id":"module ID",
+                     "module_name":"some name",
+                     "association_strength":50,
+                     "event_type":3,
+                     "event_timestamp":1649750245010
+                  }
+               ],
+               "internal_id":33333,
+               "alert_source":"SOURCE",
+               "matching_status":"MATCHED",
+               "severity":"SEV_030_MEDIUM",
+               "local_insert_ts":1649750275398,
+               "source_insert_ts":1649750245010,
+               "alert_name":"SOME NAME",
+               "alert_category":"Malware",
+               "alert_description":"Suspicious executable detected",
+               "external_id":"some ID",
+               "bioc_indicator":"None",
+               "alert_action_status":"SCANNED",
+               "is_whitelisted":false,
+               "starred":false,
+               "agent_data_collection_status":true,
+               "agent_id":"ANOTHER ID",
+               "agent_os_type":"AGENT_OS_WINDOWS",
+               "agent_ip_addresses":[
+                  "IP"
+               ],
+               "case_id":41,
+               "events_length":1
+            },
+            "incident_fields":"None"
+         },
+         {
+            "alert_fields":{
+               "events":[
+                  {
+                     "module_id":"module ID 2",
+                     "module_name":"some name 2",
+                     "association_strength":50,
+                     "event_type":3,
+                     "event_timestamp":1649750245010
+                  }
+               ],
+               "internal_id":33333,
+               "alert_source":"SOURCE",
+               "matching_status":"MATCHED",
+               "severity":"SEV_030_MEDIUM",
+               "local_insert_ts":1649750275398,
+               "source_insert_ts":1649750245010,
+               "alert_name":"SOME NAME 2",
+               "alert_category":"Malware",
+               "alert_description":"Suspicious executable detected",
+               "external_id":"some ID 2",
+               "bioc_indicator":"None",
+               "alert_action_status":"SCANNED",
+               "is_whitelisted":false,
+               "starred":false,
+               "agent_data_collection_status":true,
+               "agent_id":"ANOTHER ID",
+               "agent_os_type":"AGENT_OS_WINDOWS",
+               "agent_ip_addresses":[
+                  "IP"
+               ],
+               "case_id":41,
+               "events_length":1
+            },
+            "incident_fields":"None"
+         }
+	  ]
+   }
+}
