@@ -100,5 +100,6 @@
     ],
     "sla": 0,
     "threshold": 72,
+    "unsearchable": true,
     "fromVersion": "6.10.0"
 }
