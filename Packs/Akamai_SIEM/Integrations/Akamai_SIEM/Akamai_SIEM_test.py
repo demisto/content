@@ -8,6 +8,7 @@ import pytest
 from freezegun import freeze_time
 
 # Local imports
+import Akamai_SIEM
 from CommonServerPython import urljoin
 
 """Helper functions and fixrtures"""
@@ -32,6 +33,22 @@ def client():
     from Akamai_SIEM import Client
 
     return Client(base_url=BASE_URL)
+
+
+@pytest.fixture
+def mock_get_events(mocker):
+    # a helper function that allows mocking 500 events with 50 events per page
+    num_of_results = 500
+    page_size = 50
+    num_of_pages = num_of_results // page_size
+    mocker.patch.object(Akamai_SIEM, "events_to_ec", side_effect=lambda i: i)
+    mocker.patch.object(Akamai_SIEM.Client, "get_events", side_effect=[
+        (
+            [{"id": i + 1} for i in range(page_size * j, page_size * (j + 1))],
+            f"offset_{page_size * (j + 1)}",
+        )
+        for j in range(num_of_pages)
+    ])
 
 
 '''Tests'''
@@ -128,3 +145,22 @@ class TestCommandsFunctions:
         expected_ec = load_params_from_json(json_path=datadir['get_events_expected_ec_2.json'])
 
         assert entry_context_tested == expected_ec, "Test query response with security events - check only entry context"
+
+    def test_fetch_events_command(self, client, mock_get_events):
+        """
+        Given:
+        - A client object
+        - 500 events to pull in the 3rd party (using mock_get_events)
+        - A fetch_limit of 220
+        When:
+        - Calling fetch_events_command()
+        Then:
+        - Ensure offset is updated in each iteration by checking its value
+        - Ensure 250 events are pulled (fetch_limit, rounded up to the nearest multiple of page_size=50)
+        """
+        total_events_count = 0
+
+        for events, offset in Akamai_SIEM.fetch_events_command(client, '3 days', 220, '', {}):
+            total_events_count += len(events)
+            assert offset == f"offset_{events[-1]['id']}"
+        assert total_events_count == 250

@@ -57,7 +57,7 @@ configuration:
   type: 0
   defaultvalue: '20'
   required: false
-  additionalinfo: Limit on the number of incidents retrieved in a single fetch. Must be an integer between 1 and 2000 inclusive.
+  additionalinfo: Limit on the number of incidents retrieved in a single fetch.
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -167,6 +167,7 @@ script:
       type: String
   dockerimage: demisto/auth-utils:1.0.0.90978
   isfetch: true
+  isfetchevents: true
   runonce: false
   script: '-'
   subtype: python3

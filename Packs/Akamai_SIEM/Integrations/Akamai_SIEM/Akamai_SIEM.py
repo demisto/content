@@ -7,7 +7,7 @@ from base64 import b64decode
 
 # 3-rd party imports
 from typing import Any
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
 import urllib.parse
 import urllib3
 from akamai.edgegrid import EdgeGridAuth
@@ -31,6 +31,11 @@ Attributes:
 INTEGRATION_NAME = 'Akamai SIEM'
 INTEGRATION_COMMAND_NAME = 'akamai-siem'
 INTEGRATION_CONTEXT_NAME = 'Akamai'
+
+
+VENDOR = "Akamai"
+PRODUCT = "SIEM"
+FETCH_EVENTS_PAGE_SIZE = 50000
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -345,6 +350,39 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
+@logger
+def fetch_events_command(
+    client: Client,
+    fetch_time: str,
+    fetch_limit: str | int,
+    config_ids: str,
+    ctx: dict,
+) -> Iterator[Any]:
+    """Iteratively gathers events from Akamai SIEM. Stores the offset in integration context.
+
+    Args:
+        client: Client object with request
+        fetch_time: From when to fetch if first time, e.g. `3 days`
+        fetch_limit: limit of events in a fetch
+        config_ids: security configuration ids to fetch, e.g. `51000;56080`
+        ctx: The integration context
+
+    Yields:
+        (list[dict], str): events and new offset.
+    """
+    total_events_count = 0
+
+    from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
+    offset = ctx.get("offset")
+    while total_events_count < int(fetch_limit):
+        raw_response, offset = client.get_events(config_ids, offset, FETCH_EVENTS_PAGE_SIZE, from_epoch)
+        if not raw_response:
+            break
+        events = events_to_ec(raw_response)
+        total_events_count += len(events)
+        yield events, offset
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -379,6 +417,17 @@ def main():
                                                               last_run=demisto.getLastRun().get('lastRun'))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
+        elif command == "fetch-events":
+            ctx = get_integration_context() or {}
+            for events, offset in fetch_events_command(
+                client,
+                params.get("fetchTime"),
+                params.get("fetchLimit"),
+                params.get("configIds"),
+                ctx,
+            ):
+                send_events_to_xsiam(events, VENDOR, PRODUCT)
+                set_integration_context({"offset": offset})
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
             return_outputs(human_readable, entry_context, raw_response)
