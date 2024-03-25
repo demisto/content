@@ -61,6 +61,9 @@ ignore=PB105
 [file:Prisma_Cloud_Compute_-_Jira_Ticket_(XLSX).yml]
 ignore=PB105
 
+[file:Prisma_Cloud_Compute_-_Jira_Ticket_(Markdown_Table).yml]
+ignore=PB105
+
 [known_words]
 resourceType
 resourceID
