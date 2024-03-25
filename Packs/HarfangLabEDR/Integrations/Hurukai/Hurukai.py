@@ -665,7 +665,10 @@ def get_last_run() -> LastRun:
             # last_fetch's year is out of range (year > 50_000_000)
             history["last_fetch"] = history["last_fetch"] // 1_000_000
 
-    return LastRun(**{k: FetchHistory(**v) for k, v in last_run.items()})
+    return LastRun(
+        security_event=FetchHistory(**last_run["security_event"]),
+        threat=FetchHistory(**last_run["threat"]),
+    )
 
 
 def _adjust_max_fetch_value(max_fetch: int, already_fetched_count: int) -> int:
@@ -4115,8 +4118,7 @@ def main() -> None:
     try:
         client = Client(base_url, verify=verify, proxy=proxy, headers=headers)
     except Exception as error:
-        return_error("fail to instantiate the client", error=error)
-        raise RuntimeError from error  # semantic purpose, should never effectively happen
+        raise RuntimeError("fail to instantiate the client") from error
 
     try:
         target_function: Callable[..., Any] = get_function_from_command_name(command)
