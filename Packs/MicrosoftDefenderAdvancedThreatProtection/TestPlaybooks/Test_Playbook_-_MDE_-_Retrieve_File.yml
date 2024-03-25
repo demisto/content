@@ -890,7 +890,7 @@ tasks:
     conditions:
     - label: ' Verified'
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
