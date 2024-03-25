@@ -31,7 +31,8 @@ def test_generate_access_token_request_called_with(mocker, AIOps_client):
 
 
 def test_generate_access_token_request_check_return(mocker, AIOps_client):
-    with patch('CommonServerPython.get_integration_context', return_value={}):
+    with patch('PaloAltoNetworksAIOps.get_integration_context') as mock_get_integration_context:
+        mock_get_integration_context.return_value = {}
         http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
         response_mock = mocker.Mock()
         response_mock.json.return_value = {'access_token': '123', 'expires_in': 899}
