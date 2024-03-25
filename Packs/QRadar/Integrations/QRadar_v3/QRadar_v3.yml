@@ -1563,7 +1563,7 @@ script:
       description: 'The IDs of the languages supported by this log source type. Each ID must correspond to an existing log source language. See the Log Source Language API: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_languages-id-GET.html'
       type: List
     - contextPath: QRadar.LogSourceTypesList.uuid
-      description: 'A string uuid the log source type.'
+      description: 'A UUID string of the log source type.'
       type: String
     - contextPath: QRadar.LogSourceTypesList.version
       description: 'The log source type plugin version.'
