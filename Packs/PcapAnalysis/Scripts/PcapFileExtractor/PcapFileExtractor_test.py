@@ -1,8 +1,6 @@
 import os
 
 import pytest
-
-from CommonServerPython import CommandResults
 from PcapFileExtractor import filter_files, upload_files, INCLUSIVE, EXCLUSIVE
 from magic import Magic
 from pytest import raises
@@ -31,9 +29,8 @@ def test_extract_files(tmpdir):
 
     file_path = './TestData/tftp_rrq.pcap'
     results = upload_files(file_path, tmpdir)
-    if type(results) is CommandResults:     # Otherwise 'results' has not 'readable_output' or 'outputs' attributes.
-        assert 'Pcap Extracted Files' in results.readable_output
-        assert OUTPUTS == results.outputs
+    assert 'Pcap Extracted Files' in results.readable_output
+    assert OUTPUTS == results.outputs
     assert os.path.isfile(os.path.join(tmpdir, 'rfc1350.txt'))
 
 
