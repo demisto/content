@@ -13,6 +13,27 @@ args:
   description: The image ID to be enriched.
 - name: compliance_ids
   description: A comma separated list of compliance IDs to be enriched. If no value provided, it will return results for all compliance IDs.
+outputs:
+- contextPath: PrismaCloudCompute.PCC_ImageComplianceIssues.image_id
+  description: The image ID.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_ImageComplianceIssues.compliance_issues
+  description: A list of the image's compliance issues.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_ImageComplianceIssues.compliance_issues.Cause
+  description: Additional information regarding the root cause for the vulnerability.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_ImageComplianceIssues.compliance_issues.ComplianceID
+  description: ID of the violation.
+- contextPath: PrismaCloudCompute.PCC_ImageComplianceIssues.compliance_issues.Severity
+  description: Textual representation of the vulnerability's severity.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_ImageComplianceIssues.compliance_issues.Title
+  description: Compliance title.
+  type: string
+- contextPath: PrismaCloudCompute.PCC_ImageComplianceIssues.compliance_issues.Description
+  description: Compliance issue description.
+  type: string
 scripttarget: 0
 subtype: python3
 runonce: false
