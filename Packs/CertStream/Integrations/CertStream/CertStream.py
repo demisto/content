@@ -5,7 +5,6 @@ from uuid import UUID, uuid5
 
 from websockets.exceptions import InvalidStatus, ConnectionClosed
 from websockets.sync.client import connect
-
 from CommonServerPython import *  # noqa: F401
 
 VENDOR = "Kali Dog Security"
@@ -48,7 +47,6 @@ def long_running_execution_command(host: str, fetch_interval: int):
     while True:
         with websocket_connections(host) as (message_connection):
             demisto.info("Connected to websocket")
-
             while True:
                 now = datetime.now()
                 context = json.loads(demisto.getIntegrationContext()["context"])
@@ -56,8 +54,9 @@ def long_running_execution_command(host: str, fetch_interval: int):
                 fetch_interval = context["list_update_interval"]
 
                 if now - last_fetch_time >= timedelta(minutes=fetch_interval):
+                    demisto.info(f"Updating homographs list from {context['word_list_name']}")
                     context["homographs"] = get_homographs_list(context["word_list_name"])
-                    context["fetch_time"] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    context["fetch_time"] = datetime.now().strftime(DATETIME_FORMAT)
                     demisto.setIntegrationContext({"context": json.dumps(context)})
 
                 try:
@@ -65,24 +64,25 @@ def long_running_execution_command(host: str, fetch_interval: int):
                     fetch_certificates(message)
 
                 except ConnectionClosed:
-                    demisto.info("Websocket connection closed, reconnecting...")
+                    demisto.error("Websocket connection closed, reconnecting...")
                     break
 
 
-def fetch_certificates(message: str):
+def fetch_certificates(message):
     """ Fetches the certificates data from the CertStream socket
 
     Args:
         connection (Connection): The connection to the socket, used to iterate over messages
 
     """
-
+    demisto.info("Processing certificate message")
     message = json.loads(message)
     data = message["data"]
     cert = data["leaf_cert"]
     all_domains = cert["all_domains"]
 
     if len(all_domains) == 0:
+        demisto.info("No domains found in certificate, skipping processing")
         return  # No domains found in the certificate
     else:
         for domain in all_domains:
@@ -138,7 +138,7 @@ def create_xsoar_incident(certificate: dict, domain: str, current_time: datetime
 
     incident = {
         "name": f"Suspicious Domain Discovered - {domain}",
-        "occured": current_time.strftime('%Y-%m-%d %H:%M:%S'),
+        "occured": current_time.strftime(DATETIME_FORMAT),
         "type": get_integration_context()["incident_type"],
         "severity": set_incident_severity(result["similarity"]),
         "CustomFields": {
@@ -197,7 +197,7 @@ def create_stix_id(serial_number: str) -> str:
     Returns:
         str: A STIX ID
     """
-
+    demisto.info("Creating STIX ID for certificate")
     jsonize = json.dumps({"serial_number": serial_number}).replace(" ", "")
     uuid = uuid5(SCO_DET_ID_NAMESPACE, jsonize)
     return f'x509-certificate--{str(uuid)}'
@@ -213,6 +213,7 @@ def create_relationship_list(value: str, domains: list[str]) -> list[EntityRelat
     Returns:
         list[EntityRelationship]: A list of XSOAR relationship objects
     """
+    demisto.info("Creating relationships object for certificate")
     relationships = []
     entity_a = value
     for domain in domains:
@@ -237,6 +238,7 @@ def check_homographs(domain: str) -> tuple[bool, dict]:
     Returns:
         bool: Returns True if any word in the domain matches a homograph, False otherwise
     """
+    demisto.info("Checking domain for homographs")
     integration_context = json.loads(demisto.getIntegrationContext()["context"])
     user_homographs = integration_context["homographs"]
     levenshtein_distance_threshold = integration_context["levenshtein_distance_threshold"]
@@ -266,6 +268,7 @@ def get_homographs_list(list_name: str) -> dict:
     Returns:
         list: A list of homographs
     """
+    demisto.info(f'Fetching homographs list {list_name} from XSOAR')
     try:
         lists = json.loads(demisto.internalHttpRequest("GET", "/lists/").get("body", {}))
         demisto.info('Fetching homographs list from XSOAR ({word_list_name})')
@@ -319,6 +322,7 @@ def compute_similarity(input_string: str, reference_string: str) -> float:
     Returns:
         float: _description_
     """
+    demisto.info("Computing Levenshtein similarity between domain and homograph")
     distance = levenshtein_distance(input_string, reference_string)
     max_length = max(len(input_string), len(reference_string))
     similarity = 1 - (distance / max_length)
@@ -340,7 +344,7 @@ def main():  # pragma: no cover
         "list_update_interval": list_update_interval,
         "levenshtein_distance_threshold": levenshtein_distance_threshold,
         "homographs": get_homographs_list(word_list_name),
-        "fetch_time": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        "fetch_time": datetime.now().strftime(DATETIME_FORMAT),
         "incident_type": incident_type
     }, default=str)})
 
