@@ -588,6 +588,7 @@ class Client(BaseClient):
         )
 
 
+@logger
 def insight_idr_list_investigations_command(
     client: Client,
     args: dict[str, Any],
@@ -648,6 +649,7 @@ def insight_idr_list_investigations_command(
     )
 
 
+@logger
 def insight_idr_get_investigation_command(
     client: Client,
     args: dict[str, Any],
@@ -668,9 +670,10 @@ def insight_idr_get_investigation_command(
     api_version = args["api_version"]
     results = client.list_investigations(api_version=api_version, investigation_id=investigation_id)
     if constants.IS_V1:
-        # Find the investigation ID in list response (V1)
+        demisto.debug("Find the investigation ID in list response (V1)")
         data = results.get("data", [])
         for investigation in data:
+
             if investigation.get("id") == investigation_id:
                 investigation_data = investigation
                 break
@@ -695,6 +698,7 @@ def insight_idr_get_investigation_command(
     )
 
 
+@logger
 def insight_idr_close_investigations_command(
     client: Client,
     args: dict[str, Any],
@@ -734,6 +738,7 @@ def insight_idr_close_investigations_command(
     )
 
 
+@logger
 def insight_idr_assign_user_command(
     client: Client,
     args: dict[str, Any],
@@ -772,6 +777,7 @@ def insight_idr_assign_user_command(
     )
 
 
+@logger
 def insight_idr_set_status_command(
     client: Client,
     args: dict[str, Any],
@@ -822,6 +828,7 @@ def insight_idr_set_status_command(
     )
 
 
+@logger
 def insight_idr_add_threat_indicators_command(
     client: Client,
     key: str,
@@ -879,6 +886,7 @@ def insight_idr_add_threat_indicators_command(
     return command_results
 
 
+@logger
 def insight_idr_replace_threat_indicators_command(
     client: Client,
     key: str,
@@ -936,6 +944,7 @@ def insight_idr_replace_threat_indicators_command(
     return command_results
 
 
+@logger
 def insight_idr_list_logs_command(client: Client) -> CommandResults:
     """
     List all logs.
@@ -968,6 +977,7 @@ def insight_idr_list_logs_command(client: Client) -> CommandResults:
     return command_results
 
 
+@logger
 def insight_idr_list_log_sets_command(client: Client) -> CommandResults:
     """
     List all log sets.
@@ -1000,6 +1010,7 @@ def insight_idr_list_log_sets_command(client: Client) -> CommandResults:
     return command_results
 
 
+@logger
 def insight_idr_download_logs_command(
     client: Client,
     log_ids: str,
@@ -1045,6 +1056,7 @@ def insight_idr_download_logs_command(
     return fileResult(filename, response.content, file_type)
 
 
+@logger
 def insight_idr_query_log_command(
     client: Client,
     log_id: str,
@@ -1101,6 +1113,7 @@ def insight_idr_query_log_command(
     return command_results
 
 
+@logger
 def insight_idr_query_log_set_command(
     client: Client,
     log_set_id: str,
@@ -1194,6 +1207,7 @@ def handle_query_log_results(client: Client, result: dict) -> Tuple[list, list]:
     return data_for_readable_output, raw_responcse
 
 
+@logger
 def insight_idr_create_investigation_command(
     client: Client,
     args: dict[str, Any],
@@ -1226,6 +1240,7 @@ def insight_idr_create_investigation_command(
     )
 
 
+@logger
 def insight_idr_update_investigation_command(
     client: Client,
     args: dict[str, Any],
@@ -1262,6 +1277,7 @@ def insight_idr_update_investigation_command(
     )
 
 
+@logger
 def insight_idr_list_investigation_alerts_command(
     client: Client,
     args: dict[str, Any],
@@ -1298,6 +1314,7 @@ def insight_idr_list_investigation_alerts_command(
     )
 
 
+@logger
 def insight_idr_list_investigation_product_alerts_command(
     client: Client,
     args: dict[str, Any],
@@ -1355,6 +1372,7 @@ def generate_product_alerts_readable(response: list[dict[str, Any]]) -> list[dic
     return data
 
 
+@logger
 def insight_idr_list_users_command(
     client: Client,
     args: dict[str, Any],
@@ -1394,6 +1412,7 @@ def insight_idr_list_users_command(
     )
 
 
+@logger
 def insight_idr_search_investigation_command(
     client: Client,
     args: dict[str, Any],
@@ -1435,6 +1454,7 @@ def insight_idr_search_investigation_command(
     )
 
 
+@logger
 def test_module(client: Client) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -1465,6 +1485,7 @@ def test_module(client: Client) -> str:
         return "Connection error. Check your region or your Credentials."
 
 
+@logger
 def fetch_incidents(
     client: Client, last_run: Dict, first_fetch_time: str, max_fetch: str
 ) -> Tuple[Dict[str, int], List[dict]]:
