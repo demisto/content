@@ -14304,7 +14304,7 @@ def log_types_queries_to_dict(params: Dict[str, str]) -> Dict[str, str]:
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
         for log_type in active_log_type_queries:
-            log_type = "corr" if log_type == "Correlation" else log_type
+            log_type = "Corr" if log_type == "Correlation" else log_type
             log_type_query = params.get(f'{log_type.lower()}_query', "")
             if log_type_query:
                 queries_dict[log_type.capitalize()] = log_type_query
@@ -14391,7 +14391,7 @@ def test_fetch_incidents_parameters(fetch_params):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
         for log_type in active_log_type_queries:
-            log_type = "corr" if log_type == "Correlation" else log_type
+            log_type = "Corr" if log_type == "Correlation" else log_type
             log_type_query = fetch_params.get(f'{log_type.lower()}_query', "")
             if not log_type_query:
                 raise DemistoException(f"{log_type} Log Type Query parameter is empty. Please enter a valid query.")
