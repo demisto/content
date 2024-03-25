@@ -893,5 +893,5 @@
     },
     "fromVersion": "6.10.0",
     "description": "",
-    "marketplaces": ["xsoar"]
+    "marketplaces": ["marketplacev2"]
 }
