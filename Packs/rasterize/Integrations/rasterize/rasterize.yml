@@ -95,6 +95,7 @@ script:
         - defaultValue: url
           description: The name the file will be saved as.
           name: file_name
+          isArray: true
         - auto: PREDEFINED
           defaultValue: "False"
           description: Get the full page. The actual page width and height will be auto
