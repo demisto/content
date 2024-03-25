@@ -1715,7 +1715,7 @@ script:
       description: 'The maximum length of the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD, REGEX. The max_length is optional.'
       type: Number
     - contextPath: QRadar.LogSourceProtocolType.Parameters.max_value
-      description: 'he maximum of the parameter value for the following parameter types: INTEGER, REAL, DATE, TIME, DATETIME, INTERVAL. The max_value is optional.'
+      description: 'The maximum of the parameter value for the following parameter types: INTEGER, REAL, DATE, TIME, DATETIME, INTERVAL. The max_value is optional.'
       type: String
     - contextPath: QRadar.LogSourceProtocolType.Parameters.min_length
       description: 'The minimum length of the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD, REGEX. The max_length is optional.'
