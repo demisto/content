@@ -78,11 +78,11 @@ script:
       required: true
       isArray: false
     - name: resources_vpc_config
-      description: The VPC configuration used by the cluster control plane.
+      description: "A json representation of the VPC configuration used by the cluster control plane. An example: \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\""
       required: false
       isArray: false
     - name: logging
-      description: The logging configuration for the cluster.
+      description: "A json representation of the logging configuration for the cluster. An example: \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': True}]}\""
       required: false
       isArray: false
     - name: authentication_mode

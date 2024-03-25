@@ -86,8 +86,8 @@ Updates an Amazon EKS cluster configuration. Only one type of update can be allo
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cluster_name | The name of the Amazon EKS cluster to update. | Required | 
-| resources_vpc_config | The VPC configuration used by the cluster control plane. | Optional | 
-| logging | The logging configuration for the cluster. | Optional | 
+| resources_vpc_config | A json representation of the VPC configuration used by the cluster control plane. An example: \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\" | Optional | 
+| logging | A json representation of the logging configuration for the cluster. An example: \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': True}]}\" | Optional | 
 | authentication_mode | The desired authentication mode for the cluster. Note - once the authentication mode was updated to 'API' it is irreversible. Possible values are: API, API_AND_CONFIG_MAP, CONFIG_MAP. | Optional | 
 
 #### Context Output
