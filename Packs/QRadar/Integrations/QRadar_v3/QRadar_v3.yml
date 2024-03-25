@@ -1670,7 +1670,7 @@ script:
       description: "If this protocol type can be configured for a gateway log source, the condition is set to 'true'; otherwise, the condition is set to 'false'. A gateway log source is a stand-alone protocol configuration. The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to feed other log sources. It acts as a 'gateway' for events from multiple systems to enter the event pipeline. Not all protocol types can be used as a gateway if they don't support collecting event data from multiple sources."
       type: Boolean
     - contextPath: QRadar.LogSourceProtocolType.ID
-      description: 'The ID of tge protocol type.'
+      description: 'The ID of the protocol type.'
       type: Number
     - contextPath: QRadar.LogSourceProtocolType.Inbound
       description: 'Indicates whether this is an inbound protocol.'
