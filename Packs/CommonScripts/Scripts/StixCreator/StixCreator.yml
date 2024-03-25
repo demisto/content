@@ -38,7 +38,7 @@ outputs:
   description: The date/time that the indicator was last seen.
   type: date
 scripttarget: 0
-dockerimage: demisto/py3-tools:1.0.0.89345
+dockerimage: demisto/py3-tools:1.0.0.90842
 subtype: python3
 runas: DBotWeakRole
 tests:
