@@ -1653,7 +1653,7 @@ def test_qradar_reference_set_value_upsert_command_continue_polling_with_connect
     assert result.outputs
 
 
-@pytest.mark.parametrize('command_func, endpoint, id', [
+@pytest.mark.parametrize('command_func, endpoint, resource_id', [
     (qradar_event_collectors_list_command, '/config/event_sources/event_collectors', 0),
     (qradar_wincollect_destinations_list_command, '/config/event_sources/wincollect/wincollect_destinations', 0),
     (qradar_disconnected_log_collectors_list_command, '/config/event_sources/disconnected_log_collectors', 0),
@@ -1663,14 +1663,22 @@ def test_qradar_reference_set_value_upsert_command_continue_polling_with_connect
     (qradar_log_source_languages_list_command, '/config/event_sources/log_source_management/log_source_languages', 0),
     (qradar_log_source_groups_list_command, '/config/event_sources/log_source_management/log_source_groups', 0)
 ])
-def test_id_commands(mocker, command_func: Callable[[Client, dict], CommandResults], endpoint: str, id: int):
-    args = {"id": id}
+def test_id_commands(mocker, command_func: Callable[[Client, dict], CommandResults], endpoint: str, resource_id: int):
+    """
+    Given:
+        - A command an endpoint and an ID.
+    When:
+        - Running the command with the corresponding endpoint and ID packed in an args object.
+    Then:
+        - Verify that the correct GET function is called with the ID and the endpoint.
+    """
+    args = {"id": resource_id}
     get_by_id_mock = mocker.patch.object(client, 'get_resource_by_id', return_value={})
     try:
         command_func(client, args)
     except KeyError:
         demisto.log(f'command {command_func.__name__} raised key error')
-    get_by_id_mock.assert_called_with(id, endpoint, None, None)
+    get_by_id_mock.assert_called_with(resource_id, endpoint, None, None)
 
 
 @pytest.mark.parametrize('command_func, endpoint', [
@@ -1684,6 +1692,14 @@ def test_id_commands(mocker, command_func: Callable[[Client, dict], CommandResul
     (qradar_log_source_groups_list_command, '/config/event_sources/log_source_management/log_source_groups',)
 ])
 def test_list_commands(mocker, command_func: Callable[[Client, dict], CommandResults], endpoint: str):
+    """
+    Given:
+        - A command and an endpoint.
+    When:
+        - Running the command with the corresponding endpoint.
+    Then:
+        - Verify that the correct GET function is called with the correct endpoint
+    """
     args = {'range': '0-49'}
     get_list_mock = mocker.patch.object(client, 'get_resource_list', return_value=[{}])
     try:
@@ -1695,6 +1711,14 @@ def test_list_commands(mocker, command_func: Callable[[Client, dict], CommandRes
 
 @pytest.mark.parametrize('id', [(0), (None)])
 def test_get_resource(mocker, id: int | None):
+    """
+    Given:
+        - An existing ID or None.
+    When:
+        - Running the get_resource function with the int or None value.
+    Then:
+        - Verify that the correct GET function is called.
+    """
     endpoint = 'example.com'
     range = 'items=0-49'
     get_resource_by_id_mock = mocker.patch.object(client, 'get_resource_by_id')
@@ -1708,6 +1732,14 @@ def test_get_resource(mocker, id: int | None):
 
 
 def test_get_log_sources_list(mocker):
+    """
+    Given:
+        - An endpoint, a range, an algorithm and a password.
+    When:
+        - Running the qradar_log_sources_list command with the corresponding arguments.
+    Then:
+        - Verify that the get_resource_list function is called with the correct parameters.
+    """
     qrd_encryption_details = {
         'qrd_encryption_algorithm': 'algorithm',
         'qrd_encryption_password': 'password'
@@ -1724,6 +1756,14 @@ def test_get_log_sources_list(mocker):
 
 
 def test_get_log_source_by_id(mocker):
+    """
+    Given:
+        - An endpoint, a range, an algorithm a password and an id.
+    When:
+        - Running the qradar_log_sources_list command with the corresponding arguments and an id.
+    Then:
+        - Verify that the get_resource_by_id function is called with the correct parameters.
+    """
     mock_id = 1880
     qrd_encryption_details = {
         'qrd_encryption_algorithm': 'algorithm',
@@ -1741,32 +1781,47 @@ def test_get_log_source_by_id(mocker):
 
 
 def test_create_log_source(mocker):
+    """
+    Given:
+        - The required arguments for creating a log source.
+    When:
+        - Running the qradar_log_source_create command with the required arguments.
+    Then:
+        - Verify that the create_log_source function is called with the body correctly parsed and formatted.
+    """
     args = command_test_data['create_log_source']['args']
     expected_body = command_test_data['create_log_source']['expected_body']
-    create_log_source_mock = mocker.patch.object(client, 'create_log_source', return_value={})
-
-    try:
-        qradar_log_source_create_command(client, args)
-    except KeyError:
-        demisto.log('command create_log_source_command raised key error')
-
+    return_value = command_test_data['create_log_source']['response']
+    create_log_source_mock = mocker.patch.object(client, 'create_log_source', return_value=return_value)
+    qradar_log_source_create_command(client, args)
     create_log_source_mock.assert_called_with(expected_body)
 
 
 def test_update_log_source(mocker):
+    """
+    Given:
+        - The required arguments for updating a log source.
+    When:
+        - Running the qradar_log_source_update command with the required arguments.
+    Then:
+        - Verify that the update_log_source function is called with nothing but the correct fields.
+    """
     args = command_test_data['update_log_source']['args']
     expected_body = command_test_data['update_log_source']['expected_body']
     update_log_source_mock = mocker.patch.object(client, 'update_log_source', return_value={})
-
-    try:
-        qradar_log_source_update_command(client, args)
-    except KeyError:
-        demisto.log('command update_log_source_command raised key error')
-
+    qradar_log_source_update_command(client, args)
     update_log_source_mock.assert_called_with(expected_body)
 
 
 def test_delete_log_source(mocker):
+    """
+    Given:
+        - An id.
+    When:
+        - Running the qradar_log_source_delete command with the id.
+    Then:
+        - Verify that the delete_log_source function is called with the correct id.
+    """
     id = 0
     args = {"id": id}
     update_log_source_mock = mocker.patch.object(client, 'delete_log_source')
@@ -1776,6 +1831,14 @@ def test_delete_log_source(mocker):
 
 
 def test_dict_converter():
+    """
+    Given:
+        - A dictionary with string represented values.
+    When:
+        - Converting the dictionary to actual values using the conversion function.
+    Then:
+        - Verify that the outputted dictionary contains the expected values.
+    """
     input_dict = {'enabled': 'true', 'year': '2024', 'name': 'Moshe'}
     expected_output = {'enabled': True, 'year': 2024, 'name': 'Moshe'}
     assert convert_dict_to_actual_values(input_dict) == expected_output
@@ -1788,8 +1851,32 @@ def test_dict_converter():
     expected_output_with_list = {'enabled': True, 'year': 2024, 'name': 'Moshe', 'lst': [True, 22, 'str']}
     assert convert_dict_to_actual_values(input_dict_with_list) == expected_output_with_list
 
+    input_nested_with_list_dict = {
+        'enabled': 'true',
+        'year': '2024',
+        'name': 'Moshe',
+        'details': {'age': '30', 'score': '95.5'},
+        'lst': [{'age': '30', 'score': '95'}, {'name': 'Moshe'}]
+    }
+    expected_nested_with_list_output = {
+        'enabled': True,
+        'year': 2024,
+        'name': 'Moshe',
+        'details': {'age': 30, 'score': 95.5},
+        'lst': [{'age': 30, 'score': 95}, {'name': 'Moshe'}],
+    }
+    assert convert_dict_to_actual_values(input_nested_with_list_dict) == expected_nested_with_list_output
+
 
 def test_list_converter():
+    """
+    Given:
+        - A list with string represented values.
+    When:
+        - Converting the list to actual values using the conversion function.
+    Then:
+        - Verify that the outputted list contains the expected values.
+    """
     simple_input_list = ['true', '2024', 'moshe']
     expected_output = [True, 2024, 'moshe']
     assert convert_list_to_actual_values(simple_input_list) == expected_output
