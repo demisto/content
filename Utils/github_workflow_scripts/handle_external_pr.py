@@ -83,14 +83,12 @@ def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
             int: The location of the chosen assignee in the sorted array.
     """
     values = sorted([assigned_prs_per_potential_reviewer[key] for key in assigned_prs_per_potential_reviewer])
-    if len(values) == 3 and values[0] == values[1] == values[2]:
-        # choose randomly between 0-2
-        return randint(1, 3) - 1
-    elif len(values) >= 2 and values[0] == values[1]:
-        # choose randomly between 0-1
-        return randint(1, 2) - 1
-    else:
-        return 0
+    while len(values) > 1:
+        equal = all(reviewer == values[0] for reviewer in values)
+        if equal:
+            return randint(0, len(values) - 1)
+        values.pop(len(values)-1)
+    return 0
 
 
 def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
