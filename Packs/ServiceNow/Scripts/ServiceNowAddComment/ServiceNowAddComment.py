@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 TICKET_TYPE_USE_VALUE_FROM_INSTANCE_CONFIG = 'USE_VALUE_FROM_INSTANCE_CONFIG'
 
+
 def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
     ticket_id = args.get('ticket_id', 'none')
     note = args.get('note')
