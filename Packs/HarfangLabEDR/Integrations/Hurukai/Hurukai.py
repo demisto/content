@@ -1338,7 +1338,6 @@ def get_frequent_users(client, args):
     output = []
 
     limit = int(args.get("limit"))
-    del args["limit"]
 
     for class_name in [
         "TelemetryWindowsAuthentication",
@@ -1375,7 +1374,7 @@ def get_frequent_users(client, args):
                     break
 
             readable_output = tableToMarkdown(
-                f"Top {args.get('limit')} authentications",
+                f"Top {limit} authentications",
                 output,
                 headers=["Username", "Authentication attempts"],
                 removeNull=True,
@@ -2512,6 +2511,7 @@ def search_whitelist(client, args):
         data["results"],
         headers=[
             "comment",
+            "id",
             "creation_date",
             "last_update",
             "target",
@@ -2566,7 +2566,7 @@ def add_whitelist(client, args):
         data = client.add_whitelist(
             comment, sigma_rule_id, target, field, case_insensitive, operator, value
         )
-        message = "Successfully added whitelist"
+        message = f"Successfully added whitelist (id: {data['id']})"
 
     return CommandResults(
         readable_output=message, outputs_prefix="Harfanglab.Whitelists", outputs=data
