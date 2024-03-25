@@ -464,7 +464,7 @@ Broker - Ping.
 
 #### Human Readable Output
 
->## pong
+>## Success
 
 ### cov-mgsec-broker-endpoint-action-by-host
 

@@ -113,7 +113,7 @@ def test_ping_broker_command(requests_mock, broker_client_instance):
     requests_mock.get(f'{BROKER_HOST}/ping', json="pong")
 
     results = ping_broker_command(broker_client_instance)
-    assert results.outputs == '"pong"'
+    assert results.readable_output == "## Success"
     assert results.outputs_prefix == "FESBroker.APIStatus"
 
 

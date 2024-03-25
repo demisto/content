@@ -272,7 +272,7 @@ script:
       type: String
   - name: cov-mgsec-broker-ping
     arguments: []
-    description: Broker - Ping.
+    description: Broker - Test connectivity to the Broker service.
     outputs:
     - contextPath: FESBroker.APIStatus
       description: 'API Status.'

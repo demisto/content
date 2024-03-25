@@ -457,7 +457,10 @@ def transition_aro_command():
 
 def ping_broker_command(broker_instance: BrokerClient):
     result = broker_instance.ping()
-    readable_output = f'## {result}'
+    if 'pong' in result:
+        readable_output = '## Success'
+    else:
+        readable_output = f'Failure - {result}.'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='FESBroker.APIStatus',
@@ -517,23 +520,23 @@ def main():
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
+    broker_url = params.get('broker_url', '')
     demisto.info(f'{command} is called')
 
-    if command.startswith("cov-mgsec-broker") or command == 'test-module':
+    if broker_url and (command.startswith("cov-mgsec-broker") or command == 'test-module'):
         # Initialize Broker client only if required, allowing the Portal commands to still function if the Broker
         # connection is down or unwanted.
-        broker_url = params.get('broker_url')
-        if broker_url:
-            broker_instance = BrokerClient(host=broker_url, api_key=API_KEY)
+        broker_instance = BrokerClient(host=broker_url, api_key=API_KEY)
 
     try:
         if command == 'test-module':
             portal_result = portal_check()
-            broker_result = bool(broker_instance.ping() == "pong")
-            if portal_result is True and broker_result is True:
+            if broker_url:
+                broker_result = bool(broker_instance.ping() == "pong")
+                if broker_result is True and portal_result is True:
+                    return_results('ok')
+            elif portal_result is True:
                 return_results('ok')
-            else:
-                return DemistoException(f'Portal Check:{portal_result}, Broker Check:{broker_result}')
 
         elif command == 'fetch-incidents':
             next_run, incidents = fetch_incidents(
