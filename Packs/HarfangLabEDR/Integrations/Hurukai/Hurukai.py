@@ -3159,9 +3159,17 @@ class TelemetryBinary(Telemetry):
         self.title = "Binary list"
         self.telemetry_type = "binary"
 
-    def _construct_output(self, results, client):
+        self.token: Optional[str] = None
+
+    def _construct_output(self, results, client=None):
         """Download with an API token is not supported yet"""
-        api_token = client.get_api_token().get("api_token")
+
+        # can't use a property attr. here because we need the client object to
+        # fetch an api token
+        if not self.token:
+            self.token = client.get_api_token().get("api_token")
+
+        api_token = self.token
 
         output = []
         for x in results:
