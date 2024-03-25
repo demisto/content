@@ -9275,6 +9275,7 @@ if 'requests' in sys.modules:
             except AttributeError:
                 pass
 
+
 def generic_http_request(method,
                          server_url,
                          timeout=10,
@@ -9341,6 +9342,7 @@ def generic_http_request(method,
     return client._http_request(method=method, url_suffix=url_suffix, data=data, ok_codes=ok_codes, error_handler=error_handler,
                                 headers=headers, files=files, params=params, retries=retries, resp_type=resp_type,
                                 status_list_to_retry=status_list_to_retry)
+
 
 def batch(iterable, batch_size=1):
     """Gets an iterable and yields slices of it.
@@ -11897,6 +11899,7 @@ def comma_separated_mapping_to_dict(raw_text):
         mapping_dict[key] = value
     demisto.debug("comma_separated_mapping_to_dict << Resolved mapping: {mapping_dict}".format(mapping_dict=mapping_dict))
     return mapping_dict
+
 
 class ManagedSleep:
     def __init__(self,):

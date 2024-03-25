@@ -123,7 +123,6 @@ def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
                                    status_list_to_retry=[429],
                                    resp_type=resp_type)
 
-
     except Exception as e:
         LOG(f"Zscaler request failed with url suffix={url_suffix}\tdata={data}")
         LOG(e)

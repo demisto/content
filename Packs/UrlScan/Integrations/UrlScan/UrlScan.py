@@ -125,7 +125,6 @@ def http_request(client, method, url_suffix, json=None, retries=0):
         if r.status_code == 429:
             return {}, ErrorTypes.QUOTA_ERROR, rate_limit_reset_after
 
-
         response_json = r.json()
         error_description = response_json.get('description') or response_json.get('message')
         should_continue_on_blacklisted_urls = argToBoolean(demisto.args().get('continue_on_blacklisted_urls', False))
