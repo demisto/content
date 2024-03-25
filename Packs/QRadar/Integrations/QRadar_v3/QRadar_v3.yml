@@ -1703,7 +1703,7 @@ script:
       description: 'The description of the parameter.'
       type: String
     - contextPath: QRadar.LogSourceProtocolType.Parameters.group_id
-      description: 'he ID of the protocol parameter group that this parameter belongs to. The group_id is optional.'
+      description: 'The ID of the protocol parameter group that this parameter belongs to. The group_id is optional.'
       type: Number
     - contextPath: QRadar.LogSourceProtocolType.Parameters.id
       description: 'The ID of the parameter.'
