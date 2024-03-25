@@ -177,7 +177,12 @@ class Client(BaseClient):
             if investigation_id and api_version == "V2"
             else endpoint
         )
-        return self._http_request(method="GET", url_suffix=url, params=params)
+        return self._http_request(
+            method="GET",
+            url_suffix=url,
+            params=params,
+            ok_codes=[200, 404],
+        )
 
     def bulk_close_investigations(
         self,
@@ -598,8 +603,8 @@ def insight_idr_list_investigations_command(
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    start_time = raise_on_invalid_time (args.get("start_time"))
-    end_time = raise_on_invalid_time (args.get("end_time"))
+    start_time = raise_on_invalid_time(args.get("start_time"))
+    end_time = raise_on_invalid_time(args.get("end_time"))
 
     # start_time and end_time can come in "last 1 day" format, so we parse it
 
@@ -662,7 +667,6 @@ def insight_idr_get_investigation_command(
     investigation_id = args["investigation_id"]
     api_version = args["api_version"]
     results = client.list_investigations(api_version=api_version, investigation_id=investigation_id)
-
     if constants.IS_V1:
         # Find the investigation ID in list response (V1)
         data = results.get("data", [])
@@ -676,6 +680,9 @@ def insight_idr_get_investigation_command(
 
     else:
         # Get the investigation ID in get response (V2)
+        if not results.get("rrn"):
+            return CommandResults(raw_response=None)
+
         investigation_data = results
 
     return generate_command_results(
@@ -1403,8 +1410,8 @@ def insight_idr_search_investigation_command(
     """
     search = handle_investigation_search(args, INVESTIGATION_SEARCH)
     sort = handle_sort(args)
-    start_time = raise_on_invalid_time (time_str=args.get("start_time"))
-    end_time = raise_on_invalid_time (args.get("end_time"))
+    start_time = raise_on_invalid_time(time_str=args.get("start_time"))
+    end_time = raise_on_invalid_time(args.get("end_time"))
 
     results = client.search_investigations(
         search=search,
@@ -1668,7 +1675,7 @@ def to_camel_case(text: str | None) -> str | None:
     return camelize_string(text, " ") if text else None
 
 
-def raise_on_invalid_time (time_str: str | None) -> str | None:
+def raise_on_invalid_time(time_str: str | None) -> str | None:
     """
     Validate a time string is a correct time.
 
