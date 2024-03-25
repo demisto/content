@@ -309,7 +309,7 @@ def threatzone_get_result(client: Client, args: dict[str, Any], only_sanitized: 
                 indicator=generate_indicator(output["SHA256"], output, "file"),
             ),
             CommandResults(
-                outputs_prefix="ThreatZone.Indicators",
+                outputs_prefix="ThreatZone.IOC",
                 readable_output=ioc_readable_output,
                 outputs_key_field="UUID",
                 outputs=ioc_data,

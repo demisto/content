@@ -222,6 +222,18 @@ script:
         - contextPath: ThreatZone.Analysis.UUID
           description: The UUID of the submission.
           type: String
+        - contextPath: ThreatZone.IOC.URL
+          description: The URL data extracted from IOC.
+          type: List
+        - contextPath: ThreatZone.IOC.IP
+          description: The IP data extracted from IOC.
+          type: List
+        - contextPath: ThreatZone.IOC.DOMAIN
+          description: The DOMAIN data extracted from IOC.
+          type: List
+        - contextPath: ThreatZone.IOC.EMAIL
+          description: The EMAIL data extracted from IOC.
+          type: List
         - contextPath: DBotScore.Indicator
           description: The indicator that was tested.
           type: String
@@ -244,34 +256,34 @@ script:
           description: UUID of the submission.
       description: Downloads and uploads sanitized file from ThreatZone API to WarRoom & Context Data.
       outputs:
-        - contextPath: File.Extension
+        - contextPath: InfoFile.Extension
           type: String
           description: Extension of the file sanitized by CDR.
-        - contextPath: File.Name
+        - contextPath: InfoFile.Name
           type: String
           description: The name of the file sanitized by CDR.
-        - contextPath: File.Size
+        - contextPath: InfoFile.Size
           type: Number
           description: Size of the file sanitized by CDR.
-        - contextPath: File.EntryID
+        - contextPath: InfoFile.EntryID
           type: String
           description: EntryID of the file sanitized by CDR.
-        - contextPath: File.Info
+        - contextPath: InfoFile.Info
           type: String
           description: Info of the file sanitized by CDR.
-        - contextPath: File.MD5
+        - contextPath: InfoFile.MD5
           type: String
           description: MD5 hash of the file sanitized by CDR.
-        - contextPath: File.SHA1
+        - contextPath: InfoFile.SHA1
           type: String
           description: SHA1 hash of the file sanitized by CDR.
-        - contextPath: File.SHA256
+        - contextPath: InfoFile.SHA256
           type: String
           description: SHA256 hash of the file sanitized by CDR.
-        - contextPath: File.SHA512
+        - contextPath: InfoFile.SHA512
           type: String
           description: SHA512 hash of the file sanitized by CDR.
-        - contextPath: File.SSDeep
+        - contextPath: InfoFile.SSDeep
           type: String
           description: SSDeep hash of the file sanitized by CDR.
     - name: tz-check-limits
