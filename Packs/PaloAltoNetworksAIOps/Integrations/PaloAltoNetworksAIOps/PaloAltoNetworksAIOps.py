@@ -361,6 +361,7 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
             continue_to_poll=True,
             args_for_next_run={'report_id': report_id, 'hide_polling_output': True},
             response=None,
+            partial_result=None,
         )
 
 
