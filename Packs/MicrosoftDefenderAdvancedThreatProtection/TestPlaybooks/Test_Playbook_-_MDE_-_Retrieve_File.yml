@@ -30,7 +30,7 @@ tasks:
       {
         "position": {
           "x": -140,
-          "y": -2175
+          "y": -3005
         }
       }
     note: false
@@ -65,7 +65,7 @@ tasks:
       {
         "position": {
           "x": -140,
-          "y": -2045
+          "y": -2875
         }
       }
     note: false
@@ -133,7 +133,7 @@ tasks:
       {
         "position": {
           "x": -140,
-          "y": -1720
+          "y": -2550
         }
       }
     note: false
@@ -178,7 +178,7 @@ tasks:
       {
         "position": {
           "x": -140,
-          "y": -1560
+          "y": -2390
         }
       }
     note: false
@@ -939,8 +939,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 250,
-          "y": -1390
+          "x": 330,
+          "y": -2220
         }
       }
     note: false
@@ -975,7 +975,7 @@ tasks:
       {
         "position": {
           "x": -140,
-          "y": -1880
+          "y": -2710
         }
       }
     note: false
@@ -987,10 +987,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "287":
     id: "287"
-    taskid: 4708aeae-7927-4c9f-8fb8-41fe55b20044
+    taskid: 018cfb4a-c18a-48ce-81f1-d2705073bada
     type: playbook
     task:
-      id: 4708aeae-7927-4c9f-8fb8-41fe55b20044
+      id: 018cfb4a-c18a-48ce-81f1-d2705073bada
       version: -1
       name: MDE - Retrieve File
       description: |-
@@ -1003,11 +1003,15 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "84"
+      - "332"
     scriptarguments:
       paths:
         complex:
           root: zipped_list
+      MachineID:
+        complex:
+          root: incident
+          accessor: deviceid
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -1019,7 +1023,7 @@ tasks:
       {
         "position": {
           "x": -140,
-          "y": -1060
+          "y": -1890
         }
       }
     note: false
@@ -1063,7 +1067,7 @@ tasks:
       {
         "position": {
           "x": -140,
-          "y": -1225
+          "y": -2055
         }
       }
     note: false
@@ -1138,7 +1142,7 @@ tasks:
       {
         "position": {
           "x": -140,
-          "y": -1390
+          "y": -2220
         }
       }
     note: false
@@ -2324,15 +2328,236 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "332":
+    id: "332"
+    taskid: 302392ce-d584-4167-8f92-e5fe1b7dad2b
+    type: regular
+    task:
+      id: 302392ce-d584-4167-8f92-e5fe1b7dad2b
+      version: -1
+      name: Get Error Entries
+      description: Collect entries matching to the conditions in the war room
+      scriptName: GetEntries
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "333"
+    scriptarguments:
+      categories:
+        simple: playbookErrors
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "333":
+    id: "333"
+    taskid: 5c2f901b-fa01-429b-8246-5d0807db7dbb
+    type: regular
+    task:
+      id: 5c2f901b-fa01-429b-8246-5d0807db7dbb
+      version: -1
+      name: Get Errors Content
+      description: Get the error(s) associated with a given entry/entries. Use ${lastCompletedTaskEntries} to check the previous task entries. The automation will return an array of the error contents from those entries.
+      scriptName: GetErrorsFromEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "334"
+    scriptarguments:
+      entry_id:
+        complex:
+          root: Entry
+          accessor: ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "334":
+    id: "334"
+    taskid: 6b7fdaae-9e67-4ae1-8af5-529ca260f069
+    type: condition
+    task:
+      id: 6b7fdaae-9e67-4ae1-8af5-529ca260f069
+      version: -1
+      name: Has 404 API Error?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "84"
+      "yes":
+      - "335"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: ErrorEntries
+            iscontext: true
+          right:
+            value:
+              simple: ActiveRequestAlreadyExists
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "335":
+    id: "335"
+    taskid: 9c91dc7f-19c6-4cd5-8923-91f11f231aee
+    type: regular
+    task:
+      id: 9c91dc7f-19c6-4cd5-8923-91f11f231aee
+      version: -1
+      name: Cancel Current Action
+      description: Cancels an action with an unfinished status.
+      script: '|||microsoft-atp-live-response-cancel-action'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "336"
+    scriptarguments:
+      comment:
+        simple: Retrieving file - XSOAR PB ${incident.id}
+      machine_action_id:
+        complex:
+          root: ErrorEntries
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: ErrorEntries
+                iscontext: true
+              right:
+                value:
+                  simple: ActiveRequestAlreadyExists
+              ignorecase: true
+          transformers:
+          - operator: RegexGroups
+            args:
+              flags: {}
+              groups: {}
+              keys: {}
+              regex:
+                value:
+                  simple: action\sid\:\s(.*)\"\,\s
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": -1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "336":
+    id: "336"
+    taskid: e6116975-66c8-484b-8054-f55a1250dff2
+    type: playbook
+    task:
+      id: e6116975-66c8-484b-8054-f55a1250dff2
+      version: -1
+      name: MDE - Retrieve File
+      description: |-
+        This playbook is part of the ‘Malware Investigation And Response’ pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+        This playbook uses the Live Response feature to retrieve a file from an endpoint. The playbook supports a supplied machine id as an input. Otherwise, it will take the Device ID incident field.
+        The playbook supports only one element to be retrieved for each task (if needed more then one - use the playbook loop feature).
+      playbookName: MDE - Retrieve File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      MachineID:
+        complex:
+          root: incident
+          accessor: deviceid
+      paths:
+        complex:
+          root: zipped_list
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": -1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1870,
+        "height": 2700,
         "width": 9490,
         "x": -4900,
-        "y": -2175
+        "y": -3005
       }
     }
   }
