@@ -755,7 +755,7 @@ def test_upload_sample_method(
         - run `upload_sample` method
     Then:
         - Ensure that when the sample is a file, the data request contains the `api_key`
-        - 
+        - Ensure that when the sample is a file the `Authorization` header not in `client._headers`
     """
     mock_func = mocker.patch.object(mock_client, "_http_request")
     mock_client.api_key = "api_key_test"
