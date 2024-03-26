@@ -111,8 +111,8 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     - auto: PREDEFINED
       description: The AWS Region. If not specified, the configured region will be used.
       name: region
