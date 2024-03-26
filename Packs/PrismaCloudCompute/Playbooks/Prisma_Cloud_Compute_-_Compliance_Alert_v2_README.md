@@ -11,8 +11,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Prisma Cloud Compute - Compliance Alert Image Enrichment Loop
 * Prisma Cloud Compute - Compliance Alert Container Enrichment Loop
+* Prisma Cloud Compute - Compliance Alert Image Enrichment Loop
 * Prisma Cloud Compute - Compliance Alert Host Enrichment Loop
 
 ### Integrations

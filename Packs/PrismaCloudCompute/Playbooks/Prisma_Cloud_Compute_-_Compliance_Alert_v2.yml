@@ -107,7 +107,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 390
+          "y": 410
         }
       }
     note: false
@@ -228,7 +228,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1070
+          "y": 1030
         }
       }
     note: false
@@ -240,23 +240,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: f12662af-7d75-44b9-8a77-3b6926ddfe21
+    taskid: ae4d1720-f3b1-49f2-8f23-65cf67ef9b19
     type: playbook
     task:
-      id: f12662af-7d75-44b9-8a77-3b6926ddfe21
+      id: ae4d1720-f3b1-49f2-8f23-65cf67ef9b19
       version: -1
       name: Prisma Cloud Compute - Compliance Alert Host Enrichment Loop
-      description: |-
-        This is a sub playbook of the "Prisma Cloud Compute - Compliance Generic" playbook.
-        It will loop through all of the given compliance issue IDs and will enrich the following information about affected hosts based on the compliance ID:
-        - Hostnames
-        - Hosts cloud metadata
-        - Compliance distribution for each host
-
-        In addition, it will retrieve the following information about the compliance issue:
-        - Issue severity
-
-        The above enriched information will be displayed in the layout in a dedicated table under the "Host compliance issues" tab.
+      description: ''
       playbookName: Prisma Cloud Compute - Compliance Alert Host Enrichment Loop
       type: playbook
       iscommand: false
@@ -265,30 +255,23 @@ tasks:
       '#none#':
       - "17"
     scriptarguments:
-      ComplianceIssue:
+      ComplianceIssueID:
         complex:
           root: incident
           accessor: compliancenotes
           transformers:
           - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
       JiraIssueTypeName:
         complex:
           root: inputs.JiraIssueTypeName
       JiraProjectName:
         complex:
           root: inputs.JiraProjectName
-      LastComplianceID:
-        complex:
-          root: incident
-          accessor: compliancenotes
-          transformers:
-          - operator: ParseJSON
-          - operator: LastArrayElement
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: id
       TicketingSystem:
         complex:
           root: inputs.TicketingSystem
@@ -316,45 +299,38 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 827dadf4-6c21-4beb-8137-cc8cf524c190
+    taskid: feef410f-03ca-461c-8892-c5fbbf5c1cb5
     type: playbook
     task:
-      id: 827dadf4-6c21-4beb-8137-cc8cf524c190
+      id: feef410f-03ca-461c-8892-c5fbbf5c1cb5
       version: -1
       name: Prisma Cloud Compute - Compliance Alert Container Enrichment Loop
+      description: ''
       playbookName: Prisma Cloud Compute - Compliance Alert Container Enrichment Loop
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "17"
     scriptarguments:
-      ComplianceIssue:
+      ComplianceIssueID:
         complex:
           root: incident
           accessor: compliancenotes
           transformers:
           - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
       JiraIssueTypeName:
         complex:
           root: inputs.JiraIssueTypeName
       JiraProjectName:
         complex:
           root: inputs.JiraProjectName
-      LastComplianceID:
-        complex:
-          root: incident
-          accessor: compliancenotes
-          transformers:
-          - operator: ParseJSON
-          - operator: LastArrayElement
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: id
       TicketingSystem:
         complex:
           root: inputs.TicketingSystem
@@ -370,7 +346,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 800
+          "y": 810
         }
       }
     note: false
@@ -382,45 +358,38 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: c43b7172-db8d-4ff2-8de0-a36738866601
+    taskid: 137f921c-23cf-43a5-8e57-dd7d636fabb2
     type: playbook
     task:
-      id: c43b7172-db8d-4ff2-8de0-a36738866601
+      id: 137f921c-23cf-43a5-8e57-dd7d636fabb2
       version: -1
       name: Prisma Cloud Compute - Compliance Alert Image Enrichment Loop
+      description: ''
       playbookName: Prisma Cloud Compute - Compliance Alert Image Enrichment Loop
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "17"
     scriptarguments:
-      ComplianceIssue:
+      ComplianceIssueID:
         complex:
           root: incident
           accessor: compliancenotes
           transformers:
           - operator: ParseJSON
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
       JiraIssueTypeName:
         complex:
           root: inputs.JiraIssueTypeName
       JiraProjectName:
         complex:
           root: inputs.JiraProjectName
-      LastComplianceID:
-        complex:
-          root: incident
-          accessor: compliancenotes
-          transformers:
-          - operator: ParseJSON
-          - operator: LastArrayElement
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: id
       TicketingSystem:
         complex:
           root: inputs.TicketingSystem
@@ -436,7 +405,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 800
+          "y": 810
         }
       }
     note: false
@@ -449,12 +418,12 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "2_17_#default#": 0.11,
+      "2_17_#default#": 0.31,
       "2_8_Image": 0.35
     },
     "paper": {
       "dimensions": {
-        "height": 935,
+        "height": 895,
         "width": 1320,
         "x": -20,
         "y": 200
