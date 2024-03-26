@@ -9673,7 +9673,7 @@ def test_sleep_exceeds_ttl(mocker, managed_sleep):
     mocker.patch('time.time', return_value=managed_sleep.start_time + 10)
     with pytest.raises(ValueError) as excinfo:
         managed_sleep.sleep(duration_seconds=150)
-    assert str(excinfo.value) == "Requested sleep of 150 seconds exceeds TTL of 100 seconds"
+    assert str(excinfo.value) == "Requested sleep of 150 seconds exceeds TTL of 100 seconds."
 
 
 def test_sleep_mocked_time(mocker, managed_sleep):
