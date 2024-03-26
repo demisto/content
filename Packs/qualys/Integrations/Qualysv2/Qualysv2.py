@@ -2737,7 +2737,7 @@ def get_next_page_activity_logs(footer):
     return max_id
 
 
-def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[Optional[list], Optional[str]]:
+def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[list, Optional[str]]:
     """
     Handles Host list detection response - parses xml to json and gets the list
     Args:
@@ -2905,7 +2905,7 @@ def get_host_list_detections_events(client, since_datetime) -> list:
         Host list detections assets
     """
     demisto.debug('Starting to fetch assets')
-    assets = []
+    assets = []  # type: ignore[var-annotated]
     next_page = ''
 
     while True:
