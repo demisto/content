@@ -189,3 +189,16 @@ def test_event_types_to_fetch_parameter_handling(event_types_to_fetch_param, exp
     """
     from NetskopeEventCollector import handle_event_types_to_fetch
     assert handle_event_types_to_fetch(event_types_to_fetch_param) == expected_value
+def test_fix_last_run():
+    from NetskopeEventCollector import remove_unsupported_event_types
+    last_run = {
+        "alert": {"operation": "next"},
+        "audit": {"operation": "next"},
+        "network": {"operation": "next"},
+        "nextTrigger": "0",
+        "page": {"operation": "next"},
+    }
+    
+    supported_event_types = 'alerts'
+    remove_unsupported_event_types(last_run, supported_event_types)
+    assert last_run == { "nextTrigger": "0", "alert": {"operation": "next"}}
