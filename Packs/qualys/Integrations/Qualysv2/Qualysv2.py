@@ -3,7 +3,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from collections.abc import Callable
 from typing import Any
-import urllib3
 import csv
 import io
 import requests
@@ -2757,10 +2756,10 @@ def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[
     if isinstance(response_requested_value, dict):
         response_requested_value = [response_requested_value]
 
-    return response_requested_value, response_next_url
+    return response_requested_value, str(response_next_url)
 
 
-def handle_vulnerabilities_result(raw_response: requests.Response) -> tuple[Optional[list], Optional[str]]:
+def handle_vulnerabilities_result(raw_response: requests.Response) -> list:
     """
     Handles vulnerabilities response - parses xml to json and gets the list
     Args:
@@ -2945,7 +2944,8 @@ def fetch_assets(client):
     Args:
         client: command client
     Return:
-        event: events to push to xsiam
+        assets: assets to push to xsiam
+        vulnerabilities: vulnerabilities to push to xsiam
     """
     demisto.debug('Starting fetch for assets')
     since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
