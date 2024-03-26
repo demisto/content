@@ -6,7 +6,7 @@ configuration:
 - display: "Server URL (e.g. https://api.spur.us/)"
   name: base_url
   type: 0
-  required: true
+  required: false
   defaultvalue: https://api.spur.us/
 - display: ''
   displaypassword: API Token
