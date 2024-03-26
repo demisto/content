@@ -1423,7 +1423,7 @@ class TestParsingIndicators:
         """
         assert taxii_2_client.parse_location(location_object) == xsoar_expected_response
 
-    x509_certificate = {
+    X509_CERTIFICATE = {
         "type": "x509-certificate",
         "serial_number": "serial_number",
         "issuer": "C=ZA, ST=Western Cape, L=Cape Town,"
@@ -1434,7 +1434,7 @@ class TestParsingIndicators:
         "subject": "C=US, ST=Maryland, L=Pasadena,"
         " O=Brent Baccala, OU=FreeSoft, CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
     }
-    x509_certificate_without_serial_number = {
+    X509_CERTIFICATE_WITHOUT_SERIAL_NUMBER = {
         "type": "x509-certificate",
         "issuer": "C=ZA, ST=Western Cape, L=Cape Town,"
         " O=Thawte Consulting cc, OU=Certification "
@@ -1444,7 +1444,7 @@ class TestParsingIndicators:
         "subject": "C=US, ST=Maryland, L=Pasadena, O=Brent"
         " Baccala, OU=FreeSoft, CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
     }
-    expected_result = [
+    EXPECTED_RESULT_X509_CERTIFICATE = [
         {
             "value": "serial_number",
             "type": "X509 Certificate",
@@ -1493,8 +1493,8 @@ class TestParsingIndicators:
     ]
 
     @pytest.mark.parametrize('x509_certificate_object, xsoar_expected_response',
-                             [(x509_certificate, expected_result),
-                              (x509_certificate_without_serial_number, [])])
+                             [(X509_CERTIFICATE, EXPECTED_RESULT_X509_CERTIFICATE),
+                              (X509_CERTIFICATE_WITHOUT_SERIAL_NUMBER, [])])
     def test_parse_x509_certificate(self, taxii_2_client, x509_certificate_object, xsoar_expected_response):
         """
         Given:
@@ -1701,14 +1701,14 @@ def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
     assert 'pattern_type' in output
 
 
-xsoar_indicators = util_load_json('test_data/xsoar_sco_indicators.json').get('iocs', {})
-sco_indicators = util_load_json('test_data/stix_sco_indicators.json').get('objects', {})
+XSOAR_INDICATORS = util_load_json('test_data/xsoar_SCO_INDICATORS.json').get('iocs', {})
+SCO_INDICATORS = util_load_json('test_data/stix_SCO_INDICATORS.json').get('objects', {})
 
 
 @pytest.mark.parametrize('indicator, sco_indicator', [
-    (xsoar_indicators[0], sco_indicators[0]),
-    (xsoar_indicators[1], sco_indicators[1]),
-    (xsoar_indicators[2], sco_indicators[2])
+    (XSOAR_INDICATORS[0], SCO_INDICATORS[0]),
+    (XSOAR_INDICATORS[1], SCO_INDICATORS[1]),
+    (XSOAR_INDICATORS[2], SCO_INDICATORS[2])
 ])
 def test_build_sco_object(indicator, sco_indicator):
     """
@@ -1730,18 +1730,18 @@ def test_build_sco_object(indicator, sco_indicator):
     assert output == sco_indicator
 
 
-xsoar_indicator_1 = {'expirationStatus': 'active',
+XSOAR_INDICATOR_1 = {'expirationStatus': 'active',
                      'firstSeen': '2023-04-19T17:43:07+03:00',
                      'indicator_type': 'Account',
-                     'lastSeen': '2023-04-19T17:43:07+03:00',
+                     'LASTSEEN': '2023-04-19T17:43:07+03:00',
                      'score': 'Unknown',
                      'timestamp': '2023-04-19T17:43:07+03:00',
                      'value': 'test@test.com'}
-stix_type_1 = "user-account"
-value_1 = 'test@test.com'
-expected_stix_id_1 = "user-account--783b9e67-d7b0-58f3-b566-58ac7881a3bc"
+STIX_TYPE_1 = "user-account"
+VALUE_1 = 'test@test.com'
+EXPECTED_STIX_ID_1 = "user-account--783b9e67-d7b0-58f3-b566-58ac7881a3bc"
 
-xsoar_indicator_2 = {'expirationStatus': 'active',
+XSOAR_INDICATOR_2 = {'expirationStatus': 'active',
                      'firstSeen': '2023-04-20T10:20:04+03:00',
                      'indicator_type': 'File',
                      'lastSeen': '2023-04-20T10:20:04+03:00',
@@ -1749,27 +1749,27 @@ xsoar_indicator_2 = {'expirationStatus': 'active',
                      'sourceInstances': 'VirusTotal',
                      'timestamp': '2023-04-20T10:20:04+03:00',
                      'value': '701393b3b8e6ae6e70effcda7598a8cf92d0adb1aaeb5aa91c73004519644801'}
-stix_type_2 = "file"
-value_2 = '701393b3b8e6ae6e70effcda7598a8cf92d0adb1aaeb5aa91c73004519644801'
-expected_stix_id_2 = "file--3e26aab3-dfc3-57c5-8fe2-45cfde8fe7c8"
+STIX_TYPE_2 = "file"
+VALUE_2 = '701393b3b8e6ae6e70effcda7598a8cf92d0adb1aaeb5aa91c73004519644801'
+EXPECTED_STIX_ID_2 = "file--3e26aab3-dfc3-57c5-8fe2-45cfde8fe7c8"
 
-xsoar_indicator_3 = {'expirationStatus': 'active',
+XSOAR_INDICATOR_3 = {'expirationStatus': 'active',
                      'firstSeen': '2023-04-18T12:17:38+03:00',
                      'indicator_type': 'IP',
                      'lastSeen': '2023-04-18T12:17:38+03:00',
                      'score': 'Unknown',
                      'timestamp': '2023-04-18T12:17:38+03:00',
                      'value': '8.8.8.8'}
-stix_type_3 = "ipv4-addr"
-value_3 = '8.8.8.8'
-expected_stix_id_3 = "ipv4-addr--2f689bf9-0ff2-545f-aa61-e495eb8cecc7"
+STIX_TYPE_3 = "ipv4-addr"
+VALUE_3 = '8.8.8.8'
+EXPECTED_STIX_ID_3 = "ipv4-addr--2f689bf9-0ff2-545f-aa61-e495eb8cecc7"
 
-test_create_sco_stix_uuid_params = [(xsoar_indicator_1, stix_type_1, value_1, expected_stix_id_1),
-                                    (xsoar_indicator_2, stix_type_2, value_2, expected_stix_id_2),
-                                    (xsoar_indicator_3, stix_type_3, value_3, expected_stix_id_3)]
+TEST_CREATE_SCO_STIX_UUID_PARAMS = [(XSOAR_INDICATOR_1, STIX_TYPE_1, VALUE_1, EXPECTED_STIX_ID_1),
+                                    (XSOAR_INDICATOR_2, STIX_TYPE_2, VALUE_2, EXPECTED_STIX_ID_2),
+                                    (XSOAR_INDICATOR_3, STIX_TYPE_3, VALUE_3, EXPECTED_STIX_ID_3)]
 
 
-@pytest.mark.parametrize('xsoar_indicator, stix_type, value, expected_stix_id', test_create_sco_stix_uuid_params)
+@pytest.mark.parametrize('xsoar_indicator, stix_type, value, expected_stix_id', TEST_CREATE_SCO_STIX_UUID_PARAMS)
 def test_create_sco_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_id):
     """
     Given:
@@ -1791,7 +1791,7 @@ def test_create_sco_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_i
     assert expected_stix_id == stix_id
 
 
-sdo_xsoar_indicator_1 = {
+SDO_XSOAR_INDICATOR_1 = {
     "expirationStatus": "active",
     "firstSeen": "2023-04-19T13:05:01+03:00",
     "indicator_type": "Attack Pattern",
@@ -1801,11 +1801,11 @@ sdo_xsoar_indicator_1 = {
     "value": "T111",
     "modified": "2023-04-19T13:05:01+03:00"
 }
-sdo_stix_type_1 = 'attack-pattern'
-sdo_value_1 = 'T111'
-sdo_expected_stix_id_1 = 'attack-pattern--116d410f-50f9-5f0d-b677-2a9b95812a3e'
+SDO_STIX_TYPE_1 = 'attack-pattern'
+SDO_VALUE_1 = 'T111'
+SDO_EXPECTED_STIX_ID_1 = 'attack-pattern--116d410f-50f9-5f0d-b677-2a9b95812a3e'
 
-sdo_xsoar_indicator_2 = {
+SDO_XSOAR_INDICATOR_2 = {
     "expirationStatus": "active",
     "firstSeen": "2023-04-20T17:20:10+03:00",
     "indicator_type": "Malware",
@@ -1816,15 +1816,15 @@ sdo_xsoar_indicator_2 = {
     "ismalwarefamily": "True",
     "modified": "2023-04-19T13:05:01+03:00",
 }
-sdo_stix_type_2 = 'malware'
-sdo_value_2 = 'bad malware'
-sdo_expected_stix_id_2 = 'malware--bddcf01f-9fd0-5107-a013-4b174285babc'
+SDO_STIX_TYPE_2 = 'malware'
+SDO_VALUE_2 = 'bad malware'
+SDO_EXPECTED_STIX_ID_2 = 'malware--bddcf01f-9fd0-5107-a013-4b174285babc'
 
-test_create_sdo_stix_uuid_params = [(sdo_xsoar_indicator_1, sdo_stix_type_1, sdo_value_1, sdo_expected_stix_id_1),
-                                    (sdo_xsoar_indicator_2, sdo_stix_type_2, sdo_value_2, sdo_expected_stix_id_2)]
+TEST_CREATE_SDO_STIX_UUID_PARAMS = [(SDO_XSOAR_INDICATOR_1, SDO_STIX_TYPE_1, SDO_VALUE_1, SDO_EXPECTED_STIX_ID_1),
+                                    (SDO_XSOAR_INDICATOR_2, SDO_STIX_TYPE_2, SDO_VALUE_2, SDO_EXPECTED_STIX_ID_2)]
 
 
-@pytest.mark.parametrize('xsoar_indicator, stix_type, value, expected_stix_id', test_create_sdo_stix_uuid_params)
+@pytest.mark.parametrize('xsoar_indicator, stix_type, value, expected_stix_id', TEST_CREATE_SDO_STIX_UUID_PARAMS)
 def test_create_sdo_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_id):
     """
     Given:
@@ -1843,11 +1843,11 @@ def test_create_sdo_stix_uuid(xsoar_indicator, stix_type, value, expected_stix_i
     assert expected_stix_id == stix_id
 
 
-test_create_manifest_entry_pram = [(sdo_xsoar_indicator_1, "Attack Pattern",
+test_create_manifest_entry_pram = [(SDO_XSOAR_INDICATOR_1, "Attack Pattern",
                                     {'id': 'attack-pattern--116d410f-50f9-5f0d-b677-2a9b95812a3e',
                                      'date_added': '2023-04-19T13:05:01.000000Z',
                                      'version': '2023-04-19T13:05:01.000000Z'}),
-                                   (sdo_xsoar_indicator_2, "Malware",
+                                   (SDO_XSOAR_INDICATOR_2, "Malware",
                                     {'id': 'malware--bddcf01f-9fd0-5107-a013-4b174285babc',
                                      'date_added': '2023-04-20T17:20:10.000000Z',
                                      'version': '2023-04-19T13:05:01.000000Z'})]
@@ -1855,15 +1855,25 @@ test_create_manifest_entry_pram = [(sdo_xsoar_indicator_1, "Attack Pattern",
 
 @pytest.mark.parametrize('xsoar_indicator, xsoar_type, expected_manifest_entry', test_create_manifest_entry_pram)
 def test_create_manifest_entry(xsoar_indicator, xsoar_type, expected_manifest_entry):
+    """
+    Given:
+        - Case 1: A XSOAR indicator of type 'Attack Pattern', with a stix type of 'attack-pattern'.
+        - Case 2: A XSOAR indicator of type 'Malware', with a stix type of 'malware'.
+    When:
+        - Creating a manifest entry.
+    Then:
+     - Case 1: A manifest was created.
+     - Case 2: A manifest was created.
+    """
     cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present=set(), types_for_indicator_sdo=[],
                               namespace_uuid=PAWN_UUID)
     manifest_entry = cilent.create_manifest_entry(xsoar_indicator, xsoar_type)
     assert manifest_entry == expected_manifest_entry
 
 
-test_create_stix_object_param = [
+TEST_CREATE_STIX_OBJECT_PARAM = [
     (
-        sdo_xsoar_indicator_1,
+        SDO_XSOAR_INDICATOR_1,
         "Attack Pattern",
         {
             "id": "attack-pattern--116d410f-50f9-5f0d-b677-2a9b95812a3e",
@@ -1876,7 +1886,7 @@ test_create_stix_object_param = [
         },
     ),
     (
-        sdo_xsoar_indicator_2,
+        SDO_XSOAR_INDICATOR_2,
         "Malware",
         {
             "id": "malware--bddcf01f-9fd0-5107-a013-4b174285babc",
@@ -1892,8 +1902,18 @@ test_create_stix_object_param = [
 ]
 
 
-@pytest.mark.parametrize('xsoar_indicator, xsoar_type, expected_stix_object', test_create_stix_object_param)
+@pytest.mark.parametrize('xsoar_indicator, xsoar_type, expected_stix_object', TEST_CREATE_STIX_OBJECT_PARAM)
 def test_create_stix_object(xsoar_indicator, xsoar_type, expected_stix_object, extensions_dict={}):
+    """
+    Given:
+        - Case 1: A XSOAR indicator of type 'Attack Pattern', with a stix type of 'attack-pattern'.
+        - Case 2: A XSOAR indicator of type 'Malware', with a stix type of 'malware'.
+    When:
+        - Creating a stix object.
+    Then:
+        - Case 1: A stix object was created.
+        - Case 2: A stix object was created.
+    """
     cilent = XSOAR2STIXParser(server_version='2.1', fields_to_present={'name', 'type'}, types_for_indicator_sdo=[],
                               namespace_uuid=PAWN_UUID)
     stix_object, extension_definition, extensions_dict = cilent.create_stix_object(xsoar_indicator, xsoar_type, extensions_dict)
@@ -1903,6 +1923,14 @@ def test_create_stix_object(xsoar_indicator, xsoar_type, expected_stix_object, e
 
 
 def test_init_client_with_wrong_version():
+    """
+    Given:
+        - An unsupported version.
+    When:
+        - Creating a client.
+    Then:
+        - An error was rasied.
+    """
     with pytest.raises(Exception) as e:
         XSOAR2STIXParser(server_version='2.3', fields_to_present={'name', 'type'}, types_for_indicator_sdo=[],
                          namespace_uuid=PAWN_UUID)
@@ -1922,6 +1950,14 @@ def test_init_client_with_wrong_version():
     ({"object_marking_refs": ["marking-definition--5e57c739-391a-4eb3-b6be-7d15ca92d5ed"]}, 'RED'),
 ])
 def test_get_tlp(indicator_json, expected_result):
+    """
+    Given:
+        - An indicator_json.
+    When:
+        - Calling get_tlp.
+    Then:
+        - Validate The tlp.
+    """
     cilent = STIX2XSOARParser(id_to_object={})
     result = cilent.get_tlp(indicator_json)
     assert result == expected_result
@@ -2026,7 +2062,7 @@ def test_get_labels_for_indicator():
     - Calling get_labels_for_indicator.
     Then
     - run the get_labels_for_indicator
-    Validate The labels.
+    - Validate The labels.
     """
     cilent = XSOAR2STIXParser(server_version='2.0', fields_to_present={'name', 'type'},
                               types_for_indicator_sdo=[], namespace_uuid=PAWN_UUID)
@@ -2125,7 +2161,7 @@ def test_create_x509_certificate_subject_issuer():
     Given
     - A dicitonary representing the subject and issuer fields of an X.509 certificate
     When
-    - call the ccreate_x509_certificate_subject_issuer method
+    - call the create_x509_certificate_subject_issuer method
     Then
     - Validates that the method properly creates the subject and issuer fields of an X.509 certificate as a string.
     """
@@ -2144,3 +2180,27 @@ def test_create_x509_certificate_subject_issuer():
         )
         == "C=US, ST=Maryland, L=Pasadena, O=Brent Baccala, OU=FreeSoft, CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
     )
+
+
+def test_create_x509_certificate_grids():
+    """
+    Given
+    - a string represent a subject or an issuer fields of an X.509 certificate object.
+    When
+    - call the create_x509_certificate_grids method
+    Then
+    - Validates that the method properly creates the grid field.
+    """
+    cilent = STIX2XSOARParser(id_to_object={})
+    result = cilent.create_x509_certificate_grids(
+        "C=US, ST=Maryland, L=Pasadena, O=Brent Baccala, OU=FreeSoft, "
+        "CN=www.freesoft.org/emailAddress=baccala@freesoft.org"
+    )
+    assert result == [
+        {"data": "US", "title": "C"},
+        {"data": "Maryland", "title": "ST"},
+        {"data": "Pasadena", "title": "L"},
+        {"data": "Brent Baccala", "title": "O"},
+        {"data": "FreeSoft", "title": "OU"},
+        {"data": "www.freesoft.org/emailAddress=baccala@freesoft.org", "title": "CN"},
+    ]

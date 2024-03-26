@@ -494,7 +494,7 @@ def create_query(query: str, types: list[str], added_after: str) -> str:
     """
     new_query = ''
     if types:
-        demisto.info(f'{INTEGRATION_NAME}: raw query: {query}')
+        demisto.debug(f'{INTEGRATION_NAME}: raw query: {query}')
         xsoar_types: list = []
         for t in types:
             xsoar_type = STIX2_TYPES_TO_XSOAR.get(t, t)
@@ -506,7 +506,7 @@ def create_query(query: str, types: list[str], added_after: str) -> str:
         if or_part := (' or '.join(f'type:"{x}"' for x in xsoar_types)):
             new_query += f' and ({or_part})'
 
-        demisto.info(f'{INTEGRATION_NAME}: modified query, after adding types: {new_query}')
+        demisto.debug(f'{INTEGRATION_NAME}: modified query, after adding types: {new_query}')
         query = new_query
     return f'{query} and modified:>="{added_after}"' if added_after else f'{query}'
 
@@ -1015,7 +1015,6 @@ def main():  # pragma: no cover
         return_error(err_msg)
 
 
-from TAXII2ApiModule import *  # noqa: E402
 from NGINXApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

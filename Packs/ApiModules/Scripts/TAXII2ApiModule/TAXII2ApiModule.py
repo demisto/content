@@ -753,8 +753,10 @@ class XSOAR2STIXParser:
         """
         Args:
             dict_values: A dict with keys and values for subject/issuer
+            Example: [{'title': 'title', 'data': 'data'}, {'title': 'title1', 'data': 'data1'}]
         Returns:
             A string
+            Example: 'title=data, title1=data1'
         """
         string_to_return = ""
         if list_dict_values:
@@ -778,7 +780,6 @@ class XSOAR2STIXParser:
         Returns:
             Dict[str, Any]: A JSON object of a STIX indicator.
         """
-        demisto.info(f"we are here: {xsoar_indicator}")
         custom_fields = xsoar_indicator.get('CustomFields') or {}
         stix_object['validity_not_before'] = custom_fields.get('validitynotbefore')
         stix_object['validity_not_after'] = custom_fields.get('validitynotafter')
@@ -889,7 +890,8 @@ class STIX2XSOARParser(BaseClient):
         Build publications grid field from the indicator external_references field
 
         Args:
-            indicator: The indicator with publication field
+            indicator: The indicator with publication field.
+            ignore_external_id: Whether to ignore external_id or not.
 
         Returns:
             list. publications grid field
@@ -1470,6 +1472,15 @@ class STIX2XSOARParser(BaseClient):
         return account_indicator
 
     def create_keyvalue_dict(self, registry_key_obj_values: list[dict[str, Any]]) -> list:
+        """
+        Creates a grid field related to the keyvalue field of the registry key.
+
+        Args:
+            registry_key_obj_values (dict[str, Any]): A list of dict from the stix object.
+
+        Returns:
+            list: The return value. A list of dict.
+        """
         returned_grid = []
         for stix_values_entry in registry_key_obj_values:
             returned_grid.append({"name": stix_values_entry.get("name", ''),
@@ -1595,17 +1606,25 @@ class STIX2XSOARParser(BaseClient):
         return [cve]
 
     def create_x509_certificate_grids(self, string_object: Optional[str]) -> list:
+        """
+        Creates a grid field related to the subject and issuer field of the x509 certificate object.
+
+        Args:
+            string_object (Optional[str]): A str in format of C=ZA, ST=Western Cape, L=Cape Town, O=Thawte.
+
+        Returns:
+            list: The return value. A list of dict [{"title": "C", "data": "ZA"}].
+        """
+        result_grid_list = []
         if string_object:
             key_value_pairs = string_object.split(', ')
-            result_grid_list = []
             for pair in key_value_pairs:
                 result_grid = {}
                 key, value = pair.split('=', 1)
                 result_grid['title'] = key
                 result_grid['data'] = value
                 result_grid_list.append(result_grid)
-            return result_grid_list
-        return []
+        return result_grid_list
 
     def parse_x509_certificate(self, x509_certificate_obj: dict[str, Any]):
         """

@@ -348,7 +348,7 @@ def create_course_of_action_indicators(client: Client, course_of_action_objects,
             "modified": handle_multiple_dates_in_one_field('modified', coa_indicator_object.get('modified')),
             "tags": list(feed_tags)
         })
-        if coa_indicator['fields'].get('action_type') is not None:
+        if 'action_type' in coa_indicator['fields']:
             coa_indicator["fields"].pop("action_type")
         if tlp_color:
             coa_indicator_object['fields']['trafficlightprotocol'] = tlp_color
@@ -650,7 +650,6 @@ def main():  # pragma: no cover
         return_error(str(err))
 
 
-from TAXII2ApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
