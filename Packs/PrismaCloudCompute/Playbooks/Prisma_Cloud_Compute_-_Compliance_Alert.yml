@@ -1,5 +1,6 @@
 id: Prisma Cloud Compute - Compliance Alert
 version: -1
+deprecated: true
 name: Prisma Cloud Compute - Compliance Alert
 description: Default playbook for parsing Prisma Cloud Compute compliance alerts
 fromversion: 5.0.0
