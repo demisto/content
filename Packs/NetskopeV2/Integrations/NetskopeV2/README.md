@@ -10,11 +10,12 @@ This integration was integrated and tested with version 91.0.6.575 of Netskope (
     | **Parameter** | **Required** |
     | --- | --- |
     | URL of Netskope Tenant (e.g. https://tenant.goskope.com) | True |
-    | API Key | True |
+    | API Key | False |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -164,5 +165,4 @@ Get URL list by ID
 ``` ```
 
 #### Human Readable Output
-
 
