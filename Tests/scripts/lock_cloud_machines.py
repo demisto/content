@@ -136,7 +136,8 @@ def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval:
     for attempt_num in range(1, num_of_retries + 1):
         try:
             logging.debug(
-                f'Try to get the status of job ID {job_id} in attempt number {attempt_num},user_endpoint: {user_endpoint}')            response = requests.get(user_endpoint, headers=headers)
+                f'Try to get the status of job ID {job_id} in attempt number {attempt_num},user_endpoint: {user_endpoint}')
+            response = requests.get(user_endpoint, headers=headers)
             response_as_json = response.json()
             logging.debug(f'{user_endpoint=} raw response={response_as_json} for {job_id=}')
             return response_as_json.get('status')
@@ -147,6 +148,7 @@ def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval:
             logging.debug(f'sleeping for {interval} seconds to try to re-establish gitlab connection')
             time.sleep(interval)
     return None
+
 
 def check_pipeline_status(token: str, pipeline_id: str, num_of_retries: int = 5, interval: float = 30.0) -> str | None:
     """
@@ -319,7 +321,7 @@ def get_and_lock_all_needed_machines(storage_client: storage.Client,
     """
 
     logging.debug('getting all machines lock files')
-    
+
     locked_machine_list = []
     while number_machines_to_lock > 0:
         busy_machines = []
