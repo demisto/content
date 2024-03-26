@@ -152,11 +152,10 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
     return secs_from_beginning > EXECUTION_TIMEOUT_SECONDS
 
 def remove_unsupported_event_types(last_run_dict, event_types_to_fetch):
-    event_types = ['application', 'alert', 'page', 'audit', 'network']
     keys_to_remove = []
 
     for key in last_run_dict:
-        if (key in event_types) and (key not in event_types_to_fetch):
+        if (key in ALL_SUPPORTED_EVENT_TYPES) and (key not in event_types_to_fetch):
             keys_to_remove.append(key)
 
     for key in keys_to_remove:
