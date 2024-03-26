@@ -174,14 +174,33 @@ def test_list_clusters_command(mocker):
         ],
         'nextToken': None
     }
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "list_clusters", return_value=response)
 
-    client = AWSClient("aws_default_region", None, None, None,
-                       None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
+    client = Boto3Client()
     result = list_clusters_command(client, {})
     assert result.readable_output == '### The list of clusters\n|ClustersNames|\n|---|\n| cluster_name_1 |\n'
     assert result.outputs == {'ClustersNames': ['cluster_name_1'], 'NextToken': None}
+
+
+def test_list_clusters_command_no_clusters(mocker):
+    """
+        Given:
+            - An empty args.
+        When:
+            - running list_clusters_command.
+        Then:
+            - assert that the readable output is correct.
+    """
+    response = {
+        'clusters': [],
+        'nextToken': None
+    }
+    mocker.patch.object(Boto3Client, "list_clusters", return_value=response)
+
+    client = Boto3Client()
+    result = list_clusters_command(client, {})
+    assert result.readable_output == 'No clusters found.'
+    assert result.outputs == {'ClustersNames': [], 'NextToken': None}
 
 
 def test_list_clusters_command_with_next_token(mocker):
@@ -199,11 +218,9 @@ def test_list_clusters_command_with_next_token(mocker):
         ],
         'nextToken': 'NextToken'
     }
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "list_clusters", return_value=response)
 
-    client = AWSClient("aws_default_region", None, None, None,
-                       None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
+    client = Boto3Client()
     result = list_clusters_command(client, {'limit': '1'})
     assert result.readable_output == '### The list of clusters\n|ClustersNames|\n|---|\n| cluster_name_1 |\n'
     assert result.outputs == {'ClustersNames': ['cluster_name_1'], 'NextToken': 'NextToken'}
@@ -220,11 +237,9 @@ def test_list_clusters_command_with_pagination(mocker):
     """
     response1 = util_load_json("test_data/list_clusters.json").get('response_with_next_toke')
     response2 = util_load_json("test_data/list_clusters.json").get('response_without_next_token')
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "list_clusters", side_effect=[response1, response2])
 
-    client = AWSClient("aws_default_region", None, None, None,
-                       None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
+    client = Boto3Client()
     result = list_clusters_command(client, {'limit': '200'})
     assert result.readable_output == ('### The list of clusters\n|ClustersNames|\n|---|\n| cluster_name_1 |\n| cluster_name_100 '
                                       '|\n| cluster_name_101 |\n')
@@ -244,10 +259,8 @@ def test_update_cluster_config_logging_command(mocker):
     from AWSEKS import update_cluster_config_command
     expected_output = util_load_json("test_data/update_cluster_config.json").get('logging_expected_output')
     expected_readable_output = util_load_json("test_data/update_cluster_config.json").get('logging_expected_readable_output')
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "update_cluster_config", return_value=UPDATE_CLUSTER_CONFIG_LOGGING_RESPONSE)
-    client = AWSClient("aws_default_region", None, None, None,
-                       None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
+    client = Boto3Client()
     args = {
         "cluster_name": "cluster_name",
         "logging": "{'clusterLogging': [{'types': ['api', 'authenticator', 'audit'], 'enabled': true}]}"
@@ -267,11 +280,9 @@ def test_update_cluster_config_authentication_mode_command(mocker):
             - assert that update_cluster_config was called with the correct args.
     """
     from AWSEKS import update_cluster_config_command
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     http_request = mocker.patch.object(Boto3Client, "update_cluster_config",
                                        return_value=UPDATE_CLUSTER_CONFIG_ACCESS_CONFIG_RESPONSE)
-    client = AWSClient("aws_default_region", None, None, None,
-                       None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
+    client = Boto3Client()
     args = {
         "cluster_name": "cluster_name",
         "authentication_mode": "API_AND_CONFIG_MAP"
@@ -296,10 +307,8 @@ def test_describe_cluster_command(mocker):
     from AWSEKS import describe_cluster_command
     expected_readable_output = util_load_json("test_data/describe_cluster.json").get('expected_readable_output')
     expected_output = util_load_json("test_data/describe_cluster.json").get('expected_outputs')
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "describe_cluster", return_value=DESCRIBE_CLUSTER_RESPONSE)
-    client = AWSClient("aws_default_region", None, None, None,
-                       None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
+    client = Boto3Client()
     args = {
         "cluster_name": "cluster_name",
     }
@@ -320,10 +329,8 @@ def test_create_access_entry_command(mocker):
     from AWSEKS import create_access_entry_command
     expected_readable_output = util_load_json("test_data/create_access_entry.json").get('expected_readable_output')
     expected_output = util_load_json("test_data/create_access_entry.json").get('expected_outputs')
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "create_access_entry", return_value=CREATE_ACCESS_ENTRY_RESPONSE)
-    client = AWSClient("aws_default_region", None, None, None,
-                       None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
+    client = Boto3Client()
     args = {
         "cluster_name": "cluster_name",
         "principal_arn": "principal_arn"
@@ -345,10 +352,8 @@ def test_associate_access_policy_command(mocker):
     from AWSEKS import associate_access_policy_command
     expected_readable_output = util_load_json("test_data/associate_access_policy.json").get('expected_readable_output')
     expected_output = util_load_json("test_data/associate_access_policy.json").get('expected_outputs')
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "associate_access_policy", return_value=ASSOCIATE_ACCESS_POLICY_RESPONSE)
-    client = AWSClient("aws_default_region", None, None, None,
-                       None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
+    client = Boto3Client()
     args = {
         "cluster_name": "clusterName",
         "principal_arn": "principalArn",
@@ -399,11 +404,9 @@ def test_associate_access_policy_command_type_cluster(mocker, args, access_scope
             - assert that associate_access_policy_command was called with the correct args.
     """
     from AWSEKS import associate_access_policy_command
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     http_request = mocker.patch.object(Boto3Client, "associate_access_policy",
                                        return_value=UPDATE_CLUSTER_CONFIG_ACCESS_CONFIG_RESPONSE)
-    client = AWSClient("aws_default_region", None, None, None,
-                       None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
+    client = Boto3Client()
     associate_access_policy_command(client, args)
     http_request.assert_called_with(clusterName=args['cluster_name'],
                                     principalArn=args["principal_arn"],
@@ -423,10 +426,8 @@ def test_update_access_entry_command(mocker):
     from AWSEKS import update_access_entry_command
     expected_readable_output = util_load_json("test_data/update_access_entry.json").get('expected_readable_output')
     expected_output = util_load_json("test_data/update_access_entry.json").get('expected_outputs')
-    mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, "update_access_entry", return_value=UPDATE_ACCESS_ENTRY_RESPONSE)
-    client = AWSClient("aws_default_region", None, None, None,
-                       None, "aws_access_key_id", "aws_secret_access_key", "verify_certificate", None, 5)
+    client = Boto3Client()
     args = {
         "cluster_name": "cluster_name",
         "principal_arn": "principal_arn"

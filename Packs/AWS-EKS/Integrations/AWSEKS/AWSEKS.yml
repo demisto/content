@@ -62,6 +62,26 @@ script:
       defaultValue: 50
     - name: next_token
       description: The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter.
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the configured region will be used.
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
     outputs:
     - contextPath: AWS.EKS.Cluster.ClustersNames
       description: A list of all of the clusters for your account in the specified Amazon Web Services Region.
@@ -94,6 +114,26 @@ script:
       - API
       - API_AND_CONFIG_MAP
       - CONFIG_MAP
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the configured region will be used.
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
     outputs:
     - contextPath: AWS.EKS.UpdateCluster.clusterName
       description: The name of the cluster.
@@ -123,6 +163,26 @@ script:
       description: The name of the cluster to describe.
       required: true
       isArray: false
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the configured region will be used.
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
     outputs:
     - contextPath: AWS.EKS.DescribeCluster.name
       description: The name of your cluster.
@@ -273,6 +333,26 @@ script:
       - FARGATE_LINUX
       - EC2_LINUX
       - EC2_WINDOWS
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the configured region will be used.
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
     outputs:
     - contextPath: AWS.EKS.CreateAccessEntry.clusterName
       description: The name of the cluster.
@@ -328,6 +408,26 @@ script:
       description: A comma separated list of Kubernetes namespace that an access policy is scoped to. A value is required if you specified namespace for type.
       required: false
       isArray: false
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the configured region will be used.
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
     outputs:
     - contextPath: AWS.EKS.AssociatedAccessPolicy.clusterName
       description: The name of your cluster.
@@ -373,6 +473,26 @@ script:
       description: Username for Kubernetes authentication.
       required: false
       isArray: false
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the configured region will be used.
+      name: region
+      predefined:
+        - us-east-1
+        - us-east-2
+        - us-west-1
+        - us-west-2
+        - ca-central-1
+        - eu-west-1
+        - eu-central-1
+        - eu-west-2
+        - ap-northeast-1
+        - ap-northeast-2
+        - ap-southeast-1
+        - ap-southeast-2
+        - ap-south-1
+        - sa-east-1
+        - eu-north-1
+        - eu-west-3
     outputs:
     - contextPath: AWS.EKS.UpdateAccessEntry.clusterName
       description: The name of your cluster.

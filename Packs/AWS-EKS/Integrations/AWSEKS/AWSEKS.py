@@ -1,5 +1,4 @@
 import json
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
@@ -51,32 +50,48 @@ def validate_args(resources_vpc_config: dict, logging_arg: dict, authentication_
         return 'ok'
 
 
+def config_aws_session(args: dict, aws_client: AWSClient):
+    """
+    Configures an AWS session for the EKS service,
+    Used in all the commands.
+
+    Args:
+        args (dict): A dictionary containing the configuration parameters for the session.
+                     - 'region' (str): The AWS region.
+
+        aws_client (AWSClient): The AWS client used to configure the session.
+
+    Returns:
+        AWS session (boto3 client): The configured AWS session.
+    """
+    return aws_client.aws_session(service='eks', region=args.get('region'))
+
+
 ''' COMMAND FUNCTIONS '''
 
 
-def list_clusters_command(aws_client: AWSClient, args: dict) -> CommandResults:
+def list_clusters_command(aws_client, args: dict) -> CommandResults:
     """
     Lists the Amazon EKS clusters in the Amazon Web Services account in the specified Amazon Web Services Region.
     Args:
-        aws_client: AWS client
+        aws_client (boto3 client): The configured AWS session.
         args: command arguments
 
     Returns:
         A Command Results object
     """
-    client = aws_client.aws_session(service='eks')
     limit = arg_to_number(args.get('limit')) or 50
     next_token = args.get('next_token', '')
     list_clusters = []
     flag = True  # Do we want to enter the while loop? -> in the first time, yes. After that only if next_token!=None & limit>0
     while limit > 0 and flag:
         if limit > 100:
-            response = client.list_clusters(maxResults=100,
-                                            nextToken=next_token)
+            response = aws_client.list_clusters(maxResults=100,
+                                                nextToken=next_token)
             limit -= 100
         else:
-            response = client.list_clusters(maxResults=limit,
-                                            nextToken=next_token)
+            response = aws_client.list_clusters(maxResults=limit,
+                                                nextToken=next_token)
             limit = 0
         list_clusters.extend(response.get('clusters', []))
         next_token = response.get('nextToken')
@@ -91,11 +106,15 @@ def list_clusters_command(aws_client: AWSClient, args: dict) -> CommandResults:
         'NextToken': next_token
     }
 
-    readable_output = tableToMarkdown(
-        name='The list of clusters',
-        t=md_table,
-        removeNull=True,
-    )
+    if list_clusters:
+        readable_output = tableToMarkdown(
+            name='The list of clusters',
+            t=md_table,
+            removeNull=True,
+        )
+    else:
+        readable_output = "No clusters found."
+
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='AWS.EKS.Cluster',
@@ -104,17 +123,16 @@ def list_clusters_command(aws_client: AWSClient, args: dict) -> CommandResults:
     )
 
 
-def update_cluster_config_command(aws_client: AWSClient, args: dict) -> CommandResults:
+def update_cluster_config_command(aws_client, args: dict) -> CommandResults:
     """
     Updates an Amazon EKS cluster configuration.
     Args:
-        aws_client: AWS client
+        aws_client(boto3 client): The configured AWS session.
         args: command arguments
 
     Returns:
         A Command Results object
     """
-    client = aws_client.aws_session(service='eks')
     cluster_name = args.get('cluster_name')
     resources_vpc_config = args.get('resources_vpc_config', '').replace('\'', '"')
     logging_arg = args.get('logging', '').replace('\'', '"')
@@ -128,17 +146,17 @@ def update_cluster_config_command(aws_client: AWSClient, args: dict) -> CommandR
     validate_args(resources_vpc_config, logging_arg, authentication_mode)
 
     if resources_vpc_config:
-        response = client.update_cluster_config(
+        response = aws_client.update_cluster_config(
             name=cluster_name,
             resourcesVpcConfig=resources_vpc_config
         )
     elif logging_arg:
-        response = client.update_cluster_config(
+        response = aws_client.update_cluster_config(
             name=cluster_name,
             logging=logging_arg,
         )
     else:  # access_config
-        response = client.update_cluster_config(
+        response = aws_client.update_cluster_config(
             name=cluster_name,
             accessConfig=access_config
         )
@@ -170,20 +188,19 @@ def update_cluster_config_command(aws_client: AWSClient, args: dict) -> CommandR
     )
 
 
-def describe_cluster_command(aws_client: AWSClient, args: dict) -> CommandResults:
+def describe_cluster_command(aws_client, args: dict) -> CommandResults:
     """
     Describes an Amazon EKS cluster.
     Args:
-        aws_client: AWS client
+        aws_client(boto3 client): The configured AWS session.
         args: command arguments
 
     Returns:
         A Command Results object
     """
-    client = aws_client.aws_session(service='eks')
     cluster_name = args.get('cluster_name')
 
-    response = client.describe_cluster(name=cluster_name)
+    response = aws_client.describe_cluster(name=cluster_name)
     response_data = response.get('cluster', {})
     datetime_to_str(response_data, 'createdAt')
     datetime_to_str(response_data.get('connectorConfig', {}), 'activationExpiry')
@@ -211,17 +228,16 @@ def describe_cluster_command(aws_client: AWSClient, args: dict) -> CommandResult
     )
 
 
-def create_access_entry_command(aws_client: AWSClient, args: dict) -> CommandResults:
+def create_access_entry_command(aws_client, args: dict) -> CommandResults:
     """
     Creates an access entry.
     Args:
-        aws_client: AWS client
+        aws_client(boto3 client): The configured AWS session.
         args: command arguments
 
     Returns:
         A Command Results object
     """
-    client = aws_client.aws_session(service='eks')
     cluster_name = args.get('cluster_name')
     principal_arn = args.get('principal_arn')
     kubernetes_groups = argToList(args.get('kubernetes_groups'))
@@ -232,7 +248,7 @@ def create_access_entry_command(aws_client: AWSClient, args: dict) -> CommandRes
     type_arg = args.get('type', '').upper()
 
     if username:
-        response = client.create_access_entry(
+        response = aws_client.create_access_entry(
             clusterName=cluster_name,
             principalArn=principal_arn,
             kubernetesGroups=kubernetes_groups,
@@ -242,7 +258,7 @@ def create_access_entry_command(aws_client: AWSClient, args: dict) -> CommandRes
             type=type_arg
         ).get('accessEntry')
     else:
-        response = client.create_access_entry(
+        response = aws_client.create_access_entry(
             clusterName=cluster_name,
             principalArn=principal_arn,
             kubernetesGroups=kubernetes_groups,
@@ -279,17 +295,16 @@ def create_access_entry_command(aws_client: AWSClient, args: dict) -> CommandRes
     )
 
 
-def associate_access_policy_command(aws_client: AWSClient, args: dict) -> CommandResults:
+def associate_access_policy_command(aws_client, args: dict) -> CommandResults:
     """
     Associates an access policy and its scope to an access entry.
     Args:
-        aws_client: AWS client
+        aws_client(boto3 client): The configured AWS session.
         args: command arguments
 
     Returns:
         A Command Results object
     """
-    client = aws_client.aws_session(service='eks')
     cluster_name = args.get('cluster_name')
     principal_arn = args.get('principal_arn')
     policy_arn = args.get('policy_arn')
@@ -303,7 +318,7 @@ def associate_access_policy_command(aws_client: AWSClient, args: dict) -> Comman
         'namespaces': namespaces
     }
 
-    response = client.associate_access_policy(
+    response = aws_client.associate_access_policy(
         clusterName=cluster_name,
         principalArn=principal_arn,
         policyArn=policy_arn,
@@ -339,17 +354,16 @@ def associate_access_policy_command(aws_client: AWSClient, args: dict) -> Comman
     )
 
 
-def update_access_entry_command(aws_client: AWSClient, args: dict) -> CommandResults:
+def update_access_entry_command(aws_client, args: dict) -> CommandResults:
     """
     Updates an access entry.
     Args:
-        aws_client: AWS client
+        aws_client(boto3 client): The configured AWS session.
         args: command arguments
 
     Returns:
         A Command Results object
     """
-    client = aws_client.aws_session(service='eks')
     cluster_name = args.get('cluster_name')
     principal_arn = args.get('principal_arn')
     kubernetes_groups = argToList(args.get('kubernetes_groups'))
@@ -357,7 +371,7 @@ def update_access_entry_command(aws_client: AWSClient, args: dict) -> CommandRes
     username = args.get('username')
 
     if username:
-        response = client.update_access_entry(
+        response = aws_client.update_access_entry(
             clusterName=cluster_name,
             principalArn=principal_arn,
             kubernetesGroups=kubernetes_groups,
@@ -365,7 +379,7 @@ def update_access_entry_command(aws_client: AWSClient, args: dict) -> CommandRes
             username=username
         ).get('accessEntry', {})
     else:
-        response = client.update_access_entry(
+        response = aws_client.update_access_entry(
             clusterName=cluster_name,
             principalArn=principal_arn,
             kubernetesGroups=kubernetes_groups,
@@ -400,14 +414,14 @@ def update_access_entry_command(aws_client: AWSClient, args: dict) -> CommandRes
     )
 
 
-def test_module(aws_client: AWSClient) -> str:
+def test_module(aws_client) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
 
-    :type aws_client: ``AWSClient``
+    :type aws_client(boto3 client): The configured AWS session.
     :param AWSClient: client to use
 
     :return: 'ok' if test passed, anything else will fail the test.
@@ -416,8 +430,7 @@ def test_module(aws_client: AWSClient) -> str:
 
     message: str = ''
     try:
-        client = aws_client.aws_session(service='eks')
-        client.list_clusters(maxResults=1)
+        aws_client.list_clusters(maxResults=1)
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
@@ -448,6 +461,8 @@ def main():  # pragma: no cover
                                None, aws_access_key_id, aws_secret_access_key, verify_certificate, None, 5)
 
         args = demisto.args()
+
+        aws_client = config_aws_session(args, aws_client)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
