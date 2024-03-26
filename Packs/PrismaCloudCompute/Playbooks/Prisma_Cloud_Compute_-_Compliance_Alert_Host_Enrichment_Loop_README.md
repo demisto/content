@@ -13,8 +13,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Prisma Cloud Compute - ServiceNow Compliance Ticket
 * Prisma Cloud Compute - Jira Compliance Issue
+* Prisma Cloud Compute - ServiceNow Compliance Ticket
 
 ### Integrations
 
@@ -22,14 +22,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
+* DeleteContext
 * SetAndHandleEmpty
 * PrismaCloudComputeComplianceTable
-* DeleteContext
 
 ### Commands
 
-* prisma-cloud-compute-hosts-scan-list
 * setIncident
+* prisma-cloud-compute-hosts-scan-list
 
 ## Playbook Inputs
 
@@ -37,8 +37,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ComplianceIssue | A compliance issue. This list is used to filter relevant hostnames for enrichment. |  | Optional |
-| LastComplianceID | The ID of the last compliance issue fetched in the incidents.<br/>Used to know when to set the output after the loops end. |  | Optional |
+| ComplianceIssueID | A compliance issue ID. This ID is used to filter relevant hostnames for enrichment. |  | Optional |
 | TicketingSystem | Which ticketing system should be used to create an external ticket.<br/>Available options:<br/>- Jira<br/>- ServiceNow<br/><br/>If none of the above selected, no external ticket will get created.<br/>For Jira, please also set the "JiraProjectName" and "JiraIssueTypeName" playbook inputs.<br/> |  | Optional |
 | JiraIssueTypeName | Issue type name. For example: "Task". |  | Optional |
 | JiraProjectName | The project name with which to associate the issue. |  | Optional |
@@ -46,10 +45,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ## Playbook Outputs
 
 ---
-
-| **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| ComplianceTableOutput | Compliance issues table. | unknown |
+There are no outputs for this playbook.
 
 ## Playbook Image
 

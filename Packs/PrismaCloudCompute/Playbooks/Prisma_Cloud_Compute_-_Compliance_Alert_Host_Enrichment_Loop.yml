@@ -25,14 +25,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1160,
-          "y": 530
+          "y": 700
         }
       }
     note: false
@@ -44,10 +44,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 58fa823d-51f3-4a4f-8da5-1a230998879c
+    taskid: d35e357d-6e7f-400a-8893-4c8db81ece4f
     type: regular
     task:
-      id: 58fa823d-51f3-4a4f-8da5-1a230998879c
+      id: d35e357d-6e7f-400a-8893-4c8db81ece4f
       version: -1
       name: Get hosts information based on compliance ID
       description: This task will retrieve the "compact" information for all of the affected resources. In order to avoid performance issues, which can happen with large environments, the task won't retrieve the full information for each resource which includes all vulnerabilities, compliance issues, binaries etc.
@@ -65,13 +65,7 @@ tasks:
         simple: "true"
       compliance_ids:
         complex:
-          root: inputs.ComplianceIssue
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: id
+          root: inputs.ComplianceIssueID
       fields:
         simple: cloudMetadata,hostname,complianceDistribution
     separatecontext: false
@@ -108,49 +102,7 @@ tasks:
       {
         "position": {
           "x": 940,
-          "y": 2980
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 2c1e469c-8ed7-41bd-8b58-c99144f76a95
-    type: regular
-    task:
-      id: 2c1e469c-8ed7-41bd-8b58-c99144f76a95
-      version: -1
-      name: Delete Context
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      subplaybook:
-        simple: auto
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1160,
-          "y": 690
+          "y": 2550
         }
       }
     note: false
@@ -162,10 +114,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 1d659624-aa2e-4a5f-8ecb-2a83bb3d9f0a
+    taskid: 7631a22d-8b9d-476d-8764-45fc6408fa78
     type: regular
     task:
-      id: 1d659624-aa2e-4a5f-8ecb-2a83bb3d9f0a
+      id: 7631a22d-8b9d-476d-8764-45fc6408fa78
       version: -1
       name: Get full data from one host
       description: In order to get more details about the compliance issue, we can retrieve the full details of 1 resource, which includes more details about each compliance issue like title, severity etc.
@@ -181,15 +133,6 @@ tasks:
         simple: "true"
       compact:
         simple: "false"
-      compliance_ids:
-        complex:
-          root: inputs.ComplianceIssue
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: id
       hostname:
         complex:
           root: PrismaCloudCompute.ReportHostScan
@@ -214,10 +157,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 7fc1eb7a-d7c7-43b7-834c-fb6944e16a1d
+    taskid: 95bfb8aa-82a0-476e-88da-4be714644f0a
     type: regular
     task:
-      id: 7fc1eb7a-d7c7-43b7-834c-fb6944e16a1d
+      id: 95bfb8aa-82a0-476e-88da-4be714644f0a
       version: -1
       name: Set EnrichedComplianceIssue
       description: The key "EnrichedComplianceIssue" will hold all of the enriched compliance issue information. This will be used in the next task in order to create the compliance issues table, which will then be displayed in the incident's layout.
@@ -242,7 +185,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: inputs.ComplianceIssue.id
+                  simple: inputs.ComplianceIssueID
                 iscontext: true
           transformers:
           - operator: FirstArrayElement
@@ -264,10 +207,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 88b5193e-6c26-4a98-8287-3ef599d80ebd
+    taskid: 5c8104d1-8e3b-4605-88df-bde79f4e3b4b
     type: regular
     task:
-      id: 88b5193e-6c26-4a98-8287-3ef599d80ebd
+      id: 5c8104d1-8e3b-4605-88df-bde79f4e3b4b
       version: -1
       name: Prepare Compliance Table (Layout)
       description: Iterate over input information and add to output table context keys.
@@ -277,7 +220,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "17"
+      - "20"
     scriptarguments:
       gridID:
         simple: prismacloudcomputehostcomplianceissues
@@ -313,7 +257,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "2"
+      - "12"
       "yes":
       - "7"
     separatecontext: false
@@ -334,7 +278,7 @@ tasks:
       {
         "position": {
           "x": 1160,
-          "y": 1080
+          "y": 1090
         }
       }
     note: false
@@ -346,63 +290,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 55a77f0d-94d1-431e-8fed-896a7ee62491
-    type: condition
-    task:
-      id: 55a77f0d-94d1-431e-8fed-896a7ee62491
-      version: -1
-      name: Is it the last playbook loop?
-      description: 'In order to avoid '
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.LastComplianceID
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: inputs.ComplianceIssue
-                transformers:
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: id
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1160,
-          "y": 2550
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 9851403f-c1d1-44c7-8387-4960af4df09e
+    taskid: 1fb28559-f306-4791-8cf0-76b68287af33
     type: regular
     task:
-      id: 9851403f-c1d1-44c7-8387-4960af4df09e
+      id: 1fb28559-f306-4791-8cf0-76b68287af33
       version: -1
       name: Delete context
       description: |-
@@ -428,54 +319,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1160,
-          "y": 2760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: f3f94e93-19c6-4d4b-8d5f-6ecaf61570c3
-    type: condition
-    task:
-      id: f3f94e93-19c6-4d4b-8d5f-6ecaf61570c3
-      description: ""
-      version: -1
-      name: Any results found?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "12"
-      "Yes":
-      - "17"
-      - "20"
-    separatecontext: false
-    conditions:
-    - label: "Yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: incident.prismacloudcomputehostcomplianceissues
-                accessor: hostname
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1160,
-          "y": 1860
+          "x": 940,
+          "y": 2330
         }
       }
     note: false
@@ -487,10 +332,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 391a36ac-238b-475a-8e8e-850078d2ee15
+    taskid: 1779ef0e-c576-48c0-8562-f43121852e7e
     type: regular
     task:
-      id: 391a36ac-238b-475a-8e8e-850078d2ee15
+      id: 1779ef0e-c576-48c0-8562-f43121852e7e
       version: -1
       name: Show compliance table in layout
       description: The Compliance Alert incident layout displays several tabs based on different filtering conditions. This task sets a value in the "prismacloudcomputeshowcompliancetab" incident field, which will cause the "Host Compliance Information" tab to be visible.
@@ -510,7 +355,7 @@ tasks:
       {
         "position": {
           "x": 1160,
-          "y": 2300
+          "y": 2120
         }
       }
     note: false
@@ -567,8 +412,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1560,
-          "y": 2360
+          "x": 1650,
+          "y": 2160
         }
       }
     note: false
@@ -613,7 +458,7 @@ tasks:
       {
         "position": {
           "x": 1160,
-          "y": 2085
+          "y": 1890
         }
       }
     note: false
@@ -672,8 +517,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1790,
-          "y": 2170
+          "x": 1880,
+          "y": 1970
         }
       }
     note: false
@@ -724,8 +569,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2030,
-          "y": 2360
+          "x": 2120,
+          "y": 2160
         }
       }
     note: false
@@ -755,8 +600,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1790,
-          "y": 2040
+          "x": 1880,
+          "y": 1840
         }
       }
     note: false
@@ -769,35 +614,25 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "11_2_#default#": 0.1,
-      "12_13_yes": 0.48,
-      "12_2_#default#": 0.35,
-      "14_12_#default#": 0.23,
+      "17_12_yes": 0.21,
       "17_15_#default#": 0.55,
-      "18_12_#default#": 0.55,
+      "18_12_#default#": 0.44,
       "18_19_ServiceNow": 0.59
     },
     "paper": {
       "dimensions": {
-        "height": 2515,
-        "width": 1470,
+        "height": 1915,
+        "width": 1560,
         "x": 940,
-        "y": 530
+        "y": 700
       }
     }
   }
 inputs:
-- key: ComplianceIssue
+- key: ComplianceIssueID
   value: {}
   required: false
-  description: A compliance issue. This list is used to filter relevant hostnames for enrichment.
-  playbookInputQuery:
-- key: LastComplianceID
-  value: {}
-  required: false
-  description: |-
-    The ID of the last compliance issue fetched in the incidents.
-    Used to know when to set the output after the loops end.
+  description: A compliance issue ID. This ID is used to filter relevant hostnames for enrichment.
   playbookInputQuery:
 - key: TicketingSystem
   value: {}
@@ -821,10 +656,7 @@ inputs:
   required: false
   description: The project name with which to associate the issue.
   playbookInputQuery:
-outputs:
-- contextPath: ComplianceTableOutput
-  description: Compliance issues table.
-  type: unknown
+outputs: []
 quiet: true
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
