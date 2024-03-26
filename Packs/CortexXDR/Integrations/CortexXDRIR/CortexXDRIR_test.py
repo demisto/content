@@ -1267,3 +1267,20 @@ def test_get_incident_extra_data_incident_not_exist(mocker):
     with pytest.raises(DemistoException) as e:
         _, outputs, raw_incident = get_incident_extra_data_command(client, args)
     assert str(e.value) == 'Incident 1 is not found'
+
+
+def test_XSUP_35287_case(mocker):
+    """
+    Given:
+        -  raw incident contains only information of the incident
+    When
+        - Running sort_all_list_incident_fields
+    Then
+        - Verify that alerts are not found.
+    """
+    from CortexXDRIR import sort_all_list_incident_fields
+    raw_multiple_extra_data = load_test_data('./test_data/get_multiple_incidents_extra_data.json')\
+        .get('reply').get('incidents')[0].get('incident')
+    sort_all_list_incident_fields(raw_multiple_extra_data)
+    assert not raw_multiple_extra_data.get('alerts')
+    
