@@ -3,6 +3,7 @@ import json
 import os
 from unittest import mock
 import pytest
+from pytest_mock import MockerFixture
 from ThreatGridv2 import Client
 from datetime import datetime
 from CommonServerPython import *  # noqa: F401
@@ -727,3 +728,37 @@ def test_schedule_command_sample_upload_when_state_is_fail(
     )
     with pytest.raises(DemistoException, match=expected_exception):
         schedule_command({"sample_id": "test"}, mock_client)
+
+
+@pytest.mark.parametrize(
+    "files, payload, expected_call",
+    [
+        (None, {"url": "test"}, {"files": None, "data": {"url": "test"}, "params": {}}),
+        (
+            "test",
+            None,
+            {"files": "test", "data": {"api_key": "api_key_test"}, "params": {}},
+        ),
+    ],
+)
+def test_upload_sample_method(
+    mocker: MockerFixture,
+    mock_client,
+    files,
+    payload: dict[str, str],
+    expected_call: dict[str, str],
+):
+    """
+    Given:
+        - files or urls
+    When:
+        - run `upload_sample` method
+    Then:
+        - Ensure that when the sample is a file, the data request contains the `api_key`
+        - 
+    """
+    mock_func = mocker.patch.object(mock_client, "_http_request")
+    mock_client.api_key = "api_key_test"
+    mock_client.upload_sample(files=files, payload=payload)
+    assert mock_func.call_args[1] == expected_call
+    assert "Authorization" not in mock_client._headers if files else True
