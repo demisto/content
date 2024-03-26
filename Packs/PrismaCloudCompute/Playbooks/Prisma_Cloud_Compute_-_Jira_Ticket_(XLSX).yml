@@ -801,7 +801,7 @@ tasks:
       - "5"
     scriptarguments:
       query:
-        simple: 'project = "${inputs.JiraProjectName}" AND summary ~ ''"Prisma Cloud Compute - compliance issues ID: ${inputs.ComplianceIssueID}"'' AND status != "Done"'
+        simple: 'project = "${inputs.JiraProjectName}" AND summary ~ ''"Prisma Cloud Compute - compliance issues ID: ${inputs.ComplianceIssueID}"'' AND resolution = Unresolved'
     separatecontext: false
     continueonerrortype: ""
     view: |-
