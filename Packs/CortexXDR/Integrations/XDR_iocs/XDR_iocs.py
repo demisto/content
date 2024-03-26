@@ -90,6 +90,10 @@ class Client:
         handle_proxy()
 
     def http_request(self, url_suffix: str, requests_kwargs=None) -> dict:
+        demisto.debug(f"requests_kwargs {requests_kwargs}")
+        demisto.debug(f"url {self._base_url + url_suffix}")
+        demisto.debug(f"headers {self._headers}")
+        
         if requests_kwargs is None:
             requests_kwargs = {}
 
@@ -97,6 +101,7 @@ class Client:
                             verify=self._verify_cert,
                             headers=self._headers,
                             **requests_kwargs)
+        demisto.debug(f'res: {res}')
 
         if not res.ok:
             status_code = res.status_code
