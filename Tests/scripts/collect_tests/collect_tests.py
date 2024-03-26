@@ -1,3 +1,4 @@
+import itertools
 import json
 import os
 import sys
@@ -66,6 +67,7 @@ class CollectionReason(str, Enum):
     README_FILE_CHANGED = 'readme file was changed'
     PACK_CHOSEN_TO_UPLOAD = 'pack chosen to upload'
     PACK_TEST_E2E = "pack was chosen to be tested in e2e tests"
+    PACK_MASTER_BUCKET_DISCREPANCY = "pack version on master is ahead of bucket"
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
@@ -809,11 +811,48 @@ class BranchTestCollector(TestCollector):
             else self._get_git_diff()
 
         return CollectionResult.union([
-            self.__collect_from_changed_files(collect_from.changed_files),
-            self.__collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from)
+            self._collect_from_changed_files(collect_from.changed_files),
+            self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
+            self._collect_packs_diff_master_bucket()
         ])
 
-    def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> CollectionResult | None:
+    def _collect_packs_diff_master_bucket(self) -> CollectionResult | None:
+        """
+        For cases where master is ahead of bucket, this method extracts the difference between master and bucket.
+        It is important to upload the diff to prevent failures when there are dependencies in a higher version.
+        Returns:
+                CollectionResult - if the diff to collect and upload.
+        """
+
+        collected_packs: list[CollectionResult | None] = []
+
+        # diff between master and the last upload
+        collect_from = self._get_git_diff(upload_delta_from_last_upload=True)
+
+        for file_path in collect_from.changed_files:
+
+            full_path = PATHS.content_path / file_path
+
+            try:
+                self._validate_path(path=full_path)
+                collected_packs.append(self._collect_pack(
+                    pack_id=find_pack_folder(full_path).name,
+                    reason=CollectionReason.PACK_MASTER_BUCKET_DISCREPANCY,
+                    reason_description=file_path,
+                    only_to_install=False
+                ))
+            except NothingToCollectException as e:
+                logger.info(e.message)
+            except Exception as e:
+                logger.exception(f'Error while collecting pack for {full_path}', exc_info=True, stack_info=True)
+                raise e
+
+        # union with collected_packs since changed_files and since files were removed from master
+        collect_packs_where_files_were_removed =\
+            [self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from)]
+        return CollectionResult.union(tuple(itertools.chain(collected_packs, collect_packs_where_files_were_removed)))
+
+    def _collect_from_changed_files(self, changed_files: tuple[str, ...]) -> CollectionResult | None:
         """NOTE: this should only be used from _collect"""
         collected = []
         for raw_path in changed_files:
@@ -835,7 +874,7 @@ class BranchTestCollector(TestCollector):
                 raise e
         return CollectionResult.union(collected)
 
-    def __collect_packs_from_which_files_were_removed(self, pack_ids: tuple[str, ...]) -> CollectionResult | None:
+    def _collect_packs_from_which_files_were_removed(self, pack_ids: tuple[str, ...]) -> CollectionResult | None:
         """NOTE: this should only be used from _collect"""
         collected: list[CollectionResult] = []
         for pack_id in pack_ids:
@@ -1110,7 +1149,17 @@ class BranchTestCollector(TestCollector):
             for test in tests)
         )
 
-    def _get_git_diff(self) -> FilesToCollect:
+    def _get_git_diff(self, upload_delta_from_last_upload: bool = False) -> FilesToCollect:
+        """
+        The method extracts the files based on the diff between the two commits.
+        Args:
+            upload_delta_from_last_upload: For branch collector,
+             it is also necessary to upload the difference between master and bucket, In order to prevent failures caused
+              by higher versions in master compared to versions in bucket.
+
+        Returns:
+
+        """
         repo = PATHS.content_repo
         changed_files: list[str] = []
         packs_files_were_removed_from: set[str] = set()
@@ -1120,7 +1169,12 @@ class BranchTestCollector(TestCollector):
 
         logger.debug(f'Getting changed files for {self.branch_name=}')
 
-        if os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
+        if upload_delta_from_last_upload:
+            logger.info('bucket upload: getting last commit from index')
+            previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
+            current_commit = self.branch_name
+
+        elif os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
             logger.info('bucket upload: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
             if self.branch_name == 'master':
