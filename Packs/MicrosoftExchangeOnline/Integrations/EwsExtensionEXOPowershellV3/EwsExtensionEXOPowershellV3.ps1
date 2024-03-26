@@ -90,7 +90,7 @@ function ParseMessageTraceToEntryContext([PSObject]$raw_response) {
     #>
 }
 
-function ParseRawItem([PSObject]$item) {
+function ParseRawResponse([PSObject]$response) {
     $items = @()
     ForEach ($item in $response){
         if ($item -Is [HashTable])
@@ -1599,7 +1599,7 @@ function ListRulesCommand {
         Write-Output "No Rules were found."
     }
     else{
-        $parsed_raw_response = ParseRawItem $raw_response
+        $parsed_raw_response = ParseRawResponse $raw_response
         $md_columns = $raw_response | Select-Object -Property Identity, Name, Enabled, Priority, "RuleIdentity"
         $human_readable = TableToMarkdown $md_columns "Results of $command"
         $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule(obj.RuleIdentity === val.RuleIdentity)" = $parsed_raw_response }
@@ -1619,7 +1619,7 @@ function GetRuleCommand {
         Write-Output "No Rule with identity $identity was found."
     }
     else{
-        $parsed_raw_response = ParseRawItem $raw_response
+        $parsed_raw_response = ParseRawResponse $raw_response
 
         $md_columns = $raw_response | Select-Object -Property RuleIdentity, Name, Enabled, Priority, Description, StopProcessingRules, IsValid
         $human_readable = TableToMarkdown $md_columns "Results of $command"
