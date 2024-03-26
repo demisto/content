@@ -1269,7 +1269,7 @@ def test_get_incident_extra_data_incident_not_exist(mocker):
     assert str(e.value) == 'Incident 1 is not found'
 
 
-def test_XSUP_35287_case(mocker):
+def test_sort_all_list_incident_fields_populated_fields(mocker):
     """
     Given:
         -  raw incident contains only information of the incident
@@ -1279,8 +1279,60 @@ def test_XSUP_35287_case(mocker):
         - Verify that alerts are not found.
     """
     from CortexXDRIR import sort_all_list_incident_fields
-    raw_multiple_extra_data = load_test_data('./test_data/get_multiple_incidents_extra_data.json')\
-        .get('reply').get('incidents')[0].get('incident')
+    raw_incident_fetch = load_test_data('./test_data/get_multiple_incidents_extra_data.json')\
+        .get('reply').get('incidents')[0]
+    raw_multiple_extra_data = {
+        "incident_id": "1",
+        "incident_name": "null",
+        "creation_time": 1575806909185,
+        "modification_time": 1575813875168,
+        "xdr_url": "https://example/incident-view?caseId=1",
+        "hosts": [
+            "holodeck_agent-1"
+        ],
+        "users": [],
+        "incident_sources": [
+            "XDR Agent"
+        ],
+        "alerts": [
+            {
+                "agent_os_sub_type": "1.1.1.1",
+                "action_country": "UNKNOWN",
+                "event_type": "Process Execution",
+                "agent_fqdn": "example_agent_fqdn",
+                "mac": "62:ad:34:16:db:3b",
+                "agent_os_type": "Windows",
+                "actor_process_image_sha256": "11111111111111111",
+                "actor_process_signature_status": "N/A",
+                "event_timestamp": 1701757403327,
+                "alert_id": "94077",
+                "detection_timestamp": 1701757403327,
+                "name": "Kernel Privilege Escalation",
+                "endpoint_id": "11111111",
+                "description": "Traps has detected malware",
+                "host_ip": "1.1.1.1",
+                "host_name": "host_name",
+                "source": "XDR Agent",
+                "action": "BLOCKED",
+                "action_pretty": "Prevented (Blocked)",
+                "events_length": 1,
+                "original_tags": "DS:PANW/XDR Agent"
+            }
+        ],
+        "network_artifacts": [],
+        "file_artifacts": [{
+
+            "type": "HASH",
+            "alert_count": 1,
+            "is_manual": "false",
+            "is_malicious": "false",
+            "is_process": "true",
+            "file_name": "file_name_1",
+            "file_sha256": "file_sha256_1",
+        }]
+    }
     sort_all_list_incident_fields(raw_multiple_extra_data)
-    assert not raw_multiple_extra_data.get('alerts')
-    
+    for incident_case in (raw_multiple_extra_data, raw_incident_fetch):
+        sort_all_list_incident_fields(incident_case)
+        assert incident_case.get('alerts')
+        assert incident_case.get('incident_sources')
