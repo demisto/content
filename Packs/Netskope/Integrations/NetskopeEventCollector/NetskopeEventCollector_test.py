@@ -189,3 +189,17 @@ def test_event_types_to_fetch_parameter_handling(event_types_to_fetch_param, exp
     """
     from NetskopeEventCollector import handle_event_types_to_fetch
     assert handle_event_types_to_fetch(event_types_to_fetch_param) == expected_value
+
+
+@pytest.mark.parametrize('num_fetched_events, max_fetch_events, new_next_run, expected_result',
+                         [(200, 250, {'key' : 'value'}, {'nextTrigger': '0', 'key' : 'value'}),
+                          (1000, 5000, {'nextTrigger': '0'}, {}),
+                          (0,0,{'key':'value'},{'key':'value'}),
+                          (0,0,{},{}),
+                          (2500, 5000, {'nextTrigger':'0'}, {}),
+                          (2501, 5000, {'key':'value', 'nextTrigger':'0'}, {'key':'value', 'nextTrigger':'0'})])
+def test_next_trigger_time(num_fetched_events, max_fetch_events, new_next_run, expected_result):
+    from NetskopeEventCollector import next_trigger_time
+    next_trigger_time(num_fetched_events, max_fetch_events, new_next_run)
+    assert new_next_run== expected_result
+    
