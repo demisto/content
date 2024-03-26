@@ -23,7 +23,7 @@ from Qualysv2 import (
     get_simple_response_from_raw,
     validate_required_group,
     get_activity_logs_events_command,
-    fetch_events, get_activity_logs_events, fetch_assets, ASSETS_FETCH_FROM, ASSETS_DATE_FORMAT
+    fetch_events, get_activity_logs_events, fetch_assets, ASSETS_FETCH_FROM, ASSETS_DATE_FORMAT, HOST_LIMIT
 )
 
 from CommonServerPython import *  # noqa: F401
@@ -154,7 +154,7 @@ def test_fetch_assets_command(requests_mock):
     with open('./test_data/vulnerabilities_raw.xml') as f:
         vulnerabilities = f.read()
     requests_mock.get(f'{base_url}api/2.0/fo/asset/host/vm/detection/'
-                      f'?action=list&truncation_limit=3&vm_scan_date_after='
+                      f'?action=list&truncation_limit={HOST_LIMIT}&vm_scan_date_after='
                       f'{arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)}', text=assets)
 
     requests_mock.post(f'{base_url}api/2.0/fo/knowledge_base/vuln/'

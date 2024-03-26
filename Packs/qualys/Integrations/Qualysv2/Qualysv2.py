@@ -29,6 +29,7 @@ HOST_DETECTIONS_SINCE_DATETIME_PREV_RUN = 'host_detections_since_datetime_prev_r
 HOST_LAST_FETCH = 'host_last_fetch'
 ASSETS_FETCH_FROM = '90 days'
 MIN_ASSETS_INTERVAL = 59
+HOST_LIMIT = 1000
 
 ASSETS_DATE_FORMAT = '%Y-%m-%d'
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -1670,7 +1671,7 @@ class Client(BaseClient):
         """
         self._headers.update({"Content-Type": 'application/json'})
         params: dict[str, Any] = {
-            "truncation_limit": 3,
+            "truncation_limit": HOST_LIMIT,
             "vm_scan_date_after": since_datetime
         }
         if next_page:
@@ -2904,7 +2905,7 @@ def get_host_list_detections_events(client, since_datetime) -> list:
         Host list detections assets
     """
     demisto.debug('Starting to fetch assets')
-    assets = List[Any]
+    assets = []
     next_page = ''
 
     while True:
