@@ -234,7 +234,7 @@ class Client(BaseClient):
                 "the sample id is a file, added the api_key to data request"
             )
             if self._headers:
-               self._headers.pop("Authorization")
+                self._headers.pop("Authorization")
             payload = {
                 "api_key": self.api_key
             }
