@@ -1,10 +1,12 @@
 We recommend that you use Cortex XSOAR server rerouting when using this integration:
 
-For Cortex XSOAR 6.x only:
+<~XSOAR_ON_PREM>
 1. Navigate to  **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the value for the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
+</~XSOAR_ON_PREM>
 
-**Note**: The ***Listen Port*** needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations.
+
+**Note**: The **Listen Port** needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations. <br> (For Cortex XSOAR 8 and Cortex XSIAM) If using an engine, you must enter a Listen Port. If not using an engine, do not enter a Listen Port and an unused port will automatically be generated when the instance is saved.                                      
 
 #### Security
 - We recommend using the authorization header, as described below, to validate the requests sent from your app. If you do not use this header it might result in incident creation from unexpected requests.
