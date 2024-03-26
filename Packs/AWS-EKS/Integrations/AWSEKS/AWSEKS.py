@@ -28,7 +28,7 @@ def datetime_to_str(data: dict, param_name: str):
         data[param_name] = param_value.strftime(DATE_FORMAT)
 
 
-def validate_args(resources_vpc_config: dict, logging_arg: dict, authentication_mode: str):
+def validate_args(resources_vpc_config: dict, logging_arg: dict, authentication_mode: bool):
     """
     Check that exactly one argument is passed, and if not raise a value error
     Args:
@@ -138,54 +138,61 @@ def update_cluster_config_command(aws_client, args: dict) -> CommandResults:
     logging_arg = args.get('logging', '').replace('\'', '"')
     resources_vpc_config = json.loads(resources_vpc_config) if resources_vpc_config else {}
     logging_arg = json.loads(logging_arg) if logging_arg else {}
-    authentication_mode = args.get('authentication_mode', '')
-    access_config = {
-        'authenticationMode': authentication_mode
-    } if authentication_mode else {}
+    authentication_mode = argToBoolean(args.get('authentication_mode', False))
 
     validate_args(resources_vpc_config, logging_arg, authentication_mode)
 
-    if resources_vpc_config:
-        response = aws_client.update_cluster_config(
-            name=cluster_name,
-            resourcesVpcConfig=resources_vpc_config
-        )
-    elif logging_arg:
-        response = aws_client.update_cluster_config(
-            name=cluster_name,
-            logging=logging_arg,
-        )
-    else:  # access_config
-        response = aws_client.update_cluster_config(
-            name=cluster_name,
-            accessConfig=access_config
-        )
+    access_config = {
+        'authenticationMode': 'API_AND_CONFIG_MAP'
+    } if authentication_mode else {}
 
-    response_data = response.get('update', {})
-    response_data['clusterName'] = cluster_name
-    datetime_to_str(response_data, 'createdAt')
+    try:
+        if resources_vpc_config:
+            response = aws_client.update_cluster_config(
+                name=cluster_name,
+                resourcesVpcConfig=resources_vpc_config
+            )
+        elif logging_arg:
+            response = aws_client.update_cluster_config(
+                name=cluster_name,
+                logging=logging_arg,
+            )
+        else:  # access_config
+            response = aws_client.update_cluster_config(
+                name=cluster_name,
+                accessConfig=access_config
+            )
 
-    md_table = {
-        'Cluster Name': response_data.get('clusterName'),
-        'ID': response_data.get('id'),
-        'Status': response_data.get('status'),
-        'Type': response_data.get('type'),
-        'Params': response_data.get('params'),
-    }
-    headers = ['Cluster Name', 'ID', 'Status', 'Type', 'Params']
-    readable_output = tableToMarkdown(
-        name='Updated Cluster Config Information',
-        t=md_table,
-        removeNull=True,
-        headers=headers
-    )
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='AWS.EKS.UpdateCluster',
-        outputs=response_data,
-        raw_response=response_data,
-        outputs_key_field='id'
-    )
+        response_data = response.get('update', {})
+        response_data['clusterName'] = cluster_name
+        datetime_to_str(response_data, 'createdAt')
+
+        md_table = {
+            'Cluster Name': response_data.get('clusterName'),
+            'ID': response_data.get('id'),
+            'Status': response_data.get('status'),
+            'Type': response_data.get('type'),
+            'Params': response_data.get('params'),
+        }
+        headers = ['Cluster Name', 'ID', 'Status', 'Type', 'Params']
+        readable_output = tableToMarkdown(
+            name='Updated Cluster Config Information',
+            t=md_table,
+            removeNull=True,
+            headers=headers
+        )
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='AWS.EKS.UpdateCluster',
+            outputs=response_data,
+            raw_response=response_data,
+            outputs_key_field='id'
+        )
+    except Exception as e:
+        if 'No changes needed' in str(e):
+            return CommandResults(readable_output='No changes needed for the required update.')
+        else:
+            raise e
 
 
 def describe_cluster_command(aws_client, args: dict) -> CommandResults:
@@ -247,52 +254,58 @@ def create_access_entry_command(aws_client, args: dict) -> CommandResults:
     username = args.get('username', '')
     type_arg = args.get('type', '').upper()
 
-    if username:
-        response = aws_client.create_access_entry(
-            clusterName=cluster_name,
-            principalArn=principal_arn,
-            kubernetesGroups=kubernetes_groups,
-            tags=tags,
-            clientRequestToken=client_request_token,
-            username=username,
-            type=type_arg
-        ).get('accessEntry')
-    else:
-        response = aws_client.create_access_entry(
-            clusterName=cluster_name,
-            principalArn=principal_arn,
-            kubernetesGroups=kubernetes_groups,
-            tags=tags,
-            clientRequestToken=client_request_token,
-            type=type_arg
-        ).get('accessEntry')
+    try:
+        if username:
+            response = aws_client.create_access_entry(
+                clusterName=cluster_name,
+                principalArn=principal_arn,
+                kubernetesGroups=kubernetes_groups,
+                tags=tags,
+                clientRequestToken=client_request_token,
+                username=username,
+                type=type_arg
+            ).get('accessEntry')
+        else:
+            response = aws_client.create_access_entry(
+                clusterName=cluster_name,
+                principalArn=principal_arn,
+                kubernetesGroups=kubernetes_groups,
+                tags=tags,
+                clientRequestToken=client_request_token,
+                type=type_arg
+            ).get('accessEntry')
 
-    datetime_to_str(response, 'createdAt')
-    datetime_to_str(response, 'modifiedAt')
+        datetime_to_str(response, 'createdAt')
+        datetime_to_str(response, 'modifiedAt')
 
-    md_table = {
-        'Cluster Name': response.get('clusterName'),
-        'Principal Arn': response.get('principalArn'),
-        'Username': response.get('username'),
-        'Type': response.get('type'),
-        'Created At': response.get('createdAt')
-    }
+        md_table = {
+            'Cluster Name': response.get('clusterName'),
+            'Principal Arn': response.get('principalArn'),
+            'Username': response.get('username'),
+            'Type': response.get('type'),
+            'Created At': response.get('createdAt')
+        }
 
-    headers = ['Cluster Name', 'Principal Arn', 'Username', 'Type', 'Created At']
-    readable_output = tableToMarkdown(
-        name='The newly created access entry',
-        t=md_table,
-        removeNull=True,
-        headers=headers
-    )
+        headers = ['Cluster Name', 'Principal Arn', 'Username', 'Type', 'Created At']
+        readable_output = tableToMarkdown(
+            name='The newly created access entry',
+            t=md_table,
+            removeNull=True,
+            headers=headers
+        )
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='AWS.EKS.CreateAccessEntry',
-        outputs=response,
-        raw_response=response,
-        outputs_key_field='ClusterName'
-    )
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='AWS.EKS.CreateAccessEntry',
+            outputs=response,
+            raw_response=response,
+            outputs_key_field='ClusterName'
+        )
+    except Exception as e:
+        if 'already in use' in str(e):
+            return CommandResults(readable_output='The specified access entry resource is already in use on this cluster.')
+        else:
+            raise e
 
 
 def associate_access_policy_command(aws_client, args: dict) -> CommandResults:

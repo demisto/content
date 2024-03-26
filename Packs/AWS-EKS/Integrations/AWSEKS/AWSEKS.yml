@@ -106,14 +106,13 @@ script:
       required: false
       isArray: false
     - name: authentication_mode
-      description: The desired authentication mode for the cluster. Note - once the authentication mode was updated to 'API' it is irreversible.
+      description: Update the authentication mode to 'API_AND_CONFIG_MAP' or not.
       required: false
       isArray: false
       auto: PREDEFINED
       predefined:
-      - API
-      - API_AND_CONFIG_MAP
-      - CONFIG_MAP
+      - true
+      - false
     - auto: PREDEFINED
       description: The AWS Region. If not specified, the configured region will be used.
       name: region

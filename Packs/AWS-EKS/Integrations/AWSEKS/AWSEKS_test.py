@@ -285,7 +285,7 @@ def test_update_cluster_config_authentication_mode_command(mocker):
     client = Boto3Client()
     args = {
         "cluster_name": "cluster_name",
-        "authentication_mode": "API_AND_CONFIG_MAP"
+        "authentication_mode": "true"
     }
     access_config = {
         'authenticationMode': 'API_AND_CONFIG_MAP'
