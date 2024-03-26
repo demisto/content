@@ -2,7 +2,7 @@
     "name": "RSS Feed",
     "description": "RSS Feed reader, imports new articles as Report indicator.  All rss fields (e.g. author, published, tags) are available.",
     "support": "xsoar",
-    "currentVersion": "1.0.8",
+    "currentVersion": "1.0.9",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "",
@@ -11,9 +11,9 @@
         "Utilities"
     ],
     "tags": [
-    "Getting Started",
-    "Threat Intelligence Management",
-    "Generic Feed"
+        "Getting Started",
+        "Threat Intelligence Management",
+        "Generic Feed"
     ],
     "useCases": [],
     "keywords": [],
