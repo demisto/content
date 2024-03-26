@@ -2204,3 +2204,67 @@ def test_create_x509_certificate_grids():
         {"data": "FreeSoft", "title": "OU"},
         {"data": "www.freesoft.org/emailAddress=baccala@freesoft.org", "title": "CN"},
     ]
+
+
+def test_create_x509_certificate_object():
+    """
+    Given
+    - a create_x509_certificate in xsoar format.
+    When
+    - call the create_x509_certificate_object method
+    Then
+    - Validates that the method properly creates the x509_certificate_object in stix format.
+    """
+    cilent = XSOAR2STIXParser(server_version='2.0', fields_to_present=set(), types_for_indicator_sdo=[],
+                              namespace_uuid=uuid.uuid5(PAWN_UUID, demisto.getLicenseID()))
+    result = cilent.create_x509_certificate_object(
+        {
+            "id": "x509-certificate--f720c34b-98ae-597f-ade5-27dc241e8c74",
+            "type": "x509-certificate",
+            "spec_version": "2.1",
+            "created": "2023-04-20T17:20:10.000000Z",
+            "modified": "2023-04-19T13:05:01.000000Z"
+        },
+        {
+            "value": "36:f7:d4:32:f4:ab:70:ea:d3:ce:98:6e:ea:99:93:49:32:0a:b7:06",
+            "CustomFields": {
+                "issuer": [
+                    {"data": "ZA", "title": "C"},
+                    {"data": "Western Cape", "title": "ST"},
+                    {"data": "Cape Town", "title": "L"},
+                    {"data": "Thawte Consulting cc", "title": "O"},
+                    {"data": "Certification Services Division", "title": "OU"},
+                    {
+                        "data": "Thawte Server CA/emailAddress=server-certs@thawte.com",
+                        "title": "CN",
+                    },
+                ],
+                "subject": [
+                    {"data": "US", "title": "C"},
+                    {"data": "Maryland", "title": "ST"},
+                    {"data": "Pasadena", "title": "L"},
+                    {"data": "Brent Baccala", "title": "O"},
+                    {"data": "FreeSoft", "title": "OU"},
+                    {
+                        "data": "www.freesoft.org/emailAddress=baccala@freesoft.org",
+                        "title": "CN",
+                    },
+                ],
+                "validitynotafter": "2016-08-21T12:00:00Z",
+                "validitynotbefore": "2016-03-12T12:00:00Z",
+            }},
+    )
+    assert result == {
+        "serial_number": "36:f7:d4:32:f4:ab:70:ea:d3:ce:98:6e:ea:99:93:49:32:0a:b7:06",
+        "id": "x509-certificate--f720c34b-98ae-597f-ade5-27dc241e8c74",
+        "type": "x509-certificate",
+        "spec_version": "2.1",
+        "created": "2023-04-20T17:20:10.000000Z",
+        "modified": "2023-04-19T13:05:01.000000Z",
+        "validity_not_before": "2016-03-12T12:00:00Z",
+        "validity_not_after": "2016-08-21T12:00:00Z",
+        "subject": "C=US, ST=Maryland, L=Pasadena, O=Brent Baccala, OU=FreeSoft,"
+        " CN=www.freesoft.org/emailAddress=baccala@freesoft.org",
+        "issuer": "C=ZA, ST=Western Cape, L=Cape Town, O=Thawte Consulting cc, OU=Certification Services Division,"
+        " CN=Thawte Server CA/emailAddress=server-certs@thawte.com",
+    }
