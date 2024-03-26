@@ -210,7 +210,7 @@
       ;;
     *)
       echo "MARKETPLACE_BUCKET is not one of the allowed buckets. Using default bucket: $DEFAULT_BUCKET"
-      MARKETPLACE_BUCKET="$DEFAULT_BUCKET"
+      MARKETPLACE_BUCKET="$GCS_PRODUCTION_BUCKET"
       ;;
   esac
   - gsutil cp "gs://$MARKETPLACE_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json"
