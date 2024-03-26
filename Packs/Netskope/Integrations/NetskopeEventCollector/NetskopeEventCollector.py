@@ -307,9 +307,10 @@ def handle_event_types_to_fetch(event_types_to_fetch) -> list[str]:
         transform=lambda x: x.lower(),
     )
 
+
 def next_trigger_time(num_of_events, max_fetch, new_last_run):
     """Check wether to add the next trigger key to the next_run dict based on number of fetched events.
-    
+
     Args:
         num_of_events (int): The number of events fetched.
         max_fetch (int): The maximum fetch limit.
@@ -321,6 +322,7 @@ def next_trigger_time(num_of_events, max_fetch, new_last_run):
         new_last_run['nextTrigger'] = '0'
     else:
         new_last_run.pop('nextTrigger', None)
+
 
 ''' MAIN FUNCTION '''
 
@@ -376,7 +378,7 @@ def main() -> None:  # pragma: no cover
                 demisto.debug(f'Handled {len(events)} total events in {(end - start).seconds} seconds')
 
                 next_trigger_time(len(events), max_fetch, new_last_run)
-                    
+
                 demisto.debug(f'Setting the last_run to: {new_last_run}')
 
                 demisto.setLastRun(new_last_run)
