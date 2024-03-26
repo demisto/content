@@ -27,14 +27,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "9"
+      - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 440,
-          "y": 465
+          "y": 625
         }
       }
     note: false
@@ -46,10 +46,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c162c857-2de7-43bd-8e90-4e1d3b36a8eb
+    taskid: 55bc50f1-d6e1-496e-8995-ab111a2e6102
     type: regular
     task:
-      id: c162c857-2de7-43bd-8e90-4e1d3b36a8eb
+      id: 55bc50f1-d6e1-496e-8995-ab111a2e6102
       version: -1
       name: Get containers information based on compliance ID
       description: Retrieves container scan reports. Maps to Monitor > Compliance > Containers in the Console UI.
@@ -65,7 +65,7 @@ tasks:
         simple: "true"
       compliance_ids:
         complex:
-          root: inputs.ComplianceIDs
+          root: inputs.ComplianceIssueID
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -99,52 +99,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 2700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: fc062924-8b4a-47a5-87ef-becb04e6b269
-    type: regular
-    task:
-      id: fc062924-8b4a-47a5-87ef-becb04e6b269
-      version: -1
-      name: Delete Context
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      all:
-        simple: "yes"
-      keysToKeep:
-        simple: PrismaCloudCompute.ComplianceTable.Container
-      subplaybook:
-        simple: auto
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 610
+          "x": 230,
+          "y": 2350
         }
       }
     note: false
@@ -156,10 +112,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 6c1323eb-9b01-4096-8303-541e693c10c5
+    taskid: 1f1ec0ba-3659-4025-849e-08ee2900787b
     type: regular
     task:
-      id: 6c1323eb-9b01-4096-8303-541e693c10c5
+      id: 1f1ec0ba-3659-4025-849e-08ee2900787b
       version: -1
       name: Set EnrichedComplianceIssue
       description: The key "EnrichedComplianceIssue" will hold all of the enriched compliance issue information. This will be used in the next task in order to create the compliance issues table, which will then be displayed in the incident's layout.
@@ -184,7 +140,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: inputs.ComplianceIssue.id
+                  simple: inputs.ComplianceIssueID
                 iscontext: true
           transformers:
           - operator: FirstArrayElement
@@ -219,7 +175,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "26"
+      - "23"
     scriptarguments:
       gridID:
         simple: prismacloudcomputecontainercomplianceissues
@@ -255,7 +212,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "6"
+      - "27"
       "yes":
       - "13"
     separatecontext: false
@@ -274,148 +231,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 990
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 34012403-20f2-4bce-8e50-341b4798bae3
-    type: condition
-    task:
-      id: 34012403-20f2-4bce-8e50-341b4798bae3
-      version: -1
-      name: Is it the last playbook loop?
-      description: Check if the current loop is the last one. If it is, the next task will delete the context.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "6"
-      "yes":
-      - "19"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.LastComplianceID
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: inputs.ComplianceIssue
-                transformers:
-                - operator: getField
-                  args:
-                    field:
-                      value:
-                        simple: id
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 2280
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: c1d462b3-5c2e-4974-8343-df54d89b86bc
-    type: regular
-    task:
-      id: c1d462b3-5c2e-4974-8343-df54d89b86bc
-      version: -1
-      name: Delete context and keep ComplianceTableOutput
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "6"
-    scriptarguments:
-      all:
-        simple: "yes"
-      subplaybook:
-        simple: auto
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 2480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: bff7a4fc-d7c5-489a-8bb9-ea3e1235081d
-    type: condition
-    task:
-      id: bff7a4fc-d7c5-489a-8bb9-ea3e1235081d
-      description: ""
-      version: -1
-      name: Any results returned?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "18"
-      "yes":
-      - "23"
-      - "26"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: incident.prismacloudcomputecontainercomplianceissues
-                accessor: containerid
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1610
+          "y": 980
         }
       }
     note: false
@@ -440,7 +256,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "18"
+      - "27"
     scriptarguments:
       prismacloudcomputeshowcompliancetab:
         simple: container
@@ -450,7 +266,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 2050
+          "y": 1920
         }
       }
     note: false
@@ -477,7 +293,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+      - "27"
     scriptarguments:
       ComplianceIssueDescription:
         complex:
@@ -507,8 +323,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 2100
+          "x": 860,
+          "y": 1920
         }
       }
     note: false
@@ -538,8 +354,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1080,
-          "y": 1780
+          "x": 1090,
+          "y": 1600
         }
       }
     note: false
@@ -563,7 +379,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "18"
+      - "27"
       Jira:
       - "22"
       ServiceNow:
@@ -598,8 +414,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1080,
-          "y": 1910
+          "x": 1090,
+          "y": 1730
         }
       }
     note: false
@@ -611,20 +427,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 6fe6501c-440b-4c34-8512-3c892799ffa1
+    taskid: 0fb55187-77d0-48ce-8ade-325b10fb8275
     type: playbook
     task:
-      id: 6fe6501c-440b-4c34-8512-3c892799ffa1
+      id: 0fb55187-77d0-48ce-8ade-325b10fb8275
       version: -1
       name: Prisma Cloud Compute - ServiceNow Compliance Ticket
+      description: |-
+        This playbook is a sub playbook of the "Prisma Cloud Compute - Compliance Alert Host Enrichment Loop" playbook.
+        It creates a new ServiceNow ticket or updates an existing ServiceNow ticket for each compliance ID retrieved in the original Prisma Cloud compliance alert, with enriched data for each resource (host, image or container).
       playbookName: Prisma Cloud Compute - ServiceNow Compliance Ticket
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
-      - "18"
+      - "27"
     scriptarguments:
       AttachFileByDefault:
         simple: "False"
@@ -650,8 +468,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1320,
-          "y": 2100
+          "x": 1330,
+          "y": 1920
         }
       }
     note: false
@@ -677,7 +495,7 @@ tasks:
       '#default#':
       - "21"
       "yes":
-      - "18"
+      - "27"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -696,7 +514,49 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 1815
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 2f1a4ec0-6308-409b-8ad4-7f603ea622ce
+    type: regular
+    task:
+      id: 2f1a4ec0-6308-409b-8ad4-7f603ea622ce
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2150
         }
       }
     note: false
@@ -710,33 +570,25 @@ view: |-
   {
     "linkLabelsPosition": {
       "17_13_yes": 0.46,
-      "17_6_#default#": 0.1,
-      "18_6_#default#": 0.33,
-      "20_18_#default#": 0.21,
-      "24_18_#default#": 0.13,
-      "26_21_#default#": 0.33
+      "17_27_#default#": 0.12,
+      "24_27_#default#": 0.1,
+      "26_21_#default#": 0.33,
+      "26_27_yes": 0.3
     },
     "paper": {
       "dimensions": {
-        "height": 2300,
+        "height": 1790,
         "width": 1480,
-        "x": 220,
-        "y": 465
+        "x": 230,
+        "y": 625
       }
     }
   }
 inputs:
-- key: ComplianceIssue
+- key: ComplianceIssueID
   value: {}
   required: false
-  description: A compliance issue. This list is used to filter relevant containers for enrichment.
-  playbookInputQuery:
-- key: LastComplianceID
-  value: {}
-  required: false
-  description: |-
-    The ID of the last compliance issue fetched in the incidents.
-    Used to know when to set the output after the loops end.
+  description: A compliance issue ID. This ID is used to filter relevant containers for enrichment.
   playbookInputQuery:
 - key: TicketingSystem
   value: {}
@@ -760,10 +612,7 @@ inputs:
   required: false
   description: The project name with which to associate the issue.
   playbookInputQuery:
-outputs:
-- contextPath: ComplianceTableOutput
-  description: Compliance issues table.
-  type: unknown
+outputs: []
 quiet: true
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
