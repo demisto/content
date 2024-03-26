@@ -3028,31 +3028,31 @@ def create_vpc_endpoint_command(args: dict) -> CommandResults:
     client = build_client(args)
 
     kwargs = {}
-    kwargs.update({'VpcId': args.get('vpc-id'),
-                   'ServiceName': args.get('service-name')})
-    if (endpoint_type := args.get('endpoint-type')) is not None:
+    kwargs.update({'VpcId': args.get('vpcId'),
+                   'ServiceName': args.get('serviceName')})
+    if (endpoint_type := args.get('endpointType')) is not None:
         kwargs.update({'VpcEndpointType': endpoint_type})
-    if (subnet_ids := args.get('subnet-ids')) is not None:
+    if (subnet_ids := args.get('subnetIds')) is not None:
         kwargs.update({'SubnetIds': argToList(subnet_ids)})
-    if (security_group_ids := args.get('security-group-ids')) is not None:
+    if (security_group_ids := args.get('securityGroupIds')) is not None:
         kwargs.update({'SecurityGroupIds': argToList(security_group_ids)})
-    if (dry_run := args.get('dry-run')) is not None:
+    if (dry_run := args.get('dryRun')) is not None:
         kwargs.update({'DryRun': argToBoolean(dry_run)})
-    if (vpc_endpoint_type := args.get('vpc-endpoint-type')) is not None:
+    if (vpc_endpoint_type := args.get('vpcEndpointType')) is not None:
         kwargs.update({'VpcEndpointType': vpc_endpoint_type})
-    if (policy_document := args.get('policy-document')) is not None:
+    if (policy_document := args.get('policyDocument')) is not None:
         kwargs.update({'PolicyDocument': policy_document})
-    if (route_table_ids := args.get('route-table-ids')) is not None:
+    if (route_table_ids := args.get('routeTableIds')) is not None:
         kwargs.update({'RouteTableIds': argToList(route_table_ids)})
-    if (client_token := args.get('client-token')) is not None:
+    if (client_token := args.get('clientToken')) is not None:
         kwargs.update({'ClientToken': client_token})
-    if (private_dns_enabled := args.get('private-dns-enabled')) is not None:
+    if (private_dns_enabled := args.get('privateDnsEnabled')) is not None:
         kwargs.update({'PrivateDnsEnabled': argToBoolean(private_dns_enabled)})
-    if (tag_specifications := args.get('tag-specifications')) is not None:
+    if (tag_specifications := args.get('tagSpecifications')) is not None:
         kwargs.update({'TagSpecifications': {'Tags': json.loads(tag_specifications)}})
 
     response = client.create_vpc_endpoint(**kwargs).get('VpcEndpoint')
-    response["CreationTimestamp"] = datetime_to_string(response.get('CreationTimestamp')) # Parse timestamp to string
+    response["CreationTimestamp"] = datetime_to_string(response.get('CreationTimestamp'))  # Parse timestamp to string
 
     outputs = {key: response[key] for key in output_headers if key in response}
 
@@ -3302,7 +3302,7 @@ def main():
             case 'aws-ec2-get-ipam-discovered-public-addresses':
                 return_results(get_ipam_discovered_public_addresses_command(args))
 
-            case 'aws-ec2-aws-ec2-create-vpc-endpoint':
+            case 'aws-ec2-create-vpc-endpoint':
                 return_results(create_vpc_endpoint_command(args))
 
     except Exception as e:

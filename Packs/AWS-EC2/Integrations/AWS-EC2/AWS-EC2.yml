@@ -4052,28 +4052,28 @@ script:
     name: aws-ec2-get-ipam-discovered-public-addresses
   - arguments:
     - description: The ID of the VPC in which the endpoint will be used.
-      name: vpc-id
+      name: vpcId
       required: true
     - description: The service name for the service that you want to create an endpoint.
-      name: service-name
+      name: serviceName
       required: true
     - description: The type of endpoint.
-      name: endpoint-type
+      name: endpointType
     - description: One or more subnet IDs in which to create the endpoint.
-      name: subnet-ids
+      name: subnetIds
       isArray: true
     - description: One or more security group IDs to associate with the endpoint.
-      name: security-group-ids
+      name: securityGroupIds
       isArray: true
     - description: Checks whether you have the required permissions for the action, without actually making the request.
-      name: dry-run
+      name: dryRun
       isArray: false
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
     - description: The type of endpoint.
-      name: vpc-endpoint-type
+      name: vpcEndpointType
       isArray: false
       auto: PREDEFINED
       predefined:
@@ -4081,12 +4081,12 @@ script:
       - "Gateway"
       - "GatewayLoadBalancer"
     - description: A policy document to attach to the endpoint. A JSON policy document that controls access to the service from the endpoint.
-      name: policy-document
+      name: policyDocument
     - description: One or more route table IDs.
-      name: route-table-ids
+      name: routeTableIds
       isArray: true
     - description: Unique, case-sensitive identifier to ensure the idempotency of the request.
-      name: client-token
+      name: clientToken
     - description: Indicates whether to associate a private hosted zone with the specified VPC.
       name: private-dns-enabled
       auto: PREDEFINED
@@ -4094,7 +4094,7 @@ script:
       - "true"
       - "false"
     - description: One or more tags to associate with the endpoint. Should be Json string of key-value tags.
-      name: tag-specifications
+      name: tagSpecifications
     - description: The AWS Region, if not specified the default region will be used.
       name: region
     - description: The Amazon Resource Name (ARN) of the role to assume.
@@ -4121,7 +4121,7 @@ script:
       type: String
     description: Creates a VPC endpoint.
     name: aws-ec2-aws-ec2-create-vpc-endpoint
-  dockerimage: demisto/boto3py3:1.0.0.91028
+  dockerimage: demisto/boto3py3:1.0.0.91323
   runonce: false
   script: '-'
   subtype: python3
