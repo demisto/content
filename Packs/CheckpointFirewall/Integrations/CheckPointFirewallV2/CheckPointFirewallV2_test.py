@@ -1,4 +1,3 @@
-import io
 import json
 import pytest
 
@@ -6,7 +5,7 @@ import CheckPointFirewallV2
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -38,20 +37,20 @@ def test_checkpoint_login_and_get_session_id(requests_mock):
 
     command_result = client.login(**login_args)
     assert command_result.to_context() == \
-           {'Type': 1,
-            'ContentsFormat': 'json',
+        {'Type': 1,
+         'ContentsFormat': 'json',
             'Contents': {'sid': sid},
             'HumanReadable': f'### CheckPoint session data:\n|session-id|\n|---|\n| {sid} |\n',
             'EntryContext': {
                 'CheckPoint.Login(val.uid && val.uid == obj.uid)': {'session-id': sid}
             },
-            'IndicatorTimeline': [], 'IgnoreAutoExtract': False, 'Note': False, 'Relationships': []}
+         'IndicatorTimeline': [], 'IgnoreAutoExtract': False, 'Note': False, 'Relationships': []}
     assert client.headers == {'Content-Type': 'application/json', 'X-chkp-sid': sid}  # after login, sid is present
     assert client.has_performed_login
     assert client.sid == sid  # a non-None client.sid indicates that the client is logged in.
 
 
-INTEGRATION_CONTEXT_EMPTY = dict()
+INTEGRATION_CONTEXT_EMPTY = {}
 INTEGRATION_CONTEXT_WITH_SID = {'cp_sid': 'sid'}
 
 
@@ -489,7 +488,8 @@ def test_add_batch_command(mocker):
         assert type(add_list) == list
         for obj in add_list:
             assert len(obj) == 2
-            assert 'name' in obj and 'ip-address' in obj
+            assert 'name' in obj
+            assert 'ip-address' in obj
 
         return {}
 
@@ -551,7 +551,7 @@ def test_checkpoint_server_sanitization(mocker, server: str):
 
 
 def get_treat_protection_response():
-    with io.open('./test_data/threat_protection_response.json', mode='r', encoding='utf-8') as f:
+    with open('./test_data/threat_protection_response.json', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
