@@ -20,6 +20,7 @@ REQUIRED_PERMISSIONS = (
     'Policy.Read.All'
 )
 
+
 class Client:  # pragma: no cover
     def __init__(self, app_id: str, verify: bool, proxy: bool,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com', client_credentials: bool = False,
@@ -945,5 +946,5 @@ def main():  # pragma: no cover
 
 ''' ENTRY POINT '''
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()
