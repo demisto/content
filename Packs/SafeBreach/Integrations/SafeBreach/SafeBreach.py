@@ -1,4 +1,6 @@
+from demisto_sdk.commands.generate_yml_from_python.yml_metadata_collector import (CommandMetadata, ConfKey, InputArgument, YMLMetadataCollector, OutputArgument, ParameterTypes)
 from CommonServerPython import *
+
 import demistomock as demisto
 from copy import deepcopy
 import json
@@ -145,47 +147,47 @@ simulator_details_inputs = [
 ]
 
 simulators_output_fields = [
-    OutputArgument(name="IsEnabled", description="Whether the simulator is enabled or not.", output_type=str),
-    OutputArgument(name="SimulatorId", description="The Id of given simulator.", output_type=str),
-    OutputArgument(name="Name", description="name for given simulator.", output_type=str),
-    OutputArgument(name="AccountId", description="Account Id of account Hosting given simulator.", output_type=str),
-    OutputArgument(name="IsCritical", description="Whether the simulator is critical.", output_type=str),
-    OutputArgument(name="IsExfiltration", description="If Simulator is exfiltration target.", output_type=str),
-    OutputArgument(name="IsInfiltration", description="If simulator is infiltration target.", output_type=str),
-    OutputArgument(name="IsMailTarget", description="If simulator is mail target.", output_type=str),
-    OutputArgument(name="IsMailAttacker", description="If simulator is mail attacker.", output_type=str),
-    OutputArgument(name="IsPreExecutor", description="Whether the simulator is pre executor.", output_type=str),
-    OutputArgument(name="IsAwsAttacker", description="if the given simulator is aws attacker.", output_type=str),
-    OutputArgument(name="IsAzureAttacker", description="If the given simulator is azure attacker.", output_type=str),
-    OutputArgument(name="ExternalIp", description="external ip of given simulator.", output_type=str),
-    OutputArgument(name="InternalIp", description="internal ip of given simulator.", output_type=str),
+    OutputArgument(name="is_enabled", description="Whether the simulator is enabled or not.", output_type=str),
+    OutputArgument(name="simulator_id", description="The Id of given simulator.", output_type=str),
+    OutputArgument(name="name", description="name for given simulator.", output_type=str),
+    OutputArgument(name="account_id", description="Account Id of account Hosting given simulator.", output_type=str),
+    OutputArgument(name="is_critical", description="Whether the simulator is critical.", output_type=str),
+    OutputArgument(name="is_exfiltration", description="If Simulator is exfiltration target.", output_type=str),
+    OutputArgument(name="is_infiltration", description="If simulator is infiltration target.", output_type=str),
+    OutputArgument(name="is_mail_target", description="If simulator is mail target.", output_type=str),
+    OutputArgument(name="is_mail_attacker", description="If simulator is mail attacker.", output_type=str),
+    OutputArgument(name="is_pre_executor", description="Whether the simulator is pre executor.", output_type=str),
+    OutputArgument(name="is_aws_attacker", description="if the given simulator is aws attacker.", output_type=str),
+    OutputArgument(name="is_azure_attacker", description="If the given simulator is azure attacker.", output_type=str),
+    OutputArgument(name="external_ip", description="external ip of given simulator.", output_type=str),
+    OutputArgument(name="internal_ip", description="internal ip of given simulator.", output_type=str),
     OutputArgument(
-        name="IsWebApplicationAttacker",
+        name="is_web_application_attacker",
         description="Whether the simulator is Web application attacker.",
         output_type=str,
     ),
-    OutputArgument(name="PreferredInterface", description="Preferred simulator interface.", output_type=str),
-    OutputArgument(name="PreferredIp", description="Preferred Ip of simulator.", output_type=str),
-    OutputArgument(name="Hostname", description="Hostname of given simulator.", output_type=str),
-    OutputArgument(name="ConnectionType", description="connection_type of given simulator.", output_type=str),
-    OutputArgument(name="SimulatorStatus", description="status of the simulator.", output_type=str),
-    OutputArgument(name="ConnectionStatus", description="connection status of simulator.", output_type=str),
-    OutputArgument(name="SimulatorFrameworkVersion", description="Framework version of simulator.", output_type=str),
+    OutputArgument(name="preferred_interface", description="Preferred simulator interface.", output_type=str),
+    OutputArgument(name="preferred_ip", description="Preferred Ip of simulator.", output_type=str),
+    OutputArgument(name="hostname", description="Hostname of given simulator.", output_type=str),
+    OutputArgument(name="connection_type", description="connection_type of given simulator.", output_type=str),
+    OutputArgument(name="simulator_status", description="status of the simulator.", output_type=str),
+    OutputArgument(name="connection_status", description="connection status of simulator.", output_type=str),
+    OutputArgument(name="simulator_framework_version", description="Framework version of simulator.", output_type=str),
     OutputArgument(
-        name="OperatingSystemType", description="operating system type of given simulator.", output_type=str
+        name="operating_system_type", description="operating system type of given simulator.", output_type=str
     ),
-    OutputArgument(name="OperatingSystem", description="Operating system of given simulator.", output_type=str),
+    OutputArgument(name="operating_system", description="Operating system of given simulator.", output_type=str),
     OutputArgument(
-        name="ExecutionHostname", description="Execution Hostname of the given simulator.", output_type=str
+        name="execution_hostname", description="Execution Hostname of the given simulator.", output_type=str
     ),
-    OutputArgument(name="Deployments", description="deployments simulator is part of.", output_type=str),
-    OutputArgument(name="CreatedAt", description="Creation datetime of simulator.", output_type=str),
-    OutputArgument(name="UpdatedAt", description="Update datetime of given simulator.", output_type=str),
-    OutputArgument(name="DeletedAt", description="deletion datetime of given simulator.", output_type=str),
-    OutputArgument(name="Assets", description="Assets of given simulator.", output_type=str),
-    OutputArgument(name="SimulationUsers", description="simulator users list.", output_type=str),
-    OutputArgument(name="Proxies", description="Proxies of simulator.", output_type=str),
-    OutputArgument(name="AdvancedActions", description="Advanced simulator details.", output_type=str),
+    OutputArgument(name="deployments", description="deployments simulator is part of.", output_type=str),
+    OutputArgument(name="created_at", description="Creation datetime of simulator.", output_type=str),
+    OutputArgument(name="updated_at", description="Update datetime of given simulator.", output_type=str),
+    OutputArgument(name="deleted_at", description="deletion datetime of given simulator.", output_type=str),
+    OutputArgument(name="assets", description="Assets of given simulator.", output_type=str),
+    OutputArgument(name="simulation_users", description="simulator users list.", output_type=str),
+    OutputArgument(name="proxies", description="Proxies of simulator.", output_type=str),
+    OutputArgument(name="advanced_actions", description="Advanced simulator details.", output_type=str),
 ]
 
 simulator_details_for_update_fields = [
@@ -225,24 +227,24 @@ simulator_details_for_update_fields = [
 ]
 
 test_summaries_output_fields = [
-    OutputArgument(name="ScenarioId", description="scenario ID of the test.", output_type=str),
-    OutputArgument(name="SimulationName", description="Name of the simulation.", output_type=str),
+    OutputArgument(name="scenario_id", description="scenario ID of the test.", output_type=str),
+    OutputArgument(name="simulation_name", description="Name of the simulation.", output_type=str),
     OutputArgument(
-        name="SecurityActionPerControl", description="Security Actions of the simulation.", output_type=str
+        name="security_action_per_control", description="Security Actions of the simulation.", output_type=str
     ),
-    OutputArgument(name="TestId", description="Test id of the test.", output_type=str),
-    OutputArgument(name="Status", description="status of the test.", output_type=str),
+    OutputArgument(name="test_id", description="Test id of the test.", output_type=str),
+    OutputArgument(name="status", description="status of the test.", output_type=str),
     OutputArgument(
-        name="PlannedSimulationsAmount", description="Planned simulations count of the test.", output_type=str
+        name="planned_simulations_amount", description="Planned simulations count of the test.", output_type=str
     ),
-    OutputArgument(name="SimulatorExecutions", description="simulator executions of the test.", output_type=str),
+    OutputArgument(name="simulator_executions", description="simulator executions of the test.", output_type=str),
     OutputArgument(
-        name="AttackExecutions", description="list of attacks that are part of the simulation.", output_type=str
+        name="attack_executions", description="list of attacks that are part of the simulation.", output_type=str
     ),
-    OutputArgument(name="RanBy", description="user who started the simulation.", output_type=str),
-    OutputArgument(name="SimulatorCount", description="simulators count per account.", output_type=str),
-    OutputArgument(name="EndTime", description="End Time of the test.", output_type=str),
-    OutputArgument(name="StartTime", description="start time of the test.", output_type=str),
+    OutputArgument(name="ran_by", description="user who started the simulation.", output_type=str),
+    OutputArgument(name="simulator_count", description="simulators count per account.", output_type=str),
+    OutputArgument(name="end_time", description="End Time of the test.", output_type=str),
+    OutputArgument(name="start_time", description="start time of the test.", output_type=str),
     OutputArgument(name="finalStatus.stopped", description="stopped count of attacks.", output_type=str),
     OutputArgument(name="finalStatus.missed", description="missed count of attacks.", output_type=str),
     OutputArgument(name="finalStatus.logged", description="logged count of attacks.", output_type=str),
@@ -251,35 +253,35 @@ test_summaries_output_fields = [
 ]
 
 tests_outputs = [
-    OutputArgument(name="Id", description="Id of Actively running test.", output_type=int),
-    OutputArgument(name="Name", description="Name of the test being run.", output_type=str),
-    OutputArgument(name="Description", description="Details related to the test being run.", output_type=str),
-    OutputArgument(name="SuccessCriteria", description="success criterion for the test.", output_type=str),
+    OutputArgument(name="id", description="Id of Actively running test.", output_type=int),
+    OutputArgument(name="name", description="Name of the test being run.", output_type=str),
+    OutputArgument(name="description", description="Details related to the test being run.", output_type=str),
+    OutputArgument(name="success_criteria", description="success criterion for the test.", output_type=str),
     OutputArgument(
-        name="OriginalScenarioId", description="Original scenario ID of the running test", output_type=str
+        name="original_scenario_id", description="Original scenario ID of the running test", output_type=str
     ),
-    OutputArgument(name="ActionsCount", description="number of actions", output_type=str),
-    OutputArgument(name="EdgesCount", description="number of edges.", output_type=str),
-    OutputArgument(name="CreatedAt", description="details related to when test is created.", output_type=str),
+    OutputArgument(name="actions_count", description="number of actions", output_type=str),
+    OutputArgument(name="edges_count", description="number of edges.", output_type=str),
+    OutputArgument(name="created_at", description="details related to when test is created.", output_type=str),
     OutputArgument(
-        name="UpdatedAt", description="details related to when test is last updated/changed", output_type=str
+        name="updated_at", description="details related to when test is last updated/changed", output_type=str
     ),
-    OutputArgument(name="StepsCount", description="number of steps in simulator.", output_type=str),
-    OutputArgument(name="ScenarioId", description="scenario_id of the test.", output_type=str),
-    OutputArgument(name="OriginalScenarioId", description="scenario_id for reference.", output_type=str),
-    OutputArgument(name="RanBy", description="User who ran the scenario.", output_type=str),
-    OutputArgument(name="RanFrom", description="Where the test ran from.", output_type=str),
-    OutputArgument(name="TestId", description="test id of the test.", output_type=str),
-    OutputArgument(name="Priority", description="priority of tests.", output_type=str),
-    OutputArgument(name="RetrySimulations", description="Should simulations be retried", output_type=str),
-    OutputArgument(name="PauseDuration", description="is the test paused and if so till when", output_type=str),
-    OutputArgument(name="PausedDate", description="when the test is paused", output_type=str),
-    OutputArgument(name="ExpectedSimulationsAmount", description="number of simulations expected", output_type=str),
+    OutputArgument(name="steps_count", description="number of steps in simulator.", output_type=str),
+    OutputArgument(name="scenario_id", description="scenario_id of the test.", output_type=str),
+    OutputArgument(name="original_scenario_id", description="scenario_id for reference.", output_type=str),
+    OutputArgument(name="ran_by", description="User who ran the scenario.", output_type=str),
+    OutputArgument(name="ran_from", description="Where the test ran from.", output_type=str),
+    OutputArgument(name="test_id", description="test id of the test.", output_type=str),
+    OutputArgument(name="priority", description="priority of tests.", output_type=str),
+    OutputArgument(name="retry_simulations", description="Should simulations be retried", output_type=str),
+    OutputArgument(name="pause_duration", description="is the test paused and if so till when", output_type=str),
+    OutputArgument(name="paused_date", description="when the test is paused", output_type=str),
+    OutputArgument(name="expected_simulations_amount", description="number of simulations expected", output_type=str),
     OutputArgument(
-        name="DispatchedSimulationsAmount", description="the number of simulations dispatched", output_type=str
+        name="dispatched_simulations_amount", description="the number of simulations dispatched", output_type=str
     ),
-    OutputArgument(name="SkippedSimulationsAmount", description="The number of simulations skipped", output_type=str),
-    OutputArgument(name="FailedSimulationsAmount", description="The number of simulations failed", output_type=str),
+    OutputArgument(name="skipped_simulations_amount", description="The number of simulations skipped", output_type=str),
+    OutputArgument(name="failed_simulations_amount", description="The number of simulations failed", output_type=str),
 ]
 
 test_outputs_headers_list = [
@@ -396,7 +398,7 @@ metadata_collector = YMLMetadataCollector(
     + "Vz5AUQeQAAAABJRU5ErkJggg==",
     integration_subtype="python3",
     integration_type="python",
-    fromversion="6.10.0",
+    fromversion="6.6.0",
     conf=[
         ConfKey(
             name="base_url",
@@ -449,7 +451,7 @@ def sb_error_string(error_data, sb_code):
         704: f"{error_data} field cant be empty",
         705: f"{error_data} field cant permit this value",
         706: f"{error_data} field value is supposed to be unique, value is already taken",
-        707: f"{error_data} requested value not found",
+        707: f"{error_data} Requested value not found",
         708: f"{error_data} expected UUID but found something else",
         709: f"{error_data} cannot be null",
         710: f"{error_data} is not a valid URL",
@@ -491,7 +493,7 @@ def format_sb_code_error(errors_data):
                     sb_code = error.get("sbcode")
                     fields = error.get("data", {}).get("fields")
                     if not fields:
-                        return sb_error_string(error_data=None, sb_code=sb_code)
+                        return sb_error_string(error_data, sb_code=sb_code)
                     for field in fields:
                         error_data = field
                         issue = sb_error_string(error_data=error_data, sb_code=sb_code)
@@ -565,15 +567,14 @@ class Client(BaseClient):
 
         request_url = f"{base_url}/api/{url}"
         api_key = self.api_key.strip()
-        headers = {"Accept": "application/json", "x-apitoken": api_key}
-
+        headers = {"accept": "application/json", "content-type": "application/json", "x-apitoken": api_key}
         response = self._http_request(
             method=method,
             full_url=request_url,
             json_data=body,
             headers=headers,
             params=request_params,
-            ok_codes=[200, 201, 204, 400, 409],
+            # ok_codes=[200, 201, 204, 400, 409, 404],
         )
         return (
             response
@@ -672,7 +673,6 @@ class Client(BaseClient):
         account_id = self.account_id
         method = "PUT"
         url = f"/config/v1/accounts/{account_id}/users/{int(user_id)}"
-
         updated_user = self.get_response(url=url, method=method, body=user_details)
         return updated_user
 
@@ -725,8 +725,9 @@ class Client(BaseClient):
             dict: updated deployment data
         """
 
+        deployment_payload = None
         account_id = self.account_id
-        deployment_id = demisto.args().get("deployment_id", "")
+        deployment_id = int(demisto.args().get("deployment_id", ""))
         if not deployment_id:
             raise DemistoException("Inputs Error: Deployment ID is a required field which has to have a value as input")
 
@@ -735,7 +736,8 @@ class Client(BaseClient):
         if simulators:
             simulators = simulators.split()
         description = demisto.args().get("updated_deployment_description", "").strip()
-        deployment_payload = {"nodes": simulators, "name": name, "description": description}
+        if name or simulators or description:
+            deployment_payload = {"nodes": simulators, "name": name, "description": description}
         method = "PUT"
         url = f"/config/v1/accounts/{account_id}/deployments/{deployment_id}"
         updated_deployment = self.get_response(url=url, method=method, body=deployment_payload)
@@ -913,7 +915,7 @@ class Client(BaseClient):
 
     def get_all_integration_issues(self, error_logs, connector_map, connector):
         integration_log = {}
-        if error_logs.get("lastTestConnection").get("error") or error_logs.get("lastTestConnection").get("warning"):
+        if error_logs.get("lastTestConnection") is not None:
             integration_log.update(self.map_error_log_data(connector, connector_map))
         return integration_log
 
@@ -927,6 +929,20 @@ class Client(BaseClient):
                     log["connector"] = integration_id  # Assuming integration_id is the correct value
         return log
 
+    def get_all_errors(self, error_log, log):
+        errors = []
+        error_list = error_log.get("errors", [])
+        if error_list:
+            for error in error_list:
+                log.update({
+                    "action": error.get("action", ""),
+                    "success": error.get("success", ""),
+                    "error": error.get("error", ""),
+                    "timestamp": error.get("timestamp", "")
+                })
+                errors.append(log)
+        return errors
+
     def flatten_error_logs_for_table_view(self, error_logs):
         """
             This function flattens error logs into a single leveled dictionary for table view
@@ -938,19 +954,22 @@ class Client(BaseClient):
             dict : flattened error logs which are easier to display on table
         """
         flattened_logs_list = []
-        error_map = {"ERROR": "error", "WARNING": "warning"}
+        error_map = {"ERROR": "errors", "WARNING": "warnings"}
         log = {}
         preference = demisto.args().get("error_type") if demisto else None
         preference = error_map.get(preference, "")
         connector_map = self.get_integration_details()
         for connector in error_logs:
-            if preference == "" or error_logs[connector].get("lastTestConnection").get(preference):
-                # if preference is empty means we need to fetch both the errors and warnings.
-                if preference == "":
-                    log = self.get_all_integration_issues(error_logs[connector], connector_map, connector)
-                else:
-                    log = self.map_error_log_data(connector, connector_map)
-                flattened_logs_list.append(log)
+            # if preference is empty means we need to fetch both the errors and warnings.
+            if preference == "":
+                log = self.get_all_integration_issues(error_logs[connector], connector_map, connector)
+            elif error_logs[connector].get(preference):
+                log = self.map_error_log_data(connector, connector_map)
+            else:
+                continue
+            error_list = self.get_all_errors(error_logs[connector], log)
+            for error in error_list:
+                flattened_logs_list.append(error)
         return flattened_logs_list
 
     def get_all_integration_error_logs(self):
@@ -1052,7 +1071,7 @@ class Client(BaseClient):
             filter(lambda key_obj: key_obj["name"].lower() == key_name.lower(), active_keys.get("data"))
         )
         if not required_key_object:
-            raise DemistoException(f"couldn't find APi key with given name: {key_name}")
+            raise DemistoException(f"couldn't find API key with given name: {key_name}")
         return required_key_object[0]["id"]
 
     def delete_api_key(self):
@@ -1405,11 +1424,18 @@ class Client(BaseClient):
 
         user_id = demisto.args().get("user_id")
         # user_email = demisto.args().get("email", "").strip()
-
-        name = demisto.args().get("name", "").strip()
-        is_active = argToBoolean(demisto.args().get("is_active"))
-        description = demisto.args().get("user_description", "").strip()
-        role = demisto.args().get("user_role", "").strip()
+        name = demisto.args().get("name", "")
+        if name:
+            name = name.strip()
+        is_active = demisto.args().get("is_active")
+        if is_active:
+            is_active = argToBoolean(is_active)
+        description = demisto.args().get("user_description", "")
+        if description:
+            description = description.strip()
+        role = demisto.args().get("user_role", "")
+        if role:
+            role = role.strip()
         password = demisto.args().get("password")
         deployment_list = demisto.args().get("deployments", [])
         try:
@@ -1483,11 +1509,10 @@ class Client(BaseClient):
 
     def delete_schedule(self):
         account_id = self.account_id
-        schedule_id = demisto.args().get("schedule_id")
+        schedule_id = int(demisto.args().get("schedule_id"))
 
         method = "DELETE"
-        url = f"/config/v1/accounts/{account_id}/schedules/{schedule_id}"
-
+        url = f"/config/v1/accounts/{account_id}/plans/{schedule_id}"
         schedule_data = self.get_response(url=url, method=method)
         return schedule_data
 
@@ -1755,11 +1780,11 @@ class Client(BaseClient):
         nodeId = demisto.args().get("simulator_id", "")
         simulator_version = demisto.args().get("simulator_version", "")
         url = "/updater/v2/simulatorUpdate/"
-        body_dict = {
+        body_dict = [{
             "enableUpdates": True,
             "nodeId": nodeId,
             "selectedVersion": simulator_version,
-        }
+        }]
         simulator_data = self.get_response(url=url, method="POST", body=body_dict)
         return simulator_data
 
@@ -1982,19 +2007,19 @@ def get_tests_summary(client: Client):
 @metadata_collector.command(
     command_name="safebreach-get-all-users",
     inputs_list=None,
-    outputs_prefix="SafeBreach.UserData",
+    outputs_prefix="SafeBreach.User",
     outputs_list=[
         OutputArgument(
-            name="Id",
-            prefix="SafeBreach.UserData",
+            name="id",
+            prefix="SafeBreach.User",
             output_type=int,
             description="The ID of User retrieved. this can be used to further link this user with\
                       user_id field of safebreach-update-user or safebreach-delete-user commands",
         ),
-        OutputArgument(name="Name", prefix="SafeBreach.UserData", output_type=str, description="The name of User retrieved."),
+        OutputArgument(name="name", prefix="SafeBreach.User", output_type=str, description="The name of User retrieved."),
         OutputArgument(
-            name="Email",
-            prefix="SafeBreach.UserData",
+            name="email",
+            prefix="SafeBreach.User",
             output_type=str,
             description="The email of User retrieved. this can be used for updating user or\
                       deleting user for input email of commands safebreach-update-user or safebreach-delete-user ",
@@ -2020,7 +2045,7 @@ def get_all_users(client: Client):
         human_readable = tableToMarkdown(name="user data", t=user_data, headers=["id", "name", "email"])
     else:
         human_readable = f"No users found: {user_data}"
-    result = CommandResults(outputs_prefix="SafeBreach.UserData", outputs=user_data, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.User", outputs=user_data, readable_output=human_readable)
     return result
 
 
@@ -2034,28 +2059,29 @@ def get_all_users(client: Client):
             name="email", required=False, is_array=False, description="Email of the user. Exact match required"
         ),
     ],
-    outputs_prefix="SafeBreach.UserData",
+    outputs_prefix="SafeBreach.User",
     outputs_list=[
         OutputArgument(
-            name="Id",
-            prefix="SafeBreach.UserData",
+            name="id",
+            prefix="SafeBreach.User",
             output_type=int,
             description="The ID of User retrieved. this can be used to further link this user with user_id field of \
                       safebreach-update-user or safebreach-delete-user commands",
         ),
-        OutputArgument(name="Name", prefix="SafeBreach.UserData", output_type=str, description="The name of User retrieved."),
+        OutputArgument(name="name", prefix="SafeBreach.User", output_type=str, description="The name of User retrieved."),
         OutputArgument(
-            name="Email",
-            prefix="SafeBreach.UserData",
+            name="email",
+            prefix="SafeBreach.User",
             output_type=str,
             description="The email of User retrieved. this can be used for updating user or deleting user \
                       for input email of commands safebreach-update-user or safebreach-delete-user",
         ),
     ],
-    description="This command gives all users which match the inputs given, Since email is a unique field we only get one user if\
-            email matches but if name is given as input then care should be taken to see name matches exactly.\
-            else there is a chance that multiple users are retrieved, please not that either name or email are to\
-            be populated and if neither of them are given as input then it results in error",
+    description="The command retrieves users based on the provided inputs. "
+    + "If an email is provided, it returns the user associated with that email, as email is a unique identifier" +
+    "If a name is provided, exact name matching is required to ensure accurate retrieval of a single user;" +
+    "otherwise, multiple users may be returned. It's essential to note that either a name or an email must be populated as input;"
+    +"failure to provide either results in an error.",
 )
 def get_user_id_by_name_or_email(client: Client):
     """
@@ -2094,7 +2120,7 @@ def get_user_id_by_name_or_email(client: Client):
         human_readable = tableToMarkdown(name="user data", t=filtered_user_list, headers=["id", "name", "email"])
         outputs = filtered_user_list
 
-        result = CommandResults(outputs_prefix="SafeBreach.UserData", outputs=outputs, readable_output=human_readable)
+        result = CommandResults(outputs_prefix="SafeBreach.User", outputs=outputs, readable_output=human_readable)
 
         return result
     raise DemistoException(f"User with name {name} was not found")
@@ -2161,39 +2187,39 @@ def get_user_id_by_name_or_email(client: Client):
             + " is created , he will only have 1,3.",
         ),
     ],
-    outputs_prefix="SafeBreach.CreatedUserData",
+    outputs_prefix="SafeBreach.User",
     outputs_list=[
-        OutputArgument(name="Id", description="The ID of User created.", prefix="SafeBreach.CreatedUserData", output_type=int),
+        OutputArgument(name="id", description="The ID of User created.", prefix="SafeBreach.User", output_type=int),
         OutputArgument(
-            name="Name", description="The name of User created.", prefix="SafeBreach.CreatedUserData", output_type=str
+            name="name", description="The name of User created.", prefix="SafeBreach.User", output_type=str
         ),
         OutputArgument(
-            name="Email", description="The email of User created.", prefix="SafeBreach.CreatedUserData", output_type=str
+            name="email", description="The email of User created.", prefix="SafeBreach.User", output_type=str
         ),
         OutputArgument(
-            name="Createdat", prefix="SafeBreach.CreatedUserData", output_type=str, description="The creation time of User."
+            name="createdAt", prefix="SafeBreach.User", output_type=str, description="The creation time of User."
         ),
         OutputArgument(
-            name="Roles",
-            prefix="SafeBreach.CreatedUserData",
+            name="roles",
+            prefix="SafeBreach.User",
             output_type=str,
             description="The roles and permissions of User created.",
         ),
         OutputArgument(
-            name="Description",
-            prefix="SafeBreach.CreatedUserData",
+            name="description",
+            prefix="SafeBreach.User",
             output_type=str,
             description="The description of User if any is given at creation time, it will be populated here.",
         ),
         OutputArgument(
-            name="Role",
-            prefix="SafeBreach.CreatedUserData",
+            name="role",
+            prefix="SafeBreach.User",
             output_type=str,
             description="The role assigned to user during creation.",
         ),
         OutputArgument(
-            name="Deployments",
-            prefix="SafeBreach.CreatedUserData",
+            name="deployments",
+            prefix="SafeBreach.User",
             output_type=str,
             description="The deployments user is part of.",
         ),
@@ -2226,18 +2252,18 @@ def create_user(client: Client):
                 "roles",
                 "description",
                 "role",
-                "isActive",
+                "is_active",
                 "deployments",
-                "createdAt",
+                "created_at",
             ],
         )
     else:
         human_readable = f"Unable to create user: {created_user}"
     outputs = created_user.get("data", {})
     result = CommandResults(
-        outputs_prefix="SafeBreach.CreatedUserData",
+        outputs_prefix="SafeBreach.User",
         outputs=outputs,
-        outputs_key_field="SafeBreach.CreatedUserData",
+        outputs_key_field="SafeBreach.User",
         readable_output=human_readable,
     )
     return result
@@ -2299,70 +2325,70 @@ def create_user(client: Client):
             + "they will be replaced with new values.User will be selected based on user_id field mentioned above.",
         ),
     ],
-    outputs_prefix="SafeBreach.UpdatedUserData",
+    outputs_prefix="SafeBreach.User",
     outputs_list=[
         OutputArgument(
-            name="Id",
-            prefix="SafeBreach.UpdatedUserData",
+            name="id",
+            prefix="SafeBreach.User",
             output_type=int,
             description="The ID of User whose data has been updated.",
         ),
         OutputArgument(
-            name="Name",
-            prefix="SafeBreach.UpdatedUserData",
+            name="name",
+            prefix="SafeBreach.User",
             output_type=str,
             description="The name of User after running the update command according to safebreach records.",
         ),
         OutputArgument(
-            name="Email",
-            prefix="SafeBreach.UpdatedUserData",
+            name="email",
+            prefix="SafeBreach.User",
             output_type=str,
             description="the email of the user whose data has been updated by the command.",
         ),
         OutputArgument(
-            name="Createdat",
-            prefix="SafeBreach.UpdatedUserData",
+            name="createdAt",
+            prefix="SafeBreach.User",
             output_type=str,
             description="the time at which the user who has been selected has been created",
         ),
         OutputArgument(
-            name="Updatedat",
-            prefix="SafeBreach.UpdatedUserData",
+            name="updatedAt",
+            prefix="SafeBreach.User",
             output_type=str,
             description="The last updated time of User selected for update. \
                       this will be the execution time for the command or close to it.",
         ),
         OutputArgument(
-            name="Deletedat",
-            prefix="SafeBreach.UpdatedUserData",
+            name="deletedAt",
+            prefix="SafeBreach.User",
             output_type=str,
             description="The Deletion time of User selected to update. Generally this is empty unless\
                       user chosen to update is a deleted user",
         ),
         OutputArgument(
-            name="Roles",
-            prefix="SafeBreach.UpdatedUserData",
+            name="roles",
+            prefix="SafeBreach.User",
             output_type=str,
             description="The roles of User updated. these will change if role has been updated during\
                       updating user details else they will be same as pre update.",
         ),
         OutputArgument(
-            name="Description",
-            prefix="SafeBreach.UpdatedUserData",
+            name="description",
+            prefix="SafeBreach.User",
             output_type=str,
             description="The description of User after updating user, if description field has been given any\
                       new value during update then its updated else this will be left unchanged from previous value.",
         ),
         OutputArgument(
-            name="Role",
-            prefix="SafeBreach.UpdatedUserData",
+            name="role",
+            prefix="SafeBreach.User",
             output_type=str,
             description="The roles and permissions related to user who has been selected for update.unless this field\
                       has been given a value , this will not be updated and will stay the same as previous value.",
         ),
         OutputArgument(
-            name="Deployments",
-            prefix="SafeBreach.UpdatedUserData",
+            name="deployments",
+            prefix="SafeBreach.User",
             output_type=str,
             description="The deployments related to user, this will be comma separated values of deployment IDs",
         ),
@@ -2402,7 +2428,7 @@ def update_user_with_details(client: Client):
     else:
         human_readable = f"Unable to update user: {updated_user}"
     outputs = updated_user.get("data", {})
-    result = CommandResults(outputs_prefix="SafeBreach.UpdatedUserData", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.User", outputs=outputs, readable_output=human_readable)
     return result
 
 
@@ -2416,55 +2442,55 @@ def update_user_with_details(client: Client):
             description="ID of user to be deleted. The Id can be retrieved by using get-all-users command.",
         ),
     ],
-    outputs_prefix="SafeBreach.DeletedUserData",
+    outputs_prefix="SafeBreach.User",
     outputs_list=[
         OutputArgument(
-            name="Id",
-            prefix="SafeBreach.DeletedUserData",
+            name="id",
+            prefix="SafeBreach.User",
             output_type=int,
             description="The ID of User whose data has been deleted.",
         ),
         OutputArgument(
-            name="Name",
-            prefix="SafeBreach.DeletedUserData",
+            name="name",
+            prefix="SafeBreach.User",
             output_type=str,
             description="The name of User deleted.",
         ),
         OutputArgument(
-            name="Email", description="The email of User deleted.", prefix="SafeBreach.DeletedUserData", output_type=str
+            name="email", description="The email of User deleted.", prefix="SafeBreach.User", output_type=str
         ),
         OutputArgument(
-            name="Createdat",
-            prefix="SafeBreach.DeletedUserData",
+            name="createdAt",
+            prefix="SafeBreach.User",
             output_type=str,
             description="the time at which the user who has been selected has been created",
         ),
-        OutputArgument(name="Updatedat", prefix="SafeBreach.DeletedUserData", output_type=str, description="last updated time."),
+        OutputArgument(name="updatedAt", prefix="SafeBreach.User", output_type=str, description="last updated time."),
         OutputArgument(
-            name="Deletedat", prefix="SafeBreach.DeletedUserData", output_type=str, description="Deletion time of user."
+            name="deletedAt", prefix="SafeBreach.User", output_type=str, description="Deletion time of user."
         ),
         OutputArgument(
-            name="Roles",
+            name="roles",
             description="The roles of User before they were deleted.",
-            prefix="SafeBreach.DeletedUserData",
+            prefix="SafeBreach.User",
             output_type=str,
         ),
         OutputArgument(
-            name="Description",
+            name="description",
             description="The description of User who has been deleted.",
-            prefix="SafeBreach.DeletedUserData",
+            prefix="SafeBreach.User",
             output_type=str,
         ),
         OutputArgument(
-            name="Role",
+            name="role",
             description="The roles and permissions of User who has been deleted.",
-            prefix="SafeBreach.DeletedUserData",
+            prefix="SafeBreach.User",
             output_type=str,
         ),
         OutputArgument(
-            name="Deployments",
+            name="deployments",
             description="The deployments related to user before he was deleted.",
-            prefix="SafeBreach.DeletedUserData",
+            prefix="SafeBreach.User",
             output_type=str,
         ),
     ],
@@ -2493,7 +2519,7 @@ def delete_user_with_details(client: Client):
     else:
         human_readable = f"Unable to delete user: {deleted_user}"
     outputs = deleted_user.get("data", {})
-    result = CommandResults(outputs_prefix="SafeBreach.DeletedUserData", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.User", outputs=outputs, readable_output=human_readable)
     return result
 
 
@@ -2516,40 +2542,40 @@ def deployment_transformer(header):
     inputs_list=None,
     outputs_prefix="SafeBreach.Deployment",
     outputs_list=[
-        OutputArgument(name="Id", prefix="SafeBreach.Deployment", output_type=int, description="The ID of deployment"),
+        OutputArgument(name="id", prefix="SafeBreach.Deployment", output_type=int, description="The ID of deployment"),
         OutputArgument(
-            name="AccountId",
+            name="account_id",
             prefix="SafeBreach.Deployment",
             output_type=str,
             description="The accountId of user who created the deployment.",
         ),
         OutputArgument(
-            name="Name",
+            name="name",
             prefix="SafeBreach.Deployment",
             output_type=str,
             description="The name of deployment.\
                         this will be the name shown in deployment name field of table in deployments page in safebreach UI",
         ),
         OutputArgument(
-            name="CreatedAt",
+            name="created_at",
             prefix="SafeBreach.Deployment",
             output_type=str,
             description="The creation date and time of deployment.",
         ),
         OutputArgument(
-            name="UpdatedAt",
+            name="updated_at",
             prefix="SafeBreach.Deployment",
             output_type=str,
             description="The last updated date and time of deployment.",
         ),
         OutputArgument(
-            name="Description",
+            name="description",
             prefix="SafeBreach.Deployment",
             output_type=str,
             description="This is description field of deployments table of safebreach UI",
         ),
         OutputArgument(
-            name="Simulators",
+            name="simulators",
             prefix="SafeBreach.Deployment",
             output_type=str,
             description="The simulators that are part of deployment.",
@@ -2611,45 +2637,45 @@ def get_deployments(client: Client):
             + "part of this deployment Simulator ID can be retrieved from safebreach-get-all-simulator-details .",
         ),
     ],
-    outputs_prefix="SafeBreach.CreateDeployment",
+    outputs_prefix="SafeBreach.Deployment",
     outputs_list=[
         OutputArgument(
-            name="Id",
-            prefix="SafeBreach.CreateDeployment",
+            name="id",
+            prefix="SafeBreach.Deployment",
             output_type=int,
             description="The ID of deployment created. this Id can be used to update ,delete deployment as\
                       deployment_id field of the deployment.",
         ),
         OutputArgument(
-            name="AccountId",
-            prefix="SafeBreach.CreateDeployment",
+            name="account_id",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="This field shows account ID of user who has created the account.",
         ),
         OutputArgument(
-            name="Name",
-            prefix="SafeBreach.CreateDeployment",
+            name="name",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The name of deployment created. this will be name which will be shown on deployments page\
                       of safebreach and name that is given as input to the command.",
         ),
         OutputArgument(
-            name="CreatedAt",
-            prefix="SafeBreach.CreateDeployment",
+            name="created_at",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The creation date and time of deployment , this will be closer to\
                       command execution time if the deployment creation is successful.",
         ),
         OutputArgument(
-            name="Description",
-            prefix="SafeBreach.CreateDeployment",
+            name="description",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The description of the deployment created will be shown in description \
                           part of the table in safebreach.",
         ),
         OutputArgument(
-            name="Simulators",
-            prefix="SafeBreach.CreateDeployment",
+            name="simulators",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The simulators that are part of deployment.",
         ),
@@ -2680,7 +2706,7 @@ def create_deployment(client: Client):
     else:
         human_readable = f"Unable to create deployment: {created_deployment}"
     outputs = created_deployment.get("data", {})
-    result = CommandResults(outputs_prefix="SafeBreach.CreateDeployment", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.Deployment", outputs=outputs, readable_output=human_readable)
 
     return result
 
@@ -2706,52 +2732,52 @@ def create_deployment(client: Client):
             name="updated_deployment_description", required=False, is_array=False, description="Deployment description."
         ),
     ],
-    outputs_prefix="SafeBreach.UpdatedDeployment",
+    outputs_prefix="SafeBreach.Deployment",
     outputs_list=[
         OutputArgument(
-            name="Id",
-            prefix="SafeBreach.UpdatedDeployment",
+            name="id",
+            prefix="SafeBreach.Deployment",
             output_type=int,
             description="The ID of deployment whose values have been updated.\
                           ID cant be changed so this wont be updated.",
         ),
         OutputArgument(
-            name="AccountId",
-            prefix="SafeBreach.UpdatedDeployment",
+            name="account_id",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The accountId of user who created the deployment.",
         ),
         OutputArgument(
-            name="Name",
-            prefix="SafeBreach.UpdatedDeployment",
+            name="name",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The name of deployment which has been updated to the name given in updated_deployment_name.\
                         this will be the name shown in deployment name field of table in deployments page in safebreach UI",
         ),
         OutputArgument(
-            name="CreatedAt",
-            prefix="SafeBreach.UpdatedDeployment",
+            name="created_at",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The creation date and time of deployment whose data has been updated.",
         ),
         OutputArgument(
-            name="UpdatedAt",
-            prefix="SafeBreach.UpdatedDeployment",
+            name="updated_at",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The last updated date and time of deployment whose data has been updated.\
                       This will generally be closer to the update deployment command run time for reference",
         ),
         OutputArgument(
-            name="Description",
-            prefix="SafeBreach.UpdatedDeployment",
+            name="description",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The updated description of deployment which is provided in updated_deployment_description\
                       field of input . This will now be the description which is shown in description field of deployments\
                       table of safebreach UI",
         ),
         OutputArgument(
-            name="Simulators",
-            prefix="SafeBreach.UpdatedDeployment",
+            name="simulators",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The simulators that are part of deployment. unless any simulators are given as input this \
                           field won't be updated this field doesn't reflect changes if simulators given as input are deleted",
@@ -2783,7 +2809,7 @@ def update_deployment(client: Client):
     else:
         human_readable = f"Unable to update deployment: {updated_deployment}"
     outputs = updated_deployment.get("data", {})
-    result = CommandResults(outputs_prefix="SafeBreach.UpdatedDeployment", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.Deployment", outputs=outputs, readable_output=human_readable)
     return result
 
 
@@ -2797,41 +2823,41 @@ def update_deployment(client: Client):
             description="ID of the deployment to delete. " + "The ID his can be searched with list-deployments command",
         )
     ],
-    outputs_prefix="SafeBreach.DeletedDeployment",
+    outputs_prefix="SafeBreach.Deployment",
     outputs_list=[
         OutputArgument(
-            name="Id",
-            prefix="SafeBreach.DeletedDeployment",
+            name="id",
+            prefix="SafeBreach.Deployment",
             output_type=int,
             description="The ID of deployment which has been deleted.",
         ),
         OutputArgument(
-            name="AccountId",
-            prefix="SafeBreach.DeletedDeployment",
+            name="account_id",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The account Id of user who deleted the deployment.",
         ),
         OutputArgument(
-            name="Name",
-            prefix="SafeBreach.DeletedDeployment",
+            name="name",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The name of deployment before the deployment was deleted.",
         ),
         OutputArgument(
-            name="CreatedAt",
-            prefix="SafeBreach.DeletedDeployment",
+            name="created_at",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The creation date and time of deployment which has been deleted.",
         ),
         OutputArgument(
-            name="Description",
-            prefix="SafeBreach.DeletedDeployment",
+            name="description",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The description of deployment before it was deleted.",
         ),
         OutputArgument(
-            name="Simulators",
-            prefix="SafeBreach.DeletedDeployment",
+            name="simulators",
+            prefix="SafeBreach.Deployment",
             output_type=str,
             description="The simulators that are part of deployment before it was deleted.",
         ),
@@ -2861,7 +2887,7 @@ def delete_deployment(client: Client):
     else:
         human_readable = f"Unable to delete deployment: {deleted_deployment}"
     outputs = deleted_deployment.get("data", {})
-    result = CommandResults(outputs_prefix="SafeBreach.DeletedDeployment", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.Deployment", outputs=outputs, readable_output=human_readable)
     return result
 
 
@@ -2900,37 +2926,37 @@ def apikey_transformer(header):
                       """,
         ),
     ],
-    outputs_prefix="SafeBreach.GeneratedAPIKey",
+    outputs_prefix="SafeBreach.API",
     outputs_list=[
         OutputArgument(
-            name="Name",
-            prefix="SafeBreach.GeneratedAPIKey",
+            name="name",
+            prefix="SafeBreach.API",
             output_type=str,
             description="The Name of API Key generated through this command, \
                           This will match the input name of the command.",
         ),
         OutputArgument(
-            name="Description",
-            prefix="SafeBreach.GeneratedAPIKey",
+            name="description",
+            prefix="SafeBreach.API",
             output_type=str,
             description="The Description of API Key created. \
                           this will be same as input description given for the command.",
         ),
         OutputArgument(
-            name="CreatedBy",
-            prefix="SafeBreach.GeneratedAPIKey",
+            name="created_by",
+            prefix="SafeBreach.API",
             output_type=str,
             description="The id of user who generated this API key.",
         ),
         OutputArgument(
-            name="CreatedBt",
-            prefix="SafeBreach.GeneratedAPIKey",
+            name="created_bt",
+            prefix="SafeBreach.API",
             output_type=str,
             description="The creation date and time of API key.",
         ),
         OutputArgument(
-            name="Key",
-            prefix="SafeBreach.GeneratedAPIKey",
+            name="key",
+            prefix="SafeBreach.API",
             output_type=str,
             description="The value of API key generated. store this for further use as this will only be shown once",
         ),
@@ -2962,7 +2988,7 @@ def create_api_key(client: Client):
         human_readable = f"Unable to generate API key: {generated_api_key}"
     outputs = generated_api_key.get("data")
 
-    result = CommandResults(outputs_prefix="SafeBreach.GeneratedAPIKey", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.API", outputs=outputs, readable_output=human_readable)
     return result
 
 
@@ -2977,29 +3003,29 @@ def create_api_key(client: Client):
             + "used for searching key with given name and then once it matches, that API key will be deleted.",
         ),
     ],
-    outputs_prefix="SafeBreach.DeletedAPIKey",
+    outputs_prefix="SafeBreach.API",
     outputs_list=[
         OutputArgument(
-            name="Name", description="The Name of API Key deleted.", prefix="SafeBreach.DeletedAPIKey", output_type=int
+            name="name", description="The Name of API Key deleted.", prefix="SafeBreach.API", output_type=int
         ),
         OutputArgument(
-            name="Description", description="Description of API Key deleted.", prefix="SafeBreach.DeletedAPIKey", output_type=str
+            name="description", description="Description of API Key deleted.", prefix="SafeBreach.API", output_type=str
         ),
         OutputArgument(
-            name="CreatedBy",
+            name="created_by",
             description="The id of user who generated this API key.",
-            prefix="SafeBreach.DeletedAPIKey",
+            prefix="SafeBreach.API",
             output_type=str,
         ),
         OutputArgument(
-            name="CreatedAt",
+            name="created_at",
             description="The creation time and date of API key.",
-            prefix="SafeBreach.DeletedAPIKey",
+            prefix="SafeBreach.API",
             output_type=str,
         ),
         OutputArgument(
-            name="DeletedAt",
-            prefix="SafeBreach.DeletedAPIKey",
+            name="deleted_at",
+            prefix="SafeBreach.API",
             output_type=str,
             description="The deletion time and date of API key. The deletion date and time are generally\
                       close to the command execution time and date.",
@@ -3029,7 +3055,7 @@ def delete_api_key(client: Client):
     else:
         human_readable = f"Unable to delete API key: {deleted_api_key}"
     outputs = deleted_api_key.get("data")
-    result = CommandResults(outputs_prefix="SafeBreach.DeletedAPIKey", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.API", outputs=outputs, readable_output=human_readable)
     return result
 
 
@@ -3055,46 +3081,46 @@ def integration_issues_transformer(header):
             description="this will help see issues which are either errors or warnings or both based on the input ",
         ),
     ],
-    outputs_prefix="SafeBreach.IntegrationErrors",
+    outputs_prefix="SafeBreach.Integration",
     outputs_list=[
         OutputArgument(
-            name="IntegrationId",
-            prefix="SafeBreach.IntegrationErrors",
+            name="integration_id",
+            prefix="SafeBreach.Integration",
             output_type=int,
             description="The ID of Integration. A general notation that has been followed here is\
                       as follows, if the  id has _default at the end then its a default connector else its a custom connector",
         ),
         OutputArgument(
-            name="IntegrationName",
-            prefix="SafeBreach.IntegrationErrors",
+            name="integration_name",
+            prefix="SafeBreach.Integration",
             output_type=str,
             description="Name of the integration",
         ),
         OutputArgument(
-            name="Action",
-            prefix="SafeBreach.IntegrationErrors",
+            name="action",
+            prefix="SafeBreach.Integration",
             output_type=str,
             description="The action of Integration error. This describes where exactly did the error occur,\
                         if its search,then it implies error/warning happened when connector was trying that process",
         ),
         OutputArgument(
-            name="SuccessState",
-            prefix="SafeBreach.IntegrationErrors",
+            name="success_state",
+            prefix="SafeBreach.Integration",
             output_type=str,
             description="status of integration error. This implies whether the connector was able to \
                       successfully perform the operation or if it failed partway. \
                       So false implies it failed partway and true implies it was successfully completed",
         ),
         OutputArgument(
-            name="ErrorDescription",
-            prefix="SafeBreach.IntegrationErrors",
+            name="error_description",
+            prefix="SafeBreach.Integration",
             output_type=str,
             description="This is the exact error description shown on safebreach integration error/warning page.\
                         This description can be used for understanding of what exactly happened for the integration to fail.",
         ),
         OutputArgument(
-            name="Timestamp",
-            prefix="SafeBreach.IntegrationErrors",
+            name="timestamp",
+            prefix="SafeBreach.Integration",
             output_type=str,
             description="Time at which error/warning occurred. This can be used to pinpoint error which occurred\
                       across integrations if time of origin was remembered",
@@ -3115,6 +3141,8 @@ def get_all_integration_error_logs(client: Client):
     """
     formatted_error_logs = []
     error_logs = client.get_all_integration_error_logs()
+    if error_logs is None:
+        raise ValueError("Failed to retrieve integration error logs")
     demisto.debug(f"Get all integration error logs result is: {error_logs}")
 
     formatted_error_logs = client.flatten_error_logs_for_table_view(error_logs.get("result"))
@@ -3126,9 +3154,9 @@ def get_all_integration_error_logs(client: Client):
             headers=["connector", "action", "success", "error", "timestamp", "integration_name"],
         )
     else:
-        human_readable = f"No integration error logs found: {formatted_error_logs}"
+        human_readable = f"No integration {demisto.args().get('error_type')} logs found: {formatted_error_logs}"
     outputs = error_logs.get("result")
-    result = CommandResults(outputs_prefix="SafeBreach.IntegrationErrors", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.Integration", outputs=outputs, readable_output=human_readable)
     return result
 
 
@@ -3155,18 +3183,18 @@ def get_integration_details(client: Client):
             + "Both errors and warnings will be deleted.",
         ),
     ],
-    outputs_prefix="SafeBreach.ClearIntegrationIssues",
+    outputs_prefix="SafeBreach.Integration",
     outputs_list=[
         OutputArgument(
-            name="Error",
+            name="error",
             description="Error count after deletion of errors for the given Integration.",
-            prefix="SafeBreach.IntegrationErrors",
+            prefix="SafeBreach.Integration",
             output_type=int,
         ),
         OutputArgument(
-            name="Result",
+            name="result",
             description="error deletion status whether true or false.",
-            prefix="SafeBreach.IntegrationErrors",
+            prefix="SafeBreach.Integration",
             output_type=str,
         ),
     ],
@@ -3193,7 +3221,7 @@ def delete_integration_error_logs(client: Client):
     else:
         human_readable = f"Unable to delete integration error logs: {error_logs}"
     outputs = error_logs
-    result = CommandResults(outputs_prefix="SafeBreach.ClearIntegrationIssues", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.Integration", outputs=outputs, readable_output=human_readable)
     return result
 
 
@@ -3213,56 +3241,56 @@ def simulator_count_transformer(header):
 @metadata_collector.command(
     command_name="safebreach-get-available-simulator-count",
     inputs_list=None,
-    outputs_prefix="SafeBreach.AccountDetails",
+    outputs_prefix="SafeBreach.Account",
     outputs_list=[
         OutputArgument(
-            name="Id",
-            prefix="SafeBreach.AccountDetails",
+            name="id",
+            prefix="SafeBreach.Account",
             output_type=int,
             description="The account ID which is being used by integration.",
         ),
         OutputArgument(
-            name="Name",
+            name="name",
             description="The Account Name of account being queried.",
-            prefix="SafeBreach.AccountDetails",
+            prefix="SafeBreach.Account",
             output_type=str,
         ),
         OutputArgument(
-            name="ContactName",
+            name="contact_name",
             description="Contact name for given account.",
-            prefix="SafeBreach.AccountDetails",
+            prefix="SafeBreach.Account",
             output_type=str,
         ),
         OutputArgument(
-            name="ContactEmail", description="Email of the contact person.", prefix="SafeBreach.AccountDetails", output_type=str
+            name="contact_email", description="Email of the contact person.", prefix="SafeBreach.Account", output_type=str
         ),
         OutputArgument(
-            name="UserQuota",
-            prefix="SafeBreach.AccountDetails",
+            name="user_quota",
+            prefix="SafeBreach.Account",
             output_type=str,
             description="User Quota for the given account, maximum users which are allowed for the account.",
         ),
         OutputArgument(
-            name="SimulatorsQuota",
-            prefix="SafeBreach.AccountDetails",
+            name="simulators_quota",
+            prefix="SafeBreach.Account",
             output_type=int,
             description="The simulator quota for the given account. The maximum number of "
             + "simulators which are available for the account.",
         ),
         OutputArgument(
-            name="RegistrationDate",
+            name="registration_date",
             description="The registration date of given account.",
-            prefix="SafeBreach.AccountDetails",
+            prefix="SafeBreach.Account",
             output_type=int,
         ),
         OutputArgument(
-            name="ActivationDate",
+            name="activation_date",
             description="The Activation date of given account.",
-            prefix="SafeBreach.AccountDetails",
+            prefix="SafeBreach.Account",
             output_type=str,
         ),
         OutputArgument(
-            name="ExpirationDate", description="Account expiration date.", prefix="SafeBreach.AccountDetails", output_type=str
+            name="expiration_date", description="Account expiration date.", prefix="SafeBreach.Account", output_type=str
         ),
     ],
     description="This command gives all details related to account, we are using this to find assigned simulator quota.",
@@ -3303,7 +3331,7 @@ def get_simulator_quota_with_table(client: Client):
         "simulator_quota": simulator_details.get("data").get("nodesQuota"),
     }
     simulator_details = CommandResults(
-        outputs_prefix="SafeBreach.AccountDetails", outputs=outputs, readable_output=human_readable
+        outputs_prefix="SafeBreach.Account", outputs=outputs, readable_output=human_readable
     )
     return simulator_details
 
@@ -3358,9 +3386,10 @@ def get_simulator_with_name(client: Client):
             name="simulator_id", required=True, is_array=False, description="Id of the simulator we want to delete"
         )
     ],
-    outputs_prefix="SafeBreach.DeletedSimulator",
+    outputs_prefix="SafeBreach.Simulator",
     outputs_list=simulators_output_fields,
-    description="This command deletes simulator with given ID.to get simulator_id use safebreach-get-all-simulators command.",
+    description="The provided command facilitates the deletion of a simulator identified by its unique ID." +
+    "To obtain the respective simulator ID, execute the \"safebreach-get-all-simulators\" command."
 )
 def delete_simulator_with_given_name(client: Client):
     """
@@ -3380,7 +3409,7 @@ def delete_simulator_with_given_name(client: Client):
     else:
         human_readable = f"Unable to delete simulator with given ID: {flattened_simulators}"
     outputs = deleted_simulator.get("data", {})
-    result = CommandResults(outputs_prefix="SafeBreach.DeletedSimulator", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.Simulator", outputs=outputs, readable_output=human_readable)
     return result
 
 
@@ -3388,7 +3417,7 @@ def delete_simulator_with_given_name(client: Client):
     command_name="safebreach-update-simulator",
     inputs_list=[InputArgument(name="simulator_id", required=True, is_array=False, description="Simulator ID.")]
     + simulator_details_for_update_fields,
-    outputs_prefix="SafeBreach.UpdatedSimulator",
+    outputs_prefix="SafeBreach.Simulator",
     outputs_list=simulators_output_fields,
     description="This command updates simulator with given id. the given inputs for update fields will be "
     + "updated to the selected filed values will be updated to given value.",
@@ -3411,7 +3440,7 @@ def update_simulator(client: Client):
     else:
         human_readable = f"Unable to update simulator: {flattened_simulators}"
     outputs = updated_simulator.get("data", {})
-    result = CommandResults(outputs_prefix="SafeBreach.UpdatedSimulator", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.Simulator", outputs=outputs, readable_output=human_readable)
     return result
 
 
@@ -3460,7 +3489,7 @@ def approve_simulator(client: Client):
     outputs_prefix="SafeBreach.Token",
     outputs_list=[
         OutputArgument(
-            name="NewToken", output_type=str, description="New token which has been generated due to the API call"
+            name="new_token", output_type=str, description="New token which has been generated due to the API call"
         ),
     ],
     description="This command rotates generated verification token meaning it creates a new token which will be used for "
@@ -3478,7 +3507,7 @@ def return_rotated_verification_token(client: Client):
     """
     new_token = client.rotate_verification_token()
     if new_token.get("data"):
-        human_readable = tableToMarkdown(name="new Token Details", t=new_token.get("data"), headers=["secret"])
+        human_readable = tableToMarkdown(name="New Token Details", t=new_token.get("data"), headers=["secret"])
     else:
         human_readable = f"Unable to rotate verification token: {new_token}"
     outputs = new_token.get("data", {}).get("secret", "")
@@ -3540,7 +3569,7 @@ def get_all_tests_summary_with_scenario_id(client: Client):
     inputs_list=[
         InputArgument(name="test_id", description="Id of test to be deleted.", required=True, is_array=False),
     ],
-    outputs_prefix="SafeBreach.DeletedTest",
+    outputs_prefix="SafeBreach.Test",
     outputs_list=test_summaries_output_fields,
     description="This command deletes tests with given test ID.",
 )
@@ -3556,20 +3585,19 @@ def delete_test_result_of_test(client: Client):
     """
     test_summaries = client.delete_test_result_of_test()
     demisto.debug(f"Delete test with ID result is: {test_summaries}")
-    if test_summaries.get("data", {}):
+    if test_summaries.get("data"):
         human_readable = tableToMarkdown(name="Deleted Test", t=test_summaries.get("data", {}), headers=["id"])
     else:
         human_readable = f"Unable to delete test result with given test Id: {test_summaries}"
-    outputs = [test_summaries.get("data", {}).get("id")]
-
-    result = CommandResults(outputs_prefix="SafeBreach.DeletedTest", outputs=outputs, readable_output=human_readable)
+    outputs = [test_summaries.get("data")]
+    result = CommandResults(outputs_prefix="SafeBreach.Test", outputs=outputs, readable_output=human_readable)
     return result
 
 
 @metadata_collector.command(
     command_name="safebreach-get-running-tests",
     inputs_list=None,
-    outputs_prefix="SafeBreach.ActiveTest",
+    outputs_prefix="SafeBreach.Test",
     outputs_list=tests_outputs,
     description="This command gets tests which are in running state.",
 )
@@ -3597,7 +3625,7 @@ def get_all_running_tests_summary(client: Client):
     else:
         human_readable = f"No running tests summary found: {flattened_running_tests_for_table}"
     outputs = running_tests
-    result = CommandResults(outputs_prefix="SafeBreach.ActiveTest", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.Test", outputs=outputs, readable_output=human_readable)
 
     return result
 
@@ -3617,19 +3645,19 @@ def simulations_output_transform(header):
 @metadata_collector.command(
     command_name="safebreach-get-running-simulations",
     inputs_list=None,
-    outputs_prefix="SafeBreach.ActiveSimulations",
+    outputs_prefix="SafeBreach.Test",
     outputs_list=[
         OutputArgument(
-            name="test id", description="this is test ID of the simulation.", prefix="SafeBreach.ActiveTest", output_type=str
+            name="test id", description="this is test ID of the simulation.", prefix="SafeBreach.Test", output_type=str
         ),
         OutputArgument(
-            name="SimulationId",
+            name="simulation_id",
             description="the simulation id of the simulation.",
-            prefix="SafeBreach.ActiveTest",
+            prefix="SafeBreach.Test",
             output_type=str,
         ),
         OutputArgument(
-            name="AttackId", description="the attack ID of the simulation.", prefix="SafeBreach.ActiveTest", output_type=str
+            name="attack_id", description="the attack ID of the simulation.", prefix="SafeBreach.Test", output_type=str
         ),
     ],
     description="This command gets simulations which are in running or queued state.",
@@ -3662,7 +3690,7 @@ def get_all_running_simulations_summary(client: Client):
     else:
         human_readable = f"No running simulations summary found: {flattened_simulations_data_for_table}"
     outputs = running_simulations
-    result = CommandResults(outputs_prefix="SafeBreach.ActiveSimulations", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.Test", outputs=outputs, readable_output=human_readable)
 
     return result
 
@@ -3683,11 +3711,11 @@ def get_all_running_simulations_summary(client: Client):
             + " moment of execution of the command.",
         )
     ],
-    outputs_prefix="SafeBreach.TestStatus",
+    outputs_prefix="SafeBreach.Test",
     outputs_list=[
         OutputArgument(
-            name="Status",
-            prefix="SafeBreach.TestStatus",
+            name="status",
+            prefix="SafeBreach.Test",
             output_type=str,
             description="the status of the simulations/tests.",
         )
@@ -3715,7 +3743,7 @@ def pause_resume_tests_and_simulations(client: Client):
 
     outputs = simulations_status
     result = CommandResults(
-        outputs_prefix="SafeBreach.TestStatus", outputs=outputs.get("data"), readable_output=human_readable
+        outputs_prefix="SafeBreach.Test", outputs=outputs.get("data"), readable_output=human_readable
     )
 
     return result
@@ -3754,36 +3782,36 @@ def plan_id_name_map(test_summaries):
     inputs_list=None,
     outputs_prefix="SafeBreach.Schedules",
     outputs_list=[
-        OutputArgument(name="Id", description="the Id of the schedule.", prefix="SafeBreach.Schedules", output_type=str),
+        OutputArgument(name="id", description="the Id of the schedule.", prefix="schedules", output_type=str),
         OutputArgument(
-            name="IsEnabled", description="if simulation is enabled.", prefix="SafeBreach.Schedules", output_type=bool
+            name="is_enabled", description="if simulation is enabled.", prefix="schedules", output_type=bool
         ),
         OutputArgument(
-            name="UserSchedule",
+            name="user_schedule",
             description="the user readable form of the schedule.",
             prefix="SafeBreach.Schedules",
             output_type=str,
         ),
         OutputArgument(
-            name="RunDate", description="the run date of the schedule.", prefix="SafeBreach.Schedules", output_type=str
+            name="run_date", description="the run date of the schedule.", prefix="SafeBreach.Schedules", output_type=str
         ),
         OutputArgument(
-            name="CronTimezone", description="the time zone of the schedule.", prefix="SafeBreach.Schedules", output_type=str
+            name="cron_timezone", description="the time zone of the schedule.", prefix="SafeBreach.Schedules", output_type=str
         ),
         OutputArgument(
-            name="Description", description="the description of the schedule.", prefix="SafeBreach.Schedules", output_type=str
+            name="description", description="the description of the schedule.", prefix="SafeBreach.Schedules", output_type=str
         ),
         OutputArgument(
-            name="ScenarioId", description="the matrix ID of the schedule.", prefix="SafeBreach.Schedules", output_type=str
+            name="scenario_id", description="the matrix ID of the schedule.", prefix="SafeBreach.Schedules", output_type=str
         ),
         OutputArgument(
-            name="CreatedAt", description="the creation datetime of the schedule.", prefix="SafeBreach.Schedules", output_type=str
+            name="created_at", description="the creation datetime of the schedule.", prefix="SafeBreach.Schedules", output_type=str
         ),
         OutputArgument(
-            name="UpdatedAt", description="the updated datetime of the schedule.", prefix="SafeBreach.Schedules", output_type=str
+            name="updated_at", description="the updated datetime of the schedule.", prefix="SafeBreach.Schedules", output_type=str
         ),
         OutputArgument(
-            name="DeletedAt", description="the deletion time of the schedule.", prefix="SafeBreach.Schedules", output_type=str
+            name="deleted_at", description="the deletion time of the schedule.", prefix="SafeBreach.Schedules", output_type=str
         ),
     ],
     description="This command retrieves schedules from safebreach which user has set and they will display it to user. By "
@@ -3836,68 +3864,68 @@ def get_schedules(client: Client):
             name="schedule_id", description="schedule ID of scheduled scenario to delete", required=True, is_array=False
         )
     ],
-    outputs_prefix="SafeBreach.DeletedScheduledScenario",
+    outputs_prefix="SafeBreach.Scenario",
     outputs_list=[
         OutputArgument(
-            name="Id",
+            name="id",
             description="the Id of the scheduled scenario.",
-            prefix="SafeBreach.DeletedScheduledScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="IsEnabled",
-            description="if scheduled scenario is enabled.",
-            prefix="SafeBreach.DeletedScheduledScenario",
-            output_type=bool,
+            name="name",
+            description="the name of the scheduled scenario.",
+            prefix="SafeBreach.Scenario",
+            output_type=str,
         ),
         OutputArgument(
-            name="UserSchedule",
-            description="the user readable form of the scheduled scenario.",
+            name="accountId",
+            description="the account ID of the scheduled scenario.",
             prefix="SafeBreach.Schedules",
             output_type=str,
         ),
         OutputArgument(
-            name="RunDate",
-            description="the run date of the scheduled scenario.",
-            prefix="SafeBreach.DeletedScheduledScenario",
-            output_type=str,
-        ),
-        OutputArgument(
-            name="CronTimezone",
-            description="the time zone of the scheduled scenario.",
-            prefix="SafeBreach.DeletedScheduledScenario",
-            output_type=str,
-        ),
-        OutputArgument(
-            name="Description",
+            name="description",
             description="the description of the scheduled scenario.",
-            prefix="SafeBreach.DeletedScheduledScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="ScenarioId",
-            description="the test ID of the scheduled scenario.",
-            prefix="SafeBreach.DeletedScheduledScenario",
+            name="successCriteria",
+            description="the success criteria of the scheduled scenario.",
+            prefix="SafeBreach.Schedules",
             output_type=str,
         ),
         OutputArgument(
-            name="CreatedAt",
+            name="originalScenarioId",
+            description="the original test ID of the scheduled scenario.",
+            prefix="SafeBreach.Scenario",
+            output_type=str,
+        ),
+        OutputArgument(
+            name="systemFilter",
+            description="the systemFilter of the scheduled scenario.",
+            prefix="SafeBreach.Scenario",
+            output_type=str,
+        ),
+        OutputArgument(
+            name="tags",
+            description="the tags of the scheduled scenario.",
+            prefix="SafeBreach.Scenario",
+            output_type=str,
+        ),
+        OutputArgument(
+            name="createdAt",
             description="the creation datetime of the scheduled scenario.",
-            prefix="SafeBreach.DeletedScheduledScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="UpdatedAt",
+            name="updatedAt",
             description="the updated datetime of the scheduled scenario.",
-            prefix="SafeBreach.DeletedScheduledScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
-        ),
-        OutputArgument(
-            name="DeletedAt",
-            description="the deletion time of the scheduled scenario.",
-            prefix="SafeBreach.DeletedScheduledScenario",
-            output_type=str,
-        ),
+        )
     ],
     description="This command deletes the scheduled scenario with the specified schedule_id.",
 )
@@ -3911,36 +3939,38 @@ def delete_schedules(client: Client):
     Returns:
         CommandResults,Dict: This returns deleted schedules as a table and gives a dictionary as outputs for the same
     """
-    headers = [
-        "id",
-        "isEnabled",
-        "user_schedule",
-        "runDate",
-        "cronTimezone",
-        "description",
-        "createdAt",
-        "updatedAt",
-        "deletedAt",
-        "planId",
-    ]
+    # headers = [
+    #     "id",
+    #     "isEnabled",
+    #     "user_schedule",
+    #     "runDate",
+    #     "cronTimezone",
+    #     "description",
+    #     "createdAt",
+    #     "updatedAt",
+    #     "deletedAt",
+    #     "planId",
+    # ]
 
     schedules_data = client.delete_schedule()
     demisto.debug(f"Delete schedules result is: {schedules_data}")
 
-    new_schedules_data = client.append_cron_to_schedule([deepcopy(schedules_data.get("data"))])
-    if new_schedules_data:
-        human_readable = tableToMarkdown(
-            name="Deleted scheduled scenario",
-            headerTransform=safebreach_schedules_transformer,
-            t=new_schedules_data,
-            headers=headers,
-        )
+    #new_schedules_data = client.append_cron_to_schedule([deepcopy(schedules_data.get("data"))])
+    #if new_schedules_data:
+        #human_readable = tableToMarkdown(
+            #name="Deleted scheduled scenario",
+            #headerTransform=safebreach_schedules_transformer,
+            #t=new_schedules_data,
+            #headers=headers,
+        #)
+    if schedules_data.get("data"):
+         human_readable = tableToMarkdown("Deleted scheduled scenario:", schedules_data.get("data"))
     else:
-        human_readable = f"Unable to delete schedules: {new_schedules_data}"
+        human_readable = f"Unable to delete schedules: {schedules_data.get('data')}"
 
-    outputs = schedules_data
+    outputs = schedules_data.get("data")
     result = CommandResults(
-        outputs_prefix="SafeBreach.DeletedScheduledScenario", outputs=outputs, readable_output=human_readable
+        outputs_prefix="SafeBreach.Scenario", outputs=outputs, readable_output=human_readable
     )
 
     return result
@@ -3949,70 +3979,70 @@ def delete_schedules(client: Client):
 @metadata_collector.command(
     command_name="safebreach-get-prebuilt-scenarios",
     inputs_list=None,
-    outputs_prefix="SafeBreach.PrebuiltScenario",
+    outputs_prefix="SafeBreach.Scenario",
     outputs_list=[
-        OutputArgument(name="Id", description="the Id of scenario.", prefix="SafeBreach.PrebuiltScenario", output_type=str),
+        OutputArgument(name="id", description="the Id of scenario.", prefix="SafeBreach.Scenario", output_type=str),
         OutputArgument(
-            name="Name", description="the name of the scenario.", prefix="SafeBreach.PrebuiltScenario", output_type=str
+            name="name", description="he name of the scenario.", prefix="SafeBreach.Scenario", output_type=str
         ),
         OutputArgument(
-            name="Description",
+            name="description",
             description="the description of the scenario.",
-            prefix="SafeBreach.PrebuiltScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="CreatedBy",
+            name="created_by",
             description="user id of user, who created the scenario.",
-            prefix="SafeBreach.PrebuiltScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="CreatedAt",
+            name="created_at",
             description="creation datetime of scenario.",
-            prefix="SafeBreach.PrebuiltScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="UpdatedAt",
+            name="updated_at",
             description="the update datetime of the scenario.",
-            prefix="SafeBreach.PrebuiltScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="Recommended",
-            prefix="SafeBreach.PrebuiltScenario",
+            name="recommended",
+            prefix="SafeBreach.Scenario",
             output_type=str,
             description="the recommendation status of the scenario.",
         ),
         OutputArgument(
-            name="TagsList",
+            name="tags_list",
             description="the tags related to the scenario.",
-            prefix="SafeBreach.PrebuiltScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="Categories",
+            name="categories",
             description="the category ids of the scenario.",
-            prefix="SafeBreach.PrebuiltScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="StepsOrder",
+            name="steps_order",
             description="the order of steps involved in the scenario.",
-            prefix="SafeBreach.PrebuiltScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="Order",
+            name="order",
             description="the order of execution related to the scenario.",
-            prefix="SafeBreach.PrebuiltScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="MinApiVer",
+            name="min_api_ver",
             description="the minimum version of API required for scenario to be executed",
-            prefix="SafeBreach.PrebuiltScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
     ],
@@ -4056,7 +4086,7 @@ def get_prebuilt_scenarios(client: Client):
     else:
         human_readable = f"No prebuilt scenarios found: {flattened_simulations_data_for_table}"
     outputs = prebuilt_scenarios
-    result = CommandResults(outputs_prefix="SafeBreach.PrebuiltScenario", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.Scenario", outputs=outputs, readable_output=human_readable)
 
     return result
 
@@ -4095,52 +4125,52 @@ def scenarios_transformer(header):
             + " Possible values are: false, true. Default is true.",
         ),
     ],
-    outputs_prefix="SafeBreach.CustomScenario",
+    outputs_prefix="SafeBreach.Scenario",
     outputs_list=[
-        OutputArgument(name="Id", description="the Id of scenario.", prefix="SafeBreach.CustomScenario", output_type=str),
+        OutputArgument(name="id", description="the Id of scenario.", prefix="SafeBreach.Scenario", output_type=str),
         OutputArgument(
-            name="Name", description="the name of the scenario.", prefix="SafeBreach.CustomScenario", output_type=str
+            name="name", description="the name of the scenario.", prefix="SafeBreach.Scenario", output_type=str
         ),
         OutputArgument(
-            name="Description",
+            name="description",
             description="the description of the scenario.",
-            prefix="SafeBreach.CustomScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="SuccessCriteria",
+            name="success_criteria",
             description="success criteria the scenario.",
-            prefix="SafeBreach.CustomScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="OriginalScenarioId",
+            name="original_scenario_id",
             description="original scenario id of scenario.",
-            prefix="SafeBreach.CustomScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="ActionsList", description="actions list of the scenario.", prefix="SafeBreach.CustomScenario", output_type=str
+            name="actions_list", description="actions list of the scenario.", prefix="SafeBreach.Scenario", output_type=str
         ),
         OutputArgument(
-            name="EdgesCount", description="edges_count for the scenario.", prefix="SafeBreach.CustomScenario", output_type=str
+            name="edges_count", description="edges_count for the scenario.", prefix="SafeBreach.Scenario", output_type=str
         ),
         OutputArgument(
-            name="StepsOrder",
+            name="steps_order",
             description="the order of steps of the scenario.",
-            prefix="SafeBreach.CustomScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="CreatedAt",
+            name="created_at",
             description="the creation datetime of the scenario.",
-            prefix="SafeBreach.CustomScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
         OutputArgument(
-            name="UpdatedAt",
+            name="updated_at",
             description="the last updated time the scenario.",
-            prefix="SafeBreach.CustomScenario",
+            prefix="SafeBreach.Scenario",
             output_type=str,
         ),
     ],
@@ -4185,7 +4215,7 @@ def get_custom_scenarios(client: Client):
     else:
         human_readable = f"No custom scenarios found: {flattened_simulations_data_for_table}"
     outputs = custom_scenarios
-    result = CommandResults(outputs_prefix="SafeBreach.CustomScenario", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.Scenario", outputs=outputs, readable_output=human_readable)
 
     return result
 
@@ -4193,22 +4223,23 @@ def get_custom_scenarios(client: Client):
 @metadata_collector.command(
     command_name="safebreach-get-services-status",
     inputs_list=None,
-    outputs_prefix="SafeBreach.ServiceStatus",
+    outputs_prefix="SafeBreach.Service",
     outputs_list=[
-        OutputArgument(name="Name", description="the name of the service.", prefix="SafeBreach.ServiceStatus", output_type=str),
+        OutputArgument(name="name", description="the name of the service.", prefix="SafeBreach.Service", output_type=str),
         OutputArgument(
-            name="Version", description="version of the service.", prefix="SafeBreach.ServiceStatus", output_type=str
+            name="version", description="version of the service.", prefix="SafeBreach.Service", output_type=str
         ),
         OutputArgument(
             name="connection status",
             description="connection status of service.",
-            prefix="SafeBreach.ServiceStatus",
+            prefix="SafeBreach.Service",
             output_type=str,
         ),
-        OutputArgument(name="Error", description="error status of service.", prefix="SafeBreach.ServiceStatus", output_type=str),
+        OutputArgument(name="error", description="error status of service.", prefix="SafeBreach.Service", output_type=str),
     ],
-    description="This command retrieves status of services from safebreach and shows them as table for user, incase they are "
-    + "down then from when they are down or when it was last up will also be shown here.",
+    description="This command facilitates the retrieval of service statuses from SafeBreach," +
+    "presenting them to the user in a tabular format. In the event that services are inactive," +
+    "pertinent details regarding their downtime or last operational status are also displayed.",
 )
 def get_services_status(client: Client):
     """
@@ -4232,7 +4263,7 @@ def get_services_status(client: Client):
         human_readable = f"Unable to retrieve status of services: {modified_services_data}"
 
     outputs = services
-    result = CommandResults(outputs_prefix="SafeBreach.ServiceStatus", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.Service", outputs=outputs, readable_output=human_readable)
     return result
 
 
@@ -4265,49 +4296,47 @@ def simulations_transformer(header):
     outputs_prefix="SafeBreach.Simulation",
     outputs_list=[
         OutputArgument(
-            name="SimulationId", description="the id of the simulation.", prefix="SafeBreach.Simulation", output_type=str
+            name="simulation_id", description="the id of the simulation.", prefix="SafeBreach.Simulation", output_type=str
         ),
         OutputArgument(
-            name="AttackerNodeName",
+            name="attacker_node_name",
             description="Name of attacker node of simulation.",
             prefix="SafeBreach.Simulation",
             output_type=str,
         ),
         OutputArgument(
-            name="TargetNodeName",
+            name="target_node_name",
             description="name of target of simulation.",
             prefix="SafeBreach.Simulation",
             output_type=str,
         ),
         OutputArgument(
-            name="DestNodeName",
+            name="dest_node_name",
             description="name of destination of simulation.",
             prefix="SafeBreach.Simulation",
             output_type=str,
         ),
-        OutputArgument(name="AttackName", description="name of attack", prefix="SafeBreach.Simulation", output_type=str),
+        OutputArgument(name="attack_name", description="name of attack", prefix="SafeBreach.Simulation", output_type=str),
         OutputArgument(
-            name="AttacksInvolved",
+            name="attacks_involved",
             description="attack types involved in of simulation.",
             prefix="SafeBreach.Simulation",
             output_type=str,
         ),
         OutputArgument(
-            name="ResultDetails", description="result of simulation.", prefix="SafeBreach.Simulation", output_type=str
+            name="result_details", description="result of simulation.", prefix="SafeBreach.Simulation", output_type=str
         ),
         OutputArgument(
-            name="SecurityAction",
+            name="security_action",
             description="security status as per the simulation.",
             prefix="SafeBreach.Simulation",
             output_type=str,
         ),
         OutputArgument(
-            name="AttackDescription", description="attack details.", prefix="SafeBreach.Simulation", output_type=str
+            name="attack_description", description="attack details.", prefix="SafeBreach.Simulation", output_type=str
         ),
     ],
-    description="This command is used to get simulations and their data related to a given test, this can be used as predecessor"
-    + " command to rerun-simulations command for easier queueing of simulations. This command does not have any limiters with "
-    + "pagination implemented so there might be huge data retrieved.",
+    description="This command facilitates the retrieval of simulations and their associated data for a specified test. It can be used as a precursor command for the rerun-simulations command, streamlining the process of queuing simulations. It's important to note that this command currently lacks pagination limiters, potentially resulting in the retrieval of a large volume of data.",
 )
 def get_simulations(client: Client):
     """
@@ -4349,12 +4378,12 @@ def get_simulations(client: Client):
 @metadata_collector.command(
     command_name="safebreach-get-verification-token",
     inputs_list=None,
-    outputs_prefix="SafeBreach.VerificationToken",
+    outputs_prefix="SafeBreach.Token",
     outputs_list=[
         OutputArgument(
-            name="Token",
+            name="token",
             description="the value of new verification token.",
-            prefix="SafeBreach.VerificationToken",
+            prefix="SafeBreach.Token",
             output_type=str,
         ),
     ],
@@ -4368,7 +4397,7 @@ def get_verification_token(client):
     else:
         human_readable = f"No verification token found: {token_data}"
     outputs = token_data
-    result = CommandResults(outputs_prefix="SafeBreach.VerificationToken", outputs=outputs, readable_output=human_readable)
+    result = CommandResults(outputs_prefix="SafeBreach.Token", outputs=outputs, readable_output=human_readable)
 
     return result
 
@@ -4406,57 +4435,57 @@ def tests_scenarios_transformer(header):
     ],
     outputs_prefix="SafeBreach.Test",
     outputs_list=[
-        OutputArgument(name="Id", description="the Id of test.", prefix="SafeBreach.Test", output_type=str),
-        OutputArgument(name="Name", description="the name of the test.", prefix="SafeBreach.Test", output_type=str),
+        OutputArgument(name="id", description="the Id of test.", prefix="SafeBreach.Test", output_type=str),
+        OutputArgument(name="name", description="the name of the test.", prefix="SafeBreach.Test", output_type=str),
         OutputArgument(
-            name="Description", description="the description of the test.", prefix="SafeBreach.Test", output_type=str
+            name="description", description="the description of the test.", prefix="SafeBreach.Test", output_type=str
         ),
         OutputArgument(
-            name="SuccessCriteria", description="success criteria the test.", prefix="SafeBreach.Test", output_type=str
+            name="success_criteria", description="success criteria the test.", prefix="SafeBreach.Test", output_type=str
         ),
         OutputArgument(
-            name="OriginalScenarioId",
+            name="original_scenario_id",
             description="original scenario id of test.",
             prefix="SafeBreach.Test",
             output_type=str,
         ),
         OutputArgument(
-            name="ActionsList", description="actions list of the test.", prefix="SafeBreach.Test", output_type=str
+            name="actions_list", description="actions list of the test.", prefix="SafeBreach.Test", output_type=str
         ),
         OutputArgument(
-            name="EdgesCount", description="edges_count for the test.", prefix="SafeBreach.Test", output_type=str
+            name="edges_count", description="edges_count for the test.", prefix="SafeBreach.Test", output_type=str
         ),
         OutputArgument(
-            name="StepsOrder", description="the order of steps of the test.", prefix="SafeBreach.Test", output_type=str
+            name="steps_order", description="the order of steps of the test.", prefix="SafeBreach.Test", output_type=str
         ),
         OutputArgument(
-            name="CreatedAt", description="the creation datetime of the test.", prefix="SafeBreach.Test", output_type=str
+            name="created_at", description="the creation datetime of the test.", prefix="SafeBreach.Test", output_type=str
         ),
         OutputArgument(
-            name="UpdatedAt", description="the last updated time the test.", prefix="SafeBreach.Test", output_type=str
+            name="updated_at", description="the last updated time the test.", prefix="SafeBreach.Test", output_type=str
         ),
         OutputArgument(
-            name="ScenarioId", description="the test id of the test.", prefix="SafeBreach.Test", output_type=str
+            name="scenario_id", description="the test id of the test.", prefix="SafeBreach.Test", output_type=str
         ),
         OutputArgument(
-            name="RanBy",
+            name="ran_by",
             description="the user id of the user who ran the test.",
             prefix="SafeBreach.Test",
             output_type=str,
         ),
         OutputArgument(
-            name="RanFrom", description="where the user ran the test from.", prefix="SafeBreach.Test", output_type=str
+            name="ran_from", description="where the user ran the test from.", prefix="SafeBreach.Test", output_type=str
         ),
         OutputArgument(
-            name="EnableFeedbackLoop",
+            name="enable_feedback_loop",
             description="feedback loop status of the test.",
             prefix="SafeBreach.Test",
             output_type=str,
         ),
-        OutputArgument(name="TestId", description="test_id of the test.", prefix="SafeBreach.Test", output_type=str),
-        OutputArgument(name="Priority", description="priority of the test.", prefix="SafeBreach.Test", output_type=str),
+        OutputArgument(name="test_id", description="test_id of the test.", prefix="SafeBreach.Test", output_type=str),
+        OutputArgument(name="priority", description="priority of the test.", prefix="SafeBreach.Test", output_type=str),
         OutputArgument(
-            name="RetrySimulations", description="retry status of the test.", prefix="SafeBreach.Test", output_type=str
+            name="retry_simulations", description="retry status of the test.", prefix="SafeBreach.Test", output_type=str
         ),
     ],
     description="This command puts given test data in queue for execution.",
@@ -4510,48 +4539,48 @@ def rerun_test(client):
     ],
     outputs_prefix="SafeBreach.Simulation",
     outputs_list=[
-        OutputArgument(name="Id", description="the Id of simulation.", prefix="SafeBreach.Simulation", output_type=str),
+        OutputArgument(name="id", description="the Id of simulation.", prefix="SafeBreach.Simulation", output_type=str),
         OutputArgument(
-            name="Name", description="the name of the simulation.", prefix="SafeBreach.Simulation", output_type=str
+            name="name", description="the name of the simulation.", prefix="SafeBreach.Simulation", output_type=str
         ),
         OutputArgument(
-            name="Description",
+            name="description",
             description="the description of the simulation.",
             prefix="SafeBreach.Simulation",
             output_type=str,
         ),
         OutputArgument(
-            name="SuccessCriteria",
+            name="success_criteria",
             description="success criteria the simulation.",
             prefix="SafeBreach.Simulation",
             output_type=str,
         ),
         OutputArgument(
-            name="OriginalScenarioId",
+            name="original_scenario_id",
             description="original simulation id of simulation.",
             prefix="SafeBreach.Simulation",
             output_type=str,
         ),
         OutputArgument(
-            name="ActionsList",
+            name="actions_list",
             description="actions list of the simulation.",
             prefix="SafeBreach.Simulation",
             output_type=str,
         ),
         OutputArgument(
-            name="StepsOrder",
+            name="steps_order",
             description="the order of steps of the simulation.",
             prefix="SafeBreach.Simulation",
             output_type=str,
         ),
         OutputArgument(
-            name="Createdat",
+            name="createdAt",
             description="the creation datetime of the simulation.",
             prefix="SafeBreach.Simulation",
             output_type=str,
         ),
         OutputArgument(
-            name="Updatedat",
+            name="updatedAt",
             description="the last updated time the simulation.",
             prefix="SafeBreach.Simulation",
             output_type=str,
@@ -4624,10 +4653,10 @@ def rerun_simulation(client):
     outputs_prefix="SafeBreach.Indicator",
     outputs_list=[
         OutputArgument(
-            name="Value", description="The value of the indicator", prefix="SafeBreach.Indicator", output_type=str
+            name="value", description="The value of the indicator", prefix="SafeBreach.Indicator", output_type=str
         ),
         OutputArgument(
-            name="Type", description="The type of the indicator", prefix="SafeBreach.Indicator", output_type=str
+            name="type", description="The type of the indicator", prefix="SafeBreach.Indicator", output_type=str
         ),
         OutputArgument(
             name="rawJSON.dataType",
@@ -4684,7 +4713,7 @@ def rerun_simulation(client):
             name="fields.tags", description="The tags of the indicator", prefix="SafeBreach.Indicator", output_type=str
         ),
         OutputArgument(
-            name="Score", description="The score of the indicator", prefix="SafeBreach.Indicator", output_type=int
+            name="score", description="The score of the indicator", prefix="SafeBreach.Indicator", output_type=int
         ),
     ],
     description="This command fetches SafeBreach Insights from which indicators are extracted, "
@@ -4708,24 +4737,24 @@ def get_indicators_command(client):
     command_name="safebreach-get-simulators-versions-list",
     outputs_prefix="SafeBreach.Simulator",
     outputs_list=[
-        OutputArgument(name="Id", description="Simulator Id", prefix="SafeBreach.Simulator", output_type=str),
+        OutputArgument(name="id", description="Simulator Id", prefix="SafeBreach.Simulator", output_type=str),
         OutputArgument(
-            name="Lastupdatedate",
+            name="lastUpdateDate",
             description="Simulator last updated data",
             prefix="SafeBreach.Simulator",
             output_type=str,
         ),
         OutputArgument(
-            name="Lastupdatestatus",
+            name="lastUpdateStatus",
             description="Simulator last updated status",
             prefix="SafeBreach.Simulator",
             output_type=str,
         ),
         OutputArgument(
-            name="Currentstatus", description="Simulator current status", prefix="SafeBreach.Simulator", output_type=str
+            name="currentStatus", description="Simulator current status", prefix="SafeBreach.Simulator", output_type=str
         ),
         OutputArgument(
-            name="Availableversions",
+            name="availableVersions",
             description="Simulator available versions",
             prefix="SafeBreach.Simulator",
             output_type=list,
@@ -4758,11 +4787,11 @@ def get_simulators_versions_list(client):
             + " command and that 'latest' can be used. The default is the latest.",
         ),
     ],
-    outputs_prefix="SafeBreach.UpdatedSimulator",
+    outputs_prefix="SafeBreach.Simulator",
     outputs_list=[
-        OutputArgument(name="Nodeid", description="Simulator ID", prefix="SafeBreach.UpdatedSimulator", output_type=str),
+        OutputArgument(name="nodeId", description="Simulator ID", prefix="SafeBreach.Simulator", output_type=str),
         OutputArgument(
-            name="Status", description="Simulator status", prefix="SafeBreach.UpdatedSimulator", output_type=str
+            name="status", description="Simulator status", prefix="SafeBreach.Simulator", output_type=str
         ),
     ],
     description="This command updates the simulator using the Simulator ID and available version.",
@@ -4776,60 +4805,60 @@ def update_simulator_with_id(client):
         hr = tableToMarkdown("Updated Simulator:", entry_result)
     else:
         hr = f"Unable to update simulator with ID: {outputs}"
-    result = CommandResults(outputs_prefix="SafeBreach.UpdatedSimulator", outputs=outputs, readable_output=hr)
+    result = CommandResults(outputs_prefix="SafeBreach.Simulator", outputs=outputs, readable_output=hr)
     return result
 
 
 @metadata_collector.command(
     command_name="safebreach-get-simulator-download-links",
-    outputs_prefix="SafeBreach.InstallationLinks",
+    outputs_prefix="SafeBreach.Installation",
     outputs_list=[
         OutputArgument(
             name="md5",
             description="The MD5 generated from the contents of the file",
-            prefix="SafeBreach.InstallationLinks",
+            prefix="SafeBreach.Installation",
             output_type=str,
         ),
         OutputArgument(
-            name="Os",
+            name="os",
             description="The operating system for which the update is intended",
-            prefix="SafeBreach.InstallationLinks",
+            prefix="SafeBreach.Installation",
             output_type=str,
         ),
         OutputArgument(
             name="sha1",
             description="The sha1 generated from the contents of the file.",
-            prefix="SafeBreach.InstallationLinks",
+            prefix="SafeBreach.Installation",
             output_type=str,
         ),
         OutputArgument(
             name="sha256",
             description="The sha256 generated from the contents of the file.",
-            prefix="SafeBreach.InstallationLinks",
+            prefix="SafeBreach.Installation",
             output_type=str,
         ),
         OutputArgument(
             name="sha512",
             description="The sha512 generated from the contents of the file.",
-            prefix="SafeBreach.InstallationLinks",
+            prefix="SafeBreach.Installation",
             output_type=str,
         ),
         OutputArgument(
             name="sha512",
             description="The sha512 generated from the contents of the file.",
-            prefix="SafeBreach.InstallationLinks",
+            prefix="SafeBreach.Installation",
             output_type=str,
         ),
         OutputArgument(
-            name="Url",
+            name="url",
             description="The URL from which update can be downloaded.",
-            prefix="SafeBreach.InstallationLinks",
+            prefix="SafeBreach.Installation",
             output_type=str,
         ),
         OutputArgument(
-            name="Version",
+            name="version",
             description="This indicates the simulator version.",
-            prefix="SafeBreach.InstallationLinks",
+            prefix="SafeBreach.Installation",
             output_type=str,
         ),
     ],
@@ -4844,7 +4873,7 @@ def get_installation_links(client):
         hr = tableToMarkdown("Installation Links:", entry_result)
     else:
         hr = f"No installation links found: {outputs}"
-    result = CommandResults(outputs_prefix="SafeBreach.InstallationLinks", outputs=outputs, readable_output=hr)
+    result = CommandResults(outputs_prefix="SafeBreach.Installation", outputs=outputs, readable_output=hr)
     return result
 
 
