@@ -8783,7 +8783,6 @@ if 'requests' in sys.modules:
         :return: No data returned
         :rtype: ``None``
         """
-
         REQUESTS_TIMEOUT = 60
 
         def __init__(
@@ -11506,7 +11505,8 @@ def split_data_to_chunks(data, target_chunk_size):
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True):
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
+                         add_proxy_to_request=False):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -11549,7 +11549,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         num_of_attempts,
         chunk_size,
         data_type="events",
-        should_update_health_module=should_update_health_module
+        should_update_health_module=should_update_health_module,
+        add_proxy_to_request=add_proxy_to_request
     )
 
 
@@ -11660,7 +11661,8 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True):
+                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
+                       add_proxy_to_request: bool=False):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -11778,7 +11780,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
 
-    client = BaseClient(base_url=xsiam_url)
+    client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
     for data_chunk in data_chunks:
         data_size += len(data_chunk)

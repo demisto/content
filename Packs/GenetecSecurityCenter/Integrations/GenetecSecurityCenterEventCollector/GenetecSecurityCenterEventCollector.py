@@ -180,12 +180,12 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
         if should_push_events:
-            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT, add_proxy_to_request=True)
             demisto.info(f"{len(events)} events were pushed to XSIAM")
 
         if should_save_last_run:
             demisto.setLastRun(last_run)
-            demisto.info(f"set last run time: {last_run['start_time']}")
+            demisto.info(f"set last run time: {last_run.get('start_time')}")
 
     except Exception as e:
         return_error(
