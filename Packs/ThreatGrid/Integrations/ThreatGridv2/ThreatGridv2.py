@@ -69,8 +69,9 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, api_token: str, proxy: bool,
                  verify: bool):
+        self.api_key = api_token
         headers = {
-            "Authorization": f"bearer {api_token}",
+            "Authorization": f"bearer {self.api_key}",
         }
         super().__init__(
             base_url=base_url,
@@ -226,6 +227,18 @@ class Client(BaseClient):
             'vm': vm,
             'playbook': playbook
         })
+
+        # When the sample is a file, send the api_key via the data request
+        if files:
+            demisto.debug(
+                "the sample id is a file, added the api_key to data request"
+            )
+            if self._headers:
+               self._headers.pop("Authorization")
+            payload = {
+                "api_key": self.api_key
+            }
+
         return self._http_request("POST",
                                   urljoin(API_V2_PREFIX, "samples"),
                                   files=files,
@@ -1534,9 +1547,8 @@ def parse_file_to_sample(file_id: str) -> dict[str, Any]:
         Dict[str, Any]: Dict with file data.
     """
     file_data = demisto.getFilePath(file_id)
-    file_name = file_data["name"]
     with open(file_data["path"], "rb") as f:
-        file = {"sample": (file_name, f.read())}
+        file = {"sample": f.read()}
     return file
 
 
