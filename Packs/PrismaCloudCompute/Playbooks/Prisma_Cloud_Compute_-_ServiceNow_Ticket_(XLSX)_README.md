@@ -34,7 +34,7 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | TicketID | Existing ticket ID. Used to determine whether to create a new ticket or update an existing one. |  | Optional |
-| Filter | A filter to use for filtering relevant compliance issues. |  | Optional |
+| Filter | A filter to use for extracting affected resources with a specific compliance issue id. |  | Optional |
 | ComplianceIssueID | The compliance issue id to open a ServiceNow ticket for. |  | Optional |
 | ComplianceIssueDescription | The compliance issue description. |  | Optional |
 | ComplianceIssueSeverity | The compliance issue severity. |  | Optional |

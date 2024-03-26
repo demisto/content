@@ -1173,7 +1173,7 @@ inputs:
 - key: Filter
   value: {}
   required: false
-  description: A filter to use for filtering relevant compliance issues.
+  description: A filter to use for extracting affected resources with a specific compliance issue id.
   playbookInputQuery:
 - key: ComplianceIssueID
   value: {}
