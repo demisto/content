@@ -19,7 +19,6 @@ from tempfile import NamedTemporaryFile
 
 
 app = FastAPI()
-#test="test"
 
 basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name='Authorization')
