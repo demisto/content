@@ -112,7 +112,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-defaultmapperin: Hurukai alert mapper
+defaultmapperin: Hurukai - Incoming mapper
 defaultmapperout: Hurukai - Outgoing mapper
 defaultclassifier: Hurukai classifier
 description: |-

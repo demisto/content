@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "Hurukai alert mapper",
+    "id": "Hurukai - Incoming mapper",
     "mapping": {
         "Hurukai alert": {
             "dontMapEventToLabels": false,
@@ -244,7 +244,7 @@
             }
         }
     },
-    "name": "Hurukai alert mapper",
+    "name": "Hurukai - Incoming mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.2.0"
