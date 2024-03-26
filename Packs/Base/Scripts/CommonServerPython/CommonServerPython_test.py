@@ -7983,7 +7983,8 @@ class TestFetchWithLookBack:
         fetch_limit = last_run.get('limit') or fetch_limit_param
 
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
-                                                                    look_back=look_back, timezone=time_zone, date_format=date_format)
+                                                                    look_back=look_back, timezone=time_zone,
+                                                                    date_format=date_format)
 
         query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
         incidents_res = self.get_incidents_request(query, date_format)
@@ -8033,14 +8034,17 @@ class TestFetchWithLookBack:
         ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
          [INCIDENTS_TIME_AWARE[4]], {'limit': 2, 'time': INCIDENTS_TIME_AWARE[3]['created'],
                                      'found_incident_ids': {3: 1667482800, 4: 1667482800}}),
-        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]], [],
-         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created'], 'found_incident_ids': {3: 1667482800, 4: 1667482800, 5: 1667482800}}),
+        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]],
+         [],
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created'],
+          'found_incident_ids': {3: 1667482800, 4: 1667482800, 5: 1667482800}}),
         ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
                                                                                                       INCIDENTS_TIME_AWARE[4]],
          {'limit': 2, 'time': INCIDENTS_TIME_AWARE[2]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800}}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
          [INCIDENTS_TIME_AWARE[4]],
-         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800, 4: 1667482800}}),
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created'],
+          'found_incident_ids': {2: 1667482800, 3: 1667482800, 4: 1667482800}}),
     ])
     @freeze_time("2022-11-03 13:40:00 UTC")
     def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
@@ -8964,8 +8968,8 @@ class TestSendEventsToXSIAMTest:
         expected_error_header = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
 
         with pytest.raises(
-                DemistoException,
-                match=re.escape(expected_error_header + expected_error_msg),
+            DemistoException,
+            match=re.escape(expected_error_header + expected_error_msg),
         ):
             send_data_to_xsiam(data=events, vendor='some vendor', product='some product', data_type=data_type)
 
@@ -9416,6 +9420,7 @@ class TestIsIntegrationCommandExecution:
     def test_with_integration_exec(self, mocker):
         mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'some-integration'}]}})
         assert is_integration_command_execution() == True
+
     data_test_problematic_cases = [
         None, 1, [], {}, {'context': {}}, {'context': {'ExecutedCommands': None}},
         {'context': {'ExecutedCommands': []}}, {'context': {'ExecutedCommands': [None]}},
@@ -9467,8 +9472,12 @@ def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_
     ("3:Wg8oEIjOH9+KS3qvRBTdRi690oVqzBUGyT0/n:Vx0HgKnTdE6eoVafY8", "ssdeep"),
     ("1ff8be1766d9e16b0b651f89001e8e7375c9e71f", "sha1"),
     ("6c5360d41bd2b14b1565f5b18e5c203cf512e493", "sha1"),
-    ("eaf7542ade2c338d8d2cc76fcbf883e62c31336e60cb236f86ed66c8154ea9fb836fd88367880911529bdafed0e76cd34272123a4d656db61b120b95eaa3e069", "sha512"),
-    ("a7c19471fb4f2b752024246c28a37127ea7475148c04ace743392334d0ecc4762baf30b892d6a24b335e1065b254166f905fc46cc3ba5dba89e757bb7023a211", "sha512"),
+    (
+        "eaf7542ade2c338d8d2cc76fcbf883e62c31336e60cb236f86ed66c8154ea9fb836fd88367880911529bdafed0e76cd34272123a4d656db61b120b95eaa3e069",
+        "sha512"),
+    (
+        "a7c19471fb4f2b752024246c28a37127ea7475148c04ace743392334d0ecc4762baf30b892d6a24b335e1065b254166f905fc46cc3ba5dba89e757bb7023a211",
+        "sha512"),
     ("@", None)
 ])
 def test_detect_file_indicator_type(indicator, expected_result):
@@ -9628,3 +9637,65 @@ def test_logger_write__censor_request_logs_has_been_called(mocker, request_log):
     ilog.set_buffering(False)
     ilog.write(request_log)
     assert mock_censor.call_count == 1
+
+
+@pytest.fixture
+def managed_sleep(mocker):
+    """Fixture to create a ManagedSleep object with mocked run_duration"""
+    mocker.patch.object(demisto, 'getRunDuration', return_value=100)
+    mocker.patch('time.time', return_value=1711453263.0)
+    yield CommonServerPython.ManagedSleep()
+
+
+def test_init(managed_sleep):
+    """
+    Given: A `ManagedSleep` object is created.
+
+    When:The object is initialized.
+
+    Then:
+    - The `run_duration` attribute should be set to the value returned by the mocked `demisto.getRunDuration`.
+    - The `start_time` attribute should be a float representing the current time.
+  """
+    assert managed_sleep.run_duration == 100
+    assert isinstance(managed_sleep.start_time, float)
+
+
+def test_sleep_exceeds_ttl(mocker, managed_sleep):
+    """
+   Given:  A `ManagedSleep` object and a sleep duration exceeding the remaining TTL.
+
+    When: The `sleep` method is called with that duration.
+
+   Then:
+    - A `ValueError` should be raised indicating that the requested sleep exceeds the TTL.
+  """
+    mocker.patch('time.time', return_value=managed_sleep.start_time + 10)
+    with pytest.raises(ValueError) as excinfo:
+        managed_sleep.sleep(duration_seconds=150)
+    assert str(excinfo.value) == "Requested sleep of 150 seconds exceeds TTL of 100 seconds"
+
+
+def test_sleep_mocked_time(mocker, managed_sleep):
+    """
+    Given:  A `ManagedSleep` object.
+
+   When:  The `sleep` method is called with a specific duration.
+
+   Then:
+    - The sleep duration should be based on the difference between the mocked time calls.
+    - No exception should be raised if the sleep duration is within the remaining TTL based on mocked time.
+    """
+
+    mocker.patch('time.time', return_value=managed_sleep.start_time + 10)
+    sleep_mocker = mocker.patch('time.sleep')
+
+    # Simulate start time
+    managed_sleep.sleep(duration_seconds=5)  # Sleep for 5 seconds
+
+    # Advance mocked time by the sleep duration
+    mocker.patch('time.time', return_value=managed_sleep.start_time + 15)
+    managed_sleep.sleep(duration_seconds=50)
+
+    # Verify sleep duration based on mocked time difference
+    assert sleep_mocker.call_count == 2

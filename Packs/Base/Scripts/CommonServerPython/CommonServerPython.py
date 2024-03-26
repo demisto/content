@@ -11922,7 +11922,7 @@ class ManagedSleep:
         """
         time_left = self.run_duration - (time.time() - self.start_time)
         if duration_seconds > time_left:
-            raise ValueError(f"Requested sleep of {duration_seconds} seconds exceeds TTL of {self.run_duration} seconds")
+            raise ValueError(f"Requested sleep of {duration_seconds} seconds exceeds TTL of {self.run_duration} seconds.")
         time.sleep(duration_seconds)
 
 
