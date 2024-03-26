@@ -4,30 +4,20 @@ import time
 
 import dateparser
 import pytest
-from NetskopeEventCollector import (
-    ALL_SUPPORTED_EVENT_TYPES,
-    RATE_LIMIT_REMAINING,
-    RATE_LIMIT_RESET,
-    Client,
-)
+from NetskopeEventCollector import ALL_SUPPORTED_EVENT_TYPES, RATE_LIMIT_REMAINING, RATE_LIMIT_RESET, Client
 
 
 def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-MOCK_ENTRY = util_load_json("test_data/mock_events_entry.json")
-EVENTS_RAW = util_load_json("test_data/events_raw.json")
-EVENTS_PAGE_RAW = util_load_json("test_data/multiple_events_raw.json")
-BASE_URL = "https://netskope.example.com"
-FIRST_LAST_RUN = {
-    "alert": {"operation": 1680182467},
-    "application": {"operation": 1680182467},
-    "audit": {"operation": 1680182467},
-    "network": {"operation": 1680182467},
-    "page": {"operation": 1680182467},
-}
+MOCK_ENTRY = util_load_json('test_data/mock_events_entry.json')
+EVENTS_RAW = util_load_json('test_data/events_raw.json')
+EVENTS_PAGE_RAW = util_load_json('test_data/multiple_events_raw.json')
+BASE_URL = 'https://netskope.example.com'
+FIRST_LAST_RUN = {'alert': {'operation': 1680182467}, 'application': {'operation': 1680182467},
+                  'audit': {'operation': 1680182467}, 'network': {'operation': 1680182467}, 'page': {'operation': 1680182467}}
 
 
 def test_test_module(mocker):
@@ -40,17 +30,10 @@ def test_test_module(mocker):
         - Verify that 'ok' is returned.
     """
     from NetskopeEventCollector import test_module
-
-    client = Client(
-        BASE_URL,
-        "dummy_token",
-        False,
-        False,
-        event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES,
-    )
-    mocker.patch.object(client, "perform_data_export", return_value=EVENTS_RAW)
+    client = Client(BASE_URL, 'dummy_token', False, False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
+    mocker.patch.object(client, 'perform_data_export', return_value=EVENTS_RAW)
     results = test_module(client, last_run=FIRST_LAST_RUN, max_fetch=1)
-    assert results == "ok"
+    assert results == 'ok'
 
 
 def test_populate_prepare_events():
@@ -63,12 +46,11 @@ def test_populate_prepare_events():
         - Make sure the _time, evnet_id, and source_log_event fields are populated properly.
     """
     from NetskopeEventCollector import prepare_events
-
-    event = EVENTS_RAW.get("result")[0]
-    prepare_events([event], event_type="audit")
-    assert event.get("_time") == "2022-01-18T19:58:07.000Z"
-    assert event.get("source_log_event") == "audit"
-    assert event.get("event_id") == "f0e9b2cadd17402b59b3938b"
+    event = EVENTS_RAW.get('result')[0]
+    prepare_events([event], event_type='audit')
+    assert event.get('_time') == '2022-01-18T19:58:07.000Z'
+    assert event.get('source_log_event') == 'audit'
+    assert event.get('event_id') == 'f0e9b2cadd17402b59b3938b'
 
 
 def test_get_all_events(requests_mock):
@@ -84,30 +66,19 @@ def test_get_all_events(requests_mock):
     """
 
     def json_callback(request, _):
-        endpoint = request.path.split("/")[-1]
+        endpoint = request.path.split('/')[-1]
         return EVENTS_PAGE_RAW[endpoint]
 
     from NetskopeEventCollector import get_all_events
-
-    client = Client(
-        BASE_URL,
-        "netskope_token",
-        validate_certificate=False,
-        proxy=False,
-        event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES,
-    )
-    url_matcher = re.compile(
-        "https://netskope[.]example[.]com/events/dataexport/events"
-    )
+    client = Client(BASE_URL, 'netskope_token', validate_certificate=False,
+                    proxy=False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
+    url_matcher = re.compile('https://netskope[.]example[.]com/events/dataexport/events')
     requests_mock.get(url_matcher, json=json_callback)
     events, new_last_run = get_all_events(client, FIRST_LAST_RUN)
     assert len(events) == 25
-    assert events[0].get("event_id") == "1"
-    assert events[0].get("_time") == "2023-05-22T10:30:16.000Z"
-    assert all(
-        new_last_run[event_type]["operation"] == "next"
-        for event_type in ALL_SUPPORTED_EVENT_TYPES
-    )
+    assert events[0].get('event_id') == '1'
+    assert events[0].get('_time') == '2023-05-22T10:30:16.000Z'
+    assert all(new_last_run[event_type]['operation'] == 'next' for event_type in ALL_SUPPORTED_EVENT_TYPES)
 
 
 def test_get_events_command(mocker):
@@ -122,32 +93,22 @@ def test_get_events_command(mocker):
         - Make sure the outputs are set correctly.
     """
     from NetskopeEventCollector import get_events_command
-
-    client = Client(
-        BASE_URL,
-        "dummy_token",
-        False,
-        False,
-        event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES,
-    )
-    mocker.patch("NetskopeEventCollector.get_all_events", return_value=[MOCK_ENTRY, {}])
+    client = Client(BASE_URL, 'dummy_token', False, False, event_types_to_fetch=ALL_SUPPORTED_EVENT_TYPES)
+    mocker.patch('NetskopeEventCollector.get_all_events', return_value=[MOCK_ENTRY, {}])
     mocker.patch.object(time, "sleep")
     results, events = get_events_command(client, args={}, last_run=FIRST_LAST_RUN)
-    assert "Events List" in results.readable_output
+    assert 'Events List' in results.readable_output
     assert len(events) == 9
-    assert results.outputs_prefix == "Netskope.Event"
+    assert results.outputs_prefix == 'Netskope.Event'
     assert results.outputs == MOCK_ENTRY
 
 
-@pytest.mark.parametrize(
-    "headers, endpoint, expected_sleep",
-    [
-        ({RATE_LIMIT_REMAINING: 1}, "test_endpoint", None),
-        ({}, "test_endpoint", None),
-        ({RATE_LIMIT_REMAINING: 0, RATE_LIMIT_RESET: 2}, "test_endpoint", 2),
-        ({RATE_LIMIT_REMAINING: 0}, "test_endpoint", 1),
-    ],
-)
+@pytest.mark.parametrize('headers, endpoint, expected_sleep', [
+    ({RATE_LIMIT_REMAINING: 1}, 'test_endpoint', None),
+    ({}, 'test_endpoint', None),
+    ({RATE_LIMIT_REMAINING: 0, RATE_LIMIT_RESET: 2}, 'test_endpoint', 2),
+    ({RATE_LIMIT_REMAINING: 0}, 'test_endpoint', 1),
+])
 def test_honor_rate_limiting(mocker, headers, endpoint, expected_sleep):
     """
     Given:
@@ -167,7 +128,6 @@ def test_honor_rate_limiting(mocker, headers, endpoint, expected_sleep):
     """
     time_mock = mocker.patch.object(time, "sleep")
     from NetskopeEventCollector import honor_rate_limiting
-
     honor_rate_limiting(headers=headers, endpoint=endpoint)
     if expected_sleep:
         time_mock.assert_called_once_with(expected_sleep)
@@ -175,22 +135,14 @@ def test_honor_rate_limiting(mocker, headers, endpoint, expected_sleep):
         time_mock.assert_not_called()
 
 
-@pytest.mark.parametrize(
-    "last_run_dict, expected_operation_value",
-    [
-        ({}, 1672567200),
-        (
-            {
-                "application": {"operation": "next"},
-                "alert": {"operation": "next"},
-                "page": {"operation": "next"},
-                "audit": {"operation": "next"},
-                "network": {"operation": "next"},
-            },
-            "next",
-        ),
-    ],
-)
+@pytest.mark.parametrize('last_run_dict, expected_operation_value', [
+    ({}, 1672567200),
+    ({'application': {'operation': 'next'},
+      'alert': {'operation': 'next'},
+      'page': {'operation': 'next'},
+      'audit': {'operation': 'next'},
+      'network': {'operation': 'next'}}, 'next'),
+])
 def test_setup_last_run(mocker, last_run_dict, expected_operation_value):
     """
     Given:
@@ -206,28 +158,19 @@ def test_setup_last_run(mocker, last_run_dict, expected_operation_value):
 
     """
     from NetskopeEventCollector import setup_last_run
-
-    first_fetch = dateparser.parse("2023-01-01T10:00:00Z")
+    first_fetch = dateparser.parse('2023-01-01T10:00:00Z')
     mocker.patch.object(dateparser, "parse", return_value=first_fetch)
     last_run = setup_last_run(last_run_dict, ALL_SUPPORTED_EVENT_TYPES)
-    assert all(
-        val.get("operation") == expected_operation_value
-        for key, val in last_run.items()
-    )
+    assert all(val.get('operation') == expected_operation_value for key, val in last_run.items())
 
 
-@pytest.mark.parametrize(
-    "event_types_to_fetch_param, expected_value",
-    [
-        ("Application", ["application"]),
-        ("Alert, Page, Audit", ["alert", "page", "audit"]),
-        (["Application", "Audit", "Network"], ["application", "audit", "network"]),
-        (None, ALL_SUPPORTED_EVENT_TYPES),
-    ],
-)
-def test_event_types_to_fetch_parameter_handling(
-    event_types_to_fetch_param, expected_value
-):
+@pytest.mark.parametrize('event_types_to_fetch_param, expected_value', [
+    ('Application', ['application']),
+    ('Alert, Page, Audit', ['alert', 'page', 'audit']),
+    (['Application', 'Audit', 'Network'], ['application', 'audit', 'network']),
+    (None, ALL_SUPPORTED_EVENT_TYPES),
+])
+def test_event_types_to_fetch_parameter_handling(event_types_to_fetch_param, expected_value):
     """
     Given:
         Case a: event_types_to_fetch parameter has a single value
@@ -245,9 +188,7 @@ def test_event_types_to_fetch_parameter_handling(
 
     """
     from NetskopeEventCollector import handle_event_types_to_fetch
-
     assert handle_event_types_to_fetch(event_types_to_fetch_param) == expected_value
-
 
 def test_fix_last_run():
     from NetskopeEventCollector import remove_unsupported_event_types
