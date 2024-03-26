@@ -18,7 +18,7 @@ alter // pre-modeling extractions
 // trim ending / from url path 
 | alter path = rtrim(coalesce(path, ""), "/")
 
-// construct url according to the: <scheme>://<host><path>?<query>
+// construct url: <scheme>://<host><path>?<query>
 | alter url = concat(scheme, host, path, query )
 
 | alter // XDM Mappings
