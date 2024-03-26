@@ -723,12 +723,22 @@ def test_advanced_hunting_command(mocker):
 
 
 def test_get_list_security_incident_command(mocker):
-    response = load_json('./test_data/incidents_list_response.json')
+    # Case of single incident
+    response = load_json('./test_data/incidents_single_response.json')
     mocker.patch.object(client_mocker, "get_incidents_request", return_value=response)
     args = {'incident_id': 12345, 'limit': 1, 'timeout': 50}
-
     results = get_list_security_incident_command(client_mocker, args)
+    expected_results = load_json('./test_data/incidents_single_results.json')
+    assert results.outputs_prefix == expected_results['outputs_prefix']
+    assert results.outputs_key_field == expected_results['outputs_key_field']
+    assert results.outputs == expected_results['outputs']
+    assert results.readable_output == expected_results['readable_output']
 
+    # Case of list incidents
+    response = load_json('./test_data/incidents_list_response.json')
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value=response)
+    args = {'limit': 2, 'timeout': 50}
+    results = get_list_security_incident_command(client_mocker, args)
     expected_results = load_json('./test_data/incidents_list_results.json')
     assert results.outputs_prefix == expected_results['outputs_prefix']
     assert results.outputs_key_field == expected_results['outputs_key_field']
