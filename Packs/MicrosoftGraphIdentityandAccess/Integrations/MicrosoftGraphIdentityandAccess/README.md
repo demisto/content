@@ -17,6 +17,16 @@ Use the Azure Active Directory Identity And Access integration to manage roles a
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+
+## Required Permissions
+To use this integration, the following permissions are required on the Azure app.  
+- `IdentityRiskEvent.Read.All`
+- `IdentityRiskyUser.ReadWrite.All`
+- `RoleManagement.ReadWrite.Directory`
+- `Policy.ReadWrite.ConditionalAccess`
+- `Policy.Read.All`
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

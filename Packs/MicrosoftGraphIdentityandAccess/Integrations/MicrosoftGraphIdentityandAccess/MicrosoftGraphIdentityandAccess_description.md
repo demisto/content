@@ -29,7 +29,11 @@ Follow these steps for a self-deployed configuration:
 4. Enter your Tenant ID in the ***Tenant ID*** parameter.
 
 ### Required Permissions
-RoleManagement.ReadWrite.Directory - Application
+- `IdentityRiskEvent.Read.All`
+- `IdentityRiskyUser.ReadWrite.All`
+- `RoleManagement.ReadWrite.Directory`
+- `Policy.ReadWrite.ConditionalAccess`
+- `Policy.Read.All`
 
 ### Azure Managed Identities Authentication
 ___
