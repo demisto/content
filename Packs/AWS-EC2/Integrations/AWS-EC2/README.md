@@ -3586,11 +3586,16 @@ Creates a VPC endpoint.
 {
     "AWS": {
         "EC2": {
-            "ServiceName": "test_service_name",
-            "State": "PendingAcceptance",
-            "VpcEndpointId": "test_endpoint_id",
-            "VpcEndpointType": "Interface",
-            "VpcId": "test_id"
+            "Vpcs": {
+                "VpcEndpoint":
+                {
+                    "ServiceName": "test_service_name",
+                    "State": "PendingAcceptance",
+                    "VpcEndpointId": "test_endpoint_id",
+                    "VpcEndpointType": "Interface",
+                    "VpcId": "test_id"
+                }
+            }
         }
     }
 }
