@@ -92,6 +92,28 @@ class Client(BaseClient):
             new_offset = str(from_epoch)
         return events, new_offset
 
+    def get_events_with_offset(
+        self,
+        config_ids: str,
+        offset: str | None = '',
+        limit: str | int | None = None,
+        from_epoch: str | None = ''
+    ) -> tuple[list[dict], str | None]:
+        params = {
+            'offset': offset,
+            'limit': limit,
+            'from': from_epoch,
+        }
+        raw_response: str = self._http_request(
+            method='GET',
+            url_suffix=f'/{config_ids}',
+            params=assign_params(**params),
+            resp_type='text',
+        )
+        events: list[dict] = [json.loads(e) for e in raw_response.split('\n') if e]
+        offset = events.pop().get("offset")
+        return events, offset
+
 
 '''HELPER FUNCIONS'''
 
@@ -375,10 +397,9 @@ def fetch_events_command(
     from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
     while total_events_count < int(fetch_limit):
-        raw_response, offset = client.get_events(config_ids, offset, FETCH_EVENTS_PAGE_SIZE, from_epoch)
-        if not raw_response:
+        events, offset = client.get_events_with_offset(config_ids, offset, FETCH_EVENTS_PAGE_SIZE, from_epoch)
+        if not events:
             break
-        events = events_to_ec(raw_response)
         total_events_count += len(events)
         yield events, offset
 
