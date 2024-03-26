@@ -1701,8 +1701,8 @@ def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
     assert 'pattern_type' in output
 
 
-XSOAR_INDICATORS = util_load_json('test_data/xsoar_SCO_INDICATORS.json').get('iocs', {})
-SCO_INDICATORS = util_load_json('test_data/stix_SCO_INDICATORS.json').get('objects', {})
+XSOAR_INDICATORS = util_load_json('test_data/xsoar_sco_indicators.json').get('iocs', {})
+SCO_INDICATORS = util_load_json('test_data/stix_sco_indicators.json').get('objects', {})
 
 
 @pytest.mark.parametrize('indicator, sco_indicator', [
@@ -1733,7 +1733,7 @@ def test_build_sco_object(indicator, sco_indicator):
 XSOAR_INDICATOR_1 = {'expirationStatus': 'active',
                      'firstSeen': '2023-04-19T17:43:07+03:00',
                      'indicator_type': 'Account',
-                     'LASTSEEN': '2023-04-19T17:43:07+03:00',
+                     'lastSeen': '2023-04-19T17:43:07+03:00',
                      'score': 'Unknown',
                      'timestamp': '2023-04-19T17:43:07+03:00',
                      'value': 'test@test.com'}
