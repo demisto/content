@@ -102,7 +102,7 @@ script:
       required: false
       isArray: false
     - name: logging
-      description: "A json representation of the logging configuration for the cluster. An example: \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': True}]}\"."
+      description: "A json representation of the logging configuration for the cluster. An example: \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': true}]}\"."
       required: false
       isArray: false
     - name: authentication_mode
@@ -527,4 +527,4 @@ script:
   dockerimage: demisto/boto3py3:1.0.0.91028
 fromversion: 6.9.0
 tests:
-- No tests (auto formatted)
+- AWSEKS-Test
