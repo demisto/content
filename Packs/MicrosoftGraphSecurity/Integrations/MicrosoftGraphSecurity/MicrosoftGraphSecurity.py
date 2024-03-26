@@ -1456,7 +1456,7 @@ def test_auth_code_command(client: MsGraphClient, args):
     return CommandResults(readable_output='Authentication was successful.')
 
 
-def advanced_hunting_command(client: MsGraphClient, args: dict) -> list[CommandResults]:
+def advanced_hunting_command(client: MsGraphClient, args: dict) -> list[CommandResults] | CommandResults:
     """
     Sends a query for the advanced hunting tool.
     Args:
@@ -1484,22 +1484,23 @@ def advanced_hunting_command(client: MsGraphClient, args: dict) -> list[CommandR
 
     microsoft_365_defender_context = demisto.params().get("microsoft_365_defender_context")
 
-    command_results = [CommandResults(
+    command_result_ms_graph = CommandResults(
         outputs_prefix='MsGraph.Hunt',
         outputs_key_field='query',
         outputs=context_result,
         readable_output=human_readable_table
-    )]
+    )
 
     if microsoft_365_defender_context:
-        command_results.append(CommandResults(
+        command_result_microsoft_defender = CommandResults(
             outputs_prefix='Microsoft365Defender.Hunt',
             outputs_key_field='query',
             outputs=context_result,
             readable_output="See Results Above"
-        ))
+        )
+        return [command_result_ms_graph, command_result_microsoft_defender]
 
-    return command_results
+    return command_result_ms_graph
 
 
 def get_list_security_incident_command(client: MsGraphClient, args: dict) -> CommandResults:
@@ -1523,8 +1524,9 @@ def get_list_security_incident_command(client: MsGraphClient, args: dict) -> Com
     """
     timeout = arg_to_number(args['timeout'])  # default value is defined
     incident_id = arg_to_number(args.get('incident_id'))
+
     limit = arg_to_number(args['limit'])  # default value is defined
-    top = limit if limit <= MAX_ITEMS_PER_RESPONSE else 0  # type:ignore[operator]
+    top = limit if limit <= MAX_ITEMS_PER_RESPONSE else None  # type:ignore[operator]
     args_for_filter = {
         'status': args.get('status'),
         'assigned_to': args.get('assigned_to'),
@@ -1536,27 +1538,31 @@ def get_list_security_incident_command(client: MsGraphClient, args: dict) -> Com
     url_suffix = set_url_suffix_incident(incident_id=incident_id, top=top,  # type:ignore[arg-type]
                                          args_for_filter=args_for_filter)  # type:ignore[arg-type]
 
-    incidents_respond = client.get_incidents_request(url_suffix, timeout)  # type:ignore[arg-type]
+    incidents_response = client.get_incidents_request(url_suffix, timeout)  # type:ignore[arg-type]
 
     if incident_id:  # Case of single incident
+        if incidents_response.get('@odata.context'):
+            del incidents_response['@odata.context']
+
         name = f'Incident No. {incident_id}:'
-        readable_incident = convert_single_incident_to_readable(incidents_respond)
+        readable_incident = convert_single_incident_to_readable(incidents_response)
         headers = list(readable_incident)
+        outputs = incidents_response
 
     else:           # Case of list incidents
-        incidents_list = incidents_respond.get("value", [])
+        incidents_list: list = incidents_response.get("value", [])
         count_incidents = len(incidents_list)
 
-        nextLink = incidents_respond.get("@odata.nextLink")
+        nextLink = incidents_response.get("@odata.nextLink")
 
         while nextLink and count_incidents < limit:  # type:ignore[operator]
-            url_suffix = "security/" + nextLink.split("/")[-1]
+            url_suffix = f'security/{nextLink.split("/")[-1]}'
             top = limit - count_incidents  # type:ignore[operator]
             if top <= MAX_ITEMS_PER_RESPONSE:
                 url_suffix += f"&$top={top}"
             new_incidents_respond = client.get_incidents_request(url_suffix, timeout)  # type:ignore[arg-type]
 
-            incidents_list += new_incidents_respond["value"]
+            incidents_list.extend(new_incidents_respond.get("value", []))
             count_incidents = len(incidents_list)
 
             nextLink = new_incidents_respond.get("@odata.nextLink")
@@ -1564,14 +1570,12 @@ def get_list_security_incident_command(client: MsGraphClient, args: dict) -> Com
         name = 'Incidents:'
         readable_incident = convert_list_incidents_to_readable(incidents_list)  # type:ignore[assignment]
 
+        outputs = incidents_list  # type:ignore[assignment]
         headers = list(readable_incident[0])
 
-    if incidents_respond.get('@odata.context'):
-        del incidents_respond['@odata.context']
-
     human_readable_table = tableToMarkdown(name=name, t=readable_incident, headers=headers)
-    return CommandResults(outputs_prefix='MsGraph.Incident', outputs_key_field='incident_id',
-                          outputs=incidents_respond, readable_output=human_readable_table)
+    return CommandResults(outputs_prefix='MsGraph.Incident', outputs_key_field='id',
+                          outputs=outputs, readable_output=human_readable_table)
 
 
 def update_incident_command(client: MsGraphClient, args: dict) -> CommandResults:
@@ -1609,7 +1613,7 @@ def update_incident_command(client: MsGraphClient, args: dict) -> CommandResults
     readable_incident = convert_single_incident_to_readable(updated_incident)
     human_readable_table = tableToMarkdown(name=f"Updated incident No. {incident_id}:",
                                            t=readable_incident, headers=list(readable_incident))
-    return CommandResults(outputs_prefix='MsGraph.Incident', outputs_key_field='incident_id',
+    return CommandResults(outputs_prefix='MsGraph.Incident', outputs_key_field='id',
                           outputs=updated_incident, readable_output=human_readable_table)
 
 

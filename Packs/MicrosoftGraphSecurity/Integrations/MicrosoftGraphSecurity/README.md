@@ -27,6 +27,9 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 1. SecurityEvents.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
 2. SecurityEvents.ReadWrite.All - Application (required for updating alerts with the command: `msg-update-alert`)
 3. User.Read.All - Application (Only required if using the deprecated commands: `msg-get-user` and `msg-get-users`)
+4. SecurityIncident.Read.All - Delegated or Application (required for the command `msg-list-security-incident`)
+5. SecurityIncident.ReadWrite.All - Delegated or Application (required for the command `msg-update-security-incident`)
+6. ThreatHunting.Read.All - Delegated or Application (required for the command `msg-advanced-hunting`)
 
 **Alerts v2**:
 

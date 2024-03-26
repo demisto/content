@@ -716,10 +716,10 @@ def test_advanced_hunting_command(mocker):
     results = advanced_hunting_command(client_mocker, args)
 
     expected_results = load_json('./test_data/advanced_hunting_results.json')
-    assert results[0].outputs_prefix == expected_results['outputs_prefix']
-    assert results[0].outputs_key_field == expected_results['outputs_key_field']
-    assert results[0].outputs == expected_results['outputs']
-    assert results[0].readable_output == expected_results['readable_output']
+    assert results.outputs_prefix == expected_results['outputs_prefix']
+    assert results.outputs_key_field == expected_results['outputs_key_field']
+    assert results.outputs == expected_results['outputs']
+    assert results.readable_output == expected_results['readable_output']
 
 
 def test_get_list_security_incident_command(mocker):

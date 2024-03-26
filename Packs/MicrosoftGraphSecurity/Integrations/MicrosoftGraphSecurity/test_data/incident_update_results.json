@@ -1,6 +1,6 @@
 {
     "outputs_prefix": "MsGraph.Incident",
-    "outputs_key_field": "incident_id",
+    "outputs_key_field": "id",
     "readable_output":"### Updated incident No. 12345:\n|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|\n|---|---|---|---|---|---|---|---|---|---|---|\n| DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min) | 12345 | medium | redirected | Cortex XSOAR MS Graph Dev |  |  | truePositive | unknown | 2024-03-13T15:05:19.5066667Z | 2024-03-13T15:22:26.2766667Z |\n",
     "outputs": {
         "id": "12345",

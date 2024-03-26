@@ -1,6 +1,6 @@
 {
     "outputs_prefix": "MsGraph.Incident",
-    "outputs_key_field": "incident_id",
+    "outputs_key_field": "id",
     "outputs": {
         "id": "12345",
         "tenantId": "abc-123",
