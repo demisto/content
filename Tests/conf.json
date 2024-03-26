@@ -5646,6 +5646,10 @@
             "integrations": "AWS-SNS-Listener",
             "playbookID": "AWS SNS Listener - Test",
             "instance_names": "AWS-SNS-Listener"
+        },
+        {
+            "integrations": "Redmine",
+            "playbookID": "Redmine-Test"
         }
     ],
     "skipped_tests": {
@@ -5963,7 +5967,8 @@
         "PhishLabs IOC EIR": "No instance, CRTX-91214",
         "fortimail": "No instance",
         "JoeSecurityV2": "CIAC-9872",
-        "Aha": "No instance"
+        "Aha": "No instance",
+        "MongoDB": "CIAC-10102"
     },
     "nightly_packs": [
         "CommonScripts",
