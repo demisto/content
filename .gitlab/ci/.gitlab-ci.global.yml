@@ -202,7 +202,7 @@
 .get_last_upload_commit: &get_last_upload_commit
   - section_start "Getting last bucket upload commit" --collapsed
   - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-  - gsutil cp "gs://$GCS_PRODUCTION_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json"
+  - gsutil cp "gs://$MARKETPLACE_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json"
   - export LAST_UPLOAD_COMMIT=$(cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json" | jq -r ".\"commit\"")
   - section_end "Getting last bucket upload commit"
 

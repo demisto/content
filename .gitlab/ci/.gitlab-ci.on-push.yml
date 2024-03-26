@@ -167,6 +167,7 @@ validate-content-conf:
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: prepare-testing-bucket
   script:
+    - !reference [.get_last_upload_commit]
     - !reference [.download-demisto-conf]
     - !reference [.create-release-notes-and-common-docs]
     - !reference [.secrets-fetch]
