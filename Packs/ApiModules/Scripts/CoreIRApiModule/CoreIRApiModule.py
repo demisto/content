@@ -187,17 +187,15 @@ class CoreClient(BaseClient):
                 establish a connection to a remote machine before a timeout occurs.
                 can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
         '''
-        demisto.debug('@@@@@@@@ MAI @@@@@@@@')
         try:
             # Replace params if supplied
-            address = full_url if full_url else urljoin(self._base_url, url_suffix)
+            address = url_suffix # full_url if full_url else urljoin(self._base_url, url_suffix)
             headers = headers if headers else self._headers
+            data = json.dumps(json_data) if json_data else data
             res = demisto._apiCall(
-                        name="",
                         method=method,
                         path=address,
                         data=data,
-                        json=json_data,
                         headers=headers,
                         timeout=timeout
                     )
