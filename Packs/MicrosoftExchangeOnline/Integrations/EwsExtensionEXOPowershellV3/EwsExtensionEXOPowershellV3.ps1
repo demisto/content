@@ -1573,7 +1573,7 @@ function ListRulesCommand {
     $mailbox = $kwargs.mailbox
     $limit = ($kwargs.limit -as [int])
     $raw_response = $client.GetRules($mailbox, $limit)
-    $md_columns = $raw_response | Select-Object -Property Identity, Name, Enabled, Priority, "RuleIdentity"
+    $md_columns = $raw_response | Select-Object -Property Identity, Name, Enabled, Priority, RuleIdentity
     $human_readable = TableToMarkdown $md_columns "Results of $command"
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule(obj.RuleIdentity === val.RuleIdentity)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
