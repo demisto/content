@@ -241,18 +241,17 @@ def fetch_incidents(client: Client, first_fetch: str, max_fetch: int, query: str
         created_at_str = f"{datetime.strptime(incident['Time']['Generated'], LOGSIGN_INC_DATE_FORMAT).isoformat()}Z"
         created_at_dt = datetime.strptime(created_at_str, DATE_FORMAT)
 
-        if created_at_dt > latest_created_time:
-            inc = {
-                'name': f"Logsign-{created_at_str}",
-                'occured': created_at_str,
-                'rawJSON': json.dumps(incident)
-            }
+        inc = {
+            'name': f"Logsign-{created_at_str}",
+            'occured': created_at_str,
+            'rawJSON': json.dumps(incident)
+        }
 
-            incidents.append(inc)
-            latest_created_time = created_at_dt
+        incidents.append(inc)
+        latest_created_time = created_at_dt
 
-            if len(incidents) >= max_fetch:
-                break
+        if len(incidents) >= max_fetch:
+            break
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'last_fetch': datetime.strftime(latest_created_time, DATE_FORMAT)}
