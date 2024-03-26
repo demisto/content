@@ -11,7 +11,6 @@ This integration was integrated and tested with cloud version of Rapid7 InsightI
     | --- | --- | --- |
     | Insight cloud server region |  | True |
     | InsightIDR API key |  | False |
-    | InsightIDR API key |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
@@ -45,16 +44,16 @@ List all investigations. Retrieve a list of investigations matching the given re
 | index | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional |
 | page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
-| statuses | A comma-separated list of investigation statuses to include in the result. For example,Open,Closed. Possible values are: open, investigating, closed. | Optional |
-| sources | A comma-separated list of investigation sources to include in the result. For example,User,Alert. Relevant when api_version is V2 only. Possible values are: User, Alert. | Optional |
-| priorities | A comma-separated list of investigation priorities to include in the result. For example,Low,Medium. Relevant when api_version is V2 only. Possible values are: Unspecified, Low, Mediun, High, Critical. | Optional |
-| assignee_email | A user's email address. Only investigations assigned to that user will be included. For example,test@test.com. | Optional |
-| time_range | An optional time range string (i.e 1 week, 1 day). | Optional |
-| start_time | The time an investigation is opened. Only investigations whose created_time is after this date will be returned by the API. Must be an ISO-formatted timestamp. For example,2018-07-01T00:00:00Z. Default is 28 days prior. Relevant when api_version is V2 only. | Optional |
-| end_time | The time an investigation is closed. Only investigations whose created_time is before this date will be returned by the API. Must be an ISO-formatted timestamp. For example,2018-07-28T23:59:00Z. Default is the current time. Relevant when api_version is V2 only. | Optional |
+| statuses | A comma-separated list of investigation statuses to include in the result. For example, Open,Closed. Possible values are: open, investigating, closed. | Optional |
+| sources | A comma-separated list of investigation sources to include in the result. For example, User,Alert. Relevant when api_version is V2 only. Possible values are: User, Alert. | Optional |
+| priorities | A comma-separated list of investigation priorities to include in the result. For example, Low,Medium. Relevant when api_version is V2 only. Possible values are: Unspecified, Low, Medium, High, Critical. | Optional |
+| assignee_email | A user's email address. Only investigations assigned to that user will be included. For example, test@test.com. | Optional |
+| time_range | An optional time range string (i.e., 1 week, 1 day). | Optional |
+| start_time | The time an investigation is opened. Only investigations whose created_time is after this date will be returned by the API. Must be an ISO-formatted timestamp. For example, 2018-07-01T00:00:00Z. Default is 28 days prior. Relevant when api_version is V2 only. | Optional |
+| end_time | The time an investigation is closed. Only investigations whose created_time is before this date will be returned by the API. Must be an ISO-formatted timestamp. For example, 2018-07-28T23:59:00Z. Default is the current time. Relevant when api_version is V2 only. | Optional |
 | sort_field | A field for investigations to be sorted by. Relevant when api_version is V2 only. Possible values are: Created time, Priority, RRN Last Created Alert, Last Detection Alert. Default is Created time. | Optional |
 | sort_direction | The sorting direction. Relevant when api_version is V2 only. Possible values are: ASC, DESC. Default is DESC. | Optional |
-| tags | A comma-separated list of tags to include in the result. Only investigations who have all specified tags will be included. For example,my_teg,test_tag. Relevant when api_version is V2 only. | Optional |
+| tags | A comma-separated list of tags to include in the result. Only investigations who have all specified tags will be included. For example, my_teg,test_tag. Relevant when api_version is V2 only. | Optional |
 
 #### Context Output
 
@@ -73,11 +72,11 @@ List all investigations. Retrieve a list of investigations matching the given re
 | Rapid7InsightIDR.Investigation.source | String | How this investigation was generated. |
 | Rapid7InsightIDR.Investigation.title | String | The name of the investigation. |
 | Rapid7InsightIDR.Investigation.organization_id | String | The ID of the organization that owns this investigation. Relevant when api_version is V2 only. |
-| Rapid7InsightIDR.Investigation.rrn | String | The RRN of the investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. Relevant when api_version is V2 only. |
 | Rapid7InsightIDR.Investigation.id | String | The ID of the investigation. Relevant when api_version is V1 only. |
 | Rapid7InsightIDR.Investigation.alert.type | String | Type of alert in the investigation. Relevant when api_version is V1 only. |
-| Rapid7InsightIDR.Investigation.alert.type_description | String | Type description of alert in the investigation. Relevant when api_version is V1 only. |
-| Rapid7InsightIDR.Investigation.alert.first_event_time | String | First event time of alert in the investigation. Relevant when api_version is V1 only. |
+| Rapid7InsightIDR.Investigation.alert.type_description | String | The description of the type of alert in the investigation. Relevant when api_version is V1 only. |
+| Rapid7InsightIDR.Investigation.alert.first_event_time | String | First event time of the alert in the investigation. Relevant when api_version is V1 only. |
 
 #### Command example
 ```!rapid7-insight-idr-list-investigations api_version=V2 limit=1```
@@ -118,7 +117,7 @@ List all investigations. Retrieve a list of investigations matching the given re
 ### rapid7-insight-idr-get-investigation
 
 ***
-Get a specific investigation. This investigation is specified by either ID or RRN (If multi-customer set to true, the investigation_id must be in the RRN format).
+Get a specific investigation. This investigation is specified by either ID or Rapid7 Resource Names (RRN). (If multi-customer is set to true, the investigation_id must be in the RRN format).
 
 #### Base Command
 
@@ -129,7 +128,7 @@ Get a specific investigation. This investigation is specified by either ID or RR
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | api_version | The InsightIDR API version to request to. Possible values are: V1, V2. Default is V1. | Optional |
-| investigation_id | The ID or RRN (If api_version=V2, the ID of the investigation must be in the RRN format) of the investigation to retrieve. Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs. | Required |
+| investigation_id | The ID or Rapid7 Resource Names (RRN) of the investigation to retrieve. (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs. | Required |
 
 #### Context Output
 
@@ -148,10 +147,10 @@ Get a specific investigation. This investigation is specified by either ID or RR
 | Rapid7InsightIDR.Investigation.source | String | How this investigation was generated. |
 | Rapid7InsightIDR.Investigation.title | String | The name of the investigation. |
 | Rapid7InsightIDR.Investigation.organization_id | String | The ID of the organization that owns this investigation. Relevant when api_version is V2 only. |
-| Rapid7InsightIDR.Investigation.rrn | String | The RRN of the investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. Relevant when api_version is V2 only. |
 | Rapid7InsightIDR.Investigation.id | String | The ID of the investigation. Relevant when api_version is V1 only. |
 | Rapid7InsightIDR.Investigation.alert.type | String | Type of alert in the investigation. Relevant when api_version is V1 only. |
-| Rapid7InsightIDR.Investigation.alert.type_description | String | Type description of alert in the investigation. Relevant when api_version is V1 only. |
+| Rapid7InsightIDR.Investigation.alert.type_description | String | The description of the alert type in the investigation. Relevant when api_version is V1 only. |
 | Rapid7InsightIDR.Investigation.alert.first_event_time | String | First event time of alert in the investigation. Relevant when api_version is V1 only. |
 
 #### Command example
@@ -204,11 +203,11 @@ Close all investigations that match the provided request parameters. If there ar
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | source | The name of an investigation source. Only investigations from this source will be closed. If the source is ALERT, an alert type or a detection rule RRN must be specified as well. Possible values are: ALERT, MANUAL, HUNT. | Required |
-| end_time | An ISO formatted timestamp. Only investigations whose createTime is before this date will be returned by the API. For example,2018-07-28T23:59:00Z. Default is the current time. | Required |
-| start_time | An ISO formatted timestamp. Only investigations whose createTime is after this date will be returned by the API. For example,2018-07-01T00:00:00Z. | Required |
+| end_time | An ISO formatted timestamp. Only investigations whose createTime is before this date will be returned by the API. For example, 2018-07-28T23:59:00Z. Default is the current time. | Required |
+| start_time | An ISO formatted timestamp. Only investigations whose createTime is after this date will be returned by the API. For example, 2018-07-01T00:00:00Z. | Required |
 | alert_type | The category of types of alerts that should be closed. Use rapid7-insight-idr-list-investigations or rapid7-insight-idr-list-investigation-alerts to get the alert types. Required when sourceis ALERT. | Optional |
 | disposition | A disposition to set the investigation to. Possible values are: Undecided, Benign, Malicious, Not Applicable. Default is Not Applicable. | Optional |
-| detection_rule_rrn | The RRN of the detection rule. Only investigations that are associated with this detection rule will be closed. If a detection rule RRN is given, thealert_typeis required to be 'Attacker Behavior Detected'.  Userapid7-insight-idr-get-investigationto retrieve the investigationdetection_rule_rrn. | Optional |
+| detection_rule_rrn | The Rapid7 Resource Names (RRN) of the detection rule. Only investigations that are associated with this detection rule will be closed. If a detection rule RRN is given, thealert_typeis required to be 'Attacker Behavior Detected'.  Userapid7-insight-idr-get-investigationto retrieve the investigationdetection_rule_rrn. | Optional |
 | max_investigations_to_close | The maximum number of alerts to close. If this parameter is not specified then there is no maximum. The minimum description is 0. | Optional |
 
 #### Context Output
@@ -236,8 +235,8 @@ Assign a user by email to an investigation. Users will receive an email whenever
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | api_version | The InsightIDR API version to request to. Possible values are: V1, V2. Default is V1. | Optional |
-| investigation_id | Comma-separated list of the ID or RRN (If api_version=V2, the ID of the investigation must be in the RRN format) of the investigation to assign the user to. Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs. | Required |
-| user_email_address | The email address of the user to assign to this Investigation. Same email used to log into the insight platform. For example, test@test.com. Use rapid7-insight-idr-list-users to retrieve the user email list. Relevant when api_version is V2 only. | Required |
+| investigation_id | Comma-separated list of the ID or Rapid7 Resource Names (RRN) of the investigation to assign the user to. (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs. | Required |
+| user_email_address | The email address of the user to assign to this investigation. This is the same email used to log into the insight platform. For example, test@test.com. Use rapid7-insight-idr-list-users to retrieve the user email list. Relevant when api_version is V2 only. | Required |
 
 #### Context Output
 
@@ -255,7 +254,7 @@ Assign a user by email to an investigation. Users will receive an email whenever
 | Rapid7InsightIDR.Investigation.source | String | How this investigation was generated. |
 | Rapid7InsightIDR.Investigation.title | String | The name of the investigation. |
 | Rapid7InsightIDR.Investigation.organization_id | String | The ID of the organization that owns this investigation. Relevant when api_version is V2 only. |
-| Rapid7InsightIDR.Investigation.rrn | String | The RRN of the investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. Relevant when api_version is V2 only. |
 | Rapid7InsightIDR.Investigation.id | String | The ID of the investigation. Relevant when api_version is V1 only. |
 | Rapid7InsightIDR.Investigation.alert.type_description | String | The description of this type of alert \(if any\). Relevant when api_version is V1 only. |
 | Rapid7InsightIDR.Investigation.alert.type | String | The alert's type. Relevant when api_version is V1 only. |
@@ -300,7 +299,7 @@ Assign a user by email to an investigation. Users will receive an email whenever
 ### rapid7-insight-idr-set-status
 
 ***
-Set the status of the investigation, which is specified by ID or RRN.
+Set the status of the investigation, which is specified by ID or Rapid7 Resource Names (RRN).
 
 #### Base Command
 
@@ -311,10 +310,10 @@ Set the status of the investigation, which is specified by ID or RRN.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | api_version | The InsightIDR API version to request to. Possible values are: V1, V2. Default is V1. | Optional |
-| investigation_id | Comma-separated list of the ID or RRN (If api_version=V2, the ID of the investigation must be in the RRN format) of the investigation to be changed. Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs. | Required |
+| investigation_id | Comma-separated list of the ID or Rapid7 Resource Names (RRN) of the investigation to be changed.  (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs. | Required |
 | status | The new status for the investigation.  Open - The default status for all new investigations. Investigating - The investigation is in progress. Waiting - Progress on the investigation has paused while more information is gathered. Closed - The investigation has ended. A disposition must be selected to set this status. Possible values are: open, closed, investigating, waiting. | Required |
 | threat_command_free_text | Additional information provided by the user when closing a Threat Command alert. Relevant when status=closed and api_version is V2 only. | Optional |
-| threat_command_close_reason | The Threat Command reason for closing, applicable only if the investigation being closed has an associated alert in Threat Command. The Close Reason description depends on the Threat Command alert type.Relevant when status=closed and api_version is V2 only. Possible values are: Problem Solved, Informational Only, Problem We Are Already Aware Of, Not Related To My Company, False Positive, Legitimate Application/ Profile, Company Owned Domain, Other. | Optional |
+| threat_command_close_reason | The Threat Command reason for closing, applicable only if the investigation being closed has an associated alert in Threat Command. The Close Reason description depends on the Threat Command alert type. Relevant when status=closed and api_version is V2 only. Possible values are: Problem Solved, Informational Only, Problem We Are Already Aware Of, Not Related To My Company, False Positive, Legitimate Application/ Profile, Company Owned Domain, Other. | Optional |
 | disposition | A disposition to set the investigation to. Relevant when status=closed and api_version is V2 only. Possible values are: benign, malicious, not_applicable. | Optional |
 
 #### Context Output
@@ -333,7 +332,7 @@ Set the status of the investigation, which is specified by ID or RRN.
 | Rapid7InsightIDR.Investigation.source | String | How this investigation was generated. |
 | Rapid7InsightIDR.Investigation.title | String | The name of the investigation. |
 | Rapid7InsightIDR.Investigation.organization_id | String | The ID of the organization that owns this investigation. Relevant when api_version is V2 only. |
-| Rapid7InsightIDR.Investigation.rrn | String | The RRN of the investigation. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. Relevant when api_version is V2 only. |
 | Rapid7InsightIDR.Investigation.id | String | The ID of the investigation. Relevant when api_version is V1 only. |
 | Rapid7InsightIDR.Investigation.alert.type_description | String | The description of this type of alert \(if any\). Relevant when api_version is V1 only. |
 | Rapid7InsightIDR.Investigation.alert.type | String | The alert's type. Relevant when api_version is V1 only. |
@@ -1460,7 +1459,7 @@ Lists all existing log sets for your InsightsIDR instance.
 ### rapid7-insight-idr-download-logs
 
 ***
-Downloads logs for from your InsightsIDR instance. The maximum number of logs per call is 10.
+Downloads logs from your InsightsIDR instance. The maximum number of logs per call is 10.
 
 #### Base Command
 
@@ -1474,7 +1473,7 @@ Downloads logs for from your InsightsIDR instance. The maximum number of logs pe
 | start_time | Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. This is optional if time_range is supplied. | Optional |
 | end_time | Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. | Optional |
 | time_range | The relative time range in a readable format. Optional if "from" \ is supplied. For example: Last 4 Days. Note that if start_time, end_time and\ \ time_range is not provided the default will be Last 3 days. | Optional |
-| query | The LEQL query to match desired log events. Do not use a calculation.more info: https://docs.rapid7.com/insightidr/build-a-query/. | Optional |
+| query | The LEQL query to match desired log events. Do not use a calculation. For more information: https://docs.rapid7.com/insightidr/build-a-query/. | Optional |
 | limit | The maximum number of log events to download; cannot exceed 20 million. The default is 20 million. The argument value should be written like this: "10 thousand" or "2 million"). | Optional |
 
 #### Context Output
@@ -1513,9 +1512,9 @@ Queries within a log for certain values.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| log_id | Logentries log key. | Required |
-| query | A valid LEQL query to run against the logmore info: https://docs.rapid7.com/insightidr/build-a-query/. | Required |
-| time_range | A time range string (i.e 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed. | Optional |
+| log_id | Log entries log key. | Required |
+| query | A valid LEQL query to run against the log. For more information: https://docs.rapid7.com/insightidr/build-a-query/. | Required |
+| time_range | A time range string (i.e., 1 week, 1 day). When using this parameter, start_time and end_time isn't needed. | Optional |
 | start_time | Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000. | Optional |
 | end_time | Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000. | Optional |
 | logs_per_page | The maximum number of log entries to return per page. Default of 50. | Optional |
@@ -1543,8 +1542,8 @@ Queries within a log set for certain values.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | log_set_id | ID of the log set. | Required |
-| query | A valid LEQL query to run against the logmore info: https://docs.rapid7.com/insightidr/build-a-query/. | Required |
-| time_range | A time range string (e.g., 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed. | Optional |
+| query | A valid LEQL query to run against the log. For more information: https://docs.rapid7.com/insightidr/build-a-query/. | Required |
+| time_range | A time range string (e.g., 1 week, 1 day). When using this parameter, start_time and end_time isn't needed. | Optional |
 | start_time | Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000. | Optional |
 | end_time | Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000. | Optional |
 | logs_per_page | The maximum number of log entries to return per page. Default of 50. | Optional |
@@ -1575,7 +1574,7 @@ Create a new investigation manually.
 | status | The status of the investigation. Open - The default status for all new investigations. Investigating - The investigation is in progress. Closed - The investigation has ended. A disposition must be selected to set this status. Possible values are: Open, Investigating, Closed. Default is Open. | Optional |
 | priority | The priority for the investigation. Investigation priority is the scale given to an investigation based on the impact and urgency of the detections and assets associated with it. Possible values are: Unspecified, Low, Medium, High, Critical. Default is Unspecified. | Optional |
 | disposition | The disposition for the investigation. Select a disposition to indicate whether the investigation represented a legitimate threat. Possible values are: Undecided, Benign, Malicious, Not Applicable. Default is Undecided. | Optional |
-| user_email_address | The email address of the user to assign to this Investigation. Same email used to log into the insight platform. Use rapid7-insight-idr-list-users to retrieve the user email list. | Optional |
+| user_email_address | The email address of the user to assign to this investigation. This is the same email used to log into the insight platform. Use rapid7-insight-idr-list-users to retrieve the user email list. | Optional |
 
 #### Context Output
 
@@ -1594,7 +1593,7 @@ Create a new investigation manually.
 | Rapid7InsightIDR.Investigation.source | String | How this investigation was generated. |
 | Rapid7InsightIDR.Investigation.title | String | The name of the investigation. |
 | Rapid7InsightIDR.Investigation.organization_id | String | The ID of the organization that owns this investigation. |
-| Rapid7InsightIDR.Investigation.rrn | String | The RRN of the investigation. |
+| Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. |
 
 #### Command example
 ```!rapid7-insight-idr-create-investigation title=test limit=1```
@@ -1632,7 +1631,7 @@ Create a new investigation manually.
 ### rapid7-insight-idr-update-investigation
 
 ***
-Updates multiple fields in a single operation for an investigation, specified by ID or RRN (If multi-customer set to true, the investigation_id must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs
+Updates multiple fields in a single operation for an investigation, specified by ID or Rapid7 Resource Names (RRN). (If multi-customer set to true, the investigation_id must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs
 
 #### Base Command
 
@@ -1642,12 +1641,12 @@ Updates multiple fields in a single operation for an investigation, specified by
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| investigation_id | The ID or RRN (If api_version=V2, the ID of the investigation must be in the RRN format) of the investigation to to update. | Required |
+| investigation_id | The ID or Rapid7 Resource Names (RRN) of the investigation to to update. (If api_version=V2, the ID of the investigation must be in the RRN format). | Required |
 | title | The name of the investigation. | Optional |
 | status | The status of the investigation.  Open - The default status for all new investigations. Investigating - The investigation is in progress. Closed - The investigation has ended. A disposition must be selected to set this status. Possible values are: Open, Investigating, Closed. | Optional |
 | priority | The priority for the investigation. Investigation priority is the scale given to an investigation based on the impact and urgency of the detections and assets associated with it. Possible values are: Unspecified, Low, Medium, High, Critical. | Optional |
 | disposition | The disposition for the investigation. Select a disposition to indicate whether the investigation represented a legitimate threat. Possible values are: Undecided, Benign, Malicious, Not Applicable. | Optional |
-| user_email_address | The email address of the user to assign to this Investigation. Same email used to log into the insight platform. | Optional |
+| user_email_address | The email address of the user to assign to this investigation. This is the same email used to log into the insight platform. | Optional |
 | threat_command_free_text | Additional information provided by the user when closing a Threat Command alert. Relevant when status=Closed. | Optional |
 | threat_command_close_reason | The Threat Command reason for closing, applicable only if the investigation being closed has an associated alert in Threat Command. The Close Reason description depends on the Threat Command alert type.  Relevant when status=Closed. Possible values are: Problem Solved, Informational Only, Problem We Are Already Aware Of, Not Related To My Company, False Positive, Legitimate Application/ Profile, Company Owned Domain, Other. | Optional |
 
@@ -1668,7 +1667,7 @@ Updates multiple fields in a single operation for an investigation, specified by
 | Rapid7InsightIDR.Investigation.source | String | How this investigation was generated. |
 | Rapid7InsightIDR.Investigation.title | String | The name of the investigation. |
 | Rapid7InsightIDR.Investigation.organization_id | String | The ID of the organization that owns this investigation. |
-| Rapid7InsightIDR.Investigation.rrn | String | The RRN of the investigation. |
+| Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. |
 
 #### Command example
 ```!rapid7-insight-idr-update-investigation investigation_id=3793645a-6484-4a7e-9228-7aeb4ba97472 title=test1```
@@ -1721,17 +1720,17 @@ Search for investigations matching the given search/sort criteria.
 | --- | --- | --- |
 | start_time | An optional ISO formatted timestamp for the start of the time period to search for matching investigations. Only investigations whose created_time is after this date will be returned. For example, 2018-07-01T00:00:00Z. Default is 28 days ago. | Optional |
 | end_time | An optional ISO formatted timestamp for the end of the time period to search for matching investigations. Only investigations whose created_time is before this date will be returned. For example,2018-07-28T23:59:00Z. Default is the current time. | Optional |
-| actor_asset_hostname | Filter investigations by comma-separated values to include only those containing the specified values in the 'actor_asset_hostname' field. | Optional |
-| actor_user_name | Filter investigations by comma-separated values to include only those containing the specified values in the 'actor_user_name' field. | Optional |
-| alert_mitre_t_codes | Filter investigations by comma-separated values to include only those equals the specified values in the 'alert_mitre_t_codes' field. | Optional |
-| alert_rule_rrn | Filter investigations by comma-separated values to include only those equals the specified values in the 'alert_rule_rrn' field. | Optional |
-| assignee_id | Filter investigations by comma-separated values to include only those equals the specified values in the 'assignee_id' field. | Optional |
-| organization_id | Filter investigations by comma-separated values to include only those equals the specified values in the 'organization_id' field. | Optional |
-| priority | Filter investigations by comma-separated values to include only those equals the specified values in the 'priority' field. | Optional |
-| rrn | Filter investigations by comma-separated values to include only those equals the specified values in the 'rrn' field. | Optional |
-| source | Filter investigations by comma-separated values to include only those equals the specified values in the 'source' field. | Optional |
-| status | Filter investigations by comma-separated values to include only those equals the specified values in the 'status' field. | Optional |
-| title | Filter investigations by comma-separated values to include only those containing the specified values in the 'title' field. | Optional |
+| actor_asset_hostname | A comma-separated list of hostnames. | Optional |
+| actor_user_name | A comma-separated list of user names. | Optional |
+| alert_mitre_t_codes | A comma-separated list of mitre_t_codes. | Optional |
+| alert_rule_rrn | A comma-separated list of Rapid7 Resource Names. | Optional |
+| assignee_id | A comma-separated list of assignee IDs. | Optional |
+| organization_id | A comma-separated list of organization IDs. | Optional |
+| priority | A comma-separated list of priorities. | Optional |
+| rrn | A comma-separated list of Rapid7 Resource Names. | Optional |
+| source | A comma-separated list of sources. | Optional |
+| status | A comma-separated list of statuses. | Optional |
+| title | A comma-separated list of titles. | Optional |
 | sort | Comma-separated list of fields to sort by. Possible values are: Created time, Priority, RRN, Alert created time, Alert detection created time. | Optional |
 | sort_direction | The sorting direction. Relevant when sort is chosen. Possible values are: asc, desc, asc,desc. Default is asc. | Optional |
 | index | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional |
@@ -1755,7 +1754,7 @@ Search for investigations matching the given search/sort criteria.
 | Rapid7InsightIDR.Investigation.source | String | How this investigation was generated. |
 | Rapid7InsightIDR.Investigation.title | String | The name of the investigation. |
 | Rapid7InsightIDR.Investigation.organization_id | String | The ID of the organization that owns this investigation. |
-| Rapid7InsightIDR.Investigation.rrn | String | The RRN of the investigation. |
+| Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. |
 
 #### Command example
 ```!rapid7-insight-idr-search-investigation limit=1```
@@ -1794,7 +1793,7 @@ Search for investigations matching the given search/sort criteria.
 ### rapid7-insight-idr-list-investigation-alerts
 
 ***
-Retrieve and list all alerts associated with an investigation, with the given ID or RRN. The listed alerts are sorted in descending order by alert create time. Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
+Retrieve and list all alerts associated with an investigation, with the given ID or Rapid7 Resource Names (RRN). The listed alerts are sorted in descending order by alert create time. Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
 
 #### Base Command
 
@@ -1812,7 +1811,7 @@ Retrieve and list all alerts associated with an investigation, with the given ID
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Rapid7InsightIDR.Investigation.alert.rule_rrn | String | The RRN of the investigation. |
+| Rapid7InsightIDR.Investigation.alert.rule_rrn | String | The Rapid7 Resource Names of the investigation. |
 | Rapid7InsightIDR.Investigation.alert.rule_name | String | The name of the detection rule. |
 | Rapid7InsightIDR.Investigation.alert.alert_source | String | The source of the alert. |
 | Rapid7InsightIDR.Investigation.alert.latest_event_time | String | The time the most recent event involved in this alert occurred. |
@@ -1847,7 +1846,7 @@ Retrieve and list all alerts associated with an investigation, with the given ID
 ### rapid7-insight-idr-list-investigation-product-alerts
 
 ***
-Retrieve and list all Rapid7 product alerts associated with an investigation, with the given ID or RRN. These alerts are generated by Rapid7 products other than InsightIDR that you have an active license for.
+Retrieve and list all Rapid7 product alerts associated with an investigation, with the given ID or the Rapid7 Resource Names. These alerts are generated by Rapid7 products other than InsightIDR that you have an active license for.
 
 #### Base Command
 
@@ -1857,7 +1856,7 @@ Retrieve and list all Rapid7 product alerts associated with an investigation, wi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| investigation_id | The ID of the investigation (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs. | Required |
+| investigation_id | The ID of the investigation (If api_version=V2, the ID of the investigation must be in the Rapid7 Resource Names format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs. | Required |
 | all_results | Whether to retrieve all results by overriding the default limit. Possible values are: true, false. Default is false. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
@@ -1914,7 +1913,7 @@ Retrieve and list all Rapid7 product alerts associated with an investigation, wi
 ### rapid7-insight-idr-list-users
 
 ***
-List all users, search for matching the given search/sort criteria or retrieve a user with the given RRN.
+List all users matching the given search/sort criteria or retrieve a user with the given RRN.
 
 #### Base Command
 
@@ -1924,13 +1923,13 @@ List all users, search for matching the given search/sort criteria or retrieve a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rrn | The RRN (unique identifier for user.) of the user to retrieve. When using this argument, all the other irelevant. | Optional |
-| first_name | Filter investigations by comma-separated values to include only those equals the specified values in the 'first_name' field. Choose search operator to define the operator type. | Optional |
-| last_name | Filter investigations by comma-separated values to include only those equals the specified values in the 'last_name' field. Choose search operator to define the operator type. | Optional |
-| name | Filter investigations by comma-separated values to include only those equals the specified values in the 'name' field. Choose search operator to define the operator type. | Optional |
+| rrn | The Rapid7 Resource Names (unique identifier for user.) of the user to retrieve. When using this argument, all the other irrelevant. | Optional |
+| first_name | A comma-separated list of first names. Choose search operator to define the operator type. | Optional |
+| last_name | A comma-separated list of last names. Choose search operator to define the operator type. | Optional |
+| name | A comma-separated list of names. Choose search operator to define the operator type. | Optional |
 | search_operator | The filtering operator. Relevant when first_name / last_name / is name / domain chosen. Possible values are: contains, equals. | Optional |
 | sort | Comma-separated list of fields to sort by. Possible values are: first_name, last_name, name. | Optional |
-| sort_direction | The sorting direction. Relevant when sort is chosen. Possible values are: asc, desc, asc,desc. Default is asc. | Optional |
+| sort_direction | The sorting direction. Relevant when sort is chosen. Possible values are: asc, desc, asc & desc. Default is asc. | Optional |
 | index | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional |
 | page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional |
 | limit | The maximum number of records to retrieve. Default is 50. | Optional |
@@ -1982,21 +1981,21 @@ Query inside a log for certain values.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | log_id | Logentries log key | Required |
-| query | A valid LEQL query to run against the logmore info: https://docs.rapid7.com/insightidr/build-a-query/ | Required |
-| time_range | An optional time range string (i.e 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed | Optional |
+| query | A valid LEQL query to run against the log. For more information: https://docs.rapid7.com/insightidr/build-a-query/ | Required |
+| time_range | An optional time range string (i.e., 1 week, 1 day). When using this parameter, start_time and end_time isn't needed | Optional |
 | start_time | Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000 | Optional |
 | end_time | Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000 | Optional |
 | logs_per_page | The number of log entries to return per page. Default of 50 | Optional |
-| sequence_number | the earlier sequence number of a log entry to start searching from | Optional |
+| sequence_number | The earlier sequence number of a log entry to start searching from. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Rapid7InsightIDR.Event.log_id | String | Event message |
-| Rapid7InsightIDR.Event.message | String | ID of the log the event appears in |
-| Rapid7InsightIDR.Event.timestamp | Number | Time when the event fired |
+| Rapid7InsightIDR.Event.log_id | String | Event message. |
+| Rapid7InsightIDR.Event.message | String | ID of the log the event appears in. |
+| Rapid7InsightIDR.Event.timestamp | Number | Time when the event fired. |
 
 
 #### Command Example
@@ -2692,21 +2691,21 @@ Query inside a log set for certain values.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | log_set_id | log set ID | Required |
-| query | A valid LEQL query to run against the logmore info: https://docs.rapid7.com/insightidr/build-a-query/ | Required |
-| time_range | An optional time range string (i.e 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed | Optional |
+| query | A valid LEQL query to run against the log. For more information: https://docs.rapid7.com/insightidr/build-a-query/ | Required |
+| time_range | An optional time range string (i.e., 1 week, 1 day). When using this parameter, start_time and end_time isn't needed | Optional |
 | start_time | Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000 | Optional |
 | end_time | Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000 | Optional |
 | logs_per_page | The number of log entries to return per page. Default of 50 | Optional |
-| sequence_number | the earlier sequence number of a log entry to start searching from | Optional |
+| sequence_number | The earlier sequence number of a log entry to start searching from. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Rapid7InsightIDR.Event.log_id | String | Event message |
-| Rapid7InsightIDR.Event.message | String | ID of the log the event appears in |
-| Rapid7InsightIDR.Event.timestamp | Number | Time when the event fired |
+| Rapid7InsightIDR.Event.log_id | String | Event message. |
+| Rapid7InsightIDR.Event.message | String | ID of the log the event appears in. |
+| Rapid7InsightIDR.Event.timestamp | Number | Time when the event fired. |
 
 
 #### Command Example
