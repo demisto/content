@@ -16,6 +16,7 @@ LOCKS_BUCKET = 'xsoar-ci-artifacts'
 QUEUE_REPO = 'queue'
 MACHINES_LOCKS_REPO = 'machines_locks'
 JOB_STATUS_URL = '{}/api/v4/projects/{}/jobs/{}'  # disable-secrets-detection
+PIPELINE_STATUS_URL = '{}/api/v4/projects/{}/pipelines/{}'  # disable-secrets-detection
 CONTENT_GITLAB_PROJECT_ID = get_env_var('CI_PROJECT_ID', '1061')
 
 
@@ -48,6 +49,7 @@ def options_handler() -> argparse.Namespace:
     parser.add_argument('--service_account', help='Path to gcloud service account.')
     parser.add_argument('--gcs_locks_path', help='Path to lock repo.')
     parser.add_argument('--ci_job_id', help='the job id.')
+    parser.add_argument('--ci_pipeline_id', help='the pipeline id.')
     parser.add_argument('--test_machines', help='comma separated string contains all available machines.')
     parser.add_argument('--gitlab_status_token', help='gitlab token to get the job status.')
     parser.add_argument('--response_machine', help='file to update the chosen machine.')
@@ -116,22 +118,55 @@ def check_job_status(token: str, job_id: str, num_of_retries: int = 5, interval:
 
     Args:
         token(str): the gitlab token.
-        job_id(str): the job id to check.
+        pipeline_id_job_id(str): the pipeline and job id if exist to check.
         num_of_retries (int): num of retries to establish a connection to gitlab in case of a connection error.
         interval (float): the interval to wait before trying to establish a connection to gitlab each attempt.
 
     Returns: the status of the job.
 
     """
-    user_endpoint = JOB_STATUS_URL.format(GITLAB_SERVER_URL, CONTENT_GITLAB_PROJECT_ID, job_id)
+    logging.info(f"test job_id= {job_id}")
+    if "_" in job_id:
+        job_id = job_id.split('_')[1]
+        user_endpoint = JOB_STATUS_URL.format(GITLAB_SERVER_URL, CONTENT_GITLAB_PROJECT_ID, job_id)
+    else:
+        user_endpoint = PIPELINE_STATUS_URL.format(GITLAB_SERVER_URL, CONTENT_GITLAB_PROJECT_ID, job_id)
     headers = {'PRIVATE-TOKEN': token}
 
     for attempt_num in range(1, num_of_retries + 1):
         try:
-            logging.debug(f'Try to get the status of job ID {job_id} in attempt number {attempt_num}')
-            response = requests.get(user_endpoint, headers=headers)
+            logging.debug(
+                f'Try to get the status of job ID {job_id} in attempt number {attempt_num},user_endpoint: {user_endpoint}')            response = requests.get(user_endpoint, headers=headers)
             response_as_json = response.json()
             logging.debug(f'{user_endpoint=} raw response={response_as_json} for {job_id=}')
+            return response_as_json.get('status')
+        except requests.ConnectionError as error:
+            logging.error(f'Got connection error: {error} in attempt number {attempt_num}')
+            if attempt_num == num_of_retries:
+                raise error
+            logging.debug(f'sleeping for {interval} seconds to try to re-establish gitlab connection')
+            time.sleep(interval)
+    return None
+
+def check_pipeline_status(token: str, pipeline_id: str, num_of_retries: int = 5, interval: float = 30.0) -> str | None:
+    """
+    get the status of a pipeline in gitlab.
+    Args:
+        token(str): the gitlab token.
+        pipeline_id(str): the pipeline id to check.
+        num_of_retries (int): num of retries to establish a connection to gitlab in case of a connection error.
+        interval (float): the interval to wait before trying to establish a connection to gitlab each attempt.
+    Returns: the status of the pipeline.
+    """
+    user_endpoint = PIPELINE_STATUS_URL.format(GITLAB_SERVER_URL, CONTENT_GITLAB_PROJECT_ID, pipeline_id)
+    headers = {'PRIVATE-TOKEN': token}
+
+    for attempt_num in range(1, num_of_retries + 1):
+        try:
+            logging.debug(f'Try to get the status of pipeline ID {pipeline_id} in attempt number {attempt_num}')
+            response = requests.get(user_endpoint, headers=headers)
+            response_as_json = response.json()
+            logging.debug(f'{user_endpoint=} raw response={response_as_json} for {pipeline_id=}')
             return response_as_json.get('status')
         except requests.ConnectionError as error:
             logging.error(f'Got connection error: {error} in attempt number {attempt_num}')
@@ -284,13 +319,13 @@ def get_and_lock_all_needed_machines(storage_client: storage.Client,
     """
 
     logging.debug('getting all machines lock files')
-    machines_locks = get_machines_locks_details(storage_client, LOCKS_BUCKET,
-                                                gcs_locks_path, MACHINES_LOCKS_REPO)
-
+    
     locked_machine_list = []
     while number_machines_to_lock > 0:
         busy_machines = []
         for machine in list_machines:
+            machines_locks = get_machines_locks_details(storage_client, LOCKS_BUCKET,
+                                                        gcs_locks_path, MACHINES_LOCKS_REPO)
             lock_machine_name = try_to_lock_machine(storage_bucket, machine, machines_locks,
                                                     gitlab_status_token, gcs_locks_path,
                                                     job_id)
@@ -385,7 +420,12 @@ def main():
     storage_client = storage.Client.from_service_account_json(options.service_account)
     storage_bucket = storage_client.bucket(LOCKS_BUCKET)
 
-    logging.info(f'Adding job_id: {options.ci_job_id} to the queue')
+    logging.info(f"job_id={options.ci_job_id} pipeline_id= {options.ci_pipeline_id}")
+    if options.ci_job_id:
+        options.ci_job_id = f"{options.ci_pipeline_id}_{options.ci_job_id}"
+    else:
+        options.ci_job_id = options.pipeline_id
+    logging.info(f'Adding job_id/pipeline_id: {options.ci_job_id} to the queue')
     adding_build_to_the_queue(storage_bucket, options.gcs_locks_path, options.ci_job_id)
 
     # running until the build is the first in queue

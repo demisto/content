@@ -18,7 +18,30 @@ build-machines-cleanup:
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
-    - !reference [.lock-machine]
+    - if [[ -n "$LOCK_MACHINE_NAME" ]]; then
+    -   echo "Check if lock file already exist "
+    -   gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+    - |
+        for i in {1..3}; do
+          if gsutil -q stat "gs://${TEST_XDR_PREFIX}xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/${LOCK_MACHINE_NAME}-lock-${CI_PIPELINE_ID}" 2>/dev/null; then
+            echo "File found in GCS bucket."
+            export CLOUD_CHOSEN_MACHINE_IDS=${LOCK_MACHINE_NAME}
+            echo 'export CLOUD_CHOSEN_MACHINE_IDS=${LOCK_MACHINE_NAME}' > CloudEnvVariables
+            echo "CLOUD Chosen machine ids are:${CLOUD_CHOSEN_MACHINE_IDS}" | tee "${ARTIFACTS_FOLDER}/logs/lock_file.txt"
+            break
+          else
+            echo "File not found. Retrying in 120 seconds..."
+            sleep 120
+          fi
+        done
+        if [[ "${i}" = "3" ]]; then
+          echo "Couldn't find lock file after 3 attempts  with machine id: ${LOCK_MACHINE_NAME} and this pipeline id: ${CI_PIPELINE_ID}"
+          job-done
+          exit "${EXIT_CODE}"
+        fi
+    - else
+    -   !reference [.lock-machine]
+    - fi 
     - !reference [.uninstall-packs-and-reset-bucket-cloud]
     - !reference [.cloud-machine-information]
     - job-done
@@ -26,11 +49,14 @@ build-machines-cleanup:
   after_script:
     - source .gitlab/helper_functions.sh
     - !reference [ .unlock-machine ]
+    - export GITLAB_REPO_URL=https://GITLAB_PUSH_TOKEN:${GITLAB_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git  # disable-secrets-detection
+    - git push "$GITLAB_REPO_URL" --delete "$BRANCH" --quiet
   timeout: 4 hours
   variables:
-    CLOUD_MACHINES_TYPE: "nightly"
-    CLOUD_MACHINES_COUNT: "all"
-    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
+    CLOUD_MACHINES_TYPE: $CLOUD_MACHINES_TYPE
+    CLOUD_MACHINES_COUNT: $CLOUD_MACHINES_COUNT
+    LOCK_MACHINE_NAME: $LOCK_MACHINE_NAME
+    GCS_LOCKS_PATH: $GCS_LOCKS_PATH
     INSTANCE_ROLE: "XSIAM"
     PRODUCT_TYPE: "XSIAM"
     SERVER_TYPE: "XSIAM"
@@ -47,6 +73,7 @@ build-machines-cleanup:
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     MARKETPLACE_NAME: "marketplacev2"
     NON_REMOVABLE_PACKS: "Base"
+    BRANCH: "${BRANCH}"
 
 fan-in-build-machines-cleanup:
   tags:
@@ -58,6 +85,8 @@ fan-in-build-machines-cleanup:
     - echo "fan in"
 
 slack-notify-build-machines-cleanup:
+  rules:
+    - if: '$NIGHTLY'
   extends:
     - .trigger-slack-notification
     - .build-machines-cleanup-rule-always

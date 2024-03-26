@@ -618,6 +618,7 @@ slack-notify-on-merge:
     - .push-rule
   variables:
     EXTRACT_PRIVATE_TESTDATA: "true"
+    CLEAN_MACHINE_NEEDED: $CLEAN_MACHINE_NEEDED
   stage: run-instances
   script:
     - EXIT_CODE=0
@@ -668,6 +669,7 @@ slack-notify-on-merge:
     - exit $EXIT_CODE
   after_script:
     - source .gitlab/helper_functions.sh
+    - !reference [.clean-machine]
     - !reference [.unlock-machine]
 
 
@@ -681,17 +683,21 @@ xsiam_server_ga:
       when: always
       variables:
         CLOUD_MACHINES_TYPE: "nightly"
+        CLEAN_MACHINE_NEEDED: "true"
         CLOUD_MACHINES_COUNT: 1
         GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-nightly"
   timeout: 12 hours
   variables:
-    CLOUD_MACHINES_TYPE: "build"
+    #CLOUD_MACHINES_TYPE: "build"
+    CLOUD_MACHINES_TYPE: "cleanup" #change to my type
+    CLEAN_MACHINE_NEEDED: "true"
     CLOUD_MACHINES_COUNT: 1
     INSTANCE_ROLE: "XSIAM"
     SERVER_TYPE: "XSIAM"
     PRODUCT_TYPE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
-    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
+    # GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
+    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-cleanup"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
     CLOUD_API_TOKENS: $XSIAM_TOKENS
@@ -730,12 +736,15 @@ xsoar_ng_server_ga:
       when: never
   variables:
     CLOUD_MACHINES_TYPE: "build"
+    # CLOUD_MACHINES_TYPE: "cleanup"
+    # CLEAN_MACHINE_NEEDED: "false"
     CLOUD_MACHINES_COUNT: 1
     INSTANCE_ROLE: "XSOAR SAAS"
     PRODUCT_TYPE: "XSOAR"
     SERVER_TYPE: "XSOAR SAAS"
     GCS_QUEUE_FILE: "queue-ga"
     GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
+    # GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng-cleanup"
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
     CLOUD_API_TOKENS: $XSIAM_TOKENS
