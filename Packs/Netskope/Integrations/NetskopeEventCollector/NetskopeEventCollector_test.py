@@ -199,6 +199,14 @@ def test_event_types_to_fetch_parameter_handling(event_types_to_fetch_param, exp
                           (2500, 5000, {'nextTrigger': '0'}, {}),
                           (2501, 5000, {'key': 'value', 'nextTrigger': '0'}, {'key': 'value', 'nextTrigger': '0'})])
 def test_next_trigger_time(num_fetched_events, max_fetch_events, new_next_run, expected_result):
+    """Check that the last run is modified with the nextTrigger: '0' only if more than half of the max_fetch amount was fetched.
+
+    Args:
+        num_fetched_events (int): number of fetched events
+        max_fetch_events (int): maximum number of fetched events per fetch
+        new_next_run (dict): the last run object
+        expected_result (dict): the expected result.
+    """
     from NetskopeEventCollector import next_trigger_time
     next_trigger_time(num_fetched_events, max_fetch_events, new_next_run)
     assert new_next_run == expected_result
