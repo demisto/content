@@ -3539,7 +3539,7 @@ Gets the public IP addresses that have been discovered by IPAM.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1.1.1.1 | eipalloc-11111111111111111 | 222222222222 | us-east-1 | amazon-owned-eip | associated | i-11111111111111111 | ipam-res-disco-11111111111111111 | us-east-1 |  | eni-11111111111111111 | amazon | 2023-11-26T02:00:45 | {'GroupName': 'example_sg', 'GroupId': 'sg-11111111111111111'} | subnet-11111111111111111 | EipTags:  | vpc-11111111111111111 |
 
-### aws-ec2-aws-ec2-create-vpc-endpoint
+### aws-ec2-create-vpc-endpoint
 
 ***
 Creates a VPC endpoint.
