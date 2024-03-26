@@ -721,8 +721,17 @@ def test_advanced_hunting_command(mocker):
     assert results.outputs == expected_results['outputs']
     assert results.readable_output == expected_results['readable_output']
 
+    mocker.patch.object(demisto, 'params', return_value={'microsoft_365_defender_context': True})
+    results = advanced_hunting_command(client_mocker, args)
 
-def test_get_list_security_incident_command(mocker):
+    expected_results = load_json('./test_data/advanced_hunting_results_365_defenfer.json')
+    assert results[1].outputs_prefix == expected_results['outputs_prefix']
+    assert results[1].outputs_key_field == expected_results['outputs_key_field']
+    assert results[1].outputs == expected_results['outputs']
+    assert results[1].readable_output == expected_results['readable_output']
+
+
+def test_get_list_security_incident_command_1(mocker):
     # Case of single incident
     response = load_json('./test_data/incidents_single_response.json')
     mocker.patch.object(client_mocker, "get_incidents_request", return_value=response)
@@ -734,6 +743,8 @@ def test_get_list_security_incident_command(mocker):
     assert results.outputs == expected_results['outputs']
     assert results.readable_output == expected_results['readable_output']
 
+
+def test_get_list_security_incident_command_2(mocker):
     # Case of list incidents
     response = load_json('./test_data/incidents_list_response.json')
     mocker.patch.object(client_mocker, "get_incidents_request", return_value=response)
