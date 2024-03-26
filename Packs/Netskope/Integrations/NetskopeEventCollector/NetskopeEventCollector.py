@@ -357,14 +357,18 @@ def main() -> None:  # pragma: no cover
                 for event_type, status, in client.fetch_status.items():
                     if not status:
                         new_last_run[event_type] = {'operation': 'resend'}
-                demisto.debug(f'Setting the last_run to: {new_last_run}')
 
                 end = datetime.utcnow()
                 demisto.debug(f'Handled {len(events)} total events in {(end - start).seconds} seconds')
 
                 # set nextTrigger key in the lastRun dictionary to 0 (seconds) - this will trigger the next
                 # fetch-events to start immediately after the current fetch-events ends (CRTX-89345)
-                new_last_run['nextTrigger'] = '0'
+                if len(events) == max_fetch:
+                    new_last_run['nextTrigger'] = '0'
+                else:
+                    new_last_run.pop('nextTrigger', None)
+                    
+                demisto.debug(f'Setting the last_run to: {new_last_run}')
 
                 demisto.setLastRun(new_last_run)
 
