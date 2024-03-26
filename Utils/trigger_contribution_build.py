@@ -13,21 +13,19 @@ from gitlab.v4.objects.projects import Project
 
 urllib3.disable_warnings()
 
+DEFAULT_CI_PIPELINE_SOURCE = "contrib"
+GITLAB_DEFAULT_PROJECT_ID = 1061
 CONTRIBUTION_PRS_QUERY = 'is:pull-request state:open label:ready-for-instance-test label:Contribution label:"External PR"'
-GITLAB_PROJECT_ID = os.getenv("CI_PROJECT_ID") or 1061
+GITLAB_PROJECT_ID = os.getenv("CI_PROJECT_ID") or GITLAB_DEFAULT_PROJECT_ID
 GITLAB_SERVER_URL = os.getenv("CI_SERVER_URL", "https://gitlab.xdr.pan.local")  # disable-secrets-detection
 GITHUB_TRIGGER_BUILD_LABEL = "ready-for-instance-test"
 
-MESSAGES = namedtuple(
-    "MESSAGES",
-    ["build_request_accepted", "build_triggered", "build_trigger_failed"],
-)
-COMMENT_MESSAGES = MESSAGES(
-    "For the Reviewer: Trigger build request has been accepted for this contribution PR.",
-    "For the Reviewer: Successfully created a pipeline in GitLab with url: {url}",
-    "For the Reviewer: Could not create a pipeline in GitLab for branch name: {branch}. \
-    The branch was not found in the GitLab project.",
-)
+
+class COMMENT_MESSAGES:
+    build_request_accepted: str = "For the Reviewer: Trigger build request has been accepted for this contribution PR."
+    build_triggered: str = "For the Reviewer: Successfully created a pipeline in GitLab with url: {url}"
+    build_trigger_failed: str = "For the Reviewer: Could not create a pipeline in GitLab for branch name: {branch}. \
+    The branch was not found in the GitLab project."
 
 
 def arguments_handler() -> argparse.Namespace:
@@ -69,6 +67,7 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
     """
     for issue in github_issues:
         issue.create_comment(COMMENT_MESSAGES.build_request_accepted)
+        # Casting to PR object due to Module limitation (Issue object does not have a `branch name` attribute).
         pull_request = issue.as_pull_request()
         github_branch_name = pull_request.head.ref
 
@@ -82,7 +81,7 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
                 "CONTRIB_BRANCH": branch.name,
                 "PULL_REQUEST_NUMBER": str(pull_request.number),
                 "CI_COMMIT_BRANCH": branch.name,
-                "CI_PIPELINE_SOURCE": "contrib",
+                "CI_PIPELINE_SOURCE": "DEFAULT_CI_PIPELINE_SOURCE",
             }
             new_pipeline = gitlab_project.trigger_pipeline(
                 ref=branch.name, token=args.gitlab_trigger_token, variables=variables
