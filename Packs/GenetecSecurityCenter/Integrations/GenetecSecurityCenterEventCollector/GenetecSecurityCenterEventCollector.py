@@ -116,7 +116,8 @@ def fetch_events_command(
         last_run["start_time"] = (datetime.strptime(updated_results[-1]["ModificationTimeStamp"],
                                                     "%Y-%m-%dT%H:%M:%S.%fZ")).strftime(DATE_FORMAT_EVENT)
     else:
-        demisto.info("No new events were fetched. Therefore, the last_run object won't be updated.")
+        demisto.info("No new events were fetched. Therefore, setting last_run object to point to now.")
+        last_run["start_time"] = time_now_str
     return updated_results, last_run
 
 
