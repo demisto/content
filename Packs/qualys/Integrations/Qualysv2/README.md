@@ -22068,3 +22068,45 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Successfully purged 1 record
+
+
+### qualys-get-events
+***
+Manual command to fetch events from Qualys and display them.
+
+
+#### Base Command
+
+`qualys-get-events`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | If true, the command will create events, otherwise it will only display them. Default is false. | Required | 
+| limit | Date to return results from.                                                                    | Optional | 
+| since_datetime | Date to return results from.                                                                    | Optional | 
+| offset | Offset which events to return.                                                                  | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+### qualys-get-assets
+***
+Manual command to fetch assets from Qualys and display them.
+
+
+#### Base Command
+
+`qualys-get-assets`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_assets | If true, the command will create assets, otherwise it will only display the amount of available assets. Default is false. | Required |
+
+
+#### Context Output
+
+There is no context output for this command.
