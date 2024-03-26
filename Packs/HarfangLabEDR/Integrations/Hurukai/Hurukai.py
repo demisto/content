@@ -950,11 +950,12 @@ def _fetch_security_event_incidents(
         if len(incidents) >= max_fetch:
             break
 
-    demisto.info(
-        f"{len(fetched)}/{len(security_events)} new security events send to XSOAR"
-    )
-
     if fetched:
+
+        demisto.info(
+            f"{len(fetched)}/{len(security_events)} new security events send to XSOAR"
+        )
+
         if fetch_history.last_fetch > fetching_cursor.timestamp() + 1:
             # Only clear previously fetched security events if the last_fetch
             # timestamp have changed.
@@ -1096,12 +1097,13 @@ def _fetch_threat_incidents(
         if len(incidents) >= max_fetch:
             break
 
-    demisto.info(f"{len(fetched)}/{len(threats)} new threats send to XSOAR")
-
     if sorted(fetched) != fetched:
         demisto.debug("There is something wrong in threats fetching order")
 
     if fetched:
+
+        demisto.info(f"{len(fetched)}/{len(threats)} new threats send to XSOAR")
+
         if fetch_history.last_fetch > fetching_cursor.timestamp() + 1:
             # Only clear previously fetched threats if the last_fetch
             # timestamp have changed.
@@ -3382,7 +3384,12 @@ def get_security_events(
             method="GET", url_suffix="/api/data/alert/alert/Alert/", params=args
         )
 
-        demisto.debug(f"{len(results['results'])} security events fetched...")
+        results_count: int = len(results["results"])
+
+        if results_count == 0:
+            break
+
+        demisto.debug(f"{results_count} security events fetched...")
 
         for alert in results["results"]:
             # Retrieve additional endpoint information
@@ -3410,7 +3417,7 @@ def get_security_events(
             if max_fetch and len(security_events) >= max_fetch:
                 break
 
-        args["offset"] += len(results["results"])
+        args["offset"] += results_count
         if (
             results["count"] == 0
             or not results["next"]
@@ -3501,7 +3508,12 @@ def get_threats(
                 method="GET", url_suffix="/api/data/alert/alert/Threat/", params=args
             )
 
-            demisto.debug(f"{len(results['results'])} threats fetched...")
+            results_count: int = len(results["results"])
+
+            if results_count == 0:
+                break
+
+            demisto.debug(f"{results_count} threats fetched...")
 
             for threat in results["results"]:
                 threat_ids.append(threat["id"])
@@ -3509,7 +3521,7 @@ def get_threats(
                 if max_fetch and len(threat_ids) >= max_fetch:
                     break
 
-            args["offset"] += len(results["results"])
+            args["offset"] += results_count
             if (
                 results["count"] == 0
                 or not results["next"]
