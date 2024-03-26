@@ -83,6 +83,11 @@
             ]
         },
         {
+            "integrations": "AWS-EKS",
+            "playbookID": "AWSEKS-Test",
+            "fromversion": "6.9.0"
+        },
+        {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE Malware - Incident Enrichment",
             "instance_names": "microsoft_defender_atp_dev"
