@@ -1269,19 +1269,18 @@ def test_get_incident_extra_data_incident_not_exist(mocker):
     assert str(e.value) == 'Incident 1 is not found'
 
 
-def test_sort_all_list_incident_fields_populated_fields(mocker):
+def test_sort_all_list_incident_fields_case_get_incident_extra_data_format(mocker):
     """
     Given:
-        -  raw incident contains only information of the incident
+        -  raw incident in get_incident_extra_data format- alerts and artifacts with
+        incident data information
     When
         - Running sort_all_list_incident_fields
     Then
-        - Verify that alerts are not found.
+        - Verify that alerts and artifacts are found.
     """
     from CortexXDRIR import sort_all_list_incident_fields
-    raw_incident_fetch = load_test_data('./test_data/get_multiple_incidents_extra_data.json')\
-        .get('reply').get('incidents')[0]
-    raw_multiple_extra_data = {
+    incident_case_get_incident_extra_data = {
         "incident_id": "1",
         "incident_name": "null",
         "creation_time": 1575806909185,
@@ -1331,8 +1330,25 @@ def test_sort_all_list_incident_fields_populated_fields(mocker):
             "file_sha256": "file_sha256_1",
         }]
     }
-    sort_all_list_incident_fields(raw_multiple_extra_data)
-    for incident_case in (raw_multiple_extra_data, raw_incident_fetch):
-        sort_all_list_incident_fields(incident_case)
-        assert incident_case.get('alerts')
-        assert incident_case.get('incident_sources')
+    sort_all_list_incident_fields(incident_case_get_incident_extra_data)
+    assert incident_case_get_incident_extra_data.get('alerts')
+    assert incident_case_get_incident_extra_data.get('incident_sources')
+
+
+def test_sort_all_list_incident_fields_case_get_multiple_incidents_extra_data_format(mocker):
+    """
+    Given:
+        -  raw incident in get_incident_extra_data format- alerts and artifacts not in
+        incident data information
+    When
+        - Running sort_all_list_incident_fields
+    Then
+        - Verify that alerts and artifacts are found.
+    """
+    from CortexXDRIR import sort_all_list_incident_fields
+    incident_case_get_multiple_incidents_extra_data = load_test_data('./test_data/get_multiple_incidents_extra_data.json')\
+        .get('reply').get('incidents')[0]
+    sort_all_list_incident_fields(incident_case_get_multiple_incidents_extra_data)
+    assert incident_case_get_multiple_incidents_extra_data.get('alerts')
+    assert incident_case_get_multiple_incidents_extra_data.get('incident_sources')
+

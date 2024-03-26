@@ -685,6 +685,39 @@ def insert_cef_alerts_command(client, args):
 def sort_all_list_incident_fields(incident_data):
     """Sorting all lists fields in an incident - without this, elements may shift which results in false
     identification of changed fields"""
+    if incident_data.get('hosts', []):
+        incident_data['hosts'] = sorted(incident_data.get('hosts', []))
+        incident_data['hosts'] = [host.upper() for host in incident_data.get('hosts', [])]
+
+    if incident_data.get('users', []):
+        incident_data['users'] = sorted(incident_data.get('users', []))
+        incident_data['users'] = [user.upper() for user in incident_data.get('users', [])]
+
+    if incident_data.get('incident_sources', []):
+        incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
+
+    format_sublists = not argToBoolean(demisto.params().get('dont_format_sublists', False))
+    if incident_data.get('alerts', []):
+        incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
+        if format_sublists:
+            reformat_sublist_fields(incident_data['alerts'])
+
+    if incident_data.get('file_artifacts', []):
+        incident_data['file_artifacts'] = sort_by_key(incident_data.get('file_artifacts', []), main_key='file_name',
+                                                      fallback_key='file_sha256')
+        if format_sublists:
+            reformat_sublist_fields(incident_data['file_artifacts'])
+
+    if incident_data.get('network_artifacts', []):
+        incident_data['network_artifacts'] = sort_by_key(incident_data.get('network_artifacts', []),
+                                                         main_key='network_domain', fallback_key='network_remote_ip')
+        if format_sublists:
+            reformat_sublist_fields(incident_data['network_artifacts'])
+
+
+def sort_all_list_incident_fields_fixed(incident_data):
+    """Sorting all lists fields in an incident - without this, elements may shift which results in false
+    identification of changed fields"""
     alerts = incident_data.get('alerts', []) if isinstance(incident_data.get('alerts'), list) \
         else incident_data.get('alerts', {}).get('data')
     file_artifacts = incident_data.get('file_artifacts', []) if isinstance(incident_data.get('file_artifacts'), list) \
@@ -1016,11 +1049,12 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
                 incident_data = client.get_incident_extra_data(client, {"incident_id": incident_id,
                                                                         "alerts_limit": 1000})[0].get('incident')\
                     or {}
+            '''
             else:
                 incident_data['alerts'] = raw_incident.get('alerts', {}).get('data', [])
                 incident_data['file_artifacts'] = raw_incident.get('file_artifacts', {}).get('data', [])
                 incident_data['network_artifacts'] = raw_incident.get('network_artifacts', {}).get('data', [])
-
+            '''
             sort_all_list_incident_fields(incident_data)
             demisto.debug(f'incident_id: {incident_id}: AFTER ORT incident_data: {incident_data}')
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
