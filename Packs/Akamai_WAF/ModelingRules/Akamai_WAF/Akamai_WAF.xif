@@ -18,7 +18,7 @@ alter // pre-modeling extractions
 // trim ending / from url path 
 | alter path = rtrim(coalesce(path, ""), "/")
 
-// construct url according to the: <scheme>://<host><path>?<query>
+// construct url: <scheme>://<host><path>?<query>
 | alter url = concat(scheme, host, path, query )
 
 | alter // XDM Mappings
@@ -36,6 +36,7 @@ alter // pre-modeling extractions
     xdm.network.rule = attackData -> policyId,
     xdm.network.tls.protocol_version = httpMessage -> tls,
     xdm.observer.action = rule_actions,
+    xdm.observer.name = type,
     xdm.source.application.name = clientData -> appBundleId, 
     xdm.source.application.version = clientData -> appVersion,
     xdm.source.asn.as_number = to_integer(geo -> asn), 
