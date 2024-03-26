@@ -1,0 +1,30 @@
+[MODEL:dataset="ibm_guardium_raw"]
+// extract source ipv4 and ipv6
+alter tmp_src_ipv4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src),
+    tmp_src_ipv6 = if(src ~= "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})", src)
+// extract target ipv4 and ipv6
+| alter tmp_dst_ipv4 = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst),
+    tmp_dst_ipv6 = if(dst ~= "([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})", dst)
+
+// mapping ip protocol
+| alter tmp_ip_proto = proto
+| alter xdm.network.ip_protocol = if(proto = "6", XDM_CONST.IP_PROTOCOL_TCP , proto = "17",XDM_CONST.IP_PROTOCOL_UDP , tmp_ip_proto)
+
+// regular mapping
+| alter xdm.observer.action = act, 
+    xdm.alert.subcategory = cat,
+    xdm.target.port = to_integer(dpt),
+    xdm.source.port = to_integer(spt),
+    xdm.target.user.username = duser,
+    xdm.source.user.username = suser,
+    xdm.event.description = msg,
+    xdm.source.process.name = sproc,
+    xdm.network.application_protocol = app,
+    xdm.alert.severity = if(cs1label = "Severity", cs1, null),
+    xdm.target.host.image = if(cs2label = "Server Type", cs2, null),
+    xdm.event.type = cefname,
+    xdm.event.id = cefdeviceeventclassid,
+    xdm.source.ipv4 = tmp_src_ipv4,
+    xdm.source.ipv6 = tmp_src_ipv6,
+    xdm.target.ipv4 = tmp_dst_ipv4,
+    xdm.target.ipv6 = tmp_dst_ipv6;
