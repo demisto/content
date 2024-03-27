@@ -157,6 +157,7 @@ def add_dependency(base_pack: Path, new_depndency_pack: Path, mandatory: bool = 
         }
     })
     json_write(str(metadata_json), base_metadata)
+    enhance_release_notes(base_pack)
     return base_pack, base_metadata['currentVersion'], None
 
 
@@ -252,6 +253,20 @@ def modify_pack(pack: Path, integration: str):
 
 
 @add_changed_pack
+def modify_pack_metadata(pack: Path):
+    """
+    Modify a packmetadata file, in order to check that only the permitted fields have been changed in metadata.json
+    """
+    metadata_json = pack / 'pack_metadata.json'
+    with metadata_json.open('r') as f:
+        base_metadata = json.load(f)
+    base_metadata['keywords'] = ["Mobile"]
+    with metadata_json.open('w') as f:
+        json.dump(base_metadata, f)
+    return pack, base_metadata['currentVersion'], None
+
+
+@add_changed_pack
 def modify_modeling_rules_path(modeling_rule: Path, old_name: str, new_name: str):
     """
     Modify modeling rules path, in order to verify that the pack was uploaded correctly and that the path was changed
@@ -329,6 +344,9 @@ def do_changes_on_branch(packs_path: Path):
 
     # case 14: Verify new only-XSOAR-SaaS pack uploaded only to XSOAR SAAS bucket - TestUploadFlowXsoarSaaS
     create_new_pack(pack_id='TestUploadFlowXsoarSaaS')
+
+    # case 15: metadata changes (soft upload) - verify that only the permitted fields have been changed in metadata.json
+    modify_pack_metadata(packs_path / 'Zoom')
 
     logging.info("Finished making test changes on the branch")
 
