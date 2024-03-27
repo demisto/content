@@ -724,7 +724,7 @@ def test_fetch_incidents_extra_data(requests_mock, mocker):
     """
     from CortexXDRIR import fetch_incidents, Client
     raw_multiple_extra_data = load_test_data('./test_data/get_multiple_incidents_extra_data.json')
-    raw_all_alerts_incident_2 = load_test_data('./test_data/get_extra_data_all_alerts.json').get('reply', {}).get('incidents', [])
+    raw_all_alerts_incident_2 = load_test_data('./test_data/get_extra_data_all_alerts.json').get('reply', {})
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
@@ -1279,12 +1279,12 @@ def test_sort_all_incident_data_fields_fetch_case_get_multiple_incidents_extra_d
     Then
         - Verify that alerts and artifacts are found.
     """
-    from CortexXDRIR import sort_all_incident_data_fields_fetch
+    from CortexXDRIR import sort_incident_data, sort_all_list_incident_fields
     incident_case_get_multiple_incidents_extra_data = load_test_data('./test_data/get_multiple_incidents_extra_data.json')\
         .get('reply').get('incidents')[0]
-    incident_data = sort_all_incident_data_fields_fetch(incident_case_get_multiple_incidents_extra_data, None)
-    mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Incoming"})
+    incident_data = sort_incident_data(incident_case_get_multiple_incidents_extra_data)
+    sort_all_list_incident_fields(incident_data)
     assert incident_data.get('alerts')
     assert incident_data.get('incident_sources')
-    assert incident_data.get('last_mirrored_in')
+
     
