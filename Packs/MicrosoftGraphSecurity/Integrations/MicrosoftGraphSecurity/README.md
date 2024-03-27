@@ -76,6 +76,7 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
     | Fetch incidents of the given providers only. | Relevant only for Legacy Alerts. Multiple providers can be inserted separated by a comma, for example "\{first_provider\},\{second_provider\}". If empty, incidents of all providers will be fetched. | False |
     | Fetch incidents of the given service sources only. | Relevant only for Alerts v2. Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftCloudAppSecurity",. If empty, incidents of all providers will be fetched. | False |
     | Fetched incidents filter | Use this field to filter fetched incidents according to any of the alert properties. Overrides the providers list, if given. Filter should be in the format "\{property\} eq '\{property-value\}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'". | False |
+    | Microsoft 365 Defender context | Check to save the hunt query result to also in the Microsoft 365 Defender context path. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -2184,6 +2185,7 @@ and paste it in your instance configuration under the **Authorization code** par
 
 ***
 Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft Graph Security.
+To save result in context to 'Microsoft365Defender' as well, you can check the 'Microsoft 365 Defender context' checkbox in Instance Setting.
 
 #### Base Command
 

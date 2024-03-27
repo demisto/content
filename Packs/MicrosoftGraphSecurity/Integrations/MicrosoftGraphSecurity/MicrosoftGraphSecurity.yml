@@ -2105,7 +2105,7 @@ script:
       description: The specification for the incident.
     - name: odata
       description: Filter incidents using 'odata' query.
-    description: Get a list of incident objects that Microsoft 365 Defender created to track attacks in an organization. If you want a specific incident, just enter incident_id.
+    description: Get a list of incident objects that Microsoft graph created to track attacks in an organization. If you want a specific incident, just enter incident_id.
     name: msg-list-security-incident
     outputs:
     - contextPath: MsGraph.Incident.assignedTo
