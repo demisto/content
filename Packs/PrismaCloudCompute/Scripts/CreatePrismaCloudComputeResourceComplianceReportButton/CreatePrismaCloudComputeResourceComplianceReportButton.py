@@ -167,6 +167,11 @@ def send_xlsx_email(file_id: str, file_name: str, to_email: str, resource_type: 
     if is_error(res):
         raise DemistoException(f'Failed to send email with XLSX attachment: {str(get_error(res))}')
 
+    demisto.results(res)
+    return_results(CommandResults(
+        readable_output=res[0]['Contents']
+    ))
+
 
 def main() -> None:
     """
