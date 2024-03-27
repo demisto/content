@@ -202,7 +202,18 @@
 .get_last_upload_commit: &get_last_upload_commit
   - section_start "Getting last bucket upload commit" --collapsed
   - gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
-  - gsutil cp "gs://$GCS_PRODUCTION_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json"
+  - # if the $MARKETPLACE_BUCKET is not one of GCS_PRODUCTION_BUCKET, GCS_PRODUCTION_V2_BUCKET, GCS_PRODUCTION_XPANSE_BUCKET, GCS_PRODUCTION_XSOAR_SAAS_BUCKET, then we will use the default value of GCS_PRODUCTION_BUCKET
+  - |
+    case "$MARKETPLACE_BUCKET" in
+    "$GCS_PRODUCTION_BUCKET" | "$GCS_PRODUCTION_V2_BUCKET" | "$GCS_PRODUCTION_XPANSE_BUCKET" | "$GCS_PRODUCTION_XSOAR_SAAS_BUCKET")
+      echo "MARKETPLACE_BUCKET is set to: $MARKETPLACE_BUCKET"
+      ;;
+    *)
+      echo "MARKETPLACE_BUCKET is not one of the allowed buckets. Using default bucket: $DEFAULT_BUCKET"
+      MARKETPLACE_BUCKET="$GCS_PRODUCTION_BUCKET"
+      ;;
+  esac
+  - gsutil cp "gs://$MARKETPLACE_BUCKET/content/packs/index.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json"
   - export LAST_UPLOAD_COMMIT=$(cat "${ARTIFACTS_FOLDER_SERVER_TYPE}/previous_index.json" | jq -r ".\"commit\"")
   - section_end "Getting last bucket upload commit"
 
@@ -236,13 +247,13 @@
   - section_start "Checkout upload commit content nightly" --collapsed
   - | 
     if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
-      if [[ ! -d "${CI_PROJECT_DIR}/artifacts/production_packs" ]]; then
+      if [[ ! -d "${CI_PROJECT_DIR}/artifacts/production_packs_${MARKETPLACE_BUCKET}" ]]; then
         echo "content production packs do not exist in ${CI_PROJECT_DIR}/artifacts"
         exit 1
       fi
       rm -rf ./Packs
-      echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/production_packs to ./Packs"
-      cp -r ${CI_PROJECT_DIR}/artifacts/production_packs ./Packs
+      echo "copying production Packs folder from ${CI_PROJECT_DIR}/artifacts/production_packs_${MARKETPLACE_BUCKET} to ./Packs"
+      cp -r ${CI_PROJECT_DIR}/artifacts/production_packs_${MARKETPLACE_BUCKET} ./Packs
       git config core.fileMode false  # used to tell git not to identify permission changes on files as changes
       chmod -R 777 ./Packs  # required for the lint, we use the permissions of the file when running pytest within the containers
       echo "the Packs changes between upload commit ${LAST_UPLOAD_COMMIT} to master commit ${CI_COMMIT_SHA} is:"
@@ -305,7 +316,7 @@
   - git remote add origin https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git
   - git fetch --depth 1 origin $LAST_UPLOAD_COMMIT
   - git checkout FETCH_HEAD >${ARTIFACTS_FOLDER}/logs/add-content-production-to-artifacts.log 2>&1
-  - cp -r ./Packs ${ARTIFACTS_FOLDER}/production_packs
+  - cp -r ./Packs ${ARTIFACTS_FOLDER}/production_packs_${MARKETPLACE_BUCKET}
   - echo "checked out ${LAST_UPLOAD_COMMIT} which is the last successful upload commit"
   - section_end "Clone production content and add it to artifacts"
   - job-done
@@ -613,3 +624,13 @@ cloning-content-repo-last-upload-commit:
     ARTIFACTS_FOLDER: ${CI_PROJECT_DIR}/artifacts
   script:
     - !reference [.add-content-production-to-artifacts]
+    - export MARKETPLACE_BUCKET=$GCS_PRODUCTION_V2_BUCKET
+    - !reference [.get_last_upload_commit]
+    - !reference [.add-content-production-to-artifacts]
+    - export MARKETPLACE_BUCKET=$GCS_PRODUCTION_XPANSE_BUCKET
+    - !reference [.get_last_upload_commit]
+    - !reference [.add-content-production-to-artifacts]
+    - export MARKETPLACE_BUCKET=$GCS_PRODUCTION_XSOAR_SAAS_BUCKET
+    - !reference [.get_last_upload_commit]
+    - !reference [.add-content-production-to-artifacts]
+    - job-done
