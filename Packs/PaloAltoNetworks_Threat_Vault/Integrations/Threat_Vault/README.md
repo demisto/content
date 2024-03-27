@@ -1,5 +1,5 @@
 Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
-TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
+TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key. Before using the API, you must [generate an API key](https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClSMCA0) to authenticate API calls.
 
 ## Configure Palo Alto Networks Threat Vault on Cortex XSOAR
 
