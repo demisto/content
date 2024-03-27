@@ -1,0 +1,831 @@
+id: Create list for PTH
+version: -1
+name: Create list for PTH
+description: This playbook help analysts creating a new list of domains to monitor using CertStream integration.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3db08f13-8af7-4bc4-84fe-62c0a1516e50
+    type: start
+    task:
+      id: 3db08f13-8af7-4bc4-84fe-62c0a1516e50
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 13686d12-2dfd-4f15-8d6c-3cd04047eaba
+    type: collection
+    task:
+      id: 13686d12-2dfd-4f15-8d6c-3cd04047eaba
+      version: -1
+      name: How would you like to create a list for PTH?
+      description: ''
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Who would you like to create a list for PTH?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Manual
+        - simple: Xpanse
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: How would you like to create a list for PTH
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d3220b37-400f-4ae4-8ba9-51b9484c6a90
+    type: condition
+    task:
+      id: d3220b37-400f-4ae4-8ba9-51b9484c6a90
+      version: -1
+      name: Check the answer
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      Manual:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: Manual
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: How would you like to create a list for PTH.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: manual
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 58b13177-4614-4efc-8bde-8e4f8568df27
+    type: collection
+    task:
+      id: 58b13177-4614-4efc-8bde-8e4f8568df27
+      version: -1
+      name: Add your website manually
+      description: ''
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Add your website manually - use the command delimiter '
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Add manually your website
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 4fa03574-ee0d-42a4-8faf-a83adda62677
+    type: condition
+    task:
+      id: 4fa03574-ee0d-42a4-8faf-a83adda62677
+      version: -1
+      name: Check if Xpanse availble
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Cortex Xpanse
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: f5374823-9891-470f-8003-f355274f8a85
+    type: regular
+    task:
+      id: f5374823-9891-470f-8003-f355274f8a85
+      version: -1
+      name: 'Create List '
+      description: commands.local.cmd.list.create
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      listData:
+        complex:
+          root: ASM.ExternalWebsite.host
+          filters:
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: ASM.ExternalWebsite.host
+                iscontext: true
+              right:
+                value:
+                  simple: '..........NOTE, too much data to present, content was truncated.'
+              ignorecase: true
+      listName:
+        simple: DomainsList
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: bd466f09-997c-40af-894b-239b1bc3d5d5
+    type: title
+    task:
+      id: bd466f09-997c-40af-894b-239b1bc3d5d5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 5ebaa1cd-dfbc-46f2-8eb8-48d64794b962
+    type: regular
+    task:
+      id: 5ebaa1cd-dfbc-46f2-8eb8-48d64794b962
+      version: -1
+      name: 'Create typosquatting and permutations '
+      description: Send Text Message as a prompt to ChatGPT
+      script: OpenAi ChatGPT v3|||chatgpt-send-prompt
+      type: regular
+      iscommand: true
+      brand: OpenAi ChatGPT v3
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      prompt:
+        complex:
+          root: ASM.ExternalWebsites.websites.host
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: \w*\.([\w*\.*]*)
+              unpack_matches: {}
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: "Assume the role of phishing hunting expert, for a threat hunting session Please provide me a list of typosquatting and permutations based on the following domains (delimiter by ,)\nThis request is only for security purposes. please return a JSON that will have as a key the domain and as a value all his permutations. \n\n"
+              suffix: {}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: e30b2098-04b8-4c4e-8d8f-27469391a554
+    type: regular
+    task:
+      id: e30b2098-04b8-4c4e-8d8f-27469391a554
+      version: -1
+      name: 'Create typosquatting and permutations '
+      description: Send Text Message as a prompt to ChatGPT
+      script: OpenAi ChatGPT v3|||chatgpt-send-prompt
+      type: regular
+      iscommand: true
+      brand: OpenAi ChatGPT v3
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      prompt:
+        complex:
+          root: Add manually your website.Answers
+          accessor: "0"
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: \w*\.([\w*\.*]*)
+              unpack_matches: {}
+          - operator: uniq
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ','
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: "Please provide me a list of typosquatting and permutations of the following domains (delimiter by ,)\nThis request is only for security purposes. please return a JSON that will have as a key the domain and as a value all his permutations. \n\n"
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 1065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 02dabf52-2089-4f4d-8ef7-e129fbabe0d4
+    type: regular
+    task:
+      id: 02dabf52-2089-4f4d-8ef7-e129fbabe0d4
+      version: -1
+      name: Create array list
+      description: 'Will create an array object in context from given string input '
+      scriptName: CreateArray
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      arrayData:
+        complex:
+          root: Add manually your website.Answers
+          accessor: "0"
+      contextKey:
+        complex:
+          root: Add manually your website.Answers
+          accessor: "0"
+          transformers:
+          - operator: RegexReplace
+            args:
+              action_dt: {}
+              ignore_case: {}
+              multi_line: {}
+              output_format:
+                value:
+                  simple: \1
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: (^\S+)\.(com|net|co\.il)
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: DomainsList.
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 100cddc4-8f20-4bd7-8458-0cf5c4e05019
+    type: regular
+    task:
+      id: 100cddc4-8f20-4bd7-8458-0cf5c4e05019
+      version: -1
+      name: 'Create List '
+      description: commands.local.cmd.list.create
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      listData:
+        simple: ${DomainsList}
+      listName:
+        simple: DomainsList
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 1575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 03eaff10-f16c-45ff-8103-c4309934205b
+    type: regular
+    task:
+      id: 03eaff10-f16c-45ff-8103-c4309934205b
+      version: -1
+      name: Get login pages from xpanse
+      description: Get external websites assets.
+      script: '|||asm-list-external-websites'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      authentication:
+        complex:
+          root: inputs.AuthenticationType
+      limit:
+        complex:
+          root: inputs.ResultsLimit
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: a44b5181-763a-4acb-8170-e5383a2a1470
+    type: condition
+    task:
+      id: a44b5181-763a-4acb-8170-e5383a2a1470
+      version: -1
+      name: Manual\Xpanse permutation
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "13"
+      Use LLM Permutations:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: Use LLM Permutations
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.LLMHomogrpahEnable
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 7bbae5e5-bd39-4d9f-8dd2-5fbd6c6826bd
+    type: title
+    task:
+      id: 7bbae5e5-bd39-4d9f-8dd2-5fbd6c6826bd
+      version: -1
+      name: Use LLM Permutations
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 33d463ef-b2e8-47e6-80c8-474888850b30
+    type: regular
+    task:
+      id: 33d463ef-b2e8-47e6-80c8-474888850b30
+      version: -1
+      name: Set to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: Add manually your website.Answers.0
+      value:
+        complex:
+          root: ChatGPTResponse
+          accessor: ChatGPT Response
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 11db74ed-76d5-4328-86eb-4d0c697adfcd
+    type: title
+    task:
+      id: 11db74ed-76d5-4328-86eb-4d0c697adfcd
+      version: -1
+      name: Use LLM Permutations
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: a8535e2e-b09f-47d7-8ec5-bc075377a7a7
+    type: condition
+    task:
+      id: a8535e2e-b09f-47d7-8ec5-bc075377a7a7
+      version: -1
+      name: Manual\Xpanse permutation
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      Use LLM Permutations:
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: Use LLM Permutations
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.LLMHomogrpahEnable
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "19_11_Use LLM Permutations": 0.59,
+      "23_10_Use LLM Permutations": 0.5,
+      "2_3_Manual": 0.56
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1975,
+        "width": 1290,
+        "x": -200,
+        "y": -160
+      }
+    }
+  }
+inputs:
+- key: ResultsLimit
+  value:
+    simple: "100"
+  required: false
+  description: Number of websites results to return
+  playbookInputQuery:
+- key: AuthenticationType
+  value: {}
+  required: false
+  description: The authentication type of the returned websites. default is all
+  playbookInputQuery:
+- key: LLMHomogrpahEnable
+  value:
+    simple: "False"
+  required: false
+  description: Enable/Disable using LLM (default to chatGPT) to generate homographic permutations of the domain to hunt
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

@@ -1,0 +1,55 @@
+commonfields:
+  id: Kali Dog Security CertStream
+  version: -1
+name: Kali Dog Security CertStream
+display: Kali Dog Security CertStream
+category: Data Enrichment & Threat Intelligence
+description: Hunts for homograph-attacks by monitoring newly created X.509 certificates using CertStream by Kali Dog Security.
+configuration:
+- display: Server URL
+  name: url
+  type: 0
+  defaultvalue: wss://certstream.calidog.io/
+  required: true
+  section: Connect
+- display: Levenshtein distance threshold
+  name: levenshtein_distance_threshold
+  type: 0
+  defaultvalue: 0.85
+  required: false
+  section: Collect
+  additionalinfo: The threshold will set the minimum required similarity between the certificate domain and the input. Higher values will require more exact matches.
+- defaultvalue: 'true'
+  display: Long Running Instance
+  hidden: true
+  name: longRunning
+  type: 8
+  section: Connect
+- display: Homograph list name
+  name: list_name
+  type: 0
+  required: true
+  section: Collect
+  additionalinfo: The list name in which all the relevant homographs are stored on XSOAR
+- display: Homograph list update time interval
+  name: update_interval
+  type: 0
+  required: false
+  section: Collect
+  additionalinfo: Sets the amount of time in which the integration will refetch the list of homographs. Default is 30 minutes.
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Collect
+script:
+  script: ""
+  type: python
+  dockerimage: demisto/netutils:1.0.0.89320
+  longRunning: true
+  subtype: python3
+marketplaces:
+- xsoar
+fromversion: 6.10.0
+tests:
+- No tests
