@@ -31,10 +31,6 @@ def run_prisma_cloud_compute_containers_scan_list(container_id: str) -> list:
         list
     """
 
-    # Validate container_id length
-    if len(container_id) != 64:
-        return_error("Invalid container_id. Please verify that you entered a valid 64-character container id.")
-
     args = {'container_ids': container_id}
 
     # Run the prisma-cloud-compute-container-scan-results-list command
@@ -142,6 +138,10 @@ def main() -> None:
         # Get user-provided arguments
         container_id = demisto.getArg('container_id')
         compliance_ids = demisto.getArg('compliance_ids')
+
+        # Validate container_id length
+        if len(container_id) != 64:
+            return_error("Invalid container_id. Please verify that you entered a valid 64-character container id.")
 
         # Run the command with the provided arguments
         compliance_issues = run_prisma_cloud_compute_containers_scan_list(container_id)

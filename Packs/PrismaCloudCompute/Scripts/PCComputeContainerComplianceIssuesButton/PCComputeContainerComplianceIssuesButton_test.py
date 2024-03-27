@@ -1,7 +1,8 @@
 from PCComputeContainerComplianceIssuesButton import (
     run_prisma_cloud_compute_containers_scan_list,
     filter_compliance_issues,
-    process_and_output_compliance_issues)
+    process_and_output_compliance_issues,
+    main)
 import pytest
 import json
 import demistomock as demisto  # noqa: F401
@@ -32,20 +33,21 @@ PROCESSED_TEST_CASES = [
              'The /tmp directory is a world-writable directory used for temporary storage by all users\nand some applications.'}
     ]),
     (
-    {'compliance_issues': [compliance_issues[0], compliance_issues[1], compliance_issues[2]], 'compliance_ids': '6112,6116,6117'},
-    [
-        {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
-         'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
-         'Description':
-             'The /tmp directory is a world-writable directory used for temporary storage by all users\nand some applications.'},
-        {'ComplianceID': '6116', 'Cause': 'The directory /var should be mounted. File: /proc/mounts',
-         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.6) Ensure separate partition exists for /var',
-         'Description': 'Description for compliance ID 6116'},
-        {'ComplianceID': '6117', 'Cause': 'The directory /var/tmp should be mounted. File: /proc/mounts',
-         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.7) Ensure separate partition exists for /var/tmp',
-         'Description':
-             'Description for compliance ID 6117'}
-    ]),
+        {'compliance_issues': [compliance_issues[0], compliance_issues[1],
+                               compliance_issues[2]], 'compliance_ids': '6112,6116,6117'},
+        [
+            {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
+             'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
+             'Description':
+                 'The /tmp directory is a world-writable directory used for temporary storage by all users\nand some applications.'},
+            {'ComplianceID': '6116', 'Cause': 'The directory /var should be mounted. File: /proc/mounts',
+             'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.6) Ensure separate partition exists for /var',
+             'Description': 'Description for compliance ID 6116'},
+            {'ComplianceID': '6117', 'Cause': 'The directory /var/tmp should be mounted. File: /proc/mounts',
+             'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.7) Ensure separate partition exists for /var/tmp',
+             'Description':
+                 'Description for compliance ID 6117'}
+        ]),
     ({'compliance_issues': compliance_issues, 'compliance_ids': ''}, [
         {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
          'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
@@ -82,14 +84,6 @@ def test_run_prisma_cloud_compute_containers_scan_list(mocker):
     returned_compliance_issues = run_prisma_cloud_compute_containers_scan_list(
         "e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82")
 
-    # Check the results
-    # results = demisto.results.call_args[0][0]
-    # assert results.get('Tags') == ['ComplianceIssuesResults']
-
-    # outputs = results['EntryContext']
-    # assert outputs.get('PrismaCloudCompute.PCC_ContainerComplianceIssues', []).get('compliance_issues') == compliance_issues
-
-    # readable_output = results['HumanReadable']
     assert returned_compliance_issues == compliance_issues
 
 
@@ -103,3 +97,15 @@ def test_filter_compliance_issues(args, expected):
 def test_process_and_output_compliance_issues(args, expected):
     processed_results = process_and_output_compliance_issues(args.get('compliance_issues'), args.get('container_id'))
     assert processed_results.outputs['compliance_issues'] == expected
+
+
+RETURN_ERROR_TARGET = 'PCComputeContainerComplianceIssuesButton.return_error'
+
+
+def test_run_prisma_cloud_compute_containers_scan_list_with_error(mocker):
+    # Mock the necessary components
+    mocker.patch.object(demisto, 'getArg', side_effect='invalid_image_id')
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    main()
+    err_msg = return_error_mock.call_args_list[0][0][0]
+    assert 'Invalid container_id. Please verify that you entered a valid 64-character container id.' in err_msg
