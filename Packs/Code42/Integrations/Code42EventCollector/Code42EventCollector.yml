@@ -64,7 +64,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: devdemisto/vendors-sdk:1.0.0.91093
+  dockerimage: demisto/py42:1.0.0.91520
   isfetchevents: true
 fromversion: 8.4.0
 marketplaces:
