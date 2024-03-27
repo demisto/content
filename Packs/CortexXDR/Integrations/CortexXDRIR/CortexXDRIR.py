@@ -311,7 +311,6 @@ class Client(CoreClient):
         )
 
         incident = reply.get('reply')
-
         return incident
 
     def save_modified_incidents_to_integration_context(self):
