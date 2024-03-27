@@ -193,7 +193,7 @@ def test_detections_to_entry_without_endpoint(mocker):
     assert result['Contents'][0] == expected_result
 
 
-def test_detections_to_entry_without_erelationships(mocker):
+def test_detections_to_entry_without_relationships(mocker):
     """
     Given:
      - detection data with missing 'relationship' details
