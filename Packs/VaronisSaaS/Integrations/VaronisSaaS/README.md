@@ -29,7 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### varonis-get-threat-models
 
 ***
-Get Varonis threat models
+Get Varonis threat models  
 
 #### Base Command
 
@@ -37,13 +37,9 @@ Get Varonis threat models
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| id | List of requested threat model ids. | Optional | 
-| name | List of requested threat model names. | Optional | 
-| category | List of requested threat model categories. | Optional | 
-| severity | List of requested threat model severities. | Optional | 
-| source | List of requested threat model sources. | Optional | 
+| **Argument Name** | **Description**                                                                            | **Required** |
+| --- |--------------------------------------------------------------------------------------------|--------------|
+| name | List of requested threat model names. Pipe (`\|`) separated and wildcards (`*`) supported. | Optional |
 
 #### Context Output
 
@@ -51,13 +47,13 @@ Get Varonis threat models
 | --- |----------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | ID | Number   | ID of the threat model                                                                                                                                                                                                              | 
 | Name | String   | Name of the threat model                                                                                                                                                                                                     | 
-| Category | String   | Category of the threat model                                                                                                                                                                                                              | 
-| Severity | String   | Severity of the threat model                                                                                                                                                                                                              | 
-| Source | String   | Predefined/User-defined                                                                                                                                                                                                     | 
+                                                                                                                                                                                                | 
 
 
 #### Command example
-```!varonis-get-threat-models id="1" name="Abnormal service behavior: access to atypical folders" category="Exfiltration" severity="Error"```
+```!varonis-get-threat-models```  
+```!varonis-get-threat-models name="*access to*|Domain controller*"```
+
 #### Context Example
 ```json
 [
@@ -122,7 +118,7 @@ Get alerts from Varonis DA
 | Varonis.Alert.Location.CountryName | String | Name of the country from which the event occurred                                                                                                                                                                                    | 
 | Varonis.Alert.Location.SubdivisionName | String | Name of the state or regional subdivision from which the event occurred                                                                                                                                                              | 
 | Varonis.Alert.Status.Name | String | Alert state. Options are:<br/>- New<br/>- Under investigation<br/>- Closed<br/>- Action Required<br/>- Auto-Resolved                                                                                                                 |
-| Varonis.Alert.CloseReason.Name | String | Reason the alert was closed. Options are:<br/>- Resolved<br/>- Misconfiguration<br/>- Threat model disabled or deleted<br/>- Account misclassification<br/>- Legitimate activity<br/>- Other                                         |
+| Varonis.Alert.CloseReason.Name | String | Reason the alert was closed. Options are:<br/>- Other<br/>- Benign activity<br/>- True positive<br/>- Environment misconfiguration<br/>- Alert recently customized<br/>- Inaccurate alert logic<br/>- Authorized activity                                        |
 | Varonis.Alert.Location.BlacklistedLocation | Boolean | Whether any of the geographical locations from which an alerted activity originated was on the blacklist at the time the activity occurred                                                                                           | 
 | Varonis.Alert.Location.AbnormalLocation | Boolean | Whether any of the geographical locations from which an alerted activity originated is new or abnormal to the organization, the user and peers, or only the user                                                                     | 
 | Varonis.Alert.EventsCount | Number | Number of events with alerts                                                                                                                                                                                                         | 
@@ -367,7 +363,7 @@ Close the alert
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | Requested alerts. | Required | 
-| close_reason | The reason the alert was closed. Possible values are: Resolved, Misconfiguration, Threat model disabled or deleted, Account misclassification, Legitimate activity, Other. | Required | 
+| close_reason | The reason the alert was closed. Possible values are: Other, Benign activity, True positive, Environment misconfiguration, Alert recently customized, Inaccurate alert logic, Authorized activity. | Required | 
 | note | Note. | Optional | 
 
 #### Context Output
@@ -375,7 +371,7 @@ Close the alert
 There is no context output for this command.
 
 #### Command example
-```!varonis-close-alert  alert_id=C98A3E72-99E9-4E5C-A560-7D04FA60686E close_reason="Account misclassification"  note="Alert is irrelevant. Closed" ```
+```!varonis-close-alert  alert_id=C98A3E72-99E9-4E5C-A560-7D04FA60686E close_reason="Inaccurate alert logic"  note="Alert is irrelevant. Closed" ```
 
 
 
