@@ -372,6 +372,23 @@ tasks:
       file_sys_id:
         complex:
           root: ServiceNow.Record
+          filters:
+          - - operator: startWith
+              left:
+                value:
+                  simple: ServiceNow.Record.file_name
+                iscontext: true
+              right:
+                value:
+                  simple: PCC_
+          - - operator: endWith
+              left:
+                value:
+                  simple: ServiceNow.Record.file_name
+                iscontext: true
+              right:
+                value:
+                  simple: xlsx
           accessor: ID
     separatecontext: false
     continueonerrortype: ""
@@ -1240,5 +1257,5 @@ outputs:
   type: string
 quiet: true
 tests:
-- PaloAltoNetworks_PrismaCloudCompute-Test
+- No tests (auto formatted)
 fromversion: 6.10.0

@@ -213,7 +213,7 @@ tasks:
       id: 5c8104d1-8e3b-4605-88df-bde79f4e3b4b
       version: -1
       name: Prepare Compliance Table (Layout)
-      description: Iterate over input information and add to output table context keys.
+      description: This task runs an automation which set the "prismacloudcomputehostcomplianceissues" incident field with the enriched data. When filled, it will be visible in the layout.
       scriptName: PrismaCloudComputeComplianceTable
       type: regular
       iscommand: false
@@ -659,5 +659,5 @@ inputs:
 outputs: []
 quiet: true
 tests:
-- PaloAltoNetworks_PrismaCloudCompute-Test
+- No tests (auto formatted)
 fromversion: 6.10.0

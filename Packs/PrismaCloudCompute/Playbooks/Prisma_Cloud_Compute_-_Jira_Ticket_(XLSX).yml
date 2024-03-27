@@ -373,6 +373,23 @@ tasks:
       attachment_id:
         complex:
           root: Ticket.Attachments
+          filters:
+            - - operator: startWith
+                left:
+                  value:
+                    simple: Ticket.Attachments.filename
+                  iscontext: true
+                right:
+                  value:
+                    simple: PCC_
+            - - operator: endWith
+                left:
+                  value:
+                    simple: Ticket.Attachments.filename
+                  iscontext: true
+                right:
+                  value:
+                    simple: xlsx
           accessor: id
     separatecontext: false
     continueonerrortype: ""
@@ -1248,5 +1265,5 @@ outputs:
   type: string
 quiet: true
 tests:
-- PaloAltoNetworks_PrismaCloudCompute-Test
+- No tests (auto formatted)
 fromversion: 6.10.0

@@ -580,7 +580,7 @@ tasks:
       - "32"
     scriptarguments:
       brandname:
-        simple: ServiceNow v2_dev
+        simple: ServiceNow v2
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -857,5 +857,5 @@ inputs:
 outputs: []
 quiet: true
 tests:
-- PaloAltoNetworks_PrismaCloudCompute-Test
+- No tests (auto formatted)
 fromversion: 6.10.0
