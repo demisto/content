@@ -330,7 +330,6 @@ def test_auto_detect_indicator_type_from_cs(indicator: dict, expected_results: s
 
 
 def test_get_actors_names_request_check_output(mocker, requests_mock):
-    from CrowdStrikeIndicatorFeed import Client
     """
     Given
         - params for get_actors_names_request http request
@@ -353,7 +352,6 @@ def test_get_actors_names_request_check_output(mocker, requests_mock):
     
     
 def test_get_actors_names_request_called_with(mocker, requests_mock):
-    from CrowdStrikeIndicatorFeed import Client
     """
     Given
         - params for get_actors_names_request http request
@@ -374,25 +372,23 @@ def test_get_actors_names_request_called_with(mocker, requests_mock):
     http_request_mock.assert_called_once_with(method='GET', url_suffix='intel/entities/actors/v1?ids=123&fields=name', timeout=30)
 
 
-def test_get_actors_names_request111111(mocker, requests_mock):
-    from CrowdStrikeIndicatorFeed import Client
-    #TODO
+def test_crowdstrike_indicators_list_command_check_actors_convert(mocker, requests_mock):
     """
     Given
-        - no indicators api response
+        - params for crowdstrike_indicators_list_command http request
     When
-        - fetching indicators
+        - calling get_actors_names_request after fetching/listing indicators
     Then
-        - Ensure empty list is returned and no exception is raised.
+        - Ensure the response is correct
     """
     from CrowdStrikeIndicatorFeed import Client, crowdstrike_indicators_list_command
-
-    mock_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
+    mock_response = util_load_json('test_data/crowdstrike_test_actors_convert.json')
     requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
     requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
-    requests_mock.get(url='https://api.crowdstrike.com/intel/entities/actors/v1?ids=GOBLINPANDA&fields=name',
-                      json={'resources':{'name':'GOBLIN PANDA'}})
+    requests_mock.get(url='https://api.crowdstrike.com/intel/entities/actors/v1?ids=TESTTEST&fields=name',
+                      json={'resources':[{'name':'GOBLIN PANDA'}]})
     mocker.patch('CrowdStrikeIndicatorFeed.get_integration_context', return_value={})
+    mocker.patch('CrowdStrikeIndicatorFeed.update_integration_context')
     feed_tags = ['Tag1', 'Tag2']
     crowdstrike_client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
                     type='Domain', include_deleted='false', limit=2, feed_tags=feed_tags)
@@ -400,8 +396,29 @@ def test_get_actors_names_request111111(mocker, requests_mock):
         'limit': '2'
     }
     response = crowdstrike_indicators_list_command(crowdstrike_client, args)
-    assert len(response.outputs) == 3
-    assert len(response.raw_response) == 3
-    assert "Indicators from CrowdStrike Falcon Intel" in response.readable_output
-    assert "domain_abc" in response.readable_output
-    assert feed_tags[0] and feed_tags[1] in response.raw_response[0]['fields']['tags']
+    assert len(response.outputs) == 1
+    assert len(response.raw_response) == 1
+    assert len(response.raw_response[0].get('relationships', None)) == 2
+    assert response.raw_response[0].get('relationships', None)[1].get('entityB', None) == 'GOBLIN PANDA'
+    
+def test_change_actors_from_id_to_name(mocker, requests_mock):
+    """
+    Given
+        - params for change_actors_from_id_to_name http request
+    When
+        - calling get_actors_names_request after fetching/listing indicators
+    Then
+        - Ensure the response is correct
+    """
+    from CrowdStrikeIndicatorFeed import Client, change_actors_from_id_to_name
+    requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
+    crowdstrike_client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
+                type='Domain', include_deleted='false', limit=2)
+    actors_unparsed_array = ['TEST', 'TEST1', 'TEST2']
+    mocker.patch('CrowdStrikeIndicatorFeed.get_integration_context', return_value={'TEST':'WAS IN CONTEXT'})
+    requests_mock.get(url='https://api.crowdstrike.com/intel/entities/actors/v1?ids=TEST1&ids=TEST2&fields=name',
+                    json={'resources':[{'name':'Changedtest1'},{'name':'Changedtest2'}]})
+    result = change_actors_from_id_to_name(actors_unparsed_array, crowdstrike_client.get_actors_names_request)
+    assert result[0] == 'WAS IN CONTEXT'
+    assert result[1] == 'Changedtest1'
+    assert result[2] == 'Changedtest2'
