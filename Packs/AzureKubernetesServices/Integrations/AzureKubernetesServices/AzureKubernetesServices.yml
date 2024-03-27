@@ -211,25 +211,17 @@ script:
       description: The subscription DNS zone name.
       type: String
     arguments:
-    - default: false
-      isArray: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
   - arguments:
     - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
-      required: false
       type: String
-      isArray: false
     - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
       name: resource_group_name
-      required: false
       type: String
-      isArray: false
     - description: 'The name of the managed cluster resource. Can be retrieved using the azure-ks-clusters-list command.'
       name: resource_name
-      default: false
-      isArray: false
       required: true
     - auto: PREDEFINED
       description: 'Resource location, Can be retrieved using the azure-ks-clusters-list command.'
@@ -342,20 +334,13 @@ script:
   - description: Gets all resource groups for a subscription.
     name: azure-ks-resource-group-list
     arguments:
-    - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
-      isArray: false
+    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
-      required: false
-      secret: false
     - name: limit
       description: Limit on the number of resource groups to return.
-      required: false
       defaultValue: 50
-    - default: false
-      name: tag
+    - name: tag
       description: A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by.
-      required: false
     outputs:
     - contextPath: AzureKS.ResourceGroup.id
       description: 'The unique identifier of the Azure Kubernetes resource group.'
@@ -398,10 +383,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
 fromversion: 5.0.0
 tests:
 - Azure Kubernetes Services - Test
