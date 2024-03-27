@@ -3291,7 +3291,8 @@
         {
             "integrations": "Unit42v2 Feed",
             "playbookID": "unit42_atoms",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "memory_threshold": 115
         },
         {
             "integrations": "QRadar v3",
