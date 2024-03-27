@@ -8,6 +8,7 @@ import pytest
 from freezegun import freeze_time
 
 # Local imports
+import Akamai_SIEM
 from CommonServerPython import urljoin
 
 """Helper functions and fixrtures"""
@@ -16,6 +17,10 @@ with open('./Akamai_SIEM_test/TestCommandsFunctions/sec_events_empty.txt') as se
     SEC_EVENTS_EMPTY_TXT = sec_events_empty.read()
 with open('./Akamai_SIEM_test/TestCommandsFunctions/sec_events.txt') as sec_events:
     SEC_EVENTS_TXT = sec_events.read()
+with open('./Akamai_SIEM_test/TestCommandsFunctions/sec_events_six_results.txt') as sec_events_six_results:
+    SEC_EVENTS_SIX_RESULTS_TXT = sec_events_six_results.read()
+with open('./Akamai_SIEM_test/TestCommandsFunctions/sec_events_two_results.txt') as sec_events_two_results:
+    SEC_EVENTS_TWO_RESULTS_TXT = sec_events_two_results.read()
 
 
 def load_params_from_json(json_path, type=''):
@@ -128,3 +133,129 @@ class TestCommandsFunctions:
         expected_ec = load_params_from_json(json_path=datadir['get_events_expected_ec_2.json'])
 
         assert entry_context_tested == expected_ec, "Test query response with security events - check only entry context"
+
+    def test_fetch_events_command__sanity(self, client, mocker):
+        """
+        Given:
+        - A client object
+        - 500 events to pull in the 3rd party
+        - A fetch_limit of 220
+        When:
+        - Calling fetch_events_command()
+        Then:
+        - Ensure offset is updated in each iteration by checking its value
+        - Ensure 250 events are pulled (fetch_limit, rounded up to the nearest multiple of page_size=50)
+        """
+        num_of_results = 500
+        page_size = 50
+        num_of_pages = num_of_results // page_size
+        mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=[
+            (
+                [{"id": i + 1} for i in range(page_size * j, page_size * (j + 1))],
+                f"offset_{page_size * (j + 1)}",
+            )
+            for j in range(num_of_pages)
+        ])
+        total_events_count = 0
+
+        for events, offset in Akamai_SIEM.fetch_events_command(client, '3 days', 220, '', {}):
+            total_events_count += len(events)
+            assert offset == f"offset_{events[-1]['id']}"
+        assert total_events_count == 250
+
+    def test_fetch_events_command__no_results(self, client, requests_mock):
+        """
+        Given:
+        - A client object
+        - no events to pull from the 3rd party
+        - offset is 11111
+        When:
+        - Calling fetch_events_command()
+        Then:
+        - Ensure no events are returned and the offset is the same
+        """
+        from Akamai_SIEM import FETCH_EVENTS_PAGE_SIZE as size
+        total_events_count = 0
+        last_offset = "11111"
+        requests_mock.get(f'{BASE_URL}/50170?limit={size}&from=1575966002&offset={last_offset}', text=SEC_EVENTS_EMPTY_TXT)
+
+        for events, offset in Akamai_SIEM.fetch_events_command(client, '12 hours', 6, '50170', {"offset": last_offset}):
+            total_events_count += len(events)
+            last_offset = offset
+        assert total_events_count == 0
+        assert last_offset == "11111"
+
+    def test_fetch_events_command__limit_is_smaller_than_page_size(self, client, requests_mock, mocker):
+        """
+        Given:
+        - A client object
+        - 8 events to pull from the 3rd party
+        - page size is 6
+        - limit is 4
+        When:
+        - Calling fetch_events_command()
+        Then:
+        - Ensure 6 events are returned
+        """
+        mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_PAGE_SIZE", new=6, autospec=False)
+        total_events_count = 0
+        last_offset = None
+        requests_mock.get(f'{BASE_URL}/50170?limit=6&from=1575966002', text=SEC_EVENTS_SIX_RESULTS_TXT)
+        requests_mock.get(f'{BASE_URL}/50170?limit=6&from=1575966002&offset=218d9', text=SEC_EVENTS_TXT)
+        requests_mock.get(f'{BASE_URL}/50170?limit=6&from=1575966002&offset=318d8', text=SEC_EVENTS_EMPTY_TXT)
+
+        for events, offset in Akamai_SIEM.fetch_events_command(client, '12 hours', 4, '50170', {}):
+            total_events_count += len(events)
+            last_offset = offset
+        assert total_events_count == 6
+        assert last_offset == "218d9"
+
+    def test_fetch_events_command__limit_is_higher_than_page_size(self, client, requests_mock, mocker):
+        """
+        Given:
+        - A client object
+        - 8 events to pull from the 3rd party
+        - page size is 6
+        - limit is 20
+        When:
+        - Calling fetch_events_command()
+        Then:
+        - Ensure 8 events are returned
+        """
+        mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_PAGE_SIZE", new=6, autospec=False)
+        total_events_count = 0
+        last_offset = None
+        requests_mock.get(f'{BASE_URL}/50170?limit=6&from=1575966002', text=SEC_EVENTS_SIX_RESULTS_TXT)
+        requests_mock.get(f'{BASE_URL}/50170?limit=6&from=1575966002&offset=218d9', text=SEC_EVENTS_TXT)
+        requests_mock.get(f'{BASE_URL}/50170?limit=6&from=1575966002&offset=318d8', text=SEC_EVENTS_EMPTY_TXT)
+
+        for events, offset in Akamai_SIEM.fetch_events_command(client, '12 hours', 20, '50170', {}):
+            total_events_count += len(events)
+            last_offset = offset
+        assert total_events_count == 8
+        assert last_offset == "318d8"
+
+    def test_fetch_events_command__limit_reached(self, client, requests_mock, mocker):
+        """
+        Given:
+        - A client object
+        - 4 events to pull from the 3rd party
+        - page size is 2
+        - limit is 2
+        When:
+        - Calling fetch_events_command()
+        Then:
+        - Ensure 2 events are returned
+        - Ensure last_offset is the one returned from the last page we pulled events from (the 1st one)
+        """
+        mocker.patch.object(Akamai_SIEM, "FETCH_EVENTS_PAGE_SIZE", new=2, autospec=False)
+        total_events_count = 0
+        last_offset = None
+        requests_mock.get(f'{BASE_URL}/50170?limit=2&from=1575966002', text=SEC_EVENTS_TWO_RESULTS_TXT)
+        requests_mock.get(f'{BASE_URL}/50170?limit=2&from=1575966002&offset=117d9', text=SEC_EVENTS_TXT)
+
+        for events, offset in Akamai_SIEM.fetch_events_command(client, '12 hours', 2, '50170', {}):
+            total_events_count += len(events)
+            last_offset = offset
+        assert total_events_count == 2
+        assert last_offset == "117d9"
