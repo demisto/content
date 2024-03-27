@@ -251,7 +251,12 @@ class CollectionResult:
                             skip_reason=f'{test=} uses {integration=}, which is skipped ({reason=})'
                         )
                 test_marketplaces = conf.tests_to_marketplace_set[test]  # type: ignore[union-attr]
-                if test_marketplaces and (conf.marketplace not in test_marketplaces):  # type: ignore[union-attr]
+                logger.debug(f"{test_marketplaces=}, {conf.marketplace=}") # TODO
+                if test_marketplaces and (
+                    (conf.marketplace not in test_marketplaces) or
+                    # For XSIAM machines we collect tests that have not xsoar marketplace.
+                    # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces, will run on xsiam machines only.
+                    (conf.marketplace == MarketplaceVersions.MarketplaceV2 and MarketplaceVersions.XSOAR in test_marketplaces)):
                     raise IncompatibleTestMarketplaceException(test_name=test,
                                                                test_marketplaces=test_marketplaces,
                                                                expected_marketplace=conf.marketplace)  # type: ignore[union-attr]
@@ -556,7 +561,7 @@ class TestCollector(ABC):
             # we do want to install packs in this case (tests are not collected in this case anyway)
             logger.info(f'pack {pack_id} has support level {e.support_level} (not xsoar), '
                         f'collecting to make sure it is installed properly.')
-        except IncompatibleMarketplaceException:
+        except IncompatibleMarketplaceException: # todo
             is_xsoar_and_xsiam_pack = MarketplaceVersions.XSOAR in (pack_metadata.marketplaces or ()) and \
                 MarketplaceVersions.MarketplaceV2 in (pack_metadata.marketplaces or ())
 
@@ -754,16 +759,17 @@ class TestCollector(ABC):
             logger.debug(f'{content_item_path} has no marketplaces set, '
                          f'using default={DEFAULT_MARKETPLACES_WHEN_MISSING}')
             content_item_marketplaces = DEFAULT_MARKETPLACES_WHEN_MISSING
+        logger.debug(f"{content_item_marketplaces=}, {content_item_path=}")
 
         match self.marketplace:
             case MarketplaceVersions.MarketplaceV2:
+                # TODO - remove comment?
                 # For XSIAM machines we collect tests that have not xsoar marketplace.
                 # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
                 # will run on xsiam machines only.
                 # However only xsiam component files will be collected anyway in
                 # _collect_xsiam_and_modeling_pack function.
-                if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
-                        (MarketplaceVersions.XSOAR in content_item_marketplaces):
+                if self.marketplace not in content_item_marketplaces:
                     raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
             case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE | MarketplaceVersions.XSOAR_SAAS:
                 if self.marketplace not in content_item_marketplaces:
@@ -1049,7 +1055,7 @@ class BranchTestCollector(TestCollector):
         try:
             content_item = ContentItem(path)
             self._validate_content_item_compatibility(content_item, is_integration='Integrations' in path.parts)
-        except IncompatibleMarketplaceException:
+        except IncompatibleMarketplaceException: # TODO
             if file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES):
                 raise
         except NonDictException:
@@ -1057,7 +1063,8 @@ class BranchTestCollector(TestCollector):
 
         pack_id = find_pack_folder(path).name
         reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
-
+        logger.debug(f"{file_type=}")
+        logger.debug(f"{(file_type in FileType.TEST_PLAYBOOK)=}")
         if file_type in ONLY_INSTALL_PACK_FILE_TYPES:
             content_item_range = content_item.version_range if content_item else None
 
@@ -1069,6 +1076,8 @@ class BranchTestCollector(TestCollector):
 
             else:
                 # install pack without collecting tests.
+                logger.debug("install pack without collecting tests.")
+
                 return self._collect_pack(
                     pack_id=pack_id,
                     reason=CollectionReason.NON_CODE_FILE_CHANGED,
@@ -1077,6 +1086,8 @@ class BranchTestCollector(TestCollector):
                 )
 
         if file_type in ONLY_UPLOAD_PACK_FILE_TYPES:
+            logger.debug("ONLY_UPLOAD_PACK_FILE_TYPES")
+
             return self._collect_pack(
                 pack_id=pack_id,
                 reason=CollectionReason.README_FILE_CHANGED,
@@ -1085,6 +1096,7 @@ class BranchTestCollector(TestCollector):
             )
 
         if content_item:
+            logger.debug(f"{content_item=}")
             try:
                 '''
                 Upon reaching this part, we know the file is a content item (and not release note config, scheme, etc.)
@@ -1123,6 +1135,7 @@ class BranchTestCollector(TestCollector):
                 reason_description = f'no specific tests for {relative_path} were found'
 
         elif path.suffix == '.yml':  # file_type is often None in these cases
+            logger.debug("_collect_yml")
             return self._collect_yml(path)  # checks for containing folder (content item type)
 
         elif file_type is None:
