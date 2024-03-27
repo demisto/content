@@ -40,7 +40,8 @@ PROCESSED_TEST_CASES = [
                 "Cause": "The directory /tmp should be mounted. File: /proc/mounts",
                 "Severity": "high",
                 "Title": "(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured",
-                "Description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand some applications.",
+                "Description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand "
+                               "some applications.",
             }
         ],
     ),
@@ -59,7 +60,8 @@ PROCESSED_TEST_CASES = [
                 "Cause": "The directory /tmp should be mounted. File: /proc/mounts",
                 "Severity": "high",
                 "Title": "(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured",
-                "Description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand some "
+                "Description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand "
+                               "some "
                 "applications.",
             },
             {
@@ -86,7 +88,8 @@ PROCESSED_TEST_CASES = [
                 "Cause": "The directory /tmp should be mounted. File: /proc/mounts",
                 "Severity": "high",
                 "Title": "(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured",
-                "Description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand some applications.",
+                "Description": "The /tmp directory is a world-writable directory used for temporary storage by all users\nand "
+                               "some applications.",
             },
             {
                 "ComplianceID": "6116",
