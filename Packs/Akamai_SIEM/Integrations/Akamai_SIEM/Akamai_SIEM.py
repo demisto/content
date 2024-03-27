@@ -400,6 +400,8 @@ def fetch_events_command(
         events, offset = client.get_events_with_offset(config_ids, offset, FETCH_EVENTS_PAGE_SIZE, from_epoch)
         if not events:
             break
+        for event in events:
+            
         total_events_count += len(events)
         yield events, offset
 
