@@ -22,6 +22,16 @@ with open("test_data/hosts_table.json") as file:
 
 
 def test_filter_resources_no_desired_resources():
+    """
+    Given:
+        Hosts table.
+
+    When:
+        Running filter_resources
+
+    Then:
+        Assert the returned output matches the given hosts table.
+    """
     # Test with no desired resources
     filtered_data = filter_resources(test_table_data, 'host', [])
     # Assert that the filtered data matches the input data
@@ -29,6 +39,16 @@ def test_filter_resources_no_desired_resources():
 
 
 def test_filter_resources_with_desired_resources():
+    """
+    Given:
+        Hosts table and a desired resource.
+
+    When:
+        Running filter_resources
+
+    Then:
+        Assert the returned output matches filtered hosts table based on the given desired resource.
+    """
     desired_resource = "VM001-MYRESOURCEGROUPNAT-abc123-def456-ghi789-jkl012"
     # Test with a desired resource
     filtered_data = filter_resources(test_table_data, 'host', [desired_resource])
@@ -37,6 +57,16 @@ def test_filter_resources_with_desired_resources():
 
 
 def test_filter_severities_no_desired_severities():
+    """
+    Given:
+        Hosts table.
+
+    When:
+        Running filter_severities
+
+    Then:
+        Assert the returned output matches the given hosts table.
+    """
     # Test with no desired severities
     filtered_data = filter_severities(test_table_data, [])
     # Assert that the filtered data matches the input data
@@ -44,6 +74,16 @@ def test_filter_severities_no_desired_severities():
 
 
 def test_filter_severities_with_critical_severity():
+    """
+    Given:
+        Hosts table and a desired severity.
+
+    When:
+        Running filter_severities
+
+    Then:
+        Assert the returned output matches filtered hosts table based on the given desired severity.
+    """
     # Test with critical severity only
     filtered_data = filter_severities(test_table_data, ['critical'])
     # Assert that the filtered data contains only entries with critical severity
@@ -64,6 +104,16 @@ with open("test_data/html_images_table_pre_transform.html") as file:
 
 
 def test_transform_html_for_resource_host():
+    """
+    Given:
+        Hosts HTML data.
+
+    When:
+        Running transform_html_for_resource
+
+    Then:
+        Assert the returned output contains the desired changes.
+    """
     # Test transformation for resource type 'host'
     transformed_html = transform_html_for_resource(html_hosts_test_data, "host")
     # Assert transformations for 'host'
@@ -75,6 +125,16 @@ def test_transform_html_for_resource_host():
 
 
 def test_transform_html_for_resource_container():
+    """
+    Given:
+        Containers HTML data.
+
+    When:
+        Running transform_html_for_resource
+
+    Then:
+        Assert the returned output contains the desired changes.
+    """
     # Test transformation for resource type 'container'
     transformed_html = transform_html_for_resource(html_containers_test_data, "container")
     # Assert transformations for 'container'
@@ -88,6 +148,16 @@ def test_transform_html_for_resource_container():
 
 
 def test_transform_html_for_resource_image():
+    """
+    Given:
+        Images HTML data.
+
+    When:
+        Running transform_html_for_resource
+
+    Then:
+        Assert the returned output contains the desired changes.
+    """
     # Test transformation for resource type 'image'
     transformed_html = transform_html_for_resource(html_images_test_data, "image")
     # Assert transformations for 'image'
@@ -116,6 +186,16 @@ def email_data():
 
 @patch("CreatePrismaCloudComputeResourceComplianceReportButton.demisto.executeCommand")
 def test_send_html_email(mock_executeCommand, html_content, email_data):
+    """
+    Given:
+        Email data and html content
+
+    When:
+        Running send_html_email
+
+    Then:
+        Assert the mocked send command with the expected body and output.
+    """
     mock_executeCommand.return_value = [{'Type': EntryType.NOTE, "Contents": "Email sent successfully"}]
     send_html_email(**email_data)
     expected_html_body = email_data['html'].strip()
@@ -147,6 +227,16 @@ def email_xlsx_data():
 
 @patch("CreatePrismaCloudComputeResourceComplianceReportButton.demisto.executeCommand")
 def test_send_xlsx_email(mock_executeCommand, email_xlsx_data):
+    """
+    Given:
+        Email data and xlsx data
+
+    When:
+        Running send_xlsx_email
+
+    Then:
+        Assert the mocked send command with the expected body and output.
+    """
     mock_executeCommand.return_value = [{"Type": "NOTE", "Contents": "Email sent successfully"}]
     send_xlsx_email(**email_xlsx_data)
     mock_executeCommand.assert_called_once_with(
@@ -165,6 +255,16 @@ RETURN_ERROR_TARGET = 'CreatePrismaCloudComputeResourceComplianceReportButton.re
 
 
 def test_main_function_with_error(mocker):
+    """
+    Given:
+        An invalid output_type
+
+    When:
+        Running main
+
+    Then:
+        Assert the returned error matches the expected error.
+    """
     # Mock the necessary components
     mocker.patch.object(demisto, 'args', return_value={'table': test_table_data, 'to': 'example@example.com',
                                                        'output_type': 'invalid', 'resource_type': 'host'})
