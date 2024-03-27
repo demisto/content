@@ -1938,7 +1938,7 @@ def main() -> None:
 
         # This is the call made when pressing the integration Test button.
         if demisto.command() == 'test-module':
-            result = test_module(client, params)
+            result = test_module(client)
             demisto.results(result)
 
         elif command in commands:
