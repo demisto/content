@@ -7,7 +7,7 @@ This script takes in a dictionary and returns a dictionary with all nested dicti
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Cortex XSOAR Version | 5.5.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 
