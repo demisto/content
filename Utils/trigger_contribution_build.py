@@ -70,33 +70,33 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
         issue.create_comment(COMMENT_MESSAGES.build_request_accepted)
         # Casting to PR object due to Module limitation (Issue object does not have a `branch name` attribute).
         pull_request = issue.as_pull_request()
-        github_branch_name = pull_request.base.ref
+        github_branch_name = pull_request.head.ref # change to pull_request.base.ref
 
-        # # TODO: remove this specific if statement when done testing
-        # if (github_branch_name == "test-pr/add-trigger-contribution-build-job"):  # noqa: SIM102
+        # TODO: remove this specific if statement when done testing
+        if (github_branch_name == "test-pr/add-trigger-contribution-build-job"):  # noqa: SIM102
 
-        # get the corresponding GitLab branch object corresponding to the GitHub branch
-        if branch := gitlab_project.branches.get(github_branch_name):
-            print(f'--- Handling branch: {branch.name}. ---')
+            # get the corresponding GitLab branch object corresponding to the GitHub branch
+            if branch := gitlab_project.branches.get(github_branch_name):
+                print(f'--- Handling branch: {branch.name}. ---')
 
-            cancel_active_pipelines(gitlab_project, branch)
+                cancel_active_pipelines(gitlab_project, branch)
 
-            variables = {
-                "CONTRIB_BRANCH": branch.name,
-                "PULL_REQUEST_NUMBER": str(pull_request.number),
-                "CI_COMMIT_BRANCH": branch.name,
-                "CI_PIPELINE_SOURCE": "contrib",
-            }
-            new_pipeline = gitlab_project.trigger_pipeline(
-                ref=branch.name, token=args.gitlab_trigger_token, variables=variables
-            )
+                variables = {
+                    "CONTRIB_BRANCH": branch.name,
+                    "PULL_REQUEST_NUMBER": str(pull_request.number),
+                    "CI_COMMIT_BRANCH": branch.name,
+                    "CI_PIPELINE_SOURCE": "contrib",
+                }
+                new_pipeline = gitlab_project.trigger_pipeline(
+                    ref=branch.name, token=args.gitlab_trigger_token, variables=variables
+                )
 
-            print(f"New pipeline triggered: {new_pipeline.web_url}")
-            issue.create_comment(COMMENT_MESSAGES.build_triggered.format(url=new_pipeline.web_url))
+                print(f"New pipeline triggered: {new_pipeline.web_url}")
+                issue.create_comment(COMMENT_MESSAGES.build_triggered.format(url=new_pipeline.web_url))
 
-        else:
-            print(f"No branch was found with the name: {github_branch_name}. New pipeline was not created.")
-            issue.create_comment(COMMENT_MESSAGES.build_trigger_failed.format(branch=github_branch_name))
+            else:
+                print(f"No branch was found with the name: {github_branch_name}. New pipeline was not created.")
+                issue.create_comment(COMMENT_MESSAGES.build_trigger_failed.format(branch=github_branch_name))
 
     issue.remove_from_labels(GITHUB_TRIGGER_BUILD_LABEL)
 
