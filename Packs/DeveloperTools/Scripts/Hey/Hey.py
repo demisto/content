@@ -1,16 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import re
 import subprocess
-from typing import Tuple
 
-import urllib3
-
-
-# disable insecure warnings
-urllib3.disable_warnings()
 
 # ---------- CONSTANTS ---------- #
+
 
 FLOAT_RE = r'\d+\.\d+'
 INT_RE = r'\d+'
@@ -28,7 +22,7 @@ def try_re(pattern: str, string: str, i: int = 0) -> Optional[Any]:
 
 
 def name_value_arg_to_dict(arg: Optional[str]):
-    parsed_input: Dict[str, str] = {}
+    parsed_input: dict[str, str] = {}
     if arg:
         args = argToList(arg)
         for item in args:
@@ -53,8 +47,9 @@ def construct_hey_query(url: str,
                         headers: Optional[str] = None,
                         body: Optional[str] = None,
                         proxy: Optional[str] = None,
+                        user: Optional[str] = None,
                         enable_http2: Optional[str] = None,
-                        disable_redirects: Optional[str] = None):
+                        disable_redirects: Optional[str] = None) -> tuple[dict, str]:
     hey_map = assign_params(
         t=timeout,
         n=requests_number,
@@ -62,7 +57,8 @@ def construct_hey_query(url: str,
         m=method,
         z=duration + 's' if duration else None,
         d=body,
-        x=proxy
+        x=proxy,
+        a=user,
     )
     hey_query = "hey "
     if disable_compression == 'true':
@@ -75,7 +71,7 @@ def construct_hey_query(url: str,
         for header_key, header_val in name_value_arg_to_dict(headers).items():
             hey_query += f' -H {header_key}:{header_val} '
     hey_query += " ".join(f"-{k} {v}" for k, v in hey_map.items()) + f' {url}'
-    hey_query = hey_query.replace("  ", " ")  # remove double spaces
+    hey_query = re.sub('\s+', ' ', hey_query).strip()  # remove double spaces
     return hey_map, hey_query
 
 
@@ -90,7 +86,7 @@ class HeyPerformanceResult:
                  c: Optional[str] = None,
                  n: Optional[str] = None,
                  z: Optional[str] = None,
-                 **args):
+                 **_):
         self._t = int(t or 20)
         self._c = int(c or 50)
         self._z = int(z[:-1]) if z else None  # remove 's' from z before parsing int
@@ -99,7 +95,7 @@ class HeyPerformanceResult:
         self._result = result or ''
         self._ext_outputs = name_value_arg_to_dict(results_map)
 
-    def _get_summary(self, result: List[str]) -> Tuple[dict, int]:
+    def _get_summary(self, result: list[str]) -> tuple[dict, int]:
         """Returns summary dictionary and index after the summary"""
         summary = {}
         i = 0
@@ -108,29 +104,31 @@ class HeyPerformanceResult:
                 continue
             if 'Response' in result[i]:
                 break
+            float_re = try_re(FLOAT_RE, result[i])
+            bytes_re = try_re(BYTES_RE, result[i])
             if 'Total:' in result[i]:
                 if self._z:
                     continue
-                total_time = try_re(FLOAT_RE, result[i])
+                total_time = float_re
                 if total_time:
                     total_time = float(total_time) / self._c
                 summary['TotalTime'] = total_time
             if 'Slowest' in result[i]:
-                summary['SlowestTime'] = try_re(FLOAT_RE, result[i])
+                summary['SlowestTime'] = float_re
             if 'Fastest' in result[i]:
-                summary['FastestTime'] = try_re(FLOAT_RE, result[i])
+                summary['FastestTime'] = float_re
             if 'Average' in result[i]:
-                summary['AverageTime'] = try_re(FLOAT_RE, result[i])
+                summary['AverageTime'] = float_re
             if 'Requests' in result[i]:
-                summary['RequestsPerSecond'] = try_re(FLOAT_RE, result[i])
+                summary['RequestsPerSecond'] = float_re
             if 'Total data' in result[i]:
-                summary['TotalData'] = try_re(BYTES_RE, result[i])
+                summary['TotalData'] = bytes_re
             if 'Size' in result[i]:
-                summary['SizePerRequest'] = try_re(BYTES_RE, result[i])
+                summary['SizePerRequest'] = bytes_re
         return summary, i
 
     @staticmethod
-    def _get_successful_responses(result: List[str], result_i: int) -> int:
+    def _get_successful_responses(result: list[str], result_i: int) -> int:
         """Returns number of successful responses in the result"""
         for i in range(result_i, len(result)):
             if '[200]' in result[i]:
@@ -168,9 +166,10 @@ def run_hey_test(url: str,
                  headers: Optional[str] = None,
                  body: Optional[str] = None,
                  proxy: Optional[str] = None,
+                 user: Optional[str] = None,
                  enable_http2: Optional[str] = None,
                  disable_redirects: Optional[str] = None,
-                 *_args, **_kwargs) -> CommandResults:
+                 **_) -> CommandResults:
     hey_map, hey_query = construct_hey_query(url,
                                              requests_number,
                                              timeout,
@@ -181,6 +180,7 @@ def run_hey_test(url: str,
                                              headers,
                                              body,
                                              proxy,
+                                             user,
                                              enable_http2,
                                              disable_redirects)
     result = subprocess.check_output(hey_query.split(), stderr=subprocess.STDOUT, text=True)
@@ -188,12 +188,10 @@ def run_hey_test(url: str,
 
 
 def main() -> None:  # pragma: no cover
-    args = demisto.args()
     try:
-        return_results(run_hey_test(**args))
-    # Log exceptions and return errors
+        return_results(run_hey_test(**demisto.args()))
     except Exception as e:
-        return_error(f'Error:\n{str(e)}')
+        return_error(f'Error in Hey:\n{e}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

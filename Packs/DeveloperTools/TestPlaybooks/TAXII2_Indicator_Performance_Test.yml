@@ -82,6 +82,8 @@ tasks:
                   simple: '&match[type]=ip'
       z:
         simple: ${inputs.z}
+      user:
+        simple: 'admin:admin'
     separatecontext: false
     view: |-
       {
@@ -147,6 +149,8 @@ tasks:
                   simple: '&match[type]=url'
       z:
         simple: ${inputs.z}
+      user:
+        simple: 'admin:admin'
     separatecontext: false
     view: |-
       {
@@ -212,6 +216,8 @@ tasks:
                   simple: '&match[type]=domain'
       z:
         simple: ${inputs.z}
+      user:
+        simple: 'admin:admin'
     separatecontext: false
     view: |-
       {
