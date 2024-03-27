@@ -71,7 +71,7 @@ configuration:
   required: false
 - display: Private Key (Required for HTTPS)
   additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server.
-  name: key
+  name: key_ttt
   type: 14
   section: Connect
   advanced: true
@@ -425,7 +425,7 @@ script:
     name: zoom-delete-user
   - name: zoom-meeting-get
     arguments:
-    - name: meeting_id
+    - name: meeting_id_test_test
       required: true
       description: The ID of the existing meeting.
       type: string
