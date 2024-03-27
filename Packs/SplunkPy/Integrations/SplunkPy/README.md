@@ -3,7 +3,7 @@ Use the SplunkPy integration to:
 - Push events from Cortex XSOAR to SplunkPy
 - Fetch SplunkPy ES notable events as Cortex XSOAR incidents.
 
-This integration was integrated and tested with Splunk v9.0.4.
+This integration was integrated and tested with Splunk Enterprise v9.0.4 and Enterprise Security v7.1.1.
 
 ## Use Cases
 ---
@@ -22,14 +22,14 @@ This integration was integrated and tested with Splunk v9.0.4.
     | Host - IP (x.x.x.x) |  | True |
     | Username |  | True |
     | Password |  | True |
-    | Port |  | True |
+    | Port | The port in Splunk server which is open to the REST API calls. | True |
     | Fetch events query | The Splunk search query by which to fetch events. The default query fetches ES notable events. You can edit this query to fetch other types of events. Note, that to fetch ES notable events, make sure to include the \\\`notable\\\` macro in your query. | False |
     | Fetch Limit (Max.- 200, Recommended less than 50) |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
-    | Use Splunk Clock Time For Fetch |  | False |
-    | Parse Raw Part of Notable Events |  | False |
-    | Replace with Underscore in Incident Fields |  | False |
+    | Use Splunk Clock Time For Fetch | Whether to use the Splunk clock time from the Splunk server for fetch, or not. | False |
+    | Parse Raw Part of Notable Events | Whether to parse the raw part of the Notables, or not. | False |
+    | Replace with Underscore in Incident Fields | Whether to replace special characters to underscore when parsing the raw data of the Notables, or not. | False |
     | Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled. |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option. | False |
     | Extract Fields - CSV fields that will be parsed out of _raw notable events |  | False |
@@ -54,7 +54,7 @@ This integration was integrated and tested with Splunk v9.0.4.
     | Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise. |  | False |
     | Advanced: Fetch backwards window for the events occurrence time (minutes) | The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment. | False |
     | Advanced: Unique ID fields | A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents. | False |
-    | Enable user mapping |  | False |
+    | Enable user mapping | Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py\#configure-user-mapping-between-splunk-and-cortex-xsoar | False |
     | Users Lookup table name | The name of the lookup table in Splunk, containing the username's mapping data. | False |
     | XSOAR user key | The name of the lookup column containing the Cortex XSOAR username. | False |
     | SPLUNK user key | The name of the lookup table containing the Splunk username. | False |
@@ -530,6 +530,7 @@ Sends events to an HTTP event collector using the Splunk platform JSON event pro
 | source_type | The user-defined event source type. | Optional |
 | source | The user-defined event source. | Optional | 
 | time | The epoch-formatted time. | Optional | 
+| request_channel | A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). **If the indexer acknowledgment is turned on, a channel is required.** | Optional | 
 
 ##### Context Output
 

@@ -326,9 +326,9 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
             params['max_fetch'] = 1
             last_run = initialize_last_run(params.get('fetch_parameters', ''), params.get('first_fetch', ''))
             sql_query = create_sql_query(last_run, params.get('query', ''), params.get('column_name', ''),
-                                         params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+                                         params.get('max_fetch') or FETCH_DEFAULT_LIMIT)
             bind_variables = generate_bind_variables_for_fetch(params.get('column_name', ''),
-                                                               params.get('max_fetch', FETCH_DEFAULT_LIMIT), last_run)
+                                                               params.get('max_fetch') or FETCH_DEFAULT_LIMIT, last_run)
             result, headers = client.sql_query_execute_request(sql_query, bind_variables, 1)
         except Exception as e:
             raise e
@@ -393,7 +393,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
             "InstanceName": f"{client.dialect}_{client.dbname}",
         }
         entry_context: dict = {'GenericSQL(val.Query && val.Query === obj.Query)': {'GenericSQL': context}}
-        return human_readable, entry_context, result
+        return human_readable, entry_context, table
 
     except Exception as err:
         # In case there is no query executed and only an action e.g - insert, delete, update
@@ -564,11 +564,11 @@ def fetch_incidents(client: Client, params: dict):
     demisto.debug("GenericSQL - Start fetching")
     demisto.debug(f"GenericSQL - Last run: {json.dumps(last_run)}")
     sql_query = create_sql_query(last_run, params.get('query', ''), params.get('column_name', ''),
-                                 params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+                                 params.get('max_fetch') or FETCH_DEFAULT_LIMIT)
     demisto.debug(f"GenericSQL - Query sent to the server: {sql_query}")
-    limit_fetch = len(last_run.get('ids', [])) + int(params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+    limit_fetch = len(last_run.get('ids', [])) + int(params.get('max_fetch') or FETCH_DEFAULT_LIMIT)
     bind_variables = generate_bind_variables_for_fetch(params.get('column_name', ''),
-                                                       params.get('max_fetch', FETCH_DEFAULT_LIMIT), last_run)
+                                                       params.get('max_fetch') or FETCH_DEFAULT_LIMIT, last_run)
     result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit_fetch)
     table = convert_sqlalchemy_to_readable_table(result)
     table = table[:limit_fetch]
