@@ -5,7 +5,6 @@ import json
 
 import pytest
 from CommonServerPython import *
-from pytest_mock import mocker
 from Rapid7_InsightIDR import Client, ConstantsV1, ConstantsV2
 
 REGION = "us"
@@ -578,7 +577,7 @@ def test_insight_idr_query_log_with_pagination(
         ("logs"),
     ],
 )
-def test_insight_idr_query_log_with_callback(mocker: mocker, requests_mock, end_point) -> None:
+def test_insight_idr_query_log_with_callback(mocker, requests_mock, end_point) -> None:
     """
     Given:
         - User has provided valid logset ID or log key
