@@ -126,7 +126,7 @@ script:
     - auto: PREDEFINED
       defaultValue: Instant
       description: The type of the meeting.
-      name: type
+      name: type_test
       predefined:
       - Instant
       - Scheduled
@@ -295,7 +295,7 @@ script:
       - "false"
       - "true"
     description: Get the meeting record and save it as a file in the War Room.
-    name: zoom-fetch-recording
+    name: zoom-fetch-recording_test
     outputs:
     - contextPath: File.SHA256
       description: Attachment's SHA256.
