@@ -1,0 +1,51 @@
+{
+    "analysis": {
+        "reported": "2024-03-22T15:29:11Z",
+        "score": 5
+    },
+    "error_count": 0,
+    "files": [
+        {
+            "depth": 0,
+            "exts": [
+                ".zip"
+            ],
+            "filename": "test.exe",
+            "filesize": 435894,
+            "kind": "archive",
+            "md5": "4804d4a881a1d64856a37fb9db9508c2",
+            "runas": "test.zip",
+            "selected": false,
+            "sha1": "969dsd3542592296583dcf86d83647887e6d96a4256",
+            "sha256": "73c6d9sd8694d10f3fa3944a7faf7de71efdc0d7b377279b1f2ba7928bcfbf9676",
+            "sha512": "67b67sd0b96f960fb2586afd47e6acb266029ce5d647356862ffea46a57bd2d8d68481385e06677976f9d265a29afbba1256a41e76cc3d874231b08dc51658e025",
+            "ssdeep": "6144:hsdMbVusLlNxbZfZVwTXZxI84DK5TKTrV35eNaXFWlVymJSKV+D0r7L3r7+KdSZH:hyZhNxbxUFG84DKsBGaXYym/+Wjnh2",
+            "tags": []
+        }
+    ],
+    "sample": {
+        "kind": "file",
+        "sample": "240322-swytwacqy6",
+        "size": 435894,
+        "target": "test.exe"
+    },
+    "signatures": [
+        {
+            "desc": "AutoIT scripts compiled to PE executables.",
+            "indicators": [
+                {
+                    "resource": "static1/unpack001/Device/HarddiskVolume3/Windows/test.exe",
+                    "yara_rule": "autoit_exe"
+                }
+            ],
+            "name": "AutoIT Executable",
+            "score": 5
+        }
+    ],
+    "task": {
+        "target": "test.exe",
+        "task": "240322-swytwacqy6-static1"
+    },
+    "unpack_count": 2,
+    "version": "0.2"
+}
