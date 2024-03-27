@@ -25,17 +25,19 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
     command_args['using'] = using
 
     try:
+        demisto.debug(f'Calling servicenow-update-ticket, {command_args=}')
         command_res = demisto.executeCommand("servicenow-update-ticket", command_args)
+        demisto.debug(f'After calling servicenow-update-ticket, {command_res=}')
         resp = command_res[0]
         if isError(resp):
             raise Exception(resp['Contents'])
         else:
-            result = resp['Contents']['result']
-            if not result:
-                message = "Empty result. Please check your input. e.g. the ticket_id"
+            if 'result' not in resp['Contents'] or not resp['Contents']['result']:
+                message = "Empty result. Please check your input. e.g. the ticket_id, or table_name"
                 demisto.info(message)
-                return CommandResults(readable_output=message)
+                return_error(message)
 
+            result = resp['Contents']['result']
             output_results = {}
 
             output_results['Ticket ID'] = result['sys_id']
