@@ -2854,7 +2854,7 @@
             "integrations": [
                 "Cylance Protect v2",
                 "carbonblack-v2",
-                "epo",
+                "McAfee ePO v2",
                 "Active Directory Query v2",
                 "VMware Carbon Black EDR v2"
             ],
