@@ -1007,7 +1007,7 @@ def test_raise_on_invalid_time(text):
     """
     from Rapid7_InsightIDR import raise_on_invalid_time
 
-    result = raise_on_invalid_time (time_str=text)
+    result = raise_on_invalid_time(time_str=text)
     assert result
 
 
@@ -1030,7 +1030,7 @@ def test_fail_raise_on_invalid_time(text):
     from Rapid7_InsightIDR import raise_on_invalid_time
 
     with pytest.raises(ValueError) as error_info:
-        raise_on_invalid_time (time_str=text)
+        raise_on_invalid_time(time_str=text)
     assert f'"{text}" is not a valid date' in str(object=error_info.value)
 
 
