@@ -34,6 +34,12 @@ configuration:
   displaypassword: Secret Key
   section: Connect
   required: true
+- display: Timeout
+  name: timeout
+  defaultvalue: 60,10
+  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used.
+  type: 0
+  required: false
 - display: Retries
   name: retries
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
@@ -90,7 +96,7 @@ script:
       description: The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter.
       type: List
   - name: aws-eks-update-cluster-config
-    description: "Updates an Amazon EKS cluster configuration. Only one type of update can be allowed. Potentially harmful: once the authentication mode was updated to 'API' it is irreversible."
+    description: "Updates an Amazon EKS cluster configuration. Only one type of update is allowed. Potentially harmful: once the authentication mode is updated to 'API' it is irreversible."
     execution: true
     arguments:
     - name: cluster_name
@@ -98,15 +104,15 @@ script:
       required: true
       isArray: false
     - name: resources_vpc_config
-      description: "A json representation of the VPC configuration used by the cluster control plane. An example: \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
+      description: "A JSON representation of the VPC configuration used by the cluster control plane. An example: \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
       required: false
       isArray: false
     - name: logging
-      description: "A json representation of the logging configuration for the cluster. An example: \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': true}]}\"."
+      description: "A JSON representation of the logging configuration for the cluster. An example: \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': true}]}\"."
       required: false
       isArray: false
     - name: authentication_mode
-      description: Update the authentication mode to 'API_AND_CONFIG_MAP' or not.
+      description: Whether to update the authentication mode to 'API_AND_CONFIG_MAP' or not.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -150,10 +156,10 @@ script:
       description: The parameters of the update.
       type: Object
     - contextPath: AWS.EKS.UpdateCluster.createdAt
-      description: The creation date ob the object.
-      type: Unknown
+      description: The creation date of the object.
+      type: String
     - contextPath: AWS.EKS.UpdateCluster.errors
-      description: Any errors associated with a Failed update.
+      description: Any errors associated with a failed update.
       type: Object
   - name: aws-eks-describe-cluster
     description: Describes an Amazon EKS cluster.
@@ -190,7 +196,7 @@ script:
       description: The Amazon Resource Name (ARN) of the cluster.
       type: String
     - contextPath: AWS.EKS.DescribeCluster.createdAt
-      description: The creation date ob the object.
+      description: The creation date of the object.
       type: String
     - contextPath: AWS.EKS.DescribeCluster.version
       description: The Kubernetes server version for the cluster.
@@ -226,7 +232,7 @@ script:
       description: The CIDR block that Kubernetes Pod and Service object IP addresses are assigned from.
       type: String
     - contextPath: AWS.EKS.DescribeCluster.kubernetesNetworkConfig.serviceIpv6Cidr
-      description: The CIDR block that Kubernetes pod and service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster.
+      description: The CIDR block that Kubernetes Pod and Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster.
       type: String
     - contextPath: AWS.EKS.DescribeCluster.kubernetesNetworkConfig.ipFamily
       description: The IP family used to assign Kubernetes Pod and Service objects IP addresses.
@@ -306,7 +312,7 @@ script:
       required: true
       isArray: false
     - name: kubernetes_groups
-      description: A comma separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings.
+      description: A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings.
       required: false
       isArray: false
     - name: tags
@@ -366,7 +372,7 @@ script:
       description: The ARN of the access entry.
       type: String
     - contextPath: AWS.EKS.CreateAccessEntry.createdAt
-      description: The creation date ob the object.
+      description: The creation date of the object.
       type: String
     - contextPath: AWS.EKS.CreateAccessEntry.modifiedAt
       description: The date and time for the last modification to the object.
@@ -404,7 +410,7 @@ script:
       - cluster
       - namespace
     - name: namespaces
-      description: A comma separated list of Kubernetes namespace that an access policy is scoped to. A value is required if you specified namespace for type.
+      description: A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type.
       required: false
       isArray: false
     - auto: PREDEFINED
@@ -461,7 +467,7 @@ script:
       required: true
       isArray: false
     - name: kubernetes_groups
-      description: A comma separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings.
+      description: A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings.
       required: false
       isArray: false
     - name: client_request_token
@@ -506,7 +512,7 @@ script:
       description: The ARN of the access entry.
       type: String
     - contextPath: AWS.EKS.UpdateAccessEntry.createdAt
-      description: The creation date ob the object.
+      description: The creation date of the object.
       type: String
     - contextPath: AWS.EKS.UpdateAccessEntry.modifiedAt
       description: The date and time for the last modification to the object.
@@ -524,7 +530,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.91028
+  dockerimage: demisto/boto3py3:1.0.0.91486
 fromversion: 6.9.0
 tests:
 - AWSEKS-Test

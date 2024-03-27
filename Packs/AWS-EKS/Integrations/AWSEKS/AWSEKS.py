@@ -17,17 +17,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 ''' HELPER FUNCTIONS '''
 
 
-def datetime_to_str(data: dict, param_name: str):
-    """
-    Update a datetime parameter to it's string value.
-    Args:
-        data: a dictionary with the response data
-        param_name: the name of the parameter that should be converted from datetime object to string.
-    """
-    if param_value := data.get(param_name):
-        data[param_name] = param_value.strftime(DATE_FORMAT)
-
-
 def validate_args(resources_vpc_config: dict, logging_arg: dict, authentication_mode: bool):
     """
     Check that exactly one argument is passed, and if not raise a value error
@@ -40,14 +29,10 @@ def validate_args(resources_vpc_config: dict, logging_arg: dict, authentication_
         A Command Results object
     """
     arr = [resources_vpc_config, logging_arg, authentication_mode]
-    arg_num = 0
-    for arg in arr:
-        arg_num = arg_num + 1 if arg else arg_num
+    arg_num = sum(bool(arg) for arg in arr)  # counts the number of non-empty args.
     if arg_num != 1:
         raise ValueError("Please provide exactly one of the following arguments: resources_vpc_config, logging or "
                          "authentication_mode.")
-    else:
-        return 'ok'
 
 
 def config_aws_session(args: dict, aws_client: AWSClient):
@@ -165,21 +150,15 @@ def update_cluster_config_command(aws_client, args: dict) -> CommandResults:
 
         response_data = response.get('update', {})
         response_data['clusterName'] = cluster_name
-        datetime_to_str(response_data, 'createdAt')
+        response_data['createdAt'] = datetime_to_string(response_data.get('createdAt'))
 
-        md_table = {
-            'Cluster Name': response_data.get('clusterName'),
-            'ID': response_data.get('id'),
-            'Status': response_data.get('status'),
-            'Type': response_data.get('type'),
-            'Params': response_data.get('params'),
-        }
-        headers = ['Cluster Name', 'ID', 'Status', 'Type', 'Params']
+        headers = ['clusterName', 'id', 'status', 'type', 'params']
         readable_output = tableToMarkdown(
             name='Updated Cluster Config Information',
-            t=md_table,
+            t=response_data,
             removeNull=True,
-            headers=headers
+            headers=headers,
+            headerTransform=pascalToSpace
         )
         return CommandResults(
             readable_output=readable_output,
@@ -209,22 +188,18 @@ def describe_cluster_command(aws_client, args: dict) -> CommandResults:
 
     response = aws_client.describe_cluster(name=cluster_name)
     response_data = response.get('cluster', {})
-    datetime_to_str(response_data, 'createdAt')
-    datetime_to_str(response_data.get('connectorConfig', {}), 'activationExpiry')
-    md_table = {
-        'Cluster Name': response_data.get('name'),
-        'ID': response_data.get('id'),
-        'Status': response_data.get('status'),
-        'ARN': response_data.get('arn'),
-        'Created At': response_data.get('createdAt'),
-        'Version': response_data.get('version'),
-    }
-    headers = ['Cluster Name', 'ID', 'Status', 'ARN', 'Created At', 'Version']
+    response_data['createdAt'] = datetime_to_string(response_data.get('createdAt'))
+    if response_data.get('connectorConfig', {}).get('activationExpiry'):
+        response_data.get('connectorConfig', {})['activationExpiry'] = (
+            datetime_to_string(response_data.get('connectorConfig', {}).get('activationExpiry')))
+
+    headers = ['name', 'id', 'status', 'arn', 'createdAt', 'version']
     readable_output = tableToMarkdown(
         name='Describe Cluster Information',
-        t=md_table,
+        t=response_data,
         removeNull=True,
-        headers=headers
+        headers=headers,
+        headerTransform=pascalToSpace
     )
     return CommandResults(
         readable_output=readable_output,
@@ -275,23 +250,16 @@ def create_access_entry_command(aws_client, args: dict) -> CommandResults:
                 type=type_arg
             ).get('accessEntry')
 
-        datetime_to_str(response, 'createdAt')
-        datetime_to_str(response, 'modifiedAt')
+        response['createdAt'] = datetime_to_string(response.get('createdAt'))
+        response['modifiedAt'] = datetime_to_string(response.get('modifiedAt'))
 
-        md_table = {
-            'Cluster Name': response.get('clusterName'),
-            'Principal Arn': response.get('principalArn'),
-            'Username': response.get('username'),
-            'Type': response.get('type'),
-            'Created At': response.get('createdAt')
-        }
-
-        headers = ['Cluster Name', 'Principal Arn', 'Username', 'Type', 'Created At']
+        headers = ['clusterName', 'principalArn', 'username', 'type', 'createdAt']
         readable_output = tableToMarkdown(
             name='The newly created access entry',
-            t=md_table,
+            t=response,
             removeNull=True,
-            headers=headers
+            headers=headers,
+            headerTransform=pascalToSpace
         )
 
         return CommandResults(
@@ -323,8 +291,8 @@ def associate_access_policy_command(aws_client, args: dict) -> CommandResults:
     policy_arn = args.get('policy_arn')
     type_arg = args.get('type')
     namespaces = argToList(args.get('namespaces'))
-    if type and type == 'namespace' and not namespaces:
-        raise Exception(f'When the {type=}, you must enter a namespace.')
+    if type_arg and type_arg == 'namespace' and not namespaces:
+        raise Exception(f'When the {type_arg=}, you must enter a namespace.')
 
     access_scope = {
         'type': type_arg,
@@ -341,21 +309,16 @@ def associate_access_policy_command(aws_client, args: dict) -> CommandResults:
     response_data['clusterName'] = response.get('clusterName')
     response_data['principalArn'] = response.get('principalArn')
 
-    datetime_to_str(response_data, 'associatedAt')
-    datetime_to_str(response_data, 'modifiedAt')
+    response_data['associatedAt'] = datetime_to_string(response_data.get('associatedAt'))
+    response_data['modifiedAt'] = datetime_to_string(response_data.get('modifiedAt'))
 
-    md_table = {
-        'Cluster Name': response_data.get('clusterName'),
-        'Principal ARN': response_data.get('principalArn'),
-        'Policy ARN': response_data.get('policyArn'),
-        'Associated At': response_data.get('associatedAt')
-    }
-    headers = ['Cluster Name', 'Principal ARN', 'Policy ARN', 'Associated At']
+    headers = ['clusterName', 'principalArn', 'policyArn', 'associatedAt']
     readable_output = tableToMarkdown(
         name='The access policy was associated to the access entry successfully.',
-        t=md_table,
+        t=response_data,
         removeNull=True,
-        headers=headers
+        headers=headers,
+        headerTransform=pascalToSpace
     )
 
     return CommandResults(
@@ -399,23 +362,16 @@ def update_access_entry_command(aws_client, args: dict) -> CommandResults:
             clientRequestToken=client_request_token
         ).get('accessEntry', {})
 
-    datetime_to_str(response, 'createdAt')
-    datetime_to_str(response, 'modifiedAt')
+    response['createdAt'] = datetime_to_string(response.get('createdAt'))
+    response['modifiedAt'] = datetime_to_string(response.get('modifiedAt'))
 
-    md_table = {
-        'Cluster Name': response.get('clusterName'),
-        'Principal Arn': response.get('principalArn'),
-        'Username': response.get('username'),
-        'Type': response.get('type'),
-        'Modified At': response.get('modifiedAt')
-    }
-
-    headers = ['Cluster Name', 'Principal Arn', 'Username', 'Type', 'Modified At']
+    headers = ['clusterName', 'principalArn', 'username', 'type', 'modifiedAt']
     readable_output = tableToMarkdown(
         name='The updated access entry',
-        t=md_table,
+        t=response,
         removeNull=True,
-        headers=headers
+        headers=headers,
+        headerTransform=pascalToSpace
     )
 
     return CommandResults(
@@ -462,7 +418,8 @@ def main():  # pragma: no cover
     aws_access_key_id = params.get('credentials', {}).get('identifier')
     aws_secret_access_key = params.get('credentials', {}).get('password')
     verify_certificate = not demisto.params().get('insecure', False)
-    demisto.params().get('proxy', False)
+    timeout = params.get('timeout')
+    retries = params.get('retries') or 5
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -471,7 +428,7 @@ def main():  # pragma: no cover
                         aws_secret_access_key)
 
         aws_client = AWSClient(aws_default_region, None, None, None,
-                               None, aws_access_key_id, aws_secret_access_key, verify_certificate, None, 5)
+                               None, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout, retries)
 
         args = demisto.args()
 

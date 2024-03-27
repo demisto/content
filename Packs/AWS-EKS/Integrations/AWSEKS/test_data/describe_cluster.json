@@ -2,7 +2,7 @@
     "expected_outputs": {
         "name": "cluster_name",
         "arn": "arn",
-        "createdAt": "2024-01-01T00:00:00Z",
+        "createdAt": "2024-01-01 00:00:00",
         "version": "1.29",
         "endpoint": "endpoint",
         "roleArn": "roleArn",
@@ -53,7 +53,7 @@
         "connectorConfig": {
             "activationId": "activationId",
             "activationCode": "activationCode",
-            "activationExpiry": "2024-01-01T00:00:00Z",
+            "activationExpiry": "2024-01-01 00:00:00",
             "provider": "provider",
             "roleArn": "roleArn"
         },
@@ -75,5 +75,5 @@
             "authenticationMode": "API"
         }
     },
-    "expected_readable_output": "### Describe Cluster Information\n|Cluster Name|ID|Status|ARN|Created At|Version|\n|---|---|---|---|---|---|\n| cluster_name | id | ACTIVE | arn | 2024-01-01T00:00:00Z | 1.29 |\n"
+    "expected_readable_output": "### Describe Cluster Information\n|Name|Id|Status|Arn|Created At|Version|\n|---|---|---|---|---|---|\n| cluster_name | id | ACTIVE | arn | 2024-01-01 00:00:00 | 1.29 |\n"
 }

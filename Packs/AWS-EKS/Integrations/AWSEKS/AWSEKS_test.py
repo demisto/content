@@ -1,10 +1,9 @@
 import json
-from datetime import datetime
 
 import pytest
 
 from AWSApiModule import *
-from AWSEKS import datetime_to_str, validate_args, list_clusters_command
+from AWSEKS import validate_args, list_clusters_command
 from test_data.test_response import (UPDATE_CLUSTER_CONFIG_LOGGING_RESPONSE, DESCRIBE_CLUSTER_RESPONSE,
                                      UPDATE_CLUSTER_CONFIG_ACCESS_CONFIG_RESPONSE, CREATE_ACCESS_ENTRY_RESPONSE,
                                      ASSOCIATE_ACCESS_POLICY_RESPONSE, UPDATE_ACCESS_ENTRY_RESPONSE)
@@ -13,50 +12,6 @@ from test_data.test_response import (UPDATE_CLUSTER_CONFIG_LOGGING_RESPONSE, DES
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
-
-
-def test_datetime_to_str():
-    """
-        Given:
-            - A data object with a datetime object.
-        When:
-            - running a command with a datetime object in the response.
-        Then:
-            - update the datetime object to the string representation of the date.
-    """
-    data = {
-        'createdAt': datetime(2020, 1, 1, 12, 0, 0)
-    }
-    datetime_to_str(data, 'createdAt')
-    assert data['createdAt'] == '2020-01-01T12:00:00Z'
-
-
-def test_datetime_to_str_invalid():
-    """
-        Given:
-            - A data object without a datetime object.
-        When:
-            - running a command without a datetime object in the response.
-        Then:
-            - assert that the datetime object doesn't exist in the data object.
-    """
-    data = {}
-    datetime_to_str(data, 'createdAt')
-    assert 'createdAt' not in data
-
-
-def test_datetime_to_str_none():
-    """
-        Given:
-            - A data object with a createdAt key and a None value.
-        When:
-            - running a command with a createdAt key in the response.
-        Then:
-            - assert that the datetime object wasn't updated, and equal to None.
-    """
-    data = {'createdAt': None}
-    datetime_to_str(data, 'createdAt')
-    assert not data['createdAt']
 
 
 def test_validate_args_one_arg():
@@ -77,9 +32,11 @@ def test_validate_args_one_arg():
             }
         ]
     }
-    authentication_mode = ""
-    result = validate_args(resources_vpc_config, logging_arg, authentication_mode)
-    assert result == "ok"
+    authentication_mode = False
+    try:
+        validate_args(resources_vpc_config, logging_arg, authentication_mode)
+    except Exception as e:
+        pytest.fail(f"Unexpected Error {str(e)}")
 
 
 def test_validate_args_no_args():
@@ -93,7 +50,7 @@ def test_validate_args_no_args():
     """
     resources_vpc_config = {}
     logging_arg = {}
-    authentication_mode = ""
+    authentication_mode = False
     try:
         validate_args(resources_vpc_config, logging_arg, authentication_mode)
     except ValueError as e:
@@ -131,7 +88,7 @@ def test_validate_args_multiple_args():
             }
         ]
     }
-    authentication_mode = "API"
+    authentication_mode = True
     try:
         validate_args(resources_vpc_config, logging_arg, authentication_mode)
     except ValueError as e:
@@ -363,6 +320,59 @@ def test_associate_access_policy_command(mocker):
     result = associate_access_policy_command(client, args)
     assert result.readable_output == expected_readable_output
     assert result.outputs == expected_output
+
+
+def test_associate_access_policy_command_namespaces():
+    """
+        Given:
+            - A cluster name, a principal ARN, a policy ARN, and a type = namespaces.
+        When:
+            - running associate_access_policy_command.
+        Then:
+            - assert that an exception was raised.
+    """
+    from AWSEKS import associate_access_policy_command
+    args = {
+        "cluster_name": "clusterName",
+        "principal_arn": "principalArn",
+        "policy_arn": "policyArn",
+        "type": "namespace"
+    }
+    try:
+        client = Boto3Client()
+        associate_access_policy_command(client, args)
+    except Exception as e:
+        assert str(e) == "When the type_arg='namespace', you must enter a namespace."
+
+
+def test_associate_access_policy_command_namespaces_assert_called_with(mocker):
+    """
+        Given:
+            - A cluster name, a principal ARN, a policy ARN, and a type.
+        When:
+            - running associate_access_policy_command.
+        Then:
+            - assert that the http request was sent with the correct arguments.
+    """
+    from AWSEKS import associate_access_policy_command
+    http_request = mocker.patch.object(Boto3Client, "associate_access_policy", return_value=ASSOCIATE_ACCESS_POLICY_RESPONSE)
+    client = Boto3Client()
+    args = {
+        "cluster_name": "clusterName",
+        "principal_arn": "principalArn",
+        "policy_arn": "policyArn",
+        "type": "namespace",
+        "namespaces": "namespace1"
+    }
+    access_scope = {
+        "type": "namespace",
+        "namespaces": ["namespace1"]
+    }
+    associate_access_policy_command(client, args)
+    http_request.assert_called_with(clusterName=args.get('cluster_name'),
+                                    principalArn=args.get("principal_arn"),
+                                    policyArn=args.get("policy_arn"),
+                                    accessScope=access_scope)
 
 
 ARGS_CLUSTER = {
