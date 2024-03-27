@@ -16,11 +16,15 @@ alter // pre-modeling extractions
     rule_messages = json_extract_scalar_array(attackData, "$.ruleMessages"),
     rules = arraystring(json_extract_scalar_array(attackData, "$.rules"), ";")
 
-// set url scheme according to protocol which is an enum of either 80 or 443 
-| alter scheme = if(port = 80, "http://", port = 443, "https://", "")
+| alter // initialize the url components 
+    // set url scheme according to protocol which is an enum of either 80 or 443 
+    scheme = if(port = 80, "http://", port = 443, "https://", "")
 
-// trim trailing / from url path 
-| alter path = rtrim(coalesce(path, ""), "/")
+    // trim trailing / from url path 
+    path = rtrim(coalesce(path, ""), "/")
+
+    // add query separator if required
+    query = if(query != null and query != "", concat("?", query), "")
 
 // construct url: <scheme>://<host><path>?<query>
 | alter url = concat(scheme, host, path, query )
