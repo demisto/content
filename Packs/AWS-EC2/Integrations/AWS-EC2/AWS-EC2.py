@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 PARAMS = demisto.params()
 MAX_WORKERS = arg_to_number(PARAMS.get('max_workers'))
 ROLE_NAME: str = PARAMS.get('access_role_name', '')
-IS_ARN_PROVIDED = bool(demisto.getArg('roleArn'))
+IS_ARN_PROVIDED = bool(demisto.getArg('roleArn')) | bool(demisto.getParam('roleArn'))
 
 """HELPER FUNCTIONS"""
 
