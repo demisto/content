@@ -254,10 +254,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "186":
     id: "186"
-    taskid: a3d411ff-c938-4259-810f-49133110fa30
+    taskid: c0889235-dc9d-40d0-8870-06d9a0c56609
     type: regular
     task:
-      id: a3d411ff-c938-4259-810f-49133110fa30
+      id: c0889235-dc9d-40d0-8870-06d9a0c56609
       version: -1
       name: Set 'fileRetrieval.path' To Context
       description: For testing purposes, the task establishes the context data key and value for 'fileRetrieval.path'.
@@ -929,10 +929,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "223":
     id: "223"
-    taskid: 88c75e92-0164-4d2a-8197-aed39410ad70
+    taskid: 82958444-efeb-4427-8967-b9747c847891
     type: condition
     task:
-      id: 88c75e92-0164-4d2a-8197-aed39410ad70
+      id: 82958444-efeb-4427-8967-b9747c847891
       version: -1
       name: Verify Extracted Files
       description: 'Verify that the ''ExtractedFiles'' context key has been extracted correctly and contains both the ''manifest.json'' and ''GoogleUpdate.exe'' files. '
@@ -966,7 +966,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: GoogleUpdate.exe
+              simple: lsass.exe
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -1129,10 +1129,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "228":
     id: "228"
-    taskid: 09ea29ad-5590-447e-84bf-1ae50403a0c7
+    taskid: aaee32b1-8175-4a41-83c7-875ff2894e23
     type: condition
     task:
-      id: 09ea29ad-5590-447e-84bf-1ae50403a0c7
+      id: aaee32b1-8175-4a41-83c7-875ff2894e23
       version: -1
       name: Verify Name
       description: Verify that the 'File.Name' context key has been extracted correctly and contains both ZIP and Unzipped file names.
@@ -1168,7 +1168,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: GoogleUpdate.exe
+              simple: lsass.exe
           ignorecase: true
       - - operator: containsGeneral
           left:
@@ -1265,10 +1265,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "231":
     id: "231"
-    taskid: 68d8d954-134e-4594-8d2f-a588f4ef2ac8
+    taskid: 7bf75165-e88d-48f1-8af6-024acf7aa621
     type: condition
     task:
-      id: 68d8d954-134e-4594-8d2f-a588f4ef2ac8
+      id: 7bf75165-e88d-48f1-8af6-024acf7aa621
       version: -1
       name: Verify Entry ID
       description: Verify that the 'File.EntryID' context key has been extracted.
@@ -1291,6 +1291,8 @@ tasks:
                 root: File
                 accessor: EntryID
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1343,13 +1345,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "233":
     id: "233"
-    taskid: f978b2be-878f-40c6-8e40-b884147686bb
+    taskid: 01b62a15-56ea-4290-8dc4-c8833740005c
     type: condition
     task:
-      id: f978b2be-878f-40c6-8e40-b884147686bb
+      id: 01b62a15-56ea-4290-8dc4-c8833740005c
       version: -1
       name: Verify Size
-      description: Verify that the 'File.SHA512' context key has been extracted correctly and contains both ZIP and Unzipped file sizes.
+      description: Verify that the 'File.SHA512' context key has been extracted correctly.
       type: condition
       iscommand: false
       brand: ""
@@ -1362,36 +1364,13 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: containsString
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: File
                 accessor: Size
             iscontext: true
-          right:
-            value:
-              simple: "61498"
-      - - operator: containsString
-          left:
-            value:
-              complex:
-                root: File
-                accessor: Size
-            iscontext: true
-          right:
-            value:
-              simple: "375"
-      - - operator: containsString
-          left:
-            value:
-              complex:
-                root: File
-                accessor: Size
-            iscontext: true
-          right:
-            value:
-              simple: "156104"
     continueonerrortype: ""
     view: |-
       {
@@ -1445,13 +1424,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "235":
     id: "235"
-    taskid: 95d709d7-294a-4d9a-8977-d80370ff5b9e
+    taskid: 8b3fb5b2-36b4-42f3-8658-26f965a3f35a
     type: condition
     task:
-      id: 95d709d7-294a-4d9a-8977-d80370ff5b9e
+      id: 8b3fb5b2-36b4-42f3-8658-26f965a3f35a
       version: -1
       name: Verify MD5
-      description: Verify that the 'File.MD5' context key has been extracted correctly and contains both the 'manifest.json' and 'GoogleUpdate.exe' MD5 hashes.
+      description: Verify that the 'File.MD5' context key has been extracted correctly.
       type: condition
       iscommand: false
       brand: ""
@@ -1464,27 +1443,13 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: File
                 accessor: MD5
             iscontext: true
-          right:
-            value:
-              simple: 8e48ba5777f034731b64130624dd9947
-          ignorecase: true
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: File
-                accessor: MD5
-            iscontext: true
-          right:
-            value:
-              simple: 0bca3f16dd527b4150648ec1e36cb22a
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -1539,13 +1504,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "237":
     id: "237"
-    taskid: 67c8b760-0398-4cd5-8cf9-ddc7823ff6f3
+    taskid: 58093bad-2fbd-4ffb-8a4c-43da01032cc4
     type: condition
     task:
-      id: 67c8b760-0398-4cd5-8cf9-ddc7823ff6f3
+      id: 58093bad-2fbd-4ffb-8a4c-43da01032cc4
       version: -1
       name: Verify SHA1
-      description: Verify that the 'File.SHA1' context key has been extracted correctly and contains both the 'manifest.json' and 'GoogleUpdate.exe' SHA1 hashes.
+      description: Verify that the 'File.SHA1' context key has been extracted correctly.
       type: condition
       iscommand: false
       brand: ""
@@ -1558,27 +1523,13 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: File
                 accessor: SHA1
             iscontext: true
-          right:
-            value:
-              simple: 9a60695fbbf4d3fb0e0de7e43d0db5a0b92f5e5d
-          ignorecase: true
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: File
-                accessor: SHA1
-            iscontext: true
-          right:
-            value:
-              simple: 842ae39880c3c0bc501007b42949950c3d3b7ed3
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -1633,13 +1584,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "239":
     id: "239"
-    taskid: eb14d705-8209-4284-8a29-7c8f2d090685
+    taskid: c3c68bf3-694c-4bd6-8e2e-0a91767059d6
     type: condition
     task:
-      id: eb14d705-8209-4284-8a29-7c8f2d090685
+      id: c3c68bf3-694c-4bd6-8e2e-0a91767059d6
       version: -1
       name: Verify SHA256
-      description: 'Verify that the ''File.SHA256'' context key has been extracted correctly and contains both the ''manifest.json'' and ''GoogleUpdate.exe'' SHA256 hashes. '
+      description: 'Verify that the ''File.SHA256'' context key has been extracted correctly.'
       type: condition
       iscommand: false
       brand: ""
@@ -1652,27 +1603,13 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: File
                 accessor: SHA256
             iscontext: true
-          right:
-            value:
-              simple: c85883dd5723b7bc384a972a3999684644e0664d86e8c7cad996f91568978294
-          ignorecase: true
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: File
-                accessor: SHA256
-            iscontext: true
-          right:
-            value:
-              simple: b60e92004d394d0b14a8953a2ba29951c79f2f8a6c94f495e3153dfbbef115b6
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -1727,13 +1664,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "241":
     id: "241"
-    taskid: dbb96a55-17c0-457b-8147-b371470cbda2
+    taskid: d5a66a13-7d3e-45a1-8334-690e29ffde9a
     type: condition
     task:
-      id: dbb96a55-17c0-457b-8147-b371470cbda2
+      id: d5a66a13-7d3e-45a1-8334-690e29ffde9a
       version: -1
       name: Verify SHA512
-      description: 'Verify that the ''File.SHA512'' context key has been extracted correctly and contains both the ''manifest.json'' and ''GoogleUpdate.exe'' SHA512 hashes. '
+      description: 'Verify that the ''File.SHA512'' context key has been extracted correctly.'
       type: condition
       iscommand: false
       brand: ""
@@ -1746,27 +1683,13 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: File
                 accessor: SHA512
             iscontext: true
-          right:
-            value:
-              simple: 27cd3f16016be1f1d8a62f83d4924ae3d81cecc66b51397849cdf999b276d012a832b30b717c7f9afb799aa21323204296b41378650d140130c7e6abfab42faf
-          ignorecase: true
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: File
-                accessor: SHA512
-            iscontext: true
-          right:
-            value:
-              simple: 516e1c9313aaf1d49223a3c06677bdbe5e4f9df392c12696a9eeb086634cf60c42a9c330e2d1095f1e6fdd1f16d2a6a13c9d28110155469159f0959897dff164
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -1926,10 +1849,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "245":
     id: "245"
-    taskid: 80d63c56-6180-4253-8955-786db66645bf
+    taskid: d09913f1-7b85-407d-87e4-82ebc9d081f2
     type: condition
     task:
-      id: 80d63c56-6180-4253-8955-786db66645bf
+      id: d09913f1-7b85-407d-87e4-82ebc9d081f2
       version: -1
       name: Verify Type
       description: Verify that the 'File.Type' context key has been extracted correctly and contains both ZIP and Unzipped file types.
@@ -1965,7 +1888,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: PE32 executable (GUI) Intel 80386, for MS Windows
+              simple: PE32+ executable (GUI) x86-64, for MS Windows
           ignorecase: true
       - - operator: containsString
           left:
