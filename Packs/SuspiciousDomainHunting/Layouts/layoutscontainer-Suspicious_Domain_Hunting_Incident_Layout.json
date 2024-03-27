@@ -376,7 +376,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "suspiciousdomainhuntinguserasset",
+                                "fieldId": "certstreamuserasset",
                                 "height": 22,
                                 "id": "9ea58bd0-6d98-11ee-9354-5589491ef700",
                                 "index": 2,
@@ -385,7 +385,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "suspiciousdomainhuntingfingerprint",
+                                "fieldId": "certstreamfingerprint",
                                 "height": 22,
                                 "id": "90a14a10-6d98-11ee-9354-5589491ef700",
                                 "index": 3,
@@ -394,7 +394,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "certificatesource",
+                                "fieldId": "certstreamcertificatesource",
                                 "height": 22,
                                 "id": "9276c080-7181-11ee-b052-13bd87b11e9a",
                                 "index": 4,
@@ -412,7 +412,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "suspiciousdomainhuntinglevenshteindistance",
+                                "fieldId": "certstreamlevenshteindistance",
                                 "height": 22,
                                 "id": "98c97460-6d98-11ee-9354-5589491ef700",
                                 "index": 5,
@@ -422,7 +422,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "certificateindex",
+                                "fieldId": "certstreamcertificateindex",
                                 "height": 22,
                                 "id": "8ecd8ea0-7181-11ee-b052-13bd87b11e9a",
                                 "index": 6,
@@ -526,7 +526,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "suspiciousdomainhuntingdomainregistrarabuseemail",
+                                "fieldId": "certstreamdomainregistrarabuseemail",
                                 "height": 22,
                                 "id": "e37ad770-8205-11ee-b8c9-e9c6a8687c1a",
                                 "index": 6,
@@ -801,11 +801,11 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_certificateindex",
+                        "fieldId": "incident_certstreamcertificateindex",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_certificatesource",
+                        "fieldId": "incident_certstreamcertificatesource",
                         "isVisible": true
                     },
                     {
@@ -1069,7 +1069,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_suspiciousdomainhuntingfingerprint",
+                        "fieldId": "incident_certstreamfingerprint",
                         "isVisible": true
                     },
                     {
@@ -1121,7 +1121,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_suspiciousdomainhuntinglevenshteindistance",
+                        "fieldId": "incident_certstreamlevenshteindistance",
                         "isVisible": true
                     },
                     {
@@ -1545,7 +1545,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_suspiciousdomainhuntinguserasset",
+                        "fieldId": "incident_certstreamuserasset",
                         "isVisible": true
                     },
                     {
