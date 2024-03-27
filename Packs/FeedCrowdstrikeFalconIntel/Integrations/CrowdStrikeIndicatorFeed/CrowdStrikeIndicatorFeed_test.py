@@ -327,3 +327,81 @@ def test_auto_detect_indicator_type_from_cs(indicator: dict, expected_results: s
     from CrowdStrikeIndicatorFeed import auto_detect_indicator_type_from_cs
 
     assert auto_detect_indicator_type_from_cs(indicator['indicator'], indicator['type']) == expected_results
+
+
+def test_get_actors_names_request_check_output(mocker, requests_mock):
+    from CrowdStrikeIndicatorFeed import Client
+    """
+    Given
+        - params for get_actors_names_request http request
+    When
+        - calling get_actors_names_request after fetching/listing indicators
+    Then
+        - Ensure the result is correct
+    """
+    from CrowdStrikeIndicatorFeed import Client
+
+    mock_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
+    requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
+    requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
+    crowdstrike_client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
+                    type='Domain', include_deleted='false', limit=2)
+    requests_mock.get(url='https://api.crowdstrike.com/intel/entities/actors/v1?', json={'resources':''})
+    requests_mock.get(url='https://api.crowdstrike.com/intel/entities/actors/v1?ids=123&fields=name', json={'resources':{'name':'TEST TEST'}})
+    res = crowdstrike_client.get_actors_names_request(params_string='ids=123&fields=name')
+    assert res == {'name': 'TEST TEST'}
+    
+    
+def test_get_actors_names_request_called_with(mocker, requests_mock):
+    from CrowdStrikeIndicatorFeed import Client
+    """
+    Given
+        - params for get_actors_names_request http request
+    When
+        - calling get_actors_names_request after fetching/listing indicators
+    Then
+        - Ensure the request is called with the right args
+    """
+    from CrowdStrikeIndicatorFeed import Client
+    mock_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
+    requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
+    requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
+    crowdstrike_client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
+                    type='Domain', include_deleted='false', limit=2)
+    requests_mock.get(url='https://api.crowdstrike.com/intel/entities/actors/v1?', json={'resources':''})
+    http_request_mock = mocker.patch.object(crowdstrike_client, '_http_request', return_value={'resources':{'name':'TEST TEST'}})
+    crowdstrike_client.get_actors_names_request(params_string='ids=123&fields=name')
+    http_request_mock.assert_called_once_with(method='GET', url_suffix='intel/entities/actors/v1?ids=123&fields=name', timeout=30)
+
+
+def test_get_actors_names_request111111(mocker, requests_mock):
+    from CrowdStrikeIndicatorFeed import Client
+    #TODO
+    """
+    Given
+        - no indicators api response
+    When
+        - fetching indicators
+    Then
+        - Ensure empty list is returned and no exception is raised.
+    """
+    from CrowdStrikeIndicatorFeed import Client, crowdstrike_indicators_list_command
+
+    mock_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
+    requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
+    requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
+    requests_mock.get(url='https://api.crowdstrike.com/intel/entities/actors/v1?ids=GOBLINPANDA&fields=name',
+                      json={'resources':{'name':'GOBLIN PANDA'}})
+    mocker.patch('CrowdStrikeIndicatorFeed.get_integration_context', return_value={})
+    feed_tags = ['Tag1', 'Tag2']
+    crowdstrike_client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
+                    type='Domain', include_deleted='false', limit=2, feed_tags=feed_tags)
+    args = {
+        'limit': '2'
+    }
+    response = crowdstrike_indicators_list_command(crowdstrike_client, args)
+    assert len(response.outputs) == 3
+    assert len(response.raw_response) == 3
+    assert "Indicators from CrowdStrike Falcon Intel" in response.readable_output
+    assert "domain_abc" in response.readable_output
+    assert feed_tags[0] and feed_tags[1] in response.raw_response[0]['fields']['tags']

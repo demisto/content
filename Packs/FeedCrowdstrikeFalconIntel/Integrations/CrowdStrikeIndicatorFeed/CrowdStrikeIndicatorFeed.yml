@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: CrowdStrike Indicator Feed
+  id: CrowdStrike Indicator Feed V2
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -162,8 +162,8 @@ configuration:
   hidden: true
   required: false
 description: Retrieves indicators from the CrowdStrike Falcon Intel Feed.
-display: CrowdStrike Indicator Feed
-name: CrowdStrike Indicator Feed
+display: CrowdStrike Indicator Feed V2
+name: CrowdStrike Indicator Feed V2
 script:
   commands:
   - arguments:
