@@ -518,7 +518,7 @@ def split_notes(raw_notes, note_type, time_info):
     # The notes should be in this form:
     # '16/05/2023 15:49:56 - John Doe (Additional comments)\nsecond note first line\n\nsecond line\n\nthird
     # line\n\n2023-05-10 15:41:38 - פלוני אלמוני (Additional comments)\nfirst note first line\n\nsecond line\n\n
-    delimiter = r'([0-9]{1,4}(?:\/|-)[0-9]{1,2}(?:\/|-)[0-9]{1,4}.*\((?:Additional comments|Work notes)\))'
+    delimiter = r'([0-9]{1,4}(?:\/|-|\.)[0-9]{1,2}(?:\/|-|\.)[0-9]{1,4}.*\((?:Additional comments|Work notes)\))'
     notes_split = list(filter(None, re.split(delimiter, raw_notes)))
     for note_info, note_value in zip(notes_split[::2], notes_split[1::2]):
         created_on, _, created_by = note_info.partition(" - ")
@@ -547,23 +547,27 @@ def split_notes(raw_notes, note_type, time_info):
     return notes
 
 
-def convert_to_notes_result(full_response, time_info) -> dict:
+def convert_to_notes_result(ticket: dict, time_info: dict) -> dict:
     """
     Converts the response of a ticket to the response format when making a query for notes only.
+    Args:
+        ticket (dict): The ServiceNow ticket response dictionary.
+        time_info (dict): A dictionary with time zone information to convert timestamps.
+
+    Returns:
+        dict: A dictionary containing the key "result" which maps to a list
+        of notes extracted from the ticket comments and work notes.
     """
-    if not full_response or 'result' not in full_response or not full_response.get('result'):
+    if not ticket:
         return {}
 
-    timezone_offset = get_timezone_offset(full_response, time_info.get('display_date_format'))
-    time_info['timezone_offset'] = timezone_offset
-
     all_notes = []
-    raw_comments = full_response.get('result', {}).get('comments', {}).get('display_value', '')
+    raw_comments = ticket.get('comments', '')
     if raw_comments:
         comments = split_notes(raw_comments, 'comments', time_info=time_info)
         all_notes.extend(comments)
 
-    raw_work_notes = full_response.get('result', {}).get('work_notes', {}).get('display_value', '')
+    raw_work_notes = ticket.get('work_notes', '')
     if raw_work_notes:
         work_notes = split_notes(raw_work_notes, 'work_notes', time_info=time_info)
         all_notes.extend(work_notes)
@@ -885,7 +889,7 @@ class Client(BaseClient):
         return entries
 
     def get(self, table_name: str, record_id: str, custom_fields: dict = {}, number: str | None = None,
-            no_record_found_res: dict = {'result': []}) -> dict:
+            no_record_found_res: dict = {'result': []}, use_display_value: bool = False) -> dict:
         """Get a ticket by sending a GET request.
 
         Args:
@@ -893,6 +897,7 @@ class Client(BaseClient):
             record_id: the record ID
             custom_fields: custom fields of the record to query
             number: record number
+            use_display_value: whether to get the display values as well
 
         Returns:
             Response from API.
@@ -911,6 +916,9 @@ class Client(BaseClient):
         else:
             # Only in cases where the table is of type ticket
             raise ValueError('servicenow-get-ticket requires either ticket ID (sys_id) or ticket number.')
+
+        if use_display_value:
+            query_params['sysparm_display_value'] = "all"
 
         return self.send_request(path, 'GET', params=query_params, no_record_found_res=no_record_found_res)
 
@@ -1009,6 +1017,17 @@ class Client(BaseClient):
 
         return self.send_request('attachment/upload', 'POST', headers={'Accept': 'application/json'},
                                  body=body, file={'id': file_id, 'name': file_name})
+
+    def delete_attachment(self, attachment_file_id: str) -> dict:
+        """Deletes an attachment file by sending a DELETE request.
+
+        Args:
+        attachment_file_id: ID of the attachment file.
+
+        Returns:
+            Response from API.
+        """
+        return self.send_request(f'attachment/{attachment_file_id}', 'DELETE')
 
     def add_tag(self, ticket_id: str, tag_id: str, title: str, ticket_type: str) -> dict:
         """Adds a tag to a ticket by sending a POST request.
@@ -1142,7 +1161,8 @@ def get_ticket_command(client: Client, args: dict):
     custom_fields = split_fields(str(args.get('custom_fields', '')), fields_delimiter)
     additional_fields = argToList(str(args.get('additional_fields', '')))
 
-    result = client.get(ticket_type, ticket_id, generate_body({}, custom_fields), number)
+    result = client.get(ticket_type, ticket_id, generate_body({}, custom_fields),
+                        number, use_display_value=client.use_display_value)
     if not result or 'result' not in result:
         return 'Ticket was not found.'
 
@@ -1152,6 +1172,9 @@ def get_ticket_command(client: Client, args: dict):
         ticket = result['result'][0]
     else:
         ticket = result['result']
+
+    if client.use_display_value:
+        ticket = format_incidents_response_with_display_values(ticket)[0]
 
     entries = []  # type: List[Dict]
 
@@ -1451,6 +1474,31 @@ def upload_file_command(client: Client, args: dict) -> tuple[str, dict, dict, bo
     return human_readable, entry_context, result, True
 
 
+def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+    """Deletes an attachment file.
+    Note: This function exclusively returns 404 error responses,
+    while all other types of errors are managed within the send_request function.
+
+    Args:
+        client: Client object used to make requests.
+        args: The command arguments provided by user.
+
+    return: a tuple for CommandResults containing:
+        - Human readable message.
+        - Entry context data.
+        - The raw response.
+        - Ignore auto extract flag.
+
+    :raises DemistoException: Raised if no record is found for the provided attachment file ID.
+    """
+    attachment_file_id = str(args.get('file_sys_id', ''))
+
+    result = client.delete_attachment(attachment_file_id)
+    if not result:  # successful response is 204 (empty response)
+        return f'Attachment with Sys ID {attachment_file_id} was successfully deleted.', {}, result, True
+    raise DemistoException("Error: No record found. Record doesn't exist or ACL restricts the record retrieval.")
+
+
 def add_tag_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
     """Add tag to a ticket.
 
@@ -1513,8 +1561,11 @@ def get_ticket_notes_command(client: Client, args: dict, params: dict,) -> list[
         ticket_type = client.get_table_name(str(args.get('ticket_type', client.ticket_type)))
         path = f'table/{ticket_type}/{ticket_id}'
         query_params = {'sysparm_limit': sys_param_limit, 'sysparm_offset': sys_param_offset, 'sysparm_display_value': 'all'}
-        full_result = client.send_request(path, 'GET', params=query_params)
-        result = convert_to_notes_result(full_result, time_info={'display_date_format': client.display_date_format})
+        response = client.send_request(path, 'GET', params=query_params).get('result', {})
+        timezone_offset = get_timezone_offset(response, client.display_date_format)
+        format_response = format_incidents_response_with_display_values(response)[0]
+        result = convert_to_notes_result(format_response, time_info={
+                                         'display_date_format': client.display_date_format, 'timezone_offset': timezone_offset})
     else:
         sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
         result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
@@ -2189,24 +2240,46 @@ def get_mirroring():
     }
 
 
-def format_incidents_response_with_display_values(incidents_res: dict) -> list[dict]:
+def is_time_field(field: str) -> bool:
+    """Checks if a given field contains a valid date/time string in the format: %Y-%m-%d %H:%M:%S.
+
+    Args:
+        field (str): The field value to check.
+
+    Returns:
+        bool: True if field can be converted to a datetime, False otherwise.
+    """
+    try:
+        datetime.strptime(field, DATE_FORMAT)
+        return True
+    except Exception:
+        return False
+
+
+def format_incidents_response_with_display_values(incidents_res: list | dict) -> list[dict]:
     """Format the incidents response to use display values by key.
 
     Args:
-        incidents_res (dict): The original incidents response
+        incidents_res (list of dict or specific dict): The original incidents response
 
     Returns:
         list[dict]: The formatted incidents.
     """
+    if not isinstance(incidents_res, list):
+        incidents_res = [incidents_res]
+
     format_incidents = []
 
     for incident in incidents_res:
         format_incident = {}
 
         for item in incident:
-            if item in ("opened_by", "sys_domain", "assignment_group"):
-                format_incident[item] = incident[item]
-            elif item == "opened_at":
+            if item in ("opened_by", "sys_domain", "assignment_group", "assigned_to", "caller_id"):
+                if incident[item].get("value"):
+                    format_incident[item] = incident[item]
+                else:
+                    format_incident[item] = ""
+            elif is_time_field(incident[item]["value"]):
                 format_incident[item] = incident[item]["value"]
             else:
                 format_incident[item] = incident[item]["display_value"]
@@ -2248,7 +2321,8 @@ def fetch_incidents(client: Client) -> list:
     count = 0
     skipped_incidents = 0
 
-    severity_map = {'1': 3, '2': 2, '3': 1}  # Map SNOW severity to Demisto severity for incident creation
+    # Map SNOW severity to Demisto severity for incident creation
+    severity_map = {'1': 3, '1 - High': 3, '2': 2, '2 - Medium': 2, '3': 1, '3 - Low': 1}
 
     if client.use_display_value:
         tickets_response = format_incidents_response_with_display_values(incidents_res=tickets_response)
@@ -2439,18 +2513,25 @@ def parse_dict_ticket_fields(client: Client, ticket: dict) -> dict:
     return ticket
 
 
-def get_timezone_offset(full_response, display_date_format):
+def get_timezone_offset(ticket: dict, display_date_format: str):
     """
-    Receives the full response of a ticket query from SNOW and computes the timezone offset between the timezone of the
+    Receives ticket response of a ticket query from SNOW and computes the timezone offset between the timezone of the
     instance and UTC.
+
+    Args:
+        ticket (dict): The ticket response from the SNOW query.
+        display_date_format (str): The date format of the display_value field in the ticket.
+
+    Returns:
+        datetime.timedelta: The timezone offset between the SNOW instance and UTC.
     """
     try:
-        local_time = full_response.get('result', {}).get('sys_created_on', {}).get('display_value', '')
+        local_time = ticket.get('sys_created_on', {}).get('display_value', '')
         local_time = datetime.strptime(local_time, display_date_format)
     except Exception as e:
         raise Exception(f'Failed to get the display value offset time. ERROR: {e}')
     try:
-        utc_time = full_response.get('result', {}).get('sys_created_on', {}).get('value', '')
+        utc_time = ticket.get('sys_created_on', {}).get('value', '')
         utc_time = datetime.strptime(utc_time, DATE_FORMAT)
     except ValueError as e:
         raise Exception(f'Failed to convert {utc_time} to datetime object. ERROR: {e}')
@@ -2481,7 +2562,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     demisto.debug(f'last_update is {last_update}')
 
     ticket_type = client.ticket_type
-    result = client.get(ticket_type, ticket_id)
+    result = client.get(ticket_type, ticket_id, use_display_value=client.use_display_value)
 
     if not result or 'result' not in result:
         return f'Ticket {ticket_id=} was not found.'
@@ -2494,6 +2575,10 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     else:
         ticket = result['result']
+
+    if client.use_display_value and client.display_date_format:
+        timezone_offset = get_timezone_offset(ticket, client.display_date_format)
+        ticket = format_incidents_response_with_display_values(ticket)[0]
 
     ticket_last_update = arg_to_timestamp(
         arg=ticket.get('sys_updated_on'),
@@ -2524,15 +2609,10 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
                 entries.append(file)
 
     if client.use_display_value:
-        ticket_type = client.get_table_name(client.ticket_type)
-        path = f'table/{ticket_type}/{ticket_id}'
-        query_params = {'sysparm_limit': client.sys_param_limit, 'sysparm_offset': client.sys_param_offset,
-                        'sysparm_display_value': 'all'}
-
-        full_result = client.send_request(path, 'GET', params=query_params)
         try:
-            comments_result = convert_to_notes_result(full_result, time_info={'display_date_format': client.display_date_format,
-                                                                              'filter': datetime.fromtimestamp(last_update)})
+            comments_result = convert_to_notes_result(ticket, time_info={'display_date_format': client.display_date_format,
+                                                                         'filter': datetime.fromtimestamp(last_update),
+                                                                         'timezone_offset': timezone_offset})
         except Exception as e:
             demisto.debug(f'Failed to retrieve notes using display value. Continuing without retrieving notes.\n Error: {e}')
             comments_result = {'result': []}
@@ -3164,6 +3244,7 @@ def main():
             'servicenow-get-item-details': get_item_details_command,
             'servicenow-create-item-order': create_order_item_command,
             'servicenow-document-route-to-queue': document_route_to_table,
+            'servicenow-delete-file': delete_attachment_command,
         }
         if command == 'fetch-incidents':
             raise_exception = True
