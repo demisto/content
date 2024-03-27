@@ -2,9 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-TICKET_TYPE_USE_VALUE_FROM_INSTANCE_CONFIG = 'USE_VALUE_FROM_INSTANCE_CONFIG'
-
-
 def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
     ticket_id = args.get('ticket_id', 'none')
     note = args.get('note')
@@ -21,8 +18,6 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
     demisto.debug(f'Using ticket_type: {table_name}')
     if table_name:
         command_args['ticket_type'] = table_name
-    else:
-        command_args['ticket_type'] = TICKET_TYPE_USE_VALUE_FROM_INSTANCE_CONFIG
     if tag == 'comment':
         command_args['comments'] = note
     else:
@@ -38,9 +33,9 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
             raise Exception(resp['Contents'])
         else:
             if 'result' not in resp['Contents'] or not resp['Contents']['result']:
-                message = "Empty result. Please check your input. e.g. the ticket_id"
+                message = "Empty result. Please check your input. e.g. the ticket_id, or table_name"
                 demisto.info(message)
-                return CommandResults(readable_output=message)
+                return_error(message)
 
             result = resp['Contents']['result']
             output_results = {}

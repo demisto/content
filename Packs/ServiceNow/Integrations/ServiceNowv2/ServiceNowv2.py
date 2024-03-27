@@ -14,7 +14,6 @@ DEFAULT_FETCH_TIME = '10 minutes'
 
 INCIDENT = 'incident'
 SIR_INCIDENT = 'sn_si_incident'
-TICKET_TYPE_USE_VALUE_FROM_INSTANCE_CONFIG = 'USE_VALUE_FROM_INSTANCE_CONFIG'
 
 COMMAND_NOT_IMPLEMENTED_MSG = 'Command not implemented'
 
@@ -1220,7 +1219,7 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     fields_delimiter = args.get('fields_delimiter', ';')
     custom_fields = split_fields(str(args.get('custom_fields', '')), fields_delimiter)
     ticket_type_value = args.get('ticket_type')
-    if not ticket_type_value or ticket_type_value == TICKET_TYPE_USE_VALUE_FROM_INSTANCE_CONFIG:
+    if not ticket_type_value:
         ticket_type_value = demisto.params().get('ticket_type')
     ticket_type = client.get_table_name(str(ticket_type_value))
     ticket_id = str(args.get('id', ''))
