@@ -1448,7 +1448,7 @@ def test_group_delete_command(gsuite_client, mocker):
     from GSuiteAdmin import group_delete_command
     args = {"customer_id": "test", "target_type": "Group", "target_resource": "111111",
             "policy_schema": "chrome.users.apps.InstallType",
-            "additional_target_keys": "\"app_id\":\"chrome:111111\""}
+            "additional_target_keys": "{\"app_id\":\"chrome:11111111\"}"}
     mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value={})
     response = group_delete_command(gsuite_client, args)
     assert response == f'Policy has been deleted for the customer {args["customer_id"]}'
