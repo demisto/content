@@ -42,39 +42,39 @@ This command approves the simulator with the specified simulator_id.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.Simulator.IsEnabled | String | Whether the simulator is enabled or not. | 
-| SafeBreach.Simulator.SimulatorId | String | The Id of given simulator. | 
-| SafeBreach.Simulator.Name | String | name for given simulator. | 
-| SafeBreach.Simulator.AccountId | String | Account Id of account Hosting given simulator. | 
-| SafeBreach.Simulator.IsCritical | String | Whether the simulator is critical. | 
-| SafeBreach.Simulator.IsExfiltration | String | If Simulator is exfiltration target. | 
-| SafeBreach.Simulator.IsInfiltration | String | If simulator is infiltration target. | 
-| SafeBreach.Simulator.IsMailTarget | String | If simulator is mail target. | 
-| SafeBreach.Simulator.IsMailAttacker | String | If simulator is mail attacker. | 
-| SafeBreach.Simulator.IsPreExecutor | String | Whether the simulator is pre executor. | 
-| SafeBreach.Simulator.IsAwsAttacker | String | if the given simulator is aws attacker. | 
-| SafeBreach.Simulator.IsAzureAttacker | String | If the given simulator is azure attacker. | 
-| SafeBreach.Simulator.ExternalIp | String | external ip of given simulator. | 
-| SafeBreach.Simulator.InternalIp | String | internal ip of given simulator. | 
-| SafeBreach.Simulator.IsWebApplicationAttacker | String | Whether the simulator is Web application attacker. | 
-| SafeBreach.Simulator.PreferredInterface | String | Preferred simulator interface. | 
-| SafeBreach.Simulator.PreferredIp | String | Preferred Ip of simulator. | 
-| SafeBreach.Simulator.Hostname | String | Hostname of given simulator. | 
-| SafeBreach.Simulator.ConnectionType | String | connection_type of given simulator. | 
-| SafeBreach.Simulator.SimulatorStatus | String | status of the simulator. | 
-| SafeBreach.Simulator.ConnectionStatus | String | connection status of simulator. | 
-| SafeBreach.Simulator.SimulatorFrameworkVersion | String | Framework version of simulator. | 
-| SafeBreach.Simulator.OperatingSystemType | String | operating system type of given simulator. | 
-| SafeBreach.Simulator.OperatingSystem | String | Operating system of given simulator. | 
-| SafeBreach.Simulator.ExecutionHostname | String | Execution Hostname of the given simulator. | 
-| SafeBreach.Simulator.Deployments | String | deployments simulator is part of. | 
-| SafeBreach.Simulator.CreatedAt | String | Creation datetime of simulator. | 
-| SafeBreach.Simulator.UpdatedAt | String | Update datetime of given simulator. | 
-| SafeBreach.Simulator.DeletedAt | String | deletion datetime of given simulator. | 
-| SafeBreach.Simulator.Assets | String | Assets of given simulator. | 
-| SafeBreach.Simulator.SimulationUsers | String | simulator users list. | 
-| SafeBreach.Simulator.Proxies | String | Proxies of simulator. | 
-| SafeBreach.Simulator.AdvancedActions | String | Advanced simulator details. | 
+| SafeBreach.Simulator.is_enabled | String | Whether the simulator is enabled or not. | 
+| SafeBreach.Simulator.simulator_id | String | The Id of given simulator. | 
+| SafeBreach.Simulator.name | String | name for given simulator. | 
+| SafeBreach.Simulator.account_id | String | Account Id of account Hosting given simulator. | 
+| SafeBreach.Simulator.is_critical | String | Whether the simulator is critical. | 
+| SafeBreach.Simulator.is_exfiltration | String | If Simulator is exfiltration target. | 
+| SafeBreach.Simulator.is_infiltration | String | If simulator is infiltration target. | 
+| SafeBreach.Simulator.is_mail_target | String | If simulator is mail target. | 
+| SafeBreach.Simulator.is_mail_attacker | String | If simulator is mail attacker. | 
+| SafeBreach.Simulator.is_pre_executor | String | Whether the simulator is pre executor. | 
+| SafeBreach.Simulator.is_aws_attacker | String | if the given simulator is aws attacker. | 
+| SafeBreach.Simulator.is_azure_attacker | String | If the given simulator is azure attacker. | 
+| SafeBreach.Simulator.external_ip | String | external ip of given simulator. | 
+| SafeBreach.Simulator.internal_ip | String | internal ip of given simulator. | 
+| SafeBreach.Simulator.is_web_application_attacker | String | Whether the simulator is Web application attacker. | 
+| SafeBreach.Simulator.preferred_interface | String | Preferred simulator interface. | 
+| SafeBreach.Simulator.preferred_ip | String | Preferred Ip of simulator. | 
+| SafeBreach.Simulator.hostname | String | Hostname of given simulator. | 
+| SafeBreach.Simulator.connection_type | String | connection_type of given simulator. | 
+| SafeBreach.Simulator.simulator_status | String | status of the simulator. | 
+| SafeBreach.Simulator.connection_status | String | connection status of simulator. | 
+| SafeBreach.Simulator.simulator_framework_version | String | Framework version of simulator. | 
+| SafeBreach.Simulator.operating_system_type | String | operating system type of given simulator. | 
+| SafeBreach.Simulator.operating_system | String | Operating system of given simulator. | 
+| SafeBreach.Simulator.execution_hostname | String | Execution Hostname of the given simulator. | 
+| SafeBreach.Simulator.deployments | String | deployments simulator is part of. | 
+| SafeBreach.Simulator.created_at | String | Creation datetime of simulator. | 
+| SafeBreach.Simulator.updated_at | String | Update datetime of given simulator. | 
+| SafeBreach.Simulator.deleted_at | String | deletion datetime of given simulator. | 
+| SafeBreach.Simulator.assets | String | Assets of given simulator. | 
+| SafeBreach.Simulator.simulation_users | String | simulator users list. | 
+| SafeBreach.Simulator.proxies | String | Proxies of simulator. | 
+| SafeBreach.Simulator.advanced_actions | String | Advanced simulator details. | 
 
 ### safebreach-generate-api-key
 
@@ -96,11 +96,11 @@ This command creates an API key with the name and optionally the description pro
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.GeneratedAPIKey.Name | String | The Name of API Key generated through this command,                           This will match the input name of the command. | 
-| SafeBreach.GeneratedAPIKey.Description | String | The Description of API Key created.                           this will be same as input description given for the command. | 
-| SafeBreach.GeneratedAPIKey.CreatedBy | String | The id of user who generated this API key. | 
-| SafeBreach.GeneratedAPIKey.CreatedBt | String | The creation date and time of API key. | 
-| SafeBreach.GeneratedAPIKey.Key | String | The value of API key generated. store this for further use as this will only be shown once | 
+| SafeBreach.API.name | String | The Name of API Key generated through this command,                           This will match the input name of the command. | 
+| SafeBreach.API.description | String | The Description of API Key created.                           this will be same as input description given for the command. | 
+| SafeBreach.API.created_by | String | The id of user who generated this API key. | 
+| SafeBreach.API.created_bt | String | The creation date and time of API key. | 
+| SafeBreach.API.key | String | The value of API key generated. store this for further use as this will only be shown once | 
 
 ### safebreach-create-deployment
 
@@ -123,12 +123,12 @@ This command creates a deployment, grouping the list of simulators provided with
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.CreateDeployment.Id | Number | The ID of deployment created. this Id can be used to update ,delete deployment as                      deployment_id field of the deployment. | 
-| SafeBreach.CreateDeployment.AccountId | String | This field shows account ID of user who has created the account. | 
-| SafeBreach.CreateDeployment.Name | String | The name of deployment created. this will be name which will be shown on deployments page                      of safebreach and name that is given as input to the command. | 
-| SafeBreach.CreateDeployment.CreatedAt | String | The creation date and time of deployment , this will be closer to                      command execution time if the deployment creation is successful. | 
-| SafeBreach.CreateDeployment.Description | String | The description of the deployment created will be shown in description                           part of the table in safebreach. | 
-| SafeBreach.CreateDeployment.Simulators | String | The simulators that are part of deployment. | 
+| SafeBreach.Deployment.id | Number | The ID of deployment created. this Id can be used to update ,delete deployment as                      deployment_id field of the deployment. | 
+| SafeBreach.Deployment.account_id | String | This field shows account ID of user who has created the account. | 
+| SafeBreach.Deployment.name | String | The name of deployment created. this will be name which will be shown on deployments page                      of safebreach and name that is given as input to the command. | 
+| SafeBreach.Deployment.created_at | String | The creation date and time of deployment , this will be closer to                      command execution time if the deployment creation is successful. | 
+| SafeBreach.Deployment.description | String | The description of the deployment created will be shown in description                           part of the table in safebreach. | 
+| SafeBreach.Deployment.simulators | String | The simulators that are part of deployment. | 
 
 ### safebreach-create-user
 
@@ -156,14 +156,14 @@ This command creates a user, including credentials and permissions.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.CreatedUserData.Id | Number | The ID of User created. | 
-| SafeBreach.CreatedUserData.Name | String | The name of User created. | 
-| SafeBreach.CreatedUserData.Email | String | The email of User created. | 
-| SafeBreach.CreatedUserData.Createdat | String | The creation time of User. | 
-| SafeBreach.CreatedUserData.Roles | String | The roles and permissions of User created. | 
-| SafeBreach.CreatedUserData.Description | String | The description of User if any is given at creation time, it will be populated here. | 
-| SafeBreach.CreatedUserData.Role | String | The role assigned to user during creation. | 
-| SafeBreach.CreatedUserData.Deployments | String | The deployments user is part of. | 
+| SafeBreach.User.id | Number | The ID of User created. | 
+| SafeBreach.User.name | String | The name of User created. | 
+| SafeBreach.User.email | String | The email of User created. | 
+| SafeBreach.User.createdAt | String | The creation time of User. | 
+| SafeBreach.User.roles | String | The roles and permissions of User created. | 
+| SafeBreach.User.description | String | The description of User if any is given at creation time, it will be populated here. | 
+| SafeBreach.User.role | String | The role assigned to user during creation. | 
+| SafeBreach.User.deployments | String | The deployments user is part of. | 
 
 ### safebreach-delete-api-key
 
@@ -184,11 +184,11 @@ This command deletes the API key with the name as specified in SafeBreach Manage
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.DeletedAPIKey.Name | Number | The Name of API Key deleted. | 
-| SafeBreach.DeletedAPIKey.Description | String | Description of API Key deleted. | 
-| SafeBreach.DeletedAPIKey.CreatedBy | String | The id of user who generated this API key. | 
-| SafeBreach.DeletedAPIKey.CreatedAt | String | The creation time and date of API key. | 
-| SafeBreach.DeletedAPIKey.DeletedAt | String | The deletion time and date of API key. The deletion date and time are generally                      close to the command execution time and date. | 
+| SafeBreach.API.name | Number | The Name of API Key deleted. | 
+| SafeBreach.API.description | String | Description of API Key deleted. | 
+| SafeBreach.API.created_by | String | The id of user who generated this API key. | 
+| SafeBreach.API.created_at | String | The creation time and date of API key. | 
+| SafeBreach.API.deleted_at | String | The deletion time and date of API key. The deletion date and time are generally                      close to the command execution time and date. | 
 
 ### safebreach-delete-deployment
 
@@ -209,12 +209,12 @@ This command deletes a deployment with the deployment_id (retrieved using the ge
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.DeletedDeployment.Id | Number | The ID of deployment which has been deleted. | 
-| SafeBreach.DeletedDeployment.AccountId | String | The account Id of user who deleted the deployment. | 
-| SafeBreach.DeletedDeployment.Name | String | The name of deployment before the deployment was deleted. | 
-| SafeBreach.DeletedDeployment.CreatedAt | String | The creation date and time of deployment which has been deleted. | 
-| SafeBreach.DeletedDeployment.Description | String | The description of deployment before it was deleted. | 
-| SafeBreach.DeletedDeployment.Simulators | String | The simulators that are part of deployment before it was deleted. | 
+| SafeBreach.Deployment.id | Number | The ID of deployment which has been deleted. | 
+| SafeBreach.Deployment.account_id | String | The account Id of user who deleted the deployment. | 
+| SafeBreach.Deployment.name | String | The name of deployment before the deployment was deleted. | 
+| SafeBreach.Deployment.created_at | String | The creation date and time of deployment which has been deleted. | 
+| SafeBreach.Deployment.description | String | The description of deployment before it was deleted. | 
+| SafeBreach.Deployment.simulators | String | The simulators that are part of deployment before it was deleted. | 
 
 ### safebreach-clear-integration-issues
 
@@ -235,8 +235,8 @@ This command deletes connector-related errors and warnings for the specified con
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.ClearIntegrationIssues.Error | Number | Error count after deletion of errors for the given Integration. | 
-| SafeBreach.ClearIntegrationIssues.Result | String | error deletion status whether true or false. | 
+| SafeBreach.Integration.error | Number | Error count after deletion of errors for the given Integration. | 
+| SafeBreach.Integration.result | String | error deletion status whether true or false. | 
 
 ### safebreach-delete-scheduled-scenarios
 
@@ -257,21 +257,21 @@ This command deletes the scheduled scenario with the specified schedule_id.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.DeletedScheduledScenario.Id | String | the Id of the scheduled scenario. | 
-| SafeBreach.DeletedScheduledScenario.IsEnabled | Boolean | if scheduled scenario is enabled. | 
-| SafeBreach.DeletedScheduledScenario.UserSchedule | String | the user readable form of the scheduled scenario. | 
-| SafeBreach.DeletedScheduledScenario.RunDate | String | the run date of the scheduled scenario. | 
-| SafeBreach.DeletedScheduledScenario.CronTimezone | String | the time zone of the scheduled scenario. | 
-| SafeBreach.DeletedScheduledScenario.Description | String | the description of the scheduled scenario. | 
-| SafeBreach.DeletedScheduledScenario.ScenarioId | String | the test ID of the scheduled scenario. | 
-| SafeBreach.DeletedScheduledScenario.CreatedAt | String | the creation datetime of the scheduled scenario. | 
-| SafeBreach.DeletedScheduledScenario.UpdatedAt | String | the updated datetime of the scheduled scenario. | 
-| SafeBreach.DeletedScheduledScenario.DeletedAt | String | the deletion time of the scheduled scenario. | 
+| SafeBreach.Scenario.id | String | the Id of the scheduled scenario. | 
+| SafeBreach.Scenario.name | String | the name of the scheduled scenario. | 
+| SafeBreach.Scenario.accountId | String | the account ID of the scheduled scenario. | 
+| SafeBreach.Scenario.description | String | the description of the scheduled scenario. | 
+| SafeBreach.Scenario.successCriteria | String | the success criteria of the scheduled scenario. | 
+| SafeBreach.Scenario.originalScenarioId | String | the original test ID of the scheduled scenario. | 
+| SafeBreach.Scenario.systemFilter | String | the systemFilter of the scheduled scenario. | 
+| SafeBreach.Scenario.tags | String | the tags of the scheduled scenario. | 
+| SafeBreach.Scenario.createdAt | String | the creation datetime of the scheduled scenario. | 
+| SafeBreach.Scenario.updatedAt | String | the updated datetime of the scheduled scenario. | 
 
 ### safebreach-delete-simulator
 
 ***
-This command deletes simulator with given ID.to get simulator_id use safebreach-get-all-simulators command.
+The provided command facilitates the deletion of a simulator identified by its unique ID.To obtain the respective simulator ID, execute the "safebreach-get-all-simulators" command.
 
 #### Base Command
 
@@ -287,39 +287,39 @@ This command deletes simulator with given ID.to get simulator_id use safebreach-
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.DeletedSimulator.IsEnabled | String | Whether the simulator is enabled or not. | 
-| SafeBreach.DeletedSimulator.SimulatorId | String | The Id of given simulator. | 
-| SafeBreach.DeletedSimulator.Name | String | name for given simulator. | 
-| SafeBreach.DeletedSimulator.AccountId | String | Account Id of account Hosting given simulator. | 
-| SafeBreach.DeletedSimulator.IsCritical | String | Whether the simulator is critical. | 
-| SafeBreach.DeletedSimulator.IsExfiltration | String | If Simulator is exfiltration target. | 
-| SafeBreach.DeletedSimulator.IsInfiltration | String | If simulator is infiltration target. | 
-| SafeBreach.DeletedSimulator.IsMailTarget | String | If simulator is mail target. | 
-| SafeBreach.DeletedSimulator.IsMailAttacker | String | If simulator is mail attacker. | 
-| SafeBreach.DeletedSimulator.IsPreExecutor | String | Whether the simulator is pre executor. | 
-| SafeBreach.DeletedSimulator.IsAwsAttacker | String | if the given simulator is aws attacker. | 
-| SafeBreach.DeletedSimulator.IsAzureAttacker | String | If the given simulator is azure attacker. | 
-| SafeBreach.DeletedSimulator.ExternalIp | String | external ip of given simulator. | 
-| SafeBreach.DeletedSimulator.InternalIp | String | internal ip of given simulator. | 
-| SafeBreach.DeletedSimulator.IsWebApplicationAttacker | String | Whether the simulator is Web application attacker. | 
-| SafeBreach.DeletedSimulator.PreferredInterface | String | Preferred simulator interface. | 
-| SafeBreach.DeletedSimulator.PreferredIp | String | Preferred Ip of simulator. | 
-| SafeBreach.DeletedSimulator.Hostname | String | Hostname of given simulator. | 
-| SafeBreach.DeletedSimulator.ConnectionType | String | connection_type of given simulator. | 
-| SafeBreach.DeletedSimulator.SimulatorStatus | String | status of the simulator. | 
-| SafeBreach.DeletedSimulator.ConnectionStatus | String | connection status of simulator. | 
-| SafeBreach.DeletedSimulator.SimulatorFrameworkVersion | String | Framework version of simulator. | 
-| SafeBreach.DeletedSimulator.OperatingSystemType | String | operating system type of given simulator. | 
-| SafeBreach.DeletedSimulator.OperatingSystem | String | Operating system of given simulator. | 
-| SafeBreach.DeletedSimulator.ExecutionHostname | String | Execution Hostname of the given simulator. | 
-| SafeBreach.DeletedSimulator.Deployments | String | deployments simulator is part of. | 
-| SafeBreach.DeletedSimulator.CreatedAt | String | Creation datetime of simulator. | 
-| SafeBreach.DeletedSimulator.UpdatedAt | String | Update datetime of given simulator. | 
-| SafeBreach.DeletedSimulator.DeletedAt | String | deletion datetime of given simulator. | 
-| SafeBreach.DeletedSimulator.Assets | String | Assets of given simulator. | 
-| SafeBreach.DeletedSimulator.SimulationUsers | String | simulator users list. | 
-| SafeBreach.DeletedSimulator.Proxies | String | Proxies of simulator. | 
-| SafeBreach.DeletedSimulator.AdvancedActions | String | Advanced simulator details. | 
+| SafeBreach.Simulator.is_enabled | String | Whether the simulator is enabled or not. | 
+| SafeBreach.Simulator.simulator_id | String | The Id of given simulator. | 
+| SafeBreach.Simulator.name | String | name for given simulator. | 
+| SafeBreach.Simulator.account_id | String | Account Id of account Hosting given simulator. | 
+| SafeBreach.Simulator.is_critical | String | Whether the simulator is critical. | 
+| SafeBreach.Simulator.is_exfiltration | String | If Simulator is exfiltration target. | 
+| SafeBreach.Simulator.is_infiltration | String | If simulator is infiltration target. | 
+| SafeBreach.Simulator.is_mail_target | String | If simulator is mail target. | 
+| SafeBreach.Simulator.is_mail_attacker | String | If simulator is mail attacker. | 
+| SafeBreach.Simulator.is_pre_executor | String | Whether the simulator is pre executor. | 
+| SafeBreach.Simulator.is_aws_attacker | String | if the given simulator is aws attacker. | 
+| SafeBreach.Simulator.is_azure_attacker | String | If the given simulator is azure attacker. | 
+| SafeBreach.Simulator.external_ip | String | external ip of given simulator. | 
+| SafeBreach.Simulator.internal_ip | String | internal ip of given simulator. | 
+| SafeBreach.Simulator.is_web_application_attacker | String | Whether the simulator is Web application attacker. | 
+| SafeBreach.Simulator.preferred_interface | String | Preferred simulator interface. | 
+| SafeBreach.Simulator.preferred_ip | String | Preferred Ip of simulator. | 
+| SafeBreach.Simulator.hostname | String | Hostname of given simulator. | 
+| SafeBreach.Simulator.connection_type | String | connection_type of given simulator. | 
+| SafeBreach.Simulator.simulator_status | String | status of the simulator. | 
+| SafeBreach.Simulator.connection_status | String | connection status of simulator. | 
+| SafeBreach.Simulator.simulator_framework_version | String | Framework version of simulator. | 
+| SafeBreach.Simulator.operating_system_type | String | operating system type of given simulator. | 
+| SafeBreach.Simulator.operating_system | String | Operating system of given simulator. | 
+| SafeBreach.Simulator.execution_hostname | String | Execution Hostname of the given simulator. | 
+| SafeBreach.Simulator.deployments | String | deployments simulator is part of. | 
+| SafeBreach.Simulator.created_at | String | Creation datetime of simulator. | 
+| SafeBreach.Simulator.updated_at | String | Update datetime of given simulator. | 
+| SafeBreach.Simulator.deleted_at | String | deletion datetime of given simulator. | 
+| SafeBreach.Simulator.assets | String | Assets of given simulator. | 
+| SafeBreach.Simulator.simulation_users | String | simulator users list. | 
+| SafeBreach.Simulator.proxies | String | Proxies of simulator. | 
+| SafeBreach.Simulator.advanced_actions | String | Advanced simulator details. | 
 
 ### safebreach-delete-test-with-id
 
@@ -340,23 +340,23 @@ This command deletes tests with given test ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.DeletedTest.ScenarioId | String | scenario ID of the test. | 
-| SafeBreach.DeletedTest.SimulationName | String | Name of the simulation. | 
-| SafeBreach.DeletedTest.SecurityActionPerControl | String | Security Actions of the simulation. | 
-| SafeBreach.DeletedTest.TestId | String | Test id of the test. | 
-| SafeBreach.DeletedTest.Status | String | status of the test. | 
-| SafeBreach.DeletedTest.PlannedSimulationsAmount | String | Planned simulations count of the test. | 
-| SafeBreach.DeletedTest.SimulatorExecutions | String | simulator executions of the test. | 
-| SafeBreach.DeletedTest.AttackExecutions | String | list of attacks that are part of the simulation. | 
-| SafeBreach.DeletedTest.RanBy | String | user who started the simulation. | 
-| SafeBreach.DeletedTest.SimulatorCount | String | simulators count per account. | 
-| SafeBreach.DeletedTest.EndTime | String | End Time of the test. | 
-| SafeBreach.DeletedTest.StartTime | String | start time of the test. | 
-| SafeBreach.DeletedTest.finalStatus.stopped | String | stopped count of attacks. | 
-| SafeBreach.DeletedTest.finalStatus.missed | String | missed count of attacks. | 
-| SafeBreach.DeletedTest.finalStatus.logged | String | logged count of attacks. | 
-| SafeBreach.DeletedTest.finalStatus.detected | String | detected count of attacks. | 
-| SafeBreach.DeletedTest.finalStatus.prevented | String | prevented count of attacks. | 
+| SafeBreach.Test.scenario_id | String | scenario ID of the test. | 
+| SafeBreach.Test.simulation_name | String | Name of the simulation. | 
+| SafeBreach.Test.security_action_per_control | String | Security Actions of the simulation. | 
+| SafeBreach.Test.test_id | String | Test id of the test. | 
+| SafeBreach.Test.status | String | status of the test. | 
+| SafeBreach.Test.planned_simulations_amount | String | Planned simulations count of the test. | 
+| SafeBreach.Test.simulator_executions | String | simulator executions of the test. | 
+| SafeBreach.Test.attack_executions | String | list of attacks that are part of the simulation. | 
+| SafeBreach.Test.ran_by | String | user who started the simulation. | 
+| SafeBreach.Test.simulator_count | String | simulators count per account. | 
+| SafeBreach.Test.end_time | String | End Time of the test. | 
+| SafeBreach.Test.start_time | String | start time of the test. | 
+| SafeBreach.Test.finalStatus.stopped | String | stopped count of attacks. | 
+| SafeBreach.Test.finalStatus.missed | String | missed count of attacks. | 
+| SafeBreach.Test.finalStatus.logged | String | logged count of attacks. | 
+| SafeBreach.Test.finalStatus.detected | String | detected count of attacks. | 
+| SafeBreach.Test.finalStatus.prevented | String | prevented count of attacks. | 
 
 ### safebreach-delete-user
 
@@ -377,16 +377,16 @@ This command deletes a user with given data.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.DeletedUserData.Id | Number | The ID of User whose data has been deleted. | 
-| SafeBreach.DeletedUserData.Name | String | The name of User deleted. | 
-| SafeBreach.DeletedUserData.Email | String | The email of User deleted. | 
-| SafeBreach.DeletedUserData.Createdat | String | the time at which the user who has been selected has been created | 
-| SafeBreach.DeletedUserData.Updatedat | String | last updated time. | 
-| SafeBreach.DeletedUserData.Deletedat | String | Deletion time of user. | 
-| SafeBreach.DeletedUserData.Roles | String | The roles of User before they were deleted. | 
-| SafeBreach.DeletedUserData.Description | String | The description of User who has been deleted. | 
-| SafeBreach.DeletedUserData.Role | String | The roles and permissions of User who has been deleted. | 
-| SafeBreach.DeletedUserData.Deployments | String | The deployments related to user before he was deleted. | 
+| SafeBreach.User.id | Number | The ID of User whose data has been deleted. | 
+| SafeBreach.User.name | String | The name of User deleted. | 
+| SafeBreach.User.email | String | The email of User deleted. | 
+| SafeBreach.User.createdAt | String | the time at which the user who has been selected has been created | 
+| SafeBreach.User.updatedAt | String | last updated time. | 
+| SafeBreach.User.deletedAt | String | Deletion time of user. | 
+| SafeBreach.User.roles | String | The roles of User before they were deleted. | 
+| SafeBreach.User.description | String | The description of User who has been deleted. | 
+| SafeBreach.User.role | String | The roles and permissions of User who has been deleted. | 
+| SafeBreach.User.deployments | String | The deployments related to user before he was deleted. | 
 
 ### safebreach-get-integration-issues
 
@@ -407,12 +407,12 @@ This command gives all integrations related issues and warning. this will show t
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.IntegrationErrors.IntegrationId | Number | The ID of Integration. A general notation that has been followed here is                      as follows, if the  id has _default at the end then its a default connector else its a custom connector | 
-| SafeBreach.IntegrationErrors.IntegrationName | String | Name of the integration | 
-| SafeBreach.IntegrationErrors.Action | String | The action of Integration error. This describes where exactly did the error occur,                        if its search,then it implies error/warning happened when connector was trying that process | 
-| SafeBreach.IntegrationErrors.SuccessState | String | status of integration error. This implies whether the connector was able to                       successfully perform the operation or if it failed partway.                       So false implies it failed partway and true implies it was successfully completed | 
-| SafeBreach.IntegrationErrors.ErrorDescription | String | This is the exact error description shown on safebreach integration error/warning page.                        This description can be used for understanding of what exactly happened for the integration to fail. | 
-| SafeBreach.IntegrationErrors.Timestamp | String | Time at which error/warning occurred. This can be used to pinpoint error which occurred                      across integrations if time of origin was remembered | 
+| SafeBreach.Integration.integration_id | Number | The ID of Integration. A general notation that has been followed here is                      as follows, if the  id has _default at the end then its a default connector else its a custom connector | 
+| SafeBreach.Integration.integration_name | String | Name of the integration | 
+| SafeBreach.Integration.action | String | The action of Integration error. This describes where exactly did the error occur,                        if its search,then it implies error/warning happened when connector was trying that process | 
+| SafeBreach.Integration.success_state | String | status of integration error. This implies whether the connector was able to                       successfully perform the operation or if it failed partway.                       So false implies it failed partway and true implies it was successfully completed | 
+| SafeBreach.Integration.error_description | String | This is the exact error description shown on safebreach integration error/warning page.                        This description can be used for understanding of what exactly happened for the integration to fail. | 
+| SafeBreach.Integration.timestamp | String | Time at which error/warning occurred. This can be used to pinpoint error which occurred                      across integrations if time of origin was remembered | 
 
 ### safebreach-get-running-simulations
 
@@ -432,9 +432,9 @@ This command gets simulations which are in running or queued state.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.ActiveSimulations.test id | String | this is test ID of the simulation. | 
-| SafeBreach.ActiveSimulations.SimulationId | String | the simulation id of the simulation. | 
-| SafeBreach.ActiveSimulations.AttackId | String | the attack ID of the simulation. | 
+| SafeBreach.Test.test id | String | this is test ID of the simulation. | 
+| SafeBreach.Test.simulation_id | String | the simulation id of the simulation. | 
+| SafeBreach.Test.attack_id | String | the attack ID of the simulation. | 
 
 ### safebreach-get-running-tests
 
@@ -454,29 +454,29 @@ This command gets tests which are in running state.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.ActiveTest.Id | Number | Id of Actively running test. | 
-| SafeBreach.ActiveTest.Name | String | Name of the test being run. | 
-| SafeBreach.ActiveTest.Description | String | Details related to the test being run. | 
-| SafeBreach.ActiveTest.SuccessCriteria | String | success criterion for the test. | 
-| SafeBreach.ActiveTest.OriginalScenarioId | String | Original scenario ID of the running test | 
-| SafeBreach.ActiveTest.ActionsCount | String | number of actions | 
-| SafeBreach.ActiveTest.EdgesCount | String | number of edges. | 
-| SafeBreach.ActiveTest.CreatedAt | String | details related to when test is created. | 
-| SafeBreach.ActiveTest.UpdatedAt | String | details related to when test is last updated/changed | 
-| SafeBreach.ActiveTest.StepsCount | String | number of steps in simulator. | 
-| SafeBreach.ActiveTest.ScenarioId | String | scenario_id of the test. | 
-| SafeBreach.ActiveTest.OriginalScenarioId | String | scenario_id for reference. | 
-| SafeBreach.ActiveTest.RanBy | String | User who ran the scenario. | 
-| SafeBreach.ActiveTest.RanFrom | String | Where the test ran from. | 
-| SafeBreach.ActiveTest.TestId | String | test id of the test. | 
-| SafeBreach.ActiveTest.Priority | String | priority of tests. | 
-| SafeBreach.ActiveTest.RetrySimulations | String | Should simulations be retried | 
-| SafeBreach.ActiveTest.PauseDuration | String | is the test paused and if so till when | 
-| SafeBreach.ActiveTest.PausedDate | String | when the test is paused | 
-| SafeBreach.ActiveTest.ExpectedSimulationsAmount | String | number of simulations expected | 
-| SafeBreach.ActiveTest.DispatchedSimulationsAmount | String | the number of simulations dispatched | 
-| SafeBreach.ActiveTest.SkippedSimulationsAmount | String | The number of simulations skipped | 
-| SafeBreach.ActiveTest.FailedSimulationsAmount | String | The number of simulations failed | 
+| SafeBreach.Test.id | Number | Id of Actively running test. | 
+| SafeBreach.Test.name | String | Name of the test being run. | 
+| SafeBreach.Test.description | String | Details related to the test being run. | 
+| SafeBreach.Test.success_criteria | String | success criterion for the test. | 
+| SafeBreach.Test.original_scenario_id | String | Original scenario ID of the running test | 
+| SafeBreach.Test.actions_count | String | number of actions | 
+| SafeBreach.Test.edges_count | String | number of edges. | 
+| SafeBreach.Test.created_at | String | details related to when test is created. | 
+| SafeBreach.Test.updated_at | String | details related to when test is last updated/changed | 
+| SafeBreach.Test.steps_count | String | number of steps in simulator. | 
+| SafeBreach.Test.scenario_id | String | scenario_id of the test. | 
+| SafeBreach.Test.original_scenario_id | String | scenario_id for reference. | 
+| SafeBreach.Test.ran_by | String | User who ran the scenario. | 
+| SafeBreach.Test.ran_from | String | Where the test ran from. | 
+| SafeBreach.Test.test_id | String | test id of the test. | 
+| SafeBreach.Test.priority | String | priority of tests. | 
+| SafeBreach.Test.retry_simulations | String | Should simulations be retried | 
+| SafeBreach.Test.pause_duration | String | is the test paused and if so till when | 
+| SafeBreach.Test.paused_date | String | when the test is paused | 
+| SafeBreach.Test.expected_simulations_amount | String | number of simulations expected | 
+| SafeBreach.Test.dispatched_simulations_amount | String | the number of simulations dispatched | 
+| SafeBreach.Test.skipped_simulations_amount | String | The number of simulations skipped | 
+| SafeBreach.Test.failed_simulations_amount | String | The number of simulations failed | 
 
 ### safebreach-get-available-simulator-details
 
@@ -505,39 +505,39 @@ This command to get all available simulators. if details is set to true then it 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.Simulator.IsEnabled | String | Whether the simulator is enabled or not. | 
-| SafeBreach.Simulator.SimulatorId | String | The Id of given simulator. | 
-| SafeBreach.Simulator.Name | String | name for given simulator. | 
-| SafeBreach.Simulator.AccountId | String | Account Id of account Hosting given simulator. | 
-| SafeBreach.Simulator.IsCritical | String | Whether the simulator is critical. | 
-| SafeBreach.Simulator.IsExfiltration | String | If Simulator is exfiltration target. | 
-| SafeBreach.Simulator.IsInfiltration | String | If simulator is infiltration target. | 
-| SafeBreach.Simulator.IsMailTarget | String | If simulator is mail target. | 
-| SafeBreach.Simulator.IsMailAttacker | String | If simulator is mail attacker. | 
-| SafeBreach.Simulator.IsPreExecutor | String | Whether the simulator is pre executor. | 
-| SafeBreach.Simulator.IsAwsAttacker | String | if the given simulator is aws attacker. | 
-| SafeBreach.Simulator.IsAzureAttacker | String | If the given simulator is azure attacker. | 
-| SafeBreach.Simulator.ExternalIp | String | external ip of given simulator. | 
-| SafeBreach.Simulator.InternalIp | String | internal ip of given simulator. | 
-| SafeBreach.Simulator.IsWebApplicationAttacker | String | Whether the simulator is Web application attacker. | 
-| SafeBreach.Simulator.PreferredInterface | String | Preferred simulator interface. | 
-| SafeBreach.Simulator.PreferredIp | String | Preferred Ip of simulator. | 
-| SafeBreach.Simulator.Hostname | String | Hostname of given simulator. | 
-| SafeBreach.Simulator.ConnectionType | String | connection_type of given simulator. | 
-| SafeBreach.Simulator.SimulatorStatus | String | status of the simulator. | 
-| SafeBreach.Simulator.ConnectionStatus | String | connection status of simulator. | 
-| SafeBreach.Simulator.SimulatorFrameworkVersion | String | Framework version of simulator. | 
-| SafeBreach.Simulator.OperatingSystemType | String | operating system type of given simulator. | 
-| SafeBreach.Simulator.OperatingSystem | String | Operating system of given simulator. | 
-| SafeBreach.Simulator.ExecutionHostname | String | Execution Hostname of the given simulator. | 
-| SafeBreach.Simulator.Deployments | String | deployments simulator is part of. | 
-| SafeBreach.Simulator.CreatedAt | String | Creation datetime of simulator. | 
-| SafeBreach.Simulator.UpdatedAt | String | Update datetime of given simulator. | 
-| SafeBreach.Simulator.DeletedAt | String | deletion datetime of given simulator. | 
-| SafeBreach.Simulator.Assets | String | Assets of given simulator. | 
-| SafeBreach.Simulator.SimulationUsers | String | simulator users list. | 
-| SafeBreach.Simulator.Proxies | String | Proxies of simulator. | 
-| SafeBreach.Simulator.AdvancedActions | String | Advanced simulator details. | 
+| SafeBreach.Simulator.is_enabled | String | Whether the simulator is enabled or not. | 
+| SafeBreach.Simulator.simulator_id | String | The Id of given simulator. | 
+| SafeBreach.Simulator.name | String | name for given simulator. | 
+| SafeBreach.Simulator.account_id | String | Account Id of account Hosting given simulator. | 
+| SafeBreach.Simulator.is_critical | String | Whether the simulator is critical. | 
+| SafeBreach.Simulator.is_exfiltration | String | If Simulator is exfiltration target. | 
+| SafeBreach.Simulator.is_infiltration | String | If simulator is infiltration target. | 
+| SafeBreach.Simulator.is_mail_target | String | If simulator is mail target. | 
+| SafeBreach.Simulator.is_mail_attacker | String | If simulator is mail attacker. | 
+| SafeBreach.Simulator.is_pre_executor | String | Whether the simulator is pre executor. | 
+| SafeBreach.Simulator.is_aws_attacker | String | if the given simulator is aws attacker. | 
+| SafeBreach.Simulator.is_azure_attacker | String | If the given simulator is azure attacker. | 
+| SafeBreach.Simulator.external_ip | String | external ip of given simulator. | 
+| SafeBreach.Simulator.internal_ip | String | internal ip of given simulator. | 
+| SafeBreach.Simulator.is_web_application_attacker | String | Whether the simulator is Web application attacker. | 
+| SafeBreach.Simulator.preferred_interface | String | Preferred simulator interface. | 
+| SafeBreach.Simulator.preferred_ip | String | Preferred Ip of simulator. | 
+| SafeBreach.Simulator.hostname | String | Hostname of given simulator. | 
+| SafeBreach.Simulator.connection_type | String | connection_type of given simulator. | 
+| SafeBreach.Simulator.simulator_status | String | status of the simulator. | 
+| SafeBreach.Simulator.connection_status | String | connection status of simulator. | 
+| SafeBreach.Simulator.simulator_framework_version | String | Framework version of simulator. | 
+| SafeBreach.Simulator.operating_system_type | String | operating system type of given simulator. | 
+| SafeBreach.Simulator.operating_system | String | Operating system of given simulator. | 
+| SafeBreach.Simulator.execution_hostname | String | Execution Hostname of the given simulator. | 
+| SafeBreach.Simulator.deployments | String | deployments simulator is part of. | 
+| SafeBreach.Simulator.created_at | String | Creation datetime of simulator. | 
+| SafeBreach.Simulator.updated_at | String | Update datetime of given simulator. | 
+| SafeBreach.Simulator.deleted_at | String | deletion datetime of given simulator. | 
+| SafeBreach.Simulator.assets | String | Assets of given simulator. | 
+| SafeBreach.Simulator.simulation_users | String | simulator users list. | 
+| SafeBreach.Simulator.proxies | String | Proxies of simulator. | 
+| SafeBreach.Simulator.advanced_actions | String | Advanced simulator details. | 
 
 ### safebreach-get-tests
 
@@ -557,18 +557,18 @@ This command gets tests with given modifiers.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.Test.ScenarioId | String | scenario ID of the test. | 
-| SafeBreach.Test.SimulationName | String | Name of the simulation. | 
-| SafeBreach.Test.SecurityActionPerControl | String | Security Actions of the simulation. | 
-| SafeBreach.Test.TestId | String | Test id of the test. | 
-| SafeBreach.Test.Status | String | status of the test. | 
-| SafeBreach.Test.PlannedSimulationsAmount | String | Planned simulations count of the test. | 
-| SafeBreach.Test.SimulatorExecutions | String | simulator executions of the test. | 
-| SafeBreach.Test.AttackExecutions | String | list of attacks that are part of the simulation. | 
-| SafeBreach.Test.RanBy | String | user who started the simulation. | 
-| SafeBreach.Test.SimulatorCount | String | simulators count per account. | 
-| SafeBreach.Test.EndTime | String | End Time of the test. | 
-| SafeBreach.Test.StartTime | String | start time of the test. | 
+| SafeBreach.Test.scenario_id | String | scenario ID of the test. | 
+| SafeBreach.Test.simulation_name | String | Name of the simulation. | 
+| SafeBreach.Test.security_action_per_control | String | Security Actions of the simulation. | 
+| SafeBreach.Test.test_id | String | Test id of the test. | 
+| SafeBreach.Test.status | String | status of the test. | 
+| SafeBreach.Test.planned_simulations_amount | String | Planned simulations count of the test. | 
+| SafeBreach.Test.simulator_executions | String | simulator executions of the test. | 
+| SafeBreach.Test.attack_executions | String | list of attacks that are part of the simulation. | 
+| SafeBreach.Test.ran_by | String | user who started the simulation. | 
+| SafeBreach.Test.simulator_count | String | simulators count per account. | 
+| SafeBreach.Test.end_time | String | End Time of the test. | 
+| SafeBreach.Test.start_time | String | start time of the test. | 
 | SafeBreach.Test.finalStatus.stopped | String | stopped count of attacks. | 
 | SafeBreach.Test.finalStatus.missed | String | missed count of attacks. | 
 | SafeBreach.Test.finalStatus.logged | String | logged count of attacks. | 
@@ -594,18 +594,18 @@ This command gets tests with given scenario ID as part of it.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.Test.ScenarioId | String | scenario ID of the test. | 
-| SafeBreach.Test.SimulationName | String | Name of the simulation. | 
-| SafeBreach.Test.SecurityActionPerControl | String | Security Actions of the simulation. | 
-| SafeBreach.Test.TestId | String | Test id of the test. | 
-| SafeBreach.Test.Status | String | status of the test. | 
-| SafeBreach.Test.PlannedSimulationsAmount | String | Planned simulations count of the test. | 
-| SafeBreach.Test.SimulatorExecutions | String | simulator executions of the test. | 
-| SafeBreach.Test.AttackExecutions | String | list of attacks that are part of the simulation. | 
-| SafeBreach.Test.RanBy | String | user who started the simulation. | 
-| SafeBreach.Test.SimulatorCount | String | simulators count per account. | 
-| SafeBreach.Test.EndTime | String | End Time of the test. | 
-| SafeBreach.Test.StartTime | String | start time of the test. | 
+| SafeBreach.Test.scenario_id | String | scenario ID of the test. | 
+| SafeBreach.Test.simulation_name | String | Name of the simulation. | 
+| SafeBreach.Test.security_action_per_control | String | Security Actions of the simulation. | 
+| SafeBreach.Test.test_id | String | Test id of the test. | 
+| SafeBreach.Test.status | String | status of the test. | 
+| SafeBreach.Test.planned_simulations_amount | String | Planned simulations count of the test. | 
+| SafeBreach.Test.simulator_executions | String | simulator executions of the test. | 
+| SafeBreach.Test.attack_executions | String | list of attacks that are part of the simulation. | 
+| SafeBreach.Test.ran_by | String | user who started the simulation. | 
+| SafeBreach.Test.simulator_count | String | simulators count per account. | 
+| SafeBreach.Test.end_time | String | End Time of the test. | 
+| SafeBreach.Test.start_time | String | start time of the test. | 
 | SafeBreach.Test.finalStatus.stopped | String | stopped count of attacks. | 
 | SafeBreach.Test.finalStatus.missed | String | missed count of attacks. | 
 | SafeBreach.Test.finalStatus.logged | String | logged count of attacks. | 
@@ -630,9 +630,9 @@ This command gives all users who are not deleted.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.UserData.Id | Number | The ID of User retrieved. this can be used to further link this user with                      user_id field of safebreach-update-user or safebreach-delete-user commands | 
-| SafeBreach.UserData.Name | String | The name of User retrieved. | 
-| SafeBreach.UserData.Email | String | The email of User retrieved. this can be used for updating user or                      deleting user for input email of commands safebreach-update-user or safebreach-delete-user  | 
+| SafeBreach.User.id | Number | The ID of User retrieved. this can be used to further link this user with                      user_id field of safebreach-update-user or safebreach-delete-user commands | 
+| SafeBreach.User.name | String | The name of User retrieved. | 
+| SafeBreach.User.email | String | The email of User retrieved. this can be used for updating user or                      deleting user for input email of commands safebreach-update-user or safebreach-delete-user  | 
 
 ### safebreach-get-custom-scenarios
 
@@ -653,16 +653,16 @@ This command  retrieves scenarios which are saved by user as custom scenarios. t
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.CustomScenario.Id | String | the Id of scenario. | 
-| SafeBreach.CustomScenario.Name | String | the name of the scenario. | 
-| SafeBreach.CustomScenario.Description | String | the description of the scenario. | 
-| SafeBreach.CustomScenario.SuccessCriteria | String | success criteria the scenario. | 
-| SafeBreach.CustomScenario.OriginalScenarioId | String | original scenario id of scenario. | 
-| SafeBreach.CustomScenario.ActionsList | String | actions list of the scenario. | 
-| SafeBreach.CustomScenario.EdgesCount | String | edges_count for the scenario. | 
-| SafeBreach.CustomScenario.StepsOrder | String | the order of steps of the scenario. | 
-| SafeBreach.CustomScenario.CreatedAt | String | the creation datetime of the scenario. | 
-| SafeBreach.CustomScenario.UpdatedAt | String | the last updated time the scenario. | 
+| SafeBreach.Scenario.id | String | the Id of scenario. | 
+| SafeBreach.Scenario.name | String | the name of the scenario. | 
+| SafeBreach.Scenario.description | String | the description of the scenario. | 
+| SafeBreach.Scenario.success_criteria | String | success criteria the scenario. | 
+| SafeBreach.Scenario.original_scenario_id | String | original scenario id of scenario. | 
+| SafeBreach.Scenario.actions_list | String | actions list of the scenario. | 
+| SafeBreach.Scenario.edges_count | String | edges_count for the scenario. | 
+| SafeBreach.Scenario.steps_order | String | the order of steps of the scenario. | 
+| SafeBreach.Scenario.created_at | String | the creation datetime of the scenario. | 
+| SafeBreach.Scenario.updated_at | String | the last updated time the scenario. | 
 
 ### safebreach-list-deployments
 
@@ -682,13 +682,13 @@ This command gets all deployments present for this instance.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.Deployment.Id | Number | The ID of deployment | 
-| SafeBreach.Deployment.AccountId | String | The accountId of user who created the deployment. | 
-| SafeBreach.Deployment.Name | String | The name of deployment.                        this will be the name shown in deployment name field of table in deployments page in safebreach UI | 
-| SafeBreach.Deployment.CreatedAt | String | The creation date and time of deployment. | 
-| SafeBreach.Deployment.UpdatedAt | String | The last updated date and time of deployment. | 
-| SafeBreach.Deployment.Description | String | This is description field of deployments table of safebreach UI | 
-| SafeBreach.Deployment.Simulators | String | The simulators that are part of deployment. | 
+| SafeBreach.Deployment.id | Number | The ID of deployment | 
+| SafeBreach.Deployment.account_id | String | The accountId of user who created the deployment. | 
+| SafeBreach.Deployment.name | String | The name of deployment.                        this will be the name shown in deployment name field of table in deployments page in safebreach UI | 
+| SafeBreach.Deployment.created_at | String | The creation date and time of deployment. | 
+| SafeBreach.Deployment.updated_at | String | The last updated date and time of deployment. | 
+| SafeBreach.Deployment.description | String | This is description field of deployments table of safebreach UI | 
+| SafeBreach.Deployment.simulators | String | The simulators that are part of deployment. | 
 
 ### safebreach-get-indicators
 
@@ -714,8 +714,8 @@ This command fetches SafeBreach Insights from which indicators are extracted,  c
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.Indicator.Value | String | The value of the indicator | 
-| SafeBreach.Indicator.Type | String | The type of the indicator | 
+| SafeBreach.Indicator.value | String | The value of the indicator | 
+| SafeBreach.Indicator.type | String | The type of the indicator | 
 | SafeBreach.Indicator.rawJSON.dataType | String | The data type of the indicator | 
 | SafeBreach.Indicator.rawJSON.insightTime | String | The time of the insight | 
 | SafeBreach.Indicator.rawJSON.value | String | The data type value of the indicator | 
@@ -726,7 +726,7 @@ This command fetches SafeBreach Insights from which indicators are extracted,  c
 | SafeBreach.Indicator.fields.safebreachattackids | Unknown | The attack ids of the indicator | 
 | SafeBreach.Indicator.fields.port | String | The port of the indicator | 
 | SafeBreach.Indicator.fields.tags | String | The tags of the indicator | 
-| SafeBreach.Indicator.Score | Number | The score of the indicator | 
+| SafeBreach.Indicator.score | Number | The score of the indicator | 
 
 ### safebreach-get-simulator-download-links
 
@@ -746,14 +746,14 @@ This command gets a list of links for download (item per operating system) for t
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.InstallationLinks.md5 | String | The MD5 generated from the contents of the file | 
-| SafeBreach.InstallationLinks.Os | String | The operating system for which the update is intended | 
-| SafeBreach.InstallationLinks.sha1 | String | The sha1 generated from the contents of the file. | 
-| SafeBreach.InstallationLinks.sha256 | String | The sha256 generated from the contents of the file. | 
-| SafeBreach.InstallationLinks.sha512 | String | The sha512 generated from the contents of the file. | 
-| SafeBreach.InstallationLinks.sha512 | String | The sha512 generated from the contents of the file. | 
-| SafeBreach.InstallationLinks.Url | String | The URL from which update can be downloaded. | 
-| SafeBreach.InstallationLinks.Version | String | This indicates the simulator version. | 
+| SafeBreach.Installation.md5 | String | The MD5 generated from the contents of the file | 
+| SafeBreach.Installation.os | String | The operating system for which the update is intended | 
+| SafeBreach.Installation.sha1 | String | The sha1 generated from the contents of the file. | 
+| SafeBreach.Installation.sha256 | String | The sha256 generated from the contents of the file. | 
+| SafeBreach.Installation.sha512 | String | The sha512 generated from the contents of the file. | 
+| SafeBreach.Installation.sha512 | String | The sha512 generated from the contents of the file. | 
+| SafeBreach.Installation.url | String | The URL from which update can be downloaded. | 
+| SafeBreach.Installation.version | String | This indicates the simulator version. | 
 
 ### safebreach-get-prebuilt-scenarios
 
@@ -773,18 +773,18 @@ This command gets scenarios which are built by safebreach. They will be availabl
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.PrebuiltScenario.Id | String | the Id of scenario. | 
-| SafeBreach.PrebuiltScenario.Name | String | the name of the scenario. | 
-| SafeBreach.PrebuiltScenario.Description | String | the description of the scenario. | 
-| SafeBreach.PrebuiltScenario.CreatedBy | String | user id of user, who created the scenario. | 
-| SafeBreach.PrebuiltScenario.CreatedAt | String | creation datetime of scenario. | 
-| SafeBreach.PrebuiltScenario.UpdatedAt | String | the update datetime of the scenario. | 
-| SafeBreach.PrebuiltScenario.Recommended | String | the recommendation status of the scenario. | 
-| SafeBreach.PrebuiltScenario.TagsList | String | the tags related to the scenario. | 
-| SafeBreach.PrebuiltScenario.Categories | String | the category ids of the scenario. | 
-| SafeBreach.PrebuiltScenario.StepsOrder | String | the order of steps involved in the scenario. | 
-| SafeBreach.PrebuiltScenario.Order | String | the order of execution related to the scenario. | 
-| SafeBreach.PrebuiltScenario.MinApiVer | String | the minimum version of API required for scenario to be executed | 
+| SafeBreach.Scenario.id | String | the Id of scenario. | 
+| SafeBreach.Scenario.name | String | he name of the scenario. | 
+| SafeBreach.Scenario.description | String | the description of the scenario. | 
+| SafeBreach.Scenario.created_by | String | user id of user, who created the scenario. | 
+| SafeBreach.Scenario.created_at | String | creation datetime of scenario. | 
+| SafeBreach.Scenario.updated_at | String | the update datetime of the scenario. | 
+| SafeBreach.Scenario.recommended | String | the recommendation status of the scenario. | 
+| SafeBreach.Scenario.tags_list | String | the tags related to the scenario. | 
+| SafeBreach.Scenario.categories | String | the category ids of the scenario. | 
+| SafeBreach.Scenario.steps_order | String | the order of steps involved in the scenario. | 
+| SafeBreach.Scenario.order | String | the order of execution related to the scenario. | 
+| SafeBreach.Scenario.min_api_ver | String | the minimum version of API required for scenario to be executed | 
 
 ### safebreach-get-scheduled-scenarios
 
@@ -804,21 +804,21 @@ This command retrieves schedules from safebreach which user has set and they wil
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.Schedules.Id | String | the Id of the schedule. | 
-| SafeBreach.Schedules.IsEnabled | Boolean | if simulation is enabled. | 
-| SafeBreach.Schedules.UserSchedule | String | the user readable form of the schedule. | 
-| SafeBreach.Schedules.RunDate | String | the run date of the schedule. | 
-| SafeBreach.Schedules.CronTimezone | String | the time zone of the schedule. | 
-| SafeBreach.Schedules.Description | String | the description of the schedule. | 
-| SafeBreach.Schedules.ScenarioId | String | the matrix ID of the schedule. | 
-| SafeBreach.Schedules.CreatedAt | String | the creation datetime of the schedule. | 
-| SafeBreach.Schedules.UpdatedAt | String | the updated datetime of the schedule. | 
-| SafeBreach.Schedules.DeletedAt | String | the deletion time of the schedule. | 
+| SafeBreach.Schedules.id | String | the Id of the schedule. | 
+| SafeBreach.Schedules.is_enabled | Boolean | if simulation is enabled. | 
+| SafeBreach.Schedules.user_schedule | String | the user readable form of the schedule. | 
+| SafeBreach.Schedules.run_date | String | the run date of the schedule. | 
+| SafeBreach.Schedules.cron_timezone | String | the time zone of the schedule. | 
+| SafeBreach.Schedules.description | String | the description of the schedule. | 
+| SafeBreach.Schedules.scenario_id | String | the matrix ID of the schedule. | 
+| SafeBreach.Schedules.created_at | String | the creation datetime of the schedule. | 
+| SafeBreach.Schedules.updated_at | String | the updated datetime of the schedule. | 
+| SafeBreach.Schedules.deleted_at | String | the deletion time of the schedule. | 
 
 ### safebreach-get-services-status
 
 ***
-This command retrieves status of services from safebreach and shows them as table for user, incase they are down then from when they are down or when it was last up will also be shown here.
+This command facilitates the retrieval of service statuses from SafeBreach,presenting them to the user in a tabular format. In the event that services are inactive,pertinent details regarding their downtime or last operational status are also displayed.
 
 #### Base Command
 
@@ -833,15 +833,15 @@ This command retrieves status of services from safebreach and shows them as tabl
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.ServiceStatus.Name | String | the name of the service. | 
-| SafeBreach.ServiceStatus.Version | String | version of the service. | 
-| SafeBreach.ServiceStatus.connection status | String | connection status of service. | 
-| SafeBreach.ServiceStatus.Error | String | error status of service. | 
+| SafeBreach.Service.name | String | the name of the service. | 
+| SafeBreach.Service.version | String | version of the service. | 
+| SafeBreach.Service.connection status | String | connection status of service. | 
+| SafeBreach.Service.error | String | error status of service. | 
 
 ### safebreach-get-simulations
 
 ***
-This command is used to get simulations and their data related to a given test, this can be used as predecessor command to rerun-simulations command for easier queueing of simulations. This command does not have any limiters with pagination implemented so there might be huge data retrieved.
+This command facilitates the retrieval of simulations and their associated data for a specified test. It can be used as a precursor command for the rerun-simulations command, streamlining the process of queuing simulations. It's important to note that this command currently lacks pagination limiters, potentially resulting in the retrieval of a large volume of data.
 
 #### Base Command
 
@@ -857,15 +857,15 @@ This command is used to get simulations and their data related to a given test, 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.Simulation.SimulationId | String | the id of the simulation. | 
-| SafeBreach.Simulation.AttackerNodeName | String | Name of attacker node of simulation. | 
-| SafeBreach.Simulation.TargetNodeName | String | name of target of simulation. | 
-| SafeBreach.Simulation.DestNodeName | String | name of destination of simulation. | 
-| SafeBreach.Simulation.AttackName | String | name of attack | 
-| SafeBreach.Simulation.AttacksInvolved | String | attack types involved in of simulation. | 
-| SafeBreach.Simulation.ResultDetails | String | result of simulation. | 
-| SafeBreach.Simulation.SecurityAction | String | security status as per the simulation. | 
-| SafeBreach.Simulation.AttackDescription | String | attack details. | 
+| SafeBreach.Simulation.simulation_id | String | the id of the simulation. | 
+| SafeBreach.Simulation.attacker_node_name | String | Name of attacker node of simulation. | 
+| SafeBreach.Simulation.target_node_name | String | name of target of simulation. | 
+| SafeBreach.Simulation.dest_node_name | String | name of destination of simulation. | 
+| SafeBreach.Simulation.attack_name | String | name of attack | 
+| SafeBreach.Simulation.attacks_involved | String | attack types involved in of simulation. | 
+| SafeBreach.Simulation.result_details | String | result of simulation. | 
+| SafeBreach.Simulation.security_action | String | security status as per the simulation. | 
+| SafeBreach.Simulation.attack_description | String | attack details. | 
 
 ### safebreach-get-available-simulator-count
 
@@ -885,15 +885,15 @@ This command gives all details related to account, we are using this to find ass
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.AccountDetails.Id | Number | The account ID which is being used by integration. | 
-| SafeBreach.AccountDetails.Name | String | The Account Name of account being queried. | 
-| SafeBreach.AccountDetails.ContactName | String | Contact name for given account. | 
-| SafeBreach.AccountDetails.ContactEmail | String | Email of the contact person. | 
-| SafeBreach.AccountDetails.UserQuota | String | User Quota for the given account, maximum users which are allowed for the account. | 
-| SafeBreach.AccountDetails.SimulatorsQuota | Number | The simulator quota for the given account. The maximum number of simulators which are available for the account. | 
-| SafeBreach.AccountDetails.RegistrationDate | Number | The registration date of given account. | 
-| SafeBreach.AccountDetails.ActivationDate | String | The Activation date of given account. | 
-| SafeBreach.AccountDetails.ExpirationDate | String | Account expiration date. | 
+| SafeBreach.Account.id | Number | The account ID which is being used by integration. | 
+| SafeBreach.Account.name | String | The Account Name of account being queried. | 
+| SafeBreach.Account.contact_name | String | Contact name for given account. | 
+| SafeBreach.Account.contact_email | String | Email of the contact person. | 
+| SafeBreach.Account.user_quota | String | User Quota for the given account, maximum users which are allowed for the account. | 
+| SafeBreach.Account.simulators_quota | Number | The simulator quota for the given account. The maximum number of simulators which are available for the account. | 
+| SafeBreach.Account.registration_date | Number | The registration date of given account. | 
+| SafeBreach.Account.activation_date | String | The Activation date of given account. | 
+| SafeBreach.Account.expiration_date | String | Account expiration date. | 
 
 ### safebreach-get-simulator-with-id
 
@@ -914,39 +914,39 @@ This command gives simulator with given id
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.Simulator.IsEnabled | String | Whether the simulator is enabled or not. | 
-| SafeBreach.Simulator.SimulatorId | String | The Id of given simulator. | 
-| SafeBreach.Simulator.Name | String | name for given simulator. | 
-| SafeBreach.Simulator.AccountId | String | Account Id of account Hosting given simulator. | 
-| SafeBreach.Simulator.IsCritical | String | Whether the simulator is critical. | 
-| SafeBreach.Simulator.IsExfiltration | String | If Simulator is exfiltration target. | 
-| SafeBreach.Simulator.IsInfiltration | String | If simulator is infiltration target. | 
-| SafeBreach.Simulator.IsMailTarget | String | If simulator is mail target. | 
-| SafeBreach.Simulator.IsMailAttacker | String | If simulator is mail attacker. | 
-| SafeBreach.Simulator.IsPreExecutor | String | Whether the simulator is pre executor. | 
-| SafeBreach.Simulator.IsAwsAttacker | String | if the given simulator is aws attacker. | 
-| SafeBreach.Simulator.IsAzureAttacker | String | If the given simulator is azure attacker. | 
-| SafeBreach.Simulator.ExternalIp | String | external ip of given simulator. | 
-| SafeBreach.Simulator.InternalIp | String | internal ip of given simulator. | 
-| SafeBreach.Simulator.IsWebApplicationAttacker | String | Whether the simulator is Web application attacker. | 
-| SafeBreach.Simulator.PreferredInterface | String | Preferred simulator interface. | 
-| SafeBreach.Simulator.PreferredIp | String | Preferred Ip of simulator. | 
-| SafeBreach.Simulator.Hostname | String | Hostname of given simulator. | 
-| SafeBreach.Simulator.ConnectionType | String | connection_type of given simulator. | 
-| SafeBreach.Simulator.SimulatorStatus | String | status of the simulator. | 
-| SafeBreach.Simulator.ConnectionStatus | String | connection status of simulator. | 
-| SafeBreach.Simulator.SimulatorFrameworkVersion | String | Framework version of simulator. | 
-| SafeBreach.Simulator.OperatingSystemType | String | operating system type of given simulator. | 
-| SafeBreach.Simulator.OperatingSystem | String | Operating system of given simulator. | 
-| SafeBreach.Simulator.ExecutionHostname | String | Execution Hostname of the given simulator. | 
-| SafeBreach.Simulator.Deployments | String | deployments simulator is part of. | 
-| SafeBreach.Simulator.CreatedAt | String | Creation datetime of simulator. | 
-| SafeBreach.Simulator.UpdatedAt | String | Update datetime of given simulator. | 
-| SafeBreach.Simulator.DeletedAt | String | deletion datetime of given simulator. | 
-| SafeBreach.Simulator.Assets | String | Assets of given simulator. | 
-| SafeBreach.Simulator.SimulationUsers | String | simulator users list. | 
-| SafeBreach.Simulator.Proxies | String | Proxies of simulator. | 
-| SafeBreach.Simulator.AdvancedActions | String | Advanced simulator details. | 
+| SafeBreach.Simulator.is_enabled | String | Whether the simulator is enabled or not. | 
+| SafeBreach.Simulator.simulator_id | String | The Id of given simulator. | 
+| SafeBreach.Simulator.name | String | name for given simulator. | 
+| SafeBreach.Simulator.account_id | String | Account Id of account Hosting given simulator. | 
+| SafeBreach.Simulator.is_critical | String | Whether the simulator is critical. | 
+| SafeBreach.Simulator.is_exfiltration | String | If Simulator is exfiltration target. | 
+| SafeBreach.Simulator.is_infiltration | String | If simulator is infiltration target. | 
+| SafeBreach.Simulator.is_mail_target | String | If simulator is mail target. | 
+| SafeBreach.Simulator.is_mail_attacker | String | If simulator is mail attacker. | 
+| SafeBreach.Simulator.is_pre_executor | String | Whether the simulator is pre executor. | 
+| SafeBreach.Simulator.is_aws_attacker | String | if the given simulator is aws attacker. | 
+| SafeBreach.Simulator.is_azure_attacker | String | If the given simulator is azure attacker. | 
+| SafeBreach.Simulator.external_ip | String | external ip of given simulator. | 
+| SafeBreach.Simulator.internal_ip | String | internal ip of given simulator. | 
+| SafeBreach.Simulator.is_web_application_attacker | String | Whether the simulator is Web application attacker. | 
+| SafeBreach.Simulator.preferred_interface | String | Preferred simulator interface. | 
+| SafeBreach.Simulator.preferred_ip | String | Preferred Ip of simulator. | 
+| SafeBreach.Simulator.hostname | String | Hostname of given simulator. | 
+| SafeBreach.Simulator.connection_type | String | connection_type of given simulator. | 
+| SafeBreach.Simulator.simulator_status | String | status of the simulator. | 
+| SafeBreach.Simulator.connection_status | String | connection status of simulator. | 
+| SafeBreach.Simulator.simulator_framework_version | String | Framework version of simulator. | 
+| SafeBreach.Simulator.operating_system_type | String | operating system type of given simulator. | 
+| SafeBreach.Simulator.operating_system | String | Operating system of given simulator. | 
+| SafeBreach.Simulator.execution_hostname | String | Execution Hostname of the given simulator. | 
+| SafeBreach.Simulator.deployments | String | deployments simulator is part of. | 
+| SafeBreach.Simulator.created_at | String | Creation datetime of simulator. | 
+| SafeBreach.Simulator.updated_at | String | Update datetime of given simulator. | 
+| SafeBreach.Simulator.deleted_at | String | deletion datetime of given simulator. | 
+| SafeBreach.Simulator.assets | String | Assets of given simulator. | 
+| SafeBreach.Simulator.simulation_users | String | simulator users list. | 
+| SafeBreach.Simulator.proxies | String | Proxies of simulator. | 
+| SafeBreach.Simulator.advanced_actions | String | Advanced simulator details. | 
 
 ### safebreach-get-simulators-versions-list
 
@@ -966,16 +966,16 @@ This command fetches the list of SafeBreach simulators
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.Simulator.Id | String | Simulator Id | 
-| SafeBreach.Simulator.Lastupdatedate | String | Simulator last updated data | 
-| SafeBreach.Simulator.Lastupdatestatus | String | Simulator last updated status | 
-| SafeBreach.Simulator.Currentstatus | String | Simulator current status | 
-| SafeBreach.Simulator.Availableversions | Unknown | Simulator available versions | 
+| SafeBreach.Simulator.id | String | Simulator Id | 
+| SafeBreach.Simulator.lastUpdateDate | String | Simulator last updated data | 
+| SafeBreach.Simulator.lastUpdateStatus | String | Simulator last updated status | 
+| SafeBreach.Simulator.currentStatus | String | Simulator current status | 
+| SafeBreach.Simulator.availableVersions | Unknown | Simulator available versions | 
 
 ### safebreach-get-user-with-matching-name-or-email
 
 ***
-This command gives all users which match the inputs given, Since email is a unique field we only get one user if            email matches but if name is given as input then care should be taken to see name matches exactly.            else there is a chance that multiple users are retrieved, please not that either name or email are to            be populated and if neither of them are given as input then it results in error
+The command retrieves users based on the provided inputs. If an email is provided, it returns the user associated with that email, as email is a unique identifierIf a name is provided, exact name matching is required to ensure accurate retrieval of a single user;otherwise, multiple users may be returned. It's essential to note that either a name or an email must be populated as input;failure to provide either results in an error.
 
 #### Base Command
 
@@ -992,9 +992,9 @@ This command gives all users which match the inputs given, Since email is a uniq
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.UserData.Id | Number | The ID of User retrieved. this can be used to further link this user with user_id field of                       safebreach-update-user or safebreach-delete-user commands | 
-| SafeBreach.UserData.Name | String | The name of User retrieved. | 
-| SafeBreach.UserData.Email | String | The email of User retrieved. this can be used for updating user or deleting user                       for input email of commands safebreach-update-user or safebreach-delete-user | 
+| SafeBreach.User.id | Number | The ID of User retrieved. this can be used to further link this user with user_id field of                       safebreach-update-user or safebreach-delete-user commands | 
+| SafeBreach.User.name | String | The name of User retrieved. | 
+| SafeBreach.User.email | String | The email of User retrieved. this can be used for updating user or deleting user                       for input email of commands safebreach-update-user or safebreach-delete-user | 
 
 ### safebreach-get-verification-token
 
@@ -1014,7 +1014,7 @@ This command retrieves existing verification token needed for verification of th
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.VerificationToken.Token | String | the value of new verification token. | 
+| SafeBreach.Token.token | String | the value of new verification token. | 
 
 ### safebreach-pause/resume-simulations-tests
 
@@ -1035,7 +1035,7 @@ This command gets simulations/tests which are in running or queued state and pau
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.TestStatus.Status | String | the status of the simulations/tests. | 
+| SafeBreach.Test.status | String | the status of the simulations/tests. | 
 
 ### safebreach-rerun-simulation
 
@@ -1057,15 +1057,15 @@ this commands puts given simulation ids into queue for running.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.Simulation.Id | String | the Id of simulation. | 
-| SafeBreach.Simulation.Name | String | the name of the simulation. | 
-| SafeBreach.Simulation.Description | String | the description of the simulation. | 
-| SafeBreach.Simulation.SuccessCriteria | String | success criteria the simulation. | 
-| SafeBreach.Simulation.OriginalScenarioId | String | original simulation id of simulation. | 
-| SafeBreach.Simulation.ActionsList | String | actions list of the simulation. | 
-| SafeBreach.Simulation.StepsOrder | String | the order of steps of the simulation. | 
-| SafeBreach.Simulation.Createdat | String | the creation datetime of the simulation. | 
-| SafeBreach.Simulation.Updatedat | String | the last updated time the simulation. | 
+| SafeBreach.Simulation.id | String | the Id of simulation. | 
+| SafeBreach.Simulation.name | String | the name of the simulation. | 
+| SafeBreach.Simulation.description | String | the description of the simulation. | 
+| SafeBreach.Simulation.success_criteria | String | success criteria the simulation. | 
+| SafeBreach.Simulation.original_scenario_id | String | original simulation id of simulation. | 
+| SafeBreach.Simulation.actions_list | String | actions list of the simulation. | 
+| SafeBreach.Simulation.steps_order | String | the order of steps of the simulation. | 
+| SafeBreach.Simulation.createdAt | String | the creation datetime of the simulation. | 
+| SafeBreach.Simulation.updatedAt | String | the last updated time the simulation. | 
 
 ### safebreach-rerun-test
 
@@ -1087,23 +1087,23 @@ This command puts given test data in queue for execution.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.Test.Id | String | the Id of test. | 
-| SafeBreach.Test.Name | String | the name of the test. | 
-| SafeBreach.Test.Description | String | the description of the test. | 
-| SafeBreach.Test.SuccessCriteria | String | success criteria the test. | 
-| SafeBreach.Test.OriginalScenarioId | String | original scenario id of test. | 
-| SafeBreach.Test.ActionsList | String | actions list of the test. | 
-| SafeBreach.Test.EdgesCount | String | edges_count for the test. | 
-| SafeBreach.Test.StepsOrder | String | the order of steps of the test. | 
-| SafeBreach.Test.CreatedAt | String | the creation datetime of the test. | 
-| SafeBreach.Test.UpdatedAt | String | the last updated time the test. | 
-| SafeBreach.Test.ScenarioId | String | the test id of the test. | 
-| SafeBreach.Test.RanBy | String | the user id of the user who ran the test. | 
-| SafeBreach.Test.RanFrom | String | where the user ran the test from. | 
-| SafeBreach.Test.EnableFeedbackLoop | String | feedback loop status of the test. | 
-| SafeBreach.Test.TestId | String | test_id of the test. | 
-| SafeBreach.Test.Priority | String | priority of the test. | 
-| SafeBreach.Test.RetrySimulations | String | retry status of the test. | 
+| SafeBreach.Test.id | String | the Id of test. | 
+| SafeBreach.Test.name | String | the name of the test. | 
+| SafeBreach.Test.description | String | the description of the test. | 
+| SafeBreach.Test.success_criteria | String | success criteria the test. | 
+| SafeBreach.Test.original_scenario_id | String | original scenario id of test. | 
+| SafeBreach.Test.actions_list | String | actions list of the test. | 
+| SafeBreach.Test.edges_count | String | edges_count for the test. | 
+| SafeBreach.Test.steps_order | String | the order of steps of the test. | 
+| SafeBreach.Test.created_at | String | the creation datetime of the test. | 
+| SafeBreach.Test.updated_at | String | the last updated time the test. | 
+| SafeBreach.Test.scenario_id | String | the test id of the test. | 
+| SafeBreach.Test.ran_by | String | the user id of the user who ran the test. | 
+| SafeBreach.Test.ran_from | String | where the user ran the test from. | 
+| SafeBreach.Test.enable_feedback_loop | String | feedback loop status of the test. | 
+| SafeBreach.Test.test_id | String | test_id of the test. | 
+| SafeBreach.Test.priority | String | priority of the test. | 
+| SafeBreach.Test.retry_simulations | String | retry status of the test. | 
 
 ### safebreach-rotate-verification-token
 
@@ -1123,7 +1123,7 @@ This command rotates generated verification token meaning it creates a new token
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.Token.NewToken | String | New token which has been generated due to the API call | 
+| SafeBreach.Token.new_token | String | New token which has been generated due to the API call | 
 
 ### safebreach-update-deployment
 
@@ -1147,13 +1147,13 @@ This command updates a deployment with given data. The deployment_id field of th
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.UpdatedDeployment.Id | Number | The ID of deployment whose values have been updated.                          ID cant be changed so this wont be updated. | 
-| SafeBreach.UpdatedDeployment.AccountId | String | The accountId of user who created the deployment. | 
-| SafeBreach.UpdatedDeployment.Name | String | The name of deployment which has been updated to the name given in updated_deployment_name.                        this will be the name shown in deployment name field of table in deployments page in safebreach UI | 
-| SafeBreach.UpdatedDeployment.CreatedAt | String | The creation date and time of deployment whose data has been updated. | 
-| SafeBreach.UpdatedDeployment.UpdatedAt | String | The last updated date and time of deployment whose data has been updated.                      This will generally be closer to the update deployment command run time for reference | 
-| SafeBreach.UpdatedDeployment.Description | String | The updated description of deployment which is provided in updated_deployment_description                      field of input . This will now be the description which is shown in description field of deployments                      table of safebreach UI | 
-| SafeBreach.UpdatedDeployment.Simulators | String | The simulators that are part of deployment. unless any simulators are given as input this                           field won't be updated this field doesn't reflect changes if simulators given as input are deleted | 
+| SafeBreach.Deployment.id | Number | The ID of deployment whose values have been updated.                          ID cant be changed so this wont be updated. | 
+| SafeBreach.Deployment.account_id | String | The accountId of user who created the deployment. | 
+| SafeBreach.Deployment.name | String | The name of deployment which has been updated to the name given in updated_deployment_name.                        this will be the name shown in deployment name field of table in deployments page in safebreach UI | 
+| SafeBreach.Deployment.created_at | String | The creation date and time of deployment whose data has been updated. | 
+| SafeBreach.Deployment.updated_at | String | The last updated date and time of deployment whose data has been updated.                      This will generally be closer to the update deployment command run time for reference | 
+| SafeBreach.Deployment.description | String | The updated description of deployment which is provided in updated_deployment_description                      field of input . This will now be the description which is shown in description field of deployments                      table of safebreach UI | 
+| SafeBreach.Deployment.simulators | String | The simulators that are part of deployment. unless any simulators are given as input this                           field won't be updated this field doesn't reflect changes if simulators given as input are deleted | 
 
 ### safebreach-update-simulator
 
@@ -1180,39 +1180,39 @@ This command updates simulator with given id. the given inputs for update fields
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.UpdatedSimulator.IsEnabled | String | Whether the simulator is enabled or not. | 
-| SafeBreach.UpdatedSimulator.SimulatorId | String | The Id of given simulator. | 
-| SafeBreach.UpdatedSimulator.Name | String | name for given simulator. | 
-| SafeBreach.UpdatedSimulator.AccountId | String | Account Id of account Hosting given simulator. | 
-| SafeBreach.UpdatedSimulator.IsCritical | String | Whether the simulator is critical. | 
-| SafeBreach.UpdatedSimulator.IsExfiltration | String | If Simulator is exfiltration target. | 
-| SafeBreach.UpdatedSimulator.IsInfiltration | String | If simulator is infiltration target. | 
-| SafeBreach.UpdatedSimulator.IsMailTarget | String | If simulator is mail target. | 
-| SafeBreach.UpdatedSimulator.IsMailAttacker | String | If simulator is mail attacker. | 
-| SafeBreach.UpdatedSimulator.IsPreExecutor | String | Whether the simulator is pre executor. | 
-| SafeBreach.UpdatedSimulator.IsAwsAttacker | String | if the given simulator is aws attacker. | 
-| SafeBreach.UpdatedSimulator.IsAzureAttacker | String | If the given simulator is azure attacker. | 
-| SafeBreach.UpdatedSimulator.ExternalIp | String | external ip of given simulator. | 
-| SafeBreach.UpdatedSimulator.InternalIp | String | internal ip of given simulator. | 
-| SafeBreach.UpdatedSimulator.IsWebApplicationAttacker | String | Whether the simulator is Web application attacker. | 
-| SafeBreach.UpdatedSimulator.PreferredInterface | String | Preferred simulator interface. | 
-| SafeBreach.UpdatedSimulator.PreferredIp | String | Preferred Ip of simulator. | 
-| SafeBreach.UpdatedSimulator.Hostname | String | Hostname of given simulator. | 
-| SafeBreach.UpdatedSimulator.ConnectionType | String | connection_type of given simulator. | 
-| SafeBreach.UpdatedSimulator.SimulatorStatus | String | status of the simulator. | 
-| SafeBreach.UpdatedSimulator.ConnectionStatus | String | connection status of simulator. | 
-| SafeBreach.UpdatedSimulator.SimulatorFrameworkVersion | String | Framework version of simulator. | 
-| SafeBreach.UpdatedSimulator.OperatingSystemType | String | operating system type of given simulator. | 
-| SafeBreach.UpdatedSimulator.OperatingSystem | String | Operating system of given simulator. | 
-| SafeBreach.UpdatedSimulator.ExecutionHostname | String | Execution Hostname of the given simulator. | 
-| SafeBreach.UpdatedSimulator.Deployments | String | deployments simulator is part of. | 
-| SafeBreach.UpdatedSimulator.CreatedAt | String | Creation datetime of simulator. | 
-| SafeBreach.UpdatedSimulator.UpdatedAt | String | Update datetime of given simulator. | 
-| SafeBreach.UpdatedSimulator.DeletedAt | String | deletion datetime of given simulator. | 
-| SafeBreach.UpdatedSimulator.Assets | String | Assets of given simulator. | 
-| SafeBreach.UpdatedSimulator.SimulationUsers | String | simulator users list. | 
-| SafeBreach.UpdatedSimulator.Proxies | String | Proxies of simulator. | 
-| SafeBreach.UpdatedSimulator.AdvancedActions | String | Advanced simulator details. | 
+| SafeBreach.Simulator.is_enabled | String | Whether the simulator is enabled or not. | 
+| SafeBreach.Simulator.simulator_id | String | The Id of given simulator. | 
+| SafeBreach.Simulator.name | String | name for given simulator. | 
+| SafeBreach.Simulator.account_id | String | Account Id of account Hosting given simulator. | 
+| SafeBreach.Simulator.is_critical | String | Whether the simulator is critical. | 
+| SafeBreach.Simulator.is_exfiltration | String | If Simulator is exfiltration target. | 
+| SafeBreach.Simulator.is_infiltration | String | If simulator is infiltration target. | 
+| SafeBreach.Simulator.is_mail_target | String | If simulator is mail target. | 
+| SafeBreach.Simulator.is_mail_attacker | String | If simulator is mail attacker. | 
+| SafeBreach.Simulator.is_pre_executor | String | Whether the simulator is pre executor. | 
+| SafeBreach.Simulator.is_aws_attacker | String | if the given simulator is aws attacker. | 
+| SafeBreach.Simulator.is_azure_attacker | String | If the given simulator is azure attacker. | 
+| SafeBreach.Simulator.external_ip | String | external ip of given simulator. | 
+| SafeBreach.Simulator.internal_ip | String | internal ip of given simulator. | 
+| SafeBreach.Simulator.is_web_application_attacker | String | Whether the simulator is Web application attacker. | 
+| SafeBreach.Simulator.preferred_interface | String | Preferred simulator interface. | 
+| SafeBreach.Simulator.preferred_ip | String | Preferred Ip of simulator. | 
+| SafeBreach.Simulator.hostname | String | Hostname of given simulator. | 
+| SafeBreach.Simulator.connection_type | String | connection_type of given simulator. | 
+| SafeBreach.Simulator.simulator_status | String | status of the simulator. | 
+| SafeBreach.Simulator.connection_status | String | connection status of simulator. | 
+| SafeBreach.Simulator.simulator_framework_version | String | Framework version of simulator. | 
+| SafeBreach.Simulator.operating_system_type | String | operating system type of given simulator. | 
+| SafeBreach.Simulator.operating_system | String | Operating system of given simulator. | 
+| SafeBreach.Simulator.execution_hostname | String | Execution Hostname of the given simulator. | 
+| SafeBreach.Simulator.deployments | String | deployments simulator is part of. | 
+| SafeBreach.Simulator.created_at | String | Creation datetime of simulator. | 
+| SafeBreach.Simulator.updated_at | String | Update datetime of given simulator. | 
+| SafeBreach.Simulator.deleted_at | String | deletion datetime of given simulator. | 
+| SafeBreach.Simulator.assets | String | Assets of given simulator. | 
+| SafeBreach.Simulator.simulation_users | String | simulator users list. | 
+| SafeBreach.Simulator.proxies | String | Proxies of simulator. | 
+| SafeBreach.Simulator.advanced_actions | String | Advanced simulator details. | 
 
 ### safebreach-upgrade-simulator
 
@@ -1234,8 +1234,8 @@ This command updates the simulator using the Simulator ID and available version.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.UpdatedSimulator.Nodeid | String | Simulator ID | 
-| SafeBreach.UpdatedSimulator.Status | String | Simulator status | 
+| SafeBreach.Simulator.nodeId | String | Simulator ID | 
+| SafeBreach.Simulator.status | String | Simulator status | 
 
 ### safebreach-update-user
 
@@ -1262,13 +1262,13 @@ This command updates a user with given data.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SafeBreach.UpdatedUserData.Id | Number | The ID of User whose data has been updated. | 
-| SafeBreach.UpdatedUserData.Name | String | The name of User after running the update command according to safebreach records. | 
-| SafeBreach.UpdatedUserData.Email | String | the email of the user whose data has been updated by the command. | 
-| SafeBreach.UpdatedUserData.Createdat | String | the time at which the user who has been selected has been created | 
-| SafeBreach.UpdatedUserData.Updatedat | String | The last updated time of User selected for update.                       this will be the execution time for the command or close to it. | 
-| SafeBreach.UpdatedUserData.Deletedat | String | The Deletion time of User selected to update. Generally this is empty unless                      user chosen to update is a deleted user | 
-| SafeBreach.UpdatedUserData.Roles | String | The roles of User updated. these will change if role has been updated during                      updating user details else they will be same as pre update. | 
-| SafeBreach.UpdatedUserData.Description | String | The description of User after updating user, if description field has been given any                      new value during update then its updated else this will be left unchanged from previous value. | 
-| SafeBreach.UpdatedUserData.Role | String | The roles and permissions related to user who has been selected for update.unless this field                      has been given a value , this will not be updated and will stay the same as previous value. | 
-| SafeBreach.UpdatedUserData.Deployments | String | The deployments related to user, this will be comma separated values of deployment IDs | 
+| SafeBreach.User.id | Number | The ID of User whose data has been updated. | 
+| SafeBreach.User.name | String | The name of User after running the update command according to safebreach records. | 
+| SafeBreach.User.email | String | the email of the user whose data has been updated by the command. | 
+| SafeBreach.User.createdAt | String | the time at which the user who has been selected has been created | 
+| SafeBreach.User.updatedAt | String | The last updated time of User selected for update.                       this will be the execution time for the command or close to it. | 
+| SafeBreach.User.deletedAt | String | The Deletion time of User selected to update. Generally this is empty unless                      user chosen to update is a deleted user | 
+| SafeBreach.User.roles | String | The roles of User updated. these will change if role has been updated during                      updating user details else they will be same as pre update. | 
+| SafeBreach.User.description | String | The description of User after updating user, if description field has been given any                      new value during update then its updated else this will be left unchanged from previous value. | 
+| SafeBreach.User.role | String | The roles and permissions related to user who has been selected for update.unless this field                      has been given a value , this will not be updated and will stay the same as previous value. | 
+| SafeBreach.User.deployments | String | The deployments related to user, this will be comma separated values of deployment IDs | 
