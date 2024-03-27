@@ -574,7 +574,7 @@ def get_stix_indicator(indicator: dict) -> stix.core.STIXPackage:
         id_ = f'{NAMESPACE}:indicator-{uuid.uuid4()}'
 
         if type_ == 'URL':
-            indicator_value = werkzeug.urls.iri_to_uri(value)
+            indicator_value = werkzeug.urls.iri_to_uri(value, safe_conversion=True)
         else:
             indicator_value = value
 

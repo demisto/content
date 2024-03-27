@@ -1,7 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
 import traceback
 from typing import Any, Dict
 
@@ -22,34 +20,33 @@ class Client(BaseClient):
 
     def get_lists(self):
         return self._http_request(
-            method='GET',
-            url_suffix='/api/v2/policy/urllist'
+            method='GET'
         )
 
     def get_list(self, list_id):
         return self._http_request(
             method='GET',
-            url_suffix=f'/api/v2/policy/urllist/{list_id}'
+            url_suffix=list_id
         )
 
     def patch_list(self, list_id, url_list_object, action):
         return self._http_request(
             method='PATCH',
-            url_suffix=f'/api/v2/policy/urllist/{list_id}/{action}',
+            url_suffix=f'{list_id}/{action}',
             json_data=url_list_object
         )
 
     def replace_url_list(self, list_id, url_list_object):
         return self._http_request(
             method='PUT',
-            url_suffix=f'/api/v2/policy/urllist/{list_id}',
+            url_suffix=list_id,
             json_data=url_list_object
         )
 
     def deploy_lists(self):
         return self._http_request(
             method='POST',
-            url_suffix='/api/v2/policy/urllist/deploy'
+            url_suffix='deploy'
         )
 
 
@@ -96,8 +93,7 @@ def test_module(client: Client) -> str:
 
     try:
         client._http_request(
-            method='GET',
-            url_suffix='/api/v2/policy/urllist'
+            method='GET'
         )
     except DemistoException as e:
         if 'Unauthorized' in str(e):
@@ -235,6 +231,7 @@ def main() -> None:
     api_key = demisto.params().get("api_key_credentials", {}).get("password") or demisto.params().get("api_key")
     if not api_key:
         return_error('Please provide a valid API Key')
+    base_url = urljoin(demisto.params()['url'], '/api/v2/policy/urllist/')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
@@ -253,7 +250,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
-            base_url=demisto.params()['url'],
+            base_url=base_url,
             verify=verify_certificate,
             proxy=proxy,
             headers=headers
