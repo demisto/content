@@ -116,8 +116,6 @@ def get_msg_machines(
 ):
     if job_cause_fail.intersection(set(failed_jobs)):
         color = "danger"
-    elif set(set(failed_jobs) - job_cause_fail) != set(failed_jobs):
-        ...
     elif job_cause_warning.intersection(set(failed_jobs)):
         color = "warning"
     else:
@@ -149,7 +147,7 @@ def machines_saas_and_xsiam(failed_jobs):
                 failed_jobs,
                 {"xsoar_ng_server_ga"},
                 {"xsoar-test_playbooks_results"},
-                f"XSOAR SAAS:ֿ\n{','.join(xsoar_machine)}",
+                f"XSOAR SAAS:\n{','.join(xsoar_machine)}",
             )
         )
 
