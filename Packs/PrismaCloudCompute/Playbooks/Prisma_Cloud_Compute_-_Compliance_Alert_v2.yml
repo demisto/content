@@ -432,8 +432,7 @@ view: |-
   }
 inputs:
 - key: TicketingSystem
-  value:
-    simple: ServiceNow
+  value: {}
   required: false
   description: |
     Which ticketing system should be used to create an external ticket.
