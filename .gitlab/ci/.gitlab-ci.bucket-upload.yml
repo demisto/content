@@ -74,8 +74,6 @@ jobs-done-check-upload-flow:
     - .jobs-done-check
     - .bucket-upload-rule
   needs: ['run-unittests-and-lint-upload-flow', 'run-validations-upload-flow', 'mpv2-prepare-testing-bucket-upload-flow', 'upload-id-set-bucket', 'xpanse-prepare-testing-bucket-upload-flow', 'xsoar-prepare-testing-bucket-upload-flow', 'xsoar-saas-prepare-testing-bucket-upload-flow', 'install-packs-in-server6_9', 'install-packs-in-server6_10', 'install-packs-in-server6_11', 'install-packs-in-server6_12', 'install-packs-in-server-master', 'install-packs-in-xsiam-ga', 'sync-buckets-between-projects', 'upload-packs-to-marketplace', 'upload-packs-to-marketplace-v2', 'upload-packs-to-xpanse-marketplace', 'upload-packs-to-xsoar-saas-marketplace']
-  tags:
-    - gke
   variables:
     WORKFLOW: 'Upload Packs to Marketplace Storage'
 
@@ -134,8 +132,6 @@ xpanse-prepare-testing-bucket-upload-flow:
 
 
 .install_packs_in_xsoar_server:
-  tags:
-    - gke
   needs: ["xsoar-prepare-testing-bucket-upload-flow"]
   stage: run-instances
   artifacts:
@@ -224,8 +220,6 @@ install-packs-in-server-master:
 
 
 .install-mpv2-packs-on-xsiam-instances:
-  tags:
-    - gke
   needs: ["mpv2-prepare-testing-bucket-upload-flow"]
   stage: run-instances
   artifacts:
@@ -310,8 +304,6 @@ install-packs-in-xsiam-ga:
 
 
 upload-packs-to-marketplace:
-  tags:
-    - gke
   needs: ["run-validations-upload-flow", "install-packs-in-server6_9", "install-packs-in-server6_10", "install-packs-in-server6_11", "install-packs-in-server6_12", "install-packs-in-server-master", "run-unittests-and-lint-upload-flow"]
   stage: upload-to-marketplace
   artifacts:
@@ -405,8 +397,6 @@ upload-packs-to-marketplace:
     - job-done
 
 upload-packs-to-marketplace-v2:
-  tags:
-    - gke
   needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "mpv2-prepare-testing-bucket-upload-flow", "install-packs-in-xsiam-ga"] # "install-packs-in-xsiam-dev"
   stage: upload-to-marketplace
   artifacts:
@@ -497,8 +487,6 @@ upload-packs-to-marketplace-v2:
     - job-done
 
 upload-packs-to-xpanse-marketplace:
-  tags:
-    - gke
   needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "xpanse-prepare-testing-bucket-upload-flow"] # "install-packs-in-xpanse-dev"
   stage: upload-to-marketplace
   artifacts:
@@ -589,8 +577,6 @@ upload-packs-to-xpanse-marketplace:
     - job-done
 
 upload-packs-to-xsoar-saas-marketplace:
-  tags:
-    - gke
   needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "xsoar-saas-prepare-testing-bucket-upload-flow"] # "install-packs-in-xsoar-saas-dev"
   stage: upload-to-marketplace
   artifacts:
@@ -719,8 +705,6 @@ xpanse-force-pack-upload:
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
 
 .force-pack-upload:
-  tags:
-    - gke
   stage: upload-to-marketplace
   extends:
     - .default-job-settings
@@ -744,8 +728,6 @@ xpanse-force-pack-upload:
 
 
 fan-in-bucket-upload:
-  tags:
-    - gke
   stage: fan-in
   extends:
     - .bucket-upload-rule-always
@@ -773,8 +755,6 @@ slack-notify-bucket-upload:
     JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME: $JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME
 
 upload-id-set-bucket:
-  tags:
-    - gke
   stage: prepare-testing-bucket
   extends:
     - .bucket-upload-rule
@@ -802,8 +782,6 @@ upload-id-set-bucket:
 
 sync-buckets-between-projects:
   # syncs buckets from oproxy-dev project to xdr-xsoar-content-dev-01 project
-  tags:
-    - gke
   extends:
     - .bucket-upload-rule
     - .default-job-settings

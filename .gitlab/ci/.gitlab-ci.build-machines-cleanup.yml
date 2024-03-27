@@ -49,8 +49,6 @@ build-machines-cleanup:
     NON_REMOVABLE_PACKS: "Base"
 
 fan-in-build-machines-cleanup:
-  tags:
-    - gke
   stage: fan-in
   extends:
     - .build-machines-cleanup-rule-always

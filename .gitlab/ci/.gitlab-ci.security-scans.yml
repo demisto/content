@@ -24,8 +24,6 @@ auto secure cicd:
     .auto-secure-cicd-rule
 
 fan-in-security-scans:
-  tags:
-    - gke
   stage: fan-in
   extends:
     - .auto-secure-cicd-rule-always
