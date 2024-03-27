@@ -135,7 +135,7 @@ def test_list_clusters_command(mocker):
 
     client = Boto3Client()
     result = list_clusters_command(client, {})
-    assert result.readable_output == '### The list of clusters\n|ClustersNames|\n|---|\n| cluster_name_1 |\n'
+    assert result.readable_output == '### The list of clusters\n|Clusters Names|\n|---|\n| cluster_name_1 |\n'
     assert result.outputs == {'ClustersNames': ['cluster_name_1'], 'NextToken': None}
 
 
@@ -179,7 +179,7 @@ def test_list_clusters_command_with_next_token(mocker):
 
     client = Boto3Client()
     result = list_clusters_command(client, {'limit': '1'})
-    assert result.readable_output == '### The list of clusters\n|ClustersNames|\n|---|\n| cluster_name_1 |\n'
+    assert result.readable_output == '### The list of clusters\n|Clusters Names|\n|---|\n| cluster_name_1 |\n'
     assert result.outputs == {'ClustersNames': ['cluster_name_1'], 'NextToken': 'NextToken'}
 
 
@@ -198,7 +198,7 @@ def test_list_clusters_command_with_pagination(mocker):
 
     client = Boto3Client()
     result = list_clusters_command(client, {'limit': '200'})
-    assert result.readable_output == ('### The list of clusters\n|ClustersNames|\n|---|\n| cluster_name_1 |\n| cluster_name_100 '
+    assert result.readable_output == ('### The list of clusters\n|Clusters Names|\n|---|\n| cluster_name_1 |\n| cluster_name_100 '
                                       '|\n| cluster_name_101 |\n')
     assert result.outputs == {'ClustersNames': ['cluster_name_1', 'cluster_name_100', 'cluster_name_101'],
                               'NextToken': None}
