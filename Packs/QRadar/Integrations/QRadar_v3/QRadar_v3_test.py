@@ -1389,7 +1389,8 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
         mirror_direction=mirror_direction,
         first_fetch='3 days',
         mirror_options=mirror_options,
-        assets_limit=100
+        assets_limit=100,
+        long_running_container_id="12345"
     )
     expected_ctx_first_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY:
                                 {'15': QueryStatus.WAIT.value} if mirror_options and is_offenses_first_loop else {},
@@ -1428,7 +1429,8 @@ def test_integration_context_during_run(mirror_options, test_case_data, mocker):
         mirror_direction=mirror_direction,
         first_fetch='3 days',
         mirror_options=mirror_options,
-        assets_limit=100
+        assets_limit=100,
+        long_running_container_id="12345"
     )
     second_loop_ctx_not_default_values = test_case_data.get('second_loop_ctx_not_default_values', {})
     for k, v in second_loop_ctx_not_default_values.items():
