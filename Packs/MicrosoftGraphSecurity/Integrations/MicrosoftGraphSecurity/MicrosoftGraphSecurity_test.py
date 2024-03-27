@@ -731,8 +731,7 @@ def test_advanced_hunting_command(mocker):
     assert results[1].readable_output == expected_results['readable_output']
 
 
-def test_get_list_security_incident_command_1(mocker):
-    # Case of single incident
+def test_get_list_security_incident_command_single_case(mocker):
     response = load_json('./test_data/incidents_single_response.json')
     mocker.patch.object(client_mocker, "get_incidents_request", return_value=response)
     args = {'incident_id': 12345, 'limit': 1, 'timeout': 50}
@@ -744,8 +743,7 @@ def test_get_list_security_incident_command_1(mocker):
     assert results.readable_output == expected_results['readable_output']
 
 
-def test_get_list_security_incident_command_2(mocker):
-    # Case of list incidents
+def test_get_list_security_incident_command_list_case(mocker):
     response = load_json('./test_data/incidents_list_response.json')
     mocker.patch.object(client_mocker, "get_incidents_request", return_value=response)
     args = {'limit': 2, 'timeout': 50}
