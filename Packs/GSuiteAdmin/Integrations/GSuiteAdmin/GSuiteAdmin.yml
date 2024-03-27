@@ -2573,7 +2573,7 @@ script:
       - description: Destination organization unit to move devices to. Full path of the organizational unit or its ID prefixed with 'id:'.
         name: org_unit_path
         required: true
-    description: To move Chrome browser devices assigned to an account from one organization unit to another, use the following POST request and include the access token obtained by following the "Authorization" section.
+    description: To move Chrome browser devices assigned to an account from one organization unit to another.
     name: gsuite-chromebrowserdevice-move-ou
   - arguments:
       - description: The unique identifier of the customer's Google account.
@@ -2622,12 +2622,12 @@ script:
           - DESCENDING
       - description: The maximum number of policy schemas to return. Default and maximum are 100.
         name: page_size
-        defaultValue: 100
+        defaultValue: '100'
       - description: Page token.
         name: page_token
-      - description: Limit of number of devices.
-        name: limit (default value 100)
-        defaultValue: 100
+      - description: Limit of number of devices. Default is 100.
+        name: limit
+        defaultValue: '100'
     description: Retrieve all Chrome browser devices for an account or a specific Chrome browser device.
     name: gsuite-chromebrowserdevice-list
     outputs:
