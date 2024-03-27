@@ -401,10 +401,35 @@ def fetch_events_command(
         if not events:
             break
         for event in events:
+            try:
+                event["_time"] = event["httpMessage"]["start"]
+                event['attackData']['rules'] = decode_message(event.get('attackData', {}).get('rules', ""))
+                event['attackData']['ruleMessages'] = decode_message(event.get('attackData', {}).get('ruleMessages', ""))
+                event['attackData']['ruleTags'] = decode_message(event.get('attackData', {}).get('ruleTags', ""))
+                event['attackData']['ruleData'] = decode_message(event.get('attackData', {}).get('ruleData', ""))
+                event['attackData']['ruleSelectors'] = decode_message(event.get('attackData', {}).get('ruleSelectors', ""))
+                event['attackData']['ruleActions'] = decode_message(event.get('attackData', {}).get('ruleActions', ""))
+                event['attackData']['ruleVersions'] = decode_message(event.get('attackData', {}).get('ruleVersions', ""))
+                event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
+                event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
+            except Exception as e:
+                config_id = event['attackData']['config_id']
+                policy_id = event['attackData']['policyId']
+                demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
             
         total_events_count += len(events)
         yield events, offset
 
+
+def decode_url(headers):
+    decoded_lines = urllib.parse.unquote(headers).split("\r\n")
+    decoded_dict = {}
+    for line in decoded_lines:
+        parts = line.split(': ', 1)
+        if len(parts) == 2:
+            key, value = parts
+            decoded_dict[key.replace("-", "_")] = value.replace('"', '')
+    return decoded_dict
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
