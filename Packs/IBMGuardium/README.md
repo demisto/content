@@ -9,46 +9,46 @@ This pack includes Cortex XSIAM content.
 To configure IBM Guardium to forward logs to Cortex XSIAM Broker VM via syslog follow the steps below.
 
 ### Creating a syslog destination for events
-1. Log in to the CLI and define the IP address for Cortex XSIAM Broker VM
-2. Use SSH to log in to IBM as default user
+1. Log in to the CLI and define the IP address for Cortex XSIAM Broker VM.
+2. Use SSH to log in to IBM as default user.
    Username: <user name>
-   Password: <password>
+   Password: <password> 
 3. Type the following command to configure the syslog destination for: 
 
-   |  Event Type   | Command   
-   | :---          | :---        
-   | `informational events`      | store remote add daemon.info \<IP address>:\<port> <tcp\|udp>
-   | `warning events`     | store remote add daemon.warning \<IP address>:\<port> <tcp\|udp>
-   | `error events` | store remote add daemon.err \<IP address>:\<port> <tcp\|udp>
-    | `alert events` | store remote add daemon.alert \<IP address>:\<port> <tcp\|udp>
+|  Event Type   | Command   
+| :---          | :---        
+| `informational events`      | store remote add daemon.info \<IP address>:\<port> <tcp\|udp>
+| `warning events`     | store remote add daemon.warning \<IP address>:\<port> <tcp\|udp>
+| `error events` | store remote add daemon.err \<IP address>:\<port> <tcp\|udp>
+| `alert events` | store remote add daemon.alert \<IP address>:\<port> <tcp\|udp>
    
 
-> **IP address** - IP address of the event collector
-> **port** - syslog port used to communicate to the event collector (default port in Guardium is 514 UDP)
-> **tcp\ udp** - protocol used to communicate with the event collector
+> **IP address** - IP address of the event collector &nbsp;
+> **port** - syslog port used to communicate to the event collector (default port in Guardium is 514 UDP) &nbsp;
+> **tcp\ udp** - protocol used to communicate with the event collector &nbsp;
 
-
+*For example:*
+`store remote log add daemon.all 192.168.1.6 udp`
+`store remote log add daemon.all example.com:1514 tcp`
+&nbsp;
 
 [IBM Guardium - creating a syslog destination for events](https://www.ibm.com/docs/en/qsip/7.4?topic=guardium-creating-syslog-destination-events)
 
 ### Configure policies to generate syslog events
-Policies in IBM Guardium are responsible fpr reacting to events and forwarding the event information to Cortex XSIAM Broker VM.
+Policies in IBM Guardium are responsible for reacting to events and forwarding the event information to Cortex XSIAM Broker VM.
 
-
-Procedure
 1. Click the **Tools tab**.
 2. From the left navigation, select **Policy Builder**.
 3. From the Policy Finder pane, select an existing policy and click **Edit Rules**.
 4. Click **Edit this Rule individually**.
    The Access Rule Definition is displayed.
-
 5. Click **Add Action**.
 6. From the **Action** list, select one of the following alert types:
    **Alert Per Match** - A notification is provided for every policy violation.
    **Alert Daily** - A notification is provided the first time a policy violation occurs that day.
    **Alert Once Per Session** - A notification is provided per policy violation for unique session.
    **Alert Per Time Granularity** - A notification is provided per your selected time frame.
-7. From the **Message Template** list, select XXX
+7. From the **Message Template** list, edit the message template or choose the default template (follow IBM Support link below for default template and CEF template).
 8. From **Notification Type**, select **SYSLOG**.
 9. Click **Add**, then click **Apply**.
 10. Click **Save**.
@@ -56,11 +56,10 @@ Procedure
 
 
 ### Installing an IBM Guardium policy
-Procedure
 1. Click the **Administration Console** tab.
 2. From the left navigation, select **Configuration** &rarr; **Policy Installation**.
-3. From the Policy Installer pane, select a policy that you created in previous step.
-4. From the **drop-down** list, select **Install and Override**.
+3. From the Policy Installer pane, select a policy that you created in the previous step.
+4. From the drop-down list, select **Install and Override**.
    A confirmation is displayed to install the policy to all Inspection Engines.
 5. Click **OK**.
 
@@ -80,10 +79,10 @@ You can configure the specific vendor and product for this instance.
 2. Go to the **Apps** column under the **Brokers** tab and add the **Syslog Collector** app for the relevant broker instance. If the app already exists, hover over it and click **Configure**.
 3. Click **Add New** for adding a new syslog data source.
 4. When configuring the new syslog data source, set the following values:
-   | Parameter     | Value   
-   | :---          | :---        
-   | `Vendor`      | Enter **IBM**.
-   | `Product`     | Enter **Guardium**.
-   | `<parameter>` | < Enter **<value>**. (Fill in additional paramas if necessary for this product)
+| Parameter     | Value   
+| :---          | :---        
+| `Vendor`      | Enter **IBM**.
+| `Product`     | Enter **Guardium**.
+
  
 </~XSIAM>
