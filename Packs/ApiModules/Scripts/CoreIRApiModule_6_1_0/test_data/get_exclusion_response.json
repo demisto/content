@@ -1,0 +1,139 @@
+{
+    "reply": [
+        {
+            "ALERT_WHITELIST_ID": 38,
+            "ALERT_WHITELIST_MODIFY_TIME": 1643803797645,
+            "ALERT_WHITELIST_NAME": "test1",
+            "ALERT_WHITELIST_INDICATOR_TEXT": [
+                {
+                    "pretty_name": "category",
+                    "data_type": "TEXT",
+                    "render_type": "attribute",
+                    "entity_map": null,
+                    "dml_type": null
+                },
+                {
+                    "pretty_name": "!=",
+                    "data_type": null,
+                    "render_type": "operator",
+                    "entity_map": null
+                },
+                {
+                    "pretty_name": "Phishing",
+                    "data_type": null,
+                    "render_type": "value",
+                    "entity_map": null
+                }
+            ],
+            "ALERT_WHITELIST_INDICATOR": {
+                "filter": {
+                    "AND": [
+                        {
+                            "SEARCH_FIELD": "alert_category",
+                            "SEARCH_TYPE": "NEQ",
+                            "SEARCH_VALUE": "Phishing"
+                        }
+                    ]
+                }
+            },
+            "ALERT_WHITELIST_HITS": 0,
+            "ALERT_WHITELIST_COMMENT": "",
+            "ALERT_WHITELIST_USER": "N/A",
+            "ALERT_WHITELIST_PRETTY_USER": "Public API - 3",
+            "ALERT_WHITELIST_STATUS": "ENABLED",
+            "ALERT_WHITELIST_BACKWARDS_SCAN_STATUS": "DISABLED",
+            "ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP": null,
+            "ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS": 0
+        },
+        {
+            "ALERT_WHITELIST_ID": 39,
+            "ALERT_WHITELIST_MODIFY_TIME": 1643803916033,
+            "ALERT_WHITELIST_NAME": "test1",
+            "ALERT_WHITELIST_INDICATOR_TEXT": [
+                {
+                    "pretty_name": "category",
+                    "data_type": "TEXT",
+                    "render_type": "attribute",
+                    "entity_map": null,
+                    "dml_type": null
+                },
+                {
+                    "pretty_name": "!=",
+                    "data_type": null,
+                    "render_type": "operator",
+                    "entity_map": null
+                },
+                {
+                    "pretty_name": "Phishing",
+                    "data_type": null,
+                    "render_type": "value",
+                    "entity_map": null
+                }
+            ],
+            "ALERT_WHITELIST_INDICATOR": {
+                "filter": {
+                    "AND": [
+                        {
+                            "SEARCH_FIELD": "alert_category",
+                            "SEARCH_TYPE": "NEQ",
+                            "SEARCH_VALUE": "Phishing"
+                        }
+                    ]
+                }
+            },
+            "ALERT_WHITELIST_HITS": 0,
+            "ALERT_WHITELIST_COMMENT": "",
+            "ALERT_WHITELIST_USER": "N/A",
+            "ALERT_WHITELIST_PRETTY_USER": "Public API - 3",
+            "ALERT_WHITELIST_STATUS": "ENABLED",
+            "ALERT_WHITELIST_BACKWARDS_SCAN_STATUS": "DISABLED",
+            "ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP": null,
+            "ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS": 0
+        },
+        {
+            "ALERT_WHITELIST_ID": 40,
+            "ALERT_WHITELIST_MODIFY_TIME": 1643817377782,
+            "ALERT_WHITELIST_NAME": "test1",
+            "ALERT_WHITELIST_INDICATOR_TEXT": [
+                {
+                    "pretty_name": "category",
+                    "data_type": "TEXT",
+                    "render_type": "attribute",
+                    "entity_map": null,
+                    "dml_type": null
+                },
+                {
+                    "pretty_name": "!=",
+                    "data_type": null,
+                    "render_type": "operator",
+                    "entity_map": null
+                },
+                {
+                    "pretty_name": "Phishing",
+                    "data_type": null,
+                    "render_type": "value",
+                    "entity_map": null
+                }
+            ],
+            "ALERT_WHITELIST_INDICATOR": {
+                "filter": {
+                    "AND": [
+                        {
+                            "SEARCH_FIELD": "alert_category",
+                            "SEARCH_TYPE": "NEQ",
+                            "SEARCH_VALUE": "Phishing"
+                        }
+                    ]
+                }
+            },
+            "ALERT_WHITELIST_HITS": 0,
+            "ALERT_WHITELIST_COMMENT": "",
+            "ALERT_WHITELIST_USER": "N/A",
+            "ALERT_WHITELIST_PRETTY_USER": "Public API - 3",
+            "ALERT_WHITELIST_STATUS": "ENABLED",
+            "ALERT_WHITELIST_BACKWARDS_SCAN_STATUS": "DISABLED",
+            "ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP": null,
+            "ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS": 0
+        }
+    ]
+}
