@@ -346,6 +346,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
         incident_mirror_reset: dict = {incident['id']: True for incident in incidents}
         if incident_mirror_reset:
             demisto.debug(f'Adding incidents id to mirror reset set:{incident_mirror_reset}')
+            if isinstance(integration_context.get(MIRROR_RESET), dict):
+                integration_context[MIRROR_RESET].update(incident_mirror_reset)
             integration_context[MIRROR_RESET] = incident_mirror_reset
             set_to_integration_context_with_retries(context=integration_context)
 
@@ -669,7 +671,9 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
         # file_attachments = []
 
         if entries:
+            demisto.debug(f'Got entries: {entries} for incident id {remote_args.remote_incident_id}')
             for entry in entries:
+                demisto.debug(f'Got entry {entry}')
                 if 'file' in entry and entry.get('file'):
                     file_entry_content = client.get_file_entry(entry.get('id'))  # type: ignore
                     file_result = fileResult(entry['file'], file_entry_content)
@@ -687,6 +691,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
 
         # Handle if the incident closed remotely
         if incident.get('status') == IncidentStatus.DONE:
+            demisto.debug('incident was closed remotely, adding note')
             formatted_entries.append({
                 'Type': EntryType.NOTE,
                 'Contents': {
