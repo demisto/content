@@ -406,6 +406,19 @@
 		"Prisma Cloud Compute Compliance": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
+				"Prisma Cloud Compute Markdown": {
+					"complex": null,
+					"simple": "complianceMarkdownTable"
+				},
+				"Prisma Cloud Compute Raw Alert JSON": {
+					"complex": null,
+					"simple": "rawJSONAlert"
+				}
+			}
+		},
+        "Prisma Cloud Compute Compliance v2": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
                 "Compliance Notes": {
 					"complex": null,
 					"simple": "compliance"
