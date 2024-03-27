@@ -1,0 +1,21 @@
+{
+    "name": "XSOAR Check APIs",
+    "description": "This custom content pack XSOAR 8 Migration - API Endpoints Check allows XSOAR Administrators to identify API endpoints in use within Automations and Integrations. It does this by collecting a content bundle and parsing out automations and integrations that make use of **`core-api-*`** or **`demisto-api-*`** calls in the code. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Abel S. Santamarina",
+    "url": "",
+    "email": "",
+    "created": "2024-03-08T19:22:10Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "asantamarina"
+    ]
+}
