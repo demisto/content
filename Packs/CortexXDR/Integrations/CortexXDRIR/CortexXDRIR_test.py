@@ -1351,4 +1351,3 @@ def test_sort_all_list_incident_fields_case_get_multiple_incidents_extra_data_fo
     sort_all_list_incident_fields(incident_case_get_multiple_incidents_extra_data)
     assert incident_case_get_multiple_incidents_extra_data.get('alerts')
     assert incident_case_get_multiple_incidents_extra_data.get('incident_sources')
-

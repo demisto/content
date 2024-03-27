@@ -961,6 +961,47 @@ def update_remote_system_command(client, args):
         return remote_args.remote_incident_id
 
 
+def sort_all_list_incident_fields_fetch(raw_incident):
+    """Sorting all lists fields in an incident - without this, elements may shift which results in false
+    identification of changed fields"""
+    incident_data = {}
+    alerts = incident_data.get('alerts', []) if isinstance(incident_data.get('alerts'), list) \
+        else incident_data.get('alerts', {}).get('data')
+    file_artifacts = incident_data.get('file_artifacts', []) if isinstance(incident_data.get('file_artifacts'), list) \
+        else incident_data.get('file_artifacts', {}).get('data')
+    network_artifacts = incident_data.get('network_artifacts', []) if isinstance(incident_data.get('network_artifacts'), list) \
+        else incident_data.get('network_artifacts', {}).get('data')
+    if hosts := (incident_data.get('incident', {}).get('hosts') or incident_data.get('hosts', [])):
+        incident_data['hosts'] = sorted(hosts)
+        incident_data['hosts'] = [host.upper() for host in hosts]
+
+    if users := (incident_data.get('incident', {}).get('users', []) or incident_data.get('users', [])):
+        incident_data['users'] = sorted(users)
+        incident_data['users'] = [user.upper() for user in users]
+
+    if incident_sources := (incident_data.get('incident', {}).get('incident_sources')
+                            or incident_data.get('incident_sources', [])):
+        incident_data['incident_sources'] = sorted(incident_sources)
+
+    format_sublists = not argToBoolean(demisto.params().get('dont_format_sublists', False))
+    if alerts:
+        incident_data['alerts'] = sort_by_key(alerts, main_key='alert_id', fallback_key='name')
+        if format_sublists:
+            reformat_sublist_fields(incident_data['alerts'])
+
+    if file_artifacts:
+        incident_data['file_artifacts'] = sort_by_key(file_artifacts, main_key='file_name',
+                                                      fallback_key='file_sha256')
+        if format_sublists:
+            reformat_sublist_fields(incident_data['file_artifacts'])
+
+    if network_artifacts:
+        incident_data['network_artifacts'] = sort_by_key(network_artifacts,
+                                                         main_key='network_domain', fallback_key='network_remote_ip')
+        if format_sublists:
+            reformat_sublist_fields(incident_data['network_artifacts'])
+
+
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
                     statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
                     fields_to_exclude: bool = True):
@@ -1015,11 +1056,9 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
                 incident_data = client.get_incident_extra_data(client, {"incident_id": incident_id,
                                                                         "alerts_limit": 1000})[0].get('incident')\
                     or {}
-
-            else:
-                incident_data['alerts'] = raw_incident.get('alerts', {}).get('data', [])
-                incident_data['file_artifacts'] = raw_incident.get('file_artifacts', {}).get('data', [])
-                incident_data['network_artifacts'] = raw_incident.get('network_artifacts', {}).get('data', [])
+            incident_data['alerts'] = raw_incident.get('alerts', {}).get('data', [])
+            incident_data['file_artifacts'] = raw_incident.get('file_artifacts', {}).get('data', [])
+            incident_data['network_artifacts'] = raw_incident.get('network_artifacts', {}).get('data', [])
 
             sort_all_list_incident_fields(incident_data)
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
