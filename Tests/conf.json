@@ -3909,7 +3909,7 @@
             "playbookID": "QRadar_v3-test",
             "instance_names": "QRadar_20",
             "fromversion": "6.0.0",
-            "timeout": 600,
+            "timeout": 1200,
             "is_mockable": false
         },
         {
@@ -5842,6 +5842,7 @@
         "AWS SNS Listener - Test": "Cant validate mock msg against AWS-SNS in TBP"
     },
     "skipped_integrations": {
+        "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
         "EWS Mail Sender": "The integration is deprecated",
         "CiscoWSAv2": "No instance - No license",
         "DatadogCloudSIEM": "No instance - No license",
@@ -5973,7 +5974,8 @@
         "PhishLabs IOC EIR": "No instance, CRTX-91214",
         "fortimail": "No instance",
         "JoeSecurityV2": "CIAC-9872",
-        "Aha": "No instance"
+        "Aha": "No instance",
+        "MongoDB": "CIAC-10102"
     },
     "nightly_packs": [
         "CommonScripts",
