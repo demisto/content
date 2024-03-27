@@ -17,7 +17,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
       with:
-        fetch-depth: 0
+        fetch-depth: 1000
 
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
