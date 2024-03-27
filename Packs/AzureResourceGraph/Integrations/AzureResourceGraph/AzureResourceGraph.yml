@@ -1,0 +1,121 @@
+category: Cloud Services
+commonfields:
+  id: Azure Resource Graph
+  version: -1
+configuration:
+- display: Host URL (e.g., https://management.azure.com)
+  name: host
+  defaultvalue: https://management.azure.com
+  type: 0
+  required: true
+- display: ID (Client ID)
+  name: auth_id
+  type: 4
+  required: false
+  hidden: true
+- display: Token (Tenant ID)
+  name: tenant_id
+  type: 4
+  required: false
+  hidden: true
+- display: Key (Client Secret)
+  name: enc_key
+  type: 4
+  required: false
+  hidden: true
+- display: Certificate Thumbprint
+  name: certificate_thumbprint
+  type: 4
+  required: false
+  hidden: true
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+- display: ""
+  displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
+  name: cred_auth_id
+  type: 9
+  required: false
+  hiddenusername: true
+- display: ""
+  displaypassword: Token (received from the admin consent - see Detailed Instructions (?) section)
+  name: cred_token
+  type: 9
+  required: false
+  hiddenusername: true
+- display: ""
+  displaypassword: Key (received from the admin consent - see Detailed Instructions (?)
+  name: cred_enc_key
+  type: 9
+  required: false
+  hiddenusername: true
+- display: ""
+  displaypassword: Certificate Thumbprint
+  name: cred_certificate_thumbprint
+  type: 9
+  required: false
+  hiddenusername: true
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+- display: Private Key
+  name: private_key
+  type: 14
+  required: false
+  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+- display: Default Subscription ID
+  name: subscription_id
+  type: 4
+  required: false
+  hidden: true
+- display: ""
+  displaypassword: Default Subscription ID
+  name: cred_subscription_id
+  type: 9
+  required: false
+  hiddenusername: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: unsecure
+  type: 8
+  required: false
+- display: Use a self-deployed Azure Application
+  name: self_deployed
+  type: 8
+  required: false
+  additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
+description: 'Azure Resource Graph integration is designed to allow for executing Azure Resource Graph commands, like querying resource data.'
+display: Azure Resource Graph
+name: Azure Resource Graph
+script:
+  commands:
+  - name: azure-rg-auth-reset
+    arguments: []
+    description: Run this command if for some reason you need to rerun the authentication process.
+  - name: azure-rg-list-operations
+    arguments:
+    - defaultValue: '50'
+      description: The maximum number of operations to return (Default is 50).
+      name: limit
+    outputs:
+    - contextPath: AzureResourceGraph.Operations
+      description: A list of available Azure Resource Graph operations permissions and descriptions.
+      type: String
+    description: Gets all Azure Resource Graph operations permissions and descriptions.
+  - name: azure-rg-query
+    arguments:
+    - name: query
+      required: true
+      description: The query for the Azure Resource Graph to execute. The query is based on Kusto Query Language (KQL).
+    outputs:
+    - contextPath: AzureResourceGraph.Query
+      description: Data returned from query.
+      type: String
+    description: 'Executes a given Azure Resource Graph Query. (Ex: query="Resources | project name, type | limit 5 | order by name asc").'
+  dockerimage: demisto/crypto:1.0.0.84658
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
