@@ -144,7 +144,7 @@ def main() -> None:
         compliance_ids = demisto.getArg('compliance_ids')
 
         # Run the command with the provided arguments
-        run_prisma_cloud_compute_containers_scan_list(container_id)
+        compliance_issues = run_prisma_cloud_compute_containers_scan_list(container_id)
 
         # Filter compliance issues based on provided compliance issues IDs
         filtered_compliance_issues = filter_compliance_issues(compliance_issues, compliance_ids)
