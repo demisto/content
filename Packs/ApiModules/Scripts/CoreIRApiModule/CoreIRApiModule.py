@@ -1612,8 +1612,8 @@ def create_filter_from_args(args: dict) -> dict:
     """
     valid_args = init_filter_args_options()
     and_operator_list = []
-    start_time = args.pop('start_time', None)
-    end_time = args.pop('end_time', None)
+    start_time = arg_to_datetime(args.pop('start_time', None))
+    end_time = arg_to_datetime(args.pop('end_time', None))
 
     if (start_time or end_time) and ('time_frame' not in args):
         raise DemistoException('Please choose "custom" under time_frame argument when using start_time and end_time '
@@ -1628,15 +1628,13 @@ def create_filter_from_args(args: dict) -> dict:
         if arg_name == 'time_frame':
             # custom time frame
             if arg_value == 'custom':
-                if not start_time or not end_time:
+                if not (start_time and end_time):
                     raise DemistoException(
                         'Please provide start_time and end_time arguments when using time_frame as custom.')
-                start_time = convert_time_to_epoch(start_time)
-                end_time = convert_time_to_epoch(end_time)
                 search_type = 'RANGE'
-                search_value: Union[dict, Optional[str]] = {
-                    'from': start_time,
-                    'to': end_time
+                search_value: dict | str | None = {
+                    'from': int(start_time.timestamp()),
+                    'to': int(end_time.timestamp())
                 }
 
             # relative time frame
@@ -3549,10 +3547,10 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     custom_filter_str = args.pop('custom_filter', None)
 
     if custom_filter_str:
-        for arg in args:
-            if arg not in ['time_frame', 'start_time', 'end_time']:
-                raise DemistoException(
-                    'Please provide either "custom_filter" argument or other filter arguments but not both.')
+        # check that only the time args remain
+        if set(args) - {'time_frame', 'start_time', 'end_time'}:
+            raise DemistoException(
+                'Please provide either "custom_filter" argument or other filter arguments but not both.')
         try:
             custom_filter = json.loads(custom_filter_str)
         except Exception as e:
