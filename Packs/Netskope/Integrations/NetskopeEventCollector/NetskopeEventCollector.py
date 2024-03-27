@@ -323,7 +323,7 @@ def handle_event_types_to_fetch(event_types_to_fetch) -> list[str]:
 
 def next_trigger_time(num_of_events, max_fetch, new_last_run):
     """Check wether to add the next trigger key to the next_run dict based on number of fetched events.
-    
+
     Args:
         num_of_events (int): The number of events fetched.
         max_fetch (int): The maximum fetch limit.
