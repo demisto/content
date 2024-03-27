@@ -73,6 +73,17 @@ PROCESSED_TEST_CASES = [
 
 
 def test_run_prisma_cloud_compute_hosts_scan_list(mocker):
+    """
+    Given:
+        A specific hostname.
+        Given The results from the command "prisma-cloud-compute-hosts-scan-list" for that hostname.
+
+    When:
+        Running run_prisma_cloud_compute_hosts_scan_list
+
+    Then:
+        Assert the returned output is the same as the given results for the given hostname.
+    """
     # Mock the executeCommand function
     mocker.patch.object(demisto, 'executeCommand', return_value=[{'Type': EntryType.NOTE,
                                                                   'Contents': [{'complianceIssues': compliance_issues}]
@@ -87,11 +98,31 @@ def test_run_prisma_cloud_compute_hosts_scan_list(mocker):
 
 @pytest.mark.parametrize('args, expected', FILTERED_TEST_CASES)
 def test_filter_compliance_issues(args, expected):
+    """
+    Given:
+        All results for a host.
+
+    When:
+        Running filter_compliance_issues
+
+    Then:
+        Assert the returned output matches the filtered results, based on the "FILTERED_TEST_CASES" object.
+    """
     filtered_results = filter_compliance_issues(args.get('compliance_issues'), args.get('compliance_ids'))
     assert filtered_results == expected
 
 
 @pytest.mark.parametrize('args, expected', PROCESSED_TEST_CASES)
 def test_process_and_output_compliance_issues(args, expected):
+    """
+    Given:
+        Filtered results for a host.
+
+    When:
+        Running process_and_output_compliance_issues
+
+    Then:
+        Assert the returned output matches the processed results, based on the "PROCESSED_TEST_CASES" object.
+    """
     processed_results = process_and_output_compliance_issues(args.get('compliance_issues'), args.get('hostname'))
     assert processed_results.outputs['compliance_issues'] == expected
