@@ -11,10 +11,12 @@ var result;
 // The command input arg holds the command sent from the user.
 switch (command) {
     case 'test-module':
+        logInfo(`Servicemanager: integration test module`);
         listDevices();
         result = 'ok';
         break;
     case 'hpsm-create-incident':
+        logInfo(`Servicemanager: hpsm-create-incident command`);
         result = createIncident();
         break;
     case 'hpsm-create-request':
@@ -30,6 +32,7 @@ switch (command) {
         result = getIncidentById();
         break;
     case 'hpsm-create-resource':
+        logInfo(`Servicemanager: hpsm-create-resource command`);
         result = createResource();
         break;
     case 'hpsm-update-resource':
@@ -221,7 +224,7 @@ function createIncident() {
     if (args.subarea) {
         newIncident.Incident.Subarea = args.subarea;
     }
-
+    logInfo(`Servicemanager: ${newIncident}`);
     var res = doPost('/incidents', newIncident);
     var parsedRes = JSON.parse(res);
     if (parsedRes.ReturnCode !== 0) {
@@ -484,6 +487,8 @@ function createResource() {
     if (args.subarea) {
         newResource[resourceName]['Subarea'] = args.subarea;
     }
+    logInfo(`Servicemanager: resourceName ${resourceName}`);
+    logInfo(`Servicemanager: newResource ${newResource}`);
     var res = doPost('/'+resourceName, newResource);
     var parsedRes = JSON.parse(res);
     if (parsedRes.ReturnCode !== 0) {
@@ -591,6 +596,7 @@ function doPut(queryPath, body) {
 
 function doRequest(method, queryPath, body) {
     var requestUrl = url + queryPath;
+    logInfo(`Servicemanager: requestUrl ${requestUrl}`);
     var res = http(
         requestUrl,
         {
