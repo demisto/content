@@ -193,6 +193,51 @@ def test_detections_to_entry_without_endpoint(mocker):
     assert result['Contents'][0] == expected_result
 
 
+def test_detections_to_entry_without_erelationships(mocker):
+    """
+    Given:
+     - detection data with missing 'relationship' details
+
+    Then:
+     - Ensure detections_to_entry runs successfully
+    """
+    detection_data = [
+        {
+            'type': 'Detection',
+            'id': 1,
+            'attributes': {
+                'headline': 'Suspicious Activity',
+                'confirmed_at': '2023-09-18T21:32:52.039Z',
+                'summary': 'A user made a series of API calls to expose instance passwords.',
+                'severity': 'high',
+                'last_activity_seen_at': '2023-09-18T20:47:23.609Z',
+                'classification': {
+                    'superclassification': 'Suspicious Activity',
+                    'subclassification': ['Reconnaissance']
+                },
+                'time_of_occurrence': '2023-09-18T20:47:23.609Z',
+                'last_acknowledged_at': None,
+                'last_acknowledged_by': None,
+                'associated_releasable_intelligence_profiles': []
+            }
+            
+        }
+    ]
+
+    expected_result = {'Type': 'RedCanaryDetection', 'ID': 1, 'Headline': 'Suspicious Activity', 'Severity': 'high',
+                       'Summary': 'A user made a series of API calls to expose instance passwords.',
+                       'Classification': 'Suspicious Activity', 'Subclassification': ['Reconnaissance'],
+                       'Time': '2023-09-18T20:47:23Z', 'Acknowledged': True, 'RemediationStatus': '', 'Reason': '',
+                       'EndpointID': '', 'EndpointUserID': ''}
+    # Call the function with the sample data
+    endpoint_users = [{'Username': 'username'}]
+    mocker.patch.object(RedCanary, "get_endpoint_user_context", return_value=endpoint_users)
+    result = RedCanary.detections_to_entry(detection_data)
+    # Assert that the result is as expected
+    assert result['Contents'][0] == expected_result
+
+
+
 def test_fetch_multiple_times_when_already_fetched_incident_keep(mocker):
     """Unit test
     Given
