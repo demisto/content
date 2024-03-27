@@ -1336,6 +1336,30 @@ def test_modify_policy_command(gsuite_client, mocker):
     assert response == f'Policy has been modified for the customer {args["customer_id"]}'
 
 
+def test_modify_policy_command_with_raw_json(gsuite_client, mocker):
+    """
+        Scenario: Policy Modify command successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command modify_policy_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import modify_policy_command
+    args = {"customer_id": "test", "target_type": "Group", "policy_raw_json":
+            "{\"requests\": [{\"policyTargetKey\": {\"targetResource\": \"groups/11111111\","
+            "\"additionalTargetKeys\": {\"app_id\": \"chrome:11111111\"}},"
+            "\"policyValue\": { \"policySchema\": \"chrome.users.apps.InstallType\","
+            "\"value\": {\"appInstallType\": \"BLOCKED\"}}, \"updateMask\": \"appInstallType\"}]}"}
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value={})
+    response = modify_policy_command(gsuite_client, args)
+    assert response == f'Policy has been modified for the customer {args["customer_id"]}'
+
+
 @pytest.mark.parametrize(
     "args",
     [
