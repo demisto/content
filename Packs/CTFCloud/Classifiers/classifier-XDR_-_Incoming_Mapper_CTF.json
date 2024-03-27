@@ -1,0 +1,809 @@
+{
+    "description": "Maps incoming Cortex XDR incidents fields.",
+    "feed": false,
+    "id": "XDR - Incoming Mapper - CTF2",
+    "mapping": {
+        "Cortex XDR Incident - CTF2": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Hostnames": {
+                    "complex": {
+                        "accessor": "host_name",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                },
+                "LastMirroredInTime": {
+                    "complex": {
+                        "filters": [],
+                        "root": "last_mirrored_in",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "OutgoingMirrorError": {
+                    "simple": "out_mirror_error"
+                },
+                "XDR Alert Category": {
+                    "complex": {
+                        "accessor": "category",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": []
+                    }
+                },
+                "XDR Alert Count": {
+                    "simple": "alert_count"
+                },
+                "XDR Alert Name": {
+                    "simple": "alerts.name"
+                },
+                "XDR Alerts": {
+                    "simple": "alerts"
+                },
+                "XDR Assigned User Email": {
+                    "simple": "assigned_user_mail"
+                },
+                "XDR Assigned User Pretty Name": {
+                    "simple": "assigned_user_pretty_name"
+                },
+                "XDR Description": {
+                    "simple": "description"
+                },
+                "XDR Detection Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "detection_time",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "XDR File Artifacts": {
+                    "simple": "file_artifacts"
+                },
+                "XDR File Name": {
+                    "complex": {
+                        "accessor": "file_name",
+                        "filters": [],
+                        "root": "file_artifacts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "XDR File SHA256": {
+                    "complex": {
+                        "accessor": "file_sha256",
+                        "filters": [],
+                        "root": "file_artifacts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "XDR High Severity Alert Count": {
+                    "simple": "high_severity_alert_count"
+                },
+                "XDR Host Count": {
+                    "simple": "host_count"
+                },
+                "XDR Incident ID": {
+                    "simple": "incident_id"
+                },
+                "XDR Low Severity Alert Count": {
+                    "simple": "low_severity_alert_count"
+                },
+                "XDR MITRE Tactics": {
+                    "simple": "alerts.mitre_tactic_id_and_name"
+                },
+                "XDR MITRE Techniques": {
+                    "simple": "alerts.mitre_technique_id_and_name"
+                },
+                "XDR Medium Severity Alert Count": {
+                    "simple": "med_severity_alert_count"
+                },
+                "XDR Modification Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "modification_time",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "XDR Network Artifacts": {
+                    "simple": "network_artifacts"
+                },
+                "XDR Notes": {
+                    "simple": "notes"
+                },
+                "XDR Resolve Comment": {
+                    "simple": "resolve_comment"
+                },
+                "XDR Starred": {
+                    "simple": "starred"
+                },
+                "XDR Status": {
+                    "simple": "status"
+                },
+                "XDR Status v2": {
+                    "simple": "status"
+                },
+                "XDR URL": {
+                    "simple": "xdr_url"
+                },
+                "XDR User Count": {
+                    "simple": "user_count"
+                },
+                "XDR Users": {
+                    "complex": {
+                        "accessor": "user_name",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "incident_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "creation_time",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "owner": {
+                    "simple": "owner"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "low"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "medium"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "high"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "Cortex XDR Port Scan": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "XDR Alert Count": {
+                    "simple": "alert_count"
+                },
+                "XDR Assigned User Email": {
+                    "simple": "assigned_user_mail"
+                },
+                "XDR Assigned User Pretty Name": {
+                    "simple": "assigned_user_pretty_name"
+                },
+                "XDR Description": {
+                    "simple": "description"
+                },
+                "XDR Detection Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "detection_time",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "XDR High Severity Alert Count": {
+                    "simple": "high_severity_alert_count"
+                },
+                "XDR Host Count": {
+                    "simple": "host_count"
+                },
+                "XDR Incident ID": {
+                    "simple": "incident_id"
+                },
+                "XDR Low Severity Alert Count": {
+                    "simple": "low_severity_alert_count"
+                },
+                "XDR Medium Severity Alert Count": {
+                    "simple": "med_severity_alert_count"
+                },
+                "XDR Notes": {
+                    "simple": "notes"
+                },
+                "XDR Resolve Comment": {
+                    "simple": "resolve_comment"
+                },
+                "XDR Starred": {
+                    "simple": "starred"
+                },
+                "XDR Status": {
+                    "simple": "status"
+                },
+                "XDR Status v2": {
+                    "simple": "status"
+                },
+                "XDR URL": {
+                    "simple": "xdr_url"
+                },
+                "XDR User Count": {
+                    "simple": "user_count"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "creation_time",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "low"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "medium"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "high"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "CortextXDRIncident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        },
+        "Malware Investigation and Response": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Additional Data": {
+                    "simple": "alerts"
+                },
+                "Agent Version": {
+                    "complex": {
+                        "accessor": "agentversion",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Agents ID": {
+                    "simple": "alerts.endpoint_id"
+                },
+                "CMD line": {
+                    "simple": "alerts.action_process_image_command_line"
+                },
+                "Description": {
+                    "simple": "description"
+                },
+                "Detected User": {
+                    "complex": {
+                        "accessor": "user_name",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Device Internal IPs": {
+                    "simple": "alerts.host_ip"
+                },
+                "Device Local IP": {
+                    "simple": "alerts.[0].host_ip"
+                },
+                "Device OS Name": {
+                    "complex": {
+                        "accessor": "agent_os_type",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Device OS Version": {
+                    "complex": {
+                        "accessor": "agent_os_sub_type",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "External Category Name": {
+                    "simple": "alerts.category"
+                },
+                "External End Time": {
+                    "simple": "modification_time"
+                },
+                "External Link": {
+                    "simple": "xdr_url"
+                },
+                "External Start Time": {
+                    "simple": "creation_time"
+                },
+                "External Status": {
+                    "simple": "status"
+                },
+                "External System ID": {
+                    "simple": "incident_id"
+                },
+                "File Names": {
+                    "simple": "alerts.action_file_name"
+                },
+                "File Paths": {
+                    "simple": "alerts.action_file_path"
+                },
+                "File SHA256": {
+                    "simple": "file_artifacts.filesha256"
+                },
+                "Hostnames": {
+                    "complex": {
+                        "accessor": "host_name",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                },
+                "LastMirroredInTime": {
+                    "complex": {
+                        "filters": [],
+                        "root": "last_mirrored_in",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "MITRE Tactic ID": {
+                    "simple": "mitre_tactics_ids_and_names"
+                },
+                "MITRE Tactic Name": {
+                    "simple": "mitre_tactics_ids_and_names"
+                },
+                "MITRE Technique ID": {
+                    "simple": "mitre_techniques_ids_and_names"
+                },
+                "MITRE Technique Name": {
+                    "simple": "mitre_techniques_ids_and_names"
+                },
+                "OutgoingMirrorError": {
+                    "simple": "out_mirror_error"
+                },
+                "Parent CMD line": {
+                    "simple": "alerts.causality_actor_process_command_line"
+                },
+                "Parent Process CMD": {
+                    "simple": "alerts.causality_actor_process_command_line"
+                },
+                "Parent Process MD5": {
+                    "simple": "alerts.causality_actor_process_image_md5"
+                },
+                "Parent Process Name": {
+                    "simple": "alerts.causalityactorprocessimagename"
+                },
+                "Parent Process SHA256": {
+                    "simple": "alerts.causality_actor_process_image_sha256"
+                },
+                "Process CMD": {
+                    "simple": "alerts.actor_process_command_line"
+                },
+                "Process MD5": {
+                    "simple": "alerts.actor_process_image_md5"
+                },
+                "Process Names": {
+                    "complex": {
+                        "accessor": "actor_process_image_name",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Process Paths": {
+                    "complex": {
+                        "accessor": "actor_process_image_path",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Process SHA256": {
+                    "simple": "alerts.actor_process_image_sha256"
+                },
+                "Source IPs": {
+                    "complex": {
+                        "accessor": "host_ip",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "Users": {
+                    "simple": "users"
+                },
+                "XDR Alert Category": {
+                    "complex": {
+                        "accessor": "category",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": []
+                    }
+                },
+                "XDR Alert Count": {
+                    "simple": "alert_count"
+                },
+                "XDR Alert Name": {
+                    "simple": "alerts.name"
+                },
+                "XDR Alerts": {
+                    "simple": "alerts"
+                },
+                "XDR Assigned User Email": {
+                    "simple": "assigned_user_mail"
+                },
+                "XDR Assigned User Pretty Name": {
+                    "simple": "assigned_user_pretty_name"
+                },
+                "XDR Description": {
+                    "simple": "description"
+                },
+                "XDR Detection Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "detection_time",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "XDR File Artifacts": {
+                    "simple": "file_artifacts"
+                },
+                "XDR File Name": {
+                    "complex": {
+                        "accessor": "file_name",
+                        "filters": [],
+                        "root": "file_artifacts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "XDR File SHA256": {
+                    "complex": {
+                        "accessor": "file_sha256",
+                        "filters": [],
+                        "root": "file_artifacts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "XDR High Severity Alert Count": {
+                    "simple": "high_severity_alert_count"
+                },
+                "XDR Host Count": {
+                    "simple": "host_count"
+                },
+                "XDR Incident ID": {
+                    "simple": "incident_id"
+                },
+                "XDR Low Severity Alert Count": {
+                    "simple": "low_severity_alert_count"
+                },
+                "XDR MITRE Tactics": {
+                    "simple": "alerts.mitre_tactic_id_and_name"
+                },
+                "XDR MITRE Techniques": {
+                    "simple": "alerts.mitre_technique_id_and_name"
+                },
+                "XDR Medium Severity Alert Count": {
+                    "simple": "med_severity_alert_count"
+                },
+                "XDR Modification Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "modification_time",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "XDR Network Artifacts": {
+                    "simple": "network_artifacts"
+                },
+                "XDR Notes": {
+                    "simple": "notes"
+                },
+                "XDR Resolve Comment": {
+                    "simple": "resolve_comment"
+                },
+                "XDR Status": {
+                    "simple": "status"
+                },
+                "XDR Status v2": {
+                    "simple": "status"
+                },
+                "XDR URL": {
+                    "simple": "xdr_url"
+                },
+                "XDR User Count": {
+                    "simple": "user_count"
+                },
+                "XDR Users": {
+                    "complex": {
+                        "accessor": "user_name",
+                        "filters": [],
+                        "root": "alerts",
+                        "transformers": [
+                            {
+                                "operator": "uniq"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "incident_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "creation_time",
+                        "transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
+                    }
+                },
+                "owner": {
+                    "simple": "owner"
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "1"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "low"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "2"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "medium"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            },
+                            {
+                                "args": {
+                                    "limit": {},
+                                    "replaceWith": {
+                                        "value": {
+                                            "simple": "3"
+                                        }
+                                    },
+                                    "toReplace": {
+                                        "value": {
+                                            "simple": "high"
+                                        }
+                                    }
+                                },
+                                "operator": "replace"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Project ID": {
+                    "simple": "alerts.[0].project"
+                }
+            }
+        }
+    },
+    "name": "XDR - Incoming Mapper - CTF2",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.9.0"
+}

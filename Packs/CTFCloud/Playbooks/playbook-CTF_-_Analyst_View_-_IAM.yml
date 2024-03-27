@@ -1,0 +1,1874 @@
+id: CTF - Analyst View - IAM
+inputs: []
+name: CTF - Analyst View - IAM
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 81b3c70d-4fcb-4f9a-82f0-901adbcd13b3
+    type: start
+    task:
+      id: 81b3c70d-4fcb-4f9a-82f0-901adbcd13b3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 305
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d0c37d3a-a14a-4ae5-84ae-5db1102c47a4
+    type: title
+    task:
+      id: d0c37d3a-a14a-4ae5-84ae-5db1102c47a4
+      version: -1
+      name: Welcome message
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 42b1a8fb-034d-4bf0-8ff1-d9c2b66b2f6c
+    type: title
+    task:
+      id: 42b1a8fb-034d-4bf0-8ff1-d9c2b66b2f6c
+      version: -1
+      name: Investigate incident indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 50c655b4-36a6-44db-8d81-537a94730c3c
+    type: title
+    task:
+      id: 50c655b4-36a6-44db-8d81-537a94730c3c
+      version: -1
+      name: Check the affected asset
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 02e4d4e5-02a4-4ab7-83bf-621bc87a6c44
+    type: title
+    task:
+      id: 02e4d4e5-02a4-4ab7-83bf-621bc87a6c44
+      version: -1
+      name: Investigate the attacker actions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 10e3c0c2-effe-4eb1-8ee8-f4d657ce6b63
+    type: title
+    task:
+      id: 10e3c0c2-effe-4eb1-8ee8-f4d657ce6b63
+      version: -1
+      name: Identify any other related alerts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 485,
+          "y": 2525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: aae2a277-de23-4644-86cd-7c9cd3b0ddf9
+    type: title
+    task:
+      id: aae2a277-de23-4644-86cd-7c9cd3b0ddf9
+      version: -1
+      name: Classify the incident
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 485,
+          "y": 3010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: f35b69e7-30fc-45bf-8c02-147df535b9e4
+    type: regular
+    task:
+      id: f35b69e7-30fc-45bf-8c02-147df535b9e4
+      version: -1
+      name: Welcome To the SKO XSOAR's CTF!
+      description: "# **Welcome all!**\n\nIn this exercise, we are going to wear the analyst's hat and investigate an interesting incident :relaxed:\nSo fasten your seatbelt and enjoy the ride.\n\n## What you need to do:\n* Find the \"Suspicious API call\" incident which is in an active state (If needed, change the time period to last 30 days). \n* To make your life easier, use the following query: \n`status:Active AND name:*Suspicious*`\n\n## Rules\n* Do not change anything in the incident playbook.\n* Raise your hand if you need help.\n* To re-enter your answer, check out the following on how to do so:\n![image](https://raw.githubusercontent.com/demisto/content/3cfe7f529f3a5e82ffdf021829cfd4f0c335dc7e/Packs/ctf01/doc_files/demo.gif)\n* An SLA timer will start ticking once you mark this task as completed. This timer will indicate who finished the challenge first!\n\n\nAs usual, enjoy the exercise!\n![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/the-dark-knight-joker.gif)\n"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 520f2c4d-8ab6-4836-8715-eb70c43e0ade
+    type: collection
+    task:
+      id: 520f2c4d-8ab6-4836-8715-eb70c43e0ade
+      version: -1
+      name: Investigate incident indicators
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "17"
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What is the type of the malicious indicator?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Check the indicator's section in the Alert Info tab
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Which vendor classified this indicator as malicious?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Manual Verdict
+        - simple: VirusTotal
+        - simple: PhishTank
+        - simple: Cisco ThreatGrid
+        - simple: AbuseIPDB
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: This should be easy - check the indicators
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Which IP is associated with the TOR Proxy application?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: You can find that by checking the XDR alerts' description in the XDR alerts table.
+        readonly: false
+      title: Investigate the indicator
+      description: |-
+        Our malicious indicator can give more information about the incident, let's dig into it!
+
+        Answer the following questions to give more information about what happened in this incident.
+
+        ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/confused-john-travolta.gif)
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 25fd80cf-4bd6-4a80-8d47-f31b9907070d
+    type: collection
+    task:
+      id: 25fd80cf-4bd6-4a80-8d47-f31b9907070d
+      version: -1
+      name: Let's check the affected asset
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Who is the cloud provider?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Find the Vendor section in the Incident Info tab
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Which project ID is affected by this attack?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The project ID is also named Account ID - and it refers to the Cloud Project where the attack occurred. For more information, read about Amazon Resource Names (ARN).
+        readonly: false
+      title: Let's Check our impacted asset
+      description: "In this section, we will check the assets associated with the received incident.\nThis may help understand the impact on the organization.\n\n![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/ok-now-what.gif)"
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 1d2bf5c3-f034-48b3-8ba0-11083a3ec15a
+    type: collection
+    task:
+      id: 1d2bf5c3-f034-48b3-8ba0-11083a3ec15a
+      version: -1
+      name: What other actions were performed by the affected user
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What was the Access Key ID used by the attacker?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Check the AWS IAM command outputs that are associated with this incident.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Give an example of one suspicious activity that can indicate persistence (mention the eventName).
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: You may want to check the CloudTrail section.
+        readonly: false
+      title: Suspicious activity in the account
+      description: |-
+        There was suspicious activity in the account. Check how the attacker was authenticated in the system and which actions the attacker took.
+
+        
+        ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/hacker-typing.gif)
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 581b4789-29a4-4cf4-8c27-22516f935009
+    type: regular
+    task:
+      id: 581b4789-29a4-4cf4-8c27-22516f935009
+      version: -1
+      name: Check the answer for Q1
+      description: What is the type of malicious indicator?
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      question_ID:
+        simple: "01"
+      secret:
+        complex:
+          root: Investigate the indicator.Answers
+          accessor: "0"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b502022e-34c5-41a6-89ea-254c67e6ad93
+    type: regular
+    task:
+      id: b502022e-34c5-41a6-89ea-254c67e6ad93
+      version: -1
+      name: Check the Answer for Q2
+      description: |+
+        Which vendor classified this indicator as malicious?
+
+        Reply Options
+        - Manual Verdict
+        - VirusTotal
+        - PhishTank
+        - Cisco ThreatGrid
+        - AbuseIPDB
+
+
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      question_ID:
+        simple: "02"
+      secret:
+        complex:
+          root: Investigate the indicator.Answers
+          accessor: "1"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 3d978cdc-7afc-4196-82a6-cd821bdb21d2
+    type: regular
+    task:
+      id: 3d978cdc-7afc-4196-82a6-cd821bdb21d2
+      version: -1
+      name: Check the answer for Q4
+      description: Who is the cloud provider?
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      question_ID:
+        simple: "04"
+      secret:
+        complex:
+          root: Let's Check our impacted asset.Answers
+          accessor: "0"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: dbb3d82e-e73b-4d69-8a46-72e73a1c4f08
+    type: regular
+    task:
+      id: dbb3d82e-e73b-4d69-8a46-72e73a1c4f08
+      version: -1
+      name: Check the answer for Q5
+      description: Which project ID is affected by this attack?
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      question_ID:
+        simple: "05"
+      secret:
+        complex:
+          root: Let's Check our impacted asset.Answers
+          accessor: "1"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 1855
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 62fbf8de-fd40-4eb1-8cba-ed5844fc58d3
+    type: regular
+    task:
+      id: 62fbf8de-fd40-4eb1-8cba-ed5844fc58d3
+      version: -1
+      name: Check the Answer for Q6
+      description: What was the Access Key ID used by the attacker?
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      question_ID:
+        simple: "06"
+      secret:
+        complex:
+          root: Suspicious activity in the account.Answers
+          accessor: "0"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: f8d614ce-d9b6-41c2-8c43-2eac6edf50f2
+    type: regular
+    task:
+      id: f8d614ce-d9b6-41c2-8c43-2eac6edf50f2
+      version: -1
+      name: |
+        Check the Answer for Q7
+      description: Give an example of one suspicious activity that can indicate persistence (mention the eventName).
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      question_ID:
+        simple: "07"
+      secret:
+        complex:
+          root: Suspicious activity in the account.Answers
+          accessor: "1"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: e7a06c95-7130-4670-8b32-2212149c76af
+    type: collection
+    task:
+      id: e7a06c95-7130-4670-8b32-2212149c76af
+      version: -1
+      name: Check other related Incidents
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+      - "38"
+      - "23"
+      - "49"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 485,
+          "y": 2660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which new XDR incident ID have you identified as related to this attack?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: It can be found in the Incident name field.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Which domain is associated with the attacker's IP?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: You may want to check the XDR Network Artifacts section
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: What was the action taken by Cortex XDR for the alert in the incident?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Check the XDR alerts section
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Why are there no additional alerts from this machine (172.16.7.41)?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Nothing happened on the machine
+        - simple: XDR agent is not installed
+        - simple: XDR agent is not communicating with the XDR server
+        - simple: All the answers above
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Find the missing incident and answer the questions below
+      description: |-
+        It seems like we missed an incident that can help understand the current one. Check the Malicious and Suspicious indicators' "related incident" section and find the missed incident.
+        Remember to add the "ID" column, so you can navigate to the incident (use the Table Settings icon).
+
+
+        ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/charlie-day.gif)
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: d4cb8454-2ba5-4ed1-8ff4-8758e0bd4e3f
+    type: regular
+    task:
+      id: d4cb8454-2ba5-4ed1-8ff4-8758e0bd4e3f
+      version: -1
+      name: Check the Answer for Q8
+      description: Which new XDR Incident ID have you identified as related to this attack?
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      question_ID:
+        simple: "08"
+      secret:
+        complex:
+          root: Find the missing incident and answer the questions below.Answers
+          accessor: "0"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 2835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: a1aad6ca-b1c7-4f9a-8c32-3f4055ab2e29
+    type: collection
+    task:
+      id: a1aad6ca-b1c7-4f9a-8c32-3f4055ab2e29
+      version: -1
+      name: Classify the incident
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 485,
+          "y": 3155
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Classify the incident
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: True Positive
+        - simple: False Positive
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Classify the incident
+      description: |-
+        Based on our investigation, classify the original incident we started with (the 'Suspicious API call from a Tor exit node' incident).
+        Remember that we need to use all our findings and knowledge gained though this exercise.
+        So what's your verdcit here? Did you find some suspicious activty?
+
+        ![image](https://raw.githubusercontent.com/demisto/content/5caaf74a87ee4c03eaba65a066fef7f6c11898de/Packs/CTFCloud/doc_files/lord-of-the-rings-smeagol.gif)
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 5e9ed572-ea4d-4758-8da3-e9a5308cd58e
+    type: regular
+    task:
+      id: 5e9ed572-ea4d-4758-8da3-e9a5308cd58e
+      version: -1
+      name: Check the Answer for Q12
+      description: |-
+        Classify the incident
+
+        Options:
+        - True Positive
+        - False Positive
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      question_ID:
+        simple: "12"
+      secret:
+        complex:
+          root: Classify the incident.Answers
+          accessor: "0"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 485,
+          "y": 3330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 08c0d3d7-48f2-4e4f-8354-9a27cb122af5
+    type: title
+    task:
+      id: 08c0d3d7-48f2-4e4f-8354-9a27cb122af5
+      version: -1
+      name: Creating a remediation playbook
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 935,
+          "y": 4460
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: advancedctfsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: e475626a-9c5d-4063-8c9e-58cc4bf28877
+    type: regular
+    task:
+      id: e475626a-9c5d-4063-8c9e-58cc4bf28877
+      version: -1
+      name: Check the answer for Q3
+      description: Which IP is associated with the TOR Proxy application?
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      question_ID:
+        simple: "03"
+      secret:
+        complex:
+          root: Investigate the indicator.Answers
+          accessor: "2"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 6dfb6b32-8149-45bf-893e-9a89c0555ca1
+    type: title
+    task:
+      id: 6dfb6b32-8149-45bf-893e-9a89c0555ca1
+      version: -1
+      name: Remediation Button
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 485,
+          "y": 3505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: bd8d9113-3923-4e93-83e2-3f9adff6b9f2
+    type: collection
+    task:
+      id: bd8d9113-3923-4e93-83e2-3f9adff6b9f2
+      version: -1
+      name: Remediation action
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 485,
+          "y": 3650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Revoke the compromised account access keys using the remediation button. Get the required flag to finish! And don't forget to check the script results in the War Room.
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg:
+        - simple: True Positive
+        - simple: False Positive
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'Use the right user to get the flag '
+        readonly: false
+      title: Keep your company secure with remediation
+      description: |-
+        After analyzing the original incident, decide whether to take remediation actions.
+
+        You can customize Cortex XSOAR to facilitate your remediation actions. For example, we created the Revoke Access Keys button.
+        Check the original 'Suspicious API call from a Tor exit node' incident layout.
+
+        Take the necessary measures to keep your company secure!
+        ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/ocean-ocean-protocol.gif)
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 4df33cd6-7822-4282-8765-33095180d63e
+    type: regular
+    task:
+      id: 4df33cd6-7822-4282-8765-33095180d63e
+      version: -1
+      name: Check the answer for Q13
+      description: Revoke the compromised account access keys using the remediation button. Get the required flag to finish! And don't forget to check the script results in the War Room.
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      question_ID:
+        simple: "13"
+      secret:
+        complex:
+          root: Keep your company secure with remediation.Answers
+          accessor: "0"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 485,
+          "y": 3825
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: d861f573-a533-43d6-86f7-7450de6f58c9
+    type: regular
+    task:
+      id: d861f573-a533-43d6-86f7-7450de6f58c9
+      version: -1
+      name: Check the Answer for Q10
+      description: What was the action taken by Cortex XDR for the alert in the incident?
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      question_ID:
+        simple: "10"
+      secret:
+        complex:
+          root: Find the missing incident and answer the questions below.Answers
+          accessor: "2"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 2835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 47cb81ae-e4bb-4881-81a4-190d231fa9fc
+    type: regular
+    task:
+      id: 47cb81ae-e4bb-4881-81a4-190d231fa9fc
+      version: -1
+      name: Check the Answer for Q9
+      description: Which domain is associated with the attacker's IP?
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      question_ID:
+        simple: "09"
+      secret:
+        complex:
+          root: Find the missing incident and answer the questions below.Answers
+          accessor: "1"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 17a17138-3d7b-4c9c-836d-0ab1073cf418
+    type: collection
+    task:
+      id: 17a17138-3d7b-4c9c-836d-0ab1073cf418
+      version: -1
+      name: Create a remediation playbook
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 935,
+          "y": 4595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which pack contains this specific playbook?
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Check the playbook Settings section
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: |-
+            What is the hidden flag in the fixed tasks?
+            (check out the results)
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Use the `CloudTrail` context key to retrieve the right values for the integration commands.
+        readonly: false
+      title: Create a remediation playbook
+      description: "As an automation platform, we need to provide automated tools for our analysts. Our SecOps team left for vacation and didn't finish one of the playbooks, and we hoped you could finish it for us.\n\n**Copy** the playbook \"CTF Remediation Tasks\", add your student ID number to the playbook name, and finish the tasks. Don't detach the playbook, just copy it with your name.\n- Remove the created user from the Admins group in our AWS project\n- Delete the newly created user.\n- Kill the EC2 instance that was created by the attacker. \n- Remember that you need to provide inputs with the right context path keys so each task can run properly. Use the playbook debugger to import the Cortex XDR IAM incident context into your playground and run the playbook from there. Here is a short gif on how to do that:\n\n![image-demo](https://raw.githubusercontent.com/demisto/content/14297134d59c17eec162ed5fd7feacb782f66399/Packs/CTFCloud/doc_files/demo.gif)\n\nIf you finished the playbook properly, the tasks will give you the final flag.\nHelp kick out the attacker from our organization once and for all! \n\n\n ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/hasta-la-vista-baby.gif)"
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 5ff155c0-8c3c-43c4-879c-6818b329e01d
+    type: title
+    task:
+      id: 5ff155c0-8c3c-43c4-879c-6818b329e01d
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 485,
+          "y": 5130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 680a59b6-d100-4123-8f10-d8364c56cb39
+    type: regular
+    task:
+      id: 680a59b6-d100-4123-8f10-d8364c56cb39
+      version: -1
+      name: Check the answer for Q15
+      description: |-
+        What is the hidden flag in the fixed tasks?
+        (check the results)
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      question_ID:
+        simple: "15"
+      secret:
+        complex:
+          root: Create a remediation playbook.Answers
+          accessor: "1"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 4770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: c3f8ee94-6484-42f2-8f15-f1a41595e097
+    type: regular
+    task:
+      id: c3f8ee94-6484-42f2-8f15-f1a41595e097
+      version: -1
+      name: Check the answer for Q14
+      description: Which pack contains this specific playbook?
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      question_ID:
+        simple: "14"
+      secret:
+        complex:
+          root: Create a remediation playbook.Answers
+          accessor: "0"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 4770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 01147766-3a33-4e9a-8c56-5678f7ab8f57
+    type: regular
+    task:
+      id: 01147766-3a33-4e9a-8c56-5678f7ab8f57
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 7a727792-8c86-468f-8d97-4680a40b9956
+    type: regular
+    task:
+      id: 7a727792-8c86-468f-8d97-4680a40b9956
+      version: -1
+      name: You have finished the advanced part of CTF!
+      description: |-
+        ## !!!! Congrats, you did it !!!!
+        #### Wow, no doubt you have Security Engineer's blood running in your veins!
+
+        We hope you gained some knowledge from this exercise, and of course, had fun.
+
+        ![image](https://raw.githubusercontent.com/demisto/content/bf616e06fad91e5b1f32080eaf5ad8b6cfd29c1b/Packs/CTFCloud/doc_files/party-over-excited.gif)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 935,
+          "y": 4950
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: advancedctfsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 0de54051-afac-4087-8e42-9731812b6803
+    type: title
+    task:
+      id: 0de54051-afac-4087-8e42-9731812b6803
+      version: -1
+      name: Start CTF SLA
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: ctfsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 9196c092-bdcf-4577-806a-309e56d8750e
+    type: regular
+    task:
+      id: 9196c092-bdcf-4577-806a-309e56d8750e
+      version: -1
+      name: Check the answer for Q11
+      description: |+
+        Why are there no additional alerts from this machine (172.16.7.41)?
+
+        - Nothing happened on the machine
+        - XDR agent is not installed
+        - XDR agent is not communicating with the XDR server
+        - All the answers above
+
+      scriptName: CTFSKO
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      question_ID:
+        simple: "11"
+      secret:
+        complex:
+          root: Find the missing incident and answer the questions below.Answers
+          accessor: "3"
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 2835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 2b17c440-a3ca-4b88-8f73-0420f79533d9
+    type: title
+    task:
+      id: 2b17c440-a3ca-4b88-8f73-0420f79533d9
+      version: -1
+      name: Well Done!
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "51"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 485,
+          "y": 3990
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: ctfsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 9f3b7469-c374-4315-8486-b0d3da9fce11
+    type: collection
+    task:
+      id: 9f3b7469-c374-4315-8486-b0d3da9fce11
+      version: -1
+      name: Great Job!
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 485,
+          "y": 4120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Are you brave enough to move ahead to the advanced challenge?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: On average, the human heart beats 100,000 times a day. Maybe if you check Yes it will be more than that....
+        readonly: false
+      title: You have finished the Cloud IAM CTF challenge
+      description: "# You have finished the Cloud IAM CTF challenge!\nNicely done! Indeed you demonstrate amazing analyst skills and helped us investigate the incident.\n\n\n## Hey, do you want to assist us with some advanced security measures? \nChoose wisely...\n\nIt doesn't matter if you stop here or continue on our adventure. It was a pleasure having you participate, and we hope you enjoyed the ride! \n\nIf you choose \"no\" -  this is our last stop! Thanks for participating in the Cortex XSOAR CTF challenge.\n\n![image](https://raw.githubusercontent.com/demisto/content/8269ce28a9c239298a865d2f554300d02f06ac92/Packs/CTFCloud/doc_files/pill-red-sibarita-matrix.gif)"
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 6f3888ac-05e2-4b8b-8b39-861e3b87e20f
+    type: condition
+    task:
+      id: 6f3888ac-05e2-4b8b-8b39-861e3b87e20f
+      version: -1
+      name: So what's it going to be?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: You have finished the Cloud IAM CTF challenge.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "Yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 485,
+          "y": 4280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4890,
+        "width": 1680,
+        "x": -150,
+        "y": 305
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0
+description: ''
+version: -1

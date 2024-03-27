@@ -1,0 +1,65 @@
+{
+    "dataType": "incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "6fabb894-5e21-443f-872d-6c69d7b10bd3",
+    "isPredefined": true,
+    "name": "List of all CTF incidents",
+    "params": {
+        "enablePagination": true,
+        "tableColumns": [
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "id",
+                "width": 110
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "name",
+                "width": 300
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "status",
+                "width": 80
+            },
+            {
+                "displayed": true,
+                "isDefault": true,
+                "key": "owner",
+                "width": 160
+            },
+            {
+                "displayed": true,
+                "key": "CTF_SLA",
+                "width": 200
+            }
+        ]
+    },
+    "query": "playbook:\"CTF - Analyst View - IAM\"",
+    "sort": [
+        {
+            "asc": false,
+            "field": "id",
+            "fieldType": ""
+        }
+    ],
+    "version": -1,
+    "widgetType": "table",
+    "fromVersion": "6.9.0",
+    "description": ""
+}

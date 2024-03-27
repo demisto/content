@@ -1,0 +1,30 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "advancedctfsla",
+    "closeForm": false,
+    "content": true,
+    "editForm": false,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_advancedctfsla",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "Advanced CTF SLA",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "timer",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.9.0"
+}

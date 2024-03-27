@@ -1,0 +1,33 @@
+{
+    "dataType": "incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "79900405-6299-45ae-83e6-3279bd0fed11",
+    "isPredefined": true,
+    "name": "Top 10 users finished",
+    "params": {
+        "groupBy": [
+            "owner"
+        ],
+        "keys": [
+            "avg|ctfsla.totalDuration"
+        ],
+        "valuesFormat": "abbreviated"
+    },
+    "query": "ctfsla.runStatus:running",
+    "version": -1,
+    "widgetType": "column",
+    "fromVersion": "6.9.0",
+    "description": ""
+}

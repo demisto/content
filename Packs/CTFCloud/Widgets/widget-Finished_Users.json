@@ -1,0 +1,27 @@
+{
+    "dataType": "incidents",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "fromDateLicense": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byFrom": "days",
+            "byTo": "",
+            "field": "",
+            "fromValue": 7,
+            "toValue": null
+        },
+        "toDate": "0001-01-01T00:00:00Z"
+    },
+    "id": "4fc2d3d6-a22c-4cf2-89f1-090147f42355",
+    "isPredefined": true,
+    "name": "Finished",
+    "params": {
+        "valuesFormat": "abbreviated"
+    },
+    "query": "ctfsla.runStatus:ended",
+    "version": -1,
+    "widgetType": "number",
+    "fromVersion": "6.9.0",
+    "description": ""
+}
