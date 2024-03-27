@@ -39,7 +39,8 @@ PROCESSED_TEST_CASES = [
             {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
              'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
              'Description':
-                 'The /tmp directory is a world-writable directory used for temporary storage by all users\nand some applications.'},
+                 'The /tmp directory is a world-writable directory used for temporary storage by all users\nand some '
+                 'applications.'},
             {'ComplianceID': '6116', 'Cause': 'The directory /var should be mounted. File: /proc/mounts',
              'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.6) Ensure separate partition exists for /var',
              'Description': 'Description for compliance ID 6116'},
