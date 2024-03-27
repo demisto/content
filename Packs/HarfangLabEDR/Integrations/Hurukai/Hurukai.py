@@ -458,9 +458,9 @@ class Client(BaseClient):
         data = {}  # type: Dict[str,Any]
 
         if isinstance(threat_id, list):
-            data["id"] = threat_id
+            data["threat_ids"] = threat_id
         else:
-            data["id"] = [threat_id]
+            data["threat_ids"] = [threat_id]
 
         if status.lower() == "new":
             data["new_status"] = "new"
