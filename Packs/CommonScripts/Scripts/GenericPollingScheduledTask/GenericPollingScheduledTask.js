@@ -22,6 +22,8 @@
 const MINIMUM_XSOAR_VERSION = '8.2.0';
 const MINIMUM_BUILD_NUMBER_XSOAR = 309463;
 
+const SANITIZED_ARG_NAMES = ['additionalPollingCommandArgValues', 'additionalPollingCommandArgNames', 'pollingCommandArgName', 'pollingCommand']
+
 
 
 function listOfStrings(v) {
@@ -65,6 +67,34 @@ function finish(playbookId, tag, err, entryGUID) {
 }
 
 
+function flatten_cmd_args(cmd_args = {}) {
+    var ret_value = '';
+    for(var current_key in cmd_args){
+        ret_value += current_key + " " + cmd_args[current_key] + " ";
+    }
+    return ret_value.trim();
+}
+
+
+//replace all occurences of textToReplace with replaceWith string
+String.prototype.replaceAll = function(textToReplace, replaceWith) {
+    return this.split(textToReplace).join(replaceWith);
+};
+
+
+function checkCommandSanitized(cmd = '', cmd_args = {}) {
+        var cmd_lower = cmd.toLowerCase() + ' ' + flatten_cmd_args(cmd_args)
+    for (var i = 0; i < SANITIZED_ARG_NAMES.length; i++) {
+        var current_arg_name_lower = SANITIZED_ARG_NAMES[i].toLowerCase();
+        var regex = new RegExp(current_arg_name_lower, "g");
+        if ((cmd_lower.match(regex) || []).length > 1) {
+            throw new Error('Error, The value of ' + SANITIZED_ARG_NAMES[i] + ' is malformed.');
+        }
+        cmd_lower = cmd_lower.replaceAll(current_arg_name_lower, '')
+    }
+}
+
+
 function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pendingIds, interval, timeout, tag, additionalArgNames, additionalArgValues, extractMode) {
     var idsStr = ids.replace(/"/g, '\\"');
     var playbookIdStr = '';
@@ -77,6 +107,9 @@ function setNextRun(ids, playbookId, pollingCommand, pollingCommandArgName, pend
     if (extractMode !== undefined) {
         cmd += ' extractMode="' + extractMode + '" auto-extract="' + extractMode + '"';
     }
+
+    checkCommandSanitized(cmd)
+
     return executeCommand("ScheduleCommand", {
         'command': cmd,
         'cron': '*/' + interval + ' * * * *',
@@ -160,6 +193,7 @@ function genericPollingScheduled(){
             pollingCommandArgs[names[index]] = values[index];
 
         pollingCommandArgs[args.pollingCommandArgName] = idsToPoll.join(',');
+        checkCommandSanitized(args.pollingCommand, pollingCommandArgs);
         var res = executeCommand(args.pollingCommand, pollingCommandArgs);
 
         // Change the context output of the polling results to the local playbook context
