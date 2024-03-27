@@ -11,14 +11,14 @@ To configure IBM Guardium to forward logs to Cortex XSIAM Broker VM via syslog f
 ### Creating a syslog destination for events
 1. Log in to the CLI and define the IP address for Cortex XSIAM Broker VM.
 2. Use SSH to log in to IBM as default user.
-   Username: <user name>
-   Password: <password> 
+        Username: <user name>
+        Password: <password> 
 3. Type the following command to configure the syslog destination for: 
 
 |  Event Type   | Command   
 | :---          | :---        
-| `informational events`      | store remote add daemon.info \<IP address>:\<port> <tcp\|udp>
-| `warning events`     | store remote add daemon.warning \<IP address>:\<port> <tcp\|udp>
+| `informational events` | store remote add daemon.info \<IP address>:\<port> <tcp\|udp>
+| `warning events` | store remote add daemon.warning \<IP address>:\<port> <tcp\|udp>
 | `error events` | store remote add daemon.err \<IP address>:\<port> <tcp\|udp>
 | `alert events` | store remote add daemon.alert \<IP address>:\<port> <tcp\|udp>
    
