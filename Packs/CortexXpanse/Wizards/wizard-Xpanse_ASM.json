@@ -41,6 +41,10 @@
                     "display_name": "AWS - EC2"
                 },
                 {
+                    "name": "AWS-IAM",
+                    "display_name": "AWS - IAM"
+                },
+                {
                     "name": "GoogleCloudCompute",
                     "display_name": "Google Cloud Compute"
                 },
@@ -99,40 +103,48 @@
             {
                 "name": "AWS-EC2",
                 "action": {
-                  "existing": "Configure 'AWS EC2' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities.",
-                  "new": "Configure 'AWS EC2' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."
+                  "existing": "Configure 'AWS EC2' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
+                  "new": "Configure 'AWS EC2' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
                 },
-                "description": "Configure 'AWS EC2' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."
+                "description": "Configure 'AWS EC2' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
+            },
+            {
+                "name": "AWS - IAM",
+                "action": {
+                  "existing": "Configure 'AWS - IAM' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
+                  "new": "Configure 'AWS - IAM' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
+                },
+                "description": "Configure 'AWS - IAM' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
             },
             {
                 "name": "Google Cloud Compute",
                 "action": {
-                  "existing": "Configure 'Google Cloud Compute' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities.",
-                  "new": "Configure 'Google Cloud Compute' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."
+                  "existing": "Configure 'Google Cloud Compute' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
+                  "new": "Configure 'Google Cloud Compute' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
                 },
-                "description": "Configure 'Google Cloud Compute' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."
+                "description": "Configure 'Google Cloud Compute' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
             },
             {
                 "name": "Azure Compute v2",
                 "action": {
-                  "existing": "Configure 'Azure Compute v2' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities.",
-                  "new": "Configure 'Azure Compute v2' to enable cloud enrichment to add additional investigation enrichments and remediation capabilitiesn."
+                  "existing": "Configure 'Azure Compute v2' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
+                  "new": "Configure 'Azure Compute v2' to enable cloud enrichment to add additional investigation enrichment and remediation capabilitiesn."
                 },
-                "description": "Configure 'Azure Compute v2' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."
+                "description": "Configure 'Azure Compute v2' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
             },
             {
                 "name": "Azure Active Directory Identity Protection",
                 "action": {
-                  "existing": "Configure 'Azure Active Directory Identity and Access' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities.",
-                  "new": "Configure 'Azure Active Directory Identity and Access' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."
+                  "existing": "Configure 'Azure Active Directory Identity and Access' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
+                  "new": "Configure 'Azure Active Directory Identity and Access' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
                 },
-                "description": "Configure 'Azure Active Directory Identity and Access' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."
+                "description": "Configure 'Azure Active Directory Identity and Access' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
             },
             {
                 "name": "Microsoft Graph User",
                 "action": {
-                    "existing": "Configure 'Microsoft Graph' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities.",
-                    "new": "Configure 'Microsoft Graph' to enable cloud enrichment to add additional investigation enrichments and remediation capabilities."
+                    "existing": "Configure 'Microsoft Graph' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
+                    "new": "Configure 'Microsoft Graph' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
                 },
                 "description": "Configure Microsoft Graph to enable file detonation to improve investigation."
             }
