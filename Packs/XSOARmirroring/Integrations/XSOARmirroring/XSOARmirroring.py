@@ -351,7 +351,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
 
     for incident in incidents:
         incident_result: dict[str, Any] = {}
-        incident_result['dbotMirrorDirection'] = MIRROR_DIRECTION[mirror_direction]  # type: ignore
+        incident_result['dbotMirrorDirection'] = MIRROR_DIRECTION.get(mirror_direction)  # type: ignore
         incident['dbotMirrorInstance'] = demisto.integrationInstance()
         incident_result['dbotMirrorTags'] = mirror_tag if mirror_tag else None  # type: ignore
         incident_result['dbotMirrorId'] = incident['id']
@@ -369,28 +369,30 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
         incident_result['rawJSON'] = json.dumps(incident)
 
         file_attachments = []
-        if incident.get('attachment') and len(incident.get('attachment', [])) > 0 and incident.get('investigationId'):
-            entries = client.get_incident_entries(
-                incident_id=incident['investigationId'],  # type: ignore
-                from_date=0,
-                max_results=10,
-                categories=['attachments'],
-                tags=None,
-                tags_and_operator=False
-            )
+        # When demisto.command() == 'test-module' we can't write files since we are not running in a playground.
+        if demisto.command() != 'test-module':
+            if incident.get('attachment') and len(incident.get('attachment', [])) > 0 and incident.get('investigationId'):
+                entries = client.get_incident_entries(
+                    incident_id=incident['investigationId'],  # type: ignore
+                    from_date=0,
+                    max_results=10,
+                    categories=['attachments'],
+                    tags=None,
+                    tags_and_operator=False
+                )
 
-            for entry in entries:
-                if 'file' in entry and entry.get('file'):
-                    file_entry_content = client.get_file_entry(entry.get('id'))  # type: ignore
-                    file_result = fileResult(entry['file'], file_entry_content)
-                    if any(attachment.get('name') == entry['file'] for attachment in incident.get('attachment', [])):
-                        if file_result['Type'] == EntryType.ERROR:
-                            raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
+                for entry in entries:
+                    if 'file' in entry and entry.get('file'):
+                        file_entry_content = client.get_file_entry(entry.get('id'))  # type: ignore
+                        file_result = fileResult(entry['file'], file_entry_content)
+                        if any(attachment.get('name') == entry['file'] for attachment in incident.get('attachment', [])):
+                            if file_result['Type'] == EntryType.ERROR:
+                                raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
 
-                        file_attachments.append({
-                            'path': file_result.get('FileID', ''),
-                            'name': file_result.get('File', '')
-                        })
+                            file_attachments.append({
+                                'path': file_result.get('FileID', ''),
+                                'name': file_result.get('File', '')
+                            })
 
         incident_result['attachment'] = file_attachments
         incidents_result.append(incident_result)
