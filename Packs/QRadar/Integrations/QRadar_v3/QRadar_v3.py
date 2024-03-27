@@ -3,6 +3,7 @@ import secrets
 from enum import Enum
 from ipaddress import ip_address
 from urllib import parse
+import uuid
 
 import pytz
 import urllib3
@@ -2483,14 +2484,14 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
 def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mode: str,
                               user_query: str, events_columns: str, events_limit: int, ip_enrich: bool,
                               asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str],
-                              first_fetch: str, mirror_options: str, assets_limit: int):
+                              first_fetch: str, mirror_options: str, assets_limit: int, long_running_container_id: str):
     context_data, version = get_integration_context_with_version()
 
     if is_reset_triggered(context_data, version):
         last_highest_id = 0
     else:
         last_highest_id = int(context_data.get(LAST_FETCH_KEY, 0))
-    print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
+    print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode} on Container:{long_running_container_id}.')
     incidents, new_highest_id = get_incidents_long_running_execution(
         client=client,
         offenses_per_fetch=offenses_per_fetch,
@@ -2578,6 +2579,8 @@ def long_running_execution_command(client: Client, params: dict):
     context_data, version = get_integration_context_with_version()
     is_reset_triggered(context_data, version)
     recover_from_last_run(context_data, version)
+    long_running_container_id = str(uuid.uuid4())
+    print_debug_msg(f'Starting container with UUID: {long_running_container_id}')
     while True:
         try:
             perform_long_running_loop(
@@ -2593,7 +2596,8 @@ def long_running_execution_command(client: Client, params: dict):
                 mirror_direction=mirror_direction,
                 first_fetch=first_fetch,
                 mirror_options=mirror_options,
-                assets_limit=assets_limit
+                assets_limit=assets_limit,
+                long_running_container_id=long_running_container_id
             )
             demisto.updateModuleHealth('')
 
@@ -5069,6 +5073,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == 'long-running-execution':
             validate_integration_context()
+            support_multithreading()
             long_running_execution_command(client, params)
 
         elif command in [
