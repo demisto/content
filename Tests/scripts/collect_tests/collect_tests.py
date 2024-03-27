@@ -166,7 +166,7 @@ class CollectionResult:
             logger.info(f'collected {test=}, {reason} ({reason_description}, {version_range=})')
 
         if pack:
-            if only_to_upload == only_to_install:
+            if only_to_upload == only_to_install: # TODO
 
                 if only_to_upload and only_to_install:
                     raise ValueError(f"Packs can be collected for both to install and to upload. {pack=}, {reason}")
@@ -572,15 +572,19 @@ class TestCollector(ABC):
             # But still need to avoid collecting packs that belongs to one marketplace when collecting to the other marketplace.
             if (not allow_incompatible_marketplace or (allow_incompatible_marketplace and not is_xsoar_and_xsiam_pack)) \
                     and not collect_only_to_upload:
+                logger.info(f'{collect_only_to_upload=}, {allow_incompatible_marketplace=}, {is_xsoar_and_xsiam_pack=}'
+                            f'because they have content that IS compatible.')
                 raise
 
         # If changes are done to README files. Upload only.
-        if reason == CollectionReason.README_FILE_CHANGED:
+        if reason == CollectionReason.README_FILE_CHANGED: # TODO
             collect_only_to_upload = True
 
         version_range = content_item_range \
             if pack_metadata.version_range.is_default \
             else (pack_metadata.version_range | content_item_range)
+
+        logger.info(f'{collect_only_to_upload=}, {only_to_install=}')
 
         return CollectionResult(
             test=None,
@@ -764,9 +768,11 @@ class TestCollector(ABC):
                 # _collect_xsiam_and_modeling_pack function.
                 if (MarketplaceVersions.MarketplaceV2 not in content_item_marketplaces) or \
                         (MarketplaceVersions.XSOAR in content_item_marketplaces):
+                    logger.info(f"{content_item_marketplaces=}_collect_xsiam_and_modeling_pack function.")
                     raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
             case MarketplaceVersions.XSOAR | MarketplaceVersions.XPANSE | MarketplaceVersions.XSOAR_SAAS:
                 if self.marketplace not in content_item_marketplaces:
+                    logger.info(f"{content_item_marketplaces=}, {self.marketplace=}")
                     raise IncompatibleMarketplaceException(content_item_path, content_item_marketplaces, self.marketplace)
             case _:
                 raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
@@ -1051,10 +1057,12 @@ class BranchTestCollector(TestCollector):
             self._validate_content_item_compatibility(content_item, is_integration='Integrations' in path.parts)
         except IncompatibleMarketplaceException:
             if file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES):
+                logger.info('f file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES):')
                 raise
         except NonDictException:
             content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
 
+        logger.info("Anything not dictionary-based.")
         pack_id = find_pack_folder(path).name
         reason_description = relative_path = PACK_MANAGER.relative_to_packs(path)
 
@@ -1068,12 +1076,14 @@ class BranchTestCollector(TestCollector):
                 )
 
             else:
+                logger.info('install pack without collecting tests.')
+
                 # install pack without collecting tests.
                 return self._collect_pack(
                     pack_id=pack_id,
                     reason=CollectionReason.NON_CODE_FILE_CHANGED,
                     reason_description=reason_description,
-                    content_item_range=content_item.version_range if content_item else None
+                    content_item_range=content_item.version_range if content_item else None,
                 )
 
         if file_type in ONLY_UPLOAD_PACK_FILE_TYPES:

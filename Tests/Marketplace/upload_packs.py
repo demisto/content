@@ -132,6 +132,8 @@ def update_index_folder(index_folder_path: str, pack: Pack, is_private_pack: boo
     Returns:
         bool: whether the operation succeeded.
     """
+    logging.debug('update_index_folder')
+
     task_status = False
     index_pack_path = os.path.join(index_folder_path, pack.name)
     pack_versions_to_keep = pack_versions_to_keep or []
@@ -1120,7 +1122,7 @@ def main():
 
     # if it's not a regular upload-flow, then upload only collected/modified packs
     packs_objects_list = all_packs_objects_list if is_regular_upload_flow \
-        else [p for p in all_packs_objects_list if p.is_modified]
+        else [p for p in all_packs_objects_list if p.name == "Zoom"]
     logging.info(f"Packs list is: {[p.name for p in packs_objects_list]}")
 
     # taking care of private packs
@@ -1190,7 +1192,7 @@ def main():
                 pack.cleanup()
                 continue
         else:
-            # Signs and zips non-modified packs for the upload_with_dependencies phase
+            # Signs and zips non-modified packs for the upload_with_dependencies phase TODO
             if not pack.sign_and_zip_pack(signature_key, uploaded_packs_dir):
                 continue
 

@@ -378,7 +378,7 @@ class Pack:
 
     @property
     def is_modified(self):
-        return self._is_modified
+        return False
 
     @property
     def marketplaces(self):
@@ -391,6 +391,8 @@ class Pack:
     @property
     def statistics_metadata(self):
         return {
+            Metadata.KEY_WORDS: list(self._keywords or []),
+            Metadata.CATEGORIES: list(self._categories or []),
             Metadata.DOWNLOADS: self.downloads_count,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.TAGS: list(self._tags or []),
@@ -796,7 +798,7 @@ class Pack:
         final_path_to_zipped_pack = f"{source_path}.zip"
         return task_status, final_path_to_zipped_pack
 
-    def sign_and_zip_pack(self, signature_key, uploaded_packs_dir=None):
+    def sign_and_zip_pack(self, signature_key, uploaded_packs_dir=None):#todo
         """
         Signs and zips the pack before uploading it to GCP.
 
@@ -1721,6 +1723,8 @@ class Pack:
             self._tags = set(pack_metadata.get(Metadata.TAGS) or [])
             self._dependencies = pack_metadata.get(Metadata.DEPENDENCIES, {})
             self._certification = pack_metadata.get(Metadata.CERTIFICATION, "")
+            self._keywords = set(pack_metadata.get(Metadata.KEY_WORDS) or [])
+            self._categories = set(pack_metadata.get(Metadata.CATEGORIES) or [])
 
             if 'xsoar' in self.marketplaces:
                 self.marketplaces.append('xsoar_saas')
