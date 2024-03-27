@@ -220,7 +220,7 @@ def test_detections_to_entry_without_relationships(mocker):
                 'last_acknowledged_by': None,
                 'associated_releasable_intelligence_profiles': []
             }
-            
+
         }
     ]
 
@@ -235,7 +235,6 @@ def test_detections_to_entry_without_relationships(mocker):
     result = RedCanary.detections_to_entry(detection_data)
     # Assert that the result is as expected
     assert result['Contents'][0] == expected_result
-
 
 
 def test_fetch_multiple_times_when_already_fetched_incident_keep(mocker):
