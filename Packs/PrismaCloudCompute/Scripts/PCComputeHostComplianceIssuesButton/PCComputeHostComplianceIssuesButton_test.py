@@ -1,32 +1,54 @@
-from PCComputeHostComplianceIssuesButton import run_prisma_cloud_compute_hosts_scan_list
+from PCComputeHostComplianceIssuesButton import (
+    run_prisma_cloud_compute_hosts_scan_list,
+    filter_compliance_issues,
+    process_and_output_compliance_issues)
 import pytest
 import json
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 # Import the script you want to test
 
-TEST_CASES = [
-    ({'hostname': 'example-host', 'compliance_ids': '6112'}, [
+
+def util_load_json(path):
+    with open(path, encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+compliance_issues: object = util_load_json('test_data/compliance_issues.json')
+
+FILTERED_TEST_CASES = [
+    ({"compliance_issues": compliance_issues, "compliance_ids": []}, compliance_issues),
+    ({"compliance_issues": compliance_issues, "compliance_ids": "6112"}, [compliance_issues[0]]),
+    ({"compliance_issues": compliance_issues, "compliance_ids": "6116, 6117"}, [compliance_issues[1], compliance_issues[2]])
+]
+
+PROCESSED_TEST_CASES = [
+    ({'compliance_issues': [compliance_issues[0]], 'hostname': 'test-hostname'}, [
         {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
          'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
          'Description':
              'The /tmp directory is a world-writable directory used for temporary storage by all users\nand some applications.'}
     ]),
-    ({'hostname': 'example-host', 'compliance_ids': '6112,6116,6117'}, [
-        {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
-         'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
-         'Description':
-             'The /tmp directory is a world-writable directory used for temporary storage by all users\nand some applications.'},
-        {'ComplianceID': '6116', 'Cause': 'The directory /var should be mounted. File: /proc/mounts',
-         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.6) Ensure separate partition exists for /var',
-         'Description': 'Description for compliance ID 6116'},
-        {'ComplianceID': '6117', 'Cause': 'The directory /var/tmp should be mounted. File: /proc/mounts',
-         'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.7) Ensure separate partition exists for /var/tmp',
-         'Description':
-             'Description for compliance ID 6117'}
-    ]),
-    ({'hostname': 'example-host', 'compliance_ids': ''}, [
+    (
+        {'compliance_issues': [compliance_issues[0], compliance_issues[1],
+                               compliance_issues[2]], 'hostname': 'test-hostname'},
+        [
+            {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
+             'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
+             'Description':
+                 'The /tmp directory is a world-writable directory used for temporary storage by all users\nand some '
+                 'applications.'},
+            {'ComplianceID': '6116', 'Cause': 'The directory /var should be mounted. File: /proc/mounts',
+             'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.6) Ensure separate partition exists for /var',
+             'Description': 'Description for compliance ID 6116'},
+            {'ComplianceID': '6117', 'Cause': 'The directory /var/tmp should be mounted. File: /proc/mounts',
+             'Severity': 'medium', 'Title': '(CIS_Linux_2.0.0 - 1.1.7) Ensure separate partition exists for /var/tmp',
+             'Description':
+                 'Description for compliance ID 6117'}
+        ]),
+    ({'compliance_issues': compliance_issues, 'hostname': 'test-hostname'}, [
         {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
          'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
          'Description':
@@ -50,16 +72,7 @@ TEST_CASES = [
 ]
 
 
-def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
-        return json.loads(f.read())
-
-
-compliance_issues = util_load_json('test_data/compliance_issues.json')
-
-
-@pytest.mark.parametrize('args, expected', TEST_CASES)
-def test_run_prisma_cloud_compute_hosts_scan_list(mocker, args, expected):
+def test_run_prisma_cloud_compute_hosts_scan_list(mocker):
     # Mock the executeCommand function
     mocker.patch.object(demisto, 'executeCommand', return_value=[{'Type': EntryType.NOTE,
                                                                   'Contents': [{'complianceIssues': compliance_issues}]
@@ -67,17 +80,19 @@ def test_run_prisma_cloud_compute_hosts_scan_list(mocker, args, expected):
 
     # Run the function
     mocker.patch.object(demisto, 'results')
-    run_prisma_cloud_compute_hosts_scan_list(args.get('hostname'), args.get('compliance_ids'))
+    returned_compliance_issues = run_prisma_cloud_compute_hosts_scan_list("test-hostname")
 
-    # Check the results
-    results = demisto.results.call_args[0][0]
-    # results = demisto.results.mock_calls[00].args[0]
-    assert results.get('Tags') == ['ComplianceIssuesResults']
+    assert returned_compliance_issues == compliance_issues
 
-    outputs = results['EntryContext']
-    assert outputs.get('PrismaCloudCompute.PCC_HostComplianceIssues', []).get('compliance_issues') == expected
 
-    readable_output = results['HumanReadable']
-    assert f'Compliance Issues of host {args.get("hostname")}' in readable_output
+@pytest.mark.parametrize('args, expected', FILTERED_TEST_CASES)
+def test_filter_compliance_issues(args, expected):
+    filtered_results = filter_compliance_issues(args.get('compliance_issues'), args.get('compliance_ids'))
+    assert filtered_results == expected
 
-# Add more tests as needed
+
+@pytest.mark.parametrize('args, expected', PROCESSED_TEST_CASES)
+def test_process_and_output_compliance_issues(args, expected):
+    processed_results = process_and_output_compliance_issues(args.get('compliance_issues'), args.get('hostname'))
+    assert processed_results.outputs['compliance_issues'] == expected
+

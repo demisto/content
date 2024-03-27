@@ -15,16 +15,15 @@ from typing import Any
 # Command Function
 
 
-def run_prisma_cloud_compute_hosts_scan_list(hostname: str, compliance_ids: str) -> None:
+def run_prisma_cloud_compute_hosts_scan_list(hostname: str) -> list:
     """
     Runs the "prisma-cloud-compute-hosts-scan-list" command with specified arguments and returns specific details.
 
     Args:
         hostname: The hostname of the compute host.
-        compliance_ids: Comma-separated list of compliance IDs to filter the results.
 
     Returns:
-        None
+        list
     """
     preconfigured_args: dict[str, str] = {
         'compact': 'false',
@@ -44,23 +43,19 @@ def run_prisma_cloud_compute_hosts_scan_list(hostname: str, compliance_ids: str)
         return_error("No valid results found in the command output.")
 
     # Extract specific details from the command results
-    contents_list: list[dict[str, Any]] = result[0]['Contents']
+    contents_list: list[dict[str, Any]] = result[0]['Contents'][0]
+    compliance_issues = contents_list['complianceIssues']
 
-    # Process each element in the list
-    for contents in contents_list:
-        # Extract compliance issues
-        compliance_issues: list[dict[str, Any]] = contents.get('complianceIssues', [])
-        if not compliance_issues:
-            continue  # Skip if no compliance issues found in this element
+    # Check if compliance_issues is empty
+    if not compliance_issues:
+        return_results(f"No compliance issues found for host {hostname}")
+        sys.exit(0)
 
-        # Filter compliance issues based on provided IDs
-        filtered_compliance_issues: list[dict[str, Any]] = filter_compliance_issues(compliance_issues, compliance_ids)
-
-        # Process the filtered compliance_issues and output details
-        process_and_output_compliance_issues(filtered_compliance_issues, hostname)
+    return compliance_issues
 
 
-def filter_compliance_issues(compliance_issues: list[dict[str, Any]], compliance_ids: str) -> list[dict[str, Any]]:
+# Function to filter compliance issues based on provided IDs
+def filter_compliance_issues(compliance_issues: list, compliance_ids: str) -> list:
     """
     Filter compliance issues based on provided IDs.
 
@@ -75,16 +70,15 @@ def filter_compliance_issues(compliance_issues: list[dict[str, Any]], compliance
         return compliance_issues  # Return all issues if no IDs provided
 
     # Split comma-separated IDs into a list
-    ids_to_filter: list[str] = [id.strip() for id in compliance_ids.split(',')]
+    ids_to_filter = [id.strip() for id in compliance_ids.split(',')]
 
     # Filter issues based on provided IDs
-    filtered_compliance_issues: list[dict[str, Any]] = [issue for issue in compliance_issues if str(issue.get('id', '')) in
-                                                        ids_to_filter]
+    filtered_compliance_issues = [issue for issue in compliance_issues if str(issue.get('id', '')) in ids_to_filter]
 
     return filtered_compliance_issues
 
 
-def process_and_output_compliance_issues(compliance_issues: list[dict[str, Any]], hostname: str) -> None:
+def process_and_output_compliance_issues(compliance_issues: list[dict[str, Any]], hostname: str) -> CommandResults:
     """
     Process the compliance issues and output specific details to the War Room.
 
@@ -93,7 +87,7 @@ def process_and_output_compliance_issues(compliance_issues: list[dict[str, Any]]
         hostname: The hostname of the compute host.
 
     Returns:
-        None
+        CommandResults
     """
     # Iterate over each compliance issue and extract selected keys
     rows: list[dict[str, Any]] = []
@@ -124,10 +118,9 @@ def process_and_output_compliance_issues(compliance_issues: list[dict[str, Any]]
     )
 
     incident_id = demisto.incidents()[0]['id']
-    demisto.executeCommand('setIncident', {'id': incident_id, 'prismacloudcomputeshowcompliancetab': 'true'})
+    demisto.executeCommand('setIncident', {'id': incident_id, 'prismacloudcomputeshowcompliancetab': 'host-detailed'})
 
-    # Output to War Room
-    return_results(command_results)
+    return command_results
 
 # Main function
 
@@ -148,7 +141,17 @@ def main() -> None:
         compliance_ids: str = demisto.getArg('compliance_ids')
 
         # Run the command with the provided arguments
-        run_prisma_cloud_compute_hosts_scan_list(hostname, compliance_ids)
+        compliance_issues = run_prisma_cloud_compute_hosts_scan_list(hostname)
+
+        # Filter compliance issues based on provided compliance issues IDs
+        filtered_compliance_issues = filter_compliance_issues(compliance_issues, compliance_ids)
+
+        # Process the filtered compliance_issues
+        command_results = process_and_output_compliance_issues(filtered_compliance_issues, hostname)
+
+        # Output to War Room
+        return_results(command_results)
+
     except Exception as e:
         return_error(f"Error in script: {str(e)}")
 
