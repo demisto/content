@@ -30,12 +30,15 @@ from Tests.Marketplace.marketplace_constants import XSOAR_ON_PREM_MP, XSOAR_SAAS
     BucketUploadFlow, PACKS_FOLDER, PackTags, PackIgnored, Changelog, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
     XSIAM_MP, XPANSE_MP, TAGS_BY_MP, RN_HEADER_TO_ID_SET_KEYS
 from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName
+from Tests.scripts.collect_tests.exceptions import NotUnderPackException
+from Tests.scripts.collect_tests.utils import find_pack_folder
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
 PULL_REQUEST_PATTERN = '\(#(\d+)\)'
 TAGS_SECTION_PATTERN = '(.|\s)+?'
 SPECIAL_DISPLAY_NAMES_PATTERN = re.compile(r'- \*\*(.+?)\*\*')
+# PACK_ID_BY_PATH_PATTERN = re.compile(r'Packs\/(.*?)\/\w+')
 MAX_TOVERSION = '99.99.99'
 
 
@@ -3225,6 +3228,63 @@ def get_last_upload_commit_hash(content_repo, index_folder_path):
         logging.critical(f'Commit {last_upload_commit_hash} in {GCPConfig.INDEX_NAME}.json does not exist in content '
                          f'repo. Additional info:\n {e}')
         sys.exit(1)
+
+
+def is_pack_modified(pack_id: str, content_repo: git.Repo, index_folder_path: str, packs_to_upload: set) -> bool:
+    """
+    Checks whether the given pack_id is modified.
+    A pack can recognized as modified in 2 options:
+    1. The pack was modified between last upload commit and the current branch commit.
+       This was already calculated in the collect-tests phase.
+    2. The pack failed to upload in the previous upload-flow run and need to be uploaded in current run.
+
+    Args:
+        pack_id (str): The pack ID.
+        content_repo (git.Repo): The content repo object
+        index_folder_path (str): Path to downloaded index folder.
+        packs_to_upload (set): Given packs to upload result from collect-tests.
+
+    Returns:
+        bool: Whether pack is modified or not.
+    """
+    return any([pack_id in packs_to_upload, is_pack_changed_before_previous_commit(pack_id, content_repo, index_folder_path)])
+
+
+def is_pack_changed_before_previous_commit(pack_id: str, content_repo: git.Repo, index_folder_path: str) -> bool:
+    """
+    Checks whether pack's commit in index metadata is not updated because the pack failed to upload in previous upload-flow run.
+
+    Args:
+        pack_id (str): The pack ID.
+        content_repo (git.Repo): The content repo object
+        index_folder_path (str): Path to downloaded index folder.
+
+    Returns:
+        bool: Whether pack's index commit is not updated and need to be uploaded in current upload-flow run.
+    """
+    if not os.path.exists(os.path.join(index_folder_path, pack_id)):
+        logging.debug(f"Pack '{pack_id}' is hidden, considering as not changed pack")
+        return False
+
+    last_pack_commit = load_json(os.path.join(index_folder_path, pack_id, Pack.METADATA)).get(Metadata.COMMIT)
+
+    if not last_pack_commit:
+        logging.warning(f"Could not find the commit in index pack's metadata for pack {pack_id}. "
+                        "Considering as changed between commits")
+        return True
+
+    index_last_commit = get_last_upload_commit_hash(content_repo, index_folder_path)
+    diff_files = content_repo.commit(index_last_commit).diff(content_repo.commit(last_pack_commit))
+
+    changed_packs = set()
+    for file in diff_files:
+        try:
+            file_pack_id = find_pack_folder(Path(file.a_path)).name
+        except NotUnderPackException:
+            continue
+        changed_packs.add(file_pack_id)
+
+    return pack_id in changed_packs
 
 
 def is_ignored_pack_file(modified_file_path_parts):
