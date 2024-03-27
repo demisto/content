@@ -56,8 +56,8 @@ def validate_kwargs(*args, **kwargs):
     normal_kwargs = {'IpPermissions': [{'ToPort': 23, 'FromPort': 23, 'UserIdGroupPairs': [{}], 'IpProtocol': 'TCP'}],
                      'GroupId': 'sg-0566450bb5ae17c7d'}
     ippermsfull_kwargs = {'GroupId': 'sg-0566450bb5ae17c7d', 'IpPermissions':
-                          [{'IpProtocol': '-1', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}],
-                            'Ipv6Ranges': [], 'PrefixListIds': [], 'UserIdGroupPairs': []}]}
+        [{'IpProtocol': '-1', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}],
+          'Ipv6Ranges': [], 'PrefixListIds': [], 'UserIdGroupPairs': []}]}
     if kwargs in (normal_kwargs, ippermsfull_kwargs):
         return {'ResponseMetadata': {'HTTPStatusCode': 200}, 'Return': "some_return_value"}
     else:
@@ -247,7 +247,7 @@ def test_run_on_all_accounts_no_new_func(mocker, role_name, roleArn):
             "State": "create-complete",
             "Tags": []
         }
-      }, "### Ipam Resource Discoveries\n"
+     }, "### Ipam Resource Discoveries\n"
         "|IpamResourceDiscoveryArn|IpamResourceDiscoveryId|IpamResourceDiscoveryRegion|IsDefault|OperatingRegions|OwnerId|"
         "State|Tags|\n|---|---|---|---|---|---|---|---|\n"
         "| arn:aws:ec2::222222222222:ipam-resource-discovery/ipam-res-disco-11111111111111111 | ipam-res-disco-111111111"
@@ -287,7 +287,7 @@ def test_describe_ipam_resource_discoveries_command(mocker, return_boto, expecte
             "State": "associate-complete",
             "Tags": []
         }
-      }, "### Ipam Resource Discovery Associations\n"
+     }, "### Ipam Resource Discovery Associations\n"
         "|IpamArn|IpamId|IpamRegion|IpamResourceDiscoveryAssociationArn|IpamResourceDiscoveryAssociationId|"
         "IpamResourceDiscoveryId|IsDefault|OwnerId|ResourceDiscoveryStatus|State|Tags|\n"
         "|---|---|---|---|---|---|---|---|---|---|---|\n"
@@ -342,7 +342,7 @@ def test_describe_ipam_resource_discovery_associations_command(mocker, return_bo
             },
             "VpcId": "vpc-11111111111111111"
         }
-      }, "### Ipam Discovered Public Addresses\n"
+     }, "### Ipam Discovered Public Addresses\n"
         "|Address|AddressAllocationId|AddressOwnerId|AddressRegion|AddressType|AssociationStatus|InstanceId|IpamResourceDiscover"
         "yId|NetworkBorderGroup|NetworkInterfaceDescription|NetworkInterfaceId|PublicIpv4PoolId|SampleTime|SecurityGroups|Subnet"
         "Id|Tags|VpcId|\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n"
@@ -436,15 +436,9 @@ def test_create_vpc_endpoint_command(mocker):
         'ClientToken': 'test'
     }
 
-    expected_output = {
-        'VpcEndpointId': 'test_endpoint_id',
-        'VpcId': 'test_id',
-        'ServiceName': 'test_service_name',
-        'State': 'PendingAcceptance',
-        'VpcEndpointType': 'Interface'
-    }
     mocker.patch.object(Boto3Client, 'create_vpc_endpoint', return_value=return_boto)
-    results = AWS_EC2.create_vpc_endpoint_command({'vpc-id': 'test_endpoint_id',
-                                                   'service-name': 'test',
-                                                   'tag-specifications': '{"test": "test-tag"}'})
-    assert results.outputs == expected_output
+    results = AWS_EC2.create_vpc_endpoint_command({'vpcId': 'test_endpoint_id',
+                                                   'serviceName': 'test',
+                                                   'tagSpecifications': '{"test": "test-tag"}'})
+
+    assert results.outputs == return_boto.get('VpcEndpoint')
