@@ -181,7 +181,7 @@ repos:
     - Utils
   - id: validate-content-paths
     name: validate-content-paths
-    entry: validate-content-paths
+    entry: validate-content-path
     language: system
     args:
     -  validate
