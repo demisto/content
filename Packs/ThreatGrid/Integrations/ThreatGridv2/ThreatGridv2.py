@@ -69,6 +69,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, api_token: str, proxy: bool,
                  verify: bool):
+        self.api_key = api_token
         headers = {
             "Authorization": f"bearer {api_token}",
         }
@@ -226,6 +227,13 @@ class Client(BaseClient):
             'vm': vm,
             'playbook': playbook
         })
+        if files:
+            demisto.debug("the sample id is file, added the api_key to data request")
+            if self._headers:
+               self._headers.pop("Authorization")
+            payload = {
+                "api_key": self.api_key
+            }
         return self._http_request("POST",
                                   urljoin(API_V2_PREFIX, "samples"),
                                   files=files,
@@ -867,6 +875,7 @@ def upload_sample_command(
                                         private=private,
                                         vm=vm,
                                         playbook=playbook)
+    demisto.debug(f"{response=}")
     uploaded_sample = response["data"]
 
     return CommandResults(
@@ -962,6 +971,7 @@ def sample_state_get_command(
     """
     sample_id = args["sample_id"]
     response = client.get_sample_state(sample_id)
+    demisto.debug(f"sample state get {response=}")
     output = response["data"]
 
     readable_output = "The command was executed successfully"
@@ -992,14 +1002,17 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
         command_results = upload_sample_command(client, args)
         sample_id = command_results.raw_response["id"]  # type: ignore[index]
         args["sample_id"] = sample_id
+        demisto.debug(f"{sample_id=}")
     else:
         command_results = sample_state_get_command(client, args)
+        demisto.debug(f"{command_results.raw_response=}")
 
     sample_state = dict_safe_get(command_results.raw_response, ["state"])
     sample_id = args["sample_id"]
     args_for_next_run = {"sample_id": sample_id, **args}
 
     if sample_state == "succ":
+        demisto.debug(f"the sample state is succ")
         command_results = get_sample_command(client, args)
         return PollResult(
             response=command_results,
@@ -1008,7 +1021,7 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
 
     if sample_state == "fail":
         # In case the upload not succeeded raise the error
-        raise DemistoException(f"Uploading {args['sample_id']} to ThreatGrid failed")
+        raise DemistoException(f"Uploading {args['sample_id']} to ThreatGrid failed Error: {command_results.raw_response}")
 
     return PollResult(
         response=command_results,
@@ -1534,9 +1547,8 @@ def parse_file_to_sample(file_id: str) -> dict[str, Any]:
         Dict[str, Any]: Dict with file data.
     """
     file_data = demisto.getFilePath(file_id)
-    file_name = file_data["name"]
     with open(file_data["path"], "rb") as f:
-        file = {"sample": (file_name, f.read())}
+        file = {"sample": f.read()}
     return file
 
 
