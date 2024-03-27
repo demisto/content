@@ -3908,7 +3908,7 @@
             "playbookID": "QRadar_v3-test",
             "instance_names": "QRadar_20",
             "fromversion": "6.0.0",
-            "timeout": 600,
+            "timeout": 1200,
             "is_mockable": false
         },
         {
