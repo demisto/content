@@ -1,0 +1,210 @@
+{
+  "EnrichedComplianceIssue": {
+    "cause": "",
+    "cri": false,
+    "cve": "",
+    "cvss": 0,
+    "description": "It is a good practice to run the container as a non-root user, if possible. Though user\nnamespace mapping is now available, if a user is already defined in the container image, the\ncontainer is run as that user by default and specific user namespace remapping is not\nrequired",
+    "discovered": "0001-01-01T00:00:00Z",
+    "exploit": "",
+    "fixDate": "January 01, 1970 00:00:00 AM",
+    "functionLayer": "",
+    "id": 1337,
+    "layerTime": 0,
+    "link": "",
+    "packageName": "",
+    "packageVersion": "",
+    "published": 0,
+    "riskFactors": null,
+    "secret": {},
+    "severity": "high",
+    "status": "",
+    "templates": [
+      "template1",
+      "template2"
+    ],
+    "text": "",
+    "title": "title",
+    "twistlock": false,
+    "type": "custom",
+    "vecStr": "",
+    "wildfireMalware": {}
+  },
+  "JsonStr": "null",
+  "PrismaCloudCompute": {
+    "ReportsImagesScan": [
+      {
+        "Secrets": null,
+        "_id": "some_id",
+        "agentless": true,
+        "allCompliance": {},
+        "appEmbedded": false,
+        "binaries": null,
+        "cloudMetadata": {
+          "accountID": "some_account_id",
+          "image": "some_image",
+          "labels": [
+            {
+              "key": "some_key",
+              "sourceName": "some_source",
+              "sourceType": "some_source_type",
+              "timestamp": "2024-01-08T10:52:12.1Z",
+              "value": "some_value"
+            }
+          ],
+          "provider": "some_provider",
+          "region": "sa-east-1",
+          "resourceID": "some_resource_id",
+          "type": "some_type",
+          "vmImageID": "some_vm_image_id"
+        },
+        "clusters": [
+          "some_cluster",
+          ""
+        ],
+        "collections": [
+          "All",
+          "Collection 1"
+        ],
+        "complianceDistribution": {
+          "critical": 2,
+          "high": 4,
+          "low": 0,
+          "medium": 3,
+          "total": 9
+        },
+        "complianceIssues": null,
+        "complianceIssuesCount": 9,
+        "complianceRiskScore": 2040300,
+        "creationTime": "2023-10-13T15:08:32.985Z",
+        "distro": "some_distro",
+        "err": "",
+        "files": null,
+        "firewallProtection": {
+          "enabled": false,
+          "outOfBandMode": "",
+          "supported": false
+        },
+        "firstScanTime": "2023-10-13T09:34:20.744Z",
+        "foundSecrets": null,
+        "history": null,
+        "hostname": "",
+        "hosts": {
+          "some_ip_1": {
+            "accountID": "some_account_1",
+            "agentless": true,
+            "agentlessScanID": 902,
+            "cluster": "some_cluster",
+            "modified": "2024-01-08T10:57:53.702Z"
+          },
+          "some_ip_2": {
+            "accountID": "some_account_2",
+            "agentless": true,
+            "agentlessScanID": 902,
+            "modified": "2024-01-08T11:19:49.252Z"
+          }
+        },
+        "id": "some_other_id",
+        "image": {
+          "created": "2023-10-13T15:08:32.985Z",
+          "entrypoint": [
+            "some_entrypoint"
+          ]
+        },
+        "installedProducts": {
+          "agentless": true,
+          "crio": true,
+          "hasPackageManager": true,
+          "osDistro": "some_os_distro"
+        },
+        "instances": [
+          {
+            "host": "some_ip_1",
+            "image": "some_image_1",
+            "modified": "2024-01-08T11:19:49.252Z",
+            "registry": "",
+            "repo": "some_repo",
+            "tag": "latest"
+          },
+          {
+            "host": "some_ip_2",
+            "image": "some_image_2",
+            "modified": "2024-01-08T10:57:53.702Z",
+            "registry": "some_registry",
+            "repo": "some_repo2",
+            "tag": ""
+          },
+          {
+            "host": "some_ip_3",
+            "image": "some_image_3",
+            "modified": "2023-12-21T07:15:20.26Z",
+            "registry": "",
+            "repo": "some_repo_1",
+            "tag": ""
+          }
+        ],
+        "isARM64": false,
+        "labels": [
+          "some_label_1",
+          "some_label_2"
+        ],
+        "malwareAnalyzedTime": "2024-01-08T11:00:01.76Z",
+        "osDistro": "some_os_distro",
+        "osDistroRelease": "some_release",
+        "osDistroVersion": "",
+        "packageCorrelationDone": false,
+        "packageManager": false,
+        "packages": null,
+        "pushTime": "0001-01-01T00:00:00Z",
+        "redHatNonRPMImage": false,
+        "repoDigests": [
+          "some_repo_digests"
+        ],
+        "repoTag": {
+          "digest": "some_repo_digest",
+          "registry": "some_registry",
+          "repo": "some_repo",
+          "tag": ""
+        },
+        "riskFactors": {
+          "Attack complexity: low": {},
+          "Attack vector: network": {},
+          "Critical severity": {},
+          "DoS - High": {},
+          "DoS - Low": {},
+          "Has fix": {},
+          "Medium severity": {},
+          "Recent vulnerability": {},
+          "Remote execution": {}
+        },
+        "scanBuildDate": "20240102",
+        "scanID": 902,
+        "scanTime": "2024-01-08T11:19:49.252Z",
+        "scanVersion": "some_scan_version",
+        "secretScanMetrics": {},
+        "startupBinaries": null,
+        "tags": [
+          {
+            "registry": "",
+            "repo": "some_repo_1",
+            "tag": "latest"
+          }
+        ],
+        "topLayer": "some_top_layer",
+        "trustStatus": "untrusted",
+        "type": "image",
+        "vulnerabilities": null,
+        "vulnerabilitiesCount": 23,
+        "vulnerabilityDistribution": {
+          "critical": 2,
+          "high": 0,
+          "low": 15,
+          "medium": 6,
+          "total": 23
+        },
+        "vulnerabilityRiskScore": 2000615,
+        "wildFireUsage": null
+      }
+    ]
+  }
+}
