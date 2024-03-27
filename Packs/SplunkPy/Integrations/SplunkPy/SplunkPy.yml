@@ -52,7 +52,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: Whether to use the Splunk clock time from Splunk server, for fetch or not.
+  additionalinfo: Whether to use the Splunk clock time from the Splunk server for fetch, or not.
 - defaultvalue: 'false'
   display: Parse Raw Part of Notable Events
   name: parseNotableEventsRaw
@@ -259,7 +259,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: Whether to enable the user mapping between CSOAR and Splunk, or not. for more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py#configure-user-mapping-between-splunk-and-cortex-xsoar
+  additionalinfo: Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py#configure-user-mapping-between-splunk-and-cortex-xsoar
 - defaultvalue: 'splunk_xsoar_users'
   display: Users Lookup table name
   name: user_map_lookup_name
