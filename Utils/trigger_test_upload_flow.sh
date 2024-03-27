@@ -153,7 +153,7 @@ fi
 
 source Utils/gitlab_triggers/trigger_build_url.sh
 
-curl --request POST \
+curl -v --insecure --request POST \
   --form token="${_ci_token}" \
   --form ref="${_branch}" \
   --form "variables[BUCKET_UPLOAD]=true" \
