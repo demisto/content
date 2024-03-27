@@ -105,7 +105,7 @@ class Client(CrowdStrikeClient):
         params = assign_params(credentials=credentials,
                                server_url=base_url,
                                insecure=insecure,
-                               ok_codes=tuple(),
+                               ok_codes=(),
                                proxy=proxy,
                                timeout=timeout)
         super().__init__(params)
@@ -128,7 +128,7 @@ class Client(CrowdStrikeClient):
             timeout=30
         )
         return response
-    
+
     def get_actors_names_request(self, params_string):
         response = self._http_request(
             method='GET',
@@ -340,7 +340,7 @@ class Client(CrowdStrikeClient):
 
         if 'ALL' in types_list:
             # Replaces "ALL" for all types supported on XSOAR.
-            crowdstrike_types = [f"type:'{type}'" for type in CROWDSTRIKE_TO_XSOAR_TYPES.keys()]
+            crowdstrike_types = [f"type:'{type}'" for type in CROWDSTRIKE_TO_XSOAR_TYPES]
         else:
             crowdstrike_types = [f"type:'{XSOAR_TYPES_TO_CROWDSTRIKE.get(type.lower())}'" for type in types_list if
                                  type.lower() in XSOAR_TYPES_TO_CROWDSTRIKE]
@@ -372,7 +372,7 @@ def create_and_add_relationships(indicator: dict, resource: dict, get_actors_nam
 
 def create_relationships(
     field: str, indicator: dict, resource: dict, get_actors_names_request_func
-    ) ->  List:
+) -> List:
     """
     Creates indicator relationships.
 
@@ -397,7 +397,7 @@ def create_relationships(
         else:
             related_indicator_type = CROWDSTRIKE_TO_XSOAR_TYPES[field]
             relation_name = INDICATOR_TO_CROWDSTRIKE_RELATION_DICT[related_indicator_type].get(indicator['type'],
-                                                                                            indicator['type'])
+                                                                                               indicator['type'])
 
         indicator_relation = EntityRelationship(
             name=relation_name,
@@ -417,19 +417,19 @@ def change_actors_from_id_to_name(indicator_actors_array: List[str], get_name_of
     actors_to_convert = []
     converted_actors_array = []
     for actor in indicator_actors_array:
-        if converted_actor:=integration_context.get(actor, None):
+        if converted_actor := integration_context.get(actor, None):
             converted_actors_array.append(converted_actor)
         else:
             actors_to_convert.append(actor)
     if actors_to_convert:
-        actor_ids_params = 'ids='+'&ids='.join(actors_to_convert)+'&fields=name'
+        actor_ids_params = 'ids=' + '&ids='.join(actors_to_convert) + '&fields=name'
         actors_response = get_name_of_actors__func(actor_ids_params)
         converted_actors_from_request = []
         for actor in actors_response:
             converted_actors_from_request.append(actor.get('name'))
         zipped_actors_list_to_context = dict(zip(actors_to_convert, converted_actors_from_request))
         update_integration_context(zipped_actors_list_to_context)
-        converted_actors_array+=converted_actors_from_request
+        converted_actors_array += converted_actors_from_request
     return converted_actors_array
 
 
