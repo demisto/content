@@ -179,6 +179,29 @@ repos:
     - Packs
     - Tests
     - Utils
+  - id: validate-content-paths
+    name: validate-content-paths
+    entry: validate-content-paths
+    language: system
+    args:
+    -  validate
+    -  --skip-depth-one-file
+    -  --skip-depth-one-folder
+    -  --skip-depth-zero-file
+    -  --skip-integration-script-file-name
+    -  --skip-integration-script-file-type
+    -  --skip-markdown
+    -  --skip-suffix
+    args:nightly:
+    - validate-all
+    - . 
+    - --skip-depth-one-file
+    - --skip-depth-one-folder
+    - --skip-depth-zero-file
+    -  --skip-integration-script-file-name
+    - --skip-integration-script-file-type
+    - --skip-markdown
+    - --skip-suffix
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker
     description: Run powershell tests
