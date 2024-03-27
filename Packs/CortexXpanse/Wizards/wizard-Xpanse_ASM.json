@@ -33,10 +33,6 @@
                     "display_name": "GCP Enrichment and Remediation"
                 },
                 {
-                    "name": "Nmap",
-                    "display_name": "Nmap"
-                },
-                {
                     "name": "AWS-EC2",
                     "display_name": "AWS - EC2"
                 },
@@ -53,12 +49,16 @@
                     "display_name": "Azure Compute"
                 },
                 {
-                    "name": "AzureActiveDirectory",
+                    "name": "MicrosoftGraphAPI",
                     "display_name": "Microsoft Graph API"
                 },
                 {
                     "name": "MicrosoftGraphUser",
                     "display_name": "Microsoft Graph User"
+                },
+                {
+                    "name": "MicrosoftGraphIdentityandAccess",
+                    "display_name": "Microsoft Graph Identity and Access"
                 }
             ]
         },
@@ -101,7 +101,7 @@
                 "description": "Configure Nmap to network discovery information."
             },
             {
-                "name": "AWS-EC2",
+                "name": "AWS - EC2",
                 "action": {
                   "existing": "Configure 'AWS EC2' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
                   "new": "Configure 'AWS EC2' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
@@ -147,6 +147,14 @@
                     "new": "Configure 'Microsoft Graph' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
                 },
                 "description": "Configure Microsoft Graph to enable file detonation to improve investigation."
+            },
+            {
+                "name": "MicrosoftGraphIdentityandAccess",
+                "action": {
+                    "existing": "Configure 'Microsoft Graph Identity and Access' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
+                    "new": "Configure 'Microsoft Graph Identity and Access' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
+                },
+                "description": "Configure Microsoft Graph Identity and Access to enable file detonation to improve investigation."
             }
         ],
         "next": [
