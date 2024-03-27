@@ -1,0 +1,80 @@
+{
+    "iocs": [
+        {
+            "id": "ipv4-addr--cbd67181-b9f8-595b-8bc3-3971e34fa1cc",
+            "type": "ipv4-addr",
+            "spec_version": "2.1",
+            "created": "2021-12-08T09:32:24.102219Z",
+            "modified": "2021-05-02T11:02:28.615431Z",
+            "value": "1.1.1.1"
+        },
+        {
+            "id": "ipv4-addr--725adf32-090a-52ea-9169-5ccc307a4b40",
+            "type": "ipv4-addr",
+            "spec_version": "2.1",
+            "created": "2021-12-08T09:32:21.397301Z",
+            "modified": "2021-12-08T12:05:30.632169Z",
+            "value": "3.3.3.3"
+        },
+        {
+            "id": "file--4c51b4d2-afe2-5225-b003-c83cbfde02ee",
+            "type": "file",
+            "spec_version": "2.1",
+            "created": "2023-03-27T11:05:02.105210Z",
+            "modified": "2023-03-29T08:45:03.338791Z",
+            "hashes": {
+                "SHA-256": "f1412386aa8db2579aff2636cb9511cacc5fd9880ecab60c048508fbe26ee4d9",
+                "MD5": "e086aa137fa19f67d27b39d0eca18610",
+                "SHA-1": "409629a08b9b3f3be610b8832cc28822f964410f",
+                "SHA-512": "502b6772333c9f8ba18bf4b9cb47c81d1b931660e7a7a51d7b42ccf9179ea34e4d852466e1101249dbc3da32b121bf83427b0237dce1870e5e1a5b04db524cfb"
+            }
+        },
+        {
+            "id": "ipv4-addr--a4c470a9-5498-5e8e-9fa2-66b1ceadcc12",
+            "type": "ipv4-addr",
+            "spec_version": "2.1",
+            "created": "2021-12-08T09:32:24.104143Z",
+            "modified": "2021-12-08T12:05:28.617414Z",
+            "value": "2.2.2.2"
+        },
+        {
+            "id": "ipv4-addr--c2214d54-b5d9-5725-937f-75750897b452",
+            "type": "ipv4-addr",
+            "spec_version": "2.1",
+            "created": "2021-12-08T09:32:24.104143Z",
+            "modified": "2021-12-08T12:05:28.617414Z",
+            "value": "4.4.4.4"
+        },
+        {
+            "id": "domain-name--30729184-1706-51da-9384-a2683c171b50",
+            "type": "domain-name",
+            "spec_version": "2.1",
+            "created": "2023-03-29T08:44:50.961231Z",
+            "modified": "2023-03-29T08:45:03.338840Z",
+            "value": "bad-domain.com"
+        }
+    ],
+    "relationships": [
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--c04f44cd-c8a8-52aa-90d5-77a5249fe7b7",
+            "created": "2021-05-02T11:03:19.694969Z",
+            "modified": "2021-05-02T11:03:19.694968Z",
+            "relationship_type": "related to",
+            "source_ref": "ipv4-addr--cbd67181-b9f8-595b-8bc3-3971e34fa1cc",
+            "target_ref": "ipv4-addr--c2214d54-b5d9-5725-937f-75750897b452"
+        },
+        {
+            "type": "relationship",
+            "spec_version": "2.1",
+            "id": "relationship--91c923a5-ba81-5729-8b8b-ffb9220a95db",
+            "created": "2023-03-29T08:44:57.767885Z",
+            "modified": "2023-03-29T08:44:57.767893Z",
+            "relationship_type": "related-to",
+            "source_ref": "file--4c51b4d2-afe2-5225-b003-c83cbfde02ee",
+            "target_ref": "domain-name--30729184-1706-51da-9384-a2683c171b50",
+            "Description": "Test"
+        }
+    ]
+}
