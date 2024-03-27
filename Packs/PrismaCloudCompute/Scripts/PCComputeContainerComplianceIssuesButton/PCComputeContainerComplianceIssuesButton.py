@@ -20,16 +20,15 @@ details.
 # "prisma-cloud-compute-container-scan-results-list" command and returns specific details.
 
 # Command Function
-def run_prisma_cloud_compute_containers_scan_list(container_id: str, compliance_ids: str) -> None:
+def run_prisma_cloud_compute_containers_scan_list(container_id: str) -> list:
     """
-    Runs the "prisma-cloud-compute-container-scan-results-list" command with specified arguments and returns specific details.
+    Runs the "prisma-cloud-compute-container-scan-results-list" command with specified arguments and returns compliance issues.
 
     Args:
         container_id: The ID of the container.
-        compliance_ids: Comma-separated list of compliance IDs to filter the results.
 
     Returns:
-        None
+        list
     """
 
     # Validate container_id length
@@ -56,11 +55,7 @@ def run_prisma_cloud_compute_containers_scan_list(container_id: str, compliance_
         return_results(f"No compliance issues found for container {container_id}")
         sys.exit(0)
 
-    # Filter compliance issues based on provided IDs
-    filtered_compliance_issues = filter_compliance_issues(compliance_issues, compliance_ids)
-
-    # Process the filtered compliance_issues and output details
-    process_and_output_compliance_issues(filtered_compliance_issues, container_id)
+    return compliance_issues
 
 
 # Function to filter compliance issues based on provided IDs
@@ -88,16 +83,16 @@ def filter_compliance_issues(compliance_issues: list, compliance_ids: str) -> li
 
 
 # Function to process and output compliance issues
-def process_and_output_compliance_issues(compliance_issues: list, container_id: str) -> None:
+def process_and_output_compliance_issues(compliance_issues: list, container_id: str) -> CommandResults:
     """
-    Process the compliance issues and output specific details to the War Room.
+    Process the compliance issues and returnes the expected output to be displayed in the war room.
 
     Args:
         compliance_issues: List of compliance issues.
         container_id: The ID of the container.
 
     Returns:
-        None
+        CommandResults
     """
     # Iterate over each compliance issue and extract selected keys
     rows = []
@@ -129,8 +124,7 @@ def process_and_output_compliance_issues(compliance_issues: list, container_id: 
     incident_id = demisto.incidents()[0]['id']
     demisto.executeCommand('setIncident', {'id': incident_id, 'prismacloudcomputeshowcompliancetab': 'container-detailed'})
 
-    # Output to War Room
-    return_results(command_results)
+    return command_results
 
 
 # Main function
@@ -150,7 +144,16 @@ def main() -> None:
         compliance_ids = demisto.getArg('compliance_ids')
 
         # Run the command with the provided arguments
-        run_prisma_cloud_compute_containers_scan_list(container_id, compliance_ids)
+        run_prisma_cloud_compute_containers_scan_list(container_id)
+
+        # Filter compliance issues based on provided compliance issues IDs
+        filtered_compliance_issues = filter_compliance_issues(compliance_issues, compliance_ids)
+
+        # Process the filtered compliance_issues
+        command_results = process_and_output_compliance_issues(filtered_compliance_issues, container_id)
+
+        # Output to War Room
+        return_results(command_results)
     except Exception as e:
         return_error(f"Error in script: {str(e)}")
 
