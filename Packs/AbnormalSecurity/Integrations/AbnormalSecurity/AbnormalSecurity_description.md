@@ -10,3 +10,5 @@ To configure an instance of Abnormal Security integration in Cortex XSOAR:
 
     Keep the token safe, as it grants access to sensitive threat data related to your organization. Store it in a secure place, such as an encrypted password vault, and do not share it unless absolutely necessary. If you feel that the token has been compromised, please contact your Account Manager immediately.
     
+
+ ---
