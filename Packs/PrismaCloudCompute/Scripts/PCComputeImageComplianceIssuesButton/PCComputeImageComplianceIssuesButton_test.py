@@ -121,7 +121,7 @@ def test_filter_compliance_issues(args, expected):
 def test_process_and_output_compliance_issues(args, expected):
     """
     Given:
-        Filtered results for a image.
+        Filtered results for an image.
 
     When:
         Running process_and_output_compliance_issues
@@ -139,7 +139,7 @@ RETURN_ERROR_TARGET = 'PCComputeImageComplianceIssuesButton.return_error'
 def test_main_function_with_error(mocker):
     """
     Given:
-        An invalid imaeg ID argument
+        An invalid image ID argument
 
     When:
         Running main
