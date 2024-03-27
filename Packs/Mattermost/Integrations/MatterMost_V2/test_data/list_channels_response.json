@@ -1,0 +1,16 @@
+[    {
+    "id": "channel_id",
+    "create_at": 1519847358431,
+    "update_at": 1519847358431,
+    "delete_at": 0,
+    "team_id": "team_id",
+    "type": "O",
+    "display_name": "display_name",
+    "name": "name",
+    "header": "",
+    "purpose": "",
+    "last_post_at": 1519847395298,
+    "total_msg_count": 0,
+    "extra_update_at": 1519847395295,
+    "creator_id": "creator_id"
+}]
