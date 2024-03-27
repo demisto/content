@@ -15,6 +15,7 @@ def get_data_from_file(entry_id: str):
         raise DemistoException(f'There was a problem opening or reading the file.\nError is: {e}')
     return data
 
+
 def decode_data(data: Any, data_encoding: str):
     """
     Given data and its encoding, this function decodes the data according to the provided encoding and returns it.
@@ -24,6 +25,7 @@ def decode_data(data: Any, data_encoding: str):
     elif data_encoding != 'raw':
         raise ValueError(f'Invalid data encoding name: {data_encoding}')
     return data
+
 
 def main():
     args = demisto.args()

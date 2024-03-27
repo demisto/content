@@ -8,6 +8,7 @@ from pytest_mock import MockerFixture
 
 from FileCreateAndUploadV2 import get_data_from_file, decode_data, main
 
+
 def side_effect_sys_exit(code):
     pass
 
@@ -55,7 +56,8 @@ def test_main_with_entry_id(mocker: MockerFixture):
 
     assert results["File"] == 'test_file'
     assert results["ContentsFormat"] == 'text'
-    
+
+
 def test_main_without_entry_id(mocker: MockerFixture):
     """
     Given valid arguments without an entry_id,
