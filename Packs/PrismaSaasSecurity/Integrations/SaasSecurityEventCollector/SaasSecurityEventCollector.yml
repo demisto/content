@@ -24,7 +24,7 @@ configuration:
   type: 8
   required: false
 - display: The maximum number of events per fetch.
-  additionalinfo: The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to SaaS-Security api limitations. Default is 1000. In case this is empty, will default to 5000.
+  additionalinfo: The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to SaaS-Security api limitations. Default is 1000. In case this is empty, will default to 1000.
   defaultvalue: 1000
   name: max_fetch
   type: 0
@@ -144,7 +144,7 @@ script:
     - contextPath: SaasSecurity.Event.resource_value_new
       description: New resource value. (optional).
       type: String
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.87159
   isfetchevents: true
   script: '-'
   subtype: python3

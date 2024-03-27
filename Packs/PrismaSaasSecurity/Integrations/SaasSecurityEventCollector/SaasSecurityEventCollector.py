@@ -14,7 +14,7 @@ PRODUCT = 'saassecurity'
 
 MAX_ITERATIONS = 50
 MAX_EVENTS_PER_REQUEST = 1000
-MAX_LIMIT = 5000
+MAX_LIMIT = 50000
 DEFAULT_LIMIT = 1000
 
 ''' CLIENT CLASS '''
@@ -142,7 +142,7 @@ def get_max_fetch(limit: Optional[int]) -> int:
     1. if limit is negative raise an exception
     2. if limit is less than 10, limit will be equal to 10
     3. if limit is not dividable by 10, make sure it gets rounded down to a number that is dividable by 10.
-    4. if limit > MAX_LIMIT (5000) - make sure it will always be MAX_LIMIT (5000).
+    4. if limit > MAX_LIMIT (50000) - make sure it will always be MAX_LIMIT (50000).
     5. if limit is not provided, set it up for the default limit which is 1000.
     """
     if limit:
@@ -150,7 +150,7 @@ def get_max_fetch(limit: Optional[int]) -> int:
             raise DemistoException('fetch limit parameter cannot be negative number or zero')
         if limit < 10:
             limit = 10
-        if limit > MAX_LIMIT:  # do not allow limit of more than 5000 to avoid timeouts
+        if limit > MAX_LIMIT:  # do not allow limit of more than 50000 to avoid timeouts
             limit = MAX_LIMIT
         if limit % 10 != 0:  # max limit must be a multiplier of 10 (SaaS api limit)
             # round down the limit
@@ -197,7 +197,7 @@ def get_events_command(
             try:
                 send_events_to_xsiam(events=events, vendor=vendor, product=product)
             except Exception as e:
-                demisto.setLastRun({'events': events})
+                demisto.setLastRun({'events': events, 'nextTrigger': '0'})
                 raise e
         return CommandResults(
             readable_output=tableToMarkdown(
@@ -290,6 +290,7 @@ def main() -> None:  # pragma: no cover
                 demisto.info('Fetching events from integration context')
             try:
                 demisto.info(f'Sending the following amount of events into XSIAM: {len(events)}')
+                demisto.setLastRun({'nextTrigger': '0'})
                 send_events_to_xsiam(
                     events=events,
                     vendor=VENDOR,
