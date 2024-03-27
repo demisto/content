@@ -2,7 +2,6 @@ import json
 
 import pytest
 
-from AWSApiModule import *
 from AWSEKS import validate_args, list_clusters_command
 from test_data.test_response import (UPDATE_CLUSTER_CONFIG_LOGGING_RESPONSE, DESCRIBE_CLUSTER_RESPONSE,
                                      UPDATE_CLUSTER_CONFIG_ACCESS_CONFIG_RESPONSE, CREATE_ACCESS_ENTRY_RESPONSE,
