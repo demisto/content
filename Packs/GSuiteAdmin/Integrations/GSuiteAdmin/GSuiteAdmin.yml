@@ -2809,16 +2809,22 @@ script:
     outputs:
       - contextPath: GSuite.Policy.targetKey.targetResource
         description: Policy target key target resource.
+        type: String
       - contextPath: GSuite.Policy.targetKey.additionalTargetKeys
         description: Policy target key additional target keys.
+        type: String
       - contextPath: GSuite.Policy.value.policySchema
-        description: Policy schema value
+        description: Policy schema value.
+        type: String
       - contextPath: GSuite.Policy.value.value
         description: Policy value.
+        type: String
       - contextPath: GSuite.Policy.sourceKey.targetResource
         description: Policy source key target resource.
+        type: String
       - contextPath: GSuite.Policy.addedSourceKey.targetResource
         description: Policy added source key target resource.
+        type: String
   - arguments:
       - description: ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.
         name: customer_id

@@ -2402,10 +2402,12 @@ Gets the resolved policy values for a list of policies that match a search query
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GSuite.Policy.targetKey | unknown | Policy target key. | 
-| GSuite.Policy.value | unknown | Policy value. | 
-| GSuite.Policy.sourceKey | unknown | Policy source key. | 
-| GSuite.Policy.addedSourceKey | unknown | Policy added source key. | 
+| GSuite.Policy.targetKey.targetResource | String | Policy target key target resource. | 
+| GSuite.Policy.targetKey.additionalTargetKeys | String | Policy target key additional target keys. | 
+| GSuite.Policy.value.policySchema | String | Policy schema value. | 
+| GSuite.Policy.value.value | String | Policy value. | 
+| GSuite.Policy.sourceKey.targetResource | String | Policy source key target resource. | 
+| GSuite.Policy.addedSourceKey.targetResource | String | Policy added source key target resource. | 
 
 
 #### Command Example

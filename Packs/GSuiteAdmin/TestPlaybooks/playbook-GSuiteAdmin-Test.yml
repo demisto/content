@@ -538,7 +538,7 @@ tasks:
     taskid: c95b3b0d-d28e-4432-8fce-3d53e0f99be8
     type: regular
     task:
-      id: 97ba6e1a-c4eb-411f-802b-b739a7497acf
+      id: c95b3b0d-d28e-4432-8fce-3d53e0f99be8
       version: -1
       name: gsuite-user-delete
       description: Deletes a user.

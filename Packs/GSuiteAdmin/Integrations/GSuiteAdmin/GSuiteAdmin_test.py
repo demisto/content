@@ -1329,7 +1329,7 @@ def test_modify_policy_command(gsuite_client, mocker):
     from GSuiteAdmin import modify_policy_command
     args = {"customer_id": "test", "target_type": "Group", "target_resource": "11111111",
             "policy_schema_filter": "chrome.users.apps.InstallType",
-            "additional_target_keys": "\"app_id\":\"chrome:11111111\"",
+            "additional_target_keys": "{\"app_id\":\"chrome:11111111\"}",
             "policy_schema": "chrome.users.apps.InstallType", "policy_value": "BLOCKED", "update_mask": "appInstallType"}
     mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value={})
     response = modify_policy_command(gsuite_client, args)

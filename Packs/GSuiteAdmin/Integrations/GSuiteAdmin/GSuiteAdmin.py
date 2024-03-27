@@ -186,7 +186,7 @@ def return_file_from_entry_id(entry_id):  # pragma: no cover
     file_path = file_info.get("path")
 
     # Open file and read data
-    with open(file_path, "r") as f:  # type: ignore
+    with open(file_path) as f:  # type: ignore
         dict_list = json.load(f)
     return dict_list
 
@@ -1730,7 +1730,7 @@ def policy_resolve_command(client: Client, args: dict[str, str]) -> CommandResul
 
     full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policies:resolve'
 
-    policy_resolved_resp = []
+    policy_resolved_resp: list = []
     while len(policy_resolved_resp) < int(limit):
         if int(limit) - len(policy_resolved_resp) > API_LIMIT:
             page_size = str(API_LIMIT)
