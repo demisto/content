@@ -3660,28 +3660,55 @@ def set_updated_object(
     :param mirroring_fields: The mirroring fields that we want to mirror in, given according to whether we want to mirror a
         security event or a threat.
     """
+
+    # better use some recursive functions here...
+
+    field: str
+    root_field: str
+    sub_field: str
+
+    nested_mirrored_data: list | dict | None
+
     for field in mirroring_fields:
-        if mirrored_data.get(field):
-            updated_object[field] = mirrored_data.get(field)
+
+        # check that the field is present in the mirrored data from the EDR
+        # (data can be null)
+        if field in mirrored_data:
+            updated_object[field] = mirrored_data[field]
 
         # if the field is not in mirrored_data, it might be a nested field - that has a . in its name
         elif "." in field:
-            field_name_parts = field.split(".")
-            nested_mirrored_data = mirrored_data.get(field_name_parts[0])
+            # only the first deep level is checked for now
+            root_field, sub_field = field.split(".", 1)
 
-            if isinstance(nested_mirrored_data, list):
-                # if it is a list, it should hold a dictionary in it because it is a json structure
-                for nested_field in nested_mirrored_data:
-                    if nested_field.get(field_name_parts[1]):
-                        updated_object[field] = nested_field.get(field_name_parts[1])
-                        # finding the field in the first time it is satisfying
-                        break
-            elif isinstance(nested_mirrored_data, dict):
-                if nested_mirrored_data.get(field_name_parts[1]):
-                    updated_object[field_name_parts[0]] = {}
-                    updated_object[field_name_parts[0]][field_name_parts[1]] = (
-                        nested_mirrored_data.get(field_name_parts[1])
+            if root_field in mirrored_data:
+
+                nested_mirrored_data = mirrored_data[root_field]
+
+                if isinstance(nested_mirrored_data, list):
+                    # if it is a list, it should hold a dictionary in it because it is a json structure
+                    # assume nested_mirrored_data is a list of dictionaries
+                    for nested_dict in nested_mirrored_data:
+                        if sub_field in nested_dict:
+                            updated_object[field] = nested_dict[sub_field]
+                            # finding the field in the first time it is satisfying
+                            break
+
+                elif isinstance(nested_mirrored_data, dict):
+                    if sub_field in nested_mirrored_data:
+                        updated_object.setdefault(root_field, {})
+                        updated_object[root_field][sub_field] = nested_mirrored_data[
+                            sub_field
+                        ]
+
+                else:
+                    demisto.debug(
+                        f"Nested field '{field}' is not a list, nor a dictionary"
                     )
+            else:
+                demisto.debug(f"Nested field '{field}' doesn't appear to exist")
+        else:
+            demisto.debug(f"Field '{field}' doesn't appear to exist")
 
 
 def get_remote_secevent_data(client, remote_incident_id: str):
