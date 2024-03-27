@@ -388,7 +388,7 @@ def main() -> None:  # pragma: no cover
                         new_last_run[event_type] = {'operation': 'resend'}
 
                 end = datetime.utcnow()
-                
+
                 demisto.debug(f'Handled {len(events)} total events in {(end - start).seconds} seconds')
                 next_trigger_time(len(events), max_fetch, new_last_run)
                 demisto.debug(f'Setting the last_run to: {new_last_run}')
