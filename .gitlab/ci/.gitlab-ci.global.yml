@@ -502,7 +502,6 @@
 .run-pre-commit:
   extends:
     - .unittests-and-lint-settings
-  allow_failure: true
   script:
     - section_start "Revoking GCP Auth and Configure Docker"
     # we need to configure the docker with the registry in order to be able to pull the images
