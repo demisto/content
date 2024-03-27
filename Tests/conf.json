@@ -5650,6 +5650,10 @@
         {
             "integrations": "Redmine",
             "playbookID": "Redmine-Test"
+        },
+        {
+            "integrations": "PaloAltoNetworksAIOps",
+            "playbookID": "PaloAltoNetworksAIOps-Test"
         }
     ],
     "skipped_tests": {
