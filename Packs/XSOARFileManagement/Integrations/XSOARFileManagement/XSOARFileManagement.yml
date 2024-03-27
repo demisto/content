@@ -33,65 +33,122 @@ display: XSOAR File Management
 name: XSOAR File Management
 script:
   commands:
-  - arguments:
-    - description: Incident ID to upload the file. If empty, the current incident ID is taken.
-      name: incidentID
-    - description: Content of the file encoded in Base64 (if set let filePath, entrID and fileContent empty).
-      name: fileContentB64
-    - description: Non binary content of the file (if set let filePath, entryID and fileContentB64 empty).
-      name: fileContent
-    - description: Entry ID of the file to read (if set let filePath, fileContent and fileContentB64 empty).
-      name: entryID
-    - description: 'Path of the file to read ex: incident.attachment.path (if set let entryID, fileContent and fileContentB64 empty).'
-      name: filePath
-    - description: Name of the file. Mandatory if used with filePath and fileContent otherwise the name of the file will not change.
-      name: fileName
-    - auto: PREDEFINED
-      defaultValue: war room entry
-      description: 'Where to upload the file - Available options are: - ''war room entry'': the file will be uploaded as war room entry. - ''incident attachment'': the file will be uploaded as incident attachment. - default are ''war room entry''.'
-      name: target
+  - name: file-management-upload-file-to-incident
+    arguments:
+    - name: incidentID
+      description: Incident ID to upload the file. If empty, the current incident
+        ID is taken.
+    - name: fileContentB64
+      description: Content of the file encoded in Base64 (if set let filePath, entrID
+        and fileContent empty).
+    - name: fileContent
+      description: Non binary content of the file (if set let filePath, entryID and
+        fileContentB64 empty).
+    - name: entryID
+      description: Entry ID of the file to read (if set let filePath, fileContent
+        and fileContentB64 empty).
+    - name: filePath
+      description: 'Path of the file to read ex: incident.attachment.path (if set
+        let entryID, fileContent and fileContentB64 empty).'
+    - name: fileName
+      description: Name of the file. Mandatory if used with filePath and fileContent
+        otherwise the name of the file will not change.
+    - name: target
+      auto: PREDEFINED
       predefined:
       - war room entry
       - incident attachment
-    description: Copies a file from this incident to the specified incident. Usefull if you want to manipule file in the preprocessing.
-    name: file-management-upload-file-to-incident
-  - arguments:
-    - description: Entry ID of the file.
-      name: entryID
+      description: 'Where to upload the file - Available options are: - ''war room
+        entry'': the file will be uploaded as war room entry. - ''incident attachment'':
+        the file will be uploaded as incident attachment. - default are ''war room
+        entry''.'
+      defaultValue: war room entry
+    description: Copies a file from this incident to the specified incident. Usefull
+      if you want to manipule file in the preprocessing.
+  - name: file-management-delete-file
+    arguments:
+    - name: entryID
       required: true
+      description: Entry ID of the file.
     description: Delete the file from the incident and from the XSOAR server.
     execution: true
-    name: file-management-delete-file
-  - arguments:
-    - description: Entry ID of the file.
-      name: entryID
+  - name: file-management-check-file
+    arguments:
+    - name: entryID
       required: true
-    description: Check if entry ID exist.
-    name: file-management-check-file
+      description: Entry ID of the file.
     outputs:
-    - description: Dictionary with EntryID as key and boolean if the file exists as value.
-      contextPath: IsFileExists
-  - arguments:
-    - description: File path of the file.
-      name: filePath
+    - contextPath: IsFileExists
+      description: Dictionary with EntryID as key and boolean if the file exists as
+        value.
+    description: Check if entry ID exist.
+  - name: file-management-delete-attachment
+    arguments:
+    - name: filePath
       required: true
-    - description: ID of the incident to delete attachment.
-      name: incidentID
-    - description: 'Name of the field (type attachment) you want to remove the attachment by default it''s the incident attachment (incident.attachment) field.'
-      name: fieldName
+      description: File path of the file.
+    - name: incidentID
+      description: ID of the incident to delete attachment.
+    - name: fieldName
+      description: Name of the field (type attachment) you want to remove the attachment
+        by default it's the incident attachment (incident.attachment) field.
     description: Delete the attachment from the incident and from the XSOAR server.
     execution: true
-    name: file-management-delete-attachment
-  - arguments:
-    - description: Entry ID of the file to rename.
-      name: entryID
+  - name: file-management-rename-file
+    arguments:
+    - name: entryID
       required: true
-    - description: New name for the file.
-      name: newFileName
+      description: Entry ID of the file to rename.
+    - name: newFileName
       required: true
-    description: 'Rename a file. Warning: use this only if necessary, it''s HEAVY to run, this will delete and recreate the file with another name.'
-    name: file-management-rename-file
-  dockerimage: demisto/python3:3.10.13.89009
+      description: New name for the file.
+    description: 'Rename a file. Warning: use this only if necessary, it''s HEAVY
+      to run, this will delete and recreate the file with another name.'
+  - name: file-management-download-file
+    arguments:
+    - name: fileName
+      description: Name of the new downloaded file.
+    - name: fileURI
+      required: true
+      description: 'File URI ex:''/markdown/image/123_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg''.'
+    - name: incidentID
+      description: Incident ID to upload the file. If empty, the current incident
+        ID is taken.
+    - name: target
+      description: 'Where to upload the file - Available options are: - ''war room
+        entry'': the file will be uploaded as war room entry. - ''incident attachment'':
+        the file will be uploaded as incident attachment. - default are ''war room
+        entry''.'
+    description: Download files from server.
+  - name: file-management-get-file-hash
+    arguments:
+    - name: fileURI
+      required: true
+      description: 'File URI ex:''/markdown/image/123_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg''.'
+    outputs:
+    - contextPath: File_Hash.Extension
+      description: Extension of the file.
+      type: string
+    - contextPath: File_Hash.MD5
+      description: MD5 of the file.
+      type: string
+    - contextPath: File_Hash.SHA1
+      description: SHA1of the file.
+      type: string
+    - contextPath: File_Hash.SHA256
+      description: SHA256of the file.
+      type: string
+    - contextPath: File_Hash.SHA512
+      description: SHA512of the file.
+      type: string
+    - contextPath: File_Hash.Name
+      description: Name of the file.
+      type: string
+    - contextPath: File_Hash.Size
+      description: Size of the file.
+      type: string
+    description: Get file hash from URI.
+  dockerimage: demisto/python3:3.10.14.90585
   runonce: false
   script: ''
   subtype: python3
