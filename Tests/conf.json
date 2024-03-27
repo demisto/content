@@ -5648,6 +5648,11 @@
             "instance_names": "AWS-SNS-Listener"
         },
         {
+            "integrations": "Rapid7 InsightIDR",
+            "playbookID": "InsightIDREnhancement-TestPlaybook",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "Redmine",
             "playbookID": "Redmine-Test"
         }

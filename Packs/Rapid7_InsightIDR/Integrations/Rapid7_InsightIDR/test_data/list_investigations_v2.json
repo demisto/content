@@ -1,0 +1,43 @@
+{
+  "data": [
+    {
+      "rrn": "rrn",
+      "organization_id": "123-123-123",
+      "title": "Suspicious Process - Execution From Root of ProgramData",
+      "source": "ALERT",
+      "status": "WAITING",
+      "priority": "MEDIUM",
+      "last_accessed": "2024-01-16T09:54:08.932Z",
+      "created_time": "2024-01-09T09:20:06.714Z",
+      "disposition": "UNDECIDED",
+      "assignee": null,
+      "first_alert_time": "2024-01-09T09:20:05.793Z",
+      "latest_alert_time": "2024-01-09T12:28:26.82Z",
+      "responsibility": null
+    },
+    {
+      "rrn": "rrn",
+      "organization_id": "id",
+      "title": "test",
+      "source": "USER",
+      "status": "CLOSED",
+      "priority": "UNMAPPED",
+      "last_accessed": "2024-01-28T08:10:52.62Z",
+      "created_time": "2024-01-28T08:10:52.62Z",
+      "disposition": "UNDECIDED",
+      "assignee": {
+        "name": "test",
+        "email": "test@test.com"
+      },
+      "first_alert_time": null,
+      "latest_alert_time": null,
+      "responsibility": null
+    }
+  ],
+  "metadata": {
+    "index": 0,
+    "size": 2,
+    "total_pages": 2,
+    "total_data": 3
+  }
+}
