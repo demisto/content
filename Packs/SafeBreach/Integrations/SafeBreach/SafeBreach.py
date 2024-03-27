@@ -574,7 +574,7 @@ class Client(BaseClient):
             json_data=body,
             headers=headers,
             params=request_params,
-            # ok_codes=[200, 201, 204, 400, 409, 404],
+            ok_codes=[200, 201, 204, 400, 409, 404],
         )
         return (
             response
@@ -3939,30 +3939,10 @@ def delete_schedules(client: Client):
     Returns:
         CommandResults,Dict: This returns deleted schedules as a table and gives a dictionary as outputs for the same
     """
-    # headers = [
-    #     "id",
-    #     "isEnabled",
-    #     "user_schedule",
-    #     "runDate",
-    #     "cronTimezone",
-    #     "description",
-    #     "createdAt",
-    #     "updatedAt",
-    #     "deletedAt",
-    #     "planId",
-    # ]
 
     schedules_data = client.delete_schedule()
     demisto.debug(f"Delete schedules result is: {schedules_data}")
 
-    #new_schedules_data = client.append_cron_to_schedule([deepcopy(schedules_data.get("data"))])
-    #if new_schedules_data:
-        #human_readable = tableToMarkdown(
-            #name="Deleted scheduled scenario",
-            #headerTransform=safebreach_schedules_transformer,
-            #t=new_schedules_data,
-            #headers=headers,
-        #)
     if schedules_data.get("data"):
          human_readable = tableToMarkdown("Deleted scheduled scenario:", schedules_data.get("data"))
     else:
