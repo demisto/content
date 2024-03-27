@@ -1,0 +1,21 @@
+{
+    "name": "PlayBooks Using Scripts and Integrations",
+    "description": "This script will display the playbooks where custom scripts are used. \nIt will also display any integration used in a playbook.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Amit Koppad",
+    "url": "",
+    "email": "",
+    "created": "2024-02-29T16:33:31Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "albmartinez813"
+    ]
+}
