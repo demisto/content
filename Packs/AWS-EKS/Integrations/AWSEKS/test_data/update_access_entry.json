@@ -1,0 +1,14 @@
+{
+    "expected_readable_output": "### The updated access entry\n|Cluster Name|Principal Arn|Username|Type|Modified At|\n|---|---|---|---|---|\n| cluster_name | principal_arn | username | STANDARD | 2024-01-01 00:00:00 |\n",
+    "expected_outputs": {
+        "clusterName": "cluster_name",
+        "principalArn": "principal_arn",
+        "kubernetesGroups": ["kubernetesGroup"],
+        "accessEntryArn": "accessEntryArn",
+        "createdAt": "2024-01-01 00:00:00",
+        "modifiedAt": "2024-01-01 00:00:00",
+        "tags": {},
+        "username": "username",
+        "type": "STANDARD"
+    }
+}
