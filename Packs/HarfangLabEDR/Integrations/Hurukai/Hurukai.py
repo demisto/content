@@ -485,8 +485,24 @@ class Client(BaseClient):
             method="GET", url_suffix=f"/api/data/alert/alert/Threat/{threat_id}/"
         )
 
+        # API doesn't return a JSON response when the note doesn't exist, but
+        # rather an empty one...
+        note: requests.Response = self._http_request(
+            method="GET",
+            url_suffix=f"/api/data/alert/alert/Threat/{threat_id}/note/",
+            return_empty_response=True,
+            empty_valid_codes=[200],
+        )
+
+        note_already_exist = bool(note.text)
+
+        if note_already_exist:
+            method = "PATCH"
+        else:
+            method = "POST"
+
         return self._http_request(
-            method="PATCH",
+            method=method,
             url_suffix=f"/api/data/alert/alert/Threat/{threat_id}/note/",
             json_data={"title": threat["slug"], "content": content},
         )
