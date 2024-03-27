@@ -2232,7 +2232,7 @@ script:
       - description: 'One of the following: user email address, alias email address, or the unique user ID.'
         name: user_key
         required: true
-    description: Retreive a group's details given a group key.
+    description: Indicates if the user is forced to change their password at next login.
     name: gsuite-user-reset-password
     outputs:
       - contextPath: GSuite.User.id
@@ -2251,16 +2251,16 @@ script:
         description: The unique ID for the customer's G Suite account.
         type: String
       - contextPath: GSuite.User.gender
-        description: Gender.
+        description: The user's gender.
         type: String
       - contextPath: GSuite.User.suspended
         description: Indicates if the user is suspended.
         type: Boolean
       - contextPath: GSuite.User.notesValue
-        description: Contents of notes.
+        description: Content of the notes.
         type: String
       - contextPath: GSuite.User.notesContentType
-        description: Content type of notes.
+        description: Content type of the notes.
         type: String
       - contextPath: GSuite.User.isAdmin
         description: Indicates a user with super administrator privileges.
@@ -2278,13 +2278,13 @@ script:
         description: Indicates if this is the user's primary phone number.
         type: Boolean
       - contextPath: GSuite.User.phones.customType
-        description: If the value of type is custom, this property contains the custom type.
+        description: If the value of type is custom, this property contains the custom type string.
         type: String
       - contextPath: GSuite.User.addresses.type
         description: The address type.
         type: String
       - contextPath: GSuite.User.addresses.customType
-        description: If the address type is custom, this property contains the custom value.
+        description: If the value of type is custom, this property contains the custom type string.
         type: String
       - contextPath: GSuite.User.addresses.sourceIsStructured
         description: Indicates if the user-supplied address was formatted. Formatted addresses are not currently supported.
@@ -2314,7 +2314,7 @@ script:
         description: The street address.
         type: String
       - contextPath: GSuite.User.addresses.extendedAddress
-        description: For extended addresses, such as an  address that includes a sub-region.
+        description: For extended addresses, such as an address that includes a sub-region.
         type: String
       - contextPath: GSuite.User.addresses.primary
         description: If this is the user's primary address.
@@ -2332,7 +2332,7 @@ script:
         description: Indicates if this is the user's primary email. Only one entry can be marked as primary.
         type: Boolean
       - contextPath: GSuite.User.ipWhitelisted
-        description: If true, the user's IP address is added to allow list.
+        description: If true, the user's IP address is added to the allow list.
         type: Boolean
       - contextPath: GSuite.User.recoveryEmail
         description: Recovery email of the user.
@@ -2374,7 +2374,7 @@ script:
         description: This property is true if the user has completed an initial login and accepted the Terms of Service agreement.
         type: Boolean
       - contextPath: GSuite.User.suspensionReason
-        description: Has the reason a user account is suspended either by the administrator or by Google at the time of suspension. The property is returned only if the suspended property is true.
+        description: The reason a user account is suspended either by the administrator or by Google at the time of suspension. The property is returned only if the suspended property is true.
         type: String
       - contextPath: GSuite.User.changePasswordAtNextLogin
         description: Indicates if the user is forced to change their password at next login. This setting doesn't apply when the user signs in via a third-party identity provider.
@@ -2410,7 +2410,7 @@ script:
         description: The name of the person the user is related to.
         type: String
       - contextPath: GSuite.User.relations.type
-        description: The type of relation.
+        description: The type of relationship.
         type: String
       - contextPath: GSuite.User.relations.customType
         description: If the value of type is custom, this property contains the custom type.
@@ -2476,10 +2476,10 @@ script:
         description: The GECOS (user information) for this account.
         type: String
       - contextPath: GSuite.User.posixAccounts.systemId
-        description: System identifier for which account Username or Uid apply to.
+        description: System identifier for which account Username or UID applies to.
         type: String
       - contextPath: GSuite.User.posixAccounts.primary
-        description: If this is user's primary account within the SystemId.
+        description: If this is the user's primary account within the SystemId.
         type: Boolean
       - contextPath: GSuite.User.posixAccounts.accountId
         description: A POSIX account field identifier.
@@ -2506,7 +2506,7 @@ script:
         description: The URL of the website.
         type: String
       - contextPath: GSuite.User.websites.primary
-        description: If this is user's primary website or not.
+        description: If this is the user's primary website or not.
         type: Boolean
       - contextPath: GSuite.User.websites.type
         description: The type or purpose of the website. For example, a website could be labeled as home or blog. Alternatively, an entry can have a custom type.
@@ -2536,7 +2536,7 @@ script:
         description: Most specific textual code of individual desk location.
         type: String
       - contextPath: GSuite.User.keywords.type
-        description: Each entry can have a type which indicates standard type of that entry. For example, keyword could be of type occupation or outlook. In addition to the standard type, an entry can have a custom type and can give it any name. Such types should have the CUSTOM value as type and also have a customType value.
+        description: Each entry can have a type which indicates the standard type of that entry. For example, keyword could be of type occupation or outlook. In addition to the standard type, an entry can have a custom type and can give it any name. Such types should have the CUSTOM value as type and also have a customType value.
         type: String
       - contextPath: GSuite.User.keywords.customType
         description: Custom Type.
@@ -2554,7 +2554,7 @@ script:
         description: Indicates if the user's profile is visible in the G Suite global address list when the contact sharing feature is enabled for the domain.
         type: Boolean
       - contextPath: GSuite.User.thumbnailPhotoUrl
-        description: Photo Url of the user.
+        description: Photo URL of the user.
         type: String
       - contextPath: GSuite.User.thumbnailPhotoEtag
         description: ETag of the user's photo.
@@ -2563,25 +2563,26 @@ script:
         description: Custom fields of the user.
         type: Unknown
   - arguments:
-      - description: "The customerId is a unique identifier of the customer's Google account."
+      - description: The unique identifier of the customer's Google account.
         name: customer_id
         required: true
-      - description: 'List of unique device IDs (comma separated) of Chrome Browser Devices to move. A maximum of 600 browsers may be moved per request.'
+      - description: A comma-separated list of unique device IDs of Chrome browser devices to move. A maximum of 600 browsers may be moved per request.
         name: resource_ids
+        isArray: true
         required: true
-      - description: "Destination organization unit to move devices to. Full path of the organizational unit or its ID prefixed with 'id:'."
+      - description: Destination organization unit to move devices to. Full path of the organizational unit or its ID prefixed with 'id:'.
         name: org_unit_path
         required: true
-    description: To move Chrome Browser devices assigned to an account from one organization unit to another, use the following POST request and include the access token obtained by following the "Authorization" section.
+    description: To move Chrome browser devices assigned to an account from one organization unit to another, use the following POST request and include the access token obtained by following the "Authorization" section.
     name: gsuite-chromebrowserdevice-move-ou
   - arguments:
-      - description: The customerId is a unique identifier of the customer's Google account.
+      - description: The unique identifier of the customer's Google account.
         name: customer_id
         required: true
       - description: The unique ID of the device.
         name: device_id
       - auto: PREDEFINED
-        description: Field according to which to order by.
+        description: Field by which to order.
         name: order_by
         predefined:
           - id
@@ -2611,60 +2612,61 @@ script:
         predefined:
           - BASIC
           - FULL
-      - description: Search string using the list page query language described in the section below (Filter Query Language).
+      - description: Search string using the list page query language (Filter Query Language).
         name: query
       - auto: PREDEFINED
-        description: Whether to return results in ascending or descending order. Must be used with the orderBy parameter. "ASCENDING" - Ascending order. "DESCENDING" - Descending order.
+        description: "Whether to return results in ascending or descending order. Must be used with the orderBy parameter. Possible values are: ASCENDING, DESCENDING."
         name: sort_order
         predefined:
           - ASCENDING
           - DESCENDING
-      - description: 'The maximum number of policy schemas to return, default and maximum are 100.'
+      - description: The maximum number of policy schemas to return. Default and maximum are 100.
         name: page_size
         defaultValue: 100
-      - description: Page Token.
+      - description: Page token.
         name: page_token
-      - description: Limit.
-        name: limit
-    description: Retrieve all Chrome browser devices for an account or a specific Chrome browser device
+      - description: Limit of number of devices.
+        name: limit (default value 100)
+        defaultValue: 100
+    description: Retrieve all Chrome browser devices for an account or a specific Chrome browser device.
     name: gsuite-chromebrowserdevice-list
     outputs:
       - contextPath: GSuite.ChromeBrowserDevices.deviceId
         description: The unique Device ID for the device.
         type: String
       - contextPath: GSuite.ChromeBrowserDevices.kind
-        description: Device kind.
+        description: The type of device.
         type: String
       - contextPath: GSuite.ChromeBrowserDevices.osPlatform
-        description: Device OS Platform.
+        description: operating system platform.
         type: String
       - contextPath: GSuite.ChromeBrowserDevices.osVersion
-        description: Device OS Version.
+        description: Device operating system version.
         type: String
       - contextPath: GSuite.ChromeBrowserDevices.machineName
-        description: Device Machine Name.
+        description: Device machine name.
         type: String
       - contextPath: GSuite.ChromeBrowserDevices.lastRegistrationTime
-        description: Device Last Registration Time.
+        description: Device last registration time.
         type: String
       - contextPath: GSuite.ChromeBrowserDevices.lastActivityTime
-        description: Device Last Activity Time.
+        description: Device last activity time.
         type: String
       - contextPath: GSuite.ChromeBrowserDevices.osPlatformVersion
-        description: Device OS Platform Version.
+        description: Device operating system platform version.
         type: String
       - contextPath: GSuite.ChromeBrowserDevices.serialNumber
-        description: Device Serial Number.
+        description: Device serial number.
         type: String
       - contextPath: GSuite.ChromeBrowserDevices.virtualDeviceId
-        description: Device Virtual ID.
+        description: Device virtual ID.
         type: String
       - contextPath: GSuite.ChromeBrowserDevices.orgUnitPath
-        description: Device Organizational Unit Path.
+        description: Device organizational unit path.
         type: String
       - contextPath: GSuite.ChromeBrowserDevices.deviceIdentifiersHistory
-        description: Device Identifier History.
-        type: Array
+        description: Device identifier history.
+        type: String
   - arguments:
       - description: ID of the Google Workspace account or literal 'my_customer' for the customer associated with the request.
         name: customer_id
@@ -2698,7 +2700,7 @@ script:
              ]
           }
         name: policy_raw_json
-      - description: Entry Id of the file that contains JSON representation of the ModifyGroupPolicyRequest.
+      - description: Entry ID of the file that contains JSON representation of the ModifyGroupPolicyRequest.
         name: policy_field_json_entry_id
       - description: |-
           The target resource on which this policy is applied. The following resources are supported:
@@ -2713,77 +2715,77 @@ script:
           A string containing a list of "key": "value" pairs. Example: ""name": "wrench", "mass": "1.3kg", "count": "3"".
 
         name: additional_target_keys
-      - description: "The fully qualified name of the policy schema that is being inherited."
+      - description: The fully qualified name of the policy schema that is being inherited.
         name: policy_schema
-      - description: "The value of the policy that is compatible with the schema that it is associated with Struct format."
+      - description: The value of the policy that is compatible with the schema that it is associated with Struct format.
         name: policy_value
       - description: |-
           Policy fields to update. Only fields in this mask will be updated; other fields in policyValue will be ignored (even if they have values). If a field is in this list it must have a value in 'policyValue'.
           This is a comma-separated list of fully qualified names of fields. Example: "user.displayName,photo".
           Field mask format.
         name: update_mask
-    description:  Delete multiple policy values that are applied to a specific group. All targets must have the same target format. That is to say that they must point to the same target resource and must have the same keys specified in additionalTargetKeyNames, though the values for those keys may be different. On failure the request will return the error details as part of the google.rpc.Status.
+    description: Modifies multiple policy values that are applied to a specific group. All targets must have the same target format. That is to say that they must point to the same target resource and must have the same keys specified in additionalTargetKeyNames, though the values for those keys may be different. On failure the request will return the error details as part of the google.rpc.Status.
     name: gsuite-policy-modify
   - arguments:
-      - description: 'ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.'
+      - description: ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.
         name: customer_id
         required: true
-      - description: 'Required when asking for a specific policy. The policy schema resource name to query.'
+      - description: The policy schema resource name to query. Required when asking for a specific policy.
         name: schema_name
-      - description: 'The schema filter is used to find a particular schema based on fields like its resource name, description and additionalTargetKeyNames.'
+      - description: The schema filter is used to find a particular schema based on fields like its resource name, description and additionalTargetKeyNames.
         name: filter
-      - description: 'The maximum number of policy schemas to return, defaults to 100 and has a maximum of 1000.'
+      - description: The maximum number of policy schemas to return. Defaults to 100 and has a maximum of 1000.
         name: page_size
         defaultValue: 100
-      - description: Page Token.
+      - description: Page token.
         name: page_token
-      - description: Limit.
+      - description: Limit of policies returned.
         name: limit
     description: Gets a list of policy schemas that match a specified filter value for a given customer.
     name: gsuite-policy-schemas-list
     outputs:
       - contextPath: GSuite.PolicySchema.name
-        description: Policy Name.
+        description: Policy name.
         type: String
       - contextPath: GSuite.PolicySchema.policyDescription
-        description: Policy Description.
+        description: Policy description.
         type: String
       - contextPath: GSuite.PolicySchema.definition
-        description: Policy Definition.
+        description: Policy definition.
         type: Array
       - contextPath: GSuite.PolicySchema.fieldDescriptions
-        description: Policy File Description.
+        description: Policy file description.
         type: Array
       - contextPath: GSuite.PolicySchema.notices
-        description: Policy Notice.
+        description: Policy notice.
         type: Array
       - contextPath: GSuite.PolicySchema.supportUri
-        description: Policy Support URI.
+        description: Policy support URI.
         type: String
       - contextPath: GSuite.PolicySchema.schemaName
-        description: Policy Schema Name.
+        description: Policy schema name.
         type: String
       - contextPath: GSuite.PolicySchema.validTargetResources
-        description: Policy ValidTarget Resources.
+        description: Policy valid target resources.
         type: Array
       - contextPath: GSuite.PolicySchema.policyApiLifecycle
-        description: Policy API Lifecycle.
+        description: Policy API lifecycle.
         type: String
       - contextPath: GSuite.PolicySchema.categoryTitle
-        description: Policy Category Title.
+        description: Policy category title.
         type: String
       - contextPath: GSuite.PolicySchema.supportedPlatforms
-        description: Policy Supported Platforms.
+        description: Policy supported platforms.
         type: String
   - arguments:
-      - description: 'ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.'
+      - description: ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.
         name: customer_id
         required: true
-      - description: 'Specify a schema name to view a particular schema, for example: chrome.users.ShowLogoutButton, Please read https://developers.google.com/chrome/policy/guides/policy-schemas for details on schema namespaces.'
+      - description: 'Specify a schema name to view a particular schema, for example: chrome.users.ShowLogoutButton. See https://developers.google.com/chrome/policy/guides/policy-schemas for details on schema namespaces.'
         name: policy_schema_filter
         required: true
       - auto: PREDEFINED
-        description: Type of target, can be Group or Organizational Unit.
+        description: Type of target.
         name: target_type
         required: true
         predefined:
@@ -2794,26 +2796,31 @@ script:
         required: true
       - description: 'Map (key: string, value: string) containing the additional target key name and value pairs used to further identify the target of the policy.'
         name: additional_target_keys
-      - description: 'The maximum number of policy schemas to return, defaults to 100 and has a maximum of 1000.'
+      - description: The maximum number of policy schemas to return. Defaults to 100 and has a maximum of 1000.
         name: page_size
         defaultValue: '100'
-      - description: Page Token.
+      - description: Page token.
         name: page_token
-      - description: Limit.
+      - description: Limit of policies returned.
         name: limit
+        defaultValue: 100
     description: Gets the resolved policy values for a list of policies that match a search query.
     name: gsuite-policy-resolve
     outputs:
-      - contextPath: GSuite.Policy.targetKey
-        description: Policy Target Key.
-      - contextPath: GSuite.Policy.value
-        description: Policy Value.
-      - contextPath: GSuite.Policy.sourceKey
-        description: Policy Source Key.
-      - contextPath: GSuite.Policy.addedSourceKey
-        description: Policy Added Source Key.
+      - contextPath: GSuite.Policy.targetKey.targetResource
+        description: Policy target key target resource.
+      - contextPath: GSuite.Policy.targetKey.additionalTargetKeys
+        description: Policy target key additional target keys.
+      - contextPath: GSuite.Policy.value.policySchema
+        description: Policy schema value
+      - contextPath: GSuite.Policy.value.value
+        description: Policy value.
+      - contextPath: GSuite.Policy.sourceKey.targetResource
+        description: Policy source key target resource.
+      - contextPath: GSuite.Policy.addedSourceKey.targetResource
+        description: Policy added source key target resource.
   - arguments:
-      - description: 'ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.'
+      - description: ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.
         name: customer_id
         required: true
       - description: |-

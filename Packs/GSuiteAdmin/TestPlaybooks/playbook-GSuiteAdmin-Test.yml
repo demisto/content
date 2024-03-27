@@ -101,7 +101,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -164,7 +164,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -207,7 +207,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1070
+          "y": 1245
         }
       }
     note: false
@@ -243,7 +243,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 1420
         }
       }
     note: false
@@ -286,7 +286,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1595
         }
       }
     note: false
@@ -332,7 +332,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1770
         }
       }
     note: false
@@ -380,7 +380,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1945
         }
       }
     note: false
@@ -407,8 +407,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 2635
+          "x": 50,
+          "y": 2820
         }
       }
     note: false
@@ -446,7 +446,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2470
         }
       }
     note: false
@@ -487,7 +487,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -522,7 +522,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2190
+          "y": 2645
         }
       }
     note: false
@@ -538,7 +538,7 @@ tasks:
     taskid: c95b3b0d-d28e-4432-8fce-3d53e0f99be8
     type: regular
     task:
-      id: c95b3b0d-d28e-4432-8fce-3d53e0f99be8
+      id: 97ba6e1a-c4eb-411f-802b-b739a7497acf
       version: -1
       name: gsuite-user-delete
       description: Deletes a user.
@@ -548,7 +548,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "60"
     scriptarguments:
       admin_email:
         simple: admin@demistodev.com
@@ -559,7 +559,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
+          "x": 50,
           "y": 370
         }
       }
@@ -586,7 +586,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "50"
+      - "58"
     scriptarguments:
       user_key:
         simple: xsoar11@demistodev.com
@@ -595,8 +595,83 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 570,
-          "y": 1840
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: bd9b20c4-d7f6-4c56-8828-d8055d0f6bf4
+    type: regular
+    task:
+      id: bd9b20c4-d7f6-4c56-8828-d8055d0f6bf4
+      version: -1
+      name: gsuite-user-reset-password
+      description: Retreive a group's details given a group key.
+      script: '|||gsuite-user-reset-password'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      user_key:
+        simple: ${GSuite.User.primaryEmail}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: ee119183-9d4d-4977-8a80-9c2090c4764d
+    type: regular
+    task:
+      id: ee119183-9d4d-4977-8a80-9c2090c4764d
+      version: -1
+      name: delete-context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -611,9 +686,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2650,
-        "width": 910,
-        "x": 40,
+        "height": 2835,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }

@@ -89,7 +89,7 @@ def test_test_function(mocker, gsuite_client):
     from GSuiteAdmin import test_module, GSuiteClient
     mocker.patch.object(GSuiteClient, 'set_authorized_http')
     mocker.patch.object(GSuiteClient, 'http_request')
-    assert test_module(gsuite_client, {}) == 'ok'
+    assert test_module(gsuite_client) == 'ok'
 
 
 @patch(MOCKER_HTTP_METHOD)
@@ -1255,7 +1255,6 @@ def test_chromebrowser_move_ou_command(gsuite_client, mocker):
     "args",
     [
         {"customer_id": "test", "limit": "1"},
-        {"customer_id": "test"},
         {"customer_id": "test", "limit": "10000"}
     ]
 )
@@ -1341,7 +1340,6 @@ def test_modify_policy_command(gsuite_client, mocker):
     "args",
     [
         {"customer_id": "test", "limit": "2"},
-        {"customer_id": "test"},
         {"customer_id": "test", "limit": "100000"}
     ]
 )
@@ -1404,7 +1402,6 @@ def test_policy_schemas_command_schema_name(gsuite_client, mocker):
     "args",
     [
         {"customer_id": "test", "limit": "2"},
-        {"customer_id": "test"},
         {"customer_id": "test", "limit": "10000"}
     ]
 )

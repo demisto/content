@@ -176,6 +176,21 @@ class Client(GSuiteClient):
         super().set_authorized_http(scopes=scopes, subject=subject, timeout=timeout)
 
 
+def return_file_from_entry_id(entry_id):  # pragma: no cover
+    try:
+        file_info = demisto.getFilePath(entry_id)
+
+    except Exception as e:
+        return_error(f"Failed to get the file path for entry: {entry_id} the error message was {str(e)}")
+
+    file_path = file_info.get("path")
+
+    # Open file and read data
+    with open(file_path, "r") as f:  # type: ignore
+        dict_list = json.load(f)
+    return dict_list
+
+
 def prepare_output_user_alias_add(alias: dict[str, Any]) -> list[dict[str, Any]]:
     """
     To create context output for gsuite-user-alias-add.
@@ -449,7 +464,7 @@ def prepare_args_for_custom_user_schema(args: dict[str, str]) -> dict[str, str]:
     if args.get('field_raw_json'):
         field_json = GSuiteClient.safe_load_non_strict_json(args['field_raw_json'])
     elif args.get('field_json_entry_id'):
-        field_json = safe_load_json(args['field_json_entry_id'])
+        field_json = return_file_from_entry_id(args['field_json_entry_id'])
     else:
         raise ValueError(MESSAGES['REQUIRED_ARGS_CUSTOM_SCHEMA'])
 
@@ -539,7 +554,7 @@ def is_email_valid(email: str) -> bool:
 
 
 @logger
-def test_module(client: Client, params) -> str:
+def test_module(client: Client) -> str:
     """
     Performs test connectivity by valid http response
 
@@ -1036,7 +1051,7 @@ def datatransfer_request_create_command(client: Client, args: dict[str, str]) ->
     if args.get('applications_raw_json'):
         app_payload = GSuiteClient.safe_load_non_strict_json(args['applications_raw_json'])
     elif args.get('applications_raw_json_entry_id'):
-        app_payload = safe_load_json(args['applications_raw_json_entry_id'])
+        app_payload = return_file_from_entry_id(args['applications_raw_json_entry_id'])
 
     request_payload = prepare_datatransfer_payload_from_arguments(args)
 
@@ -1533,8 +1548,7 @@ def chromebrowser_move_ou_command(client: Client, args: dict[str, str]) -> str:
     """
     client.set_authorized_http(scopes=SCOPES['CHROME_BROWSERS'])
     customer_id = args.get('customer_id', '')
-    resource_ids = args.get('resource_ids', '')
-    resource_ids_list = resource_ids.split(',')
+    resource_ids_list = argToList(args.get('resource_ids', ''))
     org_unit_path = args.get('org_unit_path', '')
     full_url = f'https://www.googleapis.com/admin/directory/v1.1beta1/customer/{customer_id}' \
                f'/devices/chromebrowsers/moveChromeBrowsersToOu'
@@ -1589,31 +1603,18 @@ def chromebrowser_list_command(client: Client, args: dict[str, str]) -> CommandR
         response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
         cb_list_resp.append(response)
     else:
-        params_for_command = assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path, page_token,
-                                                              page_size)
-        if limit:
-            if int(limit) <= API_LIMIT:
-                page_size = limit
-                params_for_command = assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path,
-                                                                      page_token, page_size)
-                response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
-                cb_list_resp.extend(response['browsers'])
+        while len(cb_list_resp) < int(limit):
+            if int(limit) - len(cb_list_resp) > API_LIMIT:
+                page_size = str(API_LIMIT)
             else:
-                while len(cb_list_resp) < int(limit):
-                    if int(limit) - len(cb_list_resp) > API_LIMIT:
-                        page_size = str(API_LIMIT)
-                    else:
-                        page_size = str(int(limit) - len(cb_list_resp))
-                    params_for_command = assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path,
-                                                                          page_token, page_size)
-                    response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
-                    page_token = response.get('nextPageToken', '')
-                    cb_list_resp.extend(response['browsers'])
-                    if not page_token:
-                        break
-        else:
+                page_size = str(int(limit) - len(cb_list_resp))
+            params_for_command = assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path,
+                                                                  page_token, page_size)
             response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+            page_token = response.get('nextPageToken', '')
             cb_list_resp.extend(response['browsers'])
+            if not page_token:
+                break
 
     readable_output = tableToMarkdown(HR_MESSAGES['CHROME_BROWSER_LIST'].format(device_id), cb_list_resp,
                                       ['deviceId', 'osPlatform', 'osVersion', 'machineName', 'serialNumber', 'orgUnitPath'],
@@ -1652,13 +1653,15 @@ def modify_policy_command(client: Client, args: dict[str, str]) -> str:
         full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policies/orgunits:batchModify'
         target_resource_customized = f'orgunits/{target_resource}'
 
-    atk_temp = '{' + additional_target_keys + '}'
-    atk_dict = json.loads(atk_temp)
+    if additional_target_keys:
+        atk_dict = json.loads(additional_target_keys)
+    else:
+        atk_dict = {}
 
     if policy_raw_json:
         app_payload = GSuiteClient.safe_load_non_strict_json(policy_raw_json)
     elif policy_field_json_entry_id:
-        app_payload = safe_load_json(policy_field_json_entry_id)
+        app_payload = return_file_from_entry_id(policy_field_json_entry_id)
     else:
         app_payload = {
             "requests": [
@@ -1705,8 +1708,10 @@ def policy_resolve_command(client: Client, args: dict[str, str]) -> CommandResul
     page_token = args.get('page_token', '')
     limit = args.get('limit', '')
 
-    atk_temp = '{' + additional_target_keys + '}'
-    atk_dict = json.loads(atk_temp)
+    if additional_target_keys:
+        atk_dict = json.loads(additional_target_keys)
+    else:
+        atk_dict = {}
 
     if target_type == 'Group':
         target_resource_customized = f'groups/{target_resource}'
@@ -1726,27 +1731,18 @@ def policy_resolve_command(client: Client, args: dict[str, str]) -> CommandResul
     full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policies:resolve'
 
     policy_resolved_resp = []
-    if limit:
-        if int(limit) <= API_LIMIT:
-            app_payload['page_size'] = limit
-            response = client.http_request(full_url=full_url, method='POST', body=app_payload)
-            policy_resolved_resp.extend(response['resolvedPolicies'])
+    while len(policy_resolved_resp) < int(limit):
+        if int(limit) - len(policy_resolved_resp) > API_LIMIT:
+            page_size = str(API_LIMIT)
         else:
-            while len(policy_resolved_resp) < int(limit):
-                if int(limit) - len(policy_resolved_resp) > API_LIMIT:
-                    page_size = str(API_LIMIT)
-                else:
-                    page_size = str(int(limit) - len(policy_resolved_resp))
-                app_payload['pageSize'] = page_size
-                app_payload['pageToken'] = page_token
-                response = client.http_request(full_url=full_url, method='POST', body=app_payload)
-                page_token = response.get('nextPageToken', '')
-                policy_resolved_resp.extend(response['resolvedPolicies'])
-                if not page_token:
-                    break
-    else:
+            page_size = str(int(limit) - len(policy_resolved_resp))
+        app_payload['pageSize'] = page_size
+        app_payload['pageToken'] = page_token
         response = client.http_request(full_url=full_url, method='POST', body=app_payload)
+        page_token = response.get('nextPageToken', '')
         policy_resolved_resp.extend(response['resolvedPolicies'])
+        if not page_token:
+            break
 
     hr_from_response = []
     for res in policy_resolved_resp:
@@ -1799,28 +1795,17 @@ def policy_schemas_command(client: Client, args: dict[str, str]) -> CommandResul
         response = client.http_request(full_url=full_url, method='GET')
         policy_schemas_resp.append(response)
     else:
-        params_for_command = assign_params_policy_schemas(filter, page_size, page_token)
-        if limit:
-            if int(limit) <= API_LIMIT:
-                page_size = limit
-                params_for_command = assign_params_policy_schemas(filter, page_size, page_token)
-                response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
-                policy_schemas_resp.extend(response['policySchemas'])
+        while len(policy_schemas_resp) < int(limit):
+            if int(limit) - len(policy_schemas_resp) > API_LIMIT:
+                page_size = str(API_LIMIT)
             else:
-                while len(policy_schemas_resp) < int(limit):
-                    if int(limit) - len(policy_schemas_resp) > API_LIMIT:
-                        page_size = str(API_LIMIT)
-                    else:
-                        page_size = str(int(limit) - len(policy_schemas_resp))
-                    params_for_command = assign_params_policy_schemas(filter, page_size, page_token)
-                    response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
-                    page_token = response.get('nextPageToken', '')
-                    policy_schemas_resp.extend(response['policySchemas'])
-                    if not page_token:
-                        break
-        else:
+                page_size = str(int(limit) - len(policy_schemas_resp))
+            params_for_command = assign_params_policy_schemas(filter, page_size, page_token)
             response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+            page_token = response.get('nextPageToken', '')
             policy_schemas_resp.extend(response['policySchemas'])
+            if not page_token:
+                break
 
     # Readable Output
     readable_output = tableToMarkdown(HR_MESSAGES['POLICY_LIST'], policy_schemas_resp,
@@ -1851,8 +1836,10 @@ def group_delete_command(client: Client, args: dict[str, str]) -> str:
     additional_target_keys = args.get('additional_target_keys', '')
     policy_schema = args.get('policy_schema', '')
 
-    atk_temp = '{' + additional_target_keys + '}'
-    atk_dict = json.loads(atk_temp)
+    if additional_target_keys:
+        atk_dict = json.loads(additional_target_keys)
+    else:
+        atk_dict = {}
 
     if target_type == 'Group':
         target_resource_customized = f'groups/{target_resource}'
@@ -1863,7 +1850,7 @@ def group_delete_command(client: Client, args: dict[str, str]) -> str:
     if policy_raw_json:
         app_payload = GSuiteClient.safe_load_non_strict_json(policy_raw_json)
     elif policy_field_json_entry_id:
-        app_payload = safe_load_json(policy_field_json_entry_id)
+        app_payload = return_file_from_entry_id(policy_field_json_entry_id)
     else:
         app_payload = {
             "requests": [
