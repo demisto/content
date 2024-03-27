@@ -70,10 +70,10 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
         issue.create_comment(COMMENT_MESSAGES.build_request_accepted)
         # Casting to PR object due to Module limitation (Issue object does not have a `branch name` attribute).
         pull_request = issue.as_pull_request()
-        github_branch_name = pull_request.head.ref # change to pull_request.base.ref
+        github_branch_name = pull_request.base.ref
 
         # TODO: remove this specific if statement when done testing
-        if (github_branch_name == "test-pr/add-trigger-contribution-build-job"):  # noqa: SIM102
+        if github_branch_name == "contrib/samuelFain_master-1":  # noqa: SIM102
 
             # get the corresponding GitLab branch object corresponding to the GitHub branch
             if branch := gitlab_project.branches.get(github_branch_name):
