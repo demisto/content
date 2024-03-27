@@ -43,8 +43,8 @@ def run_prisma_cloud_compute_hosts_scan_list(hostname: str) -> list:
         return_error("No valid results found in the command output.")
 
     # Extract specific details from the command results
-    contents_list: list[dict[str, Any]] = result[0]['Contents'][0]
-    compliance_issues = contents_list['complianceIssues']
+    contents_list = result[0]['Contents'][0]
+    compliance_issues = contents_list.get('complianceIssues')
 
     # Check if compliance_issues is empty
     if not compliance_issues:

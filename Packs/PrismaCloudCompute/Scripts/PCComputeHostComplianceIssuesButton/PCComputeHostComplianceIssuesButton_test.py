@@ -95,4 +95,3 @@ def test_filter_compliance_issues(args, expected):
 def test_process_and_output_compliance_issues(args, expected):
     processed_results = process_and_output_compliance_issues(args.get('compliance_issues'), args.get('hostname'))
     assert processed_results.outputs['compliance_issues'] == expected
-
