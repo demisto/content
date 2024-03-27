@@ -1,5 +1,5 @@
 category: Deception & Breach Simulation
-description: SafeBreach automatically executes thousands of breach methods from its extensiveand growing Hacker’s Playbook™ to validate security control effectiveness. Simulations are automatically correlated with network, endpoint, and SIEM solutions providing data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.
+description: SafeBreach automatically executes thousands of breach methods from its extensive and growing Hacker’s Playbook™ to validate security control effectiveness. Simulations are automatically correlated with network, endpoint, and SIEM solutions providing data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.
 commonfields:
   id: Safebreach
   version: -1
