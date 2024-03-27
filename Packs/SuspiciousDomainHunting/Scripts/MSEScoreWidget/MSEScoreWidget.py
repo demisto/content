@@ -41,10 +41,10 @@ def create_widget_entry(mse_score, ssim_score, color_mse, color_ssim) -> dict:
 
 def get_color(num: int | float) -> str:
     """
-    Gets a CVSS score as an integer\float and sends back the correct hex code for a color as a string.
+    Gets a MSE score as an integer\float and sends back the correct hex code for a color as a string.
 
     Args:
-        num (int\float): A CVE CVSS score.
+        num (int\float): A MSE score.
 
     Returns:
         str: The color of the score in hex format

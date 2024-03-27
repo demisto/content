@@ -1,7 +1,6 @@
 commonfields:
-  id: ef4cf928-3878-4a43-8006-c1f0015dedab
-  version: 1
-vcShouldKeepItemLegacyProdMachine: false
+  id: SSIMScoreWidget
+  version: -1
 name: SSIMScoreWidget
 script: ''
 type: python
@@ -11,9 +10,10 @@ comment: This dynamic automation parses the SSIM results and presents it in the 
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.10.13.74666
+dockerimage: demisto/python3:3.10.14.90585
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

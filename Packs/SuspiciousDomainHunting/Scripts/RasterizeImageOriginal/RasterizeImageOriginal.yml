@@ -1,7 +1,6 @@
 commonfields:
-  id: 29f95465-a935-4c54-8ff1-2671fa66fea1
-  version: 2
-vcShouldKeepItemLegacyProdMachine: false
+  id: RasterizeImageOriginal
+  version: -1
 name: RasterizeImageOriginal
 script: ''
 type: python
@@ -10,9 +9,10 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
 dockerimage: devdemisto/processing-image-file:1.0.0.80255
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

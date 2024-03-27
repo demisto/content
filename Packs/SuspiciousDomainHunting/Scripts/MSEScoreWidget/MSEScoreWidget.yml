@@ -1,7 +1,6 @@
 commonfields:
-  id: c4e44f1c-c085-487f-8a90-bfcc37bdfaca
-  version: 1
-vcShouldKeepItemLegacyProdMachine: false
+  id: MSEScoreWidget
+  version: -1
 name: MSEScoreWidget
 script: ''
 type: python
@@ -11,9 +10,10 @@ comment: This dynamic automation parses the MSE results and presents it in the l
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.10.13.74666
+dockerimage: demisto/python3:3.10.14.90585
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
