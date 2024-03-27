@@ -210,3 +210,18 @@ def test_next_trigger_time(num_fetched_events, max_fetch_events, new_next_run, e
     from NetskopeEventCollector import next_trigger_time
     next_trigger_time(num_fetched_events, max_fetch_events, new_next_run)
     assert new_next_run == expected_result
+
+
+def test_fix_last_run():
+    from NetskopeEventCollector import remove_unsupported_event_types
+    last_run = {
+        "alert": {"operation": "next"},
+        "audit": {"operation": "next"},
+        "network": {"operation": "next"},
+        "nextTrigger": "0",
+        "page": {"operation": "next"},
+    }
+
+    supported_event_types = 'alerts'
+    remove_unsupported_event_types(last_run, supported_event_types)
+    assert last_run == {"nextTrigger": "0", "alert": {"operation": "next"}}

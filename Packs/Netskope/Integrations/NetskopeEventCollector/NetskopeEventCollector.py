@@ -152,6 +152,17 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
     return secs_from_beginning > EXECUTION_TIMEOUT_SECONDS
 
 
+def remove_unsupported_event_types(last_run_dict, event_types_to_fetch):
+    keys_to_remove = []
+
+    for key in last_run_dict:
+        if (key in ALL_SUPPORTED_EVENT_TYPES) and (key not in event_types_to_fetch):
+            keys_to_remove.append(key)
+
+    for key in keys_to_remove:
+        last_run_dict.pop(key, None)
+
+
 def setup_last_run(last_run_dict: dict, event_types_to_fetch: list[str]) -> dict:
     """
     Setting the last_tun object with the right operation to be used throughout the integration run.
@@ -162,6 +173,7 @@ def setup_last_run(last_run_dict: dict, event_types_to_fetch: list[str]) -> dict
     Returns:
         dict: the modified last run dictionary with the needed operation
     """
+    remove_unsupported_event_types(last_run_dict, event_types_to_fetch)
     first_fetch = int(arg_to_datetime('now').timestamp())  # type: ignore[union-attr]
     for event_type in event_types_to_fetch:
         if not last_run_dict.get(event_type, {}).get('operation'):
@@ -385,6 +397,10 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
+        last_run = demisto.getLastRun()
+        last_run.pop('nextTrigger', None)
+        demisto.setLastRun(last_run)
+        demisto.debug(f'last run after removing nextTrigger {last_run}')
         return_error(f'Failed to execute {command_name} command.\nError:\n{str(e)}')
 
 
