@@ -130,6 +130,7 @@ class RequestArguments:
                  url_truncate: bool = False,
                  maximum_cidr_size: int = MAXIMUM_CIDR_SIZE_DEFAULT,
                  no_wildcard_tld: bool = False,
+                 raw: bool = False,
                  ):
 
         self.query = query
@@ -149,7 +150,7 @@ class RequestArguments:
         self.url_truncate = url_truncate
         self.maximum_cidr_size = maximum_cidr_size
         self.no_wildcard_tld = no_wildcard_tld
-
+        self.raw = raw
         if category_attribute is not None:
             category_attribute_list = argToList(category_attribute)
 
@@ -264,7 +265,7 @@ def log_iocs_file_data(formatted_indicators: str, max_length: int = 100) -> None
 
 
 @debug_function
-def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
+def create_new_edl(request_args: RequestArguments, extensive_logging: bool = False) -> tuple[str, int]:
     """
     Get indicators from the server using IndicatorsSearcher and format them.
 
@@ -289,7 +290,10 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
         if request_args.drop_invalids or request_args.collapse_ips != "Don't Collapse":
             # Because there may be illegal indicators or they may turn into cider, the limit is increased
             indicator_searcher.limit = int(limit * INCREASE_LIMIT)
-        new_iocs_file, original_indicators_count = get_indicators_to_format(indicator_searcher, request_args)
+        new_iocs_file, original_indicators_count = get_indicators_to_format(indicator_searcher, request_args, extensive_logging)
+        if request_args.raw:
+            return new_iocs_file.read(), original_indicators_count
+
         # we collect first all indicators because we need all ips to collapse_ips
         new_iocs_file = create_text_out_format(new_iocs_file, request_args)
         new_iocs_file.seek(0)
@@ -305,7 +309,9 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int]:
                 formatted_indicators += line
 
     else:
-        new_iocs_file, original_indicators_count = get_indicators_to_format(indicator_searcher, request_args)
+        new_iocs_file, original_indicators_count = get_indicators_to_format(indicator_searcher, request_args, extensive_logging)
+        if request_args.raw:
+            return new_iocs_file.read(), original_indicators_count
         new_iocs_file.seek(0)
         formatted_indicators = new_iocs_file.read()
     new_iocs_file.close()
@@ -331,7 +337,8 @@ def replace_field_name_to_output_format(fields: str):
 
 @debug_function
 def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
-                             request_args: RequestArguments) -> tuple[IO | IO[str], int]:
+                             request_args: RequestArguments,
+                             extensive_logging: bool = False) -> tuple[IO | IO[str], int]:
     """
     Finds indicators using demisto.searchIndicators, and returns the indicators in file written in the requested format
     Parameters:
@@ -341,6 +348,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
         tuple[IO | IO[str], int]: A tuple of indicators in the requested format (IO | IO[str]),
             and the total number of indicators found by indicator_searcher (int).
     """
+    indicators = []
     f = tempfile.TemporaryFile(mode='w+t')
     list_fields = replace_field_name_to_output_format(request_args.fields_to_present)
     headers_was_writen = False
@@ -353,6 +361,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
                 demisto.debug(f"Parsing the following indicator: {ioc.get('value')}")
 
                 ioc_counter += 1
+                indicators.append(ioc.get('value'))
                 if request_args.out_format == FORMAT_PROXYSG:
                     files_by_category = create_proxysg_out_format(ioc, files_by_category, request_args)
 
@@ -383,8 +392,9 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher,
             # NG + XSIAM can recover from a shutdown
             if version.get('platform') == 'x2' or is_demisto_version_ge('8'):
                 raise SystemExit('Encountered issue in Elastic Search query. Restarting container and trying again.')
-
-    demisto.debug(f"Completed IOC search & format, found {ioc_counter} IOCs.")
+    demisto.debug(f"edl: Completed IOC search & format, found {ioc_counter} IOCs")
+    if extensive_logging:
+        demisto.debug(f"edl: Contents of search indicators: {indicators}")
     if request_args.out_format == FORMAT_JSON:
         f.write(']')
     elif request_args.out_format == FORMAT_PROXYSG:
@@ -689,7 +699,7 @@ def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) 
 
 
 @debug_function
-def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO, IO[str]]:
+def create_text_out_format(iocs: IO, request_args: RequestArguments, extensive_logging: bool = False) -> Union[IO, IO[str]]:
     """
     Create a list in new file of formatted_indicators
      * IP / CIDR:
@@ -762,13 +772,25 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Union[IO
             new_line = '\n'
     iocs.close()
     if len(ipv4_formatted_indicators) > 0:
+        demisto.debug(f"edl: length of ipv4_formatted_indicators: {len(ipv4_formatted_indicators)}")
+        if extensive_logging:
+            demisto.debug(f"edl: Original IPv4 indicators: {ipv4_formatted_indicators}")
         ipv4_formatted_indicators = ips_to_ranges(ipv4_formatted_indicators, request_args.collapse_ips)
+        demisto.debug(f"edl: length of formatted IPv4 indicators: {len(ipv4_formatted_indicators)}")
+        if extensive_logging:
+            demisto.debug(f"edl: Formatted IPv4 indicators: {ipv4_formatted_indicators}")
         for ip in ipv4_formatted_indicators:
             formatted_indicators.write(new_line + str(ip))
             new_line = '\n'
 
     if len(ipv6_formatted_indicators) > 0:
+        demisto.debug(f"edl: length of ipv6_formatted_indicators: {len(ipv6_formatted_indicators)}")
+        if extensive_logging:
+            demisto.debug(f"edl: Original IPv6 indicators: {ipv6_formatted_indicators}")
         ipv6_formatted_indicators = ips_to_ranges(ipv6_formatted_indicators, request_args.collapse_ips)
+        demisto.debug(f"edl: length of formatted IPv6 indicators: {len(ipv6_formatted_indicators)}")
+        if extensive_logging:
+            demisto.debug(f"edl: Formatted IPv6 indicators: {ipv6_formatted_indicators}")
         for ip in ipv6_formatted_indicators:
             formatted_indicators.write(new_line + str(ip))
             new_line = '\n'
@@ -910,8 +932,9 @@ def route_edl() -> Response:
 
     request_args = get_request_args(request.args, params)
     on_demand = params.get('on_demand')
+    extensive_logging = argToBoolean(params.get('extensive_logging', False))
     created = datetime.now(timezone.utc)
-    edl_data, original_indicators_count = get_edl_on_demand() if on_demand else create_new_edl(request_args)
+    edl_data, original_indicators_count = get_edl_on_demand() if on_demand else create_new_edl(request_args, extensive_logging)
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
     etag = f'"{hashlib.sha1(edl_data.encode()).hexdigest()}"'  # nosec
     edl_size = 0
@@ -986,7 +1009,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     maximum_cidr_size = try_parse_integer(request_args.get('mc', params.get(
         'maximum_cidr_size', MAXIMUM_CIDR_SIZE_DEFAULT)), EDL_CIDR_SIZR_MSG)
     no_wildcard_tld = argToBoolean(request_args.get('nt', params.get('no_wildcard_tld')))
-
+    raw = argToBoolean(request_args.get("raw", False))
     # handle flags
     if drop_invalids == '':
         drop_invalids = True
@@ -1049,7 +1072,8 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
                             strip_protocol,
                             url_truncate,
                             maximum_cidr_size,
-                            no_wildcard_tld
+                            no_wildcard_tld,
+                            raw=raw
                             )
 
 
@@ -1232,7 +1256,6 @@ def main():
         err_msg: str = 'If using credentials, both username and password should be provided.'
         demisto.debug(err_msg)
         raise DemistoException(err_msg)
-
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     commands = {
