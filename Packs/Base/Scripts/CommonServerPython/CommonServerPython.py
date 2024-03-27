@@ -8916,8 +8916,7 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, empty_valid_codes=None, params_parser=None, with_metrics=False,
-                          **kwargs):
+                          error_handler=None, empty_valid_codes=None, params_parser=None, with_metrics=False, **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -9275,6 +9274,74 @@ if 'requests' in sys.modules:
                     return_results(cast(CommandResults, self.execution_metrics.metrics))
             except AttributeError:
                 pass
+
+
+def generic_http_request(method,
+                         server_url,
+                         timeout=10,
+                         verify=True,
+                         proxy=False,
+                         client_headers=None,
+                         headers=None,
+                         url_suffix=None,
+                         data=None,
+                         ok_codes=None,
+                         auth=None,
+                         error_handler=None,
+                         files=None,
+                         params=None,
+                         retries=0,
+                         resp_type='json',
+                         status_list_to_retry=None
+                         ):
+    """
+        Performs a generic HTTP request to the specified server URL.
+
+        This method provides a flexible way to make various HTTP requests for integrations that do not implement BaseClient.
+
+        Args:
+            method (str): HTTP request method (e.g., GET, POST, PUT, DELETE).
+            server_url (str): Base URL of the server.
+            timeout (int, optional): Timeout in seconds for the request (defaults to 10).
+            verify (bool, optional): Whether to verify SSL certificates (defaults to True).
+            proxy (bool or str, optional): Use a proxy server. Can be a boolean (defaults to False)
+                                           or a proxy URL string.
+            client_headers (dict, optional): Additional headers to be included in all requests
+                                             made by the client (overrides headers argument).
+            headers (dict, optional): Additional headers for this specific request.
+            url_suffix (str, optional): Path suffix to be appended to the server URL.
+            data (object, optional): Data to be sent in the request body (e.g., dictionary for POST requests).
+            ok_codes (list of int, optional): A list of HTTP status codes that are considered successful responses
+                                               (defaults to [200]).
+            auth (tuple, optional): Authentication credentials (username, password) for the request.
+            error_handler (callable, optional): Function to handle request errors.
+            files (dict, optional): Dictionary of files to be uploaded (for multipart/form-data requests).
+            params (dict, optional): URL parameters to be included in the request.
+            retries (int, optional): Number of times to retry the request on failure (defaults to 0).
+            retries (int, optional): Number of times to retry the request on failure (defaults to 0).
+            status_list_to_retry (int, optional): A set of integer HTTP status codes that we should force a retry on.
+                A retry is initiated if the request method is in ['GET', 'POST', 'PUT']
+                and the response status code is in ``status_list_to_retry``.
+            resp_type (str, optional): Determines which data format to return from the HTTP request. The default
+                is 'json'.
+
+        Returns:
+            Response object: The response object containing the response data and headers.
+
+        Raises:
+            exceptions.RequestException: If an error occurs during the request.
+    """
+    client = BaseClient(base_url=server_url,
+                        verify=verify,
+                        proxy=proxy,
+                        ok_codes=ok_codes,
+                        headers=client_headers,
+                        auth=auth,
+                        timeout=timeout
+                        )
+    return client._http_request(method=method, url_suffix=url_suffix, data=data, ok_codes=ok_codes, error_handler=error_handler,
+                                headers=headers, files=files, params=params, retries=retries, resp_type=resp_type,
+                                status_list_to_retry=status_list_to_retry)
 
 
 def batch(iterable, batch_size=1):
@@ -11832,6 +11899,32 @@ def comma_separated_mapping_to_dict(raw_text):
         mapping_dict[key] = value
     demisto.debug("comma_separated_mapping_to_dict << Resolved mapping: {mapping_dict}".format(mapping_dict=mapping_dict))
     return mapping_dict
+
+
+class ManagedSleep:
+    def __init__(self,):
+        """
+        Initializes the sleeper with the given TTL in seconds.
+
+        """
+        self.run_duration = demisto.getRunDuration()
+        self.start_time = time.time()
+
+    def sleep(self, duration_seconds):
+        """
+        Sleeps for the given duration, but raises an error if it would exceed the TTL.
+
+        Args:
+            duration_seconds: The desired sleep duration in seconds.
+
+        Raises:
+            ValueError: If the sleep duration would exceed the remaining TTL.
+        """
+        time_left = self.run_duration - (time.time() - self.start_time)
+        if duration_seconds > time_left:
+            raise ValueError("Requested sleep of {} seconds exceeds TTL of {} seconds.".format(duration_seconds,
+                                                                                               self.run_duration))
+        time.sleep(duration_seconds)
 
 
 ###########################################
