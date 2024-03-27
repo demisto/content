@@ -26,42 +26,7 @@ VMware Carbon Black Enterprise EDR is an advanced threat hunting and incident re
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-1. cb-eedr-alert-workflow-update
-2. cb-eedr-device-quarantine
-3. cb-eedr-device-unquarantine
-4. cb-eedr-device-background-scan-stop
-5. cb-eedr-device-background-scan
-6. cb-eedr-device-bypass
-7. cb-eedr-device-unbypass
-8. cb-eedr-device-policy-update
-9. cb-eedr-devices-list
-10. cb-eedr-list-alerts
-11. cb-eedr-watchlist-list
-12. cb-eedr-get-watchlist-by-id
-13. cb-eedr-watchlist-alerts-status
-14. cb-eedr-watchlist-alerts-enable
-15. cb-eedr-watchlist-alerts-disable
-16. cb-eedr-watchlist-create
-17. cb-eedr-watchlist-delete
-18. cb-eedr-watchlist-update
-19. cb-eedr-report-get
-20. cb-eedr-ioc-ignore-status
-21. cb-eedr-ioc-ignore
-22. cb-eedr-ioc-reactivate
-23. cb-eedr-report-ignore
-24. cb-eedr-report-reactivate
-25. cb-eedr-report-ignore-status
-26. cb-eedr-report-remove
-27. cb-eedr-report-create
-28. cb-eedr-report-update
-29. cb-eedr-file-device-summary
-30. cb-eedr-get-file-metadata
-31. cb-eedr-files-download-link-get
-32. cb-eedr-file-paths
-33. cb-eedr-process-search
-34. cb-eedr-events-by-process-get
-35. cb-eedr-process-search-results
-### 1. cb-eedr-alert-workflow-update
+### cb-eedr-alert-workflow-update
 ---
 Updates the workflow of a single event.
 ##### Required Permissions
@@ -109,13 +74,13 @@ RBAC Permissions Required - org.alerts.dismiss: EXECUTE
 ```
 
 ##### Human Readable Output
-### Successfully updated the alert: "A28C720DCBCD66333A624893AB1E0FE9"
-|changed_by|last_update_time|state|
-|---|---|---|
-| ATL5Y9DR4B | 2020-05-26T13:33:12.890Z | OPEN |
+>### Successfully updated the alert: "A28C720DCBCD66333A624893AB1E0FE9"
+>|changed_by|last_update_time|state|
+>|---|---|---|
+>| ATL5Y9DR4B | 2020-05-26T13:33:12.890Z | OPEN |
 
 
-### 2. cb-eedr-device-quarantine
+### cb-eedr-device-quarantine
 ---
 Quarantines a device.
 ##### Required Permissions
@@ -140,7 +105,7 @@ There is no context output for this command.
 ##### Human Readable Output
 The device ['1225783'] has been quarantined successfully.
 
-### 3. cb-eedr-device-unquarantine
+### cb-eedr-device-unquarantine
 ---
 Removes a device from quarantine.
 ##### Required Permissions
@@ -163,9 +128,9 @@ There is no context output for this command.
 ```!cb-eedr-device-unquarantine device_id="1225783"```
 
 ##### Human Readable Output
-The device ['1225783'] has been unquarantined successfully.
+>The device ['1225783'] has been unquarantined successfully.
 
-### 4. cb-eedr-device-background-scan-stop
+### cb-eedr-device-background-scan-stop
 ---
 Stops a background scan on the specified devices.
 ##### Required Permissions
@@ -188,9 +153,9 @@ There is no context output for this command.
 ```!cb-eedr-device-background-scan-stop device_id="1225783"```
 
 ##### Human Readable Output
-The device ['1225783'] background scan has been disabled successfully.
+>The device ['1225783'] background scan has been disabled successfully.
 
-### 5. cb-eedr-device-background-scan
+### cb-eedr-device-background-scan
 ---
 Start a background scan on device.
 ##### Required Permissions
@@ -213,9 +178,9 @@ There is no context output for this command.
 ```!cb-eedr-device-background-scan device_id="1225783"```
 
 ##### Human Readable Output
-The device ['1225783'] background scan has been enabled successfully.
+>The device ['1225783'] background scan has been enabled successfully.
 
-### 6. cb-eedr-device-bypass
+### cb-eedr-device-bypass
 ---
 Enable a bypass on device.
 ##### Required Permissions
@@ -238,9 +203,9 @@ There is no context output for this command.
 ```!cb-eedr-device-bypass device_id="1225783"```
 
 ##### Human Readable Output
-The device ['1225783'] bypass has been enabled successfully.
+>The device ['1225783'] bypass has been enabled successfully.
 
-### 7. cb-eedr-device-unbypass
+### cb-eedr-device-unbypass
 ---
 Disable a bypass on device.
 ##### Required Permissions
@@ -263,9 +228,9 @@ There is no context output for this command.
 ```!cb-eedr-device-unbypass device_id="1225783"```
 
 ##### Human Readable Output
-The device ['1225783'] bypass has been disabled successfully.
+>The device ['1225783'] bypass has been disabled successfully.
 
-### 8. cb-eedr-device-policy-update
+### cb-eedr-device-policy-update
 ---
 Update device policy.
 ##### Required Permissions
@@ -289,9 +254,9 @@ There is no context output for this command.
 ```!cb-eedr-device-policy-update device_id=1225783 policy_id=12064```
 
 ##### Human Readable Output
-The policy 12064 has been assigned to device ['1225783'] successfully.
+>The policy 12064 has been assigned to device ['1225783'] successfully.
 
-### 9. cb-eedr-devices-list
+### cb-eedr-devices-list
 ---
 List devices based on the search query.
 ##### Required Permissions
@@ -467,14 +432,14 @@ RBAC Permissions Required - device: READ
 ```
 
 ##### Human Readable Output
-### Devices list results
-|ID|LastContactTime|LastExternalIpAddress|LastInternalIpAddress|LastLocation|Name|OS|PolicyName|Quarantined|TargetPriority|status|
-|---|---|---|---|---|---|---|---|---|---|---|
-| 1244290 | 2020-05-26T13:32:36.272Z | 2.2.2.2 | 3.3.3.3 | OFFSITE | DESKTOP-ABCND73 | WINDOWS | test | false | HIGH | REGISTERED |
-| 127519 | 2020-05-26T13:32:36.257Z | 4.4.4.4 | 10.10.10.10 | OFFSITE | AGENT-PC | WINDOWS | Detection_Servers | false | HIGH | REGISTERED |
-| 5425783 | 2020-05-26T13:32:23.788Z | 8.8.8.8 | 10.10.10.10 | OFFSITE | Alphab-Win10-VM-1 | WINDOWS | test | false | HIGH | REGISTERED |
+>### Devices list results
+>|ID|LastContactTime|LastExternalIpAddress|LastInternalIpAddress|LastLocation|Name|OS|PolicyName|Quarantined|TargetPriority|status|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 1244290 | 2020-05-26T13:32:36.272Z | 2.2.2.2 | 3.3.3.3 | OFFSITE | DESKTOP-ABCND73 | WINDOWS | test | false | HIGH | REGISTERED |
+>| 127519 | 2020-05-26T13:32:36.257Z | 4.4.4.4 | 10.10.10.10 | OFFSITE | AGENT-PC | WINDOWS | Detection_Servers | false | HIGH | REGISTERED |
+>| 5425783 | 2020-05-26T13:32:23.788Z | 8.8.8.8 | 10.10.10.10 | OFFSITE | Alphab-Win10-VM-1 | WINDOWS | test | false | HIGH | REGISTERED |
 
-### 10. cb-eedr-list-alerts
+### cb-eedr-list-alerts
 ---
 Returns a list of alerts.
 ##### Required Permissions
@@ -636,14 +601,14 @@ RBAC Permissions Required - org.alerts: READ
 ```
 
 ##### Human Readable Output
-### Alerts list results
-|AlertID|CreateTime|DeviceID|DeviceName|DeviceOS|PolicyName|ProcessName|Type|WorkflowState|
-|---|---|---|---|---|---|---|---|---|
-| ED0C9E6AE0C0E631FABC7E145CE036A5 | 2020-05-13T13:31:15.024Z | 1234242 | DESKTOP-AB3H40D | WINDOWS | test1 | 067f1b8f1e0b2bfe286f5169e17834e8cf7f4123b8d97f28ea78995dc81b0e7b.exe | WATCHLIST | DISMISSED |
-| A28C720DCBCD77222A621233AB1E0FE9 | 2020-04-27T12:21:51.294Z | 3450646 | TESTERONAPPS-CBDEF-1 | WINDOWS | test | svchost.exe | WATCHLIST | OPEN |
+>### Alerts list results
+>|AlertID|CreateTime|DeviceID|DeviceName|DeviceOS|PolicyName|ProcessName|Type|WorkflowState|
+>|---|---|---|---|---|---|---|---|---|
+>| ED0C9E6AE0C0E631FABC7E145CE036A5 | 2020-05-13T13:31:15.024Z | 1234242 | DESKTOP-AB3H40D | WINDOWS | test1 | 067f1b8f1e0b2bfe286f5169e17834e8cf7f4123b8d97f28ea78995dc81b0e7b.exe | WATCHLIST | DISMISSED |
+>| A28C720DCBCD77222A621233AB1E0FE9 | 2020-04-27T12:21:51.294Z | 3450646 | TESTERONAPPS-CBDEF-1 | WINDOWS | test | svchost.exe | WATCHLIST | OPEN |
 
 
-### 11. cb-eedr-watchlist-list
+### cb-eedr-watchlist-list
 ---
 Retrieves all watchlists.
 ##### Required Permissions
@@ -736,17 +701,17 @@ RBAC Permissions Required - threathunter.watchlists: READ
 ```
 
 ##### Human Readable Output
-### Carbon Black Enterprise EDR Watchlists
-|ID|Name|Description|create_timestamp|Alerts_enabled|Tags_enabled|Report_ids|Last_update_timestamp|Classifier|
-|---|---|---|---|---|---|---|---|---|
-| AjQoLZwJRYu4oPC22YpepQ | test watchlist2 |  | 2020-05-26T13:27:44.000Z | true | true | A59huyinQSmAr8t1a2hpg | 2020-05-26T13:27:44.000Z |  |
-| 2Bge40iPRCachAa1oYqMkA | test watchlist | this is a test watchlist | 2020-05-13T14:39:43.000Z | false | false | A59huyinQSmAr8t1a2hpg | 2020-05-13T14:39:43.000Z |  |
-| AiyyP5o1T6ia2LGBIuZtg | test watchlist1 | this is a test watchlist | 2020-05-13T14:40:03.000Z | false | false | A59huyinQSmAr8t1a2hpg | 2020-05-13T14:40:03.000Z |  |
-| 5xq2xyrKRTOMzt5V8SaJQ | test watchlist123 | this is a test watchlist | 2020-05-13T14:40:58.000Z | false | false | A59huyinQSmAr8t1a2hpg | 2020-05-13T14:40:58.000Z |  |
-| MXzJPzWYRuuKBEsy0UXImA | Cigent Watchlist |  | 2020-01-16T21:07:58.000Z | true | true | MLRtPcpQGKFh5OE4BT3tQ-19d3af31-5dbd-4b9f-9b1d-e8ddca6af991 | 2020-01-28T18:19:14.000Z |  |
+>### Carbon Black Enterprise EDR Watchlists
+>|ID|Name|Description|create_timestamp|Alerts_enabled|Tags_enabled|Report_ids|Last_update_timestamp|Classifier|
+>|---|---|---|---|---|---|---|---|---|
+>| AjQoLZwJRYu4oPC22YpepQ | test watchlist2 |  | 2020-05-26T13:27:44.000Z | true | true | A59huyinQSmAr8t1a2hpg | 2020-05-26T13:27:44.000Z |  |
+>| 2Bge40iPRCachAa1oYqMkA | test watchlist | this is a test watchlist | 2020-05-13T14:39:43.000Z | false | false | A59huyinQSmAr8t1a2hpg | 2020-05-13T14:39:43.000Z |  |
+>| AiyyP5o1T6ia2LGBIuZtg | test watchlist1 | this is a test watchlist | 2020-05-13T14:40:03.000Z | false | false | A59huyinQSmAr8t1a2hpg | 2020-05-13T14:40:03.000Z |  |
+>| 5xq2xyrKRTOMzt5V8SaJQ | test watchlist123 | this is a test watchlist | 2020-05-13T14:40:58.000Z | false | false | A59huyinQSmAr8t1a2hpg | 2020-05-13T14:40:58.000Z |  |
+>| MXzJPzWYRuuKBEsy0UXImA | Cigent Watchlist |  | 2020-01-16T21:07:58.000Z | true | true | MLRtPcpQGKFh5OE4BT3tQ-19d3af31-5dbd-4b9f-9b1d-e8ddca6af991 | 2020-01-28T18:19:14.000Z |  |
 
 
-### 12. cb-eedr-get-watchlist-by-id
+### cb-eedr-get-watchlist-by-id
 ---
 Gets watchlist information by  watchlist ID.
 ##### Required Permissions
@@ -799,13 +764,13 @@ RBAC Permissions Required - threathunter.watchlists: READ
 ```
 
 ##### Human Readable Output
-### Watchlist JI5wCDVTPGEgbWlDCoGgQ information
-|ID|Name|Description|create_timestamp|Alerts_enabled|Tags_enabled|Report_ids|Last_update_timestamp|
-|---|---|---|---|---|---|---|---|
-| JI5wCDVTPGEgbWlDCoGgQ | test watchlist1 | test description | 1970-01-19T03:38:34.000Z | true | false | A59huyinQSmAr8t1a2hpg | 1970-01-19T09:29:39.000Z |
+>### Watchlist JI5wCDVTPGEgbWlDCoGgQ information
+>|ID|Name|Description|create_timestamp|Alerts_enabled|Tags_enabled|Report_ids|Last_update_timestamp|
+>|---|---|---|---|---|---|---|---|
+>| JI5wCDVTPGEgbWlDCoGgQ | test watchlist1 | test description | 1970-01-19T03:38:34.000Z | true | false | A59huyinQSmAr8t1a2hpg | 1970-01-19T09:29:39.000Z |
 
 
-### 13. cb-eedr-watchlist-alerts-status
+### cb-eedr-watchlist-alerts-status
 ---
 Retrieves the alert status for the watchlist with given watchlist ID.
 ##### Required Permissions
@@ -828,9 +793,9 @@ There is no context output for this command.
 ```!cb-eedr-watchlist-alerts-status watchlist_id=AiyyP5o1T6ia2LGBIuZtg```
 
 ##### Human Readable Output
-Watchlist AiyyP5o1T6ia2LABIuZtg alert status is On
+>Watchlist AiyyP5o1T6ia2LABIuZtg alert status is On
 
-### 14. cb-eedr-watchlist-alerts-enable
+### cb-eedr-watchlist-alerts-enable
 ---
 Turns on alerts for the watchlist with the specified watchlist ID.
 ##### Required Permissions
@@ -853,9 +818,9 @@ There is no context output for this command.
 ```!cb-eedr-watchlist-alerts-enable watchlist_id=AiyyP5o1T6ia2LABIuZtg```
 
 ##### Human Readable Output
-Watchlist AiyyP5o1T6ia2LABIuZtg alert was enabled successfully.
+>Watchlist AiyyP5o1T6ia2LABIuZtg alert was enabled successfully.
 
-### 15. cb-eedr-watchlist-alerts-disable
+### cb-eedr-watchlist-alerts-disable
 ---
 Turns off alerts for the watchlist with the specified watchlist ID.
 ##### Required Permissions
@@ -878,9 +843,9 @@ There is no context output for this command.
 ```!cb-eedr-watchlist-alerts-disable watchlist_id=AiyyP5o1T6ia2LABIuZtg```
 
 ##### Human Readable Output
-Watchlist AiyyP5o1T6ia2LABIuZtg alert was disabled successfully.
+>Watchlist AiyyP5o1T6ia2LABIuZtg alert was disabled successfully.
 
-### 16. cb-eedr-watchlist-create
+### cb-eedr-watchlist-create
 ---
 Creates a new report or classifier watchlist.
 ##### Required Permissions
@@ -938,13 +903,13 @@ RBAC Permissions Required - threathunter.watchlists: CREATE
 ```
 
 ##### Human Readable Output
-### The watchlist "test watchlist3" created successfully.
-|Name|ID|Create_timestamp|Tags_enabled|Alerts_enabled|Report_ids|
-|---|---|---|---|---|---|
-| test watchlist3 | Bz4PlP5RSiGLvekCLbC0A | 2020-05-26T13:33:19.000Z | true | true | A59huyinQSmAr8t1a2hpg |
+>### The watchlist "test watchlist3" created successfully.
+>|Name|ID|Create_timestamp|Tags_enabled|Alerts_enabled|Report_ids|
+>|---|---|---|---|---|---|
+>| test watchlist3 | Bz4PlP5RSiGLvekCLbC0A | 2020-05-26T13:33:19.000Z | true | true | A59huyinQSmAr8t1a2hpg |
 
 
-### 17. cb-eedr-watchlist-delete
+### cb-eedr-watchlist-delete
 ---
 Removes the specified watchlist.
 ##### Required Permissions
@@ -967,9 +932,9 @@ There is no context output for this command.
 ```!cb-eedr-watchlist-delete watchlist_id=AjQoLZwJRYu4oPC22YpepQ```
 
 ##### Human Readable Output
-The watchlist AjQoLZwJRYu4oPC22YpepQ was deleted successfully.
+>The watchlist AjQoLZwJRYu4oPC22YpepQ was deleted successfully.
 
-### 18. cb-eedr-watchlist-update
+### cb-eedr-watchlist-update
 ---
 Updates the specified watchlist. This will update the tags and alert status as well as any reports or classifiers attached to the watchlist.
 ##### Required Permissions
@@ -1026,13 +991,13 @@ RBAC Permissions Required - threathunter.watchlists: UPDATE
 ```
 
 ##### Human Readable Output
-### The watchlist "2Bge40iPRCachAa1oYqMkA" was updated successfully.
-|Name|ID|Create_timestamp|Tags_enabled|Alerts_enabled|
-|---|---|---|---|---|
-| new name | 2Bge40iPRCachAa1oYqMkA | 2020-05-13T14:39:43.000Z | false | true |
+>### The watchlist "2Bge40iPRCachAa1oYqMkA" was updated successfully.
+>|Name|ID|Create_timestamp|Tags_enabled|Alerts_enabled|
+>|---|---|---|---|---|
+>| new name | 2Bge40iPRCachAa1oYqMkA | 2020-05-13T14:39:43.000Z | false | true |
 
 
-### 19. cb-eedr-report-get
+### cb-eedr-report-get
 ---
 Retrieves the specified report.
 ##### Required Permissions
@@ -1122,20 +1087,20 @@ RBAC Permissions Required - threathunter.watchlists: READ
 ```
 
 ##### Human Readable Output
-### Report "A59huyinQSmAr8t1a2hpg" information
-|ID|Title|Timestamp|Severity|Tags|
-|---|---|---|---|---|
-| A59huyinQSmAr8t1a2hpg | badfile.exe.exe | 1970-01-19T06:40:07.000Z | 8 | SAMPLE |
-### The IOCs for the report
-|ID|Match_type|Values|
-|---|---|---|
-| 860ececb-2a2e-4dc5-bdbd-f6f45657cf7c | query | (process_name:chrome.exe) |
-| f551ba63-0c7a-48ec-b12d-c4b2a9f4b922 | query | (process_name:chrome.exe) |
-| c86187e3-90e3-4fb0-a698-18112b294059 | query | (netconn_ipv4:2.2.2.2) |
-| 46e11795-e7ee-4f8e-8ad8-44b1d2216e30 | query | (process_name:c\:\\users\\administrator\\desktop\\badfile.exe) |
+>### Report "A59huyinQSmAr8t1a2hpg" information
+>|ID|Title|Timestamp|Severity|Tags|
+>|---|---|---|---|---|
+>| A59huyinQSmAr8t1a2hpg | badfile.exe.exe | 1970-01-19T06:40:07.000Z | 8 | SAMPLE |
+>### The IOCs for the report
+>|ID|Match_type|Values|
+>|---|---|---|
+>| 860ececb-2a2e-4dc5-bdbd-f6f45657cf7c | query | (process_name:chrome.exe) |
+>| f551ba63-0c7a-48ec-b12d-c4b2a9f4b922 | query | (process_name:chrome.exe) |
+>| c86187e3-90e3-4fb0-a698-18112b294059 | query | (netconn_ipv4:2.2.2.2) |
+>| 46e11795-e7ee-4f8e-8ad8-44b1d2216e30 | query | (process_name:c\:\\users\\administrator\\desktop\\badfile.exe) |
 
 
-### 20. cb-eedr-ioc-ignore-status
+### cb-eedr-ioc-ignore-status
 ---
 Gets the current ignore status for IOC ioc_id in report report_id.
 ##### Required Permissions
@@ -1159,9 +1124,9 @@ There is no context output for this command.
 ```!cb-eedr-ioc-ignore-status ioc_id=860ececb-2a2e-4dc5-bdbd-f6f45657cf7c report_id=A59huyinQSmAr8t1a2hpg```
 
 ##### Human Readable Output
-IOC 860ececb-2a2e-4dc5-bdbd-f6f45657cf7c status is false
+>IOC 860ececb-2a2e-4dc5-bdbd-f6f45657cf7c status is false
 
-### 21. cb-eedr-ioc-ignore
+### cb-eedr-ioc-ignore
 ---
 IOC ioc_id for report report_id will not match future events for any watchlist.
 ##### Required Permissions
@@ -1185,9 +1150,9 @@ There is no context output for this command.
 ```!cb-eedr-ioc-ignore ioc_id=860ececb-2a2e-4dc5-bdbd-f6f45657cf7c report_id=A59huyinQSmAr8t1a2hpg```
 
 ##### Human Readable Output
-The IOC 860ececb-2a2e-4dc5-bdbd-f6f45657cf7c for report A59huyinQSmAr8t1a2hpg will not match future events for any watchlist.
+>The IOC 860ececb-2a2e-4dc5-bdbd-f6f45657cf7c for report A59huyinQSmAr8t1a2hpg will not match future events for any watchlist.
 
-### 22. cb-eedr-ioc-reactivate
+### cb-eedr-ioc-reactivate
 ---
 IOC ioc_id for report report_id will match future events for all watchlists.
 ##### Required Permissions
@@ -1211,9 +1176,9 @@ There is no context output for this command.
 ```!cb-eedr-ioc-reactivate ioc_id=860ececb-2a2e-4dc5-bdbd-f6f45657cf7c report_id=A59huyinQSmAr8t1a2hpg```
 
 ##### Human Readable Output
-IOC 860ececb-2a2e-4dc5-bdbd-f6f45657cf7c for report A59huyinQSmAr8t1a2hpg will match future events for all watchlists.
+>IOC 860ececb-2a2e-4dc5-bdbd-f6f45657cf7c for report A59huyinQSmAr8t1a2hpg will match future events for all watchlists.
 
-### 23. cb-eedr-report-ignore
+### cb-eedr-report-ignore
 ---
 Report with report_id and all contained IOCs will not match future events for any watchlist.
 ##### Required Permissions
@@ -1236,9 +1201,9 @@ There is no context output for this command.
 ```!cb-eedr-report-ignore report_id=A59huyinQSmAr8t1a2hpg```
 
 ##### Human Readable Output
-The report with report_id "A59huyinQSmAr8t1a2hpg" and all contained IOCs will not match future events for any watchlist.
+>The report with report_id "A59huyinQSmAr8t1a2hpg" and all contained IOCs will not match future events for any watchlist.
 
-### 24. cb-eedr-report-reactivate
+### cb-eedr-report-reactivate
 ---
 Report with report_id and all contained IOCs will match future events for all watchlists.
 ##### Required Permissions
@@ -1261,9 +1226,9 @@ There is no context output for this command.
 ```!cb-eedr-report-reactivate report_id=qtcpqJwuRjaFZWjAT8zhqQ```
 
 ##### Human Readable Output
-Report with report_id "qtcpqJwuRjaFZWjAT8zhqQ" and all contained IOCs will match future events for all watchlists
+>Report with report_id "qtcpqJwuRjaFZWjAT8zhqQ" and all contained IOCs will match future events for all watchlists
 
-### 25. cb-eedr-report-ignore-status
+### cb-eedr-report-ignore-status
 ---
 Get current ignore status for report with report_id.
 ##### Required Permissions
@@ -1286,9 +1251,9 @@ There is no context output for this command.
 ```!cb-eedr-report-ignore-status report_id=A59huyinQSmAr8t1a2hpg```
 
 ##### Human Readable Output
-ignore status for report with report_id "A59huyinQSmAr8t1a2hpg" is enabled.
+>ignore status for report with report_id "A59huyinQSmAr8t1a2hpg" is enabled.
 
-### 26. cb-eedr-report-remove
+### cb-eedr-report-remove
 ---
 Remove report with report_id.
 ##### Required Permissions
@@ -1311,9 +1276,9 @@ There is no context output for this command.
 ```!cb-eedr-report-remove report_id=A59huyinQSmAr8t1a2hpg ```
 
 ##### Human Readable Output
-The report "A59huyinQSmAr8t1a2hpg" was deleted successfully.
+>The report "A59huyinQSmAr8t1a2hpg" was deleted successfully.
 
-### 27. cb-eedr-report-create
+### cb-eedr-report-create
 ---
 Adds a new watchlist report.
 ##### Required Permissions
@@ -1388,17 +1353,17 @@ RBAC Permissions Required - threathunter.watchlists: CREATE
 ```
 
 ##### Human Readable Output
-### The report was created successfully.
-|ID|Title|Timestamp|Description|Severity|Tags|
-|---|---|---|---|---|---|
-| rbwEBRfnTUGB6LqTUcgWg | Report test | 1970-01-18T21:31:40.000Z | Testing new report creation | 5 | one,two,three |
-### The IOCs for the report
-|Field|ID|Match_type|Values|
-|---|---|---|---|
-| netconn_ipv4 | 56e85f3d538b0602b10e0b544c3f61ea | equality | 2.2.2.2,3.3.3.3 |
+>### The report was created successfully.
+>|ID|Title|Timestamp|Description|Severity|Tags|
+>|---|---|---|---|---|---|
+>| rbwEBRfnTUGB6LqTUcgWg | Report test | 1970-01-18T21:31:40.000Z | Testing new report creation | 5 | one,two,three |
+>### The IOCs for the report
+>|Field|ID|Match_type|Values|
+>|---|---|---|---|
+>| netconn_ipv4 | 56e85f3d538b0602b10e0b544c3f61ea | equality | 2.2.2.2,3.3.3.3 |
 
 
-### 28. cb-eedr-report-update
+### cb-eedr-report-update
 ---
 Updates the specified report.
 ##### Required Permissions
@@ -1459,15 +1424,15 @@ RBAC Permissions Required - threathunter.watchlists: UPDATE
 ```
 
 ##### Human Readable Output
-### The report was updated successfully.
-|ID|Title|Timestamp|Description|Severity|
-|---|---|---|---|---|
-| qtcpqJwuRjaFZWjAT8zhqQ | new title | 2473-10-23T21:08:00.000Z | new description | 5 |
-### The IOCs for the report
-**No entries.**
+>### The report was updated successfully.
+>|ID|Title|Timestamp|Description|Severity|
+>|---|---|---|---|---|
+>| qtcpqJwuRjaFZWjAT8zhqQ | new title | 2473-10-23T21:08:00.000Z | new description | 5 |
+>### The IOCs for the report
+>**No entries.**
 
 
-### 29. cb-eedr-file-device-summary
+### cb-eedr-file-device-summary
 ---
 Gets an overview of the devices that executed the file.
 ##### Required Permissions
@@ -1516,13 +1481,13 @@ RBAC Permissions Required - Ubs.org.sha256
 ```
 
 ##### Human Readable Output
-### The file device summary
-|first_seen_device_id|first_seen_device_name|first_seen_device_timestamp|last_seen_device_id|last_seen_device_name|last_seen_device_timestamp|num_devices|sha256|
-|---|---|---|---|---|---|---|---|
-| 1294302 | test732-PC | 2020-05-18T09:26:28.205254Z | 1246865 | testcorewin764 | 2020-05-21T06:59:07.866395Z | 3 | 4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa |
+>### The file device summary
+>|first_seen_device_id|first_seen_device_name|first_seen_device_timestamp|last_seen_device_id|last_seen_device_name|last_seen_device_timestamp|num_devices|sha256|
+>|---|---|---|---|---|---|---|---|
+>| 1294302 | test732-PC | 2020-05-18T09:26:28.205254Z | 1246865 | testcorewin764 | 2020-05-21T06:59:07.866395Z | 3 | 4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa |
 
 
-### 30. cb-eedr-get-file-metadata
+### cb-eedr-get-file-metadata
 ---
 Returns all of the metadata for the specified binary identified by the SHA256 hash.
 ##### Required Permissions
@@ -1593,13 +1558,13 @@ RBAC Permissions Required - Ubs.org.sha256
 ```
 
 ##### Human Readable Output
-### The file metadata
-|SHA256|comments|file_size|internal_name|original_filename|os_type|
-|---|---|---|---|---|---|
-| 4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa | Portable | 745664 | test.exe | test.exe | WINDOWS |
+>### The file metadata
+>|SHA256|comments|file_size|internal_name|original_filename|os_type|
+>|---|---|---|---|---|---|
+>| 4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa | Portable | 745664 | test.exe | test.exe | WINDOWS |
 
 
-### 31. cb-eedr-files-download-link-get
+### cb-eedr-files-download-link-get
 ---
 The files are able to be downloaded via AWS S3 pre-signed URLs.
 ##### Required Permissions
@@ -1646,13 +1611,13 @@ RBAC Permissions Required - Ubs.org.file
 ```
 
 ##### Human Readable Output
-### The file to download
-|sha256|url|
-|---|---|
-| 4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa | https://cdc-file-storage-production-us-east-1.s3.amazonaws.com/4a/71/4d/98/ce/40/f5/f3/57/7c/30/6a/66/cb/4a/6b/1f/f3/fd/01/04/7c/7f/45/81/f8/55/8f/0b/cd/f5/fa/4a714d98ce40f5f3577c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAVT6ZCSICASU327FI%2F20200526%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200526T133305Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Security-Token=IQoJb3JpZ2luX2VjAAwaCXVzLWVhc3QtMSJIMEYCIQCqqdEFtwaybOvJkycEEMnMQLR%2FoNSvmNbsb%2Bchb5UEpAIhAPZTjLn4T8p3IGfkKQ0CpEEot%2FLR9oI17UIKtAV1Ej7fKr0DCKT%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQAhoMMzg2NDY1NDM2MTY0IgyYvqWtKKorgx1b%2FXYqkQMeEOokBfnVZv0RtN1W3G3sW97NreAGknB7LRsG1QVMc4b4vrRmgvPvY1ZuE8hAIOu40RQfWBEgfiQo9URFcVRqzKFi8zrLEKlX0NinYijdgA8nHKFIlqSuPRArHXhwixq4aUzQ%2B3uh9UxM%2FrwSYItYn3skiacUz6TwqLFzjfWk3YIFMH3bP4jD9q7omZHgtA6PM%2BCbsf%2Fzj2DwI8JXGKyOm0jAMpNr8wz7n1gLoFnB5WHe4ELHpBfnAh%2Fe5r1H62n0y4eT%2B19zNuNZFd7jjr1FYgounceibjgvlGILMN3xhQWpjzUgssL3GprTM%2FCFy3FzxfPnjUcgJJ%2BjAJw9AICH2yCkFiY6IglFzQwzK%2BC5Q7HvEYmStt682IvQg6ZdYoWuH7iPf7ypiMB%2Bd4o2LwnJ67xCVitD0oLxFMYgIub4buB0dlSwy%2FskcERt81xlhWIZhxRYEDxyTtMPwYSRu5El7vvui5W9y0AmLBANjAb4EaFcaOqUIFOlF6JO%2Blt4Jc6LyMzFu3zdOd9Nx7%2Fi6AewgDDN97P2BTrqAdX%2BqmMi8oItlqJdoU9ntWJ2SBR6y2xa%2BCj3GpHLzvrvWMYAQPfcOxXqDYv9UPPAsPPh1Hxl1P0Jua%2BBwmwOA4m9Lak%2BkwqL8oQMUMb68pyRNxv8dTFa1turFetE9%2Bh4NTzHfxH5WhXH58oGt5ozzPmeJmuJrMAJJV%2BMZhdL1eClkK%2FzLKfSboJIgqmvMSXncccSmEc3Ref6qGWXN3k3%2F5YLf4831zEGH%2FUKCnQqU%2F45QVHvPOfuw2%2BIsItIYimn8YRW73TMOpp3frhKVYMiEwhVBNFQESjNLzDfBZgIMKeWjUbHmJT4Cwb82w%3D%3D&X-Amz-Signature=0757be785f81856477277969af21d8076289d4bb92274c42c73b8d2776443763 |
+>### The file to download
+>|sha256|url|
+>|---|---|
+>| 4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa | https://cdc-file-storage-production-us-east-1.s3.amazonaws.com/4a/71/4d/98/ce/40/f5/f3/57/7c/30/6a/66/cb/4a/6b/1f/f3/fd/01/04/7c/7f/45/81/f8/55/8f/0b/cd/f5/fa/4a714d98ce40f5f3577c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=ASIAVT6ZCSICASU327FI%2F20200526%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20200526T133305Z&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Security-Token=IQoJb3JpZ2luX2VjAAwaCXVzLWVhc3QtMSJIMEYCIQCqqdEFtwaybOvJkycEEMnMQLR%2FoNSvmNbsb%2Bchb5UEpAIhAPZTjLn4T8p3IGfkKQ0CpEEot%2FLR9oI17UIKtAV1Ej7fKr0DCKT%2F%2F%2F%2F%2F%2F%2F%2F%2F%2FwEQAhoMMzg2NDY1NDM2MTY0IgyYvqWtKKorgx1b%2FXYqkQMeEOokBfnVZv0RtN1W3G3sW97NreAGknB7LRsG1QVMc4b4vrRmgvPvY1ZuE8hAIOu40RQfWBEgfiQo9URFcVRqzKFi8zrLEKlX0NinYijdgA8nHKFIlqSuPRArHXhwixq4aUzQ%2B3uh9UxM%2FrwSYItYn3skiacUz6TwqLFzjfWk3YIFMH3bP4jD9q7omZHgtA6PM%2BCbsf%2Fzj2DwI8JXGKyOm0jAMpNr8wz7n1gLoFnB5WHe4ELHpBfnAh%2Fe5r1H62n0y4eT%2B19zNuNZFd7jjr1FYgounceibjgvlGILMN3xhQWpjzUgssL3GprTM%2FCFy3FzxfPnjUcgJJ%2BjAJw9AICH2yCkFiY6IglFzQwzK%2BC5Q7HvEYmStt682IvQg6ZdYoWuH7iPf7ypiMB%2Bd4o2LwnJ67xCVitD0oLxFMYgIub4buB0dlSwy%2FskcERt81xlhWIZhxRYEDxyTtMPwYSRu5El7vvui5W9y0AmLBANjAb4EaFcaOqUIFOlF6JO%2Blt4Jc6LyMzFu3zdOd9Nx7%2Fi6AewgDDN97P2BTrqAdX%2BqmMi8oItlqJdoU9ntWJ2SBR6y2xa%2BCj3GpHLzvrvWMYAQPfcOxXqDYv9UPPAsPPh1Hxl1P0Jua%2BBwmwOA4m9Lak%2BkwqL8oQMUMb68pyRNxv8dTFa1turFetE9%2Bh4NTzHfxH5WhXH58oGt5ozzPmeJmuJrMAJJV%2BMZhdL1eClkK%2FzLKfSboJIgqmvMSXncccSmEc3Ref6qGWXN3k3%2F5YLf4831zEGH%2FUKCnQqU%2F45QVHvPOfuw2%2BIsItIYimn8YRW73TMOpp3frhKVYMiEwhVBNFQESjNLzDfBZgIMKeWjUbHmJT4Cwb82w%3D%3D&X-Amz-Signature=0757be785f81856477277969af21d8076289d4bb92274c42c73b8d2776443763 |
 
 
-### 32. cb-eedr-file-paths
+### cb-eedr-file-paths
 ---
 Return a summary of the observed file paths
 ##### Required Permissions
@@ -1699,12 +1664,12 @@ RBAC Permissions Required - RBAC Permissions Required: READ
 ```
 
 ##### Human Readable Output
-### The file path for the sha256
-|file_path_count|file_paths|sha256|total_file_path_count|
-|---|---|---|---|
-| 1 | {'count': 3, 'file_path': 'c:\\program files\\admin\\test.exe', 'first_seen_timestamp': '2020-05-18T09:26:28.205254Z'} | 4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa | 3 |
+>### The file path for the sha256
+>|file_path_count|file_paths|sha256|total_file_path_count|
+>|---|---|---|---|
+>| 1 | {'count': 3, 'file_path': 'c:\\program files\\admin\\test.exe', 'first_seen_timestamp': '2020-05-18T09:26:28.205254Z'} | 4a714d98ce40f5f1234c306a66cb4a6b1ff3fd01047c7f4581f8558f0bcdf5fa | 3 |
 
-### 33. cb-eedr-process-search
+### cb-eedr-process-search
 ---
 Creates a process search job.
 ##### Required Permissions
@@ -1754,7 +1719,7 @@ RBAC Permissions Required - org.search.events: CREATE
 
 >job_id is 633b7900-2b28-456d-add3-28e665525753.
 
-### 34. cb-eedr-events-by-process-get
+### cb-eedr-events-by-process-get
 ---
 Retrieves the events associated with a given process.
 
@@ -2289,7 +2254,7 @@ RBAC Permissions Required - org.search.events: READ
 >| 2020-10-14T16:22:13.180Z | 2020-11-04T06:58:51.505Z | x2Beg9ykSIiRKViJJxcsaA | 6xUCWyDQTAuOm7Lnxq-qew | 2020-10-14T16:17:45.463Z | modload | false | ACTION_LOADED_MODULE_DISCOVERED | REP_WHITE | a381226b5a088a07680391b94c474baa | c:\program files\vmware\vmware tools\hgfs.dll | VMware, Inc. | FILE_SIGNATURE_STATE_SIGNED,<br/>FILE_SIGNATURE_STATE_TRUSTED,<br/>FILE_SIGNATURE_STATE_VERIFIED | 429a69aba0196be3f53ffa1d2dd09b0caea6fc680468706b2a20fa0f7188ad4b | 7DESJ9GN-0034d5f2-00001f78-00000000-1d68709f411ee43 | 8056 |
 >Total of 2120 items found. Showing items 0 - 19.
 
-### 35. cb-eedr-process-search-results
+### cb-eedr-process-search-results
 ---
 Retrieves the process search results for a given job ID.
 
