@@ -52,6 +52,8 @@ repos:
   rev: v2.0.4
   hooks:
   - id: autopep8
+    args:ci: [--exit-code] # don't fix, but raise an error if there are any issues
+    args:nightly: [--exit-code] # don't fix, but raise an error if there are any issues
     exclude_support_level:ci:
     - community
     exclude_support_level:nightly:
