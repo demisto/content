@@ -235,7 +235,7 @@
 .checkout-upload-commit-content-nightly: &checkout-upload-commit-content-nightly
   - section_start "Checkout upload commit content nightly" --collapsed
   - | 
-    if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
+    if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" && "${LAST_UPLOAD_COMMIT}" != "${CI_COMMIT_SHA}" ]]; then
       if [[ ! -d "${CI_PROJECT_DIR}/artifacts/production_packs" ]]; then
         echo "content production packs do not exist in ${CI_PROJECT_DIR}/artifacts"
         exit 1
@@ -246,12 +246,17 @@
       git config core.fileMode false  # used to tell git not to identify permission changes on files as changes
       chmod -R 777 ./Packs  # required for the lint, we use the permissions of the file when running pytest within the containers
       echo "the Packs changes between upload commit ${LAST_UPLOAD_COMMIT} to master commit ${CI_COMMIT_SHA} is:"
-      git status -- Packs  # show the differences between the upload commit to the master branch for the Packs folder
+      git status -- Packs  # show the differences between the upload commit to the master branch for the Packs folder before commit
+      git commit -am "updated Packs folder to latest upload commit ${LAST_UPLOAD_COMMIT}"
+      git status -- Packs # show the differences between the upload commit to the master branch for the Packs folder after commit
       echo "The Packs folder is in the state of commit $LAST_UPLOAD_COMMIT"
-    else
-      echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly"
+    elif [[ -z "${NIGHTLY}" ]]; then
+      echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the build is not content nightly."
+    elif [[ "${CI_COMMIT_BRANCH}" != "master" ]]; then
+      echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the "${CI_COMMIT_BRANCH}" branch is not master."
+    elif [[ "${LAST_UPLOAD_COMMIT}" == "${CI_COMMIT_SHA}" ]]; then
+      echo "not checking out to the latest upload commit $LAST_UPLOAD_COMMIT because the \$LAST_UPLOAD_COMMIT and \$CI_COMMIT_SHA are equal to ${CI_COMMIT_SHA}."
     fi
-  - |
   - section_end "Checkout upload commit content nightly"
 
 .export_cloud_machine_constants: &export_cloud_machine_constants
