@@ -535,6 +535,7 @@ def test_publish_layer_version_command(mocker):
             "description": "test lambda function",
             "zip-file": "test",
             "CompatibleRuntimes": "nodejs",
+            "CompatibleArchitectures": "x86_64",
             }
 
     results = publish_layer_version_command(args, client)
