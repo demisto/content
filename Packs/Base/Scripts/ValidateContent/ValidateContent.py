@@ -1,3 +1,4 @@
+import subprocess
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import io
@@ -24,8 +25,6 @@ from demisto_sdk.commands.init.contribution_converter import (
     ContributionConverter, get_child_directories, get_child_files)
 from demisto_sdk.commands.lint.lint_manager import LintManager
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
-from demisto_sdk.commands.validate.old_validate_manager import OldValidateManager as ValidateManager
-from ruamel.yaml import YAML
 
 
 CACHED_MODULES_DIR = '/tmp/cached_modules'
@@ -178,13 +177,8 @@ def run_validate(file_path: str, json_output_file: str) -> None:
         os.makedirs(tests_dir)
     with open(f'{tests_dir}/id_set.json', 'w') as f:
         json.dump({}, f)
-    v_manager = ValidateManager(
-        is_backward_check=False, prev_ver="origin/master", use_git=False, only_committed_files=False,
-        print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=str(file_path),
-        validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=False,
-        silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
-        staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False)
-    v_manager.run_validation()
+    command = f'demisto-sdk validate -i {file_path} -j {json_output_file} --no-backward-comp --prev-ver origin/master --no-conf-json --skip-schema-check'
+    subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 
 
 def run_lint(file_path: str, json_output_file: str) -> None:
@@ -210,7 +204,7 @@ def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_director
 
     pack_name = get_pack_name(zip_path)
     contrib_converter = ContributionConverter(name=pack_name, contribution=zip_path, base_dir=tmp_directory)
-    code_fp_to_row_offset = convert_contribution_to_pack(contrib_converter)
+    code_fp_to_row_offset = contrib_converter.convert_contribution_to_pack()
     # Call the standalone function and get the raw response
     os.remove(zip_path)
     return contrib_converter.pack_dir_path, code_fp_to_row_offset
@@ -221,7 +215,8 @@ def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_d
     pack_name = 'TmpPack'
     pack_dir = content.path / 'Packs' / pack_name
     # create pack_metadata.json file in TmpPack
-    contrib_converter = ContributionConverter(name=pack_name, base_dir=tmp_directory, pack_dir_name=pack_name)
+    contrib_converter = ContributionConverter(name=pack_name, base_dir=tmp_directory, pack_dir_name=pack_name,
+                                              contribution=filename)
     contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
     prefix = '-'.join(filename.split('-')[:-1])
     containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Integrations')
