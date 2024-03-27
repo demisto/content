@@ -300,16 +300,14 @@ def detections_to_entry(detections, show_timeline=False):
     fixed_detections = [detection_to_context(d) for d in detections]
     endpoints = []
     for d in detections:
-        if 'affected_endpoint' in d['relationships']:
-            endpoints.append(
-                get_endpoint_context(endpoint_id=d['relationships']['affected_endpoint']['data']['id']))
+        if endpoint_id := demisto.get(d, 'relationships.affected_endpoint.data.id'):
+            endpoints.append(get_endpoint_context(endpoint_id=endpoint_id))
 
     endpoints = sum(endpoints, [])  # type: list
     endpoint_users = []
     for d in detections:
-        if 'related_endpoint_user' in d['relationships']:
-            endpoint_users.append(
-                get_endpoint_user_context(endpoint_user_id=d['relationships']['related_endpoint_user']['data']['id']))
+        if endpoint_user_id := demisto.get(d, 'relationships.related_endpoint_user.data.id'):
+            endpoint_users.append(get_endpoint_user_context(endpoint_user_id=endpoint_user_id))
     endpoint_users = sum(endpoint_users, [])  # type: list
 
     domains, files, ips, processes = [], [], [], []  # type:ignore
