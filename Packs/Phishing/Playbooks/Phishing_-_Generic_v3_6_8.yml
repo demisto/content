@@ -98,8 +98,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -920,
-          "y": 3025
+          "x": -590,
+          "y": 3200
         }
       }
     note: false
@@ -254,7 +254,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 2705
+          "y": 2685
         }
       }
     note: false
@@ -304,7 +304,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3745
+          "y": 3945
         }
       }
     note: false
@@ -681,7 +681,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - "228"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -720,8 +720,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -920,
-          "y": 3210
+          "x": -590,
+          "y": 3370
         }
       }
     note: false
@@ -1626,7 +1626,7 @@ tasks:
       version: -1
       name: Detect & Manage Phishing Campaigns
       description: |-
-        This playbook is part of the Phishing Campaign content pack.
+        This playbook is part of the Phishing Campaign content pack, available only on Cortex XSOAR.
         It is used to find, create, and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to do the following:
         1. Find and link related incidents to the same phishing attack (a phishing campaign).
         2. Search for an existing Phishing Campaign incident, or create a new incident for the linked Phishing incidents.
@@ -2038,7 +2038,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3560
+          "y": 3750
         }
       }
     note: false
@@ -2162,11 +2162,11 @@ tasks:
       id: 9ff4d990-f0b2-4085-8352-137c92a77882
       version: -1
       name: Phishing - Machine Learning Analysis
+      description: Predicts phishing emails and URLs using machine-learning, available on Cortex XSOAR.
       playbookName: Phishing - Machine Learning Analysis
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "84"
@@ -2211,7 +2211,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -3489,7 +3489,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3390
+          "y": 3580
         }
       }
     note: false
@@ -3537,8 +3537,20 @@ tasks:
     nexttasks:
       '#none#':
       - "52"
+    scriptarguments:
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
@@ -3553,18 +3565,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    scriptarguments:
-      URL:
-        complex:
-          root: URL
-          accessor: Data
-          transformers:
-          - operator: uniq
-    loop:
+  "228":
+    id: "228"
+    taskid: 95ec8c6f-527e-49dc-83fc-03fe573e46ab
+    type: condition
+    task:
+      id: 95ec8c6f-527e-49dc-83fc-03fe573e46ab
+      version: -1
+      name: Should be reviewed by analyst?
+      type: condition
       iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
+      brand: ""
+      description: "Should be reviewed by analyst?"
+    nexttasks:
+      '#default#':
+      - "226"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.NonMaliciousEmailReview
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -920,
+          "y": 3010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -3588,7 +3633,9 @@ view: |-
       "222_53_yes": 0.42,
       "222_56_#default#": 0.17,
       "223_224_yes": 0.47,
-      "33_30_yes": 0.1,
+      "228_7_yes": 0.65,
+      "33_226_No": 0.55,
+      "33_30_yes": 0.34,
       "36_152_Yes": 0.49,
       "79_82_yes": 0.46,
       "79_84_#default#": 0.17
@@ -3818,6 +3865,14 @@ inputs:
     A comma-separated list of keywords to search in the email body.
     For example: name of the organization finance app that the attacker might impersonate.
     This input is used in the "Spear Phishing Investigation" sub-playbook.
+  playbookInputQuery:
+- key: NonMaliciousEmailReview
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    In case of an incident with a non-malicious email, it is possible either to close the incident or to review and approve it by an analyst.
+    Set the value "True" for a review of the incident by an analyst. Set the value "False" to close the incident.
   playbookInputQuery:
 inputSections:
 - inputs:
