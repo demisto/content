@@ -26,7 +26,8 @@ FILTERED_TEST_CASES = [
 ]
 
 PROCESSED_TEST_CASES = [
-    ({'compliance_issues': [compliance_issues[0]], 'compliance_ids': '6112'}, [
+    ({'compliance_issues': [compliance_issues[0]],
+      'container_id': '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'}, [
         {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
          'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
          'Description':
@@ -34,7 +35,8 @@ PROCESSED_TEST_CASES = [
     ]),
     (
         {'compliance_issues': [compliance_issues[0], compliance_issues[1],
-                               compliance_issues[2]], 'compliance_ids': '6112,6116,6117'},
+                               compliance_issues[2]],
+         'container_id': '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'},
         [
             {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
              'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
@@ -49,7 +51,8 @@ PROCESSED_TEST_CASES = [
              'Description':
                  'Description for compliance ID 6117'}
         ]),
-    ({'compliance_issues': compliance_issues, 'compliance_ids': ''}, [
+    ({'compliance_issues': compliance_issues,
+      'container_id': '9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08'}, [
         {'ComplianceID': '6112', 'Cause': 'The directory /tmp should be mounted. File: /proc/mounts',
          'Severity': 'high', 'Title': '(CIS_Linux_2.0.0 - 1.1.2) Ensure /tmp is configured',
          'Description':
@@ -73,7 +76,6 @@ PROCESSED_TEST_CASES = [
 ]
 
 
-# @pytest.mark.parametrize('args, expected', TEST_CASES)
 def test_run_prisma_cloud_compute_containers_scan_list(mocker):
     # Mock the executeCommand function
     mocker.patch.object(demisto, 'executeCommand', return_value=[{'Type': EntryType.NOTE,
@@ -83,7 +85,7 @@ def test_run_prisma_cloud_compute_containers_scan_list(mocker):
     # Run the function
     mocker.patch.object(demisto, 'results')
     returned_compliance_issues = run_prisma_cloud_compute_containers_scan_list(
-        "e1e5f27107c905ac998cd8107b0513f65a64d49a1b04c974e6a19d27f73e0c82")
+        "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08")
 
     assert returned_compliance_issues == compliance_issues
 
@@ -103,7 +105,7 @@ def test_process_and_output_compliance_issues(args, expected):
 RETURN_ERROR_TARGET = 'PCComputeContainerComplianceIssuesButton.return_error'
 
 
-def test_run_prisma_cloud_compute_containers_scan_list_with_error(mocker):
+def test_main_with_error(mocker):
     # Mock the necessary components
     mocker.patch.object(demisto, 'getArg', side_effect='invalid_image_id')
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
