@@ -616,7 +616,6 @@ script:
       - sc_task
       - sc_req_item
       - sn_si_incident
-      - USE_VALUE_FROM_INSTANCE_CONFIG
     - auto: PREDEFINED
       description: Ticket urgency. You can either select from the predefined options or enter another value. For example, "Urgent" or "5".
       name: urgency
