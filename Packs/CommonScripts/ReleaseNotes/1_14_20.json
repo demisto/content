@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The ***ReadPDFFileV2*** script now unescapes special character when extracting URLs by default. This update will affect the behavior of the script and of playbooks using it such as *Extract Indicators From File - Generic v2*, or any custom playbooks using it. In order to disable this behavior, set the *unescape_url* argument to `false`."
+}
