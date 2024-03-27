@@ -15,6 +15,99 @@
     "name": "API Execution Metrics",
     "layout": [
         {
+			"id": "e7377a00-e12b-11ee-8377-d592a71a5531",
+			"forceRange": false,
+			"x": 8,
+			"y": 0,
+			"i": "e7377a00-e12b-11ee-8377-d592a71a5531",
+			"w": 4,
+			"h": 3,
+			"widget": {
+				"id": "0821903b-1099-4f3d-8c30-27decd8c5c07",
+				"version": 3,
+				"cacheVersn": 0,
+				"modified": "2024-03-13T07:21:27.174372329-04:00",
+				"packID": "",
+				"packName": "",
+				"itemVersion": "",
+				"fromServerVersion": "",
+				"toServerVersion": "",
+				"propagationLabels": [],
+				"definitionId": "",
+				"vcShouldIgnore": false,
+				"vcShouldKeepItemLegacyProdMachine": false,
+				"commitMessage": "",
+				"shouldCommit": false,
+				"Cache": null,
+				"name": "API Call Results for FortiSandbox2",
+				"prevName": "API Call Results for FortiSandbox2",
+				"dataType": "metrics",
+				"widgetType": "line",
+				"query": "type:integration and name:FortiSandboxv2",
+				"isPredefined": false,
+				"dateRange": {
+					"fromDate": "0001-01-01T00:00:00Z",
+					"toDate": "0001-01-01T00:00:00Z",
+					"period": {
+						"by": "",
+						"byTo": "days",
+						"byFrom": "hours",
+						"toValue": 0,
+						"fromValue": 3,
+						"field": ""
+					},
+					"fromDateLicense": "0001-01-01T00:00:00Z"
+				},
+				"params": {
+					"customGroupBy": [
+						null,
+						{
+							"General Error": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "GeneralError",
+											"type": "string"
+										}
+									]
+								],
+								"name": "General Error"
+							},
+							"Success": {
+								"conditions": [
+									[
+										{
+											"field": "apiResponseType",
+											"operator": "isEqualCaseString",
+											"right": "Successful",
+											"type": "string"
+										}
+									]
+								],
+								"name": "Success"
+							}
+						}
+					],
+					"groupBy": [
+						"modified(h)",
+						"apiResponseType"
+					],
+					"keys": [
+						"sum|totalAPICalls"
+					],
+					"referenceLine": {},
+					"timeFrame": "hours",
+					"valuesFormat": "abbreviated",
+					"xAxisLabel": "Time",
+					"yAxisLabel": "Request Counts"
+				},
+				"category": ""
+			},
+			"reflectDimensions": true
+		},
+        {
             "id": "870b0d20-e0df-11ec-a7f6-39e12e3bcb7a",
             "forceRange": false,
             "x": 0,
