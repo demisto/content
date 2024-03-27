@@ -26,7 +26,7 @@ from Tests.scripts.collect_tests.exceptions import (
     NotUnderPackException, PrivateTestException, SkippedPackException,
     SkippedTestException, TestMissingFromIdSetException,
     NonNightlyPackInNightlyBuildException, IncompatibleTestMarketplaceException)
-from Tests.scripts.collect_tests.id_set import Graph, IdSet, IdSetItem
+from Tests.scripts.collect_tests.id_set import Graph, IdSetItem
 from Tests.scripts.collect_tests.logger import logger
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.test_conf import TestConf
@@ -88,7 +88,7 @@ class CollectionResult:
             version_range: VersionRange | None,
             reason_description: str,
             conf: TestConf | None,
-            id_set: IdSet | Graph | None,
+            graph: Graph | None,
             is_sanity: bool = False,
             is_nightly: bool = False,
             skip_support_level_compatibility: bool = False,
@@ -111,7 +111,7 @@ class CollectionResult:
         :param version_range: XSOAR versions on which the content should be tested, matching the from/toversion fields.
         :param reason_description: free text elaborating on the collection, e.g. path of the changed file.
         :param conf: a ConfJson object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
-        :param id_set: an IdSet object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
+        :param graph: an IdSet object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
         :param is_sanity: whether the test is a sanity test. Sanity tests do not have to be in the id_set.
         :param is_nightly: whether the run is a nightly run. When running on nightly, only specific packs need to run.
         :param skip_support_level_compatibility:
@@ -136,7 +136,7 @@ class CollectionResult:
                 test=test,
                 reason=reason,
                 conf=conf,
-                id_set=id_set,
+                graph=graph,
                 is_sanity=is_sanity,
                 is_nightly=is_nightly,
                 skip_support_level_compatibility=skip_support_level_compatibility,
@@ -197,7 +197,7 @@ class CollectionResult:
             test: str | None,
             reason: CollectionReason,
             conf: TestConf | None,
-            id_set: IdSet | Graph | None,
+            graph: Graph | None,
             is_sanity: bool,
             is_nightly: bool,
             skip_support_level_compatibility: bool,
@@ -208,7 +208,7 @@ class CollectionResult:
                 For validations regarding contentItem or IdSetItem objects, see __validate_compatibility.
         """
         if reason not in REASONS_ALLOWING_NO_ID_SET_OR_CONF:
-            for (arg, arg_name) in ((conf, 'conf.json'), (id_set, 'id_set')):
+            for (arg, arg_name) in ((conf, 'conf.json'), (graph, 'id_set')):
                 if not arg:
                     # may be None only when reason not in REASONS_ALLOWING_NO_ID_SET_OR_CONF
                     raise ValueError(f'no {arg_name} was provided')
@@ -231,10 +231,10 @@ class CollectionResult:
 
         if test:
             if not is_sanity:  # sanity tests do not show in the id_set
-                if test not in id_set.id_to_test_playbook:  # type: ignore[union-attr]
+                if test not in graph.id_to_test_playbook:  # type: ignore[union-attr]
                     raise TestMissingFromIdSetException(test)
 
-                test_playbook = id_set.id_to_test_playbook[test]  # type: ignore[union-attr]
+                test_playbook = graph.id_to_test_playbook[test]  # type: ignore[union-attr]
                 if not (pack_id := test_playbook.pack_id):
                     raise ValueError(f'{test} has no pack_id')
                 if not (playbook_path := test_playbook.path):
@@ -274,7 +274,7 @@ class CollectionResult:
         # used for combining two CollectionResult objects
         return CollectionResult(
             test=None, modeling_rule_to_test=None, pack=None, reason=CollectionReason.DUMMY_OBJECT_FOR_COMBINING,
-            version_range=None, reason_description='', conf=None, id_set=None
+            version_range=None, reason_description='', conf=None, graph=None
         )
 
     def __add__(self, other: Optional['CollectionResult']) -> 'CollectionResult':
@@ -304,13 +304,9 @@ class CollectionResult:
 
 
 class TestCollector(ABC):
-    def __init__(self, marketplace: MarketplaceVersions, graph: bool = False):
+    def __init__(self, marketplace: MarketplaceVersions):
         self.marketplace = marketplace
-        self.id_set: IdSet | Graph
-        if graph:
-            self.id_set = Graph(marketplace)
-        else:
-            self.id_set = IdSet(marketplace, PATHS.id_set_path)
+        self.graph = Graph(marketplace)
         self.conf = TestConf(PATHS.conf_path, marketplace)
         self.trigger_sanity_tests = False
 
@@ -325,7 +321,7 @@ class TestCollector(ABC):
                 version_range=None,
                 reason_description=f'by marketplace version {self.marketplace}',
                 conf=self.conf,
-                id_set=self.id_set,
+                graph=self.graph,
                 is_sanity=True,
                 only_to_install=True,
             )
@@ -338,7 +334,7 @@ class TestCollector(ABC):
         return CollectionResult.union(tuple(
             CollectionResult(test=None, modeling_rule_to_test=None, pack=pack,
                              reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
-                             version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True,
+                             version_range=None, reason_description=pack, conf=None, graph=None, is_sanity=True,
                              only_to_install=True)
             for pack in always_installed_packs_list)
         )
@@ -394,7 +390,7 @@ class TestCollector(ABC):
                 continue
 
             # collect the pack containing the test playbook
-            pack_id = self.id_set.id_to_test_playbook[test_id].pack_id
+            pack_id = self.graph.id_to_test_playbook[test_id].pack_id
             result.append(self._collect_pack(
                 pack_id=pack_id,  # type: ignore[arg-type]
                 reason=CollectionReason.PACK_TEST_DEPENDS_ON,
@@ -406,7 +402,7 @@ class TestCollector(ABC):
 
             # collect integrations used in the test
             for integration in test_object.integrations:
-                if integration_object := self.id_set.id_to_integration.get(integration):
+                if integration_object := self.graph.id_to_integration.get(integration):
                     pack_id = integration_object.pack_id
                     result.append(self._collect_test_dependency(
                         dependency_name=integration,
@@ -420,7 +416,7 @@ class TestCollector(ABC):
 
             # collect scripts used in the test
             for script in test_object.scripts:
-                if script_object := self.id_set.id_to_script.get(script):
+                if script_object := self.graph.id_to_script.get(script):
                     pack_id = script_object.pack_id
                     result.append(self._collect_test_dependency(
                         dependency_name=script,
@@ -445,7 +441,7 @@ class TestCollector(ABC):
             version_range=None,
             reason_description=f'test {test_id} depends on {dependency_type} {dependency_name} from {pack_id}',
             conf=self.conf,
-            id_set=self.id_set,
+            graph=self.graph,
             only_to_install=True,
         )
 
@@ -590,7 +586,7 @@ class TestCollector(ABC):
             version_range=version_range,
             reason_description=reason_description,
             conf=self.conf,
-            id_set=self.id_set,
+            graph=self.graph,
             is_nightly=is_nightly,
             only_to_upload=collect_only_to_upload,
             only_to_install=only_to_install
@@ -662,7 +658,7 @@ class TestCollector(ABC):
             version_range=version_range,
             reason_description=reason_description,
             conf=self.conf,
-            id_set=self.id_set,
+            graph=self.graph,
             is_nightly=is_nightly,
             pack_to_reinstall=pack_to_reinstall,
         )
@@ -713,7 +709,7 @@ class TestCollector(ABC):
             version_range=version_range,
             reason_description=reason_description,
             conf=self.conf,
-            id_set=self.id_set,
+            graph=self.graph,
             is_nightly=is_nightly
         )
 
@@ -772,7 +768,7 @@ class TestCollector(ABC):
                 raise RuntimeError(f'Unexpected self.marketplace value {self.marketplace}')
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
-        if not_found := set(tests).difference(self.id_set.id_to_test_playbook.keys()):
+        if not_found := set(tests).difference(self.graph.id_to_test_playbook.keys()):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
@@ -784,7 +780,6 @@ class BranchTestCollector(TestCollector):
             marketplace: MarketplaceVersions,
             service_account: str | None,
             private_pack_path: str | None = None,
-            graph: bool = False,
     ):
         """
 
@@ -793,7 +788,7 @@ class BranchTestCollector(TestCollector):
         :param service_account: used for comparing with the latest upload bucket
         :param private_pack_path: path to a pack, only used for content-private.
         """
-        super().__init__(marketplace, graph)
+        super().__init__(marketplace)
         logger.debug(f'Created BranchTestCollector for {branch_name}')
         self.branch_name = branch_name
         self.service_account = service_account
@@ -966,8 +961,8 @@ class BranchTestCollector(TestCollector):
                 except NoTestsConfiguredException:
                     # collecting all tests that implement this script/playbook
                     id_to_tests = {
-                        FileType.SCRIPT: self.id_set.implemented_scripts_to_tests,
-                        FileType.PLAYBOOK: self.id_set.implemented_playbooks_to_tests
+                        FileType.SCRIPT: self.graph.implemented_scripts_to_tests,
+                        FileType.PLAYBOOK: self.graph.implemented_playbooks_to_tests
                     }[actual_content_type]
                     tests = tuple(test.name for test in id_to_tests.get(yml.id_, ()))
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED_NO_TESTS
@@ -989,7 +984,7 @@ class BranchTestCollector(TestCollector):
                     version_range=yml.version_range,
                     reason_description=f'{yml.id_=} ({relative_yml_path})',
                     conf=self.conf,
-                    id_set=self.id_set,
+                    graph=self.graph,
                     is_nightly=False,
                     skip_support_level_compatibility=override_support_level_compatibility,
                 ) for test in tests))
@@ -1003,7 +998,7 @@ class BranchTestCollector(TestCollector):
             )
 
     def _collect_integrations_using_apimodule(self, api_module_id: str) -> CollectionResult | None:
-        integrations_using_apimodule = self.id_set.api_modules_to_integrations.get(api_module_id, [])
+        integrations_using_apimodule = self.graph.api_modules_to_integrations.get(api_module_id, [])
         result = []
         for integration in integrations_using_apimodule:
             try:
@@ -1143,7 +1138,7 @@ class BranchTestCollector(TestCollector):
                 version_range=content_item.version_range,
                 reason_description=reason_description,
                 conf=self.conf,
-                id_set=self.id_set,
+                graph=self.graph,
                 is_nightly=False,
             )
             for test in tests)
@@ -1274,9 +1269,8 @@ class SpecificPacksTestCollector(TestCollector):
             self,
             packs_to_upload: str,
             marketplace: MarketplaceVersions,
-            graph: bool = False,
     ):
-        super().__init__(marketplace, graph=graph)
+        super().__init__(marketplace)
         self.packs_to_upload = packs_to_upload
 
     def _collect(self) -> CollectionResult | None:
@@ -1299,7 +1293,7 @@ class NightlyTestCollector(TestCollector, ABC):
                     (or is equal to it, if `only_value` is used).
         """
         result = []
-        for playbook in self.id_set.test_playbooks:
+        for playbook in self.graph.test_playbooks:
             try:
                 self._validate_id_set_item_compatibility(playbook, is_integration=False)
                 result.append(CollectionResult(
@@ -1310,7 +1304,7 @@ class NightlyTestCollector(TestCollector, ABC):
                     reason_description=self.marketplace.value,
                     version_range=playbook.version_range,
                     conf=self.conf,
-                    id_set=self.id_set,
+                    graph=self.graph,
                     is_nightly=True,
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException) as e:
@@ -1325,8 +1319,8 @@ class UploadAllCollector(TestCollector):
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, graph: bool = False):
-        super().__init__(MarketplaceVersions.MarketplaceV2, graph=graph)
+    def __init__(self):
+        super().__init__(MarketplaceVersions.MarketplaceV2)
 
     def _collect_packs_of_content_matching_marketplace_value(self) -> CollectionResult | None:
         """
@@ -1335,7 +1329,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
         """
         result = []
 
-        for item in self.id_set.artifact_iterator:
+        for item in self.graph.artifact_iterator:
             if not item.path or not item.file_path_str:
                 raise RuntimeError(f'missing path for {item.id_=} {item.name=}')
             path = PATHS.content_path / item.file_path_str
@@ -1374,7 +1368,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
             Optional[CollectionResult]: pack collection result.
         """
         result = []
-        for modeling_rule in self.id_set.modeling_rules:
+        for modeling_rule in self.graph.modeling_rules:
             try:
                 logger.debug(f'collecting modeling rule with id: {modeling_rule.id_}, with name: {modeling_rule.name}')
                 path = PATHS.content_path / modeling_rule.file_path_str
@@ -1403,7 +1397,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
                 version_range=None,
                 reason_description='XSIAM Nightly sanity',
                 conf=self.conf,
-                id_set=self.id_set,
+                graph=self.graph,
                 is_sanity=True,
                 only_to_install=True
             )
@@ -1421,8 +1415,8 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
 
 class XSOARNightlyTestCollector(NightlyTestCollector):
-    def __init__(self, marketplace: MarketplaceVersions = MarketplaceVersions.XSOAR, graph: bool = False):
-        super().__init__(marketplace, graph=graph)
+    def __init__(self, marketplace: MarketplaceVersions = MarketplaceVersions.XSOAR):
+        super().__init__(marketplace)
 
     def _collect(self) -> CollectionResult | None:
         return CollectionResult.union((
@@ -1453,7 +1447,7 @@ class E2ETestCollector(TestCollector, ABC):
                     version_range=None,
                     reason_description="e2e tests",
                     conf=None,
-                    id_set=None,
+                    graph=None,
                     only_to_install=True
                 ) for pack in self.get_e2e_packs()
             ]
@@ -1478,7 +1472,7 @@ class SDKNightlyTestCollector(TestCollector):
             version_range=None,
             reason_description='Demisto-SDK Sanity Test for test-content command',
             conf=self.conf,
-            id_set=self.id_set,
+            graph=self.graph,
             is_sanity=True,
             only_to_install=True,
         )
@@ -1527,8 +1521,8 @@ def output(result: CollectionResult | None):
 
 
 class XPANSENightlyTestCollector(NightlyTestCollector):
-    def __init__(self, graph: bool = False):
-        super().__init__(MarketplaceVersions.XPANSE, graph=graph)
+    def __init__(self):
+        super().__init__(MarketplaceVersions.XPANSE)
 
     def _collect(self) -> CollectionResult | None:
         logger.info('tests are not currently supported for XPANSE, returning nothing.')
@@ -1546,7 +1540,6 @@ if __name__ == '__main__':
     parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version',
                         default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
-    parser.add_argument('--graph', '-g', type=str2bool, help='Should use graph', default=False, required=False)
     parser.add_argument('--override_all_packs', '-a', type=str2bool, help='Collect all packs if override upload', default=False,
                         required=False)
     parser.add_argument('-up', '--pack_names', help="Packs to upload, will only collect what is related to them", default='',
@@ -1569,31 +1562,31 @@ if __name__ == '__main__':
     collector: TestCollector
 
     if args.changed_pack_path:
-        collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path, graph=graph)
+        collector = BranchTestCollector('master', marketplace, service_account, args.changed_pack_path)
 
     elif os.environ.get("IFRA_ENV_TYPE") == 'Bucket-Upload':
         if args.override_all_packs:
-            collector = UploadAllCollector(marketplace, graph)
+            collector = UploadAllCollector(marketplace)
         elif pack_to_upload:
-            collector = SpecificPacksTestCollector(pack_to_upload.split(','), marketplace, graph)
+            collector = SpecificPacksTestCollector(pack_to_upload.split(','), marketplace)
         else:
-            collector = UploadBranchCollector(branch_name, marketplace, service_account, graph=graph)
+            collector = UploadBranchCollector(branch_name, marketplace, service_account)
 
     elif sdk_nightly:
-        collector = SDKNightlyTestCollector(marketplace=marketplace, graph=graph)
+        collector = SDKNightlyTestCollector(marketplace=marketplace)
 
     elif nightly:
         match marketplace:
             case MarketplaceVersions.XSOAR:
-                collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
+                collector = XSOARNightlyTestCollector(marketplace=marketplace)
             case MarketplaceVersions.XSOAR_SAAS:
-                collector = XsoarSaasE2ETestCollector(marketplace=marketplace, graph=graph)
+                collector = XsoarSaasE2ETestCollector(marketplace=marketplace)
             case MarketplaceVersions.MarketplaceV2:
-                collector = XSIAMNightlyTestCollector(graph=graph)
+                collector = XSIAMNightlyTestCollector()
             case MarketplaceVersions.XPANSE:
-                collector = XPANSENightlyTestCollector(graph=graph)
+                collector = XPANSENightlyTestCollector()
     else:
-        collector = BranchTestCollector(branch_name, marketplace, service_account, graph=graph)
+        collector = BranchTestCollector(branch_name, marketplace, service_account)
 
     collected = collector.collect()
     output(collected)  # logs and writes to output files
