@@ -387,7 +387,7 @@ script:
       description: The type of the access entry.
       type: String
   - name: aws-eks-associate-access-policy
-    description: Describes an Amazon EKS cluster.
+    description: Associates an access policy and its scope to an access entry.
     arguments:
     - name: cluster_name
       description: The name of the cluster for which to create an access entry.

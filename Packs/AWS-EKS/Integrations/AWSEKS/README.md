@@ -1,5 +1,5 @@
 The AWS EKS integration allows for the management and operation of Amazon Elastic Kubernetes Service (EKS) clusters.
-This integration was integrated and tested with version 1.29 of AWS-EKS.
+This integration was integrated and tested with version xx of AWS-EKS.
 
 ## Configure AWS-EKS on Cortex XSOAR
 
@@ -8,13 +8,14 @@ This integration was integrated and tested with version 1.29 of AWS-EKS.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
-    | --- | --- |--------------|
-    | AWS Default Region |  | True         |
-    | Access Key |  | True         |
-    | Secret Key |  | True        |
-    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False        |
-    | Trust any certificate (not secure) |  | False        |
-    | Use system proxy settings |  | False        |
+    | --- | --- | --- |
+    | AWS Default Region | AWS Default Region | True |
+    | Access Key |  | True |
+    | Secret Key |  | True |
+    | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
+    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+    | Trust any certificate (not secure) | Trust any certificate \(not secure\) | False |
+    | Use system proxy settings | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -38,6 +39,7 @@ Lists the Amazon EKS clusters in your Amazon Web Services account in the specifi
 | --- | --- | --- |
 | limit | The maximum number of clusters to return. Default is 50. | Optional | 
 | next_token | The nextToken value returned from a previous paginated request, where maxResults was used and the results exceeded the value of that parameter. | Optional | 
+| region | The AWS Region. If not specified, the configured region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 
 #### Context Output
 
@@ -55,7 +57,8 @@ Lists the Amazon EKS clusters in your Amazon Web Services account in the specifi
         "EKS": {
             "Cluster": {
                 "ClustersNames": [
-                    "ClusterName"
+                    "cluster_name1",
+                    "cluster_name2"
                 ],
                 "NextToken": null
             }
@@ -67,15 +70,16 @@ Lists the Amazon EKS clusters in your Amazon Web Services account in the specifi
 #### Human Readable Output
 
 >### The list of clusters
->|ClustersNames|
->|---|
->| ClusterName |
+>| Clusters Names |
+>|----------------|
+>| cluster_name1  |
+>| cluster_name2  |
 
 
 ### aws-eks-update-cluster-config
 
 ***
-Updates an Amazon EKS cluster configuration. Only one type of update can be allowed. Potentially harmful: once the authentication mode was updated to 'API' it is irreversible.
+Updates an Amazon EKS cluster configuration. Only one type of update is allowed. Potentially harmful: once the authentication mode is updated to 'API' it is irreversible.
 
 #### Base Command
 
@@ -86,9 +90,10 @@ Updates an Amazon EKS cluster configuration. Only one type of update can be allo
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cluster_name | The name of the Amazon EKS cluster to update. | Required | 
-| resources_vpc_config | A json representation of the VPC configuration used by the cluster control plane. An example: \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\" | Optional | 
-| logging | A json representation of the logging configuration for the cluster. An example: \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': True}]}\" | Optional | 
-| authentication_mode | The desired authentication mode for the cluster. Note - once the authentication mode was updated to 'API' it is irreversible. Possible values are: API, API_AND_CONFIG_MAP, CONFIG_MAP. | Optional | 
+| resources_vpc_config | A JSON representation of the VPC configuration used by the cluster control plane. An example: "{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}". | Optional | 
+| logging | A JSON representation of the logging configuration for the cluster. An example: "{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': true}]}". | Optional | 
+| authentication_mode | Whether to update the authentication mode to 'API_AND_CONFIG_MAP' or not. Possible values are: true, false. | Optional | 
+| region | The AWS Region. If not specified, the configured region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 
 #### Context Output
 
@@ -99,8 +104,8 @@ Updates an Amazon EKS cluster configuration. Only one type of update can be allo
 | AWS.EKS.UpdateCluster.status | String | The status of the update. | 
 | AWS.EKS.UpdateCluster.type | String | The type of the update. | 
 | AWS.EKS.UpdateCluster.params | Object | The parameters of the update. | 
-| AWS.EKS.UpdateCluster.createdAt | Unknown | The creation date ob the object. | 
-| AWS.EKS.UpdateCluster.errors | Object | Any errors associated with a Failed update. | 
+| AWS.EKS.UpdateCluster.createdAt | String | The creation date of the object. | 
+| AWS.EKS.UpdateCluster.errors | Object | Any errors associated with a failed update. | 
 
 #### Command example
 ```!aws-eks-update-cluster-config cluster_name=CLUSTER_NAME logging="{'clusterLogging': [{'types': ['api', 'authenticator', 'audit'], 'enabled': false}]}"```
@@ -110,7 +115,7 @@ Updates an Amazon EKS cluster configuration. Only one type of update can be allo
     "AWS": {
         "EKS": {
             "UpdateCluster": {
-                "createdAt": "2024-03-14T12:07:19Z",
+                "createdAt": "2024-02-26 09:38:11.578000+00:00",
                 "errors": [],
                 "id": "11111111-1111-1111-1111-111111111111",
                 "name": "CLUSTER_NAME",
@@ -150,6 +155,7 @@ Describes an Amazon EKS cluster.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cluster_name | The name of the cluster to describe. | Required | 
+| region | The AWS Region. If not specified, the configured region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 
 #### Context Output
 
@@ -157,7 +163,7 @@ Describes an Amazon EKS cluster.
 | --- | --- | --- |
 | AWS.EKS.DescribeCluster.name | String | The name of your cluster. | 
 | AWS.EKS.DescribeCluster.arn | String | The Amazon Resource Name \(ARN\) of the cluster. | 
-| AWS.EKS.DescribeCluster.createdAt | String | The creation date ob the object. | 
+| AWS.EKS.DescribeCluster.createdAt | String | The creation date of the object. | 
 | AWS.EKS.DescribeCluster.version | String | The Kubernetes server version for the cluster. | 
 | AWS.EKS.DescribeCluster.endpoint | String | The endpoint for your Kubernetes API server. | 
 | AWS.EKS.DescribeCluster.roleArn | String | The Amazon Resource Name \(ARN\) of the IAM role that provides permissions for the Kubernetes control plane to make calls to Amazon Web Services API operations on your behalf. | 
@@ -169,7 +175,7 @@ Describes an Amazon EKS cluster.
 | AWS.EKS.DescribeCluster.resourcesVpcConfig.endpointPrivateAccess | Boolean | This parameter indicates whether the Amazon EKS private API server endpoint is enabled. | 
 | AWS.EKS.DescribeCluster.resourcesVpcConfig.publicAccessCidrs | List | The CIDR blocks that are allowed access to your cluster’s public Kubernetes API server endpoint. | 
 | AWS.EKS.DescribeCluster.kubernetesNetworkConfig.serviceIpv4Cidr | String | The CIDR block that Kubernetes Pod and Service object IP addresses are assigned from. | 
-| AWS.EKS.DescribeCluster.kubernetesNetworkConfig.serviceIpv6Cidr | String | The CIDR block that Kubernetes pod and service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster. | 
+| AWS.EKS.DescribeCluster.kubernetesNetworkConfig.serviceIpv6Cidr | String | The CIDR block that Kubernetes Pod and Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster. | 
 | AWS.EKS.DescribeCluster.kubernetesNetworkConfig.ipFamily | String | The IP family used to assign Kubernetes Pod and Service objects IP addresses. | 
 | AWS.EKS.DescribeCluster.logging.clusterLogging | Object | The cluster control plane logging configuration for your cluster. | 
 | AWS.EKS.DescribeCluster.identity | Object | The identity provider information for the cluster. | 
@@ -208,7 +214,7 @@ Describes an Amazon EKS cluster.
                 "certificateAuthority": {
                     "data": "data_key"
                 },
-                "createdAt": "2024-02-26T09:38:11Z",
+                "createdAt": "2024-02-26 09:38:11.578000+00:00",
                 "endpoint": "endpoint",
                 "health": {
                     "issues": []
@@ -268,7 +274,7 @@ Describes an Amazon EKS cluster.
 >### Describe Cluster Information
 >|Cluster Name|Status| ARN     |Created At|Version|
 >|---|---|---------|---|---|
->| roleArn | ACTIVE | roleArn | 2024-02-26T09:38:11Z | 1.29 |
+>| roleArn | ACTIVE | roleArn | 2024-02-26 09:38:11.578000+00:00 | 1.29 |
 
 
 ### aws-eks-create-access-entry
@@ -286,11 +292,12 @@ Creates an access entry.
 | --- | --- | --- |
 | cluster_name | The name of the cluster for which to create an access entry. | Required | 
 | principal_arn | ARN of the IAM principal for the AccessEntry. | Required | 
-| kubernetes_groups | A list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings. | Optional | 
+| kubernetes_groups | A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings. | Optional | 
 | tags | A dictionary containing metadata for categorization and organization. Each tag consists of a key and an optional value. | Optional | 
 | client_request_token | Unique identifier for idempotency. | Optional | 
 | username | Username for Kubernetes authentication. | Optional | 
-| type | The type of access entry to create. Possible values are: Standard, FARGATE_LINUX, EC2_LINUX, EC2_WINDOWS. Default is Standard. | Required | 
+| type | The type of access entry to create. Possible values are: Standard, FARGATE_LINUX, EC2_LINUX, EC2_WINDOWS. Default is Standard. | Optional | 
+| region | The AWS Region. If not specified, the configured region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 
 #### Context Output
 
@@ -300,11 +307,11 @@ Creates an access entry.
 | AWS.EKS.CreateAccessEntry.principalArn | String | The ARN of the IAM principal for the access entry. | 
 | AWS.EKS.CreateAccessEntry.kubernetesGroups | String | A list of names that you’ve specified in a Kubernetes RoleBinding or ClusterRoleBinding object so that Kubernetes authorizes the principalARN access to cluster objects. | 
 | AWS.EKS.CreateAccessEntry.accessEntryArn | String | The ARN of the access entry. | 
-| AWS.EKS.CreateAccessEntry.createdAt | String | The creation date ob the object. | 
+| AWS.EKS.CreateAccessEntry.createdAt | String | The creation date of the object. | 
 | AWS.EKS.CreateAccessEntry.modifiedAt | String | The date and time for the last modification to the object. | 
 | AWS.EKS.CreateAccessEntry.tags | Object | A dictionary containing metadata for categorization and organization. | 
 | AWS.EKS.CreateAccessEntry.username | String | The name of a user that can authenticate to the cluster. | 
-| AWS.EKS.CreateAccessEntry.type | String | The type of the access entry. |
+| AWS.EKS.CreateAccessEntry.type | String | The type of the access entry. | 
 
 #### Command example
 ```!aws-eks-create-access-entry cluster_name=CLUSTER_NAME principal_arn=principal_arn```
@@ -321,8 +328,8 @@ Creates an access entry.
                         "kubernetesGroups"
                     ],
                     "accessEntryArn": "accessEntryArn",
-                    "createdAt": "2024-02-28T13:07:06Z",
-                    "modifiedAt": "2024-02-28T13:07:06Z",
+                    "createdAt": "2024-02-26 09:38:11.578000+00:00",
+                    "modifiedAt": "2024-02-26 09:38:11.578000+00:00",
                     "tags": {
                         "string": "string"
                     },
@@ -340,12 +347,12 @@ Creates an access entry.
 >### The newly created access entry
 >|Cluster Name|Principal Arn|Username|Type| Created At           |
 >|---|---|---|---|----------------------|
->| clusterName | principalArn | username | STANDARD | 2024-02-28T13:07:06Z |
+>| clusterName | principalArn | username | STANDARD | 2024-02-26 09:38:11.578000+00:00 |
 
 ### aws-eks-associate-access-policy
 
 ***
-Describes an Amazon EKS cluster.
+Associates an access policy and its scope to an access entry.
 
 #### Base Command
 
@@ -359,7 +366,8 @@ Describes an Amazon EKS cluster.
 | principal_arn | The Amazon Resource Name (ARN) of the IAM user or role for the AccessEntry that you’re associating the access policy to. | Required | 
 | policy_arn | The ARN of the AccessPolicy that you’re associating. | Required | 
 | type | The scope type of an access policy. Possible values are: cluster, namespace. | Required | 
-| namespaces | A comma separated list of Kubernetes namespace that an access policy is scoped to. A value is required if you specified namespace for type. | Optional | 
+| namespaces | A comma-separated list of Kubernetes namespaces that an access policy is scoped to. A value is required if you specified namespace for type. | Optional | 
+| region | The AWS Region. If not specified, the configured region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 
 #### Context Output
 
@@ -386,8 +394,8 @@ Describes an Amazon EKS cluster.
                         "namespaces": [],
                         "type": "cluster"
                     },
-                    "associatedAt": "2024-02-28T13:11:02Z",
-                    "modifiedAt": "2024-03-14T12:07:28Z",
+                    "associatedAt": "2024-02-26 09:38:11.578000+00:00",
+                    "modifiedAt": "2024-02-26 09:38:11.578000+00:00",
                     "policyArn": "policyArn"
                 },
                 "clusterName": "CLUSTER_NAME",
@@ -400,7 +408,11 @@ Describes an Amazon EKS cluster.
 
 #### Human Readable Output
 
->The access policy was associated to the access entry successfully.
+>### The access policy was associated to the access entry successfully.
+>|Cluster Name|Principal Arn|Policy Arn| associate At           |
+>|---|---|-----------|----------------------|
+>| clusterName | principalArn | username  | 2024-02-26 09:38:11.578000+00:00 |
+
 ### aws-eks-update-access-entry
 
 ***
@@ -416,9 +428,10 @@ Updates an access entry.
 | --- | --- | --- |
 | cluster_name | The name of the cluster. | Required | 
 | principal_arn | ARN of the IAM principal for the AccessEntry. | Required | 
-| kubernetes_groups | A comma separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings. | Optional | 
+| kubernetes_groups | A comma-separated list of names for Kubernetes groups in RoleBindings or ClusterRoleBindings. | Optional | 
 | client_request_token | Unique identifier for idempotency. | Optional | 
 | username | Username for Kubernetes authentication. | Optional | 
+| region | The AWS Region. If not specified, the configured region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 
 #### Context Output
 
@@ -428,7 +441,7 @@ Updates an access entry.
 | AWS.EKS.UpdateAccessEntry.principalArn | String | The ARN of the IAM principal for the access entry. | 
 | AWS.EKS.UpdateAccessEntry.kubernetesGroups | List | A list of names that you’ve specified in a Kubernetes RoleBinding or ClusterRoleBinding object so that Kubernetes authorizes the principalARN access to cluster objects. | 
 | AWS.EKS.UpdateAccessEntry.accessEntryArn | String | The ARN of the access entry. | 
-| AWS.EKS.UpdateAccessEntry.createdAt | String | The creation date ob the object. | 
+| AWS.EKS.UpdateAccessEntry.createdAt | String | The creation date of the object. | 
 | AWS.EKS.UpdateAccessEntry.modifiedAt | String | The date and time for the last modification to the object. | 
 | AWS.EKS.UpdateAccessEntry.tags | Object | Metadata that assists with categorization and organization. Each tag consists of a key and an optional value. | 
 | AWS.EKS.UpdateAccessEntry.username | String | The name of a user that can authenticate to your cluster. | 
@@ -444,9 +457,9 @@ Updates an access entry.
             "UpdateAccessEntry": {
                 "accessEntryArn": "accessEntryArn",
                 "clusterName": "CLUSTER_NAME",
-                "createdAt": "2024-02-28T13:07:06Z",
+                "createdAt": "2024-02-26 09:38:11.578000+00:00",
                 "kubernetesGroups": [],
-                "modifiedAt": "2024-03-17T12:53:35Z",
+                "modifiedAt": "2024-02-26 09:38:11.578000+00:00",
                 "principalArn": "principalArn",
                 "tags": {},
                 "type": "STANDARD",
@@ -462,5 +475,5 @@ Updates an access entry.
 >### The updated access entry
 >|Cluster Name|Principal Arn|Username|Type|Modified At|
 >|---|---|---|---|---|
->| CLUSTER_NAME | principal_arn | username | STANDARD | 2024-03-17T12:53:35Z |
+>| CLUSTER_NAME | principal_arn | username | STANDARD | 2024-02-26 09:38:11.578000+00:00 |
 

@@ -83,7 +83,7 @@ def list_clusters_command(aws_client, args: dict) -> CommandResults:
         flag = bool(next_token)
 
     md_table = {
-        'ClustersNames': list_clusters,
+        'Clusters Names': list_clusters,
     }
 
     outputs = {
