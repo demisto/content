@@ -61,23 +61,30 @@ def is_value_sanitized(value):
 
 def is_command_sanitized(command):
     malformed_args = []
+    command_lower = command.lower()
     for current_sanitized_arg_name in SANITIZED_ARG_NAMES:
-        if command.count(current_sanitized_arg_name) > 1:
+        arg_name_lower = current_sanitized_arg_name.lower()
+        if command_lower.count(arg_name_lower) > 1:
             malformed_args.append(current_sanitized_arg_name)
-        command = command.replace(current_sanitized_arg_name, '')
+        command_lower = command_lower.replace(arg_name_lower, '')
     if malformed_args:
         return False, f'The value of {", ".join(malformed_args)} is malformed.'
     return True, None
 
 
 def get_command_string(ids, pollingCommand, pollingCommandArgName, playbookId, dt, interval, timeout, tag, args_names,
-                       args_values):
-    return '''!GenericPollingScheduledTask ids="{}" pollingCommand="{}" pollingCommandArgName="{}"{} \
+                       args_values, extract_mode):
+
+    command_string = '''!GenericPollingScheduledTask ids="{}" pollingCommand="{}" pollingCommandArgName="{}"{} \
               pendingIds="{}" interval="{}" timeout="{}" tag="{}" additionalPollingCommandArgNames="{}" \
               additionalPollingCommandArgValues="{}"'''.format(ids.replace('"', r'\"'), pollingCommand,
                                                                pollingCommandArgName, playbookId,
                                                                dt.replace('"', r'\"'), interval, timeout,
                                                                tag, args_names, args_values)
+    if extract_mode:
+        command_string += f" auto-extract={extract_mode} extractMode={extract_mode}"
+
+    return command_string
 
 
 def main():  # pragma: no cover
@@ -94,6 +101,7 @@ def main():  # pragma: no cover
 
     interval = int(args.get('interval'))
     timeout = int(args.get('timeout'))
+    extract_mode = args.get("extractMode")
     if interval <= 0 or timeout <= 0:
         return_error("Interval and timeout must be positive numbers")
 
@@ -111,7 +119,7 @@ def main():  # pragma: no cover
                         "that all ids have finished running.")
 
     command_string = get_command_string(ids, pollingCommand, pollingCommandArgName, playbookId, dt, interval, timeout, tag,
-                                        args_names, args_values)
+                                        args_names, args_values, extract_mode)
 
     command_sanitized, message = is_command_sanitized(command_string)
     if not command_sanitized:
