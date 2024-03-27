@@ -98,7 +98,7 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
                 print(f"No branch was found with the name: {github_branch_name}. New pipeline was not created.")
                 issue.create_comment(COMMENT_MESSAGES.build_trigger_failed.format(branch=github_branch_name))
 
-    issue.remove_from_labels(GITHUB_TRIGGER_BUILD_LABEL)
+            issue.remove_from_labels(GITHUB_TRIGGER_BUILD_LABEL)
 
 
 def main():
