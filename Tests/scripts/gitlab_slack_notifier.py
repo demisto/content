@@ -462,7 +462,7 @@ def missing_content_packs_test_conf(artifact_folder: Path) -> list[dict[str, Any
         title = f"Notice - Missing packs - ({len(missing_packs_list)})"
         return [{
             'fallback': title,
-            'color': 'warning',
+            'color': 'danger',
             'title': title,
             'fields': [
                 {
