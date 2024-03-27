@@ -280,3 +280,6 @@ SaaS
 saas
 Symantec
 XQL
+STS
+DB
+WAF
