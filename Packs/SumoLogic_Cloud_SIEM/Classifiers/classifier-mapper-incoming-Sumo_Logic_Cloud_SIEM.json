@@ -1,12 +1,12 @@
 {
-    "description": "Sumo Logic Cloud SIEM Mapper",
-    "feed": false,
-    "fromVersion": "6.2.0",
-    "id": "Sumo Logic Insight - Mapper",
-    "mapping": {
-        "Sumo Logic Insight": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
+	"description": "Sumo Logic Cloud SIEM Mapper",
+	"feed": false,
+	"fromVersion": "6.2.0",
+	"id": "Sumo Logic Insight - Mapper",
+	"mapping": {
+		"Sumo Logic Insight": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
 				"Alert Category": {
 					"simple": "source"
 				},
@@ -24,6 +24,7 @@
 							{
 								"args": {
 									"withSign": {
+										"isContext": false,
 										"value": {
 											"simple": "%"
 										}
@@ -48,6 +49,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_ip"
 										}
@@ -73,6 +75,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_mac"
 										}
@@ -98,6 +101,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_domain"
 										}
@@ -133,6 +137,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_hash"
 										}
@@ -149,6 +154,7 @@
 									},
 									"operator": "stringHasLength",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "32"
 										}
@@ -174,6 +180,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_file"
 										}
@@ -202,6 +209,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_hash"
 										}
@@ -218,6 +226,7 @@
 									},
 									"operator": "stringHasLength",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "40"
 										}
@@ -242,6 +251,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_hash"
 										}
@@ -258,6 +268,7 @@
 									},
 									"operator": "stringHasLength",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "64"
 										}
@@ -283,6 +294,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_hostname"
 										}
@@ -310,6 +322,7 @@
 									},
 									"operator": "containsGeneral",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_mitreAttackTactic"
 										}
@@ -321,9 +334,14 @@
 						"transformers": [
 							{
 								"args": {
-									"limit": {},
-									"replaceWith": {},
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false
+									},
 									"toReplace": {
+										"isContext": false,
 										"value": {
 											"simple": "_mitreAttackTactic:"
 										}
@@ -347,6 +365,7 @@
 									},
 									"operator": "containsGeneral",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_mitreAttackTechnique"
 										}
@@ -358,9 +377,14 @@
 						"transformers": [
 							{
 								"args": {
-									"limit": {},
-									"replaceWith": {},
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false
+									},
 									"toReplace": {
+										"isContext": false,
 										"value": {
 											"simple": "_mitreAttackTechnique:"
 										}
@@ -385,6 +409,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_process"
 										}
@@ -396,39 +421,39 @@
 						"transformers": []
 					}
 				},
-                "Sumo Logic Cloud SIEM Insight Entity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "entity",
-                        "transformers": [
-                            {
-                                "operator": "ConvertKeysToTableFieldFormat"
-                            }
-                        ]
-                    }
-                },
-                "Sumo Logic Cloud SIEM Insight Involved Entities": {
-                    "complex": {
-                        "filters": [],
-                        "root": "involvedEntities",
-                        "transformers": [
-                            {
-                                "operator": "ConvertKeysToTableFieldFormat"
-                            }
-                        ]
-                    }
-                },
-                "Sumo Logic Cloud SIEM Insight Signals": {
-                    "complex": {
-                        "filters": [],
-                        "root": "signals",
-                        "transformers": [
-                            {
-                                "operator": "ConvertKeysToTableFieldFormat"
-                            }
-                        ]
-                    }
-                },
+				"Sumo Logic Cloud SIEM Insight Entity": {
+					"complex": {
+						"filters": [],
+						"root": "entity",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Sumo Logic Cloud SIEM Insight Involved Entities": {
+					"complex": {
+						"filters": [],
+						"root": "involvedEntities",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
+				"Sumo Logic Cloud SIEM Insight Signals": {
+					"complex": {
+						"filters": [],
+						"root": "signals",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
 				"Tags": {
 					"complex": {
 						"filters": [
@@ -442,6 +467,7 @@
 									},
 									"operator": "notContainsGeneral",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_mitre"
 										}
@@ -467,6 +493,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_url"
 										}
@@ -492,6 +519,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_username"
 										}
@@ -506,6 +534,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_email"
 										}
@@ -521,33 +550,33 @@
 						]
 					}
 				},
-                "dbotMirrorDirection": {
-                    "simple": "mirror_direction"
-                },
-                "dbotMirrorId": {
-                    "simple": "readableId"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "mirror_instance"
-                },
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "readableId"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
 				"details": {
 					"simple": "description"
 				}
-            }
-        },
-        "Sumo Logic Signal": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
+			}
+		},
+		"Sumo Logic Signal": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
 				"Alert Category": {
 					"simple": "contentType"
 				},
-                "Alert ID": {
-                    "complex": {
-                        "filters": [],
-                        "root": "id",
-                        "transformers": []
-                    }
-                },
+				"Alert ID": {
+					"complex": {
+						"filters": [],
+						"root": "id",
+						"transformers": []
+					}
+				},
 				"Alert Name": {
 					"simple": "name"
 				},
@@ -570,6 +599,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "false"
 										}
@@ -606,6 +636,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "false"
 										}
@@ -635,6 +666,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "true"
 										}
@@ -656,9 +688,9 @@
 				"External Link": {
 					"simple": "sumoUrl"
 				},
-                "External Severity": {
-                    "simple": "severity"
-                },
+				"External Severity": {
+					"simple": "severity"
+				},
 				"File MD5": {
 					"simple": "allRecords.[].file_hash_md5"
 				},
@@ -687,6 +719,7 @@
 									},
 									"operator": "containsGeneral",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_mitreAttackTactic"
 										}
@@ -698,9 +731,14 @@
 						"transformers": [
 							{
 								"args": {
-									"limit": {},
-									"replaceWith": {},
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false
+									},
 									"toReplace": {
+										"isContext": false,
 										"value": {
 											"simple": "_mitreAttackTactic:"
 										}
@@ -724,6 +762,7 @@
 									},
 									"operator": "containsGeneral",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_mitreAttackTechnique"
 										}
@@ -735,9 +774,14 @@
 						"transformers": [
 							{
 								"args": {
-									"limit": {},
-									"replaceWith": {},
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false
+									},
 									"toReplace": {
+										"isContext": false,
 										"value": {
 											"simple": "_mitreAttackTechnique:"
 										}
@@ -783,6 +827,57 @@
 						"transformers": []
 					}
 				},
+				"Sumo Logic Cloud SIEM Record Fields": {
+					"complex": {
+						"filters": [],
+						"root": "allRecords",
+						"transformers": [
+							{
+								"args": {
+									"headers": {
+										"isContext": false,
+										"value": {
+											"simple": "fields"
+										}
+									},
+									"is_auto_json_transform": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									},
+									"json_transform_properties": {
+										"isContext": false
+									},
+									"title": {
+										"isContext": false
+									}
+								},
+								"operator": "JsonToTable"
+							},
+							{
+								"args": {
+									"limit": {
+										"isContext": false
+									},
+									"replaceWith": {
+										"isContext": false,
+										"value": {
+											"simple": "| \n|"
+										}
+									},
+									"toReplace": {
+										"isContext": false,
+										"value": {
+											"simple": "\u003cbr\u003e"
+										}
+									}
+								},
+								"operator": "replace"
+							}
+						]
+					}
+				},
 				"Record Message ID": {
 					"complex": {
 						"accessor": "metadata_sourceMessageId",
@@ -813,6 +908,7 @@
 									},
 									"operator": "isEqualString",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "false"
 										}
@@ -827,19 +923,16 @@
 				"Source Port": {
 					"simple": "allRecords.[].srcPort"
 				},
-				"Sumo Logic Cloud SIEM Record Fields": {
-					"simple": "allRecords.[0].fields"
+				"Sumo Logic Cloud SIEM Signal Entity": {
+					"simple": "entity"
 				},
-                "Sumo Logic Cloud SIEM Signal Entity": {
-                    "simple": "entity"
-                },
-                "Sumo Logic Cloud SIEM Signal Records": {
-                    "complex": {
-                        "filters": [],
-                        "root": "allRecords",
-                        "transformers": []
-                    }
-                },
+				"Sumo Logic Cloud SIEM Signal Records": {
+					"complex": {
+						"filters": [],
+						"root": "allRecords",
+						"transformers": []
+					}
+				},
 				"Tags": {
 					"complex": {
 						"filters": [
@@ -853,6 +946,7 @@
 									},
 									"operator": "notContainsGeneral",
 									"right": {
+										"isContext": false,
 										"value": {
 											"simple": "_mitre"
 										}
@@ -872,30 +966,30 @@
 						"transformers": []
 					}
 				},
-                "dbotMirrorDirection": {
-                    "simple": "mirror_direction"
-                },
-                "dbotMirrorId": {
-                    "simple": "readableId"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "mirror_instance"
-                },
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "readableId"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
 				"details": {
 					"simple": "description"
 				}
-            }
-        },
-        "dbot_classification_incident_type_all": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "External Severity": {
-                    "simple": "severity"
-                }
-            }
-        }
-    },
-    "name": "Sumo Logic Insight - Mapper",
-    "type": "mapping-incoming",
-    "version": -1
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"External Severity": {
+					"simple": "severity"
+				}
+			}
+		}
+	},
+	"name": "Sumo Logic Insight - Mapper",
+	"type": "mapping-incoming",
+	"version": -1
 }
