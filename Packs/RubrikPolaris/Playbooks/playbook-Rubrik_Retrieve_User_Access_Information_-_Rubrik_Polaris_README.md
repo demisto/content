@@ -1,4 +1,4 @@
-This playbook retrieves user access information for the provided username or email with the pagination related information.
+This playbook retrieves User Intelligence information for the provided username or email, which includes the user's risk level and the types of analyzer hits.
 
 ## Dependencies
 

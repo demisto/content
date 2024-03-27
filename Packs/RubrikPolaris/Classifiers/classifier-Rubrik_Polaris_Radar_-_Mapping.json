@@ -81,7 +81,7 @@
           "complex": {
             "accessor": "",
             "filters": [],
-            "root": "objectId",
+            "root": "fid",
             "transformers": []
           },
           "simple": ""
