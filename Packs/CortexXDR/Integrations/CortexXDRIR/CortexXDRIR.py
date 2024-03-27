@@ -961,21 +961,16 @@ def update_remote_system_command(client, args):
         return remote_args.remote_incident_id
 
 
-def sort_all_list_incident_fields_fetch(raw_incident):
-    """Sorting all lists fields in an incident - without this, elements may shift which results in false
+def sort_all_incident_data_fields_fetch(raw_incident, integration_instance):
+    """Sorting all fields in an incident from fetch_incidents- without this, elements may shift which results in false
     identification of changed fields"""
-    incident_data = {}
-    alerts = incident_data.get('alerts', []) if isinstance(incident_data.get('alerts'), list) \
-        else incident_data.get('alerts', {}).get('data')
-    file_artifacts = incident_data.get('file_artifacts', []) if isinstance(incident_data.get('file_artifacts'), list) \
-        else incident_data.get('file_artifacts', {}).get('data')
-    network_artifacts = incident_data.get('network_artifacts', []) if isinstance(incident_data.get('network_artifacts'), list) \
-        else incident_data.get('network_artifacts', {}).get('data')
-    if hosts := (incident_data.get('incident', {}).get('hosts') or incident_data.get('hosts', [])):
+    incident_data = raw_incident.get('incident', {})
+    
+    if hosts := raw_incident.get('incident', {}).get('hosts'):
         incident_data['hosts'] = sorted(hosts)
         incident_data['hosts'] = [host.upper() for host in hosts]
 
-    if users := (incident_data.get('incident', {}).get('users', []) or incident_data.get('users', [])):
+    if users := raw_incident.get('incident', {}).get('users', []):
         incident_data['users'] = sorted(users)
         incident_data['users'] = [user.upper() for user in users]
 
@@ -984,22 +979,27 @@ def sort_all_list_incident_fields_fetch(raw_incident):
         incident_data['incident_sources'] = sorted(incident_sources)
 
     format_sublists = not argToBoolean(demisto.params().get('dont_format_sublists', False))
-    if alerts:
+    if alerts:=raw_incident.get('alerts', {}).get('data'):
         incident_data['alerts'] = sort_by_key(alerts, main_key='alert_id', fallback_key='name')
         if format_sublists:
             reformat_sublist_fields(incident_data['alerts'])
 
-    if file_artifacts:
+    if file_artifacts:=raw_incident.get('file_artifacts', {}).get('data'):
         incident_data['file_artifacts'] = sort_by_key(file_artifacts, main_key='file_name',
                                                       fallback_key='file_sha256')
         if format_sublists:
             reformat_sublist_fields(incident_data['file_artifacts'])
 
-    if network_artifacts:
+    if network_artifacts:=raw_incident.get('network_artifacts', {}).get('data'):
         incident_data['network_artifacts'] = sort_by_key(network_artifacts,
                                                          main_key='network_domain', fallback_key='network_remote_ip')
         if format_sublists:
             reformat_sublist_fields(incident_data['network_artifacts'])
+    incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
+                                                             None)
+    incident_data['mirror_instance'] = integration_instance
+    incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
+    return incident_data
 
 
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
@@ -1053,33 +1053,20 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             incident_id = incident_data.get('incident_id')
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
-                incident_data = client.get_incident_extra_data(client, {"incident_id": incident_id,
-                                                                        "alerts_limit": 1000})[0].get('incident')\
-                    or {}
-            incident_data['alerts'] = raw_incident.get('alerts', {}).get('data', [])
-            incident_data['file_artifacts'] = raw_incident.get('file_artifacts', {}).get('data', [])
-            incident_data['network_artifacts'] = raw_incident.get('network_artifacts', {}).get('data', [])
-
-            sort_all_list_incident_fields(incident_data)
-            incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
-                                                                     None)
-            incident_data['mirror_instance'] = integration_instance
-            incident_data['last_mirrored_in'] = int(datetime.now().timestamp() * 1000)
-            description = incident_data.get('description')
+                raw_incident = client.get_incident_extra_data(client, {"incident_id": incident_id,
+                                                                        "alerts_limit": 1000})[0]
+            incident_data = sort_all_incident_data_fields_fetch(raw_incident, integration_instance)
             occurred = timestamp_to_datestring(incident_data['creation_time'], TIME_FORMAT + 'Z')
             incident: Dict[str, Any] = {
-                'name': f'XDR Incident {incident_id} - {description}',
+                'name': f'XDR Incident {incident_data.get("incident_id")} - {incident_data.get("description")}',
                 'occurred': occurred,
                 'rawJSON': json.dumps(incident_data),
             }
-
             if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
-                incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
-
+                incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail', {})).get('username')
             # Update last run and add incident if the incident is newer than last fetch
             if incident_data.get('creation_time', 0) > last_fetch:
                 last_fetch = incident_data.get('creation_time')
-
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
 
@@ -1092,7 +1079,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             demisto.info(f"Cortex XDR - rate limit exceeded, number of non created incidents is: "
                          f"'{len(non_created_incidents)}'.\n The incidents will be created in the next fetch")
         else:
-            raise
+            raise Exception(str(e))
 
     if non_created_incidents:
         next_run['incidents_from_previous_run'] = non_created_incidents
