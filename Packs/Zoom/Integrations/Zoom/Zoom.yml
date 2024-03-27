@@ -102,7 +102,7 @@ script:
       - Corporate
     description: Create a new user in zoom account.
     execution: true
-    name: zoom-create-user
+    name: zoom-create-user_test
     outputs:
     - contextPath: Zoom.User.id
       description: The ID of the created user.
