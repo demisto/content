@@ -5,7 +5,8 @@ from unittest.mock import patch
 import pytest
 from CommonServerPython import *
 
-BASE_URL = "https://test.cyberint.io/alert"
+ENVIRONMENT = "environment-example"
+BASE_URL = f"https://{ENVIRONMENT}.cyberint.io/alert"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
@@ -24,7 +25,7 @@ def client():
     from Cyberint import Client
 
     return Client(
-        base_url=BASE_URL,
+        environment=ENVIRONMENT,
         access_token="xxx",
         verify_ssl=None,
         proxy=None,

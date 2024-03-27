@@ -3,9 +3,9 @@
 
 import copy
 import json
+from collections.abc import Iterable
 from contextlib import closing
 from typing import Any
-from collections.abc import Iterable
 
 import dateparser
 from CommonServerPython import *
@@ -35,7 +35,14 @@ class Client(BaseClient):
     API Client to communicate with Cyberint API endpoints.
     """
 
-    def __init__(self, base_url: str, access_token: str, verify_ssl: bool, proxy: bool):
+    def __init__(
+        self,
+        environment: str,
+        access_token: str,
+        verify_ssl: bool,
+        proxy: bool,
+        customer_name: str = None,
+    ):
         """
         Client for CyberInt RESTful API.
 
@@ -46,8 +53,14 @@ class Client(BaseClient):
             proxy (bool): specifies if to use XSOAR proxy settings.
         """
         self._cookies = {"access_token": access_token}
-        self.headers = {"x-integration-source": f"XSOAR;{demisto.integrationInstance()}"}
-        super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
+        self._headers = {
+            "X-Integration-Type": "XSOAR",
+            "X-Integration-Version": get_pack_version(),
+            "X-Integration-Customer-Name": customer_name,
+            "X-Integration-Instance-Id": environment,
+            "X-Integration-Instance-Name": f"{demisto.integrationInstance()}",
+        }
+        super().__init__(base_url=f"https://{environment}.cyberint.io/alert/", verify=verify_ssl, proxy=proxy)
 
     def list_alerts(
         self,
@@ -871,15 +884,17 @@ def main():
     command = demisto.command()
     access_token = params.get("access_token")
     environment = params.get("environment")
+    customer_name = params.get("customer_name")
 
     verify_certificate = not params.get("insecure", False)
     first_fetch_time = params.get("first_fetch", "3 days").strip()
     proxy = params.get("proxy", False)
-    base_url = f"https://{environment}.cyberint.io/alert/"
+
     demisto.info(f"Command being called is {command}")
     try:
         client = Client(
-            base_url=base_url,
+            environment=environment,
+            customer_name=customer_name,
             verify_ssl=verify_certificate,
             access_token=access_token,
             proxy=proxy,
