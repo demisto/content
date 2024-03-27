@@ -70,7 +70,7 @@ def filter_compliance_issues(compliance_issues: list, compliance_ids: str) -> li
         return compliance_issues  # Return all issues if no IDs provided
 
     # Split comma-separated IDs into a list
-    ids_to_filter = [id.strip() for id in compliance_ids.split(',')]
+    ids_to_filter = [compliance_id.strip() for compliance_id in compliance_ids.split(',')]
 
     # Filter issues based on provided IDs
     filtered_compliance_issues = [issue for issue in compliance_issues if str(issue.get('id', '')) in ids_to_filter]
