@@ -356,7 +356,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "56"
+      - "57"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -559,7 +559,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
+          "x": 50,
           "y": 370
         }
       }
@@ -597,6 +597,42 @@ tasks:
         "position": {
           "x": 570,
           "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 1655131a-0964-45c9-8ed3-aab4b2993fb5
+    type: regular
+    task:
+      id: 1655131a-0964-45c9-8ed3-aab4b2993fb5
+      version: -1
+      name: gsuite-user-reset-password
+      description: Indicates if the user is forced to change their password at next
+        login.
+      script: '|||gsuite-user-reset-password'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      user_key:
+        simple: xsoar11@demistodev.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 1675
         }
       }
     note: false

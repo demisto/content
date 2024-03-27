@@ -67,6 +67,9 @@ HR_MESSAGES: dict[str, str] = {
     'CHROMEOS_DEVICES_LIST_SUCCESS': 'Google Workspace Admin - ChromeOS Devices List',
     'CHROMEOS_DEVICE_ACTION_SUCCESS': 'ChromeOS device with resource id - {} updated.',
     'USER_SIGNOUT_SESSIONS': 'Signs a {} out of all web and device sessions and reset their sign-in cookies.',
+    'POLICY_LIST': 'Policy Schemas List',
+    'CHROME_BROWSER_LIST': 'Chrome Browser Device List',
+    'POLICY_RESOLVE': 'Resolved Policies'
 }
 
 URL_SUFFIX: dict[str, str] = {
@@ -95,7 +98,10 @@ SCOPES: dict[str, list[str]] = {
     'ROLE_MANAGEMENT': ['https://www.googleapis.com/auth/admin.directory.rolemanagement'],
     'USER_SECURITY': ['https://www.googleapis.com/auth/admin.directory.user.security'],
     'DATA_TRANSFER': ['https://www.googleapis.com/auth/admin.datatransfer'],
-    'CUSTOM_USER_SCHEMA': ['https://www.googleapis.com/auth/admin.directory.userschema']
+    'CUSTOM_USER_SCHEMA': ['https://www.googleapis.com/auth/admin.directory.userschema'],
+    'CHROME_BROWSERS': ['https://www.googleapis.com/auth/admin.directory.device.chromebrowsers'],
+    'POLICY_MANAGEMENT': ['https://www.googleapis.com/auth/chrome.management.policy'],
+
 }
 
 COMMAND_SCOPES: dict[str, list[str]] = {
@@ -123,7 +129,10 @@ OUTPUT_PREFIX: dict[str, str] = {
     'DATA_TRANSFER_LIST_PAGE_TOKEN': 'GSuite.PageToken.DataTransfer',
     'CUSTOM_USER_SCHEMA': 'GSuite.UserSchema',
     'MOBILE_DEVICES_LIST': 'GSuite.MobileDevices',
-    'CHROMEOS_DEVICES_LIST': 'GSuite.ChromeOSDevices'
+    'CHROMEOS_DEVICES_LIST': 'GSuite.ChromeOSDevices',
+    'POLICY SCHEMAS': 'GSuite.PolicySchema',
+    'CHROME_BROWSERS': 'GSuite.ChromeBrowserDevices',
+    'POLICY_RESOLVE': 'GSuite.Policy'
 }
 
 
@@ -165,6 +174,21 @@ class Client(GSuiteClient):
         if not subject:
             subject = self.admin_email
         super().set_authorized_http(scopes=scopes, subject=subject, timeout=timeout)
+
+
+def return_file_from_entry_id(entry_id):  # pragma: no cover
+    try:
+        file_info = demisto.getFilePath(entry_id)
+
+    except Exception as e:
+        return_error(f"Failed to get the file path for entry: {entry_id} the error message was {str(e)}")
+
+    file_path = file_info.get("path")
+
+    # Open file and read data
+    with open(file_path) as f:  # type: ignore
+        dict_list = json.load(f)
+    return dict_list
 
 
 def prepare_output_user_alias_add(alias: dict[str, Any]) -> list[dict[str, Any]]:
@@ -440,7 +464,7 @@ def prepare_args_for_custom_user_schema(args: dict[str, str]) -> dict[str, str]:
     if args.get('field_raw_json'):
         field_json = GSuiteClient.safe_load_non_strict_json(args['field_raw_json'])
     elif args.get('field_json_entry_id'):
-        field_json = safe_load_json(args['field_json_entry_id'])
+        field_json = return_file_from_entry_id(args['field_json_entry_id'])
     else:
         raise ValueError(MESSAGES['REQUIRED_ARGS_CUSTOM_SCHEMA'])
 
@@ -1027,7 +1051,7 @@ def datatransfer_request_create_command(client: Client, args: dict[str, str]) ->
     if args.get('applications_raw_json'):
         app_payload = GSuiteClient.safe_load_non_strict_json(args['applications_raw_json'])
     elif args.get('applications_raw_json_entry_id'):
-        app_payload = safe_load_json(args['applications_raw_json_entry_id'])
+        app_payload = return_file_from_entry_id(args['applications_raw_json_entry_id'])
 
     request_payload = prepare_datatransfer_payload_from_arguments(args)
 
@@ -1484,6 +1508,369 @@ def gsuite_chromeos_device_action_command(client: Client, args: dict[str, str]) 
     return command_results
 
 
+def user_reset_password_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+        reset to user password based on given user_key (email)
+
+        :param client: Client object.
+        :param args: Command arguments.
+
+        :return: Command Result.
+    """
+    client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'])
+    user_key = args.get('user_key', '')
+    url_suffix = urljoin(URL_SUFFIX['USER'], urllib.parse.quote(user_key))
+    body = {"changePasswordAtNextLogin": True}
+    response = client.http_request(url_suffix=url_suffix, method='PUT', body=body)
+
+    # Context
+    outputs = prepare_output_for_user_command(copy.deepcopy(response))
+    # Output
+    readable_output = tableToMarkdown(HR_MESSAGES['USER_UPDATE'].format(user_key), outputs,
+                                      ['id', 'customerId', 'primaryEmail', 'changePasswordAtNextLogin'],
+                                      headerTransform=pascalToSpace, removeNull=True)
+
+    return CommandResults(outputs_prefix=OUTPUT_PREFIX['CREATE_USER'],
+                          outputs_key_field=['id'],
+                          outputs=outputs,
+                          readable_output=readable_output,
+                          raw_response=response)
+
+
+def chromebrowser_move_ou_command(client: Client, args: dict[str, str]) -> str:
+    """
+        Move Chrome Browser devices assigned to an account from one organization unit to another
+
+        :param client: Client object.
+        :param args: Command arguments - customer_id, resource_ids, org_unit_path - required.
+
+        :return: Message for user upon success
+    """
+    client.set_authorized_http(scopes=SCOPES['CHROME_BROWSERS'])
+    customer_id = args.get('customer_id', '')
+    resource_ids_list = argToList(args.get('resource_ids', ''))
+    org_unit_path = args.get('org_unit_path', '')
+    full_url = f'https://www.googleapis.com/admin/directory/v1.1beta1/customer/{customer_id}' \
+               f'/devices/chromebrowsers/moveChromeBrowsersToOu'
+    body = {"resource_ids": resource_ids_list, "org_unit_path": org_unit_path}
+    client.http_request(full_url=full_url, method='POST', body=body)
+
+    # Output
+    return f'Chrome browser devices have been moved to the new organization unit {org_unit_path}'
+
+
+def assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_u_path, page_t, page_s):
+    return GSuiteClient.remove_empty_entities({
+        'projection': projection,
+        'query': query,
+        'orderBy': order_by,
+        'sortOrder': sort_order,
+        'orgUnitPath': org_u_path,
+        'pageToken': page_t,
+        'maxResults': page_s
+    })
+
+
+def chromebrowser_list_command(client: Client, args: dict[str, str]) -> CommandResults:
+    '''
+        List chromebrowsers devices
+
+        :param client: Client object.
+        :param args: Command arguments - customer_id (reqyired), device_id, order_by, org_unit_path, projection, query,
+         sort_order, page_size and limit
+        :return: Command Result.
+    '''
+    API_LIMIT = 100
+    client.set_authorized_http(scopes=SCOPES['CHROME_BROWSERS'])
+    customer_id = args.get('customer_id', '')
+    device_id = args.get('device_id', '')
+    order_by = args.get('order_by', '')
+    org_unit_path = args.get('org_unit_path', '')
+    projection = args.get('projection', '')
+    query = args.get('query', '')
+    sort_order = args.get('sort_order', '')
+    page_size = args.get('page_size', '')
+    page_token = args.get('page_token', '')
+    limit = args.get('limit', '')
+
+    full_url = f'https://www.googleapis.com/admin/directory/v1.1beta1/customer/{customer_id}/devices/chromebrowsers/'
+    cb_list_resp = []
+    if device_id:
+        full_url = full_url + f'{device_id}'
+        params_for_command = GSuiteClient.remove_empty_entities({
+            'projection': projection
+        })
+        response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+        cb_list_resp.append(response)
+    else:
+        while len(cb_list_resp) < int(limit):
+            if int(limit) - len(cb_list_resp) > API_LIMIT:
+                page_size = str(API_LIMIT)
+            else:
+                page_size = str(int(limit) - len(cb_list_resp))
+            params_for_command = assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path,
+                                                                  page_token, page_size)
+            response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+            page_token = response.get('nextPageToken', '')
+            cb_list_resp.extend(response['browsers'])
+            if not page_token:
+                break
+
+    readable_output = tableToMarkdown(HR_MESSAGES['CHROME_BROWSER_LIST'].format(device_id), cb_list_resp,
+                                      ['deviceId', 'osPlatform', 'osVersion', 'machineName', 'serialNumber', 'orgUnitPath'],
+                                      headerTransform=pascalToSpace, removeNull=True)
+    return CommandResults(outputs_prefix=OUTPUT_PREFIX['CHROME_BROWSERS'],
+                          outputs_key_field=['deviceId'],
+                          outputs=cb_list_resp,
+                          readable_output=readable_output,
+                          raw_response=response)
+
+
+def modify_policy_command(client: Client, args: dict[str, str]) -> str:
+    """
+        get a user details based on user key.
+
+        :param client: Client object.
+        :param args: Command arguments.
+
+        :return: String that confirms request was executed.
+    """
+    client.set_authorized_http(scopes=SCOPES['POLICY_MANAGEMENT'])
+    customer_id = args.get('customer_id', '')
+    target_type = args.get('target_type', '')
+    policy_raw_json = args.get('policy_raw_json', '')
+    policy_field_json_entry_id = args.get('policy_field_json_entry_id', '')
+    target_resource = args.get('target_resource', '')
+    additional_target_keys = args.get('additional_target_keys', '')
+    policy_schema = args.get('policy_schema', '')
+    policy_value = args.get('policy_value', '')
+    update_mask = args.get('update_mask', '')
+
+    if target_type == 'Group':
+        full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policies/groups:batchModify'
+        target_resource_customized = f'groups/{target_resource}'
+    else:
+        full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policies/orgunits:batchModify'
+        target_resource_customized = f'orgunits/{target_resource}'
+
+    if additional_target_keys:
+        atk_dict = json.loads(additional_target_keys)
+    else:
+        atk_dict = {}
+
+    if policy_raw_json:
+        app_payload = GSuiteClient.safe_load_non_strict_json(policy_raw_json)
+    elif policy_field_json_entry_id:
+        app_payload = return_file_from_entry_id(policy_field_json_entry_id)
+    else:
+        app_payload = {
+            "requests": [
+                {
+                    "policyTargetKey":
+                    {
+                        "targetResource": target_resource_customized,
+                        "additionalTargetKeys": atk_dict
+                    },
+                    "policyValue": {
+                        "policySchema": policy_schema,
+                        "value": {
+                            "appInstallType": policy_value
+                        }
+                    },
+                    "updateMask": update_mask
+                }
+            ]
+        }
+
+    client.http_request(full_url=full_url, method='POST', body=app_payload)
+
+    # Output
+    return f'Policy has been modified for the customer {customer_id}'
+
+
+def policy_resolve_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+        resolve the provided policy and return its details
+
+        :param client: Client object.
+        :param args: Command arguments.
+
+        :return: Command Result.
+    """
+    API_LIMIT = 1000
+    client.set_authorized_http(scopes=SCOPES['POLICY_MANAGEMENT'])
+    customer_id = args.get('customer_id', '')
+    target_type = args.get('target_type', '')
+    policy_schema_filter = args.get('policy_schema_filter', '')
+    target_resource = args.get('target_resource', '')
+    additional_target_keys = args.get('additional_target_keys', '')
+    page_size = args.get('page_size', '')
+    page_token = args.get('page_token', '')
+    limit = args.get('limit', '')
+
+    if additional_target_keys:
+        atk_dict = json.loads(additional_target_keys)
+    else:
+        atk_dict = {}
+
+    if target_type == 'Group':
+        target_resource_customized = f'groups/{target_resource}'
+    else:
+        target_resource_customized = f'orgunits/{target_resource}'
+
+    app_payload = {
+        "policySchemaFilter": policy_schema_filter,
+        "policyTargetKey": {
+            "targetResource": target_resource_customized,
+            "additionalTargetKeys": atk_dict
+        },
+        "pageSize": page_size,
+        "pageToken": page_token
+    }
+
+    full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policies:resolve'
+
+    policy_resolved_resp: list = []
+    while len(policy_resolved_resp) < int(limit):
+        if int(limit) - len(policy_resolved_resp) > API_LIMIT:
+            page_size = str(API_LIMIT)
+        else:
+            page_size = str(int(limit) - len(policy_resolved_resp))
+        app_payload['pageSize'] = page_size
+        app_payload['pageToken'] = page_token
+        response = client.http_request(full_url=full_url, method='POST', body=app_payload)
+        page_token = response.get('nextPageToken', '')
+        policy_resolved_resp.extend(response['resolvedPolicies'])
+        if not page_token:
+            break
+
+    hr_from_response = []
+    for res in policy_resolved_resp:
+        customized_resp = {'targetResource': res['targetKey']['targetResource'],
+                           'additionalTargetKeys': res['targetKey']['additionalTargetKeys'],
+                           'policySchema': res['value']['policySchema']}
+        hr_from_response.append(customized_resp)
+
+    # Readable Output
+    readable_output = tableToMarkdown(HR_MESSAGES['POLICY_RESOLVE'], hr_from_response,
+                                      ['targetResource', 'additionalTargetKeys', 'policySchema'],
+                                      headerTransform=pascalToSpace, removeNull=True)
+    return CommandResults(outputs_prefix=OUTPUT_PREFIX['POLICY_RESOLVE'],
+                          outputs_key_field=['deviceId'],
+                          outputs=policy_resolved_resp,
+                          readable_output=readable_output,
+                          raw_response=response)
+
+
+def assign_params_policy_schemas(filter, page_size, page_token):
+    return GSuiteClient.remove_empty_entities({
+        'filter': filter,
+        'pageSize': page_size,
+        'pageToken': page_token
+    })
+
+
+def policy_schemas_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+        list policy schemas
+
+        :param client: Client object.
+        :param args: Command arguments.
+
+        :return: Command Result.
+    """
+    API_LIMIT = 1000
+    client.set_authorized_http(scopes=SCOPES['POLICY_MANAGEMENT'])
+    customer_id = args.get('customer_id', '')
+    schema_name = args.get('schema_name', '')
+    filter = args.get('filter', '')
+    page_size = args.get('page_size', '')
+    page_token = args.get('page_token', '')
+    limit = args.get('limit', '')
+
+    full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policySchemas'
+    policy_schemas_resp = []
+    if schema_name:
+        full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policySchemas/{schema_name}'
+        response = client.http_request(full_url=full_url, method='GET')
+        policy_schemas_resp.append(response)
+    else:
+        while len(policy_schemas_resp) < int(limit):
+            if int(limit) - len(policy_schemas_resp) > API_LIMIT:
+                page_size = str(API_LIMIT)
+            else:
+                page_size = str(int(limit) - len(policy_schemas_resp))
+            params_for_command = assign_params_policy_schemas(filter, page_size, page_token)
+            response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+            page_token = response.get('nextPageToken', '')
+            policy_schemas_resp.extend(response['policySchemas'])
+            if not page_token:
+                break
+
+    # Readable Output
+    readable_output = tableToMarkdown(HR_MESSAGES['POLICY_LIST'], policy_schemas_resp,
+                                      ['name', 'policyDescription', 'schemaName'],
+                                      headerTransform=pascalToSpace, removeNull=True)
+    return CommandResults(outputs_prefix=OUTPUT_PREFIX['POLICY SCHEMAS'],
+                          outputs_key_field=['name'],
+                          outputs=policy_schemas_resp,
+                          readable_output=readable_output,
+                          raw_response=response)
+
+
+def group_delete_command(client: Client, args: dict[str, str]) -> str:
+    """
+       delete a user_group based on target_id
+
+       :param client: Client object.
+       :param args: Command arguments.
+
+       :return: String that confirms request was executed.
+   """
+    client.set_authorized_http(scopes=SCOPES['POLICY_MANAGEMENT'])
+    customer_id = args.get('customer_id', '')
+    target_type = args.get('target_type', '')
+    policy_raw_json = args.get('policy_raw_json', '')
+    policy_field_json_entry_id = args.get('policy_field_json_entry_id', '')
+    target_resource = args.get('target_resource', '')
+    additional_target_keys = args.get('additional_target_keys', '')
+    policy_schema = args.get('policy_schema', '')
+
+    if additional_target_keys:
+        atk_dict = json.loads(additional_target_keys)
+    else:
+        atk_dict = {}
+
+    if target_type == 'Group':
+        target_resource_customized = f'groups/{target_resource}'
+    else:
+        target_resource_customized = f'orgunits/{target_resource}'
+
+    full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policies/groups:batchDelete'
+    if policy_raw_json:
+        app_payload = GSuiteClient.safe_load_non_strict_json(policy_raw_json)
+    elif policy_field_json_entry_id:
+        app_payload = return_file_from_entry_id(policy_field_json_entry_id)
+    else:
+        app_payload = {
+            "requests": [
+                {
+                    "policyTargetKey":
+                        {
+                            "targetResource": target_resource_customized,
+                            "additionalTargetKeys": atk_dict
+                        },
+                    "policySchema": policy_schema,
+                }
+            ]
+        }
+
+    client.http_request(full_url=full_url, method='POST', body=app_payload)
+
+    # Output
+    return f'Policy has been deleted for the customer {customer_id}'
+
+
 def main() -> None:
     """
          PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1511,7 +1898,14 @@ def main() -> None:
         'gsuite-mobiledevice-list': gsuite_mobile_device_list_command,
         'gsuite-chromeosdevice-action': gsuite_chromeos_device_action_command,
         'gsuite-chromeosdevice-list': gsuite_chromeos_device_list_command,
-        'gsuite-user-signout': user_signout_command
+        'gsuite-user-signout': user_signout_command,
+        'gsuite-user-reset-password': user_reset_password_command,
+        'gsuite-chromebrowserdevice-move-ou': chromebrowser_move_ou_command,
+        'gsuite-chromebrowserdevice-list': chromebrowser_list_command,
+        'gsuite-policy-modify': modify_policy_command,
+        'gsuite-policy-schemas-list': policy_schemas_command,
+        'gsuite-policy-resolve': policy_resolve_command,
+        'gsuite-policy-groups-delete': group_delete_command
     }
     command = demisto.command()
     demisto.info(f'Command being called is {command}')

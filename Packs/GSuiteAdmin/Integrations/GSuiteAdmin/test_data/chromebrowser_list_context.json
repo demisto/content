@@ -1,0 +1,47 @@
+{
+    "entry_type": 1,
+    "ignore_auto_extract": "False",
+    "mark_as_note": "False",
+    "outputs": 
+    [
+        {
+            "deviceId": "e8403671-d8e1-4d78-b107-b21d3f32b58e", 
+            "kind": "admin#directory#browserdevice", 
+            "osPlatform": "Windows", 
+            "osVersion": "10.0.19045.4046", 
+            "machineName": "WIN10-TMPLT", 
+            "lastRegistrationTime": "2024-02-20T21:16:00.902Z", 
+            "lastActivityTime": "2024-02-20T21:16:00.902Z", 
+            "osPlatformVersion": "Windows 10", 
+            "serialNumber": "VMware-42 1f 0f 04 cc 7a f7 47-17 bd 7d 0d 0b 0f 95 64", 
+            "virtualDeviceId": "0089ea7e-aca6-469c-967d-6823faec8350", 
+            "orgUnitPath": "/testing", 
+            "deviceIdentifiersHistory": {}
+        }
+    ],
+    "outputs_key_field": ["deviceId"],
+    "outputs_prefix": "GSuite.ChromeBrowserDevices",
+    "raw_response": 
+    {
+        "kind": "admin#directory#browserdevices", 
+        "browsers": 
+        [
+            {
+                "deviceId": "e8403671-d8e1-4d78-b107-b21d3f32b58e", 
+                "kind": "admin#directory#browserdevice", 
+                "osPlatform": "Windows", 
+                "osVersion": "10.0.19045.4046", 
+                "machineName": "WIN10-TMPLT", 
+                "lastRegistrationTime": "2024-02-20T21:16:00.902Z", 
+                "lastActivityTime": "2024-02-20T21:16:00.902Z", 
+                "osPlatformVersion": "Windows 10", 
+                "serialNumber": "VMware-42 1f 0f 04 cc 7a f7 47-17 bd 7d 0d 0b 0f 95 64", 
+                "virtualDeviceId": "0089ea7e-aca6-469c-967d-6823faec8350", 
+                "orgUnitPath": "/testing", 
+                "deviceIdentifiersHistory": {}
+            }
+        ]
+    },
+    "readable_output": "### Chrome Browser Device List\n|Device Id|Os Platform|Os Version|Machine Name|Serial Number|Org Unit Path|\n|---|---|---|---|---|---|\n| e8403671-d8e1-4d78-b107-b21d3f32b58e | Windows | 10.0.19045.4046 | WIN10-TMPLT | VMware-42 1f 0f 04 cc 7a f7 47-17 bd 7d 0d 0b 0f 95 64 | /testing |\n",
+    "replace_existing": "False"
+}

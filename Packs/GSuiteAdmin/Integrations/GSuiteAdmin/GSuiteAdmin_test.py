@@ -1200,3 +1200,279 @@ def create_pagination_result_manual_instance(raw_responses: list[dict], response
         mocked_data.extend(raw_response.get(response_devices_list_key, []))
         mocked_next_page_token = raw_response.get('nextPageToken', '')
     return {'data': mocked_data, 'raw_response': raw_responses, 'next_page_token': mocked_next_page_token}
+
+
+def test_gsuite_reset_password(gsuite_client, mocker):
+    """
+    Scenario: User reset password command successful execution.
+
+    Given:
+    - Working API integration and correct parameters
+
+    When:
+    - Calling command gsuite_user_reset_password
+
+    Then:
+    - Ensure expected human readable output is being set.
+    """
+
+    from GSuiteAdmin import user_reset_password_command
+    args = {'user_key': 'nikolic@demistodev.com'}
+    with open('test_data/user_password_reset_response.json') as file:
+        api_response = json.load(file)
+    with open('test_data/user_password_reset_context.json') as file:
+        expected_entry_context = json.load(file)
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
+    command_result = user_reset_password_command(gsuite_client, args)
+    assert command_result.readable_output == expected_entry_context['readable_output']
+    assert command_result.outputs == expected_entry_context['outputs']
+    assert command_result.raw_response == expected_entry_context['raw_response']
+    assert command_result.outputs_key_field == ['id']
+    assert command_result.outputs_prefix == 'GSuite.User'
+
+
+def test_chromebrowser_move_ou_command(gsuite_client, mocker):
+    """
+        Scenario: chromebrowserdevice move successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command chromebrowser_move_ou_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import chromebrowser_move_ou_command
+    args = {"customer_id": "test", "resource_ids": "1111", "org_unit_path": "/testing"}
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value={})
+    response = chromebrowser_move_ou_command(gsuite_client, args)
+    assert response == f'Chrome browser devices have been moved to the new organization unit {args["org_unit_path"]}'
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        {"customer_id": "test", "limit": "1"},
+        {"customer_id": "test", "limit": "10000"}
+    ]
+)
+def test_chromebrowser_list_command_multiple_limits(gsuite_client, mocker, args):
+    """
+        Scenario: chromebrowserdevice list successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command chromebrowser_list_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import chromebrowser_list_command
+    with open('test_data/chromebrowser_list_response.json') as file:
+        api_response = json.load(file)
+    with open('test_data/chromebrowser_list_context.json') as file:
+        expected_entry_context = json.load(file)
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
+    command_result = chromebrowser_list_command(gsuite_client, args)
+    assert command_result.readable_output == expected_entry_context['readable_output']
+    assert command_result.outputs == expected_entry_context['outputs']
+    assert command_result.raw_response == expected_entry_context['raw_response']
+    assert command_result.outputs_key_field == ['deviceId']
+    assert command_result.outputs_prefix == 'GSuite.ChromeBrowserDevices'
+
+
+def test_chromebrowser_list_command_device_id(gsuite_client, mocker):
+    """
+        Scenario: chromebrowserdevice list successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command chromebrowser_list_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import chromebrowser_list_command
+    args = {"customer_id": "test", "device_id": "1111111111"}
+    with open('test_data/chromebrowser_list_by_device_response.json') as file:
+        api_response = json.load(file)
+    with open('test_data/chromebrwoser_list_by_device_context.json') as file:
+        expected_entry_context = json.load(file)
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
+    command_result = chromebrowser_list_command(gsuite_client, args)
+    assert command_result.readable_output == expected_entry_context['readable_output']
+    assert command_result.outputs == expected_entry_context['outputs']
+    assert command_result.raw_response == expected_entry_context['raw_response']
+    assert command_result.outputs_key_field == ['deviceId']
+    assert command_result.outputs_prefix == 'GSuite.ChromeBrowserDevices'
+
+
+def test_modify_policy_command(gsuite_client, mocker):
+    """
+        Scenario: Policy Modify command successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command modify_policy_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import modify_policy_command
+    args = {"customer_id": "test", "target_type": "Group", "target_resource": "11111111",
+            "policy_schema_filter": "chrome.users.apps.InstallType",
+            "additional_target_keys": "{\"app_id\":\"chrome:11111111\"}",
+            "policy_schema": "chrome.users.apps.InstallType", "policy_value": "BLOCKED", "update_mask": "appInstallType"}
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value={})
+    response = modify_policy_command(gsuite_client, args)
+    assert response == f'Policy has been modified for the customer {args["customer_id"]}'
+
+
+def test_modify_policy_command_with_raw_json(gsuite_client, mocker):
+    """
+        Scenario: Policy Modify command successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command modify_policy_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import modify_policy_command
+    args = {"customer_id": "test", "target_type": "Group", "policy_raw_json":
+            "{\"requests\": [{\"policyTargetKey\": {\"targetResource\": \"groups/11111111\","
+            "\"additionalTargetKeys\": {\"app_id\": \"chrome:11111111\"}},"
+            "\"policyValue\": { \"policySchema\": \"chrome.users.apps.InstallType\","
+            "\"value\": {\"appInstallType\": \"BLOCKED\"}}, \"updateMask\": \"appInstallType\"}]}"}
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value={})
+    response = modify_policy_command(gsuite_client, args)
+    assert response == f'Policy has been modified for the customer {args["customer_id"]}'
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        {"customer_id": "test", "limit": "2"},
+        {"customer_id": "test", "limit": "100000"}
+    ]
+)
+def test_policy_schemas_command(gsuite_client, mocker, args):
+    """
+        Scenario: Policy Schema list command successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command policy_schemas_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import policy_schemas_command
+    with open('test_data/policy_schemas_list_reponse.json') as file:
+        api_response = json.load(file)
+    with open('test_data/policy_schemas_list_context.json') as file:
+        expected_entry_context = json.load(file)
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
+    command_result = policy_schemas_command(gsuite_client, args)
+    assert command_result.readable_output == expected_entry_context['readable_output']
+    assert command_result.outputs == expected_entry_context['outputs']
+    assert command_result.raw_response == expected_entry_context['raw_response']
+    assert command_result.outputs_key_field == ['name']
+    assert command_result.outputs_prefix == 'GSuite.PolicySchema'
+
+
+def test_policy_schemas_command_schema_name(gsuite_client, mocker):
+    """
+        Scenario: Policy Schema list command successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command policy_schemas_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import policy_schemas_command
+    args = {"customer_id": "test", "schema_name": "chrome.users.appsconfig.AllowedAppTypes"}
+    with open('test_data/policy_schemas_list_reponse_schema_name.json') as file:
+        api_response = json.load(file)
+    with open('test_data/policy_schemas_list_context_schema_name.json') as file:
+        expected_entry_context = json.load(file)
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
+    command_result = policy_schemas_command(gsuite_client, args)
+    assert command_result.readable_output == expected_entry_context['readable_output']
+    assert command_result.outputs == expected_entry_context['outputs']
+    assert command_result.raw_response == expected_entry_context['raw_response']
+    assert command_result.outputs_key_field == ['name']
+    assert command_result.outputs_prefix == 'GSuite.PolicySchema'
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        {"customer_id": "test", "limit": "2"},
+        {"customer_id": "test", "limit": "10000"}
+    ]
+)
+def test_policy_resolve_command(gsuite_client, mocker, args):
+    """
+        Scenario: Policy resolve command successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command policy_resolve_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import policy_resolve_command
+    with open('test_data/policy_resolve_response.json') as file:
+        api_response = json.load(file)
+    with open('test_data/policy_resolve_context.json') as file:
+        expected_entry_context = json.load(file)
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
+    command_result = policy_resolve_command(gsuite_client, args)
+    assert command_result.readable_output == expected_entry_context['readable_output']
+    assert command_result.outputs == expected_entry_context['outputs']
+    assert command_result.raw_response == expected_entry_context['raw_response']
+    assert command_result.outputs_key_field == ['deviceId']
+    assert command_result.outputs_prefix == 'GSuite.Policy'
+
+
+def test_group_delete_command(gsuite_client, mocker):
+    """
+        Scenario: Delete group command successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command group_delete_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import group_delete_command
+    args = {"customer_id": "test", "target_type": "Group", "target_resource": "111111",
+            "policy_schema": "chrome.users.apps.InstallType",
+            "additional_target_keys": "{\"app_id\":\"chrome:11111111\"}"}
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value={})
+    response = group_delete_command(gsuite_client, args)
+    assert response == f'Policy has been deleted for the customer {args["customer_id"]}'
