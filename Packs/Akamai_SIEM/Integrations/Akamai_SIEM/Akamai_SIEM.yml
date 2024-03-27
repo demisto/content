@@ -94,8 +94,8 @@ configuration:
   type: 0
   section: Collect
 - additionalinfo: Maximum number of events per fetch for fetch events (XSIAM)
-  defaultvalue: 50
-  display: Maximum events to fetch (Relevant only for xsiam)
+  defaultvalue: '400000'
+  display: Maximum events to fetch (Relevant only for xsiam), maximum is 600000.
   name: max_fetch
   type: 0
   required: false

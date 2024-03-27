@@ -317,13 +317,49 @@ def fetch_events_command(
     events: list | None = []
     from_time: str = last_run.get("events_last_run", "")
     if not from_time:
-        from_time, _ = parse_date_range(date_range=datetime.now(), date_format='%s')
+        from_time, _ = parse_date_range("1 minute", date_format='%s')
     events, offset = client.get_events(config_ids=config_ids, from_epoch=from_time, limit=fetch_limit)
-
+    cached_policy_ids = last_run.get("cached_policy_ids", [])
+    events, updated_cached_policy_ids = remove_duplicated_events(events, cached_policy_ids)
+    last_run['cached_policy_ids'] = updated_cached_policy_ids
     for event in events:
-        event["_time"] = event["_time"]
+        event["_time"] = event["httpMessage"]["start"]
+        event['attackData']['rules'] = decode_message(event.get('attackData', {}).get('rules', ""))
+        event['attackData']['ruleMessages'] = decode_message(event.get('attackData', {}).get('ruleMessages', ""))
+        event['attackData']['ruleTags'] = decode_message(event.get('attackData', {}).get('ruleTags', ""))
+        event['attackData']['ruleData'] = decode_message(event.get('attackData', {}).get('ruleData', ""))
+        event['attackData']['ruleSelectors'] = decode_message(event.get('attackData', {}).get('ruleSelectors', ""))
+        event['attackData']['ruleActions'] = decode_message(event.get('attackData', {}).get('ruleActions', ""))
+        event['attackData']['ruleVersions'] = decode_message(event.get('attackData', {}).get('ruleVersions', ""))
+        event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
+        event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
 
     return events, {'events_last_run': offset}
+    
+    
+def remove_duplicated_events(results: List[dict], cached_policy_ids: List[str]) -> tuple[List[dict], List[str]]:
+    updated_results: List[dict] = []
+    updated_cached_policy_ids: List[str] = []
+    removed_events: List[str] = []
+    for result in results:
+        if (event_policy_id := result.get("policyId", "")) in cached_policy_ids:
+            removed_events.append(str(event_policy_id))
+        else:
+            updated_results.append(result)
+            updated_cached_policy_ids.append(event_policy_id)
+    if removed_events:
+        demisto.info(f"The following events were deduplicated: {', '.join(removed_events)}.")
+    return updated_results, updated_cached_policy_ids
+
+def decode_url(headers):
+    decoded_lines = urllib.parse.unquote(headers).split("\r\n")
+    decoded_dict = {}
+    for line in decoded_lines:
+        parts = line.split(': ', 1)
+        if len(parts) == 2:
+            key, value = parts
+            decoded_dict[key.replace("-", "_")] = value.replace('"', '')
+    return decoded_dict
 
 
 def get_events_command(client: Client, config_ids: str, offset: str | None = None, limit: str | None = None,
@@ -422,7 +458,7 @@ def main():
             demisto.debug(f'Starting a new fetch interval with {last_run=}')
             events, new_last_run = fetch_events_command(client,
                                                         last_run,
-                                                        fetch_limit=params.get("max_fetch", "50"),
+                                                        fetch_limit=params.get("max_fetch", "400000"),
                                                         config_ids=params.get("event_configIds"))
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(new_last_run)
