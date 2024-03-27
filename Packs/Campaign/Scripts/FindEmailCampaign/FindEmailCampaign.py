@@ -434,7 +434,7 @@ def return_indicator_entry(incidents_df):
     if len(indicators_df) == 0:
         return_no_mututal_indicators_found_entry()
         return indicators_df
-    indicators_df = indicators_df[indicators_df['relatedIncCount'] < 150]
+    indicators_df = indicators_df[indicators_df.get('relatedIncCount', 0) < 150]
     indicators_df['Involved Incidents Count'] = \
         indicators_df['investigationIDs'].apply(lambda x: sum(id_ in x for id_ in incidents_df['id']))
     indicators_df = indicators_df[indicators_df['Involved Incidents Count'] > 1]
