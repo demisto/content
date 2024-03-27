@@ -1,5 +1,5 @@
 The AWS EKS integration allows for the management and operation of Amazon Elastic Kubernetes Service (EKS) clusters.
-This integration was integrated and tested with version xx of AWS-EKS.
+This integration was integrated and tested with version 1.29 of AWS-EKS.
 
 ## Configure AWS-EKS on Cortex XSOAR
 
