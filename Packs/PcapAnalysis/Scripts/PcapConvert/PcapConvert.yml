@@ -18,14 +18,15 @@ args:
   - abort
   - ignore
   - keep
-comment: Convert packet data to the standard pcap. Currently it only supports CDL(NGFW) pcap from which to convert.
+comment: Convert packet data to the standard pcap. Currently it only supports CDL(NGFW)
+  pcap from which to convert.
 commonfields:
   id: PcapConvert
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/pcap-miner:1.0.0.80182
+dockerimage: demisto/pcap-miner:1.0.0.90008
 enabled: true
 name: PcapConvert
 runas: DBotWeakRole

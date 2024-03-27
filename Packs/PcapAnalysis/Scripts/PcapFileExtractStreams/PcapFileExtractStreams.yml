@@ -13,7 +13,8 @@ args:
   name: pcap_filter
 - description: The entry ID for the RSA decryption key.
   name: rsa_decrypt_key_entry_id
-- description: The WPA password. By providing the password you will be able to decrypt encrypted traffic data.
+- description: The WPA password. By providing the password you will be able to decrypt
+    encrypted traffic data.
   name: wpa_password
 - description: Keys of output items by which to filter them.
   name: filter_keys
@@ -36,7 +37,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/pcap-miner:1.0.0.78355
+dockerimage: demisto/pcap-miner:1.0.0.90008
 enabled: true
 name: PcapFileExtractStreams
 outputs:
