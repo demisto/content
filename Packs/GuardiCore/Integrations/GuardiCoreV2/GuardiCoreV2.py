@@ -12,6 +12,8 @@ from pytz import utc
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+handle_proxy()
+
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 INCIDENT_COLUMNS = ['id', 'incident_type', 'severity', 'start_time', 'end_time',
