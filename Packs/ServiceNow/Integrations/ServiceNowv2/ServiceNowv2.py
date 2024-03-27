@@ -1018,6 +1018,17 @@ class Client(BaseClient):
         return self.send_request('attachment/upload', 'POST', headers={'Accept': 'application/json'},
                                  body=body, file={'id': file_id, 'name': file_name})
 
+    def delete_attachment(self, attachment_file_id: str) -> dict:
+        """Deletes an attachment file by sending a DELETE request.
+
+        Args:
+        attachment_file_id: ID of the attachment file.
+
+        Returns:
+            Response from API.
+        """
+        return self.send_request(f'attachment/{attachment_file_id}', 'DELETE')
+
     def add_tag(self, ticket_id: str, tag_id: str, title: str, ticket_type: str) -> dict:
         """Adds a tag to a ticket by sending a POST request.
 
@@ -1461,6 +1472,31 @@ def upload_file_command(client: Client, args: dict) -> tuple[str, dict, dict, bo
     }
 
     return human_readable, entry_context, result, True
+
+
+def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+    """Deletes an attachment file.
+    Note: This function exclusively returns 404 error responses,
+    while all other types of errors are managed within the send_request function.
+
+    Args:
+        client: Client object used to make requests.
+        args: The command arguments provided by user.
+
+    return: a tuple for CommandResults containing:
+        - Human readable message.
+        - Entry context data.
+        - The raw response.
+        - Ignore auto extract flag.
+
+    :raises DemistoException: Raised if no record is found for the provided attachment file ID.
+    """
+    attachment_file_id = str(args.get('file_sys_id', ''))
+
+    result = client.delete_attachment(attachment_file_id)
+    if not result:  # successful response is 204 (empty response)
+        return f'Attachment with Sys ID {attachment_file_id} was successfully deleted.', {}, result, True
+    raise DemistoException("Error: No record found. Record doesn't exist or ACL restricts the record retrieval.")
 
 
 def add_tag_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
@@ -3208,6 +3244,7 @@ def main():
             'servicenow-get-item-details': get_item_details_command,
             'servicenow-create-item-order': create_order_item_command,
             'servicenow-document-route-to-queue': document_route_to_table,
+            'servicenow-delete-file': delete_attachment_command,
         }
         if command == 'fetch-incidents':
             raise_exception = True
