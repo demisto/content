@@ -1,0 +1,10 @@
+{
+    "success": {
+        "args": {},
+        "command": "safebreach-get-verification-token"
+    },
+    "fail": {
+        "args": {},
+        "command": "safebreach-get-verification-token"
+    }
+}

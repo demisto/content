@@ -1,0 +1,18 @@
+{
+    "outputs": {
+        "success": {
+            "data": [
+                {
+                    "md5": "123fdsfdfgkdfmnkdnkdnfhfkh",
+                    "os": "simulator",
+                    "sha1": "admnskdfdkjgnfggkbmfgbf21233mewkdmfi",
+                    "sha256": "133rsmdfklmdfklgmngfbmfgkvbnfncklmbkjvnb455",
+                    "sha512": "123emwlkfmv54uhjt98rgjtuienfeji34urnfejng45ijy6hmnb65hm5tuibnv3etrhfumdwemdkelrmgi4rjygmrmgrthm56mrtgi6hrtkhmrihymrthkmhiityhm",
+                    "url": "https://acme.com/",
+                    "version": ""
+                }
+            ]
+        },
+        "fail": {}
+    }
+}

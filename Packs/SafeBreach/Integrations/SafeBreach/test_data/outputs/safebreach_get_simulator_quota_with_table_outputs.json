@@ -1,0 +1,21 @@
+{
+    "outputs": {
+        "success": {
+            "data": {
+                "id": 1234567890,
+                "name": "Metron_Integrations",
+                "contactName": "sbadmin",
+                "contactEmail": "demoi@acme.com",
+                "registrationDate": "2022-09-04T09:06:13.508Z",
+                "activationDate": "2022-09-04T09:11:28.761Z",
+                "expirationDate": "2024-09-30T09:06:13.508Z",
+                "userQuota": 10,
+                "nodesQuota": 10,
+                "createdAt": "2022-09-04T09:11:28.766Z",
+                "updatedAt": "2022-09-04T09:11:28.766Z",
+                "deletedAt": null
+            }
+        },
+        "fail": {}
+    }
+}

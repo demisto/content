@@ -1,0 +1,221 @@
+{
+    "outputs": {
+        "success": {
+            "data": {
+                "simulations": [
+                    {
+                        "sourcePort": [
+                            51496,
+                            51506
+                        ],
+                        "MITRE_Tactic": [],
+                        "attackerOSType": "LINUX",
+                        "targetSimulatorStartTime": "2024-01-07T15:45:22.380Z",
+                        "destNodeName": "Firewall Inside",
+                        "planName": "Network - C2 Web Communication - Baseline",
+                        "Security_Controls": [
+                            {
+                                "displayName": "Network Inspection",
+                                "id": 1,
+                                "sort": 1,
+                                "value": "Network Inspection"
+                            }
+                        ],
+                        "attackerSimulatorStartTime": "2024-01-07T15:45:22.337Z",
+                        "destinationIp": "10.0.200.207",
+                        "protocol": [
+                            {
+                                "displayName": "HTTPS",
+                                "id": 24,
+                                "sort": 24,
+                                "value": "HTTPS"
+                            }
+                        ],
+                        "paramsObj": {
+                            "Application Protocol": "https",
+                            "port": "80",
+                            "Server Node Headers": "",
+                            "command": "net use",
+                            "Client Node Headers": ""
+                        },
+                        "deploymentId": [],
+                        "attackerNodeName": "Firewall Outside",
+                        "targetOSType": "LINUX",
+                        "id": "198862",
+                        "sector": [
+                            {
+                                "displayName": "Aerospace",
+                                "id": 0,
+                                "sort": 0,
+                                "value": "Aerospace"
+                            }
+                        ],
+                        "srcNodeName": "Firewall Outside",
+                        "moveId": 1028,
+                        "testName": "Network - C2 Web Communication - Baseline",
+                        "originalExecutionId": "720a935fb10528109b59905185621fce",
+                        "params": [
+                            {
+                                "valueId": 1,
+                                "paramId": 1
+                            }
+                        ],
+                        "labels": [],
+                        "srcNodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
+                        "jobId": 198862,
+                        "sourceIp": "10.0.100.219",
+                        "moveDesc": "**Goal**\n\n1. Verify whether it is possible to remotely control the target simulator.\n\n**Actions**\n\n1. **Inbound C&C Communication**    \n    **Action:** The attack simulator sends system commands to the target simulator, simulating traffic associated with Athena.    \n    **Expected behavior:** Traffic from the target simulator using HTTP/S does not reach the attack simulator within a pre-defined time period.",
+                        "parameters": {
+                            "PROXY": [
+                                {
+                                    "displayType": "Proxy",
+                                    "displayName": "Proxy Name",
+                                    "name": "Proxy",
+                                    "nodeId": "0000000-0000-0000-0000-00000000"
+                                }
+                            ],
+                            "PORT": [
+                                {
+                                    "displayValue": "80",
+                                    "displayType": "Port",
+                                    "displayName": "port",
+                                    "name": "port",
+                                    "value": 80
+                                }
+                            ],
+                            "CLIENT_HTTP_HEADERS": [
+                                {
+                                    "displayValue": "",
+                                    "displayType": "Client HTTP Headers",
+                                    "displayName": "Server Node Headers",
+                                    "name": "headers_green",
+                                    "value": ""
+                                }
+                            ],
+                            "PROTOCOL": [
+                                {
+                                    "displayValue": "https",
+                                    "displayType": "Protocol",
+                                    "displayName": "Application Protocol",
+                                    "name": "http_or_https",
+                                    "value": "https"
+                                }
+                            ],
+                            "COMMAND": [
+                                {
+                                    "displayValue": "net use",
+                                    "displayType": "Command",
+                                    "displayName": "command",
+                                    "name": "command",
+                                    "value": "net use"
+                                }
+                            ],
+                            "URI": [
+                                {
+                                    "displayValue": "/panel/gate.php",
+                                    "displayType": "URI",
+                                    "displayName": "uri",
+                                    "name": "uri",
+                                    "value": "/panel/gate.php"
+                                }
+                            ]
+                        },
+                        "status": "SUCCESS",
+                        "moveName": "Remote Control using Athena",
+                        "attackerNodeId": "1b22e309-2cc6-4097-8840-09f691a6bd30",
+                        "IoC_Based": [
+                            {
+                                "displayName": "1",
+                                "id": 1,
+                                "sort": 1,
+                                "value": "1"
+                            }
+                        ],
+                        "finalStatus": "missed",
+                        "simulationEvents": [
+                            {
+                                "action": "CREATE",
+                                "dirPath": "/dummy/sb_000000_bs_redlr42u_pf",
+                                "type": "DIRECTORY",
+                                "nodeId": "0000000-0000-0000-0000-00000000",
+                                "timestamp": "2024-01-07T15:45:22.212Z"
+                            }
+                        ],
+                        "planRunId": "1704642251553.4",
+                        "resultCode": "SimulationSuccess",
+                        "methodId": 16003,
+                        "moveTags": {
+                            "noiseLevel": "N/A",
+                            "protocol": "HTTPS",
+                            "impact": "N/A",
+                            "opponent": "N/A",
+                            "approach": "Malware"
+                        },
+                        "serverPort": 80,
+                        "attackerSimulatorEndTime": "2024-01-07T15:45:25.582Z",
+                        "paramsStr": [
+                            "port:80",
+                            "Application Protocol:https",
+                            "uri:/panel/gate.php",
+                            "command:net use",
+                            "Proxy Name:undefined"
+                        ],
+                        "resultDetails": "The simulation was not blocked, it successfully executed all breach actions",
+                        "stepName": "Network - C2 Web Communication - Baseline",
+                        "attackTypesCounter": 1,
+                        "securityAction": "not_logged",
+                        "targetNodeName": "Firewall Inside",
+                        "assetId": -1,
+                        "behavioral": [
+                            {
+                                "displayName": "0",
+                                "id": 0,
+                                "sort": 0,
+                                "value": "0"
+                            }
+                        ],
+                        "targetSimulatorEndTime": "2024-01-07T15:45:25.575Z",
+                        "deploymentName": [],
+                        "packageName": "Infiltration",
+                        "targetNodeId": "0000000-0000-0000-0000-00000000",
+                        "lastStatusChangeDate": "2024-01-07T15:45:26.601Z",
+                        "direction": "outbound",
+                        "remediationData": [
+                            {
+                                "title": "Restrict access to trusted IPs or network segments",
+                                "content": "It is important to validate that the specified host IPs (or network segments) have network access to the target node. Be as restrictive as possible."
+                            }
+                        ],
+                        "packageId": 2,
+                        "attackerOSVersion": "22",
+                        "stepRunId": "1704642251554.5",
+                        "destNodeId": "0000000-0000-0000-0000-00000000",
+                        "executionTime": "2024-01-07T15:45:26.601Z",
+                        "targetOSVersion": "22",
+                        "attackProtocol": "HTTPS",
+                        "assetName": "N/A",
+                        "runId": "1704642251553.4",
+                        "Threat_Actor": [
+                            {
+                                "displayName": "PLATINUM",
+                                "id": 4,
+                                "sort": 4,
+                                "value": "PLATINUM"
+                            }
+                        ],
+                        "Attack_Type": [
+                            {
+                                "displayName": "Remote Control",
+                                "id": 5,
+                                "sort": 5,
+                                "value": "Remote Control"
+                            }
+                        ]
+                    }
+                ],
+                "total": 1
+            }
+        },
+        "fail": {}
+    }
+}

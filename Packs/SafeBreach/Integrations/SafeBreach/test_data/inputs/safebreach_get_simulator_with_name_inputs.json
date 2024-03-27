@@ -1,0 +1,8 @@
+{
+    "success": {
+        "args": {
+            "simulator_id": "1111111-4a14-4ec0-8543-zdcxsd2971500a"
+        },
+        "command": "safebreach-get-simulator-with-id"
+    }
+}
