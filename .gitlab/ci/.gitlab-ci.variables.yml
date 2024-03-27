@@ -42,7 +42,7 @@ variables:
   CONTENT_GITLAB_CI: "true"
   POETRY_VIRTUALENVS_OPTIONS_ALWAYS_COPY: "true"
   FF_USE_FASTZIP: "true"
-  POETRY_VERSION: "1.6.1"
+  POETRY_VERSION: "1.8.2"
   INSTALL_POETRY: "true"
   DOCKER_IO: "docker.io" # defined in the project level CI/CD variables
   KUBERNETES_CPU_REQUEST: 2
