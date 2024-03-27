@@ -25,6 +25,8 @@ The RSA Archer GRC platform provides a common foundation for managing policies, 
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+Note: Archer customers might know there is an Archer REST API that supports token based authentication. Not all functionality of this integration can be achieved using Archer's REST API, which is why this integration requries credential based authentication. 
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI as part of an automation or in a playbook.
