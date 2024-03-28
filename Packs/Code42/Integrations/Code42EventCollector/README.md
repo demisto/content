@@ -9,7 +9,7 @@ Code42 Insider Risk software solutions provide the right balance of transparency
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. https://api.us.code42.com, see help section) | True |
+    | Server URL (e.g., https://api.us.code42.com, see help section) | True |
     | API Client ID | True |
     | API Client Secret | True |
     | Maximum number of file events per fetch | True |
