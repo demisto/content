@@ -142,18 +142,18 @@ def dedup_fetched_events(
         keys_list_to_id (list): a list of keys to retrieve the ID from the event
     """
     un_fetched_events = []
+    already_fetched_event_ids = []
 
     for event in events:
         event_id = dict_safe_get(event, keys=keys_list_to_id)
-        event_type = event["eventType"]
         if event_id not in last_run_fetched_event_ids:
-            demisto.debug(f'event {event_type} with ID {event_id} has not been fetched.')
             un_fetched_events.append(event)
         else:
-            demisto.debug(f'event {event_type} with ID {event_id} for has been fetched')
+            already_fetched_event_ids.append(event_id)
 
     un_fetched_event_ids = {dict_safe_get(event, keys=keys_list_to_id) for event in un_fetched_events}
     demisto.debug(f'{un_fetched_event_ids=}')
+    demisto.debug(f'{already_fetched_event_ids=}')
 
     return un_fetched_events
 
@@ -170,13 +170,8 @@ def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> 
         events: list of events
         keys_to_id: a list of nested keys to get into the event ID
     """
-    latest_time_event: datetime = events[0]["_time"]
     event_type = events[0]["eventType"]
-
-    for i in range(1, len(events)):
-        event = events[i]
-        if latest_time_event < event["_time"]:
-            latest_time_event = event["_time"]
+    latest_time_event = max([event["_time"] for event in events ])
 
     latest_event_ids: List = [
         dict_safe_get(event, keys=keys_to_id)
