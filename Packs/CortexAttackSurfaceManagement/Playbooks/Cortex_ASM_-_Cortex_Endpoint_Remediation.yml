@@ -1,0 +1,291 @@
+id: Cortex ASM - Cortex Endpoint Remediation
+version: -1
+name: Cortex ASM - Cortex Endpoint Remediation
+description: This playbook is used to isolate a single Cortex Endpoint (XSIAM/XDR) for remediation purposes.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 3a7e2323-6f09-40a8-8866-115557d73f78
+    type: start
+    task:
+      id: 3a7e2323-6f09-40a8-8866-115557d73f78
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: b80a827a-8b19-4bff-8e57-18c29443ffbe
+    type: condition
+    task:
+      id: b80a827a-8b19-4bff-8e57-18c29443ffbe
+      version: -1
+      name: Is a Palo Alto Networks Cortex Endpoint integration enabled and are Input values defined?
+      description: Determines if a Cortex Endpoint integration instance is configured and Input values are defined for remediation actions.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '5'
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - IR
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex Core - IR
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 303061dc-4ca2-4bd3-8a6e-4eb0265fd962
+    type: regular
+    task:
+      id: 303061dc-4ca2-4bd3-8a6e-4eb0265fd962
+      version: -1
+      name: XDR Isolate Endpoint
+      description: Isolates the specified endpoint in Cortex Endpoint (XSIAM/XDR).
+      script: Cortex Core - IR|||core-isolate-endpoint
+      type: regular
+      iscommand: true
+      brand: Cortex Core - IR
+    nexttasks:
+      '#none#':
+      - '6'
+    scriptarguments:
+      endpoint_id:
+        simple: ${inputs.CortexEndpointID}
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 770c99f2-cc5f-421a-8cc0-7730e17fd639
+    type: condition
+    task:
+      id: 770c99f2-cc5f-421a-8cc0-7730e17fd639
+      version: -1
+      name: Is there only 1 endpoint?
+      description: Checks for only a single cortex endpoint returned from enrichment.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '5'
+      Yes:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: Yes
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CORTEX-ENDPOINT-ASSET-ID
+                accessor: id
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: '1'
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 670a24ac-c81b-421c-8346-18c7684ddfff
+    type: title
+    task:
+      id: 670a24ac-c81b-421c-8346-18c7684ddfff
+      version: -1
+      name: Continue
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 79bd449c-54df-4285-8bc6-c5580ddf9750
+    type: title
+    task:
+      id: 79bd449c-54df-4285-8bc6-c5580ddf9750
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_4_yes": 0.61,
+      "4_3_Yes": 0.6
+    },
+    "paper": {
+      "dimensions": {
+        "height": 945,
+        "width": 890,
+        "x": -60,
+        "y": 10
+      }
+    }
+  }
+inputs:
+- key: CortexEndpointID
+  value: {}
+  required: true
+  description: The ID of the Cortex Endpoint (XDR).
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - CortexEndpointID
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
