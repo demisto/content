@@ -297,7 +297,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "28":
     id: "28"
     taskid: 7c2eb1f6-2719-436c-8402-f4edf7254125
