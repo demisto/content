@@ -171,7 +171,7 @@ def get_latest_event_ids_and_time(events: List[dict], keys_to_id: List[str]) -> 
         keys_to_id: a list of nested keys to get into the event ID
     """
     event_type = events[0]["eventType"]
-    latest_time_event = max([event["_time"] for event in events ])
+    latest_time_event = max([event["_time"] for event in events])
 
     latest_event_ids: List = [
         dict_safe_get(event, keys=keys_to_id)
