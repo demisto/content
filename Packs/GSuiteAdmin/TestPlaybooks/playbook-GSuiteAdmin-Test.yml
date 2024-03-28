@@ -50,7 +50,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "55"
+      - "58"
     scriptarguments:
       all:
         simple: "yes"
@@ -282,6 +282,7 @@ tasks:
             value:
               simple: GSuite.RoleAssignment.roleId
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -559,7 +560,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 40,
           "y": 370
         }
       }
@@ -633,6 +634,41 @@ tasks:
         "position": {
           "x": 560,
           "y": 1675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: f98d8011-27b3-433f-811e-ec56010b6996
+    type: regular
+    task:
+      id: f98d8011-27b3-433f-811e-ec56010b6996
+      version: -1
+      name: Sleep
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 260
         }
       }
     note: false
