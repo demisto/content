@@ -1,0 +1,379 @@
+id: 395bd0d7-764f-445b-84f9-b9d94ef0803c
+version: 18
+vcShouldKeepItemLegacyProdMachine: false
+name: Darktrace ASM Risk Handler
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8a5257c9-a574-4b5b-8fb4-3f74fd4dcc40
+    type: start
+    task:
+      id: 8a5257c9-a574-4b5b-8fb4-3f74fd4dcc40
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4367ba77-4ce4-4fcd-8aad-b4c6ba21ce82
+    type: regular
+    task:
+      id: 4367ba77-4ce4-4fcd-8aad-b4c6ba21ce82
+      version: -1
+      name: Get risk
+      description: Get a specific Darktrace ASM Risk.
+      script: Darktrace ASM|||darktrace-asm-get-risk
+      type: regular
+      iscommand: true
+      brand: Darktrace ASM
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      risk_id:
+        simple: ${incident.darktraceasmriskid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 18298b3b-599a-48a3-81db-882b33143132
+    type: regular
+    task:
+      id: 18298b3b-599a-48a3-81db-882b33143132
+      version: -1
+      name: Get associated asset
+      description: Get a specific Darktrace ASM Asset.
+      script: Darktrace ASM|||darktrace-asm-get-asset
+      type: regular
+      iscommand: true
+      brand: Darktrace ASM
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      asset_id:
+        simple: ${incident.darktraceasmassetid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 930cab2d-d3b3-4bda-80e9-4e737f2d9e60
+    type: condition
+    task:
+      id: 930cab2d-d3b3-4bda-80e9-4e737f2d9e60
+      version: -1
+      name: Apply a comment on Darktrace?
+      type: condition
+      iscommand: false
+      brand: Darktrace ASM
+    nexttasks:
+      "No":
+      - "6"
+      "Yes":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4d90593b-2ed8-4e79-89ee-adf1d2370969
+    type: regular
+    task:
+      id: 4d90593b-2ed8-4e79-89ee-adf1d2370969
+      version: -1
+      name: Apply a comment
+      description: Post a comment to a Darktrace ASM risk or asset within the Darktrace
+        UI.
+      script: Darktrace ASM|||darktrace-asm-post-comment
+      type: regular
+      iscommand: true
+      brand: Darktrace ASM
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      comment:
+        simple: ${comment.Answers.0}
+      id:
+        simple: ${incident.darktraceasmriskid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e2a645ea-ac0d-4ac8-8cfa-229b309bcf96
+    type: collection
+    task:
+      id: e2a645ea-ac0d-4ac8-8cfa-229b309bcf96
+      version: -1
+      name: Specify a comment message
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What comment would you like to post to this risk?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: comment
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 7ae0921b-8a06-4e56-8cca-a74705fc3545
+    type: condition
+    task:
+      id: 7ae0921b-8a06-4e56-8cca-a74705fc3545
+      version: -1
+      name: Accept risk on Darktrace?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "No":
+      - "7"
+      "Yes":
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: 'Warning: manually accepting a risk without taking action to actually
+          mitigate the risk means it will still be present, but it will no longer
+          appear within the Darktrace UI.'
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e1ad3ff2-b37e-4246-8af9-007945b6af50
+    type: regular
+    task:
+      id: e1ad3ff2-b37e-4246-8af9-007945b6af50
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 67088ae2-ef78-4e99-84ff-b247a1c305e4
+    type: regular
+    task:
+      id: 67088ae2-ef78-4e99-84ff-b247a1c305e4
+      version: -1
+      name: Mitigate risk
+      description: Mitigate Darktrace ASM Risk within the Darktrace UI.
+      script: Darktrace ASM|||darktrace-asm-mitigate-risk
+      type: regular
+      iscommand: true
+      brand: Darktrace ASM
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      risk_id:
+        simple: ${incident.darktraceasmriskid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1845,
+        "width": 660,
+        "x": 390,
+        "y": 70
+      }
+    }
+  }
+inputs: []
+outputs: []
+
