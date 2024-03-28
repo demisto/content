@@ -15,15 +15,17 @@ def get_data_from_file(entry_id: str):
         raise DemistoException(f'There was a problem opening or reading the file.\nError is: {e}')
 
 
-def decode_data(data: Any, data_encoding: str):
+def decode_data(data: Any, data_encoding: str) -> bytes | Any:
     """
     Given data and its encoding, this function decodes the data according to the provided encoding and returns it.
     """
-    if data_encoding == 'base64':
-        data = base64.b64decode(data)
-    elif data_encoding != 'raw':
-        raise ValueError(f'Invalid data encoding value: {data_encoding}, must be either `base64` or `raw`')
-    return data
+    match data_encoding:
+        case 'base64':
+            return base64.b64decode(data)
+        case 'raw':
+            return data
+        case _:
+            raise ValueError(f'Invalid data encoding value: {data_encoding}, must be either `base64` or `raw`')
 
 
 def main():

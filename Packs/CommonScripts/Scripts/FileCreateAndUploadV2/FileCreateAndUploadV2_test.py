@@ -5,7 +5,6 @@ import pytest
 from pathlib import Path
 from CommonServerPython import DemistoException
 from pytest_mock import MockerFixture
-
 from FileCreateAndUploadV2 import get_data_from_file, decode_data, main
 
 
@@ -125,5 +124,5 @@ def test_decode_data_invalid():
     When the decode_data function is called with an invalid data_encoding,
     Then it should raise a ValueError.
     """
-    with pytest.raises(ValueError, match='Invalid data encoding name: invalid'):
+    with pytest.raises(ValueError, match='Invalid data encoding value: invalid, must be either `base64` or `raw`'):
         decode_data(b'test_data', 'invalid')
