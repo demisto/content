@@ -28,7 +28,7 @@ To configure IBM Guardium to forward logs to Cortex XSIAM Broker VM via syslog f
 > **tcp\ udp** - protocol used to communicate with the event collector &nbsp;
 
 *For example:*
-`store remote log add daemon.all 192.168.1.6 udp`
+`store remote log add daemon.all <IP> udp`
 `store remote log add daemon.all example.com:1514 tcp`
 &nbsp;
 
