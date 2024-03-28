@@ -1,4 +1,4 @@
-[MODEL: dataset = "akamai_siem_raw"]
+[MODEL: dataset = akamai_waf_raw]
 /* 
     Reference: https://techdocs.akamai.com/siem-integration/reference/get-configid
     Swagger: https://github.com/akamai/akamai-apis/blob/main/apis/siem/v1/openapi.json 

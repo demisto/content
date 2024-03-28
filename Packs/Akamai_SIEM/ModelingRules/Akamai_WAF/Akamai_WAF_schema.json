@@ -1,5 +1,5 @@
 {
-    "akamai_siem_raw": {
+    "akamai_waf_raw": {
         "attackData": {
             "type": "string",
             "is_array": false
