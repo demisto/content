@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -225,6 +226,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -247,6 +249,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -1167,36 +1170,36 @@ inputs:
     - Gmail: Google Apps Domain-Wide Delegation of Authority
 outputs:
 - contextPath: Email.HTML
-  description: Email 'html' body if exists
+  description: Email 'html' body if exists.
   type: string
 - contextPath: Email
-  description: Email object
+  description: Email object.
   type: unknown
 - contextPath: Email.CC
-  description: Email 'cc' addresses
+  description: Email 'cc' addresses.
   type: string
 - contextPath: Email.From
-  description: Email 'from' sender
+  description: Email 'from' sender.
   type: string
 - contextPath: Email.Subject
-  description: Email subject
+  description: Email subject.
   type: string
 - contextPath: Email.To
-  description: Email 'to' addresses
+  description: Email 'to' addresses.
   type: string
 - contextPath: Email.Text
-  description: Email 'text' body if exists
+  description: Email 'text' body if exists.
   type: string
 - contextPath: Email.Headers
-  description: The full email headers as a single string
+  description: The full email headers as a single string.
   type: string
 - contextPath: Email.Attachments
-  description: The list of attachment names in the email
+  description: The list of attachment names in the email.
   type: string
 - contextPath: Email.Format
-  description: The format of the email if available
+  description: The format of the email if available.
   type: string
 - contextPath: File
-  description: The File object
+  description: The File object.
   type: unknown
 fromversion: 6.0.0
