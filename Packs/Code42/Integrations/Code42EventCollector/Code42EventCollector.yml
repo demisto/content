@@ -50,7 +50,7 @@ script:
       name: limit
       required: true
       defaultValue: '100'
-    - description: 'the type of event to return.'
+    - description: 'The type of event to return.'
       name: event_type
       required: true
       auto: PREDEFINED
