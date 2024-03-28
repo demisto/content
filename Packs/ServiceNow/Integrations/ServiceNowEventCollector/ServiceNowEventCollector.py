@@ -97,16 +97,16 @@ def process_and_filter_events(events: list, previous_run_ids: set, from_date: st
     :return: all unique events and a set of last ids of events with same time.
     """
     unique_events = []
+    from_date_datetime = datetime.strptime(from_date, LOGS_DATE_FORMAT)
     for event in events:
         create_time = datetime.strptime(event.get("sys_created_on"), LOGS_DATE_FORMAT)
-        from_date_datetime = datetime.strptime(from_date, LOGS_DATE_FORMAT)
         if event.get("sys_id") in previous_run_ids:
             continue
         if create_time > from_date_datetime:
             previous_run_ids = set()
-            previous_run_ids.add(event.get("sys_id"))
             from_date_datetime = create_time
 
+        previous_run_ids.add(event.get("sys_id"))
         unique_events.append(event)
 
     return unique_events, previous_run_ids
@@ -179,8 +179,9 @@ def fetch_events_command(client: Client, last_run: dict):
         )
 
         demisto.debug(f"Done processing {len(events)} audit_logs.")
+        last_fetch_time = events[-1].get("sys_created_on") if events else from_date
         last_run = {
-            "last_fetch_time": events[-1].get("sys_created_on"),
+            "last_fetch_time": last_fetch_time,
             "previous_run_ids": list(previous_run_ids),
         }
         demisto.debug(f"Saving last run as {last_run}")

@@ -1,0 +1,12 @@
+[MODEL: dataset = servicenow_servicenow_raw]
+alter // sys_audit: https://docs.servicenow.com/bundle/vancouver-platform-security/page/administer/time/concept/exploring-auditing.html#d227507e148
+    xdm.event.id = sys_id, // the record id of the audit record in sys_audit
+    xdm.event.outcome_reason = reason,
+    xdm.event.type = "AUDIT",
+    xdm.session_context_id = documentkey, // the record id of the audited record in <tablename>
+    xdm.source.user.username = user,
+    xdm.target.resource_before.value = oldvalue,
+    xdm.target.resource.id = documentkey, 
+    xdm.target.resource.name = fieldname,
+    xdm.target.resource.type = tablename,
+    xdm.target.resource.value = newvalue;

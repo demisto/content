@@ -14,7 +14,7 @@ def util_load_json(path):
 
 class TestFetchActivity:
     @pytest.fixture(autouse=True)
-    def create_client(self, mocker):
+    def create_client(self):
         self.base_url = "https://test.com"
         self.client = Client(
             use_oauth=True,
@@ -29,9 +29,9 @@ class TestFetchActivity:
         )
 
     @staticmethod
-    def create_response_by_limit(self, from_time, limit, offset):
-        single_response = util_load_json("test_data/single_audit_response.json")
-        return [single_response.copy() for i in range(limit)]
+    def create_response_by_limit(from_time, limit, offset):
+        single_response = util_load_json("test_data/single_audit_log.json")
+        return [single_response.copy() for _ in range(limit)]
 
     @staticmethod
     def create_response_with_duplicates(request_time, limit, number_of_different_time, id_to_start_from):
@@ -44,7 +44,7 @@ class TestFetchActivity:
             id_to_start_from: id to start from
 
         """
-        single_response = util_load_json("test_data/single_loggings_response.json")
+        single_response = util_load_json("test_data/single_audit_log.json")
         request_time_date_time = datetime.strptime(request_time, LOGS_DATE_FORMAT)
         output = []
 
@@ -63,7 +63,7 @@ class TestFetchActivity:
         return output
 
     @pytest.mark.parametrize("logs_to_fetch", [1, 4, 6], ids=["Single", "Part", "All"])
-    def test_get_max_fetch_activity_logging(self, logs_to_fetch, requests_mock, mocker):
+    def test_get_max_fetch_activity_logging(self, logs_to_fetch, mocker):
         """
         Given: number of logging to fetch.
         When: running get activity logging command or fetch.
@@ -77,12 +77,12 @@ class TestFetchActivity:
         assert len(res) == logs_to_fetch
 
     DUPLICATED_AUDIT_LOGS = [
-        (("2023-04-15 07:00:00", 5, 2, 0), 5, {"last_fetch_time": "2023-04-15 07:00:00", "previous_run_ids": []}),
-        (("2023-04-15 07:00:00", 5, 0, 0), 3, {"last_fetch_time": "2023-04-15 07:00:00", "previous_run_ids": ["1", "2"]}),
+        (("2023-04-15 07:00:00", 5, 2, 0), 5, 2, {"last_fetch_time": "2023-04-15 07:00:00", "previous_run_ids": set()}),
+        (("2023-04-15 07:00:00", 5, 0, 0), 3, 5, {"last_fetch_time": "2023-04-15 07:00:00", "previous_run_ids": {"1", "2"}}),
     ]
 
-    @pytest.mark.parametrize("args, len_of_audit_logs, last_run", DUPLICATED_AUDIT_LOGS)
-    def test_remove_duplicated_activity_logging(self, args, len_of_audit_logs, last_run):
+    @pytest.mark.parametrize("args, len_of_audit_logs, len_of_previous, last_run", DUPLICATED_AUDIT_LOGS)
+    def test_remove_duplicated_activity_logging(self, args, len_of_audit_logs, len_of_previous, last_run):
         """
         Given: responses with potential duplications from last fetch.
         When: running fetch command.
@@ -93,8 +93,9 @@ class TestFetchActivity:
 
         loggings = self.create_response_with_duplicates(*args)
 
-        activity_loggings = process_and_filter_events(loggings, last_run, "2023-04-15 07:00:00")
+        activity_loggings, previous_run_ids = process_and_filter_events(loggings, last_run.get('previous_run_ids'), "2023-04-15 07:00:00")
         assert len(activity_loggings) == len_of_audit_logs
+        assert len(previous_run_ids) == len_of_previous
 
     def test_get_activity_logging_command(self, mocker):
         """
@@ -124,7 +125,6 @@ class TestFetchActivity:
         """
         from ServiceNowEventCollector import fetch_events_command
 
-        first_fetch_time = datetime.strptime("2023-04-12 07:00:00", LOGS_DATE_FORMAT)
         fetched_events = util_load_json("test_data/fetch_audit_logs.json")
         http_responses = mocker.patch.object(
             Client,
