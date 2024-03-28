@@ -39,7 +39,7 @@ configuration:
   - GREEN
   - WHITE
   type: 15
-  defaultvalue: 'WHITE'
+  defaultvalue: WHITE
   required: false
 - display: ''
   name: feedExpirationPolicy
@@ -134,7 +134,7 @@ configuration:
   - identity
   - location
   - vulnerability
-  additionalinfo: 'Choose which STIX object types to fetch from the TAXII server. If left empty, all available object types will be fetched.'
+  additionalinfo: Choose which STIX object types to fetch from the TAXII server. If left empty, all available object types will be fetched.
 - display: Certificate File as Text
   name: creds_certificate
   type: 9
@@ -158,7 +158,7 @@ configuration:
   name: limit_per_request
   type: 0
   required: false
-- additionalinfo: "Choose how to handle complex observations. Two or more observation expressions may be combined using a complex observation operator such as \"AND\" or \"OR\". For example: [ IP = 'b' ] AND [ URL = 'd' ]"
+- additionalinfo: 'Choose how to handle complex observations. Two or more observation expressions may be combined using a complex observation operator such as "AND" or "OR". For example: [ IP = ''b'' ] AND [ URL = ''d'' ]'
   display: Complex Observation Mode
   name: observation_operator_mode
   type: 15
@@ -171,7 +171,7 @@ configuration:
   name: update_custom_fields
   type: 8
   required: false
-  additionalinfo: "Choose whether to import Cortex XSOAR custom fields. Note: this may overwrite data pulled from other sources."
+  additionalinfo: 'Choose whether to import Cortex XSOAR custom fields. Note: this may overwrite data pulled from other sources.'
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -227,7 +227,7 @@ script:
   - deprecated: true
     description: 'WARNING: This command will reset your fetch history.'
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.89439
+  dockerimage: demisto/taxii2:1.0.0.90039
   feed: true
   runonce: false
   script: '-'

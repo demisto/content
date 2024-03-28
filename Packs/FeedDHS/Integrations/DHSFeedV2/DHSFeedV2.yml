@@ -25,7 +25,7 @@ configuration:
   required: true
   type: 12
 - additionalinfo: The default API root to use (e.g., default, public). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead. The user must be authorized to reach the selected API root.
-  defaultvalue: 'public'
+  defaultvalue: public
   display: Default API Root to use
   name: default_api_root
   type: 0
@@ -95,7 +95,7 @@ configuration:
   name: initial_interval
   type: 0
   required: false
-- additionalinfo: 'The objects to fetch, most likely indicators. Specifying the types of objects to fetch may slow down the fetch time.'
+- additionalinfo: The objects to fetch, most likely indicators. Specifying the types of objects to fetch may slow down the fetch time.
   display: STIX Objects To Fetch
   name: objects_to_fetch
   type: 16
@@ -170,7 +170,7 @@ configuration:
   name: feedIncremental
   type: 8
   required: false
-description: The Cybersecurity and Infrastructure Security Agency’s (CISA’s) free Automated Indicator Sharing (AIS) capability enables the exchange of cyber threat indicators, at machine speed, to the Federal Government community.
+description: "The Cybersecurity and Infrastructure Security Agency\u2019s (CISA\u2019s) free Automated Indicator Sharing (AIS) capability enables the exchange of cyber threat indicators, at machine speed, to the Federal Government community."
 display: DHS Feed v2
 name: DHS Feed v2
 script:
@@ -186,7 +186,7 @@ script:
     - defaultValue: '10'
       description: Maximum number of indicators to return. Default is 10. If you are increasing this value, make sure the 'execution-timeout' argument is also increased.
       name: limit
-    - defaultValue: '24 hours'
+    - defaultValue: 24 hours
       description: Fetch only indicators that were added to the server after the given time. Provide a <number> and <time unit> of type minute/hour/day. For example, 1 minute, 12 hours, 2 days. Limited to 48 hours.
       name: added_after
     description: Allows you to test your feed and to make sure you can fetch indicators successfully. Due to API limitations, this command may take a long time to run. Make sure the 'execution-timeout' argument is increased. See the integration readme for further information.
@@ -210,7 +210,7 @@ script:
     - contextPath: DHS.Collections.Name
       description: Collection name.
       type: String
-  dockerimage: demisto/taxii2:1.0.0.88937
+  dockerimage: demisto/taxii2:1.0.0.90039
   feed: true
   runonce: false
   script: '-'
