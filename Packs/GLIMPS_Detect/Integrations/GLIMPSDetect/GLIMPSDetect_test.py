@@ -1,6 +1,8 @@
 import GLIMPSDetect
 
 DUMMY_TOKEN = "11111111-11111111-11111111-11111111-11111111"
+
+
 def mocked_gdetect_get():
     return {
         "uuid": "23465d22-3464-39ce-b8b3-bc2ee7d6eecf",
