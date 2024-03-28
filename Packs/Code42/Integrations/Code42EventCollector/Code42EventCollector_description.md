@@ -14,7 +14,7 @@ The domain used for making API requests can be determined using the domain you u
 | console.gov.code42.com | api.gov.code42.com |
 
 
-For each request sent to the API, a bearer token will be requested to authenticate your action. The bearer token should be renewed each 15 minutes. This is being done automatically by the integration.
+For each request sent to the API, a bearer token will be requested to authenticate your action. The bearer token should be renewed each 15 minutes. This is done automatically by the integration.
 
 You can retrieve your API credentials by following the instructions in the [Code 42 documentation](https://support.code42.com/hc/en-us/articles/14827617150231).
 
