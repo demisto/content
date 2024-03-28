@@ -1,0 +1,1 @@
+Note: Support for this Pack will be moved to Partner starting May 06, 2024.

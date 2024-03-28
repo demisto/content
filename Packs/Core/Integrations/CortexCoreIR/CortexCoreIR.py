@@ -461,14 +461,8 @@ def main():  # pragma: no cover
         elif command == 'core-list-user-groups':
             return_results(list_user_groups_command(client, args))
 
-        elif command == 'core-list-roles':
-            return_results(list_roles_command(client, args))
-
         elif command == 'core-get-incidents':
             return_outputs(*get_incidents_command(client, args))
-
-        elif command in ('core-set-user-role', 'core-remove-user-role'):
-            return_results(change_user_role_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))

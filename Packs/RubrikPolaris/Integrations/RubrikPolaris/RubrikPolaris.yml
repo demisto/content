@@ -7,7 +7,7 @@ configuration:
   name: service_account_json
   type: 4
   required: false
-- display: Polaris Account (e.g. ${polarisAccount}.my.rubrik.com)
+- display: Rubrik Account (e.g. ${rubrikAccount}.my.rubrik.com)
   name: url
   type: 0
   required: false
@@ -36,9 +36,9 @@ configuration:
   name: max_fetch
   type: 0
   required: false
-- additionalinfo: When a Radar event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
+- additionalinfo: When a Anomaly event of Critical severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
   defaultvalue: XSOAR HIGH
-  display: Radar Critical Severity Level Mapping
+  display: Anomaly Event Critical Severity Level Mapping
   name: radar_critical_severity_mapping
   options:
   - XSOAR CRITICAL
@@ -47,9 +47,9 @@ configuration:
   - XSOAR LOW
   type: 15
   required: false
-- additionalinfo: When a Radar event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
+- additionalinfo: When a Anomaly event of Warning severity is detected and fetched, this setting indicates what severity will get assigned within XSOAR.
   defaultvalue: XSOAR LOW
-  display: Radar Warning Severity Level Mapping
+  display: Anomaly Event Warning Severity Level Mapping
   name: radar_warning_severity_mapping
   options:
   - XSOAR CRITICAL
@@ -68,8 +68,8 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: The Rubrik Radar integration will fetch the Rubrik Radar Anomaly Event and is rich with commands to perform the on-demand scans, backups, recoveries and many more features to manage and protect the organizational data.
-display: Rubrik Radar
+description: The Rubrik Security Cloud integration will fetch the Rubrik Anomaly Event and is rich with commands to perform the on-demand scans, backups, recoveries and many more features to manage and protect the organizational data.
+display: Rubrik Security Cloud
 name: RubrikPolaris
 script:
   commands:
@@ -2255,7 +2255,691 @@ script:
     - contextPath: RubrikPolaris.GPSVMRecoverFiles.id
       description: Recover files request ID.
       type: String
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.83417
+  - arguments:
+    - description: 'The name of the user to search for.'
+      name: user_name
+    - description: 'The email or the UPN of the user to search for.'
+      name: user_email
+    - defaultValue: 7 days
+      description: "Specify the search time period to look for user access.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2023, 01 Mar 2023 04:45:33, 2023-04-17T14:05:44Z."
+      name: search_time_period
+    - auto: PREDEFINED
+      isArray: true
+      description: "The comma-separated list of risk levels.\n\nSupported values are: UNKNOWN_RISK, HIGH_RISK, MEDIUM_RISK, LOW_RISK, NO_RISK.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
+      name: risk_levels
+      predefined:
+        - UNKNOWN_RISK
+        - HIGH_RISK
+        - MEDIUM_RISK
+        - LOW_RISK
+        - NO_RISK
+    - description: 'Specify the group ID to filter with.'
+      name: group_id
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: "The boolean indicates to include the whitelisted results.\n\nPossible values are: \"True\", \"False\"."
+      name: include_whitelisted_results
+      predefined:
+      - "True"
+      - "False"
+    - auto: PREDEFINED
+      defaultValue: USERS_WITH_SENSITIVE_ACCESS
+      description: "Specify the principal summary category to filter with.\n\nSupported values are: PRINCIPAL_SUMMARY_CATEGORY_UNSPECIFIED, USERS_WITH_SENSITIVE_ACCESS, NEW_USERS_WITH_SENSITIVE_ACCESS, USERS_WITH_RISK_LEVEL_INCREASE.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
+      name: principal_summary_category
+      predefined:
+        - PRINCIPAL_SUMMARY_CATEGORY_UNSPECIFIED
+        - USERS_WITH_SENSITIVE_ACCESS
+        - NEW_USERS_WITH_SENSITIVE_ACCESS
+        - USERS_WITH_RISK_LEVEL_INCREASE
+    - defaultValue: 50
+      description: Number of results to retrieve in the response. The maximum allowed size is 1000.
+      name: limit
+    - defaultValue: 1
+      description: "Specify the page number to get the particular page of results in the response.\n\nNote: This argument is only applicable when provided with the \"user_email\" argument."
+      name: page_number
+    - auto: PREDEFINED
+      defaultValue: RISK_LEVEL
+      description: "Specify the field to use for sorting the response.\n\nSupported values are: RISK_LEVEL, RISK_SENSITIVE_FILES, RISK_SENSITIVE_HITS, TOTAL_SENSITIVE_HITS, TOTAL_SENSITIVE_FILES, SID, TOTAL_SENSITIVE_OBJECTS.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
+      name: sort_by
+      predefined:
+        - RISK_LEVEL
+        - RISK_SENSITIVE_FILES
+        - RISK_SENSITIVE_HITS
+        - TOTAL_SENSITIVE_HITS
+        - TOTAL_SENSITIVE_FILES
+        - SID
+        - TOTAL_SENSITIVE_OBJECTS
+    - auto: PREDEFINED
+      defaultValue: DESC
+      description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
+      name: sort_order
+      predefined:
+      - ASC
+      - DESC
+    - description: The next page cursor to retrieve the next set of results.
+      name: next_page_token
+    description: Retrieve the user access information.
+    name: rubrik-sonar-user-access-list
+    outputs:
+    - contextPath: RubrikPolaris.UserAccess.principalId
+      description: The ID of the user.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.fullName
+      description: The full name of the user.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.upn
+      description: The user principal name.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.riskLevel
+      description: The risk level of the user.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.totalCount
+      description: The total number of high-risk files.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.violatedCount
+      description: The number of high-risk files that violate policies.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.__typename
+      description: The high-risk file count field type.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.totalCount
+      description: Total number of medium-risk files.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.violatedCount
+      description: The number of medium-risk files that violate policies.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.__typename
+      description: The type of the medium risk file count field.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.totalCount
+      description: The total number of low-risk files.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.violatedCount
+      description: The number of low-risk files that violate policies.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.__typename
+      description: The type of the low-risk file count field.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.__typename
+      description: The type of the sensitive files field.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.totalSensitiveHits.totalHits
+      description: The total number of sensitive hits.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.totalSensitiveHits.violatedHits
+      description: The number of sensitive hits that violate policies.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.totalSensitiveHits.__typename
+      description: The type of the total sensitive hits field.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.sensitiveObjectCount.totalCount
+      description: The total number of sensitive objects.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveObjectCount.violatedCount
+      description: The Number of sensitive objects that violate policies.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveObjectCount.__typename
+      description: The type of the sensitive object count field.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.numDescendants
+      description: The number of descendant users associated with this user.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.domainName
+      description: The domain name associated with this user.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.__typename
+      description: The type of the User Access field.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.UserAccess.name
+      description: Name of the command.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.UserAccess.startCursor
+      description: The start cursor for the current page.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.UserAccess.endCursor
+      description: The end cursor for the current page.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.UserAccess.hasNextPage
+      description: Whether the result has the next page or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.PageToken.UserAccess.hasPreviousPage
+      description: Whether the result has the previous page or not.
+      type: Boolean
+    - contextPath: RubrikPolaris.PageToken.UserAccess.next_upn_page_number
+      description: The next UPN page number.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.UserAccess.has_next_upn_page
+      description: Whether the result has the next UPN page or not.
+      type: Boolean
+  - arguments:
+    - description: "Specify the user_id to retrieve the user access information.\n\nNote: Users can get the list of the user IDs by executing the \"rubrik-sonar-user-access-list\" command."
+      name: user_id
+      required: true
+    - defaultValue: 7 days
+      description: "Specify the search time period to look for user access.\n\nSupported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.\n\nFor example: 01 May 2023, 01 Mar 2023 04:45:33, 2023-04-17T14:05:44Z."
+      name: search_time_period
+    - defaultValue: 7
+      description: "Specify the number of days in the past to collect delta for the sensitive hits."
+      name: historical_delta_days
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: "The boolean indicates to include the whitelisted results.\n\nPossible values are: \"True\", \"False\"."
+      name: include_whitelisted_results
+      predefined:
+      - "True"
+      - "False"
+    description: Retrieve the user access information based on the provided user ID.
+    name: rubrik-sonar-user-access-get
+    outputs:
+    - contextPath: RubrikPolaris.UserAccess.principalId
+      description: The ID of the user.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.fullName
+      description: The full name of the user.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.upn
+      description: The user principal name.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.riskLevel
+      description: The risk level of the user.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.__typename
+      description: The type of object representing the policy hits summary.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.policyId
+      description: The unique identifier of the policy associated with the hits summary.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.policyName
+      description: The human-readable name of the policy associated with the hits summary.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidAnalyzerHits.__typename
+      description: The type of object representing the analyzer hits for a specific SID.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidAnalyzerHits.highRiskHits.__typename
+      description: The type of object representing high-risk hits for the analyzer.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidAnalyzerHits.highRiskHits.totalHits
+      description: The total number of high-risk hits detected by the analyzer.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidAnalyzerHits.highRiskHits.violatedHits
+      description: The number of high-risk hits that violated security policies.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidAnalyzerHits.lowRiskHits.__typename
+      description: The type of object representing low-risk hits for the analyzer.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidAnalyzerHits.lowRiskHits.totalHits
+      description: The total number of low-risk hits detected by the analyzer.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidAnalyzerHits.lowRiskHits.violatedHits
+      description: The number of low-risk hits that violated security policies.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidAnalyzerHits.mediumRiskHits.__typename
+      description: The type of object representing medium-risk hits for the analyzer.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidAnalyzerHits.mediumRiskHits.totalHits
+      description: The total number of medium-risk hits detected by the analyzer.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidAnalyzerHits.mediumRiskHits.violatedHits
+      description: The number of medium-risk hits that violated security policies.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidAnalyzerHits.totalHits.__typename
+      description: The type of object representing the total number of hits for the analyzer.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidAnalyzerHits.totalHits.totalHits
+      description: The total number of hits detected by the analyzer (all risk levels combined).
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidAnalyzerHits.totalHits.violatedHits
+      description: The number of hits detected by the analyzer that violated security policies (all risk levels combined).
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaAnalyzerHits.__typename
+      description: The type of object representing the difference in analyzer hits between the current and previous periods.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaAnalyzerHits.highRiskHits.__typename
+      description: The type of object representing the difference in high-risk hits for the analyzer between the current and previous periods.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaAnalyzerHits.highRiskHits.totalHits
+      description: The difference in the total number of high-risk hits detected by the analyzer between the current and previous periods.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaAnalyzerHits.highRiskHits.violatedHits
+      description: The difference in the number of high-risk hits that violated security policies between the current and previous periods.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaAnalyzerHits.lowRiskHits.__typename
+      description: The type of object representing the difference in low-risk hits for the analyzer between the current and previous periods.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaAnalyzerHits.lowRiskHits.totalHits
+      description: The difference in the total number of low-risk hits detected by the analyzer between the current and previous periods.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaAnalyzerHits.lowRiskHits.violatedHits
+      description: The difference in the number of low-risk hits that violated security policies between the current and previous periods.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaAnalyzerHits.mediumRiskHits.__typename
+      description: The type of object representing the difference in medium-risk hits for the analyzer between the current and previous periods.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaAnalyzerHits.mediumRiskHits.totalHits
+      description: The difference in the total number of medium-risk hits detected by the analyzer between the current and previous periods.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaAnalyzerHits.mediumRiskHits.violatedHits
+      description: The difference in the number of medium-risk hits that violated security policies between the current and previous periods.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaAnalyzerHits.totalHits.__typename
+      description: The type of object representing the total difference in hits for the analyzer between the current and previous periods (all risk levels combined).
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaAnalyzerHits.totalHits.totalHits
+      description: The total difference in the number of hits detected by the analyzer between the current and previous periods (all risk levels combined).
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaAnalyzerHits.totalHits.violatedHits
+      description: The difference in the number of hits detected by the analyzer that violated security policies between the current and previous periods (all risk levels combined).
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaRiskHits.__typename
+      description: The type of object representing the difference in risk hits between the current and previous periods.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaRiskHits.highRiskHits.__typename
+      description: The type of object representing the difference in high-risk hits between the current and previous periods.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaRiskHits.highRiskHits.totalHits
+      description: The difference in the total number of high-risk hits detected between the current and previous periods.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaRiskHits.highRiskHits.violatedHits
+      description: The difference in the number of high-risk hits that violated security policies between the current and previous periods.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaRiskHits.lowRiskHits.__typename
+      description: The type of object representing the difference in low-risk hits between the current and previous periods.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaRiskHits.lowRiskHits.totalHits
+      description: The difference in the total number of low-risk hits detected between the current and previous periods.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaRiskHits.lowRiskHits.violatedHits
+      description: The difference in the number of low-risk hits that violated security policies between the current and previous periods.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaRiskHits.mediumRiskHits.__typename
+      description: The type of object representing the difference in medium-risk hits between the current and previous periods.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaRiskHits.mediumRiskHits.totalHits
+      description: The difference in the total number of medium-risk hits detected between the current and previous periods.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaRiskHits.mediumRiskHits.violatedHits
+      description: The difference in the number of medium-risk hits that violated security policies between the current and previous periods.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaRiskHits.totalHits.__typename
+      description: The type of object representing the total difference in risk hits between the current and previous periods (all risk levels combined).
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaRiskHits.totalHits.totalHits
+      description: The total difference in the number of risk hits detected between the current and previous periods (all risk levels combined).
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidDeltaRiskHits.totalHits.violatedHits
+      description: The difference in the number of risk hits detected that violated security policies between the current and previous periods (all risk levels combined).
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidRiskHits.__typename
+      description: The type of object representing the risk hits for a specific SID.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidRiskHits.highRiskHits.__typename
+      description: The type of object representing high-risk hits for the risk engine.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidRiskHits.highRiskHits.totalHits
+      description: The total number of high-risk hits detected by the risk engine for the specific SID.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidRiskHits.highRiskHits.violatedHits
+      description: The number of high-risk hits that violated security policies for the specific SID.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidRiskHits.lowRiskHits.__typename
+      description: The type of object representing low-risk hits for the risk engine.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidRiskHits.lowRiskHits.totalHits
+      description: The total number of low-risk hits detected by the risk engine for the specific SID.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidRiskHits.lowRiskHits.violatedHits
+      description: The number of low-risk hits that violated security policies for the specific SID.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidRiskHits.mediumRiskHits.__typename
+      description: The type of object representing medium-risk hits for the risk engine.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidRiskHits.mediumRiskHits.totalHits
+      description: The total number of medium-risk hits detected by the risk engine for the specific SID.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidRiskHits.mediumRiskHits.violatedHits
+      description: The number of medium-risk hits that violated security policies for the specific SID.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidRiskHits.totalHits.__typename
+      description: The type of object representing the total number of risk hits for the specific SID (all risk levels combined).
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidRiskHits.totalHits.totalHits
+      description: The total number of risk hits detected by the risk engine for the specific SID (all risk levels combined).
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidRiskHits.totalHits.violatedHits
+      description: The number of risk hits detected by the risk engine that violated security policies for the specific SID (all risk levels combined).
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidSensitiveFiles.__typename
+      description: The type of object representing the sensitive files associated with the specific SID.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidSensitiveFiles.totalFileCount.__typename
+      description: The type of object representing the total number of sensitive files associated with the specific SID.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidSensitiveFiles.totalFileCount.totalCount
+      description: The total number of sensitive files associated with the specific SID, including both compliant and non-compliant files.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.policy_hits_summary.sidSensitiveFiles.totalFileCount.violatedCount
+      description: The number of sensitive files associated with the specific SID that violate security policies.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.riskReasons.accessRiskReasons
+      description: The reasons why the user's access is considered risky.
+      type: Unknown
+    - contextPath: RubrikPolaris.UserAccess.riskReasons.insecureReasons
+      description: The reasons why the user's access is considered insecure.
+      type: Unknown
+    - contextPath: RubrikPolaris.UserAccess.riskReasons.__typename
+      description: The type of the risk reasons field.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.totalCount
+      description: The total number of high-risk files.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.violatedCount
+      description: The number of high-risk files that violate policies.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.highRiskFileCount.__typename
+      description: The high-risk file count field type.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.totalCount
+      description: Total number of medium-risk files.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.violatedCount
+      description: The number of medium-risk files that violate policies.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.mediumRiskFileCount.__typename
+      description: The type of the medium risk file count field.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.totalCount
+      description: The total number of low-risk files.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.violatedCount
+      description: The number of low-risk files that violate policies.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.lowRiskFileCount.__typename
+      description: The type of the low-risk file count field.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.sensitiveFiles.__typename
+      description: The type of the sensitive files field.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.totalSensitiveHits.totalHits
+      description: The total number of sensitive hits.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.totalSensitiveHits.violatedHits
+      description: The number of sensitive hits that violate policies.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.totalSensitiveHits.__typename
+      description: The type of the total sensitive hits field.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.sensitiveObjectCount.totalCount
+      description: The total number of sensitive objects.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveObjectCount.violatedCount
+      description: The Number of sensitive objects that violate policies.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.sensitiveObjectCount.__typename
+      description: The type of the sensitive object count field.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.numDescendants
+      description: The number of descendant users associated with this user.
+      type: Number
+    - contextPath: RubrikPolaris.UserAccess.domainName
+      description: The domain name associated with this user.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.directGroups.name
+      description: The name of the direct group.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.directGroups.sid
+      description: The security identifier (SID) of the direct group.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.directGroups.__typename
+      description: The type of the direct groups field.
+      type: String
+    - contextPath: RubrikPolaris.UserAccess.__typename
+      description: The type of the User Access field.
+      type: String
+  - arguments:
+    - description: "The Object ID or the Snappable ID.\n\nNote: Users can get the list of the object IDs by executing the \"rubrik-polaris-object-list\" command."
+      name: object_id
+      required: true
+    - description: "The Snapshot ID of the object.\n\nNote: Users can get the list of the snapshot IDs by executing the \"rubrik-polaris-object-snapshot-list\" command."
+      name: snapshot_id
+      required: true
+    - description: 'Specify the name of the file, folder, or file share object.'
+      name: file_name
+    - description: 'Specify the standard file path to filter with.'
+      name: file_path
+    - description: "Specify the user ID to filter with.\n\nNote: Users can get the list of the user IDs by executing the \"rubrik-sonar-user-access-list\" command."
+      name: user_id
+    - auto: PREDEFINED
+      defaultValue: "False"
+      description: "The boolean indicates to include the whitelisted results.\n\nPossible values are: \"True\", \"False\"."
+      name: include_whitelisted_results
+      predefined:
+      - "True"
+      - "False"
+    - defaultValue: 50
+      description: Number of results to retrieve in the response. The maximum allowed size is 1000.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: HITS
+      description: "Specify the field to use for sorting the response.\n\nSupported values are: HITS, NAME, DAILY_CHANGE, LAST_ACCESS_TIME, OPEN_ACCESS_TYPE, FILES_WITH_HITS, FILES_WITH_OPEN_ACCESS_HITS, STALE_FILES_WITH_HITS, CLUSTER, OBJECT_NAME, OBJECT_LOCATION, SNAPSHOT_TIME, NUM_ACTIVITIES, NUM_ACTIVITIES_DELTA, NATIVE_PATH.\n\nNote: For any other values, whether the obtained result is filtered or not, is not confirmed."
+      name: sort_by
+      predefined:
+        - HITS
+        - NAME
+        - DAILY_CHANGE
+        - LAST_ACCESS_TIME
+        - OPEN_ACCESS_TYPE
+        - FILES_WITH_HITS
+        - FILES_WITH_OPEN_ACCESS_HITS
+        - STALE_FILES_WITH_HITS
+        - CLUSTER
+        - OBJECT_NAME
+        - OBJECT_LOCATION
+        - SNAPSHOT_TIME
+        - NUM_ACTIVITIES
+        - NUM_ACTIVITIES_DELTA
+        - NATIVE_PATH
+    - auto: PREDEFINED
+      defaultValue: DESC
+      description: "Specify the order to sort the data in.\n\nPossible values are: \"ASC\", \"DESC\"."
+      name: sort_order
+      predefined:
+      - ASC
+      - DESC
+    - description: The next page cursor to retrieve the next set of results.
+      name: next_page_token
+    description: Retrieve the context of the file, folder, or file share for the provided object and the file details.
+    name: rubrik-sonar-file-context-list
+    outputs:
+    - contextPath: RubrikPolaris.FileContext.nativePath
+      description: The native path of the file.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.stdPath
+      description: The standardized path of the file.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.filename
+      description: The filename.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.mode
+      description: The file mode.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.size
+      description: The file size in bytes.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.lastAccessTime
+      description: The last access time of the file in milliseconds since the epoch.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.lastModifiedTime
+      description: The last modified time of the file in milliseconds since the epoch.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.directory
+      description: The value of Directory.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.numDescendantFiles
+      description: The number of descendant files of the file.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.numDescendantErrorFiles
+      description: The number of descendant files of the file that could not be processed.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.numDescendantSkippedExtFiles
+      description: The number of descendant files of the file that were skipped because of their file extension.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.numDescendantSkippedSizeFiles
+      description: The number of descendant files of the file that were skipped because of their file size.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.errorCode
+      description: The error code, if any, for the file.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.hits.totalHits
+      description: The total number of hits for the file.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.hits.violations
+      description: The number of violations for the file.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.hits.violationsDelta
+      description: The change in the number of violations for the file since the last scan.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.hits.totalHitsDelta
+      description: The change in the total number of hits for the file since the last scan.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.hits.__typename
+      description: The type of the hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.filesWithHits.totalHits
+      description: The total number of files with hits.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.filesWithHits.violations
+      description: The number of files with violations.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.filesWithHits.__typename
+      description: The type of the files with hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.openAccessFilesWithHits.totalHits
+      description: The total number of open access files with hits.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.openAccessFilesWithHits.violations
+      description: The number of open access files with violations.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.openAccessFilesWithHits.__typename
+      description: The type of the open access files with hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.staleFilesWithHits.totalHits
+      description: The total number of stale files with hits.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.staleFilesWithHits.violations
+      description: The number of stale files with violations.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.staleFilesWithHits.__typename
+      description: The type of the stale files with hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.analyzerGroup.groupType
+      description: The type of the analyzer group.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.analyzerGroup.id
+      description: The ID of the analyzer group.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.analyzerGroup.name
+      description: The name of the analyzer group.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.analyzerGroup.__typename
+      description: The type of the analyzer group field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.hits.totalHits
+      description: The total number of hits for the analyzer results.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.hits.violations
+      description: The number of violations for the analyzer results.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.hits.__typename
+      description: The type of the hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.analyzer.id
+      description: The ID of the analyzer.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.analyzer.name
+      description: The name of the analyzer.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.analyzer.analyzerType
+      description: The type of the analyzer.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.analyzer.__typename
+      description: The type of the analyzer field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.analyzerResults.__typename
+      description: The type of the analyzer results field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.hits.totalHits
+      description: The total number of hits for the analyzer group results.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.hits.violations
+      description: The number of violations for the analyzer group results.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.hits.violationsDelta
+      description: The change in the number of violations for the analyzer group results since the last scan.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.hits.totalHitsDelta
+      description: The change in the total number of hits for the analyzer group results since the last scan.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.hits.__typename
+      description: The type of the hits field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.analyzerGroupResults.__typename
+      description: The type of the analyzer group results field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.highRiskFileCount.totalCount
+      description: The total number of high-risk files for the policy object.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.highRiskFileCount.violatedCount
+      description: The number of high-risk files for the policy object that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.highRiskFileCount.__typename
+      description: The type of the high-risk file count field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.totalCount
+      description: Total number of medium-risk files for the policy object.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.violatedCount
+      description: The number of medium-risk files for the policy object that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.mediumRiskFileCount.__typename
+      description: The type of the medium risk file count field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.totalCount
+      description: Total number of low-risk files for the policy object.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.violatedCount
+      description: The number of low-risk files for the policy object that violates policies.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.lowRiskFileCount.__typename
+      description: The type of the low-risk file count field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.sensitiveFiles.__typename
+      description: The type of the sensitive files field.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.openAccessType
+      description: The open access type for the file.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.stalenessType
+      description: The staleness type for the file.
+      type: String
+    - contextPath: RubrikPolaris.FileContext.numActivities
+      description: The number of activities for the file.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.numActivitiesDelta
+      description: The change in the number of activities for the file since the last time it was checked.
+      type: Number
+    - contextPath: RubrikPolaris.FileContext.__typename
+      description: The type of the file context field.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.FileContext.name
+      description: Name of the command.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.FileContext.endCursor
+      description: The end cursor for the current page.
+      type: String
+    - contextPath: RubrikPolaris.PageToken.FileContext.hasNextPage
+      description: Whether the result has the next page or not.
+      type: Boolean
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.86433
   isfetch: true
   runonce: false
   script: '-'

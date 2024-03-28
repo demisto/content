@@ -79,7 +79,7 @@ configuration:
 - display: Indicator Fetch Limit
   name: limit
   type: 0
-  additionalinfo: Provide value to limit the indicator to be fetched per iteration
+  additionalinfo: Provide value to limit the indicator to be fetched per iteration (Limit higher than 30 is not recommended)
   required: false
 - display: Collection Name
   name: collection
@@ -117,7 +117,7 @@ script:
     arguments:
     - name: limit
       description: Number of records to fetch. Using a smaller limit will get faster responses.
-      defaultValue: "50"
+      defaultValue: "30"
     - name: begin
       description: 'Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S)).'
     - name: end
@@ -136,7 +136,7 @@ script:
     - contextPath: CybleIntel.collection.names
       description: Available collection names for the feed service.
     description: Get the data feed collection names for the taxii feed.
-  dockerimage: demisto/taxii-server:1.0.0.84385
+  dockerimage: demisto/taxii-server:1.0.0.87636
   subtype: python3
   feed: true
 fromversion: 6.2.0

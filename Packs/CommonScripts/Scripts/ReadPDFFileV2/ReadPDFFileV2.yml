@@ -8,14 +8,27 @@ args:
 - defaultValue: "20"
   description: Maximum number of images to extract from the PDF file.
   name: maxImages
+- auto: PREDEFINED
+  defaultValue: 'true'
+  description: To unescape URLs that have been escaped as part of the URLs extraction. Invalid characters will be ignored.
+  name: unescape_url
+  predefined:
+  - 'true'
+  - 'false'
 comment: |-
-  Load a PDF file's content and metadata into context.
+  Load a PDF file's content and metadata into context. Supports extraction of hashes, urls, and emails when available.
 commonfields:
   id: ReadPDFFileV2
   version: -1
 enabled: true
 name: ReadPDFFileV2
 outputs:
+- contextPath: Hashes.type
+  description: The hash type extracted from the PDF file.
+  type: String
+- contextPath: Hashes.value
+  description: The hash value extracted from the PDF file.
+  type: String
 - contextPath: URL.Data
   description: A list of URLs that were extracted from the PDF file.
   type: String
@@ -116,7 +129,7 @@ tags:
 - ingestion
 timeout: "0"
 type: python
-dockerimage: demisto/readpdf:1.0.0.83506
+dockerimage: demisto/readpdf:1.0.0.89247
 runas: DBotRole
 tests:
 - Extract Indicators From File - Generic v2 - Test

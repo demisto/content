@@ -106,7 +106,7 @@ references:
           neo4j_conf_file="/etc/neo4j/neo4j.conf"
           sudo echo "dbms.security.procedures.unrestricted=apoc.*" >> $neo4j_conf_file
           sudo echo "dbms.security.procedures.allowlist=apoc.*" >> $neo4j_conf_file
-          sudo echo "dbms.memory.transaction.total.max=600m" >> $neo4j_conf_file
+          sudo echo "dbms.memory.transaction.total.max=2000m" >> $neo4j_conf_file
 
           apoc_conf_file="/etc/neo4j/apoc.conf"
           sudo echo "apoc.export.file.enabled=true" > $apoc_conf_file
@@ -297,9 +297,10 @@ references:
             name: Get Contributor pack
             when: always
             command: |
-                REPO=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
+                USERNAME=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
                 BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-                python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -c $REPO
+                $CONTRIB_REPO="content"
+                python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USERNAME -c $CONTRIB_REPO
 
   comment_on_contrib_pr: &comment_on_contrib_pr
     when:

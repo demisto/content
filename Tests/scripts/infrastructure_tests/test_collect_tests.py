@@ -124,11 +124,12 @@ class MockerCases:
 ALWAYS_INSTALLED_PACKS = ('Base', 'DeveloperTools')
 
 
-def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable,
+def _test(mocker, monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable,
           expected_tests: Iterable[str], expected_packs: Iterable[str], expected_packs_to_upload: Iterable[str],
           expected_machines: Iterable[Machine] | None,
           expected_modeling_rules_to_test: Iterable[str | Path] | None,
-          collector_class_args: tuple[Any, ...] = ()):
+          collector_class_args: tuple[Any, ...] = (),
+          disable_collect_packs_diff_master_bucket=True):
     """
     Instantiates the given collector class, calls collect with run_nightly and asserts
     that the result packs and tests are expected ones.
@@ -140,9 +141,13 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callabl
     :param expected_machines: the expected machines. (pass None to not check)
     :param expected_modeling_rules_to_test: the expected modeling rules directory names. (pass None to not check)
     :param collector_class_args: with which to instantiate the collector class.
+    :param disable_collect_packs_diff_master_bucket: For branch collectors and diffs between buckets and masters,
+                                                     set to False for checking this functionality, in the other case set to True.
     :return: Nothing: only calls assert.
     """
     monkeypatch.chdir(case_mocker.path_manager.content_path)
+    if disable_collect_packs_diff_master_bucket:
+        mocker.patch.object(BranchTestCollector, "_collect_packs_diff_master_bucket", return_value=None)
     with case_mocker:
         collector = collector_class(*collector_class_args)
         collected = collector.collect()
@@ -285,7 +290,7 @@ NIGHTLY_TESTS: tuple = (
     'case_mocker,collector_class,expected_tests,'
     'expected_packs,expected_machines,expected_modeling_rules_to_test,collector_class_args', NIGHTLY_TESTS
 )
-def test_nightly(monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable, expected_tests: set[str],
+def test_nightly(mocker, monkeypatch, case_mocker: CollectTestsMocker, collector_class: Callable, expected_tests: set[str],
                  expected_packs: tuple[str],
                  expected_machines: tuple[Machine] | None,
                  expected_modeling_rules_to_test: Iterable[str | Path] | None,
@@ -295,7 +300,7 @@ def test_nightly(monkeypatch, case_mocker: CollectTestsMocker, collector_class: 
     when:   collecting tests with a NightlyTestCollector
     then:   make sure tests are collected from integration and id_set
     """
-    _test(monkeypatch, case_mocker=case_mocker, collector_class=collector_class,
+    _test(mocker, monkeypatch, case_mocker=case_mocker, collector_class=collector_class,
           expected_tests=expected_tests, expected_packs=expected_packs, expected_packs_to_upload={},
           expected_machines=expected_machines,
           expected_modeling_rules_to_test=expected_modeling_rules_to_test,
@@ -309,122 +314,123 @@ XSOAR_SAAS_BRANCH_ARGS = ('master', MarketplaceVersions.XSOAR_SAAS, None)
 
 @pytest.mark.parametrize(
     'case_mocker,expected_tests,expected_packs,expected_machines,expected_modeling_rules_to_test,'
-    'collector_class_args,mocked_changed_files,mocked_packs_files_were_moved_from,expected_packs_to_upload',
+    'collector_class_args,mocked_changed_files,mocked_packs_files_were_moved_from,expected_packs_to_upload,'
+    'disable_collect_packs_diff_master_bucket',
     (
         # (0) change in a sanity-collection-triggering file, expecting xsoar sanity tests to be collected
         (MockerCases.empty, XSOAR_SANITY_TEST_NAMES, ('Whois', 'HelloWorld'), None, None, XSOAR_BRANCH_ARGS,
-         ('.gitlab/helper_functions.sh',), (), ()),
+         ('.gitlab/helper_functions.sh',), (), (), True),
 
         # (1) Empty content folder: expecting XSIAM collector to not collect anything
-        (MockerCases.empty, (), (), None, None, XSIAM_BRANCH_ARGS, (), (), None),
+        (MockerCases.empty, (), (), None, None, XSIAM_BRANCH_ARGS, (), (), None, True),
 
         # (2) Case A, yml file changes, expect the test playbook testing the integration to be collected
         (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSOAROnlyPack',)),
+         ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSOAROnlyPack',), True),
 
         # (3) Case A, py file changes, expect the test playbook testing the integration to be collected
         (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',), (), ('myXSOAROnlyPack',)),
+         ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',), (), ('myXSOAROnlyPack',), True),
 
         # (4) Case A: yml file changes, expect the test playbook testing the integration to be collected
         (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack', 'CoreAlertFields'), None, None,
          XSIAM_BRANCH_ARGS, ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.yml',), (),
-         ('myXSIAMOnlyPack',)),
+         ('myXSIAMOnlyPack',), True),
 
         # (5) Case A: py file changes, expect the test playbook testing the integration to be collected
         (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack', 'CoreAlertFields'), None, None,
          XSIAM_BRANCH_ARGS, ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.py',), (),
-         ('myXSIAMOnlyPack',)),
+         ('myXSIAMOnlyPack',), True),
 
         # (6) Case B: test playbook changes, expect it to be collected
         (MockerCases.B_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',), (), ('myXSOAROnlyPack',)),
+         ('Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',), (), ('myXSOAROnlyPack',), True),
 
         # (7) Case B: two test playbook change, expect both to be collected
         (MockerCases.B_xsoar, ('myOtherTestPlaybook', 'myTestPlaybook'), ('myXSOAROnlyPack',), None, None,
          XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',
                              'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',), (),
-         ('myXSOAROnlyPack',)),
+         ('myXSOAROnlyPack',), True),
 
         # (8) Case D: playbook changes, expect it and its pack to be collected
         (MockerCases.D, ('myTestPlaybook',), ('myPack',), (Machine.V6_9, Machine.MASTER,), None, XSOAR_BRANCH_ARGS,
-         ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',), (), ('myPack',)),
+         ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',), (), ('myPack',), True),
 
         # (9) Case D: playbook changes, expect it and its pack to be collected
         (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myPack/TestPlaybooks/myOtherTestPlaybook.yml',), (), ('myPack',)),
+         ('Packs/myPack/TestPlaybooks/myOtherTestPlaybook.yml',), (), ('myPack',), True),
 
         # (10) Playbook changes, expect its test playbook to be collected
         (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myPack/Playbooks/myPlaybook.yml',), (), ('myPack',)),
+         ('Packs/myPack/Playbooks/myPlaybook.yml',), (), ('myPack',), True),
 
         # (11) Script changes, expect its test playbook to be collected
         (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myPack/Scripts/myScript/myScript.yml',), (), ('myPack',)),
+         ('Packs/myPack/Scripts/myScript/myScript.yml',), (), ('myPack',), True),
 
         # (12) Two test playbooks change, but myOtherTestPlaybook is ignored, so it should not be collected
         (MockerCases.I_xsoar, ('myTestPlaybook',), ('myXSOAROnlyPack',), None, None, XSOAR_BRANCH_ARGS,
          ('Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
-          'Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml'), (), ('myXSOAROnlyPack',)),
+          'Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml'), (), ('myXSOAROnlyPack',), True),
 
         # (13) Skipped integration changes - should not be collected
         (MockerCases.J, (), (), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',), (), None),
+         ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',), (), None, True),
 
         # (14) test data file changes - should not be collected
         (MockerCases.J, (), (), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myPack/Integrations/myIntegration/test_data/file.json',), (), None),
+         ('Packs/myPack/Integrations/myIntegration/test_data/file.json',), (), None, True),
 
         # (15) a file under ParsingRules/Samples is changed, nothing should be collected.
         (MockerCases.J, (), (), None, None, XSOAR_BRANCH_ARGS,
          ('Packs/myPack/ParsingRules/Samples/some_sample.json',),
-         (), None),
+         (), None, True),
 
         # (16) Integration is changed but its test playbook is skipped - pack should be collected, test should not.
         (MockerCases.K, (), ('myPack',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',), (), ('myPack',)),
+         ('Packs/myPack/Integrations/mySkippedIntegration/mySkippedIntegration.yml',), (), ('myPack',), True),
 
         # (17) Testing version ranges
         (MockerCases.L, None, ('myXSIAMOnlyPack', 'CoreAlertFields'), (Machine.MASTER, Machine.V6_9), None,
-         XSIAM_BRANCH_ARGS, ('Packs/myXSIAMOnlyPack/Wizards/harry.json',), (), ('myXSIAMOnlyPack',)),
+         XSIAM_BRANCH_ARGS, ('Packs/myXSIAMOnlyPack/Wizards/harry.json',), (), ('myXSIAMOnlyPack',), True),
 
         # (18) see M2 definition at the top of this file
         (MockerCases.M2, None, ('myXSOAROnlyPack',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',), (), ('myXSOAROnlyPack',)),
+         ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',), (), ('myXSOAROnlyPack',), True),
 
         # (19) see M3 definition at the top of this file - integration py file is changed
         (MockerCases.M3, None, ('myXSOAROnlyPack',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',), (), ('myXSOAROnlyPack',)),
+         ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',), (), ('myXSOAROnlyPack',), True),
 
         # (20) see M3 definition at the top of this file - integration yml file is changed
         (MockerCases.M3, None, ('myXSOAROnlyPack',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSOAROnlyPack',)),
+         ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSOAROnlyPack',), True),
 
         # (21) see M3 definition at the top of this file - test playbook is changed
         (MockerCases.M3, None, ('myXSOAROnlyPack',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',), (), ('myXSOAROnlyPack',)),
+         ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',), (), ('myXSOAROnlyPack',), True),
 
         # (22) Test Playbook using skipped integration - should not be collected.
         (MockerCases.P, None, ('myPack',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',), (), ('myPack',)),
+         ('Packs/myPack/TestPlaybooks/myTestPlaybook.yml',), (), ('myPack',), True),
 
         # (23) Old-formatted script changes, expecting its test playbook to be collected
         (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myPack/Scripts/script-myScript.yml',), (), ('myPack',)),
+         ('Packs/myPack/Scripts/script-myScript.yml',), (), ('myPack',), True),
 
         # (24) When content is moved between packs, both packs (old, new) should be collected
         (MockerCases.C, None, ('bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration'), None, None,
          XSOAR_BRANCH_ARGS, (), ('bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration'),
-         ('bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration')),
+         ('bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration'), True),
 
         # (25) Deprecated integration changes - should not be collected
         (MockerCases.Q, (), (), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myPack/Integrations/myDeprecatedIntegration/myDeprecatedIntegration.yml',), (), None),
+         ('Packs/myPack/Integrations/myDeprecatedIntegration/myDeprecatedIntegration.yml',), (), None, True),
 
         # (26) Deprecated integration changes - should not be collected
         (MockerCases.Q, ('myTestPlaybook',), ('myPack',), None, None, XSOAR_BRANCH_ARGS,
          ('Packs/myPack/Integrations/myDeprecatedIntegration/myDeprecatedIntegration.yml',
-          'Packs/myPack/Integrations/myIntegration/myIntegration.yml'), (), ('myPack',)),
+          'Packs/myPack/Integrations/myIntegration/myIntegration.yml'), (), ('myPack',), True),
 
         # (27) Packs for XSOAR & XSIAM will be collected only for upload,
         # test dependency and always install packs will collected only to install
@@ -433,77 +439,77 @@ XSOAR_SAAS_BRANCH_ARGS = ('master', MarketplaceVersions.XSOAR_SAAS, None)
          None, XSIAM_BRANCH_ARGS,
          ('Packs/bothMarketplacesPack/pack_metadata.json',
           'Packs/bothMarketplacesPackOnlyXSIAMIntegration/Integrations/onlyXSIAMIntegration/onlyXSIAMIntegration.yml'),
-         (), ('bothMarketplacesPackOnlyXSIAMIntegration',)),
+         (), ('bothMarketplacesPackOnlyXSIAMIntegration',), True),
 
         # (28) Only packs with changes in XSOAR items will be collected to install and to upload.
         (MockerCases.R, None, ('bothMarketplacesPack',), None, None, XSOAR_BRANCH_ARGS,
          ('Packs/bothMarketplacesPack/pack_metadata.json',
           'Packs/bothMarketplacesPackOnlyXSIAMIntegration/Integrations/onlyXSIAMIntegration/onlyXSIAMIntegration.yml'),
-         (), ('bothMarketplacesPack',)),
+         (), ('bothMarketplacesPack',), True),
 
         # (29) modeling rule yml file is changed - expect the modeling rule dir to be marked
         (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields',), None,
          (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS,
-         ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule.yml',), (), ('MyXSIAMPack',)),
+         ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule.yml',), (), ('MyXSIAMPack',), True),
 
         # (30) modeling rule schema json file changed - expect the modeling rule dir to be marked
         (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields',), None,
          (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS,
-         ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_schema.json',), (), ('MyXSIAMPack',)),
+         ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_schema.json',), (), ('MyXSIAMPack',), True),
 
         # (31) modeling rule xif file is changed - expect the modeling rule dir to be marked
         (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields',), None,
          (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS,
-         ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule.xif',), (), ('MyXSIAMPack',)),
+         ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule.xif',), (), ('MyXSIAMPack',), True),
 
         # (32) modeling rule test data file is changed - expect the modeling rule dir to be marked
         (MockerCases.MR1, None, ('MyXSIAMPack', 'CoreAlertFields',), None,
          (Path('MyXSIAMPack/ModelingRules/HarryRule'),), XSIAM_BRANCH_ARGS,
-         ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_testdata.json',), (), ('MyXSIAMPack',)),
+         ('Packs/MyXSIAMPack/ModelingRules/HarryRule/HarryRule_testdata.json',), (), ('MyXSIAMPack',), True),
 
         # (33) Release Notes Config
         (MockerCases.RN_CONFIG, (), ('myPack',), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/myPack/ReleaseNotes/2_1_3.json',), (), ('myPack',)),
+         ('Packs/myPack/ReleaseNotes/2_1_3.json',), (), ('myPack',), True),
 
         # (34) see S definition at the top of this file - one of the integration has been changed
         (MockerCases.S, ('myOtherTestPlaybook',), ('myXSOAROnlyPack', 'myXSOAROnlyPack2',), None, None,
          XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (),
-         ('myXSOAROnlyPack',)),
+         ('myXSOAROnlyPack',), True),
 
         # (35) see T definition at the top of this file - reputation indicator type test
         (MockerCases.T, ("FormattingPerformance - Test", "Email extraction test", "Domain extraction test"),
          ('Base', 'DeveloperTools', 'CommonTypes'), None, None, XSOAR_BRANCH_ARGS,
-         ('Packs/CommonTypes/IndicatorTypes/reputation-domain.json',), (), ('CommonTypes',)),
+         ('Packs/CommonTypes/IndicatorTypes/reputation-domain.json',), (), ('CommonTypes',), True),
 
         # (36) see PR1 definition at the top of this file - only parsing rules xif file was changed
         (MockerCases.PR1, (), ('MyXSIAMPack', 'CoreAlertFields',), None, None, XSIAM_BRANCH_ARGS,
-         ('Packs/MyXSIAMPack/ParsingRules/MyParsingRules/MyParsingRules.xif',), (), ('MyXSIAMPack',)),
+         ('Packs/MyXSIAMPack/ParsingRules/MyParsingRules/MyParsingRules.xif',), (), ('MyXSIAMPack',), True),
 
         # (37) see PR1 definition at the top of this file - only parsing rules yml file was changed
         (MockerCases.PR1, (), ('MyXSIAMPack', 'CoreAlertFields',), None, None, XSIAM_BRANCH_ARGS,
-         ('Packs/MyXSIAMPack/ParsingRules/MyParsingRules/MyParsingRules.yml',), (), ('MyXSIAMPack',)),
+         ('Packs/MyXSIAMPack/ParsingRules/MyParsingRules/MyParsingRules.yml',), (), ('MyXSIAMPack',), True),
 
         # (38) Case A_xsoar_saas, yml file changes, expect the test playbook testing the integration to be collected
         (MockerCases.A_xsoar_saas, ('myOtherTestPlaybook',), ('myXSOARSaaSOnlyPack',), None, None, XSOAR_SAAS_BRANCH_ARGS,
-            ('Packs/myXSOARSaaSOnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSOARSaaSOnlyPack',)),
+            ('Packs/myXSOARSaaSOnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSOARSaaSOnlyPack',), True),
 
         # (39) Case A, yml file changes, expect the test playbook testing the integration to be collected
         (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, None, XSOAR_SAAS_BRANCH_ARGS,
-            ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSOAROnlyPack',)),
+            ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSOAROnlyPack',), True),
 
         # (40) All kind of xsoar packs changed, running with xsoar_saas collector validate that only relevant packs are collected
         (MockerCases.Xsoar_marketplaces, None, ('OnlyXsoarSaaS', 'BothXsoar',), None, None, XSOAR_SAAS_BRANCH_ARGS,
             ('Packs/OnlyXsoarSaaS/Integrations/myOnlyXsoarSaaSIntegration/myOnlyXsoarSaaSIntegration.yml',
              'Packs/BothXsoar/Integrations/myBothXsoarIntegration/myBothXsoarIntegration.yml',
              'Packs/OnlyXsoarOnPrem/Integrations/myOnlyXsoarOnPremIntegration/myOnlyXsoarOnPremIntegration.yml'), (),
-         ('OnlyXsoarSaaS', 'BothXsoar',)),
+         ('OnlyXsoarSaaS', 'BothXsoar',), True),
 
         # (41) All kind of xsoar packs changed, running with xsoar collector validate that only relevant packs are collected
         (MockerCases.Xsoar_marketplaces, None, ('OnlyXsoarOnPrem', 'BothXsoar',), None, None, XSOAR_BRANCH_ARGS,
             ('Packs/OnlyXsoarSaaS/Integrations/myOnlyXsoarSaaSIntegration/myOnlyXsoarSaaSIntegration.yml',
              'Packs/BothXsoar/Integrations/myBothXsoarIntegration/myBothXsoarIntegration.yml',
              'Packs/OnlyXsoarOnPrem/Integrations/myOnlyXsoarOnPremIntegration/myOnlyXsoarOnPremIntegration.yml'), (),
-         ('OnlyXsoarOnPrem', 'BothXsoar',)),
+         ('OnlyXsoarOnPrem', 'BothXsoar',), True),
 
         # (42) Checks that tests are collected according to the marketplace entry they hold - xsoar_saas
         (MockerCases.conf_marketplaces_entry,
@@ -514,7 +520,7 @@ XSOAR_SAAS_BRANCH_ARGS = ('master', MarketplaceVersions.XSOAR_SAAS, None)
              'Packs/myPack/TestPlaybooks/myTestPlaybook_on_prem.yml',
              'Packs/myPack/TestPlaybooks/myTestPlaybook_saas.yml',
              'Packs/myPack/TestPlaybooks/myTestPlaybook_two_entries.yml'), (),
-         ('myPack',)),
+         ('myPack',), True),
 
         # (43) Checks that tests are collected according to the marketplace entry they hold - xsoar_on_prem
         (MockerCases.conf_marketplaces_entry,
@@ -525,8 +531,15 @@ XSOAR_SAAS_BRANCH_ARGS = ('master', MarketplaceVersions.XSOAR_SAAS, None)
              'Packs/myPack/TestPlaybooks/myTestPlaybook_on_prem.yml',
              'Packs/myPack/TestPlaybooks/myTestPlaybook_saas.yml',
              'Packs/myPack/TestPlaybooks/myTestPlaybook_two_entries.yml'), (),
-         ('myPack',)),
+         ('myPack',), True),
 
+        # (44) master and bucket are equal, no need to collect for upload nothing
+        (MockerCases.K, (), (), None, None, XSOAR_BRANCH_ARGS, (), (), ('myPack',), False),
+
+
+        # (45) master ahead of bucket, need to collect for upload the diff (pack should be collected, test should not.)
+        (MockerCases.A_xsoar, None, ('myXSOAROnlyPack',), None, None, XSOAR_BRANCH_ARGS,
+         ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (), ('myXSOAROnlyPack',), False),
     )
 )
 def test_branch(
@@ -541,14 +554,17 @@ def test_branch(
         mocked_changed_files: tuple[str, ...],
         mocked_packs_files_were_moved_from: tuple[str, ...],
         expected_packs_to_upload: tuple[str, ...] | None,
+        disable_collect_packs_diff_master_bucket: bool,
 ):
     mocker.patch.object(BranchTestCollector, '_get_git_diff',
                         return_value=FilesToCollect(mocked_changed_files, mocked_packs_files_were_moved_from))
-    _test(monkeypatch, case_mocker, collector_class=BranchTestCollector,
+    _test(mocker, monkeypatch, case_mocker, collector_class=BranchTestCollector,
           expected_tests=expected_tests, expected_packs=expected_packs,
           expected_packs_to_upload=expected_packs_to_upload,
           expected_machines=expected_machines, expected_modeling_rules_to_test=expected_modeling_rules_to_test,
-          collector_class_args=collector_class_args)
+          collector_class_args=collector_class_args,
+          disable_collect_packs_diff_master_bucket=disable_collect_packs_diff_master_bucket
+          )
 
 
 def test_branch_test_missing_from_conf(mocker, monkeypatch):
@@ -559,7 +575,7 @@ def test_branch_test_missing_from_conf(mocker, monkeypatch):
                             pack_ids_files_were_removed_from=()),
                         )
     with pytest.raises(ValueError) as e:
-        _test(monkeypatch, MockerCases.M1, BranchTestCollector, (), (), (), (), (), XSOAR_BRANCH_ARGS)
+        _test(mocker, monkeypatch, MockerCases.M1, BranchTestCollector, (), (), (), (), (), XSOAR_BRANCH_ARGS)
     assert 'is (1) missing from conf.json' in str(e.value)  # checking it's the right error
 
 
@@ -657,7 +673,7 @@ def test_no_file_type_and_non_content_dir_files_are_ignored(mocker, monkeypatch)
     mocker.patch.object(BranchTestCollector, '_get_git_diff',
                         return_value=FilesToCollect(('Packs/myXSOAROnlyPack/NonContentItems/Empty.json',), ()))
 
-    _test(monkeypatch, case_mocker=MockerCases.A_xsoar, collector_class=BranchTestCollector, expected_tests=(),
+    _test(mocker, monkeypatch, case_mocker=MockerCases.A_xsoar, collector_class=BranchTestCollector, expected_tests=(),
           expected_modeling_rules_to_test=(), expected_packs=(), expected_packs_to_upload=(),
           expected_machines=None, collector_class_args=XSOAR_BRANCH_ARGS)
 
@@ -678,7 +694,7 @@ def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileTyp
     expected_packs = ('myPack',) if file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES) else ()
 
     # noinspection PyTypeChecker
-    _test(monkeypatch, case_mocker=MockerCases.H, collector_class=BranchTestCollector,
+    _test(mocker, monkeypatch, case_mocker=MockerCases.H, collector_class=BranchTestCollector,
           expected_tests=(), expected_packs=expected_packs, expected_packs_to_upload=('myPack',),
           expected_machines=None, expected_modeling_rules_to_test=None, collector_class_args=XSOAR_BRANCH_ARGS)
 
@@ -693,7 +709,7 @@ def test_invalid_content_item(mocker, monkeypatch):
     mocker.patch.object(BranchTestCollector, '_get_git_diff',
                         return_value=FilesToCollect(('Packs/myPack/some_file',), ()))
 
-    _test(monkeypatch, case_mocker=MockerCases.H, collector_class=BranchTestCollector,
+    _test(mocker, monkeypatch, case_mocker=MockerCases.H, collector_class=BranchTestCollector,
           expected_tests=(), expected_packs=(), expected_packs_to_upload=(), expected_machines=None,
           expected_modeling_rules_to_test=None,
           collector_class_args=XSOAR_BRANCH_ARGS)
@@ -737,7 +753,7 @@ def test_number_of_file_types():
              'myXSIAMOnlyPack', 'CoreAlertFields', 'bothMarketplacesPack',
              'bothMarketplacesPackOnlyXSIAMIntegration', 'Whois')),
     ), ids=('install_and_upload_all_xsoar', 'install_and_upload_all_xsiam'))
-def test_upload_all_packs(monkeypatch, case_mocker, expected_tests: set[str] | None,
+def test_upload_all_packs(mocker, monkeypatch, case_mocker, expected_tests: set[str] | None,
                           expected_packs: tuple[str, ...] | None,
                           expected_machines: tuple[Machine, ...] | None,
                           expected_modeling_rules_to_test: Iterable[str | Path] | None,
@@ -751,7 +767,7 @@ def test_upload_all_packs(monkeypatch, case_mocker, expected_tests: set[str] | N
     when:   Collecting tests for the upload flow.
     then:   Make sure all packs are collected to the pack_to_upload, and the pack_to_install list is empty.
     """
-    _test(monkeypatch, case_mocker, collector_class=UploadAllCollector,
+    _test(mocker, monkeypatch, case_mocker, collector_class=UploadAllCollector,
           expected_tests=expected_tests, expected_packs=expected_packs,
           expected_packs_to_upload=expected_packs_to_upload,
           expected_machines=expected_machines, expected_modeling_rules_to_test=expected_modeling_rules_to_test,

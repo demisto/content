@@ -761,6 +761,21 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             method='GET', url_suffix=f'rest/api/{self.api_version}/attachment/{attachment_id}'
         )
 
+    def delete_attachment_file(self, attachment_id: str):
+        """This method is in charge of deleting an attached file.
+
+        Args:
+            attachment_id (str): The id of the attachment file.
+
+        Returns:
+            requests.Response: The raw response of the endpoint.
+        """
+        return self.http_request(
+            method='DELETE',
+            url_suffix=f'rest/api/{self.api_version}/attachment/{attachment_id}',
+            resp_type='response',
+        )
+
     @abstractmethod
     def get_attachment_content(self, attachment_id: str = '', attachment_content_url: str = '') -> str:
         """This method is in charge of returning the content for an attachment.
@@ -1937,6 +1952,13 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
+
+    # Validate that no more args are sent when the issue_json arg is used
+    if "issue_json" in args and len(args) > 1:
+        raise DemistoException(
+            "When using the argument `issue_json`, additional arguments cannot be used.ֿֿֿ\n see the argument description"
+        )
+
     args_for_api = deepcopy(args)
     if project_name := args_for_api.get('project_name'):
         args_for_api['project_id'] = get_project_id_from_name(client=client, project_name=project_name)
@@ -1972,6 +1994,18 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
+    if "issue_json" in args and [
+        k
+        for k in args
+        if k
+        not in ("status", "transition", "action", "issue_id", "issue_key", "issue_json")
+    ]:
+        raise DemistoException(
+            "When using the `issue_json` argument, additional arguments cannot be used "
+            "except `issue_id`, `issue_key`, `status`, `transition`, and `action` arguments.ֿֿֿ"
+            "\n see the argument description"
+        )
+
     issue_id_or_key = get_issue_id_or_key(
         issue_id=args.get("issue_id", ""), issue_key=args.get("issue_key", "")
     )
@@ -2055,6 +2089,21 @@ def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
                                           issue_key=args.get('issue_key', ''))
     client.delete_issue(issue_id_or_key=issue_id_or_key)
     return CommandResults(readable_output='Issue deleted successfully.')
+
+
+def delete_attachment_file_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of deleting an attachment file.
+
+    Args:
+        client (JiraBaseClient): The jira client.
+        args (Dict[str, str]): The argument supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    attachment_id = args['attachment_id']
+    client.delete_attachment_file(attachment_id=attachment_id)
+    return CommandResults(readable_output=f'Attachment id {attachment_id} was deleted successfully.')
 
 
 def update_issue_assignee_command(client: JiraBaseClient, args: Dict) -> CommandResults:
@@ -4036,6 +4085,7 @@ def main():  # pragma: no cover
         'jira-epic-issue-list': epic_issues_list_command,
         'jira-issue-link-type-get': get_issue_link_types_command,
         'jira-issue-to-issue-link': link_issue_to_issue_command,
+        'jira-issue-delete-file': delete_attachment_file_command,
     }
     try:
         client: JiraBaseClient

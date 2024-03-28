@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The default range for Recorded Future Risk Scores mapped to a Suspicious Verdict has been changed. The previous range was risk scores 5-64 (inclusive). The new range will be risk scores 25-64 (inclusive). Indicators greater than 64 will still be given a Malicious verdict, and indicators less than 25 will now be set to an Unknown verdict. The IOC Threshold, Suspicious Threshold, and Malicious Threshold can all be adjusted in the integration settings."
+}

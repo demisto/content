@@ -1,9 +1,12 @@
 import json
 import os
 from pathlib import Path
+from pytest_mock import MockFixture
 
 import requests
 
+import networkx as nx
+from networkx import DiGraph
 import demisto_client
 import pytest
 import timeout_decorator
@@ -107,94 +110,6 @@ class MockApiClient:
 class MockClient:
     def __init__(self):
         self.api_client = MockApiClient()
-
-
-class MockLock:
-    def acquire(self):
-        return None
-
-    def release(self):
-        return None
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, type, value, traceback):
-        return False
-
-
-@pytest.mark.parametrize('use_multithreading', [True, False])
-def test_search_and_install_packs_and_their_dependencies(mocker, use_multithreading: bool):
-    """
-    Given
-    - Valid pack ids.
-    - Invalid pack id.
-    When
-    - Running integrations configuration tests.
-    Then
-    - Ensure packs & their dependency search requests are valid.
-    - Ensure packs & their dependency installation requests are valid.
-    """
-    good_pack_ids = [
-        'HelloWorld',
-        'AzureSentinel'
-    ]
-
-    bad_pack_ids = ['malformed_pack_id']
-
-    client = MockClient()
-
-    import time
-    mocker.patch.object(time, 'sleep')
-
-    mocker.patch.object(script, 'install_packs', return_value=(True, []))
-    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=mocked_generic_request_func)
-    mocker.patch.object(script, 'is_pack_deprecated', return_value=False)  # Relevant only for post-update unit-tests
-
-    installed_packs, success = script.search_and_install_packs_and_their_dependencies(pack_ids=good_pack_ids,
-                                                                                      client=client,
-                                                                                      multithreading=use_multithreading,
-                                                                                      production_bucket=True)
-    assert 'HelloWorld' in installed_packs
-    assert 'AzureSentinel' in installed_packs
-    assert 'TestPack' in installed_packs
-    assert success is True
-
-    installed_packs, _ = script.search_and_install_packs_and_their_dependencies(pack_ids=bad_pack_ids,
-                                                                                client=client,
-                                                                                multithreading=use_multithreading,
-                                                                                production_bucket=True)
-    assert bad_pack_ids[0] not in installed_packs
-
-
-@pytest.mark.parametrize('error_code,use_multithreading',
-                         [
-                             (400, False), (400, True),
-                             (500, False), (500, True),
-                         ])
-def test_search_and_install_packs_and_their_dependencies_with_error(mocker, error_code, use_multithreading: bool):
-    """
-    Given:
-      The API call to Marketplace API has failed (returned an error code).
-
-    When:
-        Running 'get_pack_dependencies' function.
-
-    Then:
-        Ensure the function returns a 'success' value of 'False'.
-    """
-    client = MockClient()
-    import time
-    mocker.patch.object(time, 'sleep')
-    mocker.patch.object(script, 'install_packs', return_value=(False, []))
-    mocker.patch.object(script, 'fetch_pack_metadata_from_gitlab', return_value={"hidden": False})
-    mocker.patch.object(demisto_client, 'generic_request_func', side_effect=ApiException(status=error_code))
-
-    _, success = script.search_and_install_packs_and_their_dependencies(pack_ids=['HelloWorld'],
-                                                                        client=client,
-                                                                        multithreading=use_multithreading,
-                                                                        production_bucket=True)
-    assert success is False
 
 
 @timeout_decorator.timeout(3)
@@ -322,23 +237,23 @@ def test_is_pack_deprecated_using_marketplace_api_data():
     Then: Validate the result is as expected
     """
     mock_pack_api_data = {
-        "id": "TestPack",
-        "name": "TestPack",
-        "extras": {
-            "pack": {},
+        "TestPack": {
+            "currentVersion": "1",
+            "dependencies": [],
+            "deprecated": False
         },
     }
 
     # Check missing "hidden" field results in a default value of False
-    assert not script.is_pack_deprecated("pack_id", production_bucket=True, pack_api_data=mock_pack_api_data)
+    assert not script.is_pack_deprecated("TestPack", production_bucket=True, pack_api_data=mock_pack_api_data['TestPack'])
 
     # Check normal case of hidden pack
-    mock_pack_api_data["extras"]["pack"]["deprecated"] = True
-    assert script.is_pack_deprecated("pack_id", production_bucket=True, pack_api_data=mock_pack_api_data)
+    mock_pack_api_data["TestPack"]["deprecated"] = True
+    assert script.is_pack_deprecated("TestPack", production_bucket=True, pack_api_data=mock_pack_api_data['TestPack'])
 
     # Check normal case of non-hidden pack
-    mock_pack_api_data["extras"]["pack"]["deprecated"] = False
-    assert not script.is_pack_deprecated("pack_id", production_bucket=True, pack_api_data=mock_pack_api_data)
+    mock_pack_api_data["TestPack"]["deprecated"] = False
+    assert not script.is_pack_deprecated("TestPack", production_bucket=True, pack_api_data=mock_pack_api_data['TestPack'])
 
 
 def test_fetch_pack_metadata_from_gitlab(mocker):
@@ -503,3 +418,651 @@ class TestFindMalformedPackId:
     def test_additional_info(self):
         error_msg = '{"errors": ["invalid version 1.0.0 for pack with ID pack1 some additional info"]}'
         assert script.find_malformed_pack_id(error_msg) == ['pack1']
+
+
+def test_create_graph_empty():
+    """
+    Given:
+        An empty dictionary of pack dependencies
+    When:
+        create_graph is called
+    Then:
+        An empty DiGraph is returned
+    """
+    all_packs_dependencies = {}
+
+    graph = script.create_graph(all_packs_dependencies)
+
+    assert isinstance(graph, DiGraph)
+    assert len(graph) == 0
+
+
+def test_create_graph_single_dependency():
+    """
+    Given:
+        A dictionary with a single pack and dependency
+    When:
+        create_graph is called
+    Then:
+        A DiGraph with a single edge is returned
+    """
+    all_packs_dependencies = {"PackA": {"dependencies": {"PackB": {"mandatory": True}}}}
+
+    graph = script.create_graph(all_packs_dependencies)
+
+    assert isinstance(graph, DiGraph)
+    assert len(graph.edges()) == 1
+    assert ("PackB", "PackA") in graph.edges()
+
+
+def test_create_graph_multiple_dependencies():
+    """
+    Given:
+        A dictionary with multiple packs and dependencies
+    When:
+        create_graph is called
+    Then:
+        A DiGraph with multiple edges is returned
+    """
+    all_packs_dependencies = {
+        "PackA": {
+            "dependencies": {"PackB": {"mandatory": True}, "PackC": {"mandatory": True}}
+        },
+        "PackB": {"dependencies": {"PackD": {"mandatory": True}}},
+        "PackC": {"dependencies": {}},
+    }
+
+    graph = script.create_graph(all_packs_dependencies)
+
+    assert isinstance(graph, DiGraph)
+    assert len(graph.edges()) == 3
+    assert ("PackB", "PackA") in graph.edges()
+    assert ("PackC", "PackA") in graph.edges()
+    assert ("PackD", "PackB") in graph.edges()
+
+
+def test_merge_cycles_direct_single_cycle():
+    """
+    Given:
+        A directed graph with a direct cycle between two nodes
+    When:
+        merge_cycles is called on that graph
+    Then:
+        The nodes in the cycle are merged into a single node
+    """
+    graph = nx.DiGraph()
+    edges = [
+        ("PackB", "PackA"),
+        ("PackC", "PackB"),
+        ("PackB", "PackC"),
+        ("PackD", "PackC"),
+    ]  # Cycle between PackB and PackC
+    graph.add_edges_from(edges)
+    merged_nodes = ("PackB", "PackC")
+
+    assert all(pack in graph.nodes() for pack in merged_nodes)
+    assert len(graph) == 4
+    assert len(graph.edges()) == len(edges)
+
+    merged_graph = script.merge_cycles(graph)
+
+    assert any(script.CYCLE_SEPARATOR in pack for pack in merged_graph.nodes())
+    assert all(pack not in merged_graph.nodes() for pack in merged_nodes)
+    assert len(merged_graph) == 3
+    assert len(merged_graph.edges()) == 2
+
+
+def test_merge_cycles_single_wide_cycle():
+    """
+    Given:
+        A directed graph with a single cycle created by three nodes
+    When:
+        merge_cycles is called on that graph
+    Then:
+        The nodes in the cycle are merged into a single node
+    """
+    graph = nx.DiGraph()
+    edges = [
+        ("PackB", "PackA"),
+        ("PackC", "PackB"),
+        ("PackD", "PackC"),
+        ("PackB", "PackD"),
+        ("PackD", "PackE"),
+    ]  # Cycle between PackB, PackC and PackD
+    graph.add_edges_from(edges)
+    merged_nodes = ("PackB", "PackC", "PackD")
+
+    assert all(pack in graph.nodes() for pack in merged_nodes)
+    assert len(graph) == 5
+    assert len(graph.edges()) == len(edges)
+
+    merged_graph = script.merge_cycles(graph)
+
+    assert any(script.CYCLE_SEPARATOR in pack for pack in merged_graph.nodes())
+    assert all(pack not in merged_graph.nodes() for pack in merged_nodes)
+    assert len(merged_graph) == 3
+    assert len(merged_graph.edges()) == 2
+
+
+def test_merge_cycles_node_with_multiple_cycles():
+    """
+    Given:
+        A directed graph with a node that have multiple cycles
+        The node 'PackC' have two cycles, one with PackB and one with PackD.
+    When:
+        merge_cycles is called on that graph
+    Then:
+        The nodes in each cycle are merged into separate single nodes
+    """
+    graph = nx.DiGraph()
+    edges = [
+        ("PackB", "PackA"),
+        ("PackC", "PackB"),
+        ("PackB", "PackC"),
+        ("PackD", "PackC"),
+        ("PackC", "PackD"),
+        ("PackE", "PackD"),
+    ]  # Cycle between PackB and PackC, and cycle between PackC and PackD
+    graph.add_edges_from(edges)
+    merged_nodes = ("PackB", "PackC", "PackD")
+
+    assert all(pack in graph.nodes() for pack in merged_nodes)
+    assert len(graph) == 5
+    assert len(graph.edges()) == len(edges)
+
+    merged_graph = script.merge_cycles(graph)
+
+    assert any(script.CYCLE_SEPARATOR in pack for pack in merged_graph.nodes())
+    assert all(pack not in merged_graph.nodes() for pack in merged_nodes)
+    assert len(merged_graph) == 3
+    assert len(merged_graph.edges()) == 2
+
+
+@pytest.mark.parametrize(
+    "list_of_nodes, expected",
+    (
+        (["PackA", "PackB<->PackC"], [["PackA"], ["PackB", "PackC"]]),
+        (["PackX"], [["PackX"]]),
+        ([], []),
+    ),
+)
+def test_split_cycles(list_of_nodes, expected):
+    """
+    Given:
+        A list of nodes, some of which are merged cycles
+    When:
+        Calling split_cycles
+    Then:
+        Returns a list of lists, with merged cycles split
+    """
+    result = script.split_cycles(list_of_nodes)
+    assert result == expected
+
+
+def test_get_all_content_packs_dependencies(mocker: MockFixture):
+    """
+    Given:
+        A demisto client instance
+    When:
+        get_all_content_packs_dependencies is called and iterates over pages
+    Then:
+        Pack dependencies are extracted correctly across pages
+    """
+    # Mock client and responses
+    client = mocker.Mock()
+    mock_request = [
+        {
+            "total": 3,
+            "packs": [
+                {
+                    "id": "Pack1",
+                    "dependencies": {},
+                    "currentVersion": "",
+                    "deprecated": "",
+                },
+                {
+                    "id": "Pack2",
+                    "dependencies": {},
+                    "currentVersion": "",
+                    "deprecated": "",
+                },
+            ]
+        },
+        {
+            "total": 3,
+            "packs": [
+                {
+                    "id": "Pack3",
+                    "dependencies": {},
+                    "currentVersion": "",
+                    "deprecated": "",
+                }
+            ]
+        },
+    ]
+    mocker.patch.object(
+        script, "get_one_page_of_packs_dependencies", side_effect=mock_request
+    )
+    script.PAGE_SIZE_DEFAULT = 2
+
+    # Call function and test
+    result = script.get_all_content_packs_dependencies(client)
+
+    assert len(result) == 3
+    assert all(pack in result for pack in ("Pack1", "Pack2", "Pack3"))
+
+
+def test_get_all_content_packs_dependencies_empty(mocker: MockFixture):
+    """
+    Given:
+        A demisto client instance
+    When:
+        The search API returns no results
+    Then:
+        An empty dict is returned
+    """
+    client = mocker.Mock()
+    mocker.patch.object(
+        script, "get_one_page_of_packs_dependencies", return_value={"total": 3, "packs": []}
+    )
+
+    result = script.get_all_content_packs_dependencies(client)
+
+    assert result == {}
+
+
+def test_get_one_page_of_packs_dependencies_success(mocker: MockFixture):
+    """
+    Given:
+        A demisto client and page number
+    When:
+        Calling get_one_page_of_packs_dependencies
+    Then:
+        - Make API call with correct params
+        - Return API response
+    """
+    client = mocker.Mock()
+    page = 1
+
+    mocker.patch.object(
+        script, "generic_request_with_retries", return_value=(True, {"packs": []})
+    )
+
+    result = script.get_one_page_of_packs_dependencies(client, page)
+
+    assert result == {"packs": []}
+
+
+def test_search_for_deprecated_dependencies_with_deprecated_dependency(
+    mocker: MockFixture,
+):
+    """
+    Given:
+        - Pack ID
+        - Set of dependency pack IDs containing a deprecated pack
+        - Pack metadata mapping containing deprecated pack metadata
+    When:
+        Calling search_for_deprecated_dependencies
+    Then:
+        - Returns False
+        - Logs critical message about deprecated dependency
+    """
+    pack_id = "TestPack"
+    dependencies = {"Pack1", "Pack2"}
+    dependencies_data = {"Pack1": {"deprecated": True}, "Pack2": {"deprecated": False}}
+    mocker.patch.object(script, "logging")
+
+    assert (
+        script.search_for_deprecated_dependencies(
+            pack_id, dependencies, True, dependencies_data
+        )
+        is False
+    )
+
+    script.logging.critical.assert_called_with(mocker.ANY)
+
+
+def test_search_for_deprecated_dependencies_no_deprecated_dependency(mocker: MockFixture):
+    """
+    Given:
+        - Pack ID
+        - Set of dependency pack IDs with no deprecated packs
+        - Pack metadata mapping with no deprecated packs
+    When:
+        Calling search_for_deprecated_dependencies
+    Then:
+        - Returns True
+        - Does not log any critical messages
+    """
+    pack_id = "TestPack"
+    dependencies = {"Pack1", "Pack2"}
+    dependencies_data = {"Pack1": {"deprecated": False}, "Pack2": {"deprecated": False}}
+    mocker.patch.object(script, "logging")
+
+    assert (
+        script.search_for_deprecated_dependencies(
+            pack_id, dependencies, True, dependencies_data
+        )
+        is True
+    )
+    script.logging.critical.assert_not_called()
+
+
+def test_get_packs_and_dependencies_to_install_no_deprecated(mocker: MockFixture):
+    """
+    Given:
+        Packs to search for their dependencies
+    When:
+        Calling get_packs_and_dependencies_to_install
+    Then:
+        Ensure correct return value with no deprecated dependencies
+    """
+    client = MockClient()
+    mocker.patch.object(script, 'search_for_deprecated_dependencies',
+                        return_value=True)
+    mocker.patch.object(script, "get_server_numeric_version", return_value="6.9")
+    mocker.patch.object(script, "create_packs_artifacts", return_value="")
+
+    pack_id = "PackA"
+    dependencies = {"Dep1", "Dep2"}
+    production_bucket = True
+    dependencies_data = {}
+    mocker.patch.object(script, "filter_packs_by_min_server_version", return_value=dependencies)
+
+    pack_ids = [pack_id]
+    graph_dependencies = DiGraph([(d, pack_id) for d in dependencies])
+
+    result = script.get_packs_and_dependencies_to_install(
+        pack_ids, graph_dependencies, production_bucket, dependencies_data, client)
+
+    assert result == (True, {pack_id, *dependencies})
+
+
+def test_get_packs_and_dependencies_to_install_no_dependencies(mocker: MockFixture):
+    """
+    Given:
+        Packs to search for their dependencies
+    When:
+        Calling get_packs_and_dependencies_to_install, for pack with no dependencies
+    Then:
+        Ensure that the pack itself added to result
+    """
+    client = MockClient()
+    mocker.patch.object(script, 'search_for_deprecated_dependencies',
+                        return_value=True)
+    mocker.patch.object(script, "create_packs_artifacts", return_value="")
+
+    pack_id = "PackA"
+    dependencies = {}
+    production_bucket = True
+    dependencies_data = {}
+
+    pack_ids = [pack_id]
+    graph_dependencies = DiGraph()
+    graph_dependencies.add_node(pack_id)
+
+    result = script.get_packs_and_dependencies_to_install(
+        pack_ids, graph_dependencies, production_bucket, dependencies_data, client)
+
+    assert result == (True, {pack_id, *dependencies})
+
+
+def test_get_packs_and_dependencies_to_install_deprecated(mocker: MockFixture):
+    """
+    Given:
+        - Pack ID
+        - Dependency IDs
+        - Production bucket flag
+        - Packs dependencies data
+    When:
+        - Getting packs and dependencies to install
+        - Mocking search finding deprecated dependencies
+    Then:
+        - Ensure empty dependencies set returned
+        - Ensure no deprecated dependencies flag set to False
+    """
+    client = MockClient()
+    mocker.patch.object(script, "search_for_deprecated_dependencies",
+                        return_value=False)
+    mocker.patch.object(script, "get_server_numeric_version", return_value="6.9")
+    mocker.patch.object(script, "create_packs_artifacts", return_value="")
+
+    pack_id = "PackA"
+    dependencies = {"Dep1", "Dep2"}
+    production_bucket = True
+    dependencies_data = {}
+    mocker.patch.object(script, "filter_packs_by_min_server_version", return_value=dependencies)
+
+    pack_ids = [pack_id]
+    graph_dependencies = DiGraph([(d, pack_id) for d in dependencies])
+
+    result = script.get_packs_and_dependencies_to_install(
+        pack_ids, graph_dependencies, production_bucket, dependencies_data, client)
+
+    assert result == (False, set())
+
+
+def test_create_install_request_body():
+    """
+    Given:
+        - A list of packs to install
+        - Dependencies data for packs
+    When:
+        Calling create_install_request_body
+    Then:
+        Validate returned request body contains correct data
+    """
+    packs_to_install = [['HelloWorld'], ['TestPack']]
+    packs_deps_data = {
+        'HelloWorld': {'currentVersion': '1.0.0'},
+        'TestPack': {'currentVersion': '2.0.0'}
+    }
+    result = script.create_install_request_body(packs_to_install, packs_deps_data)
+
+    assert len(result) == 2
+    assert result[0][0]['id'] == 'HelloWorld'
+    assert result[1][0]['id'] == 'TestPack'
+
+
+def test_filter_deprecated_packs(mocker: MockFixture):
+    """
+    Given:
+        - A list of pack IDs, some deprecated and some not
+        - Production bucket boolean
+        - Commit hash
+
+    When:
+        Calling filter_deprecated_packs
+
+    Then:
+        - Deprecated packs are filtered from the list
+        - Warning is logged for deprecated packs
+        - List without deprecated packs is returned
+    """
+    pack_ids = ['pack1', 'deprecated_pack', 'pack2']
+    production_bucket = True
+    commit_hash = '1234abcd'
+
+    mocker.patch.object(script, 'is_pack_deprecated', side_effect=[False, True, False])
+    mocker.patch.object(script, 'logging')
+
+    result = script.filter_deprecated_packs(pack_ids, production_bucket, commit_hash)
+
+    assert result == ['pack1', 'pack2']
+    script.logging.warning.assert_called_with("Pack 'deprecated_pack' is deprecated (hidden) and will not be installed.")
+
+
+@pytest.mark.parametrize("list_of_packs, expected", [
+    (
+        [["pack1"], ["pack2", "pack3"]],
+        [["pack1", "pack2", "pack3"]]
+    ),
+    (
+        [["pack1"], ["pack2", "pack3"], ["pack4"]],
+        [["pack1", "pack2", "pack3", "pack4"]]
+    ),
+    (
+        [["pack1"], ["pack2", "pack3"], ["pack4", "pack5", "pack6"]],
+        [["pack1", "pack2", "pack3"], ["pack4", "pack5", "pack6"]]
+    )
+])
+def test_create_batches(mocker: MockFixture, list_of_packs, expected):
+    """
+    Given:
+        A list of packs and dependencies
+
+    When:
+        Running create_batches
+
+    Then:
+        Ensure the correct batches are created based on the batch size
+    """
+    mocker.patch.object(script, "BATCH_SIZE", 5)
+    assert script.create_batches(list_of_packs) == expected
+
+
+def test_search_and_install_packs_success(mocker: MockFixture):
+    """
+    Given:
+        A list of pack IDs to install
+
+    When:
+        search_and_install_packs_and_their_dependencies is called with that list of packs
+
+    Then:
+        A success response should be returned, since no deprecated dependencies packs were found
+        and packs were installed successfully
+    """
+    mock_packs = ["pack1", "pack2"]
+    mocker.patch.object(script, "get_env_var", return_value="commit")
+    mocker.patch.object(script, "filter_deprecated_packs", return_value=mock_packs)
+    mocker.patch.object(script, "get_all_content_packs_dependencies", return_value={})
+    mocker.patch.object(script, "save_graph_data_file_log")
+    mocker.patch.object(
+        script, "get_packs_and_dependencies_to_install", return_value=(True, set())
+    )
+    mocker.patch.object(script, "merge_cycles", return_value=DiGraph())
+    mocker.patch.object(script, "install_packs", return_value=(True, []))
+
+    _, success = script.search_and_install_packs_and_their_dependencies(
+        pack_ids=mock_packs, client=MockClient()
+    )
+
+    assert success is True
+
+
+def test_search_and_install_packs_deprecated_dependencies(mocker: MockFixture):
+    """
+    Given:
+        A list of pack IDs to install
+
+    When:
+        search_and_install_packs_and_their_dependencies is called with that list of packs
+
+    Then:
+        A failure response should be returned, since deprecated dependencies packs were found
+    """
+    mock_packs = ["pack1", "pack2"]
+    mocker.patch.object(script, "get_env_var", return_value="commit")
+    mocker.patch.object(script, "filter_deprecated_packs", return_value=mock_packs)
+    mocker.patch.object(script, "get_all_content_packs_dependencies", return_value={})
+    mocker.patch.object(script, "save_graph_data_file_log")
+    mocker.patch.object(
+        script, "get_packs_and_dependencies_to_install", return_value=(False, set())
+    )
+    mocker.patch.object(script, "merge_cycles", return_value=DiGraph())
+    mocker.patch.object(script, "install_packs", return_value=(True, []))
+
+    _, success = script.search_and_install_packs_and_their_dependencies(
+        pack_ids=mock_packs, client=MockClient()
+    )
+
+    assert success is False
+
+
+def test_search_and_install_packs_failure_install_packs(mocker: MockFixture):
+    """
+    Given:
+        A list of pack IDs to install
+
+    When:
+        search_and_install_packs_and_their_dependencies is called with that list of packs
+
+    Then:
+        A failure response should be returned, since the install packs call returned a failure
+    """
+    mock_packs = ["pack1", "pack2"]
+    mocker.patch.object(script, "get_env_var", return_value="commit")
+    mocker.patch.object(script, "filter_deprecated_packs", return_value=mock_packs)
+    mocker.patch.object(script, "get_all_content_packs_dependencies", return_value={})
+    mocker.patch.object(script, "save_graph_data_file_log")
+    mocker.patch.object(
+        script, "get_packs_and_dependencies_to_install", return_value=(False, set())
+    )
+    mocker.patch.object(script, "merge_cycles", return_value=DiGraph())
+    mocker.patch.object(script, "install_packs", return_value=(False, []))
+
+    _, success = script.search_and_install_packs_and_their_dependencies(
+        pack_ids=mock_packs, client=MockClient()
+    )
+
+    assert success is False
+
+
+@pytest.mark.parametrize(
+    'pack_version, expected_results',
+    [('6.5.0', {'TestPack'}), ('6.8.0', set())])
+def test_get_packs_with_higher_min_version(mocker: MockFixture, pack_version, expected_results):
+    """
+    Given:
+        - Pack names to install.
+        - case 1: pack with a version lower than the machine.
+        - case 2: pack with a version higher than the machine.
+    When:
+        - Running 'get_packs_with_higher_min_version' method.
+    Then:
+        - Assert the returned packs are with higher min version than the server version.
+        - case 1: shouldn't filter any packs.
+        - case 2: should filter the pack.
+    """
+    mocker.patch.object(script, "get_json_file",
+                        return_value={"serverMinVersion": "6.6.0"})
+
+    packs_with_higher_min_version = script.get_packs_with_higher_min_version({'TestPack'}, pack_version, "")
+    assert packs_with_higher_min_version == expected_results
+
+
+def test_filter_packs_by_min_server_version_packs_filtered(mocker: MockFixture):
+    """
+    Given:
+        A set of pack IDs and a server version
+    When:
+        Some packs have a higher min version than the server version
+    Then:
+        It returns the pack IDs that have a lower min version
+    """
+    packs_id = {"Pack1", "Pack2", "Pack3"}
+    server_version = "6.10.0"
+    mocker.patch.object(script, 'get_packs_with_higher_min_version', return_value={"Pack2", "Pack3"})
+
+    filtered_packs = script.filter_packs_by_min_server_version(packs_id, server_version, "")
+
+    assert filtered_packs == {"Pack1"}
+
+
+def test_filter_packs_by_min_server_version_no_packs_filtered(mocker: MockFixture):
+    """
+    Given:
+        A set of pack IDs and a server version
+    When:
+        No packs have a higher min version than the server version
+    Then:
+        It returns the original set of pack IDs
+    """
+    packs_id = {"Pack1", "Pack2", "Pack3"}
+    server_version = "6.9.0"
+    mocker.patch.object(script, 'get_packs_with_higher_min_version', return_value=set())
+
+    filtered_packs = script.filter_packs_by_min_server_version(packs_id, server_version, "")
+
+    assert filtered_packs == packs_id

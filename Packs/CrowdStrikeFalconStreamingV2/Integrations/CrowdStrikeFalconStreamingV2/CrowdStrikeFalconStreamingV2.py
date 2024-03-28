@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -6,9 +8,10 @@ import traceback
 from asyncio import create_task, sleep, run
 from contextlib import asynccontextmanager
 from aiohttp import ClientSession, TCPConnector, ClientTimeout
-from typing import Dict, AsyncGenerator, AsyncIterator
+from collections.abc import AsyncGenerator, AsyncIterator
 from collections import deque
 from random import uniform
+import json
 
 import urllib3
 urllib3.disable_warnings()
@@ -112,7 +115,7 @@ class Client(BaseClient):
                 demisto.debug(str(e))
                 return {}
 
-    async def discover_stream(self, refresh_token: 'RefreshToken') -> Dict:
+    async def discover_stream(self, refresh_token: 'RefreshToken') -> dict:
         demisto.debug('Sending request to discover stream')
         return await self._http_request(
             method='GET',
@@ -121,7 +124,7 @@ class Client(BaseClient):
             refresh_token=refresh_token,
         )
 
-    async def refresh_stream_session(self, refresh_token: 'RefreshToken') -> Dict:
+    async def refresh_stream_session(self, refresh_token: 'RefreshToken') -> dict:
         demisto.debug(f'Sending request to refresh stream to {self.refresh_stream_url}')
         return await self._http_request(
             method='POST',
@@ -210,7 +213,7 @@ class EventStream:
 
     async def fetch_event(
             self, first_fetch_time: datetime, initial_offset: int = 0, event_type: str = '', sock_read: int = 120
-    ) -> AsyncGenerator[Dict, None]:
+    ) -> AsyncGenerator[dict, None]:
         """Retrieves events from a CrowdStrike Falcon stream starting from given offset.
 
         Args:
@@ -252,42 +255,54 @@ class EventStream:
                         timeout=ClientTimeout(total=None, connect=60, sock_connect=60, sock_read=sock_read)
                     ) as res:
                         demisto.updateModuleHealth('')
-                        demisto.debug(f'Fetched event: {res.content}')
-                        async for line in res.content:
-                            stripped_line = line.strip()
-                            if stripped_line:
-                                events_fetched += 1
-                                try:
-                                    streaming_event = json.loads(stripped_line)
-                                    event_metadata = streaming_event.get('metadata', {})
-                                    event_creation_time = event_metadata.get('eventCreationTime', 0)
-                                    if not event_creation_time:
-                                        demisto.debug(
-                                            'Could not extract "eventCreationTime" field, using 0 instead. '
-                                            f'{streaming_event}')
-                                    else:
-                                        event_creation_time /= 1000
-                                    event_creation_time_dt = datetime.fromtimestamp(event_creation_time)
-                                    if event_creation_time_dt < first_fetch_time:
-                                        demisto.debug(f'Event with offset {event_metadata.get("offset")} '
-                                                      f'and creation time {event_creation_time} was skipped.')
-                                        continue
-                                    yield streaming_event
-                                except json.decoder.JSONDecodeError:
-                                    demisto.debug(f'Failed decoding event (skipping it) - {str(stripped_line)}')
-                            else:
-                                new_lines_fetched += 1
-                            if last_fetch_stats_print + timedelta(minutes=1) <= datetime.utcnow():
-                                demisto.info(
-                                    f'Fetched {events_fetched} events and'
-                                    f' {new_lines_fetched} new lines'
-                                    f' from the stream in the last minute.')
-                                events_fetched = 0
-                                new_lines_fetched = 0
-                                last_fetch_stats_print = datetime.utcnow()
-                            if last_refresh_stream + timedelta(minutes=25) <= datetime.utcnow():
-                                await self._refresh_stream()
-                                last_refresh_stream = datetime.utcnow()
+                        buffer = b''
+                        async for chunk in res.content.iter_any():
+                            buffer += chunk
+                            lines = buffer.splitlines(True)
+
+                            for line in lines[:-1]:
+                                stripped_line = line.decode().strip()
+                                if stripped_line:
+                                    events_fetched += 1
+                                    try:
+                                        streaming_event = json.loads(stripped_line)
+                                        event_metadata = streaming_event.get('metadata', {})
+                                        event_creation_time = event_metadata.get('eventCreationTime', 0)
+
+                                        if not event_creation_time:
+                                            demisto.debug('Could not extract "eventCreationTime" field, using 0 instead. '
+                                                          f'{streaming_event}')
+                                        else:
+                                            event_creation_time /= 1000
+                                        event_creation_time_dt = datetime.fromtimestamp(event_creation_time)
+
+                                        if event_creation_time_dt < first_fetch_time:
+                                            demisto.debug(
+                                                f'Event with offset {event_metadata.get("offset")} '
+                                                f'and creation time {event_creation_time} was skipped '
+                                                f'because {first_fetch_time=}')
+                                            continue
+                                        yield streaming_event
+                                    except json.decoder.JSONDecodeError:
+                                        demisto.debug(f'Failed decoding event (skipping it) - {str(stripped_line)}')
+                                else:
+                                    new_lines_fetched += 1
+
+                                if last_fetch_stats_print + timedelta(minutes=1) <= datetime.utcnow():
+                                    demisto.info(
+                                        f'Fetched {events_fetched} events and'
+                                        f' {new_lines_fetched} new lines'
+                                        f' from the stream in the last minute.')
+                                    events_fetched = 0
+                                    new_lines_fetched = 0
+                                    last_fetch_stats_print = datetime.utcnow()
+                                if last_refresh_stream + timedelta(minutes=25) <= datetime.utcnow():
+                                    await self._refresh_stream()
+                                    last_refresh_stream = datetime.utcnow()
+                            buffer = lines[-1]
+                        if buffer:
+                            stripped_line = buffer.decode().strip()
+                            demisto.debug(f"MISSING LINE: {stripped_line}")
             except Exception as e:
                 demisto.debug(f'An error occurred in the fetch event loop: {e} - {traceback.format_exc()}. '
                               f'Going to sleep for 10 seconds and then retry. '
@@ -568,7 +583,7 @@ def merge_integration_context() -> None:
 
 
 def main():
-    params: Dict = demisto.params()
+    params: dict = demisto.params()
     base_url: str = params.get('base_url', '')
     client_id: str = params.get('credentials_client', {}).get('identifier') or params.get('client_id', '')
     client_secret: str = params.get('credentials_client', {}).get('password') or params.get('client_secret', '')

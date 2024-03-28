@@ -15,7 +15,8 @@
         "Attachment",
         "GitHub",
         "Gitlab",
-        "AzureDevOps"
+        "AzureDevOps",
+        "GoogleCloudStorage"
     ],
     "useAsKpi": false,
     "locked": false,

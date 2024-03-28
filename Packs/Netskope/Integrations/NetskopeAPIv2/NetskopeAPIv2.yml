@@ -1026,7 +1026,7 @@ script:
     - contextPath: Netskope.Client.emails
       description: Netskope client emails.
       type: String
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.13.89873
   feed: false
   isfetch: true
   longRunning: false
