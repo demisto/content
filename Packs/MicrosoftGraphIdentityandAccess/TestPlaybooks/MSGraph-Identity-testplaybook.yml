@@ -1,19 +1,19 @@
 id: Identity & Access test playbook
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Identity & Access test playbook
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0a2de1dd-32b0-499b-8b5d-fe8b5ee033da
+    taskid: 6caa0aef-05cf-4421-844f-722a7fcaed2b
     type: start
     task:
-      id: 0a2de1dd-32b0-499b-8b5d-fe8b5ee033da
+      id: 6caa0aef-05cf-4421-844f-722a7fcaed2b
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -30,14 +30,184 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: ffd25416-d2a9-45c2-84ac-da67fbe4b21a
+  "2":
+    id: "2"
+    taskid: 04bf540f-25c5-4b38-85e7-963568d5b061
     type: regular
     task:
-      id: ffd25416-d2a9-45c2-84ac-da67fbe4b21a
+      id: 04bf540f-25c5-4b38-85e7-963568d5b061
+      version: -1
+      name: msgraph-identity-auth-test
+      description: Tests connectivity to Microsoft.
+      script: MicrosoftGraphIdentityandAccess|||msgraph-identity-auth-test
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphIdentityandAccess
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 458d2616-864d-47c6-84e7-37c9373b7628
+    type: regular
+    task:
+      id: 458d2616-864d-47c6-84e7-37c9373b7628
+      version: -1
+      name: msgraph-identity-directory-role-member-add
+      description: Add a user to a role.
+      script: MicrosoftGraphIdentityandAccess|||msgraph-identity-directory-role-member-add
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphIdentityandAccess
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      role_id:
+        complex:
+          root: MSGraphIdentity.Role.[6]
+          accessor: id
+      user_id:
+        complex:
+          root: MSGraphIdentity.RoleMember
+          accessor: user_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: f37824fe-b943-431d-8adc-ff881ee4c46d
+    type: regular
+    task:
+      id: f37824fe-b943-431d-8adc-ff881ee4c46d
+      version: -1
+      name: msgraph-identity-directory-role-member-remove
+      description: Removes a user from a role.
+      script: MicrosoftGraphIdentityandAccess|||msgraph-identity-directory-role-member-remove
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphIdentityandAccess
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      role_id:
+        complex:
+          root: MSGraphIdentity.Role.[6]
+          accessor: id
+      user_id:
+        complex:
+          root: MSGraphIdentity.RoleMember
+          accessor: user_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 9be231ca-cb3c-4bfb-8097-9794792ef035
+    type: regular
+    task:
+      id: 9be231ca-cb3c-4bfb-8097-9794792ef035
+      version: -1
+      name: msgraph-identity-directory-role-members-list
+      description: Gets all members in the role ID.
+      script: MicrosoftGraphIdentityandAccess|||msgraph-identity-directory-role-members-list
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphIdentityandAccess
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      limit: {}
+      role_id:
+        complex:
+          root: MSGraphIdentity.Role.[0]
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 3c9bc415-81cd-4525-8a2c-4677e158c3ca
+    type: regular
+    task:
+      id: 3c9bc415-81cd-4525-8a2c-4677e158c3ca
+      version: -1
+      name: msgraph-identity-directory-roles-list
+      description: Lists roles in the directory.
+      script: MicrosoftGraphIdentityandAccess|||msgraph-identity-directory-roles-list
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphIdentityandAccess
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      limit:
+        simple: "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 28b7b9a9-8e50-4a9a-88d9-9df339a8d7b7
+    type: regular
+    task:
+      id: 28b7b9a9-8e50-4a9a-88d9-9df339a8d7b7
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -47,10 +217,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -64,25 +238,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 65919e2a-e2f0-4f9e-8e20-0e0f217b991a
+    taskid: 3dbfa74a-3063-4be8-883d-1aa66dc6c222
     type: title
     task:
-      id: 65919e2a-e2f0-4f9e-8e20-0e0f217b991a
+      id: 3dbfa74a-3063-4be8-883d-1aa66dc6c222
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 410
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -90,16 +263,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 425,
-        "width": 390,
-        "x": 40,
+        "height": 1260,
+        "width": 380,
+        "x": 50,
         "y": 50
       }
     }
