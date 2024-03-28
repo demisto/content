@@ -2,7 +2,7 @@ import pytest
 
 import demistomock as demisto
 from CommonServerPython import *
-from ParseEmailFilesV2 import main, data_to_md, parse_nesting_level
+from ParseEmailFilesV2 import main, data_to_md, parse_nesting_level, extract_indicators_from_headers
 
 
 def exec_command_for_file(
@@ -584,3 +584,33 @@ def test_smime_without_to_from_subject(mocker):
     results = demisto.results.call_args[0]
     assert len(results) == 1
     assert results[0]['EntryContext']['Email']['FileName'] == 'Attachment.eml'
+
+
+@pytest.mark.parametrize("header, expected_output", [
+    (['from BN7PR03MB4465.namprd03.prod.outlook.com (::1) '
+     'by SA1PR03MB6436.namprd03.prod.outlook.com with HTTPS; '
+      'Thu, 19 May 2022 00:02:21 +0000'],
+     {'BN7PR03MB4465.namprd03.prod.outlook.com',
+      'SA1PR03MB6436.namprd03.prod.outlook.com',
+      '::1'}),
+    (['from mail-qk1-f196.google.com (192.168.1.1)'
+     'by 192.168.1.1 (192.168.1.2)'
+      'with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384)'
+      'id 15.20.5273.14 via Frontend Transport;'
+      'Thu, 19 May 2022 00:02:19 +0000'],
+     {
+         'mail-qk1-f196.google.com',
+         '192.168.1.1',
+         '192.168.1.2',
+    }),
+    (['by mail-qk1-f196.google.com with SMTP id a76so3588897qkg.12'
+     'for <xsoar@test.com>;'
+      'Wed, 18 May 2022 17:02:19 -0700 (PDT)'],
+     {
+         'mail-qk1-f196.google.com',
+         'xsoar@test.com'
+    })
+])
+def test_extract_indicators_from_headers(header, expected_output):
+    version = extract_indicators_from_headers(header)
+    assert version == expected_output

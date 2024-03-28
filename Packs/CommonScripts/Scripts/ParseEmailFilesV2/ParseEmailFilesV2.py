@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa: F401
 from parse_emails.parse_emails import EmailParser
 
 
-def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False) -> str:
+def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False,
+               print_only_headers_indicators=False) -> str:
     """
     create Markdown with the data.
 
@@ -26,6 +27,9 @@ def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_o
 
     if print_only_headers:
         return tableToMarkdown(f"Email Headers: {email_file_name}", email_data.get('HeadersMap'))
+
+    if print_only_headers_indicators:
+        return str(extract_indicators_from_headers(email_data.get("HeadersMap")["Received"]))
 
     if parent_email_file:
         md += f"### Containing email: {parent_email_file}\n"
@@ -64,6 +68,24 @@ def save_file(file_name, file_content) -> str:
     return_results(created_file)
 
     return attachment_internal_path
+
+
+def extract_indicators_from_headers(received_headers: List[str] | str) -> Set[str]:
+    indicators: Set[str] = set()
+    header_regex = re.compile(
+        r'(?ism)(?:from\s+[[]?(?P<sender>.*?)[]]?\s+[(](?P<sender_host>.*?)[.\s]?(?:[[](?P<sender_ip>.*?)[]])?[)].*?)?(?:by\s+(?P<mx_server>.*?)\s+(?:[(](?P<mx_ip>.*?)[)])?.*?)(?:for\s<(?P<email>.*?)>|;)')
+
+    if isinstance(received_headers, str):
+        received_headers = [received_headers]
+
+    for header in received_headers:
+        try:
+            indicators.update(header_regex.search(header).groups())  # type: ignore
+
+        except AttributeError:
+            demisto.debug(f'Failed to extract indicators form - "{header}"')
+
+    return indicators - {'', None}
 
 
 def extract_file_info(entry_id: str) -> tuple:
@@ -118,6 +140,7 @@ def main():
     if not max_depth or max_depth < 1:
         return_error('Minimum max_depth is 1, the script will parse just the top email')
     parse_only_headers = argToBoolean(args.get('parse_only_headers', 'false'))
+    parse_only_headers_indicators = argToBoolean(args.get('parse_only_headers_indicators', 'false'))
     forced_encoding = args.get('forced_encoding')
     default_encoding = args.get('default_encoding')
     nesting_level_to_return = args.get('nesting_level_to_return', 'All files')
@@ -156,11 +179,15 @@ def main():
             if isinstance(email.get("HTML"), bytes):
                 email['HTML'] = email.get("HTML").decode('utf-8')
 
+            received_headers = email.get("HeadersMap", {}).get("Received", [])
+            email['HeadersIndicators'] = list(extract_indicators_from_headers(received_headers))
+
             results.append(CommandResults(
                 outputs_prefix='Email',
                 outputs=email,
                 readable_output=data_to_md(email, file_name, email.get('ParentFileName', None),
-                                           print_only_headers=parse_only_headers),
+                                           print_only_headers=parse_only_headers,
+                                           print_only_headers_indicators=parse_only_headers_indicators),
                 raw_response=email))
 
         return_results(results)

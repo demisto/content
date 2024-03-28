@@ -5,6 +5,13 @@ args:
   required: true
 - auto: PREDEFINED
   defaultValue: "false"
+  description: Will parse only the indictors from the headers and return them.
+  name: parse_only_headers_indicators
+  predefined:
+  - "true"
+  - "false"
+- auto: PREDEFINED
+  defaultValue: "false"
   description: Will parse only the headers and return headers table.
   name: parse_only_headers
   predefined:
@@ -58,6 +65,9 @@ outputs:
 - contextPath: Email.Headers
   description: Deprecated - use Email.HeadersMap output instead. The full email headers as a single string.
   type: string
+- contextPath: Email.HeadersIndicators
+  description: list of indicators found in the headers.
+  type: Unknown
 - contextPath: Email.HeadersMap
   description: The full email headers json.
   type: Unknown
@@ -116,4 +126,4 @@ type: python
 fromversion: 5.0.0
 tests:
 - ParseEmailFilesV2-test
-dockerimage: demisto/parse-emails:1.0.0.83945
+dockerimage: demisto/parse-emails:1.0.0.91411
