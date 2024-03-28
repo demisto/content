@@ -127,7 +127,7 @@ def main() -> None:
     :rtype:
     """
 
-    api_key = demisto.params().get('credentials', {}).get('password') or demisto.params().get('credentials')
+    api_key = demisto.params().get('credentials', {}).get('password')
     base_url = demisto.params().get('base_url')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)

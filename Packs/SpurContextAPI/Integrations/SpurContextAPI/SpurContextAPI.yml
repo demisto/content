@@ -8,8 +8,7 @@ configuration:
   type: 0
   required: false
   defaultvalue: https://api.spur.us/
-- display: ''
-  displaypassword: API Token
+- displaypassword: API Token
   hiddenusername: true
   name: credentials
   required: true
