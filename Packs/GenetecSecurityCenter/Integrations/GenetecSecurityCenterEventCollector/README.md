@@ -15,6 +15,7 @@ Security Center is the foundation of our unified security portfolio. It lets you
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Maximum number of events per fetch | Alerts and activity events. |  |
+    | Use system proxy settings for external requests | Use this if you wish to use proxy setting for external requests (such as sending events) when running with an engine. |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

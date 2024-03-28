@@ -1,5 +1,5 @@
 {
-    "gentec_security_center_raw": {
+    "genetec_security_center_raw": {
       "AuditTrailModificationType": {
         "type": "int",
         "is_array": false

@@ -1,4 +1,4 @@
-[MODEL: dataset = gentec_security_center_raw]
+[MODEL: dataset = genetec_security_center_raw]
 alter // Extractions & Initializations
     assigned_to = arrayindex(regextract(Description, "is assigned to ([^\.]+)"), 0), 
     changed_property = arrayindex(regextract(Description, "Value of (.+?) changed from"), 0),

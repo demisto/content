@@ -35,6 +35,11 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: Use system proxy settings for external requests
+  additionalinfo: Use this if you wish to use proxy setting for external requests (such as sending events) when running with an engine.
+  name: add_proxy_to_xsiam_request
+  type: 8
+  required: false
 description: Genetec Security Center Audit Trail Event Collector.
 display: Genetec Security Center Event Collector
 name: Genetec Security Center Event Collector

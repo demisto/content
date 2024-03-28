@@ -149,6 +149,7 @@ def main() -> None:  # pragma: no cover
     proxy = params.get("proxy", False)
     should_push_events = argToBoolean(args.get("should_push_events", False))
     should_save_last_run = False
+    add_proxy_to_request = params.get("add_proxy_to_xsiam_request", False)
 
     command = demisto.command()
     try:
@@ -180,7 +181,7 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
         if should_push_events:
-            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT, add_proxy_to_request=True)
+            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT, add_proxy_to_request=add_proxy_to_request)
             demisto.info(f"{len(events)} events were pushed to XSIAM")
 
         if should_save_last_run:
