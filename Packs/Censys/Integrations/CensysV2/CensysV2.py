@@ -56,16 +56,17 @@ class Client(BaseClient):
             params['at_time_b'] = at_time_b
         res = self._http_request('GET', url_suffix, params=params)
         return res
-    
+
     def ip_reputation_request(self, ip):
         url_suffix = f"/api/v2/hosts/search?q=labels: * and {ip} or {ip}"
         res = self._http_request('GET', url_suffix)
         return res
-    
+
     def domain_reputation_request(self, domain):
         url_suffix = f"/api/v2/hosts/search?q=labels: * and {domain} or {domain}"
         res = self._http_request('GET', url_suffix)
         return res
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -244,6 +245,7 @@ def censys_host_history_command(client: Client, args: dict[str, Any]) -> Command
         raw_response=res
     )
 
+
 def ip_command(client: Client, args: dict):
     ips: list = argToList(args.get('ip'))
     results: List[CommandResults] = []
@@ -264,12 +266,12 @@ def ip_command(client: Client, args: dict):
             updated_date=res.get('last_updated_at'),
             port=res.get('services', {}).get('port'),
             whois_records=res.get('whois'),
-            geo_latitude=res.get('location',{}).get('latitude'),
-            geo_longitude=res.get('location',{}).get('longitude'),
-            geo_country=res.get('location',{}).get('country'),
-            registrar_abuse_email=res.get('whois',{}).get('organization',{}).get('abuse_contacts',{}).get('email'),
-            registrar_abuse_name=res.get('whois',{}).get('organization',{}).get('abuse_contacts',{}).get('name'),
-            organization_name=res.get('services',{}).get('tls',{}).get('issuer',{}).get('organization'),
+            geo_latitude=res.get('location', {}).get('latitude'),
+            geo_longitude=res.get('location', {}).get('longitude'),
+            geo_country=res.get('location', {}).get('country'),
+            registrar_abuse_email=res.get('whois', {}).get('organization', {}).get('abuse_contacts', {}).get('email'),
+            registrar_abuse_name=res.get('whois', {}).get('organization', {}).get('abuse_contacts', {}).get('name'),
+            organization_name=res.get('services', {}).get('tls', {}).get('issuer', {}).get('organization'),
         )
         results.append(CommandResults(
             outputs_prefix='Censys.IP',
@@ -280,6 +282,7 @@ def ip_command(client: Client, args: dict):
             indicator=indicator,
         ))
     return results
+
 
 def domain_command(client: Client, args: dict):
     domains: list = argToList(args.get('domain'))
@@ -312,6 +315,7 @@ def domain_command(client: Client, args: dict):
             indicator=indicator,
         ))
     return results
+
 
 def get_dbot_score(args, result_labels):
     malicious_labels = set(args.get("malicious_labels", []))
