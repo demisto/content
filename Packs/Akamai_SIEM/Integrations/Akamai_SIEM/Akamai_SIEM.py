@@ -413,7 +413,7 @@ def fetch_events_command(
                 event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
                 event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
             except Exception as e:
-                config_id = event['attackData']['config_id']
+                config_id = event['attackData']['configId']
                 policy_id = event['attackData']['policyId']
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
             
