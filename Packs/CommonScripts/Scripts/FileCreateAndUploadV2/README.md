@@ -68,4 +68,4 @@ Creates a file (using the given data input or entry ID) and uploads it to the cu
 
 ### Limitation
 
-Using the `entryID` argument to copy the contents of an existing file is only available from XSOAR version 6.12.0 onwards.
+Using the `entryID` argument to copy the contents of an existing file **from different incidents** is only available from XSOAR version 6.12.0 onwards.
