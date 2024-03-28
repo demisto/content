@@ -67,8 +67,8 @@ Manual command to get events, used mainly for debugging
 | --- | --- | --- |
 | start_date | from which time to get events. | Required | 
 | end_date | until which time to get events. | Required | 
-| limit | the maximum number of events to return. Default is 100. | Required | 
-| event_type | the type of event to return. Possible values are: audit-logs, file-events. | Required | 
+| limit | The maximum number of events to return. Default is 100. | Required | 
+| event_type | The type of event to return. Possible values are: audit-logs, file-events. | Required | 
 
 #### Context Output
 
