@@ -138,7 +138,7 @@ def update_content_items_docker_images_and_push(
 
 
 @app.command()
-def get_affected_content_items(
+def open_prs_for_content_items(
     affected_content_items_file: str = typer.Argument(
         default="Utils/auto_update_docker/affected_content_items.json",
         help="The affected content items that will have their image tags updated, supplied as a json",
