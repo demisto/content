@@ -101,3 +101,14 @@ Make sure you run the ***!export-indicators-list-update*** command for the first
 ### Important Notes:
 - If constantly using different queries for the same EDL instance through the *q* inline argument, it is recommended to use different instances of the EDL (one for each query), and set each one with a default query for better performance.
 - When using the *q* inline argument, the number of exported indicators is limited to 100,000 due to performance reasons. To export more than 100,000 indicators, create a new instance of the integration with the desired Indicator Query and List Size.
+
+## Troubleshoot
+
+To view logs concerning addition and modification of the indicator list visit:
+`https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
+
+To download the full log bundle (including the rolled log files) you can either:
+1. Visit the URL endpoint:
+   `https://*<xsoar_address>*/instance/execute/*<instance_name>*/download-logs`
+2. Use the following XSOAR command:
+   `!HttpV2 method=GET url=https://*<xsoar_address>*/instance/execute/*<instance_name>*/download-logs save_as_file=yes filename=logs.zip`

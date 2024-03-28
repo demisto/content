@@ -9,7 +9,7 @@ import re
 import os
 
 from base64 import b64decode
-from flask import Flask, Response, request
+from flask import Flask, Response, request, send_file
 from netaddr import IPSet, IPNetwork
 from typing import Any, cast, IO
 from collections.abc import Iterable, Callable
@@ -82,6 +82,8 @@ FORMAT_PROXYSG: str = "Symantec ProxySG"
 MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "mediatype", "number", "regex"]
 
 INCREASE_LIMIT = 1.1
+
+LOGS_ZIP_FILE_PREFIX = "log_download"
 '''Request Arguments Class'''
 
 
@@ -952,11 +954,11 @@ def roll_diff_log_if_needed(created_time):
         rolled_files = []
         created_str = created_time.strftime("%Y%m%d-%H%M%S")
         for file_index, file_chunk in enumerate(file_chunks[:-1]):
-            rolled_filename = f"{ROLLED_LOG_PREFIX}_{created_str}_{file_index}.zip"
+            rolled_filename = f"{ROLLED_LOG_PREFIX}_{created_str}_{file_index}"
             demisto.debug(f"Creating new rolled log at {rolled_filename}.")
-            with zipfile.ZipFile(rolled_filename, 'w') as zipped_rolled_log:
-                zipped_rolled_log.writestr(rolled_filename, file_chunk)
-            rolled_files.append(rolled_filename)
+            with zipfile.ZipFile(f"{rolled_filename}.zip", 'w', zipfile.ZIP_DEFLATED) as zipped_rolled_log:
+                zipped_rolled_log.writestr(f"{rolled_filename}.log", file_chunk)
+            rolled_files.append(f"{rolled_filename}.zip")
 
         current_data = f"Log rolled at {created_time.isoformat()} created files: {rolled_files}\n\n\n{file_chunks[-1]}"
 
@@ -983,6 +985,7 @@ def store_log_edl_data(log_edl_data, created, request_args):
             with open(EDL_FULL_LOG_PATH, 'r') as last_full_log_file:
                 last_full_logged_data = last_full_log_file.read()
                 log_diff = calc_log_diff(logged_edl_data, last_full_logged_data)
+                last_full_log_file.seek(0)
 
         new_log_diff = f"Created new EDL at {created}\n\n{log_diff if log_diff else 'No diff from previous.'}"
         with open(EDL_DIFF_LOG_PATH, 'a') as diff_log_file:
@@ -1050,17 +1053,20 @@ def get_edl_on_demand() -> tuple[str, int]:
             demisto.debug(f"edl: Error reading cache file: {str(e)}")
             raise e
 
-    try:
-        with open(EDL_DIFF_LOG_PATH) as last_diff_log_file:
-            edl_data_diff_log = last_diff_log_file.read()
+    #try:
+    #    with open(EDL_DIFF_LOG_PATH, 'r') as last_diff_log_file:
+    #        old_seek = last_diff_log_file.tell()
+    #        last_diff_log_file.seek(0)
+    #        edl_data_diff_log = last_diff_log_file.read()
+    #        last_diff_log_file.seek(old_seek)
 
-    except Exception as e:
-        demisto.debug(f"edl: Error reading cache file: {str(e)}")
-        raise e
+    #except Exception as e:
+    #    demisto.debug(f"edl: Error reading cache file: {str(e)}")
+    #    raise e
 
     demisto.debug("edl: Finished reading EDL data from cache")
 
-    return edl_data, EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE, edl_data_diff_log
+    return edl_data, EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE
 
 
 def validate_basic_authentication(headers: dict, username: str, password: str) -> bool:
@@ -1118,7 +1124,7 @@ def route_edl() -> Response:
     on_demand = params.get('on_demand')
     created = datetime.now(timezone.utc)
     if on_demand:
-        edl_data, original_indicators_count, log_edl_data_diff = get_edl_on_demand()
+        edl_data, original_indicators_count = get_edl_on_demand()
     else:
         edl_data, original_indicators_count, log_edl_data = create_new_edl(request_args)
         store_log_edl_data(log_edl_data, created, request_args)
@@ -1197,6 +1203,8 @@ def route_edl_log() -> Response:
     if os.path.exists(EDL_DIFF_LOG_PATH):
         demisto.debug(f"found diff log file")
         with open(EDL_DIFF_LOG_PATH, 'r') as diff_log_file:
+            #old_seek = diff_log_file.tell()
+            diff_log_file.seek(0)
             edl_data_diff_log = diff_log_file.read()
             diff_log_file.seek(0)
 
@@ -1228,6 +1236,44 @@ def route_edl_log() -> Response:
     resp.cache_control['stale-if-error'] = '600'
 
     return resp
+
+@APP.route('/download-logs', methods=['GET', 'POST'])
+def route_download_logs() -> Response:
+    params = demisto.params()
+
+    credentials = params.get('credentials') if params.get('credentials') else {}
+    username: str = credentials.get('identifier', '')
+    password: str = credentials.get('password', '')
+
+    if username and password:
+        headers: dict = cast(dict[Any, Any], request.headers)
+        if not validate_basic_authentication(headers, username, password):
+            err_msg: str = 'Basic authentication failed. Make sure you are using the right credentials.'
+            demisto.debug(err_msg)
+            return Response(err_msg, status=401, mimetype='text/plain', headers=[
+                ('WWW-Authenticate', 'Basic realm="Login Required"'),
+            ])
+    created = datetime.now(timezone.utc)
+    purge_after_download = params.get('purge_rolled_logs_after_download', True)
+
+    for previous_zip in glob.glob(f"{LOGS_ZIP_FILE_PREFIX}_*.zip"):
+        os.remove(previous_zip)
+
+    zip_filename = f'{LOGS_ZIP_FILE_PREFIX}_{created.strftime("%Y%m%d-%H%M%S")}.zip'
+    zipf = zipfile.ZipFile(zip_filename,'w', zipfile.ZIP_DEFLATED)
+    zipf.write(EDL_FULL_LOG_PATH)
+    zipf.write(EDL_DIFF_LOG_PATH)
+    for rolled_log_path in glob.glob(f"{ROLLED_LOG_PREFIX}_*"):
+        zipf.write(rolled_log_path)
+    zipf.close()
+    if purge_after_download:
+        for rolled_log_path in glob.glob(f"{ROLLED_LOG_PREFIX}_*"):
+            os.remove(rolled_log_path)
+
+    return send_file(zip_filename,
+            mimetype='zip',
+            download_name=zip_filename,
+            as_attachment=True)
 
 
 def get_request_args(request_args: dict, params: dict) -> RequestArguments:
@@ -1477,36 +1523,6 @@ def initialize_edl_context(params: dict):
     set_integration_context(ctx)
     demisto.debug(f"Setting context data on demand to true: {ctx}")
 
-def download_logs(args: dict, params: dict):
-    log_files_option = args.get('log_files', 'All')
-
-    readable_outputs = []
-    results = []
-    if log_files_option in ['Current Diff Log', 'All']:
-        readable_outputs.append(f"#### Current Diff Log: {EDL_DIFF_LOG_PATH}")
-        current_diff_log_data = ''
-        if os.path.exists(EDL_DIFF_LOG_PATH):
-            with open(EDL_DIFF_LOG_PATH, 'r') as diff_log_file:
-                current_diff_log_data = diff_log_file.read()
-                diff_log_file.seek(0)
-
-        results.append(fileResult(EDL_DIFF_LOG_PATH, current_diff_log_data ,file_type=EntryType.FILE))
-
-    if log_files_option in ['Current Full Log', 'All']:
-        readable_outputs.append(f"#### Current Full Log: {EDL_FULL_LOG_PATH}")
-        current_full_log_data = ''
-        if os.path.exists(EDL_FULL_LOG_PATH):
-            with open(EDL_FULL_LOG_PATH, 'r') as full_log_file:
-                current_full_log_data = full_log_file.read()
-                full_log_file.seek(0)
-
-        results.append(fileResult(EDL_FULL_LOG_PATH, current_full_log_data, file_type=EntryType.FILE))
-
-    if log_files_option in ['All Rolled Logs', 'All']:
-        pass
-
-    readable_output = "\n".join(readable_outputs)
-    return readable_output, results[0], None
 
 
 def check_platform_and_version(params: dict) -> bool:
@@ -1545,8 +1561,7 @@ def main():
     commands = {
         'test-module': test_module,
         'edl-update': update_edl_command,
-        'export-indicators-list-update': update_edl_command,
-        'edl-download-logs': download_logs
+        'export-indicators-list-update': update_edl_command
     }
 
     try:
