@@ -2257,7 +2257,7 @@ To save result in context to 'Microsoft365Defender' as well, you can check the '
 ### msg-list-security-incident
 
 ***
-Get a list of incident objects that Microsoft 365 Defender created to track attacks in an organization. If you want a specific incident, just enter incident_id.
+Get a list of incident objects that Microsoft 365 Defender created to track attacks in an organization. If you want a specific incident, enter an incident ID.
 
 #### Base Command
 
@@ -2272,7 +2272,7 @@ Get a list of incident objects that Microsoft 365 Defender created to track atta
 | timeout | The time limit in seconds for the http request to run. Default is 50. | Optional | 
 | status | The status of the incident. Possible values are: active, redirected, resolved, inProgress, unknownFutureValue, awaitingAction. | Optional | 
 | assigned_to | Owner of the incident. | Optional | 
-| severity | Indicates the possible impact on assets. The higher the severity, the bigger the impact. Typically higher severity items require the most immediate attention. Possible values are: unknown, informational, low, medium, high, unknownFutureValue. | Optional | 
+| severity | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are: unknown, informational, low, medium, high, unknownFutureValue. | Optional | 
 | classification | The specification for the incident. | Optional | 
 | odata | Filter incidents using 'odata' query. | Optional | 
 
@@ -2293,7 +2293,7 @@ Get a list of incident objects that Microsoft 365 Defender created to track atta
 | MsGraph.Incident.lastModifiedBy | string | The identity that last modified the incident. | 
 | MsGraph.Incident.lastUpdateDateTime | string | Time when the incident was last updated. | 
 | MsGraph.Incident.redirectIncidentId | string | Only populated in case an incident is grouped with another incident, as part of the logic that processes incidents. In such a case, the status property is redirected. | 
-| MsGraph.Incident.severity | string | Indicates the possible impact on assets. The higher the severity, the bigger the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue. | 
+| MsGraph.Incident.severity | string | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue. | 
 | MsGraph.Incident.status | string | The status of the incident. Possible values are active, resolved, inProgress, redirected, unknownFutureValue, and awaitingAction. | 
 | MsGraph.Incident.tenantId | string | The Microsoft Entra tenant in which the alert was created. | 
 | MsGraph.Incident.systemTags | string | The system tags associated with the incident. | 
@@ -2372,7 +2372,7 @@ Update the incident with the given ID.
 | MsGraph.Incident.lastModifiedBy | String | The identity that last modified the incident. | 
 | MsGraph.Incident.lastUpdateDateTime | Date | Time when the incident was last updated. | 
 | MsGraph.Incident.redirectIncidentId | String | Only populated in case an incident is grouped with another incident, as part of the logic that processes incidents. In such a case, the status property is redirected. | 
-| MsGraph.Incident.severity | String | Indicates the possible impact on assets. The higher the severity, the bigger the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue. | 
+| MsGraph.Incident.severity | String | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue. | 
 | MsGraph.Incident.status | String | The status of the incident. Possible values are active, resolved, inProgress, redirected, unknownFutureValue, and awaitingAction. | 
 | MsGraph.Incident.tenantId | String | The Microsoft Entra tenant in which the alert was created. | 
 | MsGraph.Incident.systemTags | String collection | The system tags associated with the incident. | 
