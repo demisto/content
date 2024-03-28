@@ -513,7 +513,7 @@
     - |
       if [[ -n "${SHOULD_LINT_ALL}" ]]; then
         echo "Pre Commit all files"
-        # if we need to pre-commit all anyway we need the graph, and it's better to create it here.
+        # if we need to pre-commit all anyway we need the graph, and it's better (resource-wise) to create it here.
         demisto-sdk graph update
         demisto-sdk pre-commit -a --mode=nightly || PRE_COMMIT_SUCCESS=1
       else
