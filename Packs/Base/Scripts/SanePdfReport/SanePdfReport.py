@@ -129,8 +129,8 @@ def main():
         pageSize = demisto.args().get('paperSize', 'letter')
         disableHeaders = demisto.args().get('disableHeaders', '')
         tableTextMaxLength = demisto.args().get('tableTextMaxLength', '300')
-        forceServerFormattedTimeString = argToBoolean(demisto.args().get('forceServerFormattedTimeString', 'false'))
-        addUtf8Bom = argToBoolean(demisto.args().get('addUtf8Bom', 'false'))
+        forceServerFormattedTimeString = demisto.args().get('forceServerFormattedTimeString', 'false')
+        addUtf8Bom = demisto.args().get('addUtf8Bom', 'false')
 
         # Note: After headerRightImage the empty one is for legacy argv in server.js
         extra_cmd = f"{orientation} {resourceTimeout} {reportType} " + \
