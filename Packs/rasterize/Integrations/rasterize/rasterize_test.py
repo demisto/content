@@ -3,7 +3,6 @@ from rasterize import *
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
-import subprocess
 import os
 import logging
 import http.server
@@ -28,6 +27,17 @@ def test_rasterize_email_image(caplog, capfd, mocker):
         caplog.clear()
 
 
+def test_rasterize_email_image_array(caplog, capfd, mocker):
+    with capfd.disabled() and NamedTemporaryFile('w+') as f:
+        f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
+                '</head><body><br>---------- TEST FILE ----------<br></body></html>')
+        path = os.path.realpath(f.name)
+        f.flush()
+        mocker.patch.object(rasterize, 'support_multithreading')
+        perform_rasterize(path=[f'file://{path}'], width=250, height=250, rasterize_type=RasterizeType.PNG)
+        caplog.clear()
+
+
 def test_rasterize_email_pdf(caplog, capfd, mocker):
     with capfd.disabled() and NamedTemporaryFile('w+') as f:
         f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
@@ -47,27 +57,6 @@ def test_rasterize_email_pdf_offline(caplog, capfd, mocker):
         f.flush()
         mocker.patch.object(rasterize, 'support_multithreading')
         perform_rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
-        caplog.clear()
-
-
-def test_rasterize_no_defunct_processes(caplog, capfd, mocker):
-    with capfd.disabled() and NamedTemporaryFile('w+') as f:
-        f.write('<html><head><meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">'
-                '</head><body><br>---------- TEST FILE ----------<br></body></html>')
-        path = os.path.realpath(f.name)
-        f.flush()
-        mocker.patch.object(rasterize, 'support_multithreading')
-        perform_rasterize(path=f'file://{path}', width=250, height=250, rasterize_type=RasterizeType.PDF)
-        process = subprocess.Popen(['ps', '-aux'], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                   universal_newlines=True)
-        processes_str, _ = process.communicate()
-        processes = processes_str.split('\n')
-        defunct_process_list = [process for process in processes if 'defunct' in process]
-        assert not defunct_process_list
-
-        # zombies, output = find_zombie_processes()
-        # assert not zombies
-        # assert 'defunct' not in output
         caplog.clear()
 
 
@@ -323,3 +312,40 @@ def test_poppler_version():
     import pdf2image
     poppler_version = pdf2image.pdf2image._get_poppler_version("pdftoppm")
     assert poppler_version[0] > 20
+
+
+def test_get_list_item():
+    from rasterize import get_list_item
+
+    my_list = ['a', 'b', 'c']
+
+    assert get_list_item(my_list, 0, "FOO") == 'a'
+    assert get_list_item(my_list, 1, "FOO") == 'b'
+    assert get_list_item(my_list, 2, "FOO") == 'c'
+    assert get_list_item(my_list, 3, "FOO") == 'FOO'
+    assert get_list_item(my_list, 4, "FOO") == 'FOO'
+
+
+def test_add_filename_suffix():
+    from rasterize import add_filename_suffix
+
+    my_list = ['a', 'b', 'c']
+    my_list_with_suffix = add_filename_suffix(my_list, 'sfx')
+
+    assert len(my_list) == len(my_list_with_suffix)
+    for current_element_index, _ in enumerate(my_list):
+        assert f'{my_list[current_element_index]}.sfx' == my_list_with_suffix[current_element_index]
+
+
+def test_get_output_filenames():
+    from rasterize import get_list_item, add_filename_suffix
+
+    file_name = ['foo_01', 'foo_02', 'foo_03']
+    file_names = argToList(file_name)
+    file_names = add_filename_suffix(file_names, 'png')
+
+    assert get_list_item(file_names, 0, "FOO.png") == 'foo_01.png'
+    assert get_list_item(file_names, 1, "FOO.png") == 'foo_02.png'
+    assert get_list_item(file_names, 2, "FOO.png") == 'foo_03.png'
+    assert get_list_item(file_names, 3, "FOO.png") == 'FOO.png'
+    assert get_list_item(file_names, 4, "FOO.png") == 'FOO.png'
