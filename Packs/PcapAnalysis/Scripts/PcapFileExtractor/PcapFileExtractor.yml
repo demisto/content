@@ -9,7 +9,7 @@ args:
 - defaultValue: '5'
   description: Maximum number of files to extract. Default is 5.
   name: limit
-- description: 'A comma-separated list of file extensions to include/exclude for example, image/gif.'
+- description: A comma-separated list of file extensions to include/exclude for example, image/gif.
   name: types
 - auto: PREDEFINED
   defaultValue: inclusive
@@ -18,9 +18,9 @@ args:
   predefined:
   - inclusive
   - exclusive
-- description: 'A comma-separated list of MIME file types to include/exclude, for example, image/png. Can not combine with the extensions argument.'
+- description: A comma-separated list of MIME file types to include/exclude, for example, image/png. Can not combine with the extensions argument.
   name: types
-- description: 'A comma-separated list of file extensions to include/exclude, for example, image/png. Can not combine with the types argument.'
+- description: A comma-separated list of file extensions to include/exclude, for example, image/png. Can not combine with the types argument.
   name: extensions
 comment: This automation extracts all possible files from a PCAP file.
 commonfields:
@@ -87,7 +87,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/pcap-miner:1.0.0.90440
+dockerimage: demisto/pcap-miner:1.0.0.90008
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
