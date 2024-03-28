@@ -187,7 +187,8 @@ def convert_args_to_request_format(args: Dict[str, Any]):
     if custom_fields := args.pop('custom_fields', None):
         custom_fields = argToList(custom_fields)
         try:
-            args['custom_fields'] = [{'id': field.split(':')[0], 'value': field.split(':')[1]} for field in custom_fields]
+            args['custom_fields'] = [{'id': field[0:field.index(':')], 'value': field[field.index(':')+1]}
+                                     for field in custom_fields]
         except Exception as e:
             if 'list index out of range' in e.args[0]:
                 raise DemistoException("Custom fields not in format, please follow the instructions")
@@ -339,7 +340,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
                 raise DemistoException("Invalid tracker ID, please use only predefined values.")
         if custom_field:
             try:
-                cf_in_format = argToList(custom_field, ':')
+                cf_in_format = [custom_field[0:custom_field.index(':')], custom_field[custom_field.index(':')+1]]
                 args[f'cf_{cf_in_format[0]}'] = cf_in_format[1]
             except Exception as e:
                 raise DemistoException(f"Invalid custom field format, please follow the command description. Error: {e}.")
