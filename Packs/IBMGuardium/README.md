@@ -23,14 +23,17 @@ To configure IBM Guardium to forward logs to Cortex XSIAM Broker VM via syslog f
 | `alert events` | store remote add daemon.alert \<IP address>:\<port> <tcp\|udp>
    
 
-> **IP address** - IP address of the event collector &nbsp;
-> **port** - syslog port used to communicate to the event collector (default port in Guardium is 514 UDP) &nbsp;
-> **tcp\ udp** - protocol used to communicate with the event collector &nbsp;
+> **IP address** - IP address of the event collector  
+
+> **port** - syslog port used to communicate to the event collector (default port in Guardium is 514 UDP)   
+
+> **tcp\ udp** - protocol used to communicate with the event collector   
+
 
 *For example:*
-`store remote log add daemon.all <IP> udp`
-`store remote log add daemon.all example.com:1514 tcp`
-&nbsp;
+`store remote log add daemon.all <IP> udp` &nbsp;
+`store remote log add daemon.all example.com:1514 tcp` &nbsp;
+
 
 [IBM Guardium - creating a syslog destination for events](https://www.ibm.com/docs/en/qsip/7.4?topic=guardium-creating-syslog-destination-events)
 
@@ -79,10 +82,14 @@ You can configure the specific vendor and product for this instance.
 2. Go to the **Apps** column under the **Brokers** tab and add the **Syslog Collector** app for the relevant broker instance. If the app already exists, hover over it and click **Configure**.
 3. Click **Add New** for adding a new syslog data source.
 4. When configuring the new syslog data source, set the following values:
-| Parameter     | Value   
+
+&nbsp;
+
+|  Parameter   | Value   
 | :---          | :---        
-| `Vendor`      | Enter **IBM**.
-| `Product`     | Enter **Guardium**.
+| `Vendor` | Enter **IBM**
+| `Product` | Enter **Guardium**
+
 
  
 </~XSIAM>
