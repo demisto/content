@@ -11,7 +11,7 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["DB", "Database", "DBF"],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
