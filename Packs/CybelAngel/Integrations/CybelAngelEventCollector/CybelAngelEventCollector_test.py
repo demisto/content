@@ -500,7 +500,7 @@ def test_get_events_command_command(mocker):
     mocker.patch.object(
         demisto, 'args',
         return_value={
-            "start-date": "2024-02-29T13:48:32",
+            "start_date": "2024-02-29T13:48:32",
         }
     )
     mocker.patch.object(demisto, 'command', return_value='cybelangel-get-events')

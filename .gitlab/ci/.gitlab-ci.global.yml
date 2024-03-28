@@ -3,10 +3,11 @@
     key:
       files:
         - "poetry.lock"
-        - "package-lock.json"
+        - ".pre-commit-config_template.yaml"
       prefix: dev-content
     paths:
       - $PIP_CACHE_DIR
+      - /root/.cache/pre-commit
       - .venv/
       - node_modules/
       - .npm/
@@ -322,7 +323,6 @@
 .trigger-slack-notification:
   stage: .post
   trigger:
-    strategy: depend
     include:
       - local: .gitlab/ci/.gitlab-ci.slack-notify.yml
   inherit: # see https://gitlab.com/gitlab-org/gitlab-runner/-/issues/27775
@@ -439,6 +439,7 @@
         ./Tests/scripts/sdk_pylint_check.sh
       fi
     - section_end "Test Infrastructure"
+    - rm -rf Packs/MyPack # remove MyPack from the Packs folder, workaround until demisto-sdk 1.27.5 will be released
     - section_start "Revoking GCP Auth and Configure Docker"
     - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
     - gcloud auth configure-docker ${DOCKER_IO_DOMAIN} >> "${ARTIFACTS_FOLDER}/logs/configure_docker_with_registry.log" 2>&1
@@ -496,6 +497,34 @@
   parallel:
     matrix:
       - DOCKER: ['native:ga,native:maintenance,native:candidate','native:dev,from-yml']
+
+.run-pre-commit:
+  extends:
+    - .unittests-and-lint-settings
+  script:
+    - section_start "Revoking GCP Auth and Configure Docker"
+    # we need to configure the docker with the registry in order to be able to pull the images
+    - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+    - gcloud auth configure-docker ${DOCKER_IO_DOMAIN} >> "${ARTIFACTS_FOLDER}/logs/configure_docker_with_registry.log" 2>&1
+    - section_end "Revoking GCP Auth and Configure Docker"
+    # temp solution not to spam the build
+    - PRE_COMMIT_SUCCESS=0
+    - SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
+    - |
+      if [[ -n "${SHOULD_LINT_ALL}" ]]; then
+        echo "Pre Commit all files"
+        # if we need to pre-commit all anyway we need the graph, and it's better (resource-wise) to create it here.
+        demisto-sdk graph update
+        demisto-sdk pre-commit -a --mode=nightly || PRE_COMMIT_SUCCESS=1
+      else
+        echo "Pre Commit only changed files"
+        demisto-sdk pre-commit --mode=ci || PRE_COMMIT_SUCCESS=1
+      fi
+
+    - echo "PRE_COMMIT_SUCCESS=$PRE_COMMIT_SUCCESS"
+    - job-done
+
+
 
 .run-validations:
   stage: unittests-and-validations
