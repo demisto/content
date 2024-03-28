@@ -53,6 +53,30 @@ def test_hash_contexts_in_return_results():
     assert entry_context == hashes
 
 
+UNESCAPE_CASES = [
+    (False, {'http://example.com/abc&#34;&#160;xmlns:xsi=&#34;http://example.com/abc&#34;&#160;',
+             'http://www.w3.org/1999/xhtml',
+             'http://example.com/abc&#160;http://example.com/abc/v1.2/1_2.xsd&#34;&gt;&#160;'}),
+    (True, {'http://www.w3.org/1999/xhtml', 'http://example.com/abc/v1.2/1_2.xsd', 'http://example.com/abc'})
+]
+
+
+@pytest.mark.parametrize('unescape_url, urls_set', UNESCAPE_CASES)
+def test_urls_are_unescaped(unescape_url, urls_set):
+    """
+    Given
+        - A pdf file that has xml content in it.
+        - Whether to unescape the html content or no.
+    When
+        - Trying extract the urls from an html with escaping characters.
+    Then
+        - The set of urls are extracted correctly, with respect to whether to unescape them or not.
+    """
+    from ReadPDFFileV2 import get_urls_and_emails_from_pdf_html_content
+    urls, _ = get_urls_and_emails_from_pdf_html_content(f'{CWD}/xml_with_urls.pdf', CWD, unescape_url)
+    assert urls == urls_set
+
+
 def test_urls_are_found_correctly(mocker):
     """
     Given
