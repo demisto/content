@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 import argparse
+import logging
 import os
 from collections import namedtuple
 
 import urllib3
-from github import Github
+from github import Github, GithubException
 from github.Issue import Issue
 from github.PaginatedList import PaginatedList
 from gitlab import Gitlab
+from gitlab.exceptions import GitlabError
 from gitlab.v4.objects.branches import ProjectBranch
 from gitlab.v4.objects.projects import Project
+from Tests.scripts.utils.log_util import install_logging
 
 urllib3.disable_warnings()
 
@@ -52,7 +55,7 @@ def cancel_active_pipelines(gitlab_project: Project, branch: ProjectBranch) -> N
     pipelines = gitlab_project.pipelines.list(ref=branch.name, status="running")
     if pipelines:
         for pipeline in pipelines:
-            print(f"Canceling active pipeline: {pipeline.id}")
+            logging.info(f"Canceling active pipeline: {pipeline.id}")
             pipeline.cancel()
 
 
@@ -66,49 +69,64 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
         gitlab_project (Project): GitLab project object.
     """
     for issue in github_issues:
+        try:
+            issue.create_comment(COMMENT_MESSAGES.build_request_accepted)
+            # casting to PR object due to Module limitation (Issue object does not have a `branch name` attribute).
+            pull_request = issue.as_pull_request()
 
-        issue.create_comment(COMMENT_MESSAGES.build_request_accepted)
-        # casting to PR object due to Module limitation (Issue object does not have a `branch name` attribute).
-        pull_request = issue.as_pull_request()
+            # the branch the contributor wants to commit into (starts with 'demisto:')
+            github_branch_name = pull_request.base.ref
 
-        # the branch that starts with 'demisto:'
-        github_branch_name = pull_request.base.ref
 
-        # get the GitLab branch object corresponding to the GitHub branch
-        if branch := gitlab_project.branches.get(github_branch_name):
-            print(f'--- Handling branch: {branch.name}. ---')
+            # get the GitLab branch object corresponding to the GitHub branch
+            if branch := gitlab_project.branches.get(github_branch_name):
+                logging.info(f"--- Handling branch: {branch.name}. ---")
 
-            cancel_active_pipelines(gitlab_project, branch)
+                cancel_active_pipelines(gitlab_project, branch)
 
-            variables = {
-                "CONTRIB_BRANCH": branch.name,
-                "PULL_REQUEST_NUMBER": str(pull_request.number),
-                "CI_COMMIT_BRANCH": branch.name,
-                "CI_PIPELINE_SOURCE": "contrib",
-            }
-            new_pipeline = gitlab_project.trigger_pipeline(
-                ref=branch.name, token=args.gitlab_trigger_token, variables=variables
-            )
+                variables = {
+                    "CONTRIB_BRANCH": branch.name,
+                    "PULL_REQUEST_NUMBER": str(pull_request.number),
+                    "CI_COMMIT_BRANCH": branch.name,
+                    "CI_PIPELINE_SOURCE": "contrib",
+                }
+                new_pipeline = gitlab_project.trigger_pipeline(
+                    ref=branch.name,
+                    token=args.gitlab_trigger_token,
+                    variables=variables,
+                )
 
-            print(f"New pipeline triggered: {new_pipeline.web_url}")
-            issue.create_comment(COMMENT_MESSAGES.build_triggered.format(url=new_pipeline.web_url))
+                logging.info(f"New pipeline triggered: {new_pipeline.web_url}")
+                issue.create_comment(COMMENT_MESSAGES.build_triggered.format(url=new_pipeline.web_url))
 
-        else:
-            print(f"No branch was found with the name: {github_branch_name}. New pipeline was not created.")
-            issue.create_comment(COMMENT_MESSAGES.build_trigger_failed.format(branch=github_branch_name))
+            else:
+                logging.info(f"No branch was found with the name: {github_branch_name}. New pipeline was not created.")
+                issue.create_comment(COMMENT_MESSAGES.build_trigger_failed.format(branch=github_branch_name))
 
-        pull_request.remove_from_labels(GITHUB_TRIGGER_BUILD_LABEL)
+            pull_request.remove_from_labels(GITHUB_TRIGGER_BUILD_LABEL)
+
+        except Exception as e:
+            logging.exception(f"Failed to trigger pipeline for: {github_branch_name}. Error: {e}")
 
 
 def main():
+    install_logging("Trigger contribution build.log")
     args: argparse.Namespace = arguments_handler()
 
-    github_client = Github(login_or_token=args.github_token)
-    gitlab_client = Gitlab(oauth_token=args.gitlab_api_token, url=GITLAB_SERVER_URL, ssl_verify=False)
+    try:
+        github_client = Github(login_or_token=args.github_token)
+        gitlab_client = Gitlab(oauth_token=args.gitlab_api_token, url=GITLAB_SERVER_URL, ssl_verify=False)
 
-    github_issues: PaginatedList[Issue] = github_client.search_issues(query=CONTRIBUTION_PRS_QUERY)
-    gitlab_project: Project = gitlab_client.projects.get(GITLAB_PROJECT_ID)
+        github_issues: PaginatedList[Issue] = github_client.search_issues(query=CONTRIBUTION_PRS_QUERY)
+        gitlab_project: Project = gitlab_client.projects.get(GITLAB_PROJECT_ID)
+    except GithubException as e:
+        logging.exception(f"Failed to initialize Github client: {e}")
+    except GitlabError as e:
+        logging.exception(f"Failed to initialize GitLab client: {e}")
+    except Exception as e:
+        logging.exception(f"Failed to initialize necessary variables related to GitHub or Gitlab: {e}")
 
+    logging.info("Successfully initiated Github and Gitlab clients.")
     handle_contribution_prs(args=args, github_issues=github_issues, gitlab_project=gitlab_project)
 
 
