@@ -28,6 +28,7 @@ With this integration, you can use your custom profiles as well as following pre
 
 
 
+
 **2. Isolation**
 
 Endpoint isolation works by terminating all connections of an endpoint and not allowing any new connections.
