@@ -355,7 +355,7 @@ def test_gdetect_get_all_command_token(mocker):
     client = GLIMPSDetect.Client('url', DUMMY_TOKEN, False, False)
     args = {'entryID': '1@042262f2-6a12-44da-8e11-74cf4bc67063'}
     results = GLIMPSDetect.gdetect_get_all_command(client, args)
-    assert DUMMY_TOKEN in results.outputs
+    assert 'token' in results.outputs
     assert 'link' in results.outputs
     assert 'analysis-redirect' in results.outputs.get('link')
     assert 'sid' not in results.outputs
