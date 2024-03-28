@@ -2657,7 +2657,7 @@ script:
   - name: gitlab-raw-file-get
     description: Get the file in a raw format.
     arguments:
-    - description: The file path.
+    - description: Encoded file path (e.g. app/models -> app%2Fmodels).
       name: file_path
       required: true
     - description: The branch to retrieve the file from. Default is master.
