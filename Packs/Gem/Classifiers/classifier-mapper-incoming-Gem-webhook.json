@@ -5,19 +5,19 @@
         "Gem Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Gem Account ID": {
+                "Account ID": {
                     "simple": "account.name"
                 },
-                "Gem Account Name": {
+                "Account Name": {
                     "simple": "account.display_name"
                 },
                 "Gem Account Provider": {
                     "simple": "account.cloud_provider"
                 },
-                "Gem Alert ID": {
+                "Alert ID": {
                     "simple": "event.alert_id"
                 },
-                "Gem Alert Source": {
+                "Alert Source": {
                     "simple": "event.alert_source"
                 },
                 "occurred": {
@@ -29,7 +29,7 @@
                 "Gem Events Count": {
                     "simple": "event.events_total_count"
                 },
-                "Gem Url": {
+                "External Link": {
                     "complex": {
                         "accessor": "threat_id",
                         "filters": [],
@@ -67,7 +67,7 @@
                 "Gem Threat ID": {
                     "simple": "event.threat_id"
                 },
-                "Gem Title": {
+                "Title": {
                     "simple": "title"
                 },
                 "Gem TTP ID": {
@@ -100,9 +100,6 @@
                             }
                         ]
                     }
-                },
-                "Gem Severity": {
-                    "simple": "severity"
                 }
             }
         },

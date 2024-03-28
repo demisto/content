@@ -3,14 +3,13 @@ description: |-
   The response will be added to the Gem Timeline.
 id: "Gem Validate triggering event"
 inputs:
-  - description: Extra Slack user to send validation to
+  - description: Slack user to send validation for
     key: User
     playbookInputQuery:
     required: false
     value: {}
 name: Gem Validate triggering event
 outputs: []
-fromversion: 6.12.0
 starttaskid: "0"
 tasks:
   "0":
@@ -39,8 +38,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": -120
+          "x": 695,
+          "y": 50
         }
       }
   "1":
@@ -93,8 +92,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 440,
-          "y": 1020
+          "x": 265,
+          "y": 895
         }
       }
   "2":
@@ -112,7 +111,7 @@ tasks:
     quietmode: 1
     scriptarguments:
       alert_id:
-        simple: ${incident.gemalertid}
+        simple: ${incident.alertid}
     separatecontext: false
     skipunavailable: false
     task:
@@ -130,8 +129,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 200
+          "x": 377.5,
+          "y": 370
         }
       }
   "5":
@@ -178,8 +177,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": 450
+          "x": 50,
+          "y": 545
         }
       }
   "6":
@@ -226,8 +225,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
-          "y": 450
+          "x": 480,
+          "y": 545
         }
       }
   "7":
@@ -265,8 +264,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 630
+          "x": 152.5,
+          "y": 720
         }
       }
   "8":
@@ -299,8 +298,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 240,
-          "y": 1270
+          "x": 577.5,
+          "y": 1070
         }
       }
   "9":
@@ -333,8 +332,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 1260
+          "x": -12.5,
+          "y": 1070
         }
       }
   "10":
@@ -366,19 +365,19 @@ tasks:
     task:
       brand: ""
       description: Check if an external user is involved in the alert
-      id: b467bcb6-29ec-4c30-8b09-d1021cd28b46
+      id: 2ee90698-9062-4c25-867a-9ce8247b67db
       iscommand: false
-      name: Is external user involved
+      name: Is external user involved?
       type: condition
       version: -1
-    taskid: b467bcb6-29ec-4c30-8b09-d1021cd28b46
+    taskid: 2ee90698-9062-4c25-867a-9ce8247b67db
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 10
+          "x": 695,
+          "y": 195
         }
       }
   "11":
@@ -394,19 +393,19 @@ tasks:
     task:
       brand: ""
       description: No external user, end playbook
-      id: 3e14f3d3-8fc5-44b6-815e-b3f13a80530a
+      id: 103cb582-f33e-4ad6-8096-98f6302baa9c
       iscommand: false
-      name: Ignore
-      type: regular
+      name: Done
+      type: title
       version: -1
-    taskid: 3e14f3d3-8fc5-44b6-815e-b3f13a80530a
+    taskid: 103cb582-f33e-4ad6-8096-98f6302baa9c
     timertriggers: []
-    type: regular
+    type: title
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 200
+          "x": 807.5,
+          "y": 385
         }
       }
   "12":
@@ -453,8 +452,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1290,
-          "y": 630
+          "x": 947.5,
+          "y": 545
         }
       }
 version: -1
@@ -465,12 +464,13 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1485,
-        "width": 1530,
-        "x": 140,
-        "y": -120
+        "height": 1115,
+        "width": 1340,
+        "x": -12.5,
+        "y": 50
       }
     }
   }
 tests:
   - No tests (auto formatted)
+fromversion: 6.12.0

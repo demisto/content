@@ -13,6 +13,6 @@ tags:
   - post-processing
   - field-change-triggered
 type: python
-fromversion: 6.10.0
+fromversion: 6.12.0
 tests:
   - No tests (auto formatted)
