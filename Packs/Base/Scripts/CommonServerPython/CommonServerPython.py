@@ -11696,7 +11696,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type should_update_health_module: ``bool``
     :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
         This can be useful when using send_data_to_xsiam in batches for the same fetch.
-    
+
     :type add_proxy_to_request ``bool``
     :param should_update_health_module: whether to add proxy to the send evnets request.
 
