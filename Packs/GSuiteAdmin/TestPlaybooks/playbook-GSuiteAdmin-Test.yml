@@ -50,7 +50,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "58"
+      - "59"
     scriptarguments:
       all:
         simple: "yes"
@@ -95,7 +95,7 @@ tasks:
       password:
         simple: Xsoar@111
       primary_email:
-        simple: xsoar11@demistodev.com
+        simple: ${email}
     separatecontext: false
     view: |-
       {
@@ -282,7 +282,6 @@ tasks:
             value:
               simple: GSuite.RoleAssignment.roleId
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -297,6 +296,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "28":
     id: "28"
     taskid: 7c2eb1f6-2719-436c-8402-f4edf7254125
@@ -439,9 +439,10 @@ tasks:
       admin_email:
         simple: admin@demistodev.com
       user_key:
-        simple: ${GSuite.User.id}
-    continueonerror: true
+        simple: ${email}
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -456,7 +457,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "51":
     id: "51"
     taskid: c5157957-a79c-4c2a-843c-0d809daf0ad0
@@ -553,9 +553,11 @@ tasks:
       admin_email:
         simple: admin@demistodev.com
       user_key:
-        simple: xsoar11@demistodev.com
-    continueonerror: true
+        complex:
+          root: ${email}
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -570,7 +572,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "56":
     id: "56"
     taskid: d526e266-ce59-43ec-888b-d8b4ebb38072
@@ -589,7 +590,7 @@ tasks:
       - "50"
     scriptarguments:
       user_key:
-        simple: xsoar11@demistodev.com
+        simple: ${GSuite.User.primaryEmail}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -608,10 +609,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 1655131a-0964-45c9-8ed3-aab4b2993fb5
+    taskid: cfc38b87-627f-4f3e-8c26-6b42697fa918
     type: regular
     task:
-      id: 1655131a-0964-45c9-8ed3-aab4b2993fb5
+      id: cfc38b87-627f-4f3e-8c26-6b42697fa918
       version: -1
       name: gsuite-user-reset-password
       description: Indicates if the user is forced to change their password at next
@@ -625,7 +626,7 @@ tasks:
       - "56"
     scriptarguments:
       user_key:
-        simple: xsoar11@demistodev.com
+        simple: ${GSuite.User.primaryEmail}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -642,16 +643,59 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "58":
-    id: "58"
-    taskid: f98d8011-27b3-433f-811e-ec56010b6996
+  "59":
+    id: "59"
+    taskid: cba19b1c-9680-4d64-89a5-b0fbdfdf6aa4
     type: regular
     task:
-      id: f98d8011-27b3-433f-811e-ec56010b6996
+      id: cba19b1c-9680-4d64-89a5-b0fbdfdf6aa4
       version: -1
-      name: Sleep
-      description: Sleep for X seconds.
-      scriptName: Sleep
+      name: Generate random user name
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "60"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "6"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 15fd8fc3-e148-493b-89e2-c233657685ef
+    type: regular
+    task:
+      id: 15fd8fc3-e148-493b-89e2-c233657685ef
+      version: -1
+      name: Save Email for next tests
+      description: Set a value in context under the key you entered.
+      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
@@ -659,15 +703,25 @@ tasks:
       '#none#':
       - "55"
     scriptarguments:
-      seconds:
-        simple: "10"
+      key:
+        simple: email
+      value:
+        complex:
+          root: RandomString
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: '@demistodev.com'
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 260
+          "x": 550,
+          "y": 370
         }
       }
     note: false
