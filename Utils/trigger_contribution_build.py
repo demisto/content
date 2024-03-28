@@ -109,7 +109,7 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
 
 
 def main():
-    install_logging("Trigger_contribution_build.log")
+    install_logging("trigger_contribution_build.log")
     args: argparse.Namespace = arguments_handler()
 
     try:
