@@ -12,7 +12,7 @@ import typer
 logging.basicConfig(level=logging.INFO)
 load_dotenv()
 app = typer.Typer(no_args_is_help=True)
-
+CWD = os.getcwd()
 
 def load_json(path: str) -> dict[str, Any]:
     with open(path, encoding="utf-8") as f:
@@ -31,15 +31,19 @@ def create_remote_pr(
     pr_reviewers: list[str] = [],
     base_branch: str = "master",
 ):
-    """Create the PR on the remote repo.
+    """Create the PR with the changes in the docker tag on the remote repo.
 
     Args:
         docker_image (str): The docker image.
-        head_branch (str): The local branch name.
-        base_branch (str): The branch off which these changes are based.
-        remote_content_repo (Repository.Repository): The remote repo object.
-        pr_assignees (str): The Github assignees.
-        pr_reviewers (str): The Github reviewer.
+        current_batch (int): PR batch number, with respect to docker image.
+        number_of_batches (int): Overall number of batches.
+        target_tag (str): The docker's target tag.
+        head_branch (str): The head branch, that has the committed changes.
+        remote_content_repo (Repository.Repository): Remote repository.
+        pr_tags (list[str]): PR tags.
+        pr_assignees (list[str], optional): PR assignee/s. Defaults to [].
+        pr_reviewers (list[str], optional): PR reviewer/s. Defaults to [].
+        base_branch (str, optional): The base branch. Defaults to "master".
     """
     body = "Auto update docker PR"
     title = f"Auto update docker for {docker_image}:{target_tag}. Batch #{current_batch}/{number_of_batches}"
@@ -73,6 +77,20 @@ def update_content_items_docker_images_and_push(
     remote_content_repo: Repository.Repository,
     origin: Remote,
 ):
+    """_summary_
+
+    Args:
+        docker_image (str): The docker image.
+        content_items (list[str]): Content items to update their docker images.
+        target_tag (str): Target tag of docker image.
+        pr_tags (list[str]): PR tags.
+        current_batch (int): PR batch number, with respect to docker image.
+        number_of_batches (int): Overall number of batches.
+        staging_branch (str): The staging branch, which is treated as the base branch of the PR.
+        git (Git): Git object to stage and commit files.
+        remote_content_repo (Repository.Repository): The remote repository. Used to created PRs.
+        origin (Remote): Remote object. Used to open PRs on the remote repository.
+    """
     logging.info(f"Updating the following content items: {','.join(content_items)}")
     current_batch_branch_name = f"AUD-{docker_image}-{target_tag}-batch-{current_batch}"
     # Create branch off of master
