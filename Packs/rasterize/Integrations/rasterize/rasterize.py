@@ -657,12 +657,7 @@ def perform_rasterize(path: str | list[str],
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
             demisto.debug(f'path type is: {type(path)}')
-            if type(path) == list:
-                demisto.debug('path type is list')
-                paths = argToList(path)
-            else:
-                demisto.debug('path type is str')
-                paths = [path]
+            paths = [path] if isinstance(path, str) else path
             demisto.debug(f"rasterize, {paths=}, {rasterize_type=}")
             rasterization_threads = []
             rasterization_results = []
@@ -872,7 +867,8 @@ def add_filename_suffix(file_names: list, file_extension: str):
 
 
 def rasterize_command():  # pragma: no cover
-    urls = argToList(demisto.getArg('url'))
+    urls = demisto.getArg('url')
+    urls = [urls] if isinstance(urls, str) else urls
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
     rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
