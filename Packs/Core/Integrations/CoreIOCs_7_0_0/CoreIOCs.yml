@@ -6,17 +6,17 @@ configuration:
 - display: Server URL (e.g. https://example.net)
   name: url
   type: 0
-  hidden: false
+  hidden: true
   required: false
 - display: API Key ID
   name: apikey_id
   type: 4
-  hidden: false
+  hidden: true
   required: false
 - display: API Key
   name: apikey
   type: 4
-  hidden: false
+  hidden: true
   required: false
 - additionalinfo: Map the severity of each indicator that will be synced to Cortex.
   display: Cortex Severity
@@ -87,5 +87,6 @@ script:
   type: python
 tests:
 - No tests
-fromversion: 8.0.0
+fromversion: 5.5.0
+toversion: 7.0.0
 defaultEnabled: true
