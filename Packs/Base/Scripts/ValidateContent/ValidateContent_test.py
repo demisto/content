@@ -5,17 +5,17 @@ from _pytest._py.path import LocalPath
 from pytest_mock import MockerFixture
 from requests_mock import Mocker
 import demistomock as demisto
-from base64 import b64encode
+from base64 import b64decode, b64encode
 
 import ValidateContent
 from ValidateContent import (
-    CACHED_MODULES_DIR,
     COMMAND_OUTPUT_KEY_ERROR,
     COMMAND_OUTPUT_KEY_LINE,
     COMMAND_OUTPUT_KEY_NAME,
     COMMAND_OUTPUT_PREFIX,
     get_content_modules,
     adjust_linter_row_and_col,
+    get_file_name_and_contents,
     main,
 )
 
@@ -118,9 +118,10 @@ class TestValidateContent:
 
     test_invalid_script_path = Path(__file__).parent.resolve() / "test_data" / "automationwitherrors.yml"
     test_valid_script_path = Path(__file__).parent.resolve() / "test_data" / "valid_automation.yml"
+    test_valid_script_b64_path = Path(__file__).parent.resolve() / "test_data" / "valid_automation.yml.b64"
     test_contrib_zip_path = Path(__file__).parent.resolve() / "test_data" / \
         "contentpack-6ade7368-803c-4c4b-873c-4a0555c6ca03-Test.zip"
-        
+
     def _setup(
         self,
         mocker: MockerFixture,
@@ -277,3 +278,108 @@ class TestValidateContent:
         """
         Test ValidateContent on a invalid contribution zip.
         """
+
+    def test_get_file_name_and_contents_filename_data(self):
+        """
+        Validate a successful scenario where a file name and its base64
+        encoded data are provided to the `get_file_name_and_contents`
+        function.
+
+        Given:
+        - A file name.
+        - A data stream of bytes representing the contents of the file.
+
+        When:
+        - The input is valid (filename and data arguments only).
+
+        Then:
+        - The input file name is equal to the one output from the
+        tested function.
+        - The output data is equal to the decoded data stream of the
+        input file.
+        """
+
+        input_filename = expected_filename = self.test_valid_script_path.name
+        input_data = b64encode(self.test_valid_script_path.read_bytes())
+
+        actual_filename, actual_decoded_data = get_file_name_and_contents(input_filename, input_data)
+
+        assert actual_filename == expected_filename
+        assert actual_decoded_data == b64decode(input_data)
+
+    def test_get_file_name_and_contents_entry_id(
+        self,
+        mocker: MockerFixture,
+    ):
+        """
+        Validate a successful scenario where an entry ID
+        is provided to the  `get_file_name_and_contents`
+        function.
+
+        Given:
+        - An entry ID.
+
+        When:
+        - The input is valid (entry ID only).
+
+        Then:
+        - The entry file name and data are as expected.
+        """
+
+        mocker.patch.object(demisto, "getFilePath", return_value={
+            "path": self.test_valid_script_b64_path.absolute(),
+            "name": self.test_valid_script_b64_path.name,
+            "id": "1337"
+        })
+
+        actual_filename, actual_decoded_data = get_file_name_and_contents(entry_id="1337")
+
+        assert actual_filename == self.test_valid_script_b64_path.name
+        assert actual_decoded_data == self.test_valid_script_b64_path.read_bytes()
+
+    def test_get_file_name_and_contents_entry_id_filename_data(
+        self,
+        mocker: MockerFixture,
+    ):
+        """
+        Validate a scenario where an entry ID,
+        filename and data are all provided to the
+        `get_file_name_and_contents` function.
+
+        Given:
+        - An entry ID.
+        - A filename.
+        - A data stream of bytes representing the contents of the file.
+
+        When:
+        - All possible inputs are provided.
+
+        Then:
+        - The input file name is equal to the one output from the
+        tested function.
+        - The output data is equal to the decoded data stream of the
+        input file.
+
+        When:
+        - The input is valid (entry ID only).
+
+        Then:
+        - The entry file name and data are as expected.
+        """
+
+        mocker.patch.object(demisto, "getFilePath", return_value={
+            "path": self.test_valid_script_b64_path.absolute(),
+            "name": self.test_valid_script_b64_path.name,
+            "id": "1337"
+        })
+        input_filename = expected_filename = self.test_valid_script_path.name
+        input_data = b64encode(self.test_valid_script_path.read_bytes())
+
+        actual_filename, actual_decoded_data = get_file_name_and_contents(
+            filename=input_filename,
+            data=input_data,
+            entry_id="1337"
+        )
+
+        assert actual_filename == expected_filename
+        assert actual_decoded_data == b64decode(input_data)
