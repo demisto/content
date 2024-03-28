@@ -80,6 +80,9 @@ def binalyze_assign_image_acquisition_task(api_token, args, params):
             "organizationIds": [
                 int(args.get("organizationid"))
             ]
+        },
+        "schedulerConfig": {
+            "when": "now"
         }
     }
     if args.get('tags') is None:
@@ -119,6 +122,9 @@ def binalyze_assign_reboot_task(api_token,args,params):
             "organizationIds": [
                 int(args.get("organizationIds"))
             ]
+        },
+        "schedulerConfig": {
+            "when": "now"
         }
     }
 
@@ -162,6 +168,9 @@ def binalyze_assign_version_update_task(api_token,args,params):
             "organizationIds": [
                 int(args.get("organizationIds"))
             ]
+        },
+        "schedulerConfig": {
+            "when": "now"
         }
     }
     if args.get('tags') is None:
@@ -203,6 +212,9 @@ def binalyze_assign_log_retrieval_task(api_token,args,params):
             "organizationIds": [
                 int(args.get("organizationIds"))
             ]
+        },
+        "schedulerConfig": {
+            "when": "now"
         }
     }
     if args.get('tags') is None:
@@ -244,6 +256,9 @@ def binalyze_assign_isolation_task(api_token,args,params):
             "organizationIds": [
                 int(args.get("organizationIds"))
             ]
+        },
+        "schedulerConfig": {
+            "when": "now"
         }
     }
 
@@ -281,6 +296,9 @@ def binalyze_assign_shutdown_task(api_token,args,params):
             "organizationIds": [
                 int(args.get("organizationIds"))
             ]
+        },
+        "schedulerConfig": {
+            "when": "now"
         }
     }
 
@@ -379,6 +397,9 @@ def binalyze_assign_evidence_acquisition(api_token,args,params):
             "organizationIds": [
                 int(args.get("organizationIds"))
             ]
+        },
+        "schedulerConfig": {
+            "when": "now"
         }
     }
 
@@ -511,6 +532,9 @@ def binalyze_assign_triage_task_by_filter(api_token,args,params):
             "organizationIds": [
                 int(args.get("organizationsIds"))
             ]
+        },
+        "schedulerConfig": {
+            "when": "now"
         }
     }
 
