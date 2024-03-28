@@ -11662,7 +11662,7 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                        chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
-                       add_proxy_to_request: bool=False):
+                       add_proxy_to_request=False):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -11696,6 +11696,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type should_update_health_module: ``bool``
     :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
         This can be useful when using send_data_to_xsiam in batches for the same fetch.
+    
+    :type add_proxy_to_request ``bool``
+    :param should_update_health_module: whether to add proxy to the send evnets request.
 
     :return: None
     :rtype: ``None``
