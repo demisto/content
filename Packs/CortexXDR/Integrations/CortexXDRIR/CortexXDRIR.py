@@ -392,7 +392,6 @@ class Client(CoreClient):
         if demisto.command() == 'fetch-incidents' and fields_to_exclude:
             request_data['fields_to_exclude'] = FIELDS_TO_EXCLUDE  # type: ignore
 
-
         if starred and starred_incidents_fetch_window:
             filters.append({
                 'field': 'starred',
@@ -425,7 +424,6 @@ class Client(CoreClient):
             headers=self.headers,
             timeout=self.timeout,
         )
-        demisto.debug(f'before ALERTS_LIMIT_PER_INCIDENTS cond {ALERTS_LIMIT_PER_INCIDENTS}')
         if ALERTS_LIMIT_PER_INCIDENTS < 0:
             ALERTS_LIMIT_PER_INCIDENTS = arg_to_number(reply.get('reply', {}).get('alerts_limit_per_incident')) or 50
             demisto.debug(f'Setting alerts limit per incident to {ALERTS_LIMIT_PER_INCIDENTS}')
@@ -563,7 +561,10 @@ def get_incident_extra_data_command(client, args):
     if isinstance(raw_incident, list):
         raw_incident = raw_incident[0]
     if raw_incident.get('incident', {}).get('alert_count') > ALERTS_LIMIT_PER_INCIDENTS:
-        raw_incident = client.get_incident_extra_data(incident_id, alerts_limit).get('incidents', {})
+        demisto.debug(f'for incident:{incident_id} using the old call since "\
+            "alert_count:{raw_incident.get("incident", {}).get("alert_count")} >" \
+            "limit:{ALERTS_LIMIT_PER_INCIDENTS}')
+        raw_incident = client.get_incident_extra_data(incident_id, alerts_limit)
     demisto.debug(f"in get_incident_extra_data_command {incident_id=} {raw_incident=}")
     readable_output = [tableToMarkdown(f'Incident {incident_id}', raw_incident.get('incident'), removeNull=True)]
     incident = sort_incident_data(raw_incident)
@@ -608,8 +609,6 @@ def get_incident_extra_data_command(client, args):
         context_output,
         raw_incident
     )
-    
-
 
 
 def create_parsed_alert(product, vendor, local_ip, local_port, remote_ip, remote_port, event_timestamp, severity,
@@ -709,7 +708,6 @@ def sort_all_list_incident_fields(incident_data):
 
     format_sublists = not argToBoolean(demisto.params().get('dont_format_sublists', False))
     if incident_data.get('alerts', []):
-        demisto.debug('if incident_data.get("alerts", [])')
         incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
         if format_sublists:
             reformat_sublist_fields(incident_data['alerts'])
@@ -984,8 +982,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     incidents = []
     if incidents_from_previous_run:
         raw_incidents = incidents_from_previous_run
-        if last_run.get('alerts_limit_per_incident'):
-            ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident') or -1
+        ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1)
     else:
         if statuses:
             raw_incidents = []
@@ -1039,7 +1036,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
                 incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
 
             # Update last run and add incident if the incident is newer than last fetch
-            if incident_data['creation_time'] > last_fetch:
+            if incident_data.get('creation_time', 0) > last_fetch:
                 last_fetch = incident_data['creation_time']
 
             incidents.append(incident)
