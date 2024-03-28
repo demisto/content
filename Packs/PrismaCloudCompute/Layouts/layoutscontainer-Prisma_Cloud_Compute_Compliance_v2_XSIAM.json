@@ -285,7 +285,7 @@
                                 "index": 0,
                                 "listId": "caseinfoid-5be896c0-b51e-11ee-953e-756485313d90",
                                 "name": "Enrich Host Compliance Issues",
-                                "scriptId": "PaloAltoNetworks_PrismaCloudCompute|||PCComputeHostComplianceIssuesButton",
+                                "scriptId": "PCComputeHostComplianceIssuesButton",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -327,7 +327,7 @@
                                 "id": "98819060-d3ea-11ee-8ff5-2b0c5e4bbbdf",
                                 "index": 1,
                                 "name": "Send Compliance Issues via Email",
-                                "scriptId": "PaloAltoNetworks_PrismaCloudCompute|||CreatePrismaCloudComputeResourceComplianceReportButton",
+                                "scriptId": "CreatePrismaCloudComputeResourceComplianceReportButton",
                                 "sectionItemType": "button",
                                 "startCol": 2
                             }
@@ -473,7 +473,7 @@
                                 "index": 0,
                                 "listId": "caseinfoid-27c35970-c112-11ee-bda4-e12716dd436c",
                                 "name": "Enrich Container Compliance Issue",
-                                "scriptId": "PaloAltoNetworks_PrismaCloudCompute|||PCComputeContainerComplianceIssuesButton",
+                                "scriptId": "PCComputeContainerComplianceIssuesButton",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -513,7 +513,7 @@
                                 "id": "53ea7ed0-d3cc-11ee-a07b-65cce8bb8474",
                                 "index": 2,
                                 "name": "Send Compliance Issues via Email",
-                                "scriptId": "PaloAltoNetworks_PrismaCloudCompute|||CreatePrismaCloudComputeResourceComplianceReportButton",
+                                "scriptId": "CreatePrismaCloudComputeResourceComplianceReportButton",
                                 "sectionItemType": "button",
                                 "startCol": 2
                             }
@@ -663,7 +663,7 @@
                                 "index": 0,
                                 "listId": "caseinfoid-b606f0e0-c2c8-11ee-ade5-b3726450e5e4",
                                 "name": "Enrich Image Compliance Issues",
-                                "scriptId": "PaloAltoNetworks_PrismaCloudCompute|||PCComputeImageComplianceIssuesButton",
+                                "scriptId": "PCComputeImageComplianceIssuesButton",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -705,7 +705,7 @@
                                 "index": 0,
                                 "listId": "caseinfoid-g6zyzr3vyg-caseinfoid-b606f0e0-c2c8-11ee-ade5-b3726450e5e4",
                                 "name": "Send Compliance Issues via Email",
-                                "scriptId": "PaloAltoNetworks_PrismaCloudCompute|||CreatePrismaCloudComputeResourceComplianceReportButton",
+                                "scriptId": "CreatePrismaCloudComputeResourceComplianceReportButton",
                                 "sectionItemType": "button",
                                 "startCol": 2
                             }
