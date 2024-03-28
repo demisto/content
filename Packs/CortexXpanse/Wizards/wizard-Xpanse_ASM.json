@@ -31,34 +31,6 @@
                 {
                     "name": "GCP-Enrichment-Remediation",
                     "display_name": "GCP Enrichment and Remediation"
-                },
-                {
-                    "name": "AWS-EC2",
-                    "display_name": "AWS - EC2"
-                },
-                {
-                    "name": "AWS-IAM",
-                    "display_name": "AWS - IAM"
-                },
-                {
-                    "name": "GoogleCloudCompute",
-                    "display_name": "Google Cloud Compute"
-                },
-                {
-                    "name": "AzureCompute_v2",
-                    "display_name": "Azure Compute"
-                },
-                {
-                    "name": "MicrosoftGraphAPI",
-                    "display_name": "Microsoft Graph API"
-                },
-                {
-                    "name": "MicrosoftGraphUser",
-                    "display_name": "Microsoft Graph User"
-                },
-                {
-                    "name": "MicrosoftGraphIdentityandAccess",
-                    "display_name": "Microsoft Graph Identity and Access"
                 }
             ]
         },
