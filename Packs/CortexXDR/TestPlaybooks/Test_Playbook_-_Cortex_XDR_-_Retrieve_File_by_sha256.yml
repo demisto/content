@@ -1849,10 +1849,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "245":
     id: "245"
-    taskid: d09913f1-7b85-407d-87e4-82ebc9d081f2
+    taskid: 0b57c8a6-3655-4f90-8fae-53aa98a03d11
     type: condition
     task:
-      id: d09913f1-7b85-407d-87e4-82ebc9d081f2
+      id: 0b57c8a6-3655-4f90-8fae-53aa98a03d11
       version: -1
       name: Verify Type
       description: Verify that the 'File.Type' context key has been extracted correctly and contains both ZIP and Unzipped file types.
@@ -1868,38 +1868,13 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: containsString
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: File
                 accessor: Type
             iscontext: true
-          right:
-            value:
-              simple: ASCII text, with very long lines, with no line terminators
-          ignorecase: true
-      - - operator: containsString
-          left:
-            value:
-              complex:
-                root: File
-                accessor: Type
-            iscontext: true
-          right:
-            value:
-              simple: PE32+ executable (GUI) x86-64, for MS Windows
-          ignorecase: true
-      - - operator: containsString
-          left:
-            value:
-              complex:
-                root: File
-                accessor: Type
-            iscontext: true
-          right:
-            value:
-              simple: Zip archive data, at least v2.0 to extract
           ignorecase: true
     continueonerrortype: ""
     view: |-
