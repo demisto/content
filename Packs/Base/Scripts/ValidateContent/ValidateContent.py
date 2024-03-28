@@ -25,6 +25,10 @@ from demisto_sdk.commands.validate.old_validate_manager import OldValidateManage
 from ruamel.yaml import YAML
 
 
+COMMAND_OUTPUT_PREFIX = "ValidationResult"
+COMMAND_OUTPUT_KEY_NAME = "Name"
+COMMAND_OUTPUT_KEY_LINE = "Line"
+COMMAND_OUTPUT_KEY_ERROR = "Error"
 CACHED_MODULES_DIR = '/tmp/cached_modules'
 yaml = YAML()
 
@@ -97,12 +101,31 @@ def run_validate(file_path: str, json_output_file: str) -> None:
         os.makedirs(tests_dir)
     with open(f'{tests_dir}/id_set.json', 'w') as f:
         json.dump({}, f)
+
+    # FIXME use the new validation manager
     v_manager = ValidateManager(
-        is_backward_check=False, prev_ver="origin/master", use_git=False, only_committed_files=False,
-        print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=str(file_path),
-        validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=False,
-        silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
-        staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False)
+        is_backward_check=False,
+        prev_ver="origin/master",
+        use_git=False,
+        only_committed_files=False,
+        print_ignored_files=False,
+        skip_conf_json=True,
+        validate_id_set=False,
+        file_path=str(file_path),
+        validate_all=False,
+        is_external_repo=False,
+        skip_pack_rn_validation=False,
+        print_ignored_errors=False,
+        silence_init_prints=False,
+        no_docker_checks=False,
+        skip_dependencies=False,
+        id_set_path=None,
+        staged=False,
+        json_file_path=json_output_file,
+        skip_schema_check=True,
+        create_id_set=False,
+        check_is_unskipped=False
+    )
     v_manager.run_validation()
 
 
@@ -135,12 +158,18 @@ def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_director
     return contrib_converter.pack_dir_path, code_fp_to_row_offset
 
 
-def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_directory: str) -> tuple[str, dict]:
+def prepare_single_content_item_for_validation(
+    filename: str,
+    data: bytes,
+    tmp_directory: str
+) -> tuple[str, dict]:
+
     content = Content(tmp_directory)
     pack_name = 'TmpPack'
     pack_dir = content.path / 'Packs' / pack_name
     # create pack_metadata.json file in TmpPack
-    contrib_converter = ContributionConverter(name=pack_name, contribution=filename, base_dir=tmp_directory, pack_dir_name=pack_name)
+    contrib_converter = ContributionConverter(name=pack_name, contribution=filename,
+                                              base_dir=tmp_directory, pack_dir_name=pack_name)
     contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
     prefix = '-'.join(filename.split('-')[:-1])
     containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Integrations')
@@ -202,7 +231,7 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> list:
 
     demisto.debug("log capture:" + log_capture.getvalue())
     all_outputs = []
-    with open(json_output_path, 'r') as json_outputs:
+    with open(json_output_path) as json_outputs:
         outputs_as_json = json.load(json_outputs)
         if outputs_as_json:
             if isinstance(outputs_as_json, list):
@@ -210,7 +239,7 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> list:
             else:
                 all_outputs.append(outputs_as_json)
 
-    with open(lint_output_path, 'r') as json_outputs:
+    with open(lint_output_path) as json_outputs:
         outputs_as_json = json.load(json_outputs)
         if outputs_as_json:
             if isinstance(outputs_as_json, list):
@@ -312,21 +341,38 @@ def get_file_name_and_contents(
         data: str | None = None,
         entry_id: str | None = None,
 ) -> tuple[str, bytes]:
+    """
+    Return the file name and the decoded contents to validate.
+
+    Args:
+    - `filename` (``str | None``): The name of the file to validate.
+    - `data` (``str | None``): The base64 encoded data of the file to validate.
+    - `entry_id` (``str | None``): The entry ID.
+
+    Returns:
+    - ``tuple[str, bytes]`` with the name of the file and the decoded
+    contents of the file.
+
+    Throws:
+    - `ValueError` if the provided arguments are unexpected.
+    """
+
     if filename and data:
         return filename, b64decode(data)
     elif entry_id:
         file_object = demisto.getFilePath(entry_id)
-
         with open(file_object['path'], 'rb') as f:
             file_contents = f.read()
         return file_object['name'], file_contents
+    else:
+        raise ValueError("Invalid arguments provided")
 
 
 def main():
     cwd = os.getcwd()
-    content_tmp_dir = TemporaryDirectory()
     try:
         args = demisto.args()
+        content_tmp_dir = TemporaryDirectory()
         if args.get('use_system_proxy') == 'no':
             del os.environ['HTTP_PROXY']
             del os.environ['HTTPS_PROXY']
@@ -354,13 +400,13 @@ def main():
         for validation in result:
             if validation.get('ui') or validation.get('fileType') in {'py', 'ps1'}:
                 outputs.append({
-                    'Name': validation.get('name'),
-                    'Error': validation.get('message'),
-                    'Line': validation.get('row'),
+                    COMMAND_OUTPUT_KEY_NAME: validation.get('name'),
+                    COMMAND_OUTPUT_KEY_ERROR: validation.get('message'),
+                    COMMAND_OUTPUT_KEY_LINE: validation.get('row'),
                 })
         return_results(CommandResults(
-            readable_output=tableToMarkdown('Validation Results', outputs, headers=['Name', 'Error', 'Line']),
-            outputs_prefix='ValidationResult',
+            readable_output=tableToMarkdown('Validation Results', outputs),
+            outputs_prefix=COMMAND_OUTPUT_PREFIX,
             outputs=outputs,
             raw_response=result,
         ))
