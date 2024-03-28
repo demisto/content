@@ -311,7 +311,7 @@ def test_gdetect_send(mocker):
 
 
 def test_gdetect_get(mocker):
-    mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get())
+    mocker.patch('GLIMPSDetect.gClient.get_by_uuid', return_value=mocked_gdetect_get())
     client = GLIMPSDetect.Client('url', 'token', False, False)
     resp = client.gdetect_get('23465d22-3464-39ce-b8b3-bc2ee7d6eecf')
     assert 'status' in resp
@@ -337,7 +337,7 @@ def test_gdetect_send_command_wrong_entry(mocker):
 
 
 def test_gdetect_get_all_command_error(mocker):
-    mocker.patch('GLIMPSDetect.gClient.get', return_value=mocker_gdetect_get_error())
+    mocker.patch('GLIMPSDetect.gClient.get_by_uuid', return_value=mocker_gdetect_get_error())
     client = GLIMPSDetect.Client('url', 'token', False, False)
     args = {'entryID': '1@042262f2-6a12-44da-8e11-74cf4bc67063'}
     try:
@@ -351,7 +351,7 @@ def test_gdetect_get_all_command_error(mocker):
 
 
 def test_gdetect_get_all_command_token(mocker):
-    mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get_token())
+    mocker.patch('GLIMPSDetect.gClient.get_by_uuid', return_value=mocked_gdetect_get_token())
     client = GLIMPSDetect.Client('url', 'token', False, False)
     args = {'entryID': '1@042262f2-6a12-44da-8e11-74cf4bc67063'}
     results = GLIMPSDetect.gdetect_get_all_command(client, args)
@@ -362,7 +362,7 @@ def test_gdetect_get_all_command_token(mocker):
 
 
 def test_gdetect_get_all_command_link_sid(mocker):
-    mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get_sid())
+    mocker.patch('GLIMPSDetect.gClient.get_by_uuid', return_value=mocked_gdetect_get_sid())
     client = GLIMPSDetect.Client('url', 'token', False, False)
     args = {'entryID': '1@042262f2-6a12-44da-8e11-74cf4bc67063'}
     results = GLIMPSDetect.gdetect_get_all_command(client, args)
@@ -373,7 +373,7 @@ def test_gdetect_get_all_command_link_sid(mocker):
 
 
 def test_gdetect_get_all_command_link_uuid(mocker):
-    mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get_base())
+    mocker.patch('GLIMPSDetect.gClient.get_by_uuid', return_value=mocked_gdetect_get_base())
     client = GLIMPSDetect.Client('url', 'token', False, False)
     args = {'entryID': '1@042262f2-6a12-44da-8e11-74cf4bc67063'}
     results = GLIMPSDetect.gdetect_get_all_command(client, args)
@@ -385,7 +385,7 @@ def test_gdetect_get_all_command_link_uuid(mocker):
 
 
 def test_gdetect_get_all_command_errors(mocker):
-    mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get_errors())
+    mocker.patch('GLIMPSDetect.gClient.get_by_uuid', return_value=mocked_gdetect_get_errors())
     client = GLIMPSDetect.Client('url', 'token', False, False)
     args = {'entryID': '1@042262f2-6a12-44da-8e11-74cf4bc67063'}
     results = GLIMPSDetect.gdetect_get_all_command(client, args)
@@ -396,7 +396,7 @@ def test_gdetect_get_all_command_errors(mocker):
 
 
 def test_gdetect_get_all_command_files(mocker):
-    mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get_files())
+    mocker.patch('GLIMPSDetect.gClient.get_by_uuid', return_value=mocked_gdetect_get_files())
     client = GLIMPSDetect.Client('url', 'token', False, False)
     args = {'entryID': '1@042262f2-6a12-44da-8e11-74cf4bc67063'}
     results = GLIMPSDetect.gdetect_get_all_command(client, args)
@@ -405,7 +405,7 @@ def test_gdetect_get_all_command_files(mocker):
 
 
 def test_gdetect_get_all_command_files_av_results(mocker):
-    mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get_files_av_results())
+    mocker.patch('GLIMPSDetect.gClient.get_by_uuid', return_value=mocked_gdetect_get_files_av_results())
     client = GLIMPSDetect.Client('url', 'token', False, False)
     args = {'entryID': '1@042262f2-6a12-44da-8e11-74cf4bc67063'}
     results = GLIMPSDetect.gdetect_get_all_command(client, args)
@@ -415,7 +415,7 @@ def test_gdetect_get_all_command_files_av_results(mocker):
 
 
 def test_gdetect_get_all_command_threats(mocker):
-    mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get_threats())
+    mocker.patch('GLIMPSDetect.gClient.get_by_uuid', return_value=mocked_gdetect_get_threats())
     client = GLIMPSDetect.Client('url', 'token', False, False)
     args = {'entryID': '1@042262f2-6a12-44da-8e11-74cf4bc67063'}
     results = GLIMPSDetect.gdetect_get_all_command(client, args)
@@ -425,7 +425,7 @@ def test_gdetect_get_all_command_threats(mocker):
 
 
 def test_gdetect_get_threats_command_token(mocker):
-    mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get_threats_with_token())
+    mocker.patch('GLIMPSDetect.gClient.get_by_uuid', return_value=mocked_gdetect_get_threats_with_token())
     client = GLIMPSDetect.Client('url', 'token', False, False)
     args = {'entryID': '1@042262f2-6a12-44da-8e11-74cf4bc67063'}
     results = GLIMPSDetect.gdetect_get_threats_command(client, args)
@@ -436,7 +436,7 @@ def test_gdetect_get_threats_command_token(mocker):
 
 
 def test_gdetect_get_threats_command_sid(mocker):
-    mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get_threats_with_sid())
+    mocker.patch('GLIMPSDetect.gClient.get_by_uuid', return_value=mocked_gdetect_get_threats_with_sid())
     client = GLIMPSDetect.Client('url', 'token', False, False)
     args = {'entryID': '1@042262f2-6a12-44da-8e11-74cf4bc67063'}
     results = GLIMPSDetect.gdetect_get_threats_command(client, args)
@@ -447,7 +447,7 @@ def test_gdetect_get_threats_command_sid(mocker):
 
 
 def test_gdetect_get_threats_command_uuid(mocker):
-    mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get_threats())
+    mocker.patch('GLIMPSDetect.gClient.get_by_uuid', return_value=mocked_gdetect_get_threats())
     client = GLIMPSDetect.Client('url', 'token', False, False)
     args = {'entryID': '1@042262f2-6a12-44da-8e11-74cf4bc67063'}
     results = GLIMPSDetect.gdetect_get_threats_command(client, args)
@@ -458,7 +458,7 @@ def test_gdetect_get_threats_command_uuid(mocker):
 
 
 def test_gdetect_get_threats_command_no_threats(mocker):
-    mocker.patch('GLIMPSDetect.gClient.get', return_value=mocked_gdetect_get_base())
+    mocker.patch('GLIMPSDetect.gClient.get_by_uuid', return_value=mocked_gdetect_get_base())
     client = GLIMPSDetect.Client('url', 'token', False, False)
     args = {'entryID': '1@042262f2-6a12-44da-8e11-74cf4bc67063'}
     results = GLIMPSDetect.gdetect_get_threats_command(client, args)
