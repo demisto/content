@@ -26,7 +26,6 @@ configuration:
   - us-gov-west-1
   type: 15
   section: Connect
-  advanced: true
   required: true
 - display: Access Key
   name: credentials
