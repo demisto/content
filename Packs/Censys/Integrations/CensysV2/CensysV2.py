@@ -56,7 +56,16 @@ class Client(BaseClient):
             params['at_time_b'] = at_time_b
         res = self._http_request('GET', url_suffix, params=params)
         return res
-
+    
+    def ip_reputation_request(self, ip):
+        url_suffix = f"/api/v2/hosts/search?q=labels: * and {ip} or {ip}"
+        res = self._http_request('GET', url_suffix)
+        return res
+    
+    def domain_reputation_request(self, domain):
+        url_suffix = f"/api/v2/hosts/search?q=labels: * and {domain} or {domain}"
+        res = self._http_request('GET', url_suffix)
+        return res
 
 ''' COMMAND FUNCTIONS '''
 
@@ -155,7 +164,7 @@ def censys_search_command(client: Client, args: dict[str, Any]) -> CommandResult
         for hit in hits:
             contents.append({
                 'IP': hit.get('ip'),
-                'Services': hit.get('services'),
+                'Services': ', '.join([f"{service['port']}/{service['service_name']}" for service in hit.get('services', [])]),
                 'Location Country code': hit.get('location', {}).get('country_code'),
                 'Registered Country Code': hit.get('location', {}).get('registered_country_code'),
                 'ASN': hit.get('autonomous_system', {}).get('asn'),
@@ -221,11 +230,11 @@ def censys_host_history_command(client: Client, args: dict[str, Any]) -> Command
     :return: Command results.
     """
     ip = args.get("ip", '')
-    ip_b = args.get("ip_b", ip)
+    ip_b = args.get("ip_b", '')
     at_time = args.get("at_time", '')
     at_time_b = args.get("at_time_b", '')
 
-    res = client.censys_host_history_request(ip, ip_b, at_time, at_time_b)
+    res = client.censys_host_history_request(ip, ip_b, at_time, at_time_b).get("result", {})
     human_readable = tableToMarkdown(f'Host Diff for IP {ip}', res)
     return CommandResults(
         readable_output=human_readable,
@@ -234,6 +243,91 @@ def censys_host_history_command(client: Client, args: dict[str, Any]) -> Command
         outputs=res,
         raw_response=res
     )
+
+def ip_command(client: Client, args: dict):
+    ips: list = argToList(args.get('ip'))
+    results: List[CommandResults] = []
+    for ip in ips:
+        res = client.ip_reputation_request(ip)
+        dbot_score = Common.DBotScore(
+            indicator=ip,
+            indicator_type=DBotScoreType.IP,
+            integration_name="Censys",
+            score=get_dbot_score(args, res),
+            reliability=args.get('reliability')
+        )
+        indicator = Common.IP(
+            ip=ip,
+            dbot_score=dbot_score,
+            asn=res.get("autonomous_system", {}).get('asn'),
+            region=res.get('location', {}).get('country'),
+            updated_date=res.get('last_updated_at'),
+            port=res.get('services', {}).get('port'),
+            whois_records=res.get('whois'),
+            geo_latitude=res.get('location',{}).get('latitude'),
+            geo_longitude=res.get('location',{}).get('longitude'),
+            geo_country=res.get('location',{}).get('country'),
+            registrar_abuse_email=res.get('whois',{}).get('organization',{}).get('abuse_contacts',{}).get('email'),
+            registrar_abuse_name=res.get('whois',{}).get('organization',{}).get('abuse_contacts',{}).get('name'),
+            organization_name=res.get('services',{}).get('tls',{}).get('issuer',{}).get('organization'),
+        )
+        results.append(CommandResults(
+            outputs_prefix='Censys.IP',
+            outputs_key_field='IP',
+            readable_output=tableToMarkdown(f'censys results for IP: {ip}', res),
+            outputs=res,
+            raw_response=res,
+            indicator=indicator,
+        ))
+    return results
+
+def domain_command(client: Client, args: dict):
+    domains: list = argToList(args.get('domain'))
+    results: List[CommandResults] = []
+    for domain in domains:
+        res = client.domain_reputation_request(domain)
+        dbot_score = Common.DBotScore(
+            indicator=domain,
+            indicator_type=DBotScoreType.DOMAIN,
+            integration_name="Censys",
+            score=get_dbot_score(args, res),
+            reliability=args.get('reliability')
+        )
+        indicator = Common.Domain(
+            domain=domain,
+            dbot_score=dbot_score,
+            description=res.get('autonomous_system', {}).get('description'),
+            dns_records=res.get('dns', {}).get('reverse_dns', {}).get('names'),
+            updated_date=res.get('last_updated_at'),
+            port=res.get('services', {}).get('port'),
+            geo_country=res.get('location', {}).get('country'),
+            certificates=res.get('services', {}).get('certificate'),
+        )
+        results.append(CommandResults(
+            outputs_prefix='Censys.Domain',
+            outputs_key_field='Domain',
+            readable_output=tableToMarkdown(f'Censys results for Domain: {domain}', res),
+            outputs=res,
+            raw_response=res,
+            indicator=indicator,
+        ))
+    return results
+
+def get_dbot_score(args, result_labels):
+    malicious_labels = set(args.get("malicious_labels", []))
+    suspicious_labels = set(args.get("suspicious_labels", []))
+    malicious_threshold = args.get("malicious_labels_threshold", 0)
+    suspicious_threshold = args.get("suspicious_labels_threshold", 0)
+
+    num_malicious = len(malicious_labels.intersection(result_labels))
+    if num_malicious >= malicious_threshold:
+        return Common.DBotScore.BAD
+
+    num_suspicious = len(suspicious_labels.intersection(result_labels))
+    if num_suspicious >= suspicious_threshold:
+        return Common.DBotScore.SUSPICIOUS
+
+    return Common.DBotScore.GOOD
 
 
 ''' MAIN FUNCTION '''
@@ -264,6 +358,12 @@ def main() -> None:
             return_results(censys_view_command(client, demisto.args()))
         elif command == 'cen-search':
             return_results(censys_search_command(client, demisto.args()))
+        elif command == 'cen-host-history':
+            return_results(censys_host_history_command(client, demisto.args()))
+        elif command == 'ip':
+            return_results(ip_command(client, demisto.args()))
+        elif command == 'domain':
+            return_results(domain_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

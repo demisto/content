@@ -47,7 +47,7 @@ configuration:
   - scada
   - voip
   - web.control-panel.hosting
-  additionalinfo: 'IP and Domain Malicious labels Free text, array, separated by comma. '
+  additionalinfo: IP and Domain Malicious labels Free text, array, separated by comma.
   section: Collect-  advanced
 - display: IP and Domain Suspicious labels
   name: suspicious_labels
@@ -71,10 +71,22 @@ configuration:
   - scada
   - voip
   - web.control-panel.hosting
-  additionalinfo: 'IP and Domain Suspicious labels Free text, array, separated by comma. '
+  additionalinfo: IP and Domain Suspicious labels Free text, array, separated by comma.
   section: Collect-  advanced
+- display: Malicious labels threshold
+  name: malicious_labels_threshold
+  type: 0
+  required: false
+  additionalinfo: IP and domain Malicious labels Threshold. Minimum of labels returned
+    that are classified as malicious.
+- display: Suspicious labels threshold
+  name: suspicious_labels_threshold
+  type: 0
+  required: false
+  additionalinfo: IP and domain Suspicious labels Threshold. Minimum of labels returned 
+    that are classified as suspicious.
 - display: Source Reliability
-  name: integrationReliability
+  name: integration_reliability
   defaultvalue: C - Fairly reliable
   required: true
   type: 15
@@ -474,6 +486,33 @@ script:
     description: The diff endpoint generates a JSONPatch (RFC6902) formatted patch
       by comparing a host against another host (or itself) at optionally given points
       in time.
+  - name: ip
+    arguments: 
+    - name: ip
+      required: true
+      isArray: true
+      type: textArea
+    description: Runs reputation on IPs
+    outputs:
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
+  - name: domain
+    arguments: 
+    - name: domain
+      required: true
+      isArray: true
+      type: textArea
+    description: Runs reputation on Domains
   dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
