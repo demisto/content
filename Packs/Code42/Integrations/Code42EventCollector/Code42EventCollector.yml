@@ -46,7 +46,7 @@ script:
     - description: 'Time until when to get events.'
       name: end_date
       required: true
-    - description: 'the maximum number of events to return.'
+    - description: 'The maximum number of events to return.'
       name: limit
       required: true
       defaultValue: '100'
