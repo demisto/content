@@ -1,5 +1,7 @@
 commonfields:
   id: QRadar v3
+  id:marketplacev2: QRadar v3 xsiam
+  id:xpanse: QRadar v3 xpanse
   version: -1
 sectionOrder:
 - Connect
