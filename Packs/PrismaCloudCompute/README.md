@@ -47,7 +47,7 @@ The integration ships with four default playbooks:
 * **Prisma Cloud Compute - Compliance Alert v2**
 * **Prisma Cloud Compute - Vulnerability Alert**
 
-Two of the above playbooks (all except _Audit Alert v3_) contain a single script. The script in each playbook encode the raw JSON alerts into Cortex XSOAR objects that can then be used in the playbooks. The scripts are:
+Two of the above playbooks (all except _Audit Alert v3_) contain a single script. The script in each playbook encodes the raw JSON alerts into Cortex XSIAM objects that can then be used in the playbooks. The scripts are:
 
 * **PrismaCloudComputeParseVulnerabilityAlert**
 * **PrismaCloudComputeParseCloudDiscoveryAlert**
@@ -150,7 +150,7 @@ The integration ships with four default playbooks:
 * **Prisma Cloud Compute - Compliance Alert v2**
 * **Prisma Cloud Compute - Vulnerability Alert**
 
-Two of the above playbooks (all except _Audit Alert v3_) contain a single script. The script in each playbook encode the raw JSON alerts into Cortex XSOAR objects that can then be used in the playbooks. The scripts are:
+Two of the above playbooks (all except _Audit Alert v3_) contain a single script. The script in each playbook encodes the raw JSON alerts into Cortex XSOAR objects that can then be used in the playbooks. The scripts are:
 
 * **PrismaCloudComputeParseVulnerabilityAlert**
 * **PrismaCloudComputeParseCloudDiscoveryAlert**
