@@ -1095,8 +1095,8 @@ def get_action_result(client, data_args):
 
 def main():
     params = demisto.params()
-    username = params.get('credentials').get('identifier')
-    password = params.get('credentials').get('password')
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
     domain = params.get('domain')
     # Remove trailing slash to prevent wrong URL path to service
     server = params['url'].strip('/')
