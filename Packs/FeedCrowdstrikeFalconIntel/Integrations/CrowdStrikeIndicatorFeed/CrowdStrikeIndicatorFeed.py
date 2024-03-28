@@ -277,7 +277,8 @@ class Client(CrowdStrikeClient):
         return params
 
     @staticmethod
-    def create_indicators_from_response(raw_response, get_actors_names_request_func, tlp_color=None, feed_tags=None, create_relationships=True) -> list:
+    def create_indicators_from_response(raw_response, get_actors_names_request_func, tlp_color=None, feed_tags=None,
+                                        create_relationships=True) -> list:
         """ Builds indicators from API raw response
 
             Args:

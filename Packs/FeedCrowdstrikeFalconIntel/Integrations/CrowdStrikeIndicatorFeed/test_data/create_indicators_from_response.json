@@ -95,7 +95,7 @@
         "entityA": "abc",
         "entityAFamily": "Indicator",
         "entityAType": "Domain",
-        "entityB": "GOBLINPANDA",
+        "entityB": "GOBLIN PANDA",
         "entityBFamily": "Indicator",
         "entityBType": "Threat Actor",
         "fields": {},

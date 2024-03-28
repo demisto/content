@@ -26,7 +26,8 @@ def test_crowdstrike_indicators_list_command(requests_mock):
     mock_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
     requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
     requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
-
+    requests_mock.get(url='https://api.crowdstrike.com/intel/entities/actors/v1?ids=GOBLINPANDA&fields=name',
+                    json={'resources': [{'name': 'GOBLIN PANDA'}]})
     feed_tags = ['Tag1', 'Tag2']
     client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
                     type='Domain', include_deleted='false', limit=2, feed_tags=feed_tags)
@@ -66,7 +67,7 @@ def test_build_type_fql(types_list, expected):
     assert res == expected
 
 
-def test_create_indicators_from_response():
+def test_create_indicators_from_response(requests_mock, mocker):
     """Tests build_type_fql function
         Given
             - Indicator types that were chosen by the user.
@@ -76,10 +77,10 @@ def test_create_indicators_from_response():
             - validate result as expected
     """
     from CrowdStrikeIndicatorFeed import Client
-
+    mocker.patch('CrowdStrikeIndicatorFeed.get_integration_context', return_value={'GOBLINPANDA': 'GOBLIN PANDA'})
     raw_response = util_load_json('test_data/crowdstrike_indicators_list_command.json')
     expected_result = util_load_json('test_data/create_indicators_from_response.json')
-    res = Client.create_indicators_from_response(raw_response)
+    res = Client.create_indicators_from_response(raw_response, Client.get_actors_names_request)
     assert res == expected_result
 
 
@@ -123,8 +124,9 @@ def test_create_relationships_unknown_key(field, indicator, resource, expected_r
         Then
             - validate that no Key Error exception was thrown, and that only 1 relationship was created.
     """
+    from CrowdStrikeIndicatorFeed import Client
     from CrowdStrikeIndicatorFeed import create_relationships
-    rs_ls = create_relationships(field, indicator, resource)
+    rs_ls = create_relationships(field, indicator, resource, Client.get_actors_names_request)
     assert rs_ls == expected_results
     assert len(rs_ls) == 1
 
@@ -293,6 +295,8 @@ def test_handling_first_fetch_and_old_integration_context(mocker,
     client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
                     type='ALL', include_deleted='false', limit=2, first_fetch=first_fetch)
     mocker.patch('CrowdStrikeIndicatorFeed.demisto.getIntegrationContext', return_value=integration_context)
+    requests_mock.get(url='https://api.crowdstrike.com/intel/entities/actors/v1?ids=DOPPELSPIDER&fields=name',
+                      json={'resources': [{'name': 'DOPPEL SPIDER'}]})
     get_indicator_call = mocker.patch.object(client, 'get_indicators', return_value=get_indicators_response)
 
     results = client.handle_first_fetch_context_or_pre_2_1_0(filter)
@@ -388,7 +392,7 @@ def test_crowdstrike_indicators_list_command_check_actors_convert(mocker, reques
     requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
     requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
     requests_mock.get(url='https://api.crowdstrike.com/intel/entities/actors/v1?ids=TESTTEST&fields=name',
-                      json={'resources': [{'name': 'GOBLIN PANDA'}]})
+                      json={'resources': [{'name': 'TEST TEST'}]})
     mocker.patch('CrowdStrikeIndicatorFeed.get_integration_context', return_value={})
     mocker.patch('CrowdStrikeIndicatorFeed.update_integration_context')
     feed_tags = ['Tag1', 'Tag2']
@@ -401,7 +405,7 @@ def test_crowdstrike_indicators_list_command_check_actors_convert(mocker, reques
     assert len(response.outputs) == 1
     assert len(response.raw_response) == 1
     assert len(response.raw_response[0].get('relationships', None)) == 2
-    assert response.raw_response[0].get('relationships', None)[1].get('entityB', None) == 'GOBLIN PANDA'
+    assert response.raw_response[0].get('relationships', None)[1].get('entityB', None) == 'TEST TEST'
 
 
 def test_change_actors_from_id_to_name(mocker, requests_mock):
