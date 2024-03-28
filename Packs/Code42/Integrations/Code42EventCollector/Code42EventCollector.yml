@@ -40,7 +40,7 @@ name: Code42 Event Collector
 script:
   commands:
   - arguments:
-    - description: 'from which time to get events.'
+    - description: 'Starting time from which to get events.'
       name: start_date
       required: true
     - description: 'until which time to get events.'
