@@ -77,7 +77,7 @@ def update_content_items_docker_images_and_push(
     remote_content_repo: Repository.Repository,
     origin: Remote,
 ):
-    """_summary_
+    """Updates the content items' docker tags, and pushes the changes to a remote branch.
 
     Args:
         docker_image (str): The docker image.
