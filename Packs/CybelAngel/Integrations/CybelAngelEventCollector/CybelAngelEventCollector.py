@@ -46,7 +46,7 @@ class Client(BaseClient):
         demisto.debug(f'Running http-request with URL {url_suffix} and {params=}')
 
         response = self._http_request(
-            method, url_suffix=url_suffix, headers=headers, params=params, resp_type="response", ok_codes=(401, 200)
+            method, url_suffix=url_suffix, headers=headers, params=params, resp_type="response", ok_codes=(401, 403, 200)
         )
         if response.status_code == 200:
             return response.json()
