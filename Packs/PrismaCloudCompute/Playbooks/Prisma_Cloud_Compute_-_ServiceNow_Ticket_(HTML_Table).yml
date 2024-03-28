@@ -536,7 +536,7 @@ tasks:
             value:
               complex:
                 root: incident
-                accessor: eventtype
+                accessor: alertcategory
             iscontext: true
           right:
             value:
@@ -549,7 +549,7 @@ tasks:
             value:
               complex:
                 root: incident
-                accessor: eventtype
+                accessor: alertcategory
             iscontext: true
           right:
             value:
@@ -562,7 +562,7 @@ tasks:
             value:
               complex:
                 root: incident
-                accessor: eventtype
+                accessor: alertcategory
             iscontext: true
           right:
             value:

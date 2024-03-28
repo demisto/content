@@ -179,7 +179,7 @@ tasks:
         complex:
           root: JiraResources
       file_name:
-        simple: PCC_${incident.eventtype}_ComplianceIssues_ID_${inputs.ComplianceIssueID}.xlsx
+        simple: PCC_${incident.alertcategory}_ComplianceIssues_ID_${inputs.ComplianceIssueID}.xlsx
       sheet_name:
         simple: ComplianceIssues_ID_${inputs.ComplianceIssueID}
     separatecontext: false
@@ -677,7 +677,7 @@ tasks:
             value:
               complex:
                 root: incident
-                accessor: eventtype
+                accessor: alertcategory
             iscontext: true
           right:
             value:
@@ -690,7 +690,7 @@ tasks:
             value:
               complex:
                 root: incident
-                accessor: eventtype
+                accessor: alertcategory
             iscontext: true
           right:
             value:
@@ -703,7 +703,7 @@ tasks:
             value:
               complex:
                 root: incident
-                accessor: eventtype
+                accessor: alertcategory
             iscontext: true
           right:
             value:

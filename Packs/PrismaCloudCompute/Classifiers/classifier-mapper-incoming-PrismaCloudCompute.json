@@ -419,13 +419,13 @@
         "Prisma Cloud Compute Compliance v2": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
+                "Alert Category": {
+					"complex": null,
+					"simple": "type"
+				},
                 "Compliance Notes": {
 					"complex": null,
 					"simple": "compliance"
-				},
-				"Event Type": {
-					"complex": null,
-					"simple": "type"
 				},
 				"Prisma Cloud Compute Markdown": {
 					"complex": null,
