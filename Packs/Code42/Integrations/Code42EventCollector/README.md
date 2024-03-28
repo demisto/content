@@ -66,7 +66,7 @@ Manual command to get events, used mainly for debugging
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | start_date | Starting time from which to get events. | Required | 
-| end_date | until which time to get events. | Required | 
+| end_date | Time until when to get events. | Required | 
 | limit | The maximum number of events to return. Default is 100. | Required | 
 | event_type | The type of event to return. Possible values are: audit-logs, file-events. | Required | 
 
