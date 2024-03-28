@@ -512,6 +512,8 @@
     - |
       if [[ -n "${SHOULD_LINT_ALL}" ]]; then
         echo "Pre Commit all files"
+        # if we need to pre-commit all anyway we need the graph, and it's better to create it here.
+        demisto-sdk graph update
         demisto-sdk pre-commit -a --mode=nightly
       else
         echo "Pre Commit only changed files"
