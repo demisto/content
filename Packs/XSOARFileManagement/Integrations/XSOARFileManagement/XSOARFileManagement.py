@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import re
 import time
 from typing import Tuple
@@ -63,7 +65,7 @@ class Client(BaseClient):
         )
         return response
 
-    def delete_file(self, entry_id: str, delete_artifact=True):
+    def delete_file(self, incident_id, entry_id: str, delete_artifact=True):
         """Delete file by entry ID
         Arguments:
             client: (Client) The client class.
@@ -74,7 +76,9 @@ class Client(BaseClient):
         """
         body_content = {
             "id": entry_id,
-            "deleteArtifact": delete_artifact
+            "deleteArtifact": delete_artifact,
+            "version": 0,
+            "investigationId": incident_id
         }
         response = self._http_request(
             method='POST',
@@ -188,7 +192,7 @@ def get_incident_id(entry_id: str) -> str:
     Returns:
         str -- incident id
     """
-    res = re.findall("(\d+)@(\d+)", entry_id)
+    res = re.findall("(.*?)@(\d+)", entry_id)
     if len(res) <= 0:
         return_error("EntryID unknow or malformatted !")
     return res[0][1]
@@ -297,13 +301,13 @@ def delete_attachment_command(client: Client, args: dict) -> CommandResults:
 def delete_file(client: Client, entry_id: str):
     files = demisto.context().get('File', [])
     files = [files] if not isinstance(files, list) else files
+    incident_id = get_incident_id(entry_id)
     # delete old file
     try:
-        client.delete_file(entry_id)
+        client.delete_file(incident_id, entry_id)
     except DemistoException as error:
         return_error(f"File already deleted or not found !\n{str(error)}")
     # output
-    incident_id = get_incident_id(entry_id)
     client.delete_context(incident_id, "File")
     time.sleep(1)  # to let the API execute the request
     new_files = [file for file in files if file.get("EntryID") != entry_id]
@@ -432,6 +436,7 @@ def main() -> None:
     command = demisto.command()
 
     api_key = demisto.get(demisto.params(), 'creds_apikey.password')
+    api_key_id = demisto.params().get("creds_apikey_id", {}).get("password")
     server_url = demisto.demistoUrls()["server"]
     base_url = params.get('url', server_url)
     verify_certificate = not params.get('insecure', False)
@@ -439,7 +444,8 @@ def main() -> None:
 
     try:
         headers = {
-            'Authorization': api_key
+            'Authorization': api_key,
+            'x-xdr-auth-id': api_key_id
         }
         client = Client(
             base_url=base_url,

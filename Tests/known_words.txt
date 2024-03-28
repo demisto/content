@@ -278,4 +278,6 @@ datetime
 HSTS
 SaaS
 saas
+Symantec
 XQL
+VPC

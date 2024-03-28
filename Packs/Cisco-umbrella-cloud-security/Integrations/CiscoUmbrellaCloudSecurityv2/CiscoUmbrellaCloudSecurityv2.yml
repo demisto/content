@@ -29,27 +29,18 @@ script:
     - name: destination_list_id
       description: The ID of the destination list. Destination lists can be fetched with the `umbrella-destination-lists-list` command.
       required: true
-      isArray: false
     - name: destination_ids
       description: Comma-separated list of destination IDs to be retrieved from a list of destinations.
-      required: false
       isArray: true
     - name: destinations
       description: Comma-separated list of destinations to retrieve, a destination may be a domain, URL, or IP address.
-      required: false
       isArray: true
     - name: page
       description: Page number of paginated results. Minimum 1; Default 1.
-      required: false
-      isArray: false
     - name: page_size
       description: The number of items per page. Minimum 1; Maximum 100; Default 50.
-      required: false
-      isArray: false
     - name: limit
       description: The number of items per page. Minimum 1.
-      required: false
-      isArray: false
       defaultValue: '50'
     outputs:
     - type: String
@@ -73,15 +64,11 @@ script:
     - name: destination_list_id
       description: The ID of the destination list. Destination lists can be fetched with the `umbrella-destination-lists-list` command.
       required: true
-      isArray: false
     - name: destinations
       description: Comma-separated list of destinations. A destination may be a URL, IPv4, CIDR or fully qualified domain name.
       required: true
-      isArray: false
     - name: comment
       description: A comment about all the inserted destinations.
-      required: false
-      isArray: false
       defaultValue: Added from XSOAR
     outputs:
     - type: Number
@@ -126,7 +113,6 @@ script:
     - name: destination_list_id
       description: The ID of the destination list. Destination lists can be fetched with the `umbrella-destination-lists-list` command.
       required: true
-      isArray: false
     - name: destination_ids
       description: Comma-separated list of destination IDs. Destinations can be fetched with the `umbrella-destination-list` command.
       required: true
@@ -173,20 +159,12 @@ script:
     arguments:
     - name: destination_list_id
       description: The ID of the destination list to retrieve.
-      required: false
-      isArray: false
     - name: page
       description: Page number of paginated results. Minimum 1; Default 1.
-      required: false
-      isArray: false
     - name: page_size
       description: The number of items per page. Minimum 1; Maximum 100; Default 50.
-      required: false
-      isArray: false
     - name: limit
       description: The maximum number of records to retrieve. Minimum 1.
-      required: false
-      isArray: false
       defaultValue: '50'
     outputs:
     - type: Number
@@ -242,8 +220,6 @@ script:
     arguments:
     - name: bundle_type
       description: The type of the Umbrella policy associated with the destination list. If the field is not specified, the default value is 'DNS'.
-      required: false
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'DNS'
@@ -251,7 +227,6 @@ script:
     - name: access
       description: 'The type of access for the destination list. Valid values are "allow" or "block". Accepted types for destination list with the access "allow" are: DOMAIN, IPv4 and CIDR. Accepted types for destination list with the access "block" are: URL and DOMAIN.'
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'allow'
@@ -259,7 +234,6 @@ script:
     - name: is_global
       description: Specifies whether the destination list is a global destination list. There is only one default destination list of type 'allow' or 'block' for an organization.
       required: true
-      isArray: false
       auto: PREDEFINED
       predefined:
       - 'True'
@@ -267,15 +241,11 @@ script:
     - name: name
       description: The name of the destination list.
       required: true
-      isArray: false
     - name: destinations
       description: Comma-separated list of destinations. A destination may be a URL, IPv4, CIDR or fully qualified domain name.
-      required: false
       isArray: true
     - name: destinations_comment
       description: A comment about all the inserted destinations.
-      required: false
-      isArray: false
       defaultValue: Added from XSOAR
     outputs:
     - type: Number
@@ -320,11 +290,9 @@ script:
     - name: destination_list_id
       description: The ID of the destination list. Destination lists can be fetched with the `umbrella-destination-lists-list` command.
       required: true
-      isArray: false
     - name: name
       description: The name of the destination list.
       required: true
-      isArray: false
     outputs:
     - type: Number
       contextPath: Umbrella.DestinationLists.id
@@ -368,7 +336,6 @@ script:
     - name: destination_list_id
       description: The ID of the destination list. Destination lists can be fetched with the `umbrella-destination-lists-list` command.
       required: true
-      isArray: false
   - arguments:
     - description: Organization ID.
       name: orgId
@@ -483,7 +450,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.13.87159
   isfetch: false
 fromversion: 6.9.0
 tests:
