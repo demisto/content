@@ -41,19 +41,20 @@ def test_main_with_entry_id(mocker: MockerFixture) -> None:
     Then it should not raise any exceptions.
     """
     mocker.patch.object(demisto, "args", return_value={
-        "filename": "test_file",
-        "data": "test_data",
-        "data_encoding": "raw",
+        "filename": "test_filename",
+        "data": "test_file_data",
+        "data_encoding": "raw_encoding",
         "entryId": "test_entry_id",
     })
-    mocker.patch("FileCreateAndUploadV2.get_data_from_file", return_value=b"test_data")
-    mocker.patch("FileCreateAndUploadV2.decode_data", return_value=b"test_data")
+    mock_file_data = b"test_file_data"
+    mocker.patch("FileCreateAndUploadV2.get_data_from_file", return_value=mock_file_data)
+    mocker.patch("FileCreateAndUploadV2.decode_data", return_value=mock_file_data)
     mocker.patch.object(demisto, "results")
 
     main()
     results = demisto.results.call_args[0][0]
 
-    assert results["File"] == "test_file"
+    assert results["File"] == "test_filename"
     assert results["ContentsFormat"] == "text"
 
 
