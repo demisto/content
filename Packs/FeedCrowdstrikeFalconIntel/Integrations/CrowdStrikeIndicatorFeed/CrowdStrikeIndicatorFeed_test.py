@@ -27,7 +27,7 @@ def test_crowdstrike_indicators_list_command(requests_mock):
     requests_mock.post('https://api.crowdstrike.com/oauth2/token', json={'access_token': '12345'})
     requests_mock.get(url='https://api.crowdstrike.com/intel/combined/indicators/v1', json=mock_response)
     requests_mock.get(url='https://api.crowdstrike.com/intel/entities/actors/v1?ids=GOBLINPANDA&fields=name',
-                    json={'resources': [{'name': 'GOBLIN PANDA'}]})
+                      json={'resources': [{'name': 'GOBLIN PANDA'}]})
     feed_tags = ['Tag1', 'Tag2']
     client = Client(base_url='https://api.crowdstrike.com/', credentials={'identifier': '123', 'password': '123'},
                     type='Domain', include_deleted='false', limit=2, feed_tags=feed_tags)
@@ -426,6 +426,6 @@ def test_change_actors_from_id_to_name(mocker, requests_mock):
     requests_mock.get(url='https://api.crowdstrike.com/intel/entities/actors/v1?ids=TEST1&ids=TEST2&fields=name',
                       json={'resources': [{'name': 'Changedtest1'}, {'name': 'Changedtest2'}]})
     result = change_actors_from_id_to_name(actors_unparsed_array, crowdstrike_client.get_actors_names_request)
-    assert result[0] == 'WAS IN CONTEXT'
-    assert result[1] == 'Changedtest1'
-    assert result[2] == 'Changedtest2'
+    assert result[0] == "WAS IN CONTEXT"
+    assert result[1] == "Changedtest1"
+    assert result[2] == "Changedtest2"
