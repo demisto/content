@@ -34,7 +34,7 @@ INTEGRATION_CONTEXT_NAME = 'Akamai'
 
 
 VENDOR = "Akamai"
-PRODUCT = "SIEM"
+PRODUCT = "WAF"
 FETCH_EVENTS_PAGE_SIZE = 50000
 
 # Disable insecure warnings
