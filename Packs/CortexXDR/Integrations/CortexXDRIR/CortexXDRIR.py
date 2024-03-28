@@ -540,7 +540,6 @@ def sort_incident_data(raw_incident):
     return incident
 
 
-
 def get_incident_extra_data_command(client, args):
     global ALERTS_LIMIT_PER_INCIDENTS
     incident_id = args.get('incident_id')
@@ -588,7 +587,6 @@ def get_incident_extra_data_command(client, args):
             alert_context['ID'] = endpoint_id
         if alert_context:
             endpoint_context_output.append(alert_context)
-    
     context_output = {f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident}
     if account_context_output:
         context_output['Account(val.Username==obj.Username)'] = account_context_output
