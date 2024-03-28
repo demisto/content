@@ -2,7 +2,7 @@ id: Prisma Cloud Compute - ServiceNow Compliance Ticket
 version: -1
 name: Prisma Cloud Compute - ServiceNow Compliance Ticket
 description: |-
-  This playbook is a sub playbook of the "Prisma Cloud Compute - Compliance Alert Host Enrichment Loop" playbook.
+  This playbook is a sub-playbook of the "Prisma Cloud Compute - Compliance Alert Host Enrichment Loop" playbook.
   It creates a new ServiceNow ticket or updates an existing ServiceNow ticket for each compliance ID retrieved in the original Prisma Cloud compliance alert, with enriched data for each resource (host, image or container).
 starttaskid: "0"
 tasks:
@@ -139,7 +139,7 @@ tasks:
       id: bbce9749-39a3-4c19-8f2b-cf6dcb07f606
       version: -1
       name: Create a filter term for extracting relevant resources
-      description: This task will create a string which will be used as a filter which will be used in other tasks in order to extract only the relevant resources, based on the compliance issue ID, from the full list of affected resources.
+      description: This task will create a string which will be used as a filter in other tasks in order to extract only the relevant resources, based on the compliance issue ID, from the full list of affected resources.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -240,7 +240,7 @@ tasks:
       name: Search for existing open ServiceNow issues
       description: |-
         Retrieves ticket information according to the supplied query.
-        This task is used In order to decide in later stages of the playbook whether it needs to create a new ticket or update an existing one.
+        This task is used in order to decide in later stages of the playbook whether it needs to create a new ticket or update an existing one.
       script: '|||servicenow-query-tickets'
       type: regular
       iscommand: true
@@ -376,7 +376,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -724,7 +724,7 @@ tasks:
       name: Delete "Ticket" duplicates
       description: |-
         The reason for this task is to make sure that the next task will get a single value for each key.
-        Since this playbook may contain several "Ticket" objects which all of them are with the same ID, depends on the scenario, this task will make sure only one of them will be used in the next task.
+        Since this playbook may contain several "Ticket" objects with the same ID, depending on the scenario, this task will make sure only one of them will be used in the next task.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -829,7 +829,7 @@ inputs:
 - key: ComplianceIssueID
   value: {}
   required: false
-  description: The compliance issue id to open a ServiceNow ticket for.
+  description: The compliance issue ID to open a ServiceNow ticket for.
   playbookInputQuery:
 - key: ComplianceIssueDescription
   value: {}

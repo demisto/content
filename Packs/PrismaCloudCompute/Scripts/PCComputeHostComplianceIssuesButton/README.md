@@ -27,10 +27,10 @@ This script uses the following commands and scripts.
 
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| hostname | The hostname to be enriched. |
-| compliance_ids | A comma separated list of compliance IDs to be enriched. If no value provided, it will return results for all compliance IDs. |
+| **Argument Name** | **Description**                                                                                                               |
+| --- |-------------------------------------------------------------------------------------------------------------------------------|
+| hostname | The hostname to be enriched.                                                                                                  |
+| compliance_ids | A comma-separated list of compliance IDs to be enriched. If no value provided, it will return results for all compliance IDs. |
 
 ## Outputs
 

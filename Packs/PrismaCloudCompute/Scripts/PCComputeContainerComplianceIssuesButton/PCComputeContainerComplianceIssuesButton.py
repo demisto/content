@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 '''
 Script Description:
-    This script runs the "prisma-cloud-compute-hosts-scan-list" command for a specific container id and returns details about its
+    This script runs the "prisma-cloud-compute-hosts-scan-list" command for a specific container ID and returns details about its
 compliance issues, if found.
     If any compliance issues found, it will create a new tab in the layout called "Detailed Compliance Issues" showing the issues
 details.
@@ -141,7 +141,7 @@ def main() -> None:
 
         # Validate container_id length
         if len(container_id) != 64:
-            return_error("Invalid container_id. Please verify that you entered a valid 64-character container id.")
+            return_error("Invalid container_id. Please verify that you entered a valid 64-character container ID.")
 
         # Run the command with the provided arguments
         compliance_issues = run_prisma_cloud_compute_containers_scan_list(container_id)

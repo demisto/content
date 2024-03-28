@@ -12,7 +12,7 @@ args:
   required: true
   description: The hostname to be enriched.
 - name: compliance_ids
-  description: A comma separated list of compliance IDs to be enriched. If no value provided, it will return results for all compliance IDs.
+  description: A comma-separated list of compliance IDs to be enriched. If no value provided, it will return results for all compliance IDs.
 outputs:
 - contextPath: PrismaCloudCompute.PCC_HostComplianceIssues.hostname
   description: The hostname.

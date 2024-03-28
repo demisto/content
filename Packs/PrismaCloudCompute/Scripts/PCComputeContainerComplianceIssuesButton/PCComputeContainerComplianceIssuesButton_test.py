@@ -224,6 +224,6 @@ def test_main_with_error(mocker):
     main()
     err_msg = return_error_mock.call_args_list[0][0][0]
     assert (
-        "Invalid container_id. Please verify that you entered a valid 64-character container id."
+        "Invalid container_id. Please verify that you entered a valid 64-character container ID."
         in err_msg
     )

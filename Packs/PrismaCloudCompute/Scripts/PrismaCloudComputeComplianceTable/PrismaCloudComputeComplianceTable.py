@@ -89,7 +89,7 @@ class Container(ComplianceObject):
 
         Args:
             input_data (dict): The input context data containing information about the container.
-            identifier (str): The container id.
+            identifier (str): The container ID.
             issues (list): List of issues the container appeared in.
 
         Returns:

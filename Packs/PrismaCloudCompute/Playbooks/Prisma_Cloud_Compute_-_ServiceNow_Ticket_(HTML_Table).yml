@@ -2,7 +2,7 @@ id: Prisma Cloud Compute - ServiceNow Ticket (HTML Table)
 version: -1
 name: Prisma Cloud Compute - ServiceNow Ticket (HTML Table)
 description: |-
-  This playbook is a sub playbook of the "Prisma Cloud Compute - Jira Compliance Issue" playbook.
+  This playbook is a sub-playbook of the "Prisma Cloud Compute - ServiceNow Compliance Ticket" playbook.
   It creates a new ServiceNow ticket or updates an existing ServiceNow ticket with an HTML table for the given compliance ID retrieved from the parent playbook, with enriched data for each resource (host, image or container).
 starttaskid: "0"
 tasks:
@@ -103,7 +103,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -386,7 +386,7 @@ tasks:
       id: c4b105b3-220f-42d1-8198-157294d19140
       version: -1
       name: Set "TicketAction" as "Create"
-      description: The action of the the ticket (create or update) will be displayed in the layout under the “Ticketing Information” tab in the layout.
+      description: The action of the the ticket (create or update) will be displayed in the layout under the “Ticketing Information” tab.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -423,7 +423,7 @@ tasks:
       id: 794b6ce1-6b38-47bc-80e6-d998b234b7c5
       version: -1
       name: Set "TicketAction" as "Update"
-      description: The action of the the ticket (create or update) will be displayed in the layout under the “Ticketing Information” tab in the layout.
+      description: The action of the the ticket (create or update) will be displayed in the layout under the “Ticketing Information” tab.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -465,7 +465,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -596,7 +596,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -652,7 +652,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -715,7 +715,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1014,7 +1014,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1077,7 +1077,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1140,7 +1140,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -1190,12 +1190,12 @@ inputs:
 - key: Filter
   value: {}
   required: false
-  description: A filter to use for extracting affected resources with a specific compliance issue id.
+  description: A filter to use for extracting affected resources with a specific compliance issue ID.
   playbookInputQuery:
 - key: ComplianceIssueID
   value: {}
   required: false
-  description: The compliance issue id to open a ServiceNow ticket for.
+  description: The compliance issue ID to open a ServiceNow ticket for.
   playbookInputQuery:
 - key: ComplianceIssueDescription
   value: {}
@@ -1209,7 +1209,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: TicketAction
-  description: What was the ticket action - create or update.
+  description: The ticket action - create or update.
   type: string
 - contextPath: Ticket
   description: The ticket object which was created or updated.

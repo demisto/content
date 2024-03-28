@@ -2,7 +2,7 @@ id: Prisma Cloud Compute - Compliance Alert Image Enrichment Loop
 version: -1
 name: Prisma Cloud Compute - Compliance Alert Image Enrichment Loop
 description: |-
-  This is a sub playbook of the "Prisma Cloud Compute - Compliance Alert v2" playbook.
+  This is a sub-playbook of the "Prisma Cloud Compute - Compliance Alert v2" playbook.
   It will loop through all of the given compliance issue IDs and will retrieve the following information for each affected image based on the compliance issue ID:
   - Image ID
   - Compliance Issues
@@ -120,7 +120,7 @@ tasks:
       id: efe4b9bc-d64f-4647-880e-c68faeea1829
       version: -1
       name: Get full data from one host
-      description: In order to get more details about the compliance issue, we can retrieve the full details of 1 resource, which includes more details about each compliance issue like title, severity etc.
+      description: In order to get more details about the compliance issue, you can retrieve the full details of 1 resource, which includes more details about each compliance issue like title, severity etc.
       script: '|||prisma-cloud-compute-images-scan-list'
       type: regular
       iscommand: true
@@ -332,8 +332,8 @@ tasks:
       version: -1
       name: Prisma Cloud Compute - Jira Compliance Issue
       description: |
-        This playbook is a sub playbook of the "Prisma Cloud Compute - Compliance Alert Host Enrichment Loop" playbook.
-        It create or update existing Jira issue for each compliance ID retrieved in the original Prisma Cloud compliance alert, with enriched data for each resource (host, image or container).
+        This playbook is a sub-playbook of the "Prisma Cloud Compute - Compliance Alert Host Enrichment Loop" playbook.
+        It creates or updates existing Jira issues for each compliance ID retrieved in the original Prisma Cloud compliance alert, with enriched data for each resource (host, image or container).
       playbookName: Prisma Cloud Compute - Jira Compliance Issue
       type: playbook
       iscommand: false
@@ -582,7 +582,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -643,8 +643,8 @@ inputs:
     - Jira
     - ServiceNow
 
-    If none of the above selected, no external ticket will get created.
-    For Jira, please also set the "JiraProjectName" and "JiraIssueTypeName" playbook inputs.
+    If neither of the above are selected, no external ticket will be created.
+    For Jira, also set the "JiraProjectName" and "JiraIssueTypeName" playbook inputs.
   playbookInputQuery:
 - key: JiraIssueTypeName
   value: {}

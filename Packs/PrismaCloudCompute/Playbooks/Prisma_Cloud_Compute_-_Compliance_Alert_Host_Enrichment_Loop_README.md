@@ -1,4 +1,4 @@
-This is a sub playbook of the "Prisma Cloud Compute - Compliance Alert v2" playbook.
+This is a sub-playbook of the "Prisma Cloud Compute - Compliance Alert v2" playbook.
 It will loop through all of the given compliance issue IDs and will retrieve the following information for each affected host based on the compliance issue ID:
 - Hostname
 - Compliance Issues
@@ -18,7 +18,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* PaloAltoNetworks_PrismaCloudCompute
+PaloAltoNetworks_PrismaCloudCompute
 
 ### Scripts
 
@@ -35,12 +35,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ---
 
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| ComplianceIssueID | A compliance issue ID. This ID is used to filter relevant hostnames for enrichment. |  | Optional |
-| TicketingSystem | Which ticketing system should be used to create an external ticket.<br/>Available options:<br/>- Jira<br/>- ServiceNow<br/><br/>If none of the above selected, no external ticket will get created.<br/>For Jira, please also set the "JiraProjectName" and "JiraIssueTypeName" playbook inputs.<br/> |  | Optional |
-| JiraIssueTypeName | Issue type name. For example: "Task". |  | Optional |
-| JiraProjectName | The project name with which to associate the issue. |  | Optional |
+| **Name** | **Description**                                                                                                                                                                                                                                                                                      | **Default Value** | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- | --- |
+| ComplianceIssueID | A compliance issue ID. This ID is used to filter relevant hostnames for enrichment.                                                                                                                                                                                                                  |  | Optional |
+| TicketingSystem | Which ticketing system should be used to create an external ticket.<br/>Available options:<br/>- Jira<br/>- ServiceNow<br/><br/>If neither of the above are selected, no external ticket will be created.<br/>For Jira, also set the "JiraProjectName" and "JiraIssueTypeName" playbook inputs.<br/> |  | Optional |
+| JiraIssueTypeName | Issue type name. For example: "Task".                                                                                                                                                                                                                                                                |  | Optional |
+| JiraProjectName | The project name with which to associate the issue.                                                                                                                                                                                                                                                  |  | Optional |
 
 ## Playbook Outputs
 

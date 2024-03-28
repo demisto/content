@@ -305,7 +305,7 @@ tasks:
     task:
       id: 2d178d2d-57f0-498a-89a3-7972faf323de
       version: -1
-      name: Extract container id
+      name: Extract container ID
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 

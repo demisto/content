@@ -1,4 +1,4 @@
-This script runs the "prisma-cloud-compute-container-scan-results-list" command for a specific container id and returns details about its compliance issues, if found. If any compliance issues found, it will create a new tab in the layout called "Detailed Compliance Issues" showing the issues details.
+This script runs the "prisma-cloud-compute-container-scan-results-list" command for a specific container ID and returns details about its compliance issues, if found. If any compliance issues found, it will create a new tab in the layout called "Detailed Compliance Issues" showing the issues details.
 Returns the following fields for each compliance ID:
 - Compliance ID
 - Cause
@@ -27,10 +27,10 @@ This script uses the following commands and scripts.
 
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| container_id | Te container ID to be enriched. |
-| compliance_ids | A comma separated list of compliance IDs to be enriched. If no value provided, it will return results for all compliance IDs. |
+| **Argument Name** | **Description**                                                                                                               |
+| --- |-------------------------------------------------------------------------------------------------------------------------------|
+| container_id | The container ID to be enriched.                                                                                              |
+| compliance_ids | A comma-separated list of compliance IDs to be enriched. If no value provided, it will return results for all compliance IDs. |
 
 ## Outputs
 

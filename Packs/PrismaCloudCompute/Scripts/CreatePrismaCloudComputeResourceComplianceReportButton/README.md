@@ -22,16 +22,16 @@ This script uses the following commands and scripts.
 
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| table | The table of data. |
-| title | The title of the report. |
-| to | The to email address. |
-| headers | The headers for the HTML table. |
-| resource_type | The resource type. |
-| output_type | Whether to send the compliance issues as html table or attached in xlsx file. |
-| desired_severities | A Comma separated list of severities which will be included in the compliance report. If no value is provided, all of the severities will be included. Example: "Critical, High"." |
-| desired_resources | A comma separated list of resources. In case the report should contain results only for specific resources, whether it's a host, container ID or an image ID, provide the resources here. |
+| **Argument Name** | **Description**                                                                                                                                                                           |
+| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| table | The table of data.                                                                                                                                                                        |
+| title | The title of the report.                                                                                                                                                                  |
+| to | The to email address.                                                                                                                                                                     |
+| headers | The headers for the HTML table.                                                                                                                                                           |
+| resource_type | The resource type.                                                                                                                                                                        |
+| output_type | Whether to send the compliance issues as an html table or attached in xlsx file.                                                                                                          |
+| desired_severities | A comma-separated list of severities which will be included in the compliance report. If no value is provided, all of the severities will be included. Example: "Critical, High"."        |
+| desired_resources | A comma-separated list of resources. In case the report should contain results only for specific resources, whether it's a host, container ID or an image ID, provide the resources here. |
 
 ## Outputs
 

@@ -1,4 +1,4 @@
-This playbook is a sub playbook of the "Prisma Cloud Compute - Jira Compliance Issue" playbook.
+This playbook is a sub-playbook of the "Prisma Cloud Compute - ServiceNow Compliance Ticket" playbook.
 It creates a new ServiceNow ticket or updates an existing ServiceNow ticket with an HTML table for the given compliance ID retrieved from the parent playbook, with enriched data for each resource (host, image or container).
 
 ## Dependencies
@@ -30,13 +30,13 @@ This playbook does not use any integrations.
 
 ---
 
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
+| **Name** | **Description**                                                                                 | **Default Value** | **Required** |
+| --- |-------------------------------------------------------------------------------------------------| --- | --- |
 | TicketID | Existing ticket ID. Used to determine whether to create a new ticket or update an existing one. |  | Optional |
-| Filter | A filter to use for extracting affected resources with a specific compliance issue id. |  | Optional |
-| ComplianceIssueID | The compliance issue id to open a ServiceNow ticket for. |  | Optional |
-| ComplianceIssueDescription | The compliance issue description. |  | Optional |
-| ComplianceIssueSeverity | The compliance issue severity. |  | Optional |
+| Filter | A filter to use for extracting affected resources with a specific compliance issue ID.          |  | Optional |
+| ComplianceIssueID | The compliance issue ID to open a ServiceNow ticket for.                                        |  | Optional |
+| ComplianceIssueDescription | The compliance issue description.                                                               |  | Optional |
+| ComplianceIssueSeverity | The compliance issue severity.                                                                  |  | Optional |
 
 ## Playbook Outputs
 
@@ -44,7 +44,7 @@ This playbook does not use any integrations.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| TicketAction | What was the ticket action - create or update. | string |
+| TicketAction | The ticket action - create or update. | string |
 | Ticket | The ticket object which was created or updated. | string |
 
 ## Playbook Image

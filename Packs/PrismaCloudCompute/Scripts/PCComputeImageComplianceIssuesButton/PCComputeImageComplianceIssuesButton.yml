@@ -5,14 +5,14 @@ name: PCComputeImageComplianceIssuesButton
 script: ''
 type: python
 tags: []
-comment: "This script runs the \"prisma-cloud-compute-images-scan-list\" command for a specific container id and returns details about its compliance issues, if found. If any compliance issues found, it will create a new tab in the layout called \"Detailed Compliance Issues\" showing the issues details.\nReturns the following fields for each compliance ID:\n- Compliance ID\n- Cause\n- Severity\n- Title\n- Description."
+comment: "This script runs the \"prisma-cloud-compute-images-scan-list\" command for a specific container ID and returns details about its compliance issues, if found. If any compliance issues found, it will create a new tab in the layout called \"Detailed Compliance Issues\" showing the issues details.\nReturns the following fields for each compliance ID:\n- Compliance ID\n- Cause\n- Severity\n- Title\n- Description."
 enabled: true
 args:
 - name: image_id
   required: true
   description: The image ID to be enriched.
 - name: compliance_ids
-  description: A comma separated list of compliance IDs to be enriched. If no value provided, it will return results for all compliance IDs.
+  description: A comma-separated list of compliance IDs to be enriched. If no value provided, it will return results for all compliance IDs.
 outputs:
 - contextPath: PrismaCloudCompute.PCC_ImageComplianceIssues.image_id
   description: The image ID.
