@@ -9,10 +9,11 @@ This pack includes Cortex XSIAM content.
 To configure IBM Guardium to forward logs to Cortex XSIAM Broker VM via syslog follow the steps below.
 
 ### Creating a syslog destination for events
+
 1. Log in to the CLI and define the IP address for Cortex XSIAM Broker VM.
-2. Use SSH to log in to IBM as default user.
-        Username: <user name>
-        Password: <password> 
+2. Use SSH to log in to IBM as default user.  
+Username: \<user name\>  
+Password: \<password\> 
 3. Type the following command to configure the syslog destination for: 
 
 |  Event Type   | Command   
@@ -30,14 +31,20 @@ To configure IBM Guardium to forward logs to Cortex XSIAM Broker VM via syslog f
 > **tcp\ udp** - protocol used to communicate with the event collector   
 
 
-*For example:*
-`store remote log add daemon.all <IP> udp` &nbsp;
-`store remote log add daemon.all example.com:1514 tcp` &nbsp;
+*For example:*  
+
+``` bash
+    store remote log add daemon.all <IP> udp
+
+    store remote log add daemon.all example.com:1514 tcp
+```  
+
 
 
 [IBM Guardium - creating a syslog destination for events](https://www.ibm.com/docs/en/qsip/7.4?topic=guardium-creating-syslog-destination-events)
 
 ### Configure policies to generate syslog events
+
 Policies in IBM Guardium are responsible for reacting to events and forwarding the event information to Cortex XSIAM Broker VM.
 
 1. Click the **Tools tab**.
@@ -59,6 +66,7 @@ Policies in IBM Guardium are responsible for reacting to events and forwarding t
 
 
 ### Installing an IBM Guardium policy
+
 1. Click the **Administration Console** tab.
 2. From the left navigation, select **Configuration** &rarr; **Policy Installation**.
 3. From the Policy Installer pane, select a policy that you created in the previous step.
@@ -71,9 +79,11 @@ Policies in IBM Guardium are responsible for reacting to events and forwarding t
 
  
 ## Collect Events from Vendor
+
 In order to use the collector, use the [Broker VM](#broker-vm) option.
  
 ### Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
  
 You can configure the specific vendor and product for this instance.
@@ -81,15 +91,16 @@ You can configure the specific vendor and product for this instance.
 1. Navigate to **Settings** &rarr; **Configuration** &rarr; **Data Broker** &rarr; **Broker VMs**.
 2. Go to the **Apps** column under the **Brokers** tab and add the **Syslog Collector** app for the relevant broker instance. If the app already exists, hover over it and click **Configure**.
 3. Click **Add New** for adding a new syslog data source.
-4. When configuring the new syslog data source, set the following values:
-
-&nbsp;
-
-|  Parameter   | Value   
-| :---          | :---        
-| `Vendor` | Enter **IBM**
-| `Product` | Enter **Guardium**
+4. When configuring the new syslog data source, set the following values:  
 
 
- 
+
+| Parameter     | Value    
+   | :---          | :---                    
+   | `Protocol`    | TCP or UDP according to the protocol defined in the IBM Guardium CLI.
+   | `Port`        | Enter the port number defined in the IBM Guardium CLI or 514 if no specific port was defined.
+   | `Vendor`      | Enter **IBM**.
+   | `Product`     | Enter **Guardium**.
+
+
 </~XSIAM>
