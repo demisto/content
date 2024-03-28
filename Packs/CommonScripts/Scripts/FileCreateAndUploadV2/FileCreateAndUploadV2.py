@@ -10,10 +10,9 @@ def get_data_from_file(entry_id: str):
     This function reads the file associated with the entry_id and returns its data as bytes.
     """
     try:
-        data = Path(demisto.getFilePath(entry_id)['path']).read_bytes()
+        return Path(demisto.getFilePath(entry_id)['path']).read_bytes()
     except Exception as e:
         raise DemistoException(f'There was a problem opening or reading the file.\nError is: {e}')
-    return data
 
 
 def decode_data(data: Any, data_encoding: str):
@@ -23,7 +22,7 @@ def decode_data(data: Any, data_encoding: str):
     if data_encoding == 'base64':
         data = base64.b64decode(data)
     elif data_encoding != 'raw':
-        raise ValueError(f'Invalid data encoding name: {data_encoding}')
+        raise ValueError(f'Invalid data encoding value: {data_encoding}, must be either `base64` or `raw`')
     return data
 
 
