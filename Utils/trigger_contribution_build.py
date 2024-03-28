@@ -2,7 +2,6 @@
 import argparse
 import logging
 import os
-from collections import namedtuple
 
 import urllib3
 from github import Github, GithubException
@@ -77,7 +76,6 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
             # the branch the contributor wants to commit into (starts with 'demisto:')
             github_branch_name = pull_request.base.ref
 
-
             # get the GitLab branch object corresponding to the GitHub branch
             if branch := gitlab_project.branches.get(github_branch_name):
                 logging.info(f"--- Handling branch: {branch.name}. ---")
@@ -96,11 +94,12 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
                     variables=variables,
                 )
 
-                logging.info(f"New pipeline triggered: {new_pipeline.web_url}")
+                logging.info(f"New pipeline triggered successfully: {new_pipeline.web_url}")
                 issue.create_comment(COMMENT_MESSAGES.build_triggered.format(url=new_pipeline.web_url))
 
             else:
-                logging.info(f"No branch was found with the name: {github_branch_name}. New pipeline was not created.")
+                logging.info(f"No branch was found in the GitLab project with the name: {github_branch_name}.\
+                             New pipeline was not created.")
                 issue.create_comment(COMMENT_MESSAGES.build_trigger_failed.format(branch=github_branch_name))
 
             pull_request.remove_from_labels(GITHUB_TRIGGER_BUILD_LABEL)
