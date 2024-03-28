@@ -2,8 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # Imports
 from CommonServerUserPython import *
-from gdetect.api import status_msg, Client as gClient, logger as gLogger
-from gdetect.exceptions import GDetectError, NoAuthenticateToken, NoURL, BadAuthenticationToken, BadUUID, UnauthorizedAccess
+from gdetect.api import HTTPExceptions, Client as gClient, logger as gLogger
+from gdetect.exceptions import GDetectError
 import logging
 ''' IMPORTS '''
 
@@ -48,21 +48,21 @@ class Client(BaseClient):
         :rtype: ``Dict[str, Any]``
         """
 
-        return self.gclient.get(uuid)
+        return self.gclient.get_by_uuid(uuid)
 
 
 def test_module(client):
     """
-    Returning 'ok' indicates that the integration works like it suppose to. Connection to the service is successful.
+    Returning the response to a dummy request. Connection to the service is successful if status_code is 200 ('ok').
 
     Args:
         client: GLIMPSDetect client
 
     Returns:
-        'ok' if test passed, anything else will fail the test
+       Response to GLIMPS analysis request. Response with status code other than 200 will fail the test.
     """
-    client.gdetect_get('00000000-0000-0000-0000-000000000000')
-    return 'ok'
+    response = client.gdetect_get('00000000-0000-0000-0000-000000000000')
+    return response
 
 
 def gdetect_send_command(client, args):  # TO TEST
@@ -255,8 +255,6 @@ def gdetect_get_threats_command(client, args):  # TO TEST
 
     return results
 
-# Main TODO
-
 
 def main():
     """
@@ -269,11 +267,12 @@ def main():
         client = Client(params.get('url'), params.get('api_token'), params.get('insecure'), params.get('proxy'))
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            res = test_module(client)
-            code = client.gclient.response.response.status_code
+            response = test_module(client)
+
+            code = response.status_code
             if code == 200 or code == 404:
-                return_results(res)
-            error = f'GDetect server error: {code} {status_msg(code)}'
+                return_results('ok')
+            error = f'GDetect server error: {code} {HTTPExceptions.get(code, "unexpected HTTP error")}'
         elif command == 'gdetect-send':
             return_results(gdetect_send_command(client, demisto.args()))
         elif command == 'gdetect-get-all':
@@ -283,21 +282,9 @@ def main():
 
     # Log exceptions
     except GDetectError as e:
-        resp = client.gclient.response
-        if isinstance(resp.error, BadAuthenticationToken):
-            error = f'Given token has bad format: {resp.message}'
-        elif isinstance(resp.error, NoAuthenticateToken):
-            error = f'No token to authentication exists: {resp.message}'
-        elif isinstance(resp.error, NoURL):
-            error = f'No URL to API found: {resp.message}'
-        elif isinstance(resp.error, UnauthorizedAccess):
-            error = f'Access to API is unauthorized: {resp.message}'
-        elif isinstance(resp.error, BadUUID):
-            error = f'Given UUID is wrong: {resp.message}'
-        else:
-            error = f'GDetectError: {str(e)}'
+        return_error(str(e))
     except Exception as e:
-        error = f'Failed to execute {command} command. Error: {str(e)}'
+        return_error(f'Failed to execute {command} command. Error: {str(e)}')
     if error is not None:
         return_error(error)
 
