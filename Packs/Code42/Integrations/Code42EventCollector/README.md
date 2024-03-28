@@ -38,7 +38,7 @@ For each request sent to the API, a bearer token will be requested to authentica
 You can retrieve your API credentials by following the instructions in the [Code 42 documentation](https://support.code42.com/hc/en-us/articles/14827617150231).
 
 ## Code42 Event Collector Rate Limits
-The code 42 api can handle up to 120 requests per a single minute. After that the api will start to decline client's requests.
+The Code42 API can handle up to 120 requests per minute. After that the API will start to decline client's requests.
 
 The integration with the default configuration should not raise any rate-limits.
 
