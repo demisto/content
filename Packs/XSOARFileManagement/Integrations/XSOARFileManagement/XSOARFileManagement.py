@@ -509,11 +509,11 @@ def get_file_hahs_command(client: Client, args: dict) -> CommandResults:
     # structure to return
     nfu = {
         "Size": response.headers['Content-length'],
-        "SHA1": hashlib.sha1(response.content).hexdigest(),
-        "SHA256": hashlib.sha256(response.content).hexdigest(),
-        "SHA512": hashlib.sha512(response.content).hexdigest(),
+        "SHA1": hashlib.sha1(response.content, usedforsecurity=False).hexdigest(),
+        "SHA256": hashlib.sha256(response.content, usedforsecurity=False).hexdigest(),
+        "SHA512": hashlib.sha512(response.content, usedforsecurity=False).hexdigest(),
         "Name": file_name,
-        "MD5": hashlib.md5(response.content).hexdigest()
+        "MD5": hashlib.md5(response.content, usedforsecurity=False).hexdigest()
     }
     res = nfu.get("Name", "").split(".")
     if len(res) > 1:
