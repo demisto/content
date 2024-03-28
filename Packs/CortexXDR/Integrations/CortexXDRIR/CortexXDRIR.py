@@ -703,7 +703,8 @@ def sort_all_list_incident_fields(incident_data):
 
     if incident_data.get('incident_sources', []):
         incident_data['incident_sources'] = sorted(incident_data.get('incident_sources', []))
-
+    demisto.debug('ALL GOOD sort_all_list_incident_fields')
+    demisto.debug(f"{incident_data.get('alerts', [])}")
     format_sublists = not argToBoolean(demisto.params().get('dont_format_sublists', False))
     if incident_data.get('alerts', []):
         incident_data['alerts'] = sort_by_key(incident_data.get('alerts', []), main_key='alert_id', fallback_key='name')
@@ -721,6 +722,7 @@ def sort_all_list_incident_fields(incident_data):
                                                          main_key='network_domain', fallback_key='network_remote_ip')
         if format_sublists:
             reformat_sublist_fields(incident_data['network_artifacts'])
+    demisto.debug(' GOOD network_artifacts,file_artifacts, alerts sort_all_list_incident_fields')
 
 
 def sync_incoming_incident_owners(incident_data):
@@ -966,6 +968,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
                     statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
                     fields_to_exclude: bool = True):
     global ALERTS_LIMIT_PER_INCIDENTS
+    demisto.debug('**** STARTING fetch_incidents ****')
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
@@ -1011,6 +1014,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         for raw_incident in raw_incidents:
             incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
             incident_id = incident_data.get('incident_id')
+            demisto.debug(f"Fetching incident {incident_id} {raw_incident}")
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
                 demisto.debug(f'for incident:{incident_id} using the old call since alert_count:{alert_count} >" \
@@ -1018,6 +1022,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
                 raw_incident_ = client.get_incident_extra_data(incident_id=incident_id)
                 incident_data = sort_incident_data(raw_incident_)
             sort_all_list_incident_fields(incident_data)
+            demisto.debug(f"!!! AFTER sort_all_list_incident_fields  {incident_id} {raw_incident}")
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
                                                                      None)
             incident_data['mirror_instance'] = integration_instance
@@ -1029,15 +1034,16 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
                 'occurred': occurred,
                 'rawJSON': json.dumps(incident_data),
             }
-
+            demisto.debug('before owner')
             if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
                 incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
-
+            demisto.debug('before creation_time')
             # Update last run and add incident if the incident is newer than last fetch
             if incident_data.get('creation_time', 0) > last_fetch:
                 last_fetch = incident_data['creation_time']
-
+            demisto.debug(f'!!! finished creating the incident, adding to incidents list {len(incidents)}')
             incidents.append(incident)
+            demisto.debug(f'!!! AFTER adding to incidents list {len(incidents)}')
             non_created_incidents.remove(raw_incident)
 
             count_incidents += 1
