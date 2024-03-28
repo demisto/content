@@ -146,6 +146,16 @@ def test_update_ec2_instance(mocker):
     assert result == "Successfully updated ***AWS - EC2*** with accounts:"
 
 
+def test_remove_excluded_accounts():
+    from AwsEC2SyncAccounts import remove_excluded_accounts
+
+    accounts = ['1', '2', '3', '4', '5']
+
+    accounts = remove_excluded_accounts(accounts, '1,2,3')
+
+    assert accounts == ['4', '5']
+
+
 def test_errors(mocker):
     import AwsEC2SyncAccounts as sync
 
