@@ -31,30 +31,6 @@
                 {
                     "name": "GCP-Enrichment-Remediation",
                     "display_name": "GCP Enrichment and Remediation"
-                },
-                {
-                    "name": "Nmap",
-                    "display_name": "Nmap"
-                },
-                {
-                    "name": "AWS-EC2",
-                    "display_name": "AWS - EC2"
-                },
-                {
-                    "name": "GoogleCloudCompute",
-                    "display_name": "Google Cloud Compute"
-                },
-                {
-                    "name": "AzureCompute_v2",
-                    "display_name": "Azure Compute"
-                },
-                {
-                    "name": "AzureActiveDirectory",
-                    "display_name": "Microsoft Graph API"
-                },
-                {
-                    "name": "MicrosoftGraphUser",
-                    "display_name": "Microsoft Graph User"
                 }
             ]
         },
@@ -75,8 +51,8 @@
                 "priority": 1,
                 "name": "Cortex Xpanse",
                 "action": {
-                    "existing": "Update your current instance to work with the new Xpanse Alert Incident type: \n1. Enable fetching. \n2. Set the Incident classifier field to Xpanse - Classifier. \n3. Set the Mapper field to 'Xpanse - Incoming Mapper'.",
-                    "new": "Set up new 'Cortex Xpanse' instance to start fetching Cortex Xpanse Alerts: \n1. Enable fetching. \n2. Set the Incident classifier to Xpanse - Classifier. \n3. Set the Mapper field to 'Xpanse - Incoming Mapper'."
+                    "existing": "Update your current instance to work with the new Xpanse Alert Incident type: \n1. Enable fetching. \n2. Set incident type to Xpanse Alert. \n3. Set the Incident classifier field to Xpanse - Classifier. \n4. Set the Mapper field to 'Xpanse - Incoming Mapper'.",
+                    "new": "Set up new 'Cortex Xpanse' instance to start fetching Cortex Xpanse Alerts: \n1. Enable fetching. \n2. Set incident type to Xpanse Alert. \n3. Set the Incident classifier to Xpanse - Classifier. \n4. Set the Mapper field to 'Xpanse - Incoming Mapper'."
                 },
                 "description": "Set up the 'Cortex Xpanse' integration to work with your Attack Surface Management use case.",
                 "incident_type": "Xpanse Alert"
@@ -89,12 +65,68 @@
         ],
         "supporting_integrations": [
             {
-                "name": "Nmap",
+                "name": "nmap",
                 "action": {
                     "existing": "Configure 'Nmap' to enable network discovery information.",
                     "new": "Configure 'Nmap' to enable network discovery information."
                 },
                 "description": "Configure Nmap to network discovery information."
+            },
+            {
+                "name": "AWS - EC2",
+                "action": {
+                  "existing": "Configure 'AWS EC2' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
+                  "new": "Configure 'AWS EC2' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
+                },
+                "description": "Configure 'AWS EC2' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
+            },
+            {
+                "name": "AWS - IAM",
+                "action": {
+                  "existing": "Configure 'AWS - IAM' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
+                  "new": "Configure 'AWS - IAM' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
+                },
+                "description": "Configure 'AWS - IAM' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
+            },
+            {
+                "name": "Google Cloud Compute",
+                "action": {
+                  "existing": "Configure 'Google Cloud Compute' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
+                  "new": "Configure 'Google Cloud Compute' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
+                },
+                "description": "Configure 'Google Cloud Compute' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
+            },
+            {
+                "name": "Azure Compute v2",
+                "action": {
+                  "existing": "Configure 'Azure Compute v2' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
+                  "new": "Configure 'Azure Compute v2' to enable cloud enrichment to add additional investigation enrichment and remediation capabilitiesn."
+                },
+                "description": "Configure 'Azure Compute v2' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
+            },
+            {
+                "name": "Azure Active Directory Identity Protection",
+                "action": {
+                  "existing": "Configure 'Azure Active Directory Identity and Access' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
+                  "new": "Configure 'Azure Active Directory Identity and Access' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
+                },
+                "description": "Configure 'Azure Active Directory Identity and Access' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
+            },
+            {
+                "name": "Microsoft Graph User",
+                "action": {
+                    "existing": "Configure 'Microsoft Graph' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
+                    "new": "Configure 'Microsoft Graph' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
+                },
+                "description": "Configure Microsoft Graph to enable file detonation to improve investigation."
+            },
+            {
+                "name": "MicrosoftGraphIdentityandAccess",
+                "action": {
+                    "existing": "Configure 'Microsoft Graph Identity and Access' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities.",
+                    "new": "Configure 'Microsoft Graph Identity and Access' to enable cloud enrichment to add additional investigation enrichment and remediation capabilities."
+                },
+                "description": "Configure Microsoft Graph Identity and Access to enable file detonation to improve investigation."
             }
         ],
         "next": [
