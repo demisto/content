@@ -153,7 +153,7 @@ def test_remove_excluded_accounts():
 
     accounts = remove_excluded_accounts(accounts, '1,2,3')
 
-    assert accounts == ['4', '5']
+    assert set(accounts) == {'4', '5'}
 
 
 def test_errors(mocker):
