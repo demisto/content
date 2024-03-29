@@ -1,0 +1,3 @@
+!pc-kql-search max_packets="100" incident_delta="1" search_filter=“dest_port:80”  search_name="test" incident_time="2023-09-20 10:22:00"
+!pc-bpf-search max_packets="100" incident_delta="1" search_filter=“tcp”  search_name="test" incident_time="2023-09-20 10:22:00"
+!pc-get-status

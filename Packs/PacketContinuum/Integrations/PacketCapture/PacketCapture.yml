@@ -1,0 +1,175 @@
+category: Utilities
+commonfields:
+  id: PacketCapture
+  version: -1
+configuration:
+- display: API Rest API Token
+  name: api_token
+  type: 0
+  required: true
+- display: Packet Continuum Management IP
+  name: ip_management
+  type: 0
+  required: true
+description: 'Integration for Packet Continuum capture server'
+display: 'PacketCapture'
+name: PacketCapture
+script:
+  commands:
+  - deprecated: false
+    description: Run a bpf search
+    name: pc-bpf-search
+    arguments:
+    - name: search_name
+      isArray: false
+      description: Search identifier
+      required: true
+      secret: false
+      default: false
+    - name: search_filter
+      isArray: false
+      description: BPF search query string
+      required: true
+      secret: false
+      default: false
+    - name: incident_time
+      isArray: false
+      description: UTC time of event
+      required: true
+      secret: false
+      default: false
+    - name: incident_delta
+      isArray: false
+      description: Search window from incident time
+      required: true
+      secret: false
+      default: false
+    - name: max_packets
+      isArray: false
+      description: Max number of returned packets
+      required: false
+      secret: false
+      default: true
+      defaultValue: '100'
+    outputs:
+    - contextPath: PacketCapture.bpf.checkstatus
+      description: Status of newly executed search 
+      type: String
+    - contextPath: PacketCapture.bpf.getpcaps
+      description: URL to download pcaps resulting from search
+      type: String
+    - contextPath: PacketCapture.bpf.pc.kql.metadata
+      description: URL to download metadata from PCAPs
+      type: String
+    - contextPath: PacketCapture.bpf.objects
+      description: URL to download extracted objects from PCAPs
+      type: String
+  - deprecated: false
+    description: ''
+    name: pc-get-status
+    arguments: []
+    outputs:
+    - contextPath: PacketContinuum.ServerInfo.NodeName
+      description: Node name of capture box 
+      type: String
+    - contextPath: PacketContinuum.ServerInfo.NodeIP
+      description: Node IP address
+      type: String
+    - contextPath: PacketContinuum.ServerInfo.Upordown
+      description: Capture status 
+      type: String
+    - contextPath: PacketContinuum.ServerInfo.Port
+      description: Server port
+      type: String
+    - contextPath: PacketContinuum.ServerInfo.Status
+      description: System status 
+      type: String
+    - contextPath: PacketContinuum.ServerInfo.Duration
+      description: Capture uptime
+      type: String
+    - contextPath: PacketContinuum.ServerInfo.BeginTime
+      description: Capture start time
+      type: String
+    - contextPath: PacketContinuum.ServerInfo.EndTime
+      description: Capture end time
+      type: String
+    - contextPath: PacketContinuum.ServerInfo.License
+      description: License status
+      type: String
+    - contextPath: PacketContinuum.ServerInfo.TimeZone
+      description: Sytem timezone
+      type: String 
+    - contextPath: PacketContinuum.ServerInfo.PreCaptureFilter
+      description: Precapture filter 
+      type: String
+    - contextPath: PacketContinuum.ServerInfo.VirtualStorage
+      description: Virtual storage
+      type: String
+    - contextPath: PacketContinuum.ServerInfo.RealStorage
+      description: Real Storage
+      type: String
+    - contextPath: PacketContinuum.ServerInfo.Capturedrops
+      description: Packet drops
+      type: String
+    - contextPath: PacketContinuum.ServerInfo.Throughput
+      description: Capture throughput 
+      type: String
+    - contextPath: PacketContinuum.ServerInfo.CompressionRatio
+      description: PCAP data compressibility
+      type: String
+  - deprecated: false
+    description: Run a kql search
+    name: pc-kql-search
+    arguments:
+    - name: search_name
+      isArray: false
+      description: Search identifier
+      required: true
+      secret: false
+      default: false
+    - name: search_filter
+      isArray: false
+      description: KQL search query string
+      required: true
+      secret: false
+      default: false
+    - name: incident_time
+      isArray: false
+      description: UTC time of event
+      required: true
+      secret: false
+      default: false
+    - name: incident_delta
+      isArray: false
+      description: Search window from incident time
+      required: true
+      secret: false
+      default: false
+    - name: max_packets
+      isArray: false
+      description: Max number of returned packets
+      required: false
+      secret: false
+      default: true
+      defaultValue: '100'
+    outputs:
+    - contextPath: PacketCapture.kql.checkstatus
+      description: Status of newly executed search
+      type: String
+    - contextPath: PacketCapture.kql.getpcaps
+      description: URL to download pcaps resulting from search
+      type: String
+    - contextPath: PacketCapture.kql.pc.kql.metadata
+      description: URL to download metadata from PCAPs
+      type: String
+    - contextPath: PacketCapture.kql.objects
+      description: URL to download extracted objects from PCAPs
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.63474
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
