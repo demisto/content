@@ -156,7 +156,7 @@ def test_remove_excluded_accounts():
     assert set(accounts) == {'4', '5'}
 
 
-def test_errors(mocker):
+def test_errors():
     import AwsEC2SyncAccounts as sync
 
     with pytest.raises(DemistoException, match='Unexpected error while configuring AWS - EC2 instance with accounts'):
