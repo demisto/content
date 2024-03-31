@@ -430,6 +430,29 @@ class Client(CoreClient):
         incidents = reply.get('reply')
         return incidents.get('incidents', {}) if isinstance(incidents, dict) else incidents  # type: ignore
 
+    def update_alerts_in_xdr_request(self, alerts_ids, severity, status, comment) -> List[Any]:
+        request_data = {"request_data": {
+            "alert_id_list" : [alerts_ids],
+        }}
+        if severity:
+            request_data["update_data"]["severity"] = severity
+        if status:
+            request_data["update_data"]["status"] = status
+        if comment:
+            request_data["update_data"]["comment"] = comment
+        
+        response = self._http_request(
+            method='POST',
+            url_suffix='/incidents/get_multiple_incidents_extra_data/',
+            json_data=request_data,
+            headers=self.headers,
+            timeout=self.timeout,
+        )
+        
+        if "reply" not in response or "alerts_ids" not in response["reply"]:
+            raise DemistoException("Parse Error. Response not in format, can't find reply key.")
+        return response['reply']['alerts_ids']
+        
 
 def get_headers(params: dict) -> dict:
     api_key = params.get('apikey') or params.get('apikey_creds', {}).get('password', '')
@@ -1152,7 +1175,14 @@ def replace_featured_field_command(client: Client, args: Dict) -> CommandResults
         outputs=result,
         raw_response=result
     )
-
+def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
+    alerts_ids = args.get('alert_ids')
+    severity = args.get('severity')
+    status = args.get('status')
+    comment = args.get('comment')
+    array_of_ids = client.update_alerts_in_xdr_request(alerts_ids, severity, status, comment)
+    return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_ids))
+)
 
 def main():  # pragma: no cover
     """
@@ -1578,7 +1608,8 @@ def main():  # pragma: no cover
 
         elif command in ('xdr-set-user-role', 'xdr-remove-user-role'):
             return_results(change_user_role_command(client, args))
-
+        elif command == 'xdr-update-alert':
+            return_results(update_alerts_in_xdr_command(client, args))
     except Exception as err:
         return_error(str(err))
 

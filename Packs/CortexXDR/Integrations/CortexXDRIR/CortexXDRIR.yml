@@ -165,6 +165,13 @@ configuration:
   type: 8
   section: Collect
   advanced: true
+- display: Close all related alerts in XDR
+  name: close_alerts_in_xdr
+  required: false
+  additionalinfo: "Close all related alerts in XDR once an incident has been closed in XSOAR."
+  advanced: true
+  defaultValue: False
+  type: 8
 description: Cortex XDR is the world's first detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks.
 display: Palo Alto Networks Cortex XDR - Investigation and Response
 name: Cortex XDR - IR
@@ -3492,6 +3499,42 @@ script:
       isArray: true
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
+  - arguments:
+    - description: Array of alert-ids (separated with comma).
+      name: alert_ids
+      required: true
+      isArray: true
+    - auto: PREDEFINED
+      description: Severity of the incident which was closed.
+      name: severity
+      required: false
+      predefined:
+      - critical
+      - high
+      - medium
+      - low
+      - informational
+    - auto: PREDEFINED
+      description: Status to be changed to updated alerts.
+      name: status
+      required: false
+      predefined:
+      - new
+      - resolved_threat_handled
+      - under_investigation
+      - resolved_security_testing
+      - resolved_auto
+      - resolved_known_issue
+      - resolved_duplicate
+      - resolved_other
+      - resolved_false_positive
+      - resolved_true_positive
+    - description: Comment to append to updated alerts.
+      name: comment
+      required: false
+    description: |- 
+      Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored.Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB
+    name: xdr-update-alert
   dockerimage: demisto/python3:3.10.14.90585
   isfetch: true
   isfetch:xpanse: false
