@@ -103,15 +103,16 @@ def test_polling_until_upload_report_command_completed_with_success(mocker, AIOp
                                       '|---|---|---|---|---|\n| 1 | device | feature1 | Warning message 1 | warning |\n'
                                       '| 2 | device | feature1 | Note message 1 | note |\n| 3 | device | feature2 | '
                                       'Warning message 2 | warning |\n| 4 | device | feature2 | Note message 2 | note |\n')
-    assert result.outputs == [{'check_id': 1, 'check_message': 'Warning message 1', 'check_type': 'warning',
-                               'check_feature': 'feature1', 'check_category': 'device'},
-                              {'check_id': 2, 'check_message': 'Note message 1', 'check_type': 'note',
-                               'check_feature': 'feature1', 'check_category': 'device'},
-                              {'check_id': 3, 'check_message': 'Warning message 2', 'check_type': 'warning',
-                               'check_feature': 'feature2', 'check_category': 'device'},
-                              {'check_id': 4, 'check_message': 'Note message 2', 'check_type': 'note',
-                               'check_feature': 'feature2', 'check_category': 'device'}, {'report_id': '123456789'},
-                              {'report_status': 'COMPLETED_WITH_SUCCESS'}]
+    assert result.outputs == [{'report_id': '123456789',
+                               'report_status': 'COMPLETED_WITH_SUCCESS',
+                               'data': [{'check_id': 1, 'check_message': 'Warning message 1', 'check_type': 'warning',
+                                         'check_feature': 'feature1', 'check_category': 'device'},
+                                        {'check_id': 2, 'check_message': 'Note message 1', 'check_type': 'note',
+                                         'check_feature': 'feature1', 'check_category': 'device'},
+                                        {'check_id': 3, 'check_message': 'Warning message 2', 'check_type': 'warning',
+                                         'check_feature': 'feature2', 'check_category': 'device'},
+                                        {'check_id': 4, 'check_message': 'Note message 2', 'check_type': 'note',
+                                         'check_feature': 'feature2', 'check_category': 'device'}]}]
 
 
 def test_get_info_about_device_request_called_with(mocker, AIOps_client):
