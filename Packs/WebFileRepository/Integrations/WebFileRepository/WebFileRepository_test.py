@@ -1131,7 +1131,7 @@ def test_process_root_post_upload_chunk(
             chunk_size = int(file_size / 3)
             chunk_num = math.ceil(file_size / chunk_size)
             chunk_sid = ''.join([random.choice(string.digits) for i in range(16)])
-            
+
             for chunk_index in range(0, chunk_num):
                 chunk = f.read(chunk_size)
 
@@ -1145,7 +1145,7 @@ def test_process_root_post_upload_chunk(
                 ]).encode()
 
                 post_data += chunk
-                
+
                 if chunk_index < chunk_num - 1:
                     form_params = {
                         'q': 'upload',

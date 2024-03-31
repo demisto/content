@@ -3388,8 +3388,7 @@ class FileReceiver:
         ) -> bool:
             return (
                 self.__file is not None
-                and
-                int(datetime.now().timestamp()) < self.__valid_until
+                and int(datetime.now().timestamp()) < self.__valid_until
             )
 
         def update_session_time(
@@ -3426,7 +3425,7 @@ class FileReceiver:
             if next_seq_no != seq_no:
                 raise DemistoException(f'Incorrect chunk sequence # - {seq_no} (expected {next_seq_no})')
 
-            self.__last_seq_no = next_seq_no;
+            self.__last_seq_no = next_seq_no
             try:
                 while d := data.read(4096):
                     self.__file.write(d)
