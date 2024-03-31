@@ -25,7 +25,7 @@ GET_HEADERS = {
 MAX_PAGE_SIZE = 200
 
 INTEGRATION_NAME = 'JAMF v2'
-AUTHENTICATION_ERROR = 'Please provide either client_id and client_secret or username and password'
+AUTHENTICATION_PARAMS_ERROR = 'Please provide either client_id and client_secret or username and password'
 
 ''' CLIENT CLASS '''
 
@@ -40,11 +40,12 @@ class Client(BaseClient):
         self._token = _token
         self.client_id = client_id
         self.client_secret = client_secret
-        self.basic_auth_flag = basic_auth_flag     #this flag is used to determine if its possible to use basic auth if the token generation fails
+        # this flag is used to determine if its possible to use basic auth if the token generation fails
+        self.basic_auth_flag = basic_auth_flag
 
-        """ due to deprecating the basic auth option from the classical API versions 10.35 and up
-            the client will try to generate an auth token first, if it failed to do generate the token,
-            the client will use basic auth instead.
+        """ due to deprecating the basic auth option from the classical API versions 10.35 and up,
+            if basic  auth was provided, the client will try to generate an auth token first, 
+            if it failed to do generate the token, the client will use basic auth instead.
         """
         try:
             self._token = self._get_token()
@@ -83,12 +84,12 @@ class Client(BaseClient):
         """
         Generates new token.
         """
-        if self.basic_auth_flag:
+        if self.basic_auth_flag:    #basic auth is used to create a token
             resp = self._http_request(method='POST', url_suffix='api/v1/auth/token', resp_type='json',
                                       auth=(self.username, self.password))
             token = resp.get('token')
             expiration_time = int(dateparser.parse(resp.get('expires')).timestamp()) 
-        else:
+        else:   #client id and client secret are used to create a token
 
             resp = self._http_request(method='POST', url_suffix="/api/v1/oauth/token",data={
                 'client_id': self.client_id,
@@ -111,6 +112,7 @@ class Client(BaseClient):
     def _classic_api_post(self, url_suffix, data, error_handler):
         post_headers = ((self._headers or {}) | POST_HEADERS)  # merge the token and the POST headers
         classic_url_suffix = urljoin('/JSSResource', url_suffix)  # classic API endpoints starts with JSSResource
+        #if token is not available, use basic auth directly
         auth = (self.username, self.password) if (not self._token) and self.basic_auth_flag else None
         return self._http_request(method='POST', data=data, url_suffix=classic_url_suffix,
                                   headers=post_headers, resp_type='response',
@@ -1317,7 +1319,7 @@ def check_authentication_parameters(client_id:str|None, client_secret:str|None,
     """
     if (not all([client_id and client_secret]) and not all([username and password])) or \
         any([client_id, client_secret]) and any([username, password]):
-        raise DemistoException(AUTHENTICATION_ERROR)
+        raise DemistoException(AUTHENTICATION_PARAMS_ERROR)
 
 
 ''' MAIN FUNCTION '''
