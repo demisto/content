@@ -88,7 +88,7 @@ def get_entry_id_list(attachments, files):
     for attachment in attachments:
         attachment_name = attachment.get('name', '')
         for file in files:
-            if attachment_name == file.get('Name'):
+            if attachment_name == file.get('Name') and attachment.get('description', '') != 'is_attached_file':
                 entry_id_list.append((attachment_name, file.get('EntryID')))
 
     return entry_id_list
