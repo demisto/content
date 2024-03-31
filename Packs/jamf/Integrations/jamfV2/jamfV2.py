@@ -5,7 +5,7 @@ from CommonServerUserPython import *  # noqa
 import dateparser
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Any
 from bs4 import BeautifulSoup
 import urllib3
 
@@ -32,8 +32,8 @@ AUTHENTICATION_PARAMS_ERROR = 'Please provide either client_id and client_secret
 
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, username: str = "", password: str = "", proxy: bool = False,
-                basic_auth_flag: bool = True, _token: str|None = None,
-                client_id: str|None = None, client_secret: str|None = None):
+                 basic_auth_flag: bool = True, _token: str | None = None,
+                 client_id: str | None = None, client_secret: str | None = None):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.username = username
         self.password = password
@@ -44,7 +44,7 @@ class Client(BaseClient):
         self.basic_auth_flag = basic_auth_flag
 
         """ due to deprecating the basic auth option from the classical API versions 10.35 and up,
-            if basic  auth was provided, the client will try to generate an auth token first, 
+            if basic  auth was provided, the client will try to generate an auth token first,
             if it failed to do generate the token, the client will use basic auth instead.
         """
         try:
@@ -71,9 +71,8 @@ class Client(BaseClient):
         now_timestamp = arg_to_datetime('now').timestamp()  # type:ignore
         # if there is a key and valid_until, and the current time is smaller than the valid until
         # return the current token
-        if token and valid_until:
-            if now_timestamp < valid_until:
-                return token
+        if token and valid_until and now_timestamp < valid_until:
+            return token
 
         # else generate a token and update the integration context accordingly
         token = self._generate_token()
@@ -84,22 +83,22 @@ class Client(BaseClient):
         """
         Generates new token.
         """
-        if self.basic_auth_flag:    #basic auth is used to create a token
+        if self.basic_auth_flag:  # basic auth is used to create a token
             resp = self._http_request(method='POST', url_suffix='api/v1/auth/token', resp_type='json',
                                       auth=(self.username, self.password))
             token = resp.get('token')
             expiration_time = int(dateparser.parse(resp.get('expires')).timestamp())
-        else:   #client id and client secret are used to create a token
+        else:  # client id and client secret are used to create a token
 
-            resp = self._http_request(method='POST', url_suffix="/api/v1/oauth/token",data={
+            resp = self._http_request(method='POST', url_suffix="/api/v1/oauth/token", data={
                 'client_id': self.client_id,
                 'grant_type': 'client_credentials',
                 'client_secret': self.client_secret},
-                                    headers = {"Content-Type": "application/x-www-form-urlencoded"}, resp_type='json')
+                headers={"Content-Type": "application/x-www-form-urlencoded"}, resp_type='json')
             token = resp.get('access_token')
             now_timestamp = arg_to_datetime('now').timestamp()
             expiration_time = now_timestamp + resp.get('expires_in')
-            
+
          # type: ignore[union-attr]
         integration_context = get_integration_context()
         integration_context.update({'token': token})
@@ -112,18 +111,18 @@ class Client(BaseClient):
     def _classic_api_post(self, url_suffix, data, error_handler):
         post_headers = ((self._headers or {}) | POST_HEADERS)  # merge the token and the POST headers
         classic_url_suffix = urljoin('/JSSResource', url_suffix)  # classic API endpoints starts with JSSResource
-        #if token is not available, use basic auth directly
+        # if token is not available, use basic auth directly
         auth = (self.username, self.password) if (not self._token) and self.basic_auth_flag else None
         return self._http_request(method='POST', data=data, url_suffix=classic_url_suffix,
                                   headers=post_headers, resp_type='response',
-                                  error_handler=error_handler,auth=auth)
+                                  error_handler=error_handler, auth=auth)
 
     def _classic_api_get(self, url_suffix, error_handler=None):
         get_headers = ((self._headers or {}) | GET_HEADERS)  # merge the token and the GET headers
         classic_url_suffix = urljoin('/JSSResource', url_suffix)  # classic API endpoints starts with JSSResource
         auth = (self.username, self.password) if (not self._token) and self.basic_auth_flag else None
         return self._http_request(method='GET', url_suffix=classic_url_suffix, headers=get_headers,
-                                  error_handler=error_handler,auth=auth)
+                                  error_handler=error_handler, auth=auth)
 
     def get_computers_request(self, computer_id: str = None, basic_subset: bool = False, match: str = None):
         """Retrieve the computers results.
@@ -913,7 +912,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-def get_computers_command(client: Client, args: Dict[str, Any], basic_subset: bool = False) -> List[CommandResults]:
+def get_computers_command(client: Client, args: dict[str, Any], basic_subset: bool = False) -> List[CommandResults]:
     match = args.get('match')
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 0))
@@ -951,7 +950,7 @@ def get_computers_command(client: Client, args: Dict[str, Any], basic_subset: bo
     ]
 
 
-def get_computer_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_computer_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
     computer_id = args.get('id')
 
     computers_response = client.get_computers_request(computer_id)
@@ -974,7 +973,7 @@ def get_computer_by_id_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def get_computer_subset_command(client: Client, args: Dict[str, Any], subset_name: str) -> CommandResults:
+def get_computer_subset_command(client: Client, args: dict[str, Any], subset_name: str) -> CommandResults:
     identifier = args['identifier']
     identifier_value = args['identifier_value']
 
@@ -1005,7 +1004,7 @@ def get_computer_id(client: Client, response, subset_name, identifier, identifie
     return computer_id
 
 
-def computer_lock_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def computer_lock_command(client: Client, args: dict[str, Any]) -> CommandResults:
     computer_id = args['id']
     passcode = args['passcode']
     lock_msg = args.get('lock_message')
@@ -1025,7 +1024,7 @@ def computer_lock_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def computer_erase_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def computer_erase_command(client: Client, args: dict[str, Any]) -> CommandResults:
     computer_id = args['id']
     passcode = args['passcode']
 
@@ -1045,7 +1044,7 @@ def computer_erase_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def get_users_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def get_users_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 0))
     user_response = client.get_users_request()
@@ -1080,7 +1079,7 @@ def get_users_command(client: Client, args: Dict[str, Any]) -> List[CommandResul
     ]
 
 
-def get_users_by_identifier_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_users_by_identifier_command(client: Client, args: dict[str, Any]) -> CommandResults:
     user_id = args.get('id')
     name = args.get('name')
     email = args.get('email')
@@ -1108,7 +1107,7 @@ def get_users_by_identifier_command(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def get_mobile_devices_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def get_mobile_devices_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     match = args.get('match', False)
     limit = arg_to_number(args.get('limit', 50))
     page = arg_to_number(args.get('page', 0))
@@ -1145,7 +1144,7 @@ def get_mobile_devices_command(client: Client, args: Dict[str, Any]) -> List[Com
     ]
 
 
-def get_mobile_device_by_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_mobile_device_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
     mobile_id = args.get('id')
 
     mobile_response = client.get_mobile_devices_request(mobile_id)
@@ -1165,7 +1164,7 @@ def get_mobile_device_by_id_command(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
-def get_mobile_device_subset_command(client: Client, args: Dict[str, Any], subset: str) -> CommandResults:
+def get_mobile_device_subset_command(client: Client, args: dict[str, Any], subset: str) -> CommandResults:
     identifier = args['identifier']
     identifier_value = args['identifier_value']
 
@@ -1196,7 +1195,7 @@ def get_mobile_device_id(client: Client, response, subset, identifier, identifie
     return mobile_id
 
 
-def get_computers_by_app_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+def get_computers_by_app_command(client: Client, args: dict[str, Any]) -> List[CommandResults]:
     app = args['application']
     version = args.get('version')
     limit = arg_to_number(args.get('limit', 50))
@@ -1235,7 +1234,7 @@ def get_computers_by_app_command(client: Client, args: Dict[str, Any]) -> List[C
     ]
 
 
-def mobile_device_lost_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def mobile_device_lost_command(client: Client, args: dict[str, Any]) -> CommandResults:
     mobile_id = args['id']
     lost_mode_msg = args.get('lost_mode_message')
 
@@ -1255,7 +1254,7 @@ def mobile_device_lost_command(client: Client, args: Dict[str, Any]) -> CommandR
     )
 
 
-def mobile_device_erase_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def mobile_device_erase_command(client: Client, args: dict[str, Any]) -> CommandResults:
     mobile_id = args['id']
     preserve_data_plan = args.get('preserve_data_plan', False)
     clear_activation_code = args.get('clear_activation_code', False)
@@ -1312,13 +1311,13 @@ def endpoint_command(client, args):
     return command_results
 
 
-def check_authentication_parameters(client_id:str|None, client_secret:str|None,
-                                    username:str|None, password:str|None)-> DemistoException:
+def check_authentication_parameters(client_id: str | None, client_secret: str | None,
+                                    username: str | None, password: str | None) -> DemistoException:
     """
     Validate that the authentication parameters are correctly provided
     """
     if (not all([client_id and client_secret]) and not all([username and password])) or \
-        any([client_id, client_secret]) and any([username, password]):
+            any([client_id, client_secret]) and any([username, password]):
         raise DemistoException(AUTHENTICATION_PARAMS_ERROR)
 
 
@@ -1331,8 +1330,8 @@ def main() -> None:
         base_url = params.get('url', '').rstrip('/')
         username = params.get('credentials', {}).get('identifier')
         password = params.get('credentials', {}).get('password')
-        client_id= params.get('client_credentials', {}).get('identifier')
-        client_secret= params.get('client_credentials', {}).get('password')
+        client_id = params.get('client_credentials', {}).get('identifier')
+        client_secret = params.get('client_credentials', {}).get('password')
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
         check_authentication_parameters(client_id, client_secret, username, password)

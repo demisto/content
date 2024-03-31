@@ -11,7 +11,6 @@ you are implementing with your integration
 """
 
 import json
-import io
 
 from freezegun import freeze_time
 from CommonServerPython import *
@@ -19,13 +18,14 @@ import pytest
 from jamfV2 import check_authentication_parameters
 from CommonServerPython import DemistoException
 
+
 def load_xml_response(file_name: str) -> str:
-    with io.open(file_name, mode='r', encoding='utf-8') as xml_file:
+    with open(file_name, encoding='utf-8') as xml_file:
         return xml_file.read()
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -437,7 +437,7 @@ def test_endpoint_command(mocker):
         }]
     }
     results = outputs[0].to_context()
-    for key, val in results.get("EntryContext").items():
+    for key, _val in results.get("EntryContext").items():
         assert results.get("EntryContext")[key] == get_endpoints_response[key]
     assert results.get("EntryContext") == get_endpoints_response
     assert len(outputs) == 1
@@ -460,7 +460,7 @@ def test_check_authentication_parameters(client_id, client_secret, username, pas
         case 3: None of the parameters are provided - should raise an exception
         case 4: client_id and username are provided, but client_secret, password are not - should raise an exception
         case 5: client_secret and password are provided, but client_id, username are not - should raise an exception
-        
+
     When:
         - check_authentication_parameters is called
     Then:
@@ -485,10 +485,11 @@ def test_generate_token__client_credentials(mocker):
         - Ensure the integration context is updated with the new token and expiration time
         - Ensure the _auth attribute is set to None since basic_auth_flag is False
     """
-    
+
     from jamfV2 import Client
     mocker.patch.object(Client, '_http_request').return_value = {"access_token": "mocked token", "expires_in": 3600}
-    client = Client(base_url="https://example.com", verify=False, proxy=False, _token="token", client_id="client_id", client_secret= "client_secrert", basic_auth_flag=False)
+    client = Client(base_url="https://example.com", verify=False, proxy=False, _token="token",
+                    client_id="client_id", client_secret="client_secrert", basic_auth_flag=False)
 
     mocker.patch('jamfV2.get_integration_context', return_value={})
     mock_set_integration_context = mocker.patch('jamfV2.set_integration_context')
@@ -497,7 +498,7 @@ def test_generate_token__client_credentials(mocker):
     assert client._token == "mocked token"
     assert mock_set_integration_context.call_args_list[0][0][0] == {'token': 'mocked token', 'expires': 1711933140.0}
     assert not client._auth
-    
+
 
 @freeze_time("2024-04-01")
 def test_generate_token__basic_auth(mocker):
@@ -511,11 +512,11 @@ def test_generate_token__basic_auth(mocker):
         - Ensure the integration context is updated with the new token and expiration time
         - Ensure the _auth attribute is set to None since we are using a token (based on basic_auth)
     """
-    
+
     from jamfV2 import Client
     mocker.patch.object(Client, '_http_request').return_value = {"token": "mocked token", "expires": '2024-03-31T15:23:30.164Z'}
     client = Client(base_url="https://example.com", verify=False, proxy=False, _token="token",
-                    username="username",password="password", basic_auth_flag=True)
+                    username="username", password="password", basic_auth_flag=True)
 
     mocker.patch('jamfV2.get_integration_context', return_value={})
     mock_set_integration_context = mocker.patch('jamfV2.set_integration_context')
