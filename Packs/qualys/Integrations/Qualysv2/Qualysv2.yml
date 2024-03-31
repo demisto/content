@@ -36,12 +36,14 @@ configuration:
   name: first_fetch
   additionalinfo: If "First event fetch time" is set for a long time ago, it may cause performance issues.
   required: false
+  advanced: true
   type: 0
 - defaultvalue: 10000
   section: Collect
   display: Event Fetch Limit
   name: max_fetch_activity_logs
   additionalinfo: Maximum number of events to fetch per fetch iteration.
+  advanced: true
   required: false
   type: 0
 description: Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.

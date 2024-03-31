@@ -2940,16 +2940,18 @@ def get_vulnerabilities(client, since_datetime) -> list:
     return vulnerabilities
 
 
-def fetch_assets(client):
+def fetch_assets(client, since_datetime=None):
     """ Fetches host list detections
     Args:
         client: command client
+        since_datetime: The start fetch date.
     Return:
         assets: assets to push to xsiam
         vulnerabilities: vulnerabilities to push to xsiam
     """
     demisto.debug('Starting fetch for assets')
-    since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+    if not since_datetime:
+        since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
 
     assets = get_host_list_detections_events(client, since_datetime)
     vulnerabilities = get_vulnerabilities(client, since_datetime)
@@ -3061,7 +3063,8 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
             previous_run_time_field=ACTIVITY_LOGS_SINCE_DATETIME_PREV_RUN,
         )
     if params.get('isFetchAssets'):
-        fetch_assets(client=client)
+        since_datetime = arg_to_datetime('3 days').strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+        fetch_assets(client=client, since_datetime=since_datetime)
 
     return 'ok'
 
