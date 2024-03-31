@@ -103,7 +103,7 @@ class Client(BaseClient):
          # type: ignore[union-attr]
         integration_context = get_integration_context()
         integration_context.update({'token': token})
-        # Add 1 minute buffer for the token
+        # subtract 60 seconds from the expiration time to make sure the token is still valid
         integration_context.update({'expires': expiration_time - 60})
         set_integration_context(integration_context)
 
