@@ -55,7 +55,10 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 FETCH_DEFAULT_TIME = '1 day'
 MAX_INCIDENTS_TO_FETCH = 100
-FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Corr', 'System', 'Wildfire', 'Decryption']
+FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
+FETCH_LOG_TYPE_TO_QUERY = {'Traffic': 'traffic', 'Threat': 'threat', 'URL': 'url', 'Data': 'data', 'Correlation': 'corr', 'System': 'system', 'Wildfire': 'wildfire', 'Decryption': 'decryption'}
+
+
 GET_LOG_JOB_ID_MAX_RETRIES = 10
 
 XPATH_SECURITY_RULES = ''
@@ -14001,7 +14004,7 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int) -> st
     Returns:
         job_id (str): returns the Job ID associated with the given query
     """
-    params = assign_params(key=API_KEY, type='log', log_type=log_type.lower(), query=query, nlogs=max_fetch, dir='forward')
+    params = assign_params(key=API_KEY, type='log', log_type=FETCH_LOG_TYPE_TO_QUERY[log_type], query=query, nlogs=max_fetch, dir='forward')
     demisto.debug(f'{query=}')
     response = http_request(URL, 'GET', params=params)
     return response.get('response', {}).get('result', {}).get('job')
@@ -14304,7 +14307,6 @@ def log_types_queries_to_dict(params: Dict[str, str]) -> Dict[str, str]:
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
         for log_type in active_log_type_queries:
-            log_type = "Corr" if log_type == "Correlation" else log_type
             log_type_query = params.get(f'{log_type.lower()}_query', "")
             if log_type_query:
                 queries_dict[log_type.capitalize()] = log_type_query
@@ -14391,7 +14393,6 @@ def test_fetch_incidents_parameters(fetch_params):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if 'All' in log_types else log_types
         for log_type in active_log_type_queries:
-            log_type = "Corr" if log_type == "Correlation" else log_type
             log_type_query = fetch_params.get(f'{log_type.lower()}_query', "")
             if not log_type_query:
                 raise DemistoException(f"{log_type} Log Type Query parameter is empty. Please enter a valid query.")
