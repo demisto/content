@@ -1,3 +1,5 @@
+Note: Support for this Pack will be moved to Partner starting February 26, 2024.
+
 The Netscout Arbor Edge Defense (AED) integration enables you to block and allow outbound and inbound traffic.
 
 ## What does this pack do?
