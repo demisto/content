@@ -427,10 +427,10 @@ def validate_passcode_type_args(passcode_type, passcode, passcode_length, payloa
                 'when setting passcode_type to be UserDefined, you must specify the passcode arg.')
         payload["passcodeDefinition"].update({"passcode": passcode})
 
-    elif passcode_type == "RandomForEach" or passcode_type == "RandomForAl":
+    elif passcode_type == "RandomForEach" or passcode_type == "RandomForAll":
         not_valid_passcode_length = not passcode_length or passcode_length > 8 or passcode_length < 4
         if not_valid_passcode_length:
-            raise_demisto_exception('when setting passcode_type to be RandomForEach or RandomForAl, '
+            raise_demisto_exception('when setting passcode_type to be RandomForEach or RandomForAll, '
                                     'you must specify the passcode_length arg to be between 4 to 8.')
         payload["passcodeDefinition"].update({"length": passcode_length})
 
