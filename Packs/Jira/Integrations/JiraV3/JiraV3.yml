@@ -84,6 +84,8 @@ configuration:
   name: close_incident
   type: 8
   required: false
+  hidden:
+  - marketplacev2
 - defaultvalue: None
   display: Mirroring Direction
   name: mirror_direction
