@@ -26,7 +26,6 @@ Provide at least one of the following scopes for each command.
 * ***google-drive-files-list***
 * ***google-drive-file-get***
 * ***google-drive-file-upload***
-* ***google-drive-file-upload***
 * ***google-drive-file-copy***
 * ***google-drive-file-get-parents***
 	*  https://www.googleapis.com/auth/drive
