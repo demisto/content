@@ -83,6 +83,11 @@
             ]
         },
         {
+            "integrations": "AWS-EKS",
+            "playbookID": "AWSEKS-Test",
+            "fromversion": "6.9.0"
+        },
+        {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE Malware - Incident Enrichment",
             "instance_names": "microsoft_defender_atp_dev"
@@ -236,13 +241,14 @@
             "fromversion": "6.5.0",
             "instance_names": "using_v9",
             "memory_threshold": 200,
-            "timeout": 300
+            "timeout": 600
         },
         {
             "integrations": "McAfeeNSMv2",
             "playbookID": "Test_McAfeeNSMv2_using_v10",
             "instance_names": "using_v10",
-            "fromversion": "6.5.0"
+            "fromversion": "6.5.0",
+            "timeout": 600
         },
         {
             "playbookID": "Generic Polling Test",
@@ -2854,7 +2860,7 @@
             "integrations": [
                 "Cylance Protect v2",
                 "carbonblack-v2",
-                "epo",
+                "McAfee ePO v2",
                 "Active Directory Query v2",
                 "VMware Carbon Black EDR v2"
             ],
