@@ -81,7 +81,7 @@ script:
     name: phishtank-reload
   - description: Shows the status (timestamp) of the last time that PhishTank database was loaded.
     name: phishtank-status
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.14.91134
   runonce: false
   script: '-'
   subtype: python3
