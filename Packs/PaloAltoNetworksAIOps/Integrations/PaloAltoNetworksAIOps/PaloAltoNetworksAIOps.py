@@ -8,8 +8,8 @@ from typing import Any
 urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES '''
-INTERVAL_FOR_POLLING = 30
-TIMEOUT_FOR_POLLING = 600
+INTERVAL_FOR_POLLING_DEFAULT = 30
+TIMEOUT_FOR_POLLING_DEFAULT = 600
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 ''' CLIENT CLASS '''
@@ -281,10 +281,6 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     config_file_from_user = args.get('entry_id')
     requester_email = args.get('requester_email')
     requester_name = args.get('requester_name')
-    global INTERVAL_FOR_POLLING
-    INTERVAL_FOR_POLLING = int(args.get('interval_in_seconds', INTERVAL_FOR_POLLING))
-    global TIMEOUT_FOR_POLLING
-    TIMEOUT_FOR_POLLING = int(args.get('timeout', TIMEOUT_FOR_POLLING))
 
     # Get info about device - system info
     system_info_xml = client.get_info_about_device_request()
@@ -308,8 +304,8 @@ def generate_report_command(client: Client, args: dict[str, Any]):
 
 @polling_function(
     name="pan-aiops-polling-upload-report",
-    interval=INTERVAL_FOR_POLLING,
-    timeout=TIMEOUT_FOR_POLLING,
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", INTERVAL_FOR_POLLING_DEFAULT)),  # type: ignore
+    timeout=arg_to_number(demisto.args().get("timeout", TIMEOUT_FOR_POLLING_DEFAULT)),  # type: ignore
     requires_polling_arg=False,
     poll_message="",
 )
