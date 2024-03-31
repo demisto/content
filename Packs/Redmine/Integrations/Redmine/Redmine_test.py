@@ -318,7 +318,7 @@ def test_get_issues_list_command(mocker, redmine_client):
     get_issues_list_command(redmine_client, args)
     http_request.assert_called_with('GET', '/issues.json', params={'status_id': 'open',
                                                                    'offset': 0, 'limit': 1,
-                                                                   'sort': 'priority:desc', 
+                                                                   'sort': 'priority:desc',
                                                                    'cf_1': 'https://tests'},
                                     headers={'X-Redmine-API-Key': True})
 
