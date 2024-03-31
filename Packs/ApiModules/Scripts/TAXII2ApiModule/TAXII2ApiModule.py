@@ -6,6 +6,7 @@ from CommonServerUserPython import *
 
 from typing import Optional, Tuple
 from requests.sessions import merge_setting, CaseInsensitiveDict
+from requests.exceptions import HTTPError
 import re
 import copy
 import logging
@@ -330,6 +331,12 @@ class Taxii2FeedClient:
             # try TAXII 2.1
             self.set_api_root()
         # (TAXIIServiceException, HTTPError) should suffice, but sometimes it raises another type of HTTPError
+        except HTTPError as e:
+            if e.response.status_code != 406 and "version=2.0" not in str(e):
+                raise e
+            # switch to TAXII 2.0
+            self.init_server(version=TAXII_VER_2_0)
+            self.set_api_root()
         except Exception as e:
             if "406 Client Error" not in str(e) and "version=2.0" not in str(e):
                 raise e
@@ -522,6 +529,12 @@ class Taxii2FeedClient:
 
         if tlp_color:
             fields['trafficlightprotocol'] = tlp_color
+
+        if confidence := obj_to_parse.get('confidence'):
+            fields['confidence'] = confidence
+
+        if lang := obj_to_parse.get('lang'):
+            fields['languages'] = lang
 
         return fields
 
@@ -1406,12 +1419,13 @@ class Taxii2FeedClient:
         ioc_obj_copy = copy.deepcopy(indicator_obj)
         ioc_obj_copy["value"] = value
         ioc_obj_copy["type"] = type_
+
         indicator = {
             "value": value,
             "type": type_,
             "rawJSON": ioc_obj_copy,
         }
-        fields = {}
+        fields = self.set_default_fields(indicator_obj)
         tags = list(self.tags)
         # create tags from labels:
         for label in ioc_obj_copy.get("labels", []):
@@ -1445,6 +1459,7 @@ class Taxii2FeedClient:
                 tags.append(field_tag)
 
         fields["tags"] = list(set(tags))
+        fields["publications"] = self.get_indicator_publication(indicator_obj)
 
         indicator["fields"] = fields
         return indicator

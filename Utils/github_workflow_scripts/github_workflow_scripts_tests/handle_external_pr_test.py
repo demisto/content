@@ -187,6 +187,17 @@ OPTION6 = {
     'reviewer2': 1,
     'reviewer3': 1,
 }
+OPTION7 = {
+    'reviewer1': 1,
+    'reviewer2': 1,
+}
+OPTION8 = {
+    'reviewer1': 2,
+    'reviewer2': 1,
+}
+OPTION9 = {
+    'reviewer1': 1,
+}
 
 
 @pytest.mark.parametrize('assigned_prs_per_potential_reviewer, possible_locations',
@@ -196,7 +207,10 @@ OPTION6 = {
                              (OPTION3, [0, 1]),
                              (OPTION4, [0, 1]),
                              (OPTION5, [0, 1]),
-                             (OPTION6, [0, 1, 2])
+                             (OPTION6, [0, 1, 2]),
+                             (OPTION7, [0, 1]),
+                             (OPTION8, [0]),
+                             (OPTION9, [0])
                          ])
 def test_get_location_of_reviewer(assigned_prs_per_potential_reviewer, possible_locations):
     """
