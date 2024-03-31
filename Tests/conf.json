@@ -5359,6 +5359,10 @@
             "playbookID": "KafkaV3 Test"
         },
         {
+            "playbookID": "FileCreateAndUploadV2-Test",
+            "fromversion": "6.12.0"
+        },
+        {
             "playbookID": "FormatURL-Test"
         },
         {
