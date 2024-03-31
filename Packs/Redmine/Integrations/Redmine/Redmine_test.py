@@ -387,7 +387,7 @@ def test_get_issues_list_command_invalid_custom_field(mocker, redmine_client):
     with pytest.raises(DemistoException) as e:
         get_issues_list_command(redmine_client, {'custom_field': 'frf2rg2'})
     assert e.value.message == ("Invalid custom field format, please follow the command description."
-                               " Error: substring not found.")
+                               " Error: list index out of range.")
 
 
 def test_get_issues_list_command_use_both_exclude_subproject(mocker, redmine_client):
