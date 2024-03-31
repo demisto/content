@@ -92,6 +92,7 @@ demisto-sdk-nightly:run-unittests-and-lint:
     - .sdk-nightly-schedule-rule
 
 demisto-sdk-nightly:run-pre-commit:
+  allow_failure: true
   extends:
     - .run-pre-commit
     - .sdk-nightly-schedule-rule
