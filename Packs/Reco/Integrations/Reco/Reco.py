@@ -766,7 +766,7 @@ class RecoClient(BaseClient):
         try:
             response = self._http_request(
                 method="GET",
-                url_suffix="/data-sources",
+                url_suffix="/policy-subsystem/alert-inbox?limit=1",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
             )
             if response.get("dataSources") is None:
