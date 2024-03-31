@@ -87,9 +87,9 @@ def test_handle_contribution_prs_exception_handling(
 ):
     """
     Given:
-        - An exception is raised
+        - An exception is raised.
     When:
-        - Triggering a new pipeline for a given GitLab branch
+        - Triggering a new pipeline for a given GitLab branch.
     Then:
         - Log the exception and continue to next branch.
     """
