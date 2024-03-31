@@ -12,6 +12,8 @@ you are implementing with your integration
 
 import json
 import io
+
+from freezegun import freeze_time
 from CommonServerPython import *
 import pytest
 from jamfV2 import check_authentication_parameters
@@ -469,4 +471,56 @@ def test_check_authentication_parameters(client_id, client_secret, username, pas
             check_authentication_parameters(client_id, client_secret, username, password)
     else:
         check_authentication_parameters(client_id, client_secret, username, password)
+
+
+@freeze_time("2024-04-01")
+def test_generate_token__client_credentials(mocker):
+    """
+    Given:
+        - A Client instance with client credentials and basic_auth_flag set to False since client_id and client_secret are provided
+    When:
+        - _generate_token is called
+    Then:
+        - Ensure the response is parsed as it expected, and the token is updated with the new token
+        - Ensure the integration context is updated with the new token and expiration time
+        - Ensure the _auth attribute is set to None since basic_auth_flag is False
+    """
     
+    from jamfV2 import Client
+    mocker.patch.object(Client, '_http_request').return_value = {"access_token": "mocked token", "expires_in": 3600}
+    client = Client(base_url="https://example.com", verify=False, proxy=False, _token="token", client_id="client_id", client_secret= "client_secrert", basic_auth_flag=False)
+
+    mocker.patch('jamfV2.get_integration_context', return_value={})
+    mock_set_integration_context = mocker.patch('jamfV2.set_integration_context')
+    client._generate_token()
+
+    assert client._token == "mocked token"
+    assert mock_set_integration_context.call_args_list[0][0][0] == {'token': 'mocked token', 'expires': 1711933140.0}
+    assert not client._auth
+    
+
+@freeze_time("2024-04-01")
+def test_generate_token__basic_auth(mocker):
+    """
+    Given:
+        - A Client instance with username and password and basic_auth_flag set to True
+    When:
+        - _generate_token is called
+    Then:
+        - Ensure the response is parsed as it expected, and the token is updated with the new token
+        - Ensure the integration context is updated with the new token and expiration time
+        - Ensure the _auth attribute is set to None since we are using a token (based on basic_auth)
+    """
+    
+    from jamfV2 import Client
+    mocker.patch.object(Client, '_http_request').return_value = {"token": "mocked token", "expires": '2024-03-31T15:23:30.164Z'}
+    client = Client(base_url="https://example.com", verify=False, proxy=False, _token="token",
+                    username="username",password="password", basic_auth_flag=True)
+
+    mocker.patch('jamfV2.get_integration_context', return_value={})
+    mock_set_integration_context = mocker.patch('jamfV2.set_integration_context')
+    client._generate_token()
+
+    assert client._token == "mocked token"
+    assert mock_set_integration_context.call_args_list[0][0][0] == {'token': 'mocked token', 'expires': 1711898550}
+    assert not client._auth
