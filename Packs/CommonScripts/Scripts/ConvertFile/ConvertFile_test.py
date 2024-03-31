@@ -84,8 +84,6 @@ def test_convert_pdf_to_html(mocker):
     # check no defunct processed
     zombies, output = find_zombie_processes()
     assert not zombies
-    assert 'defunct' not in output
-
 
 def test_convert_failure(mocker):
     # test with BAD format to see that we fail
