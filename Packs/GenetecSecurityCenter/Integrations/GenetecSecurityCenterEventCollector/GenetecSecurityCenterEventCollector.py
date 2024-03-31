@@ -1,3 +1,4 @@
+import html
 import demistomock as demisto
 from urllib3 import disable_warnings
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -5,6 +6,7 @@ from CommonServerUserPython import *  # noqa
 from requests.auth import HTTPBasicAuth
 import json
 from xmltodict import parse
+
 
 disable_warnings()
 
@@ -109,7 +111,7 @@ def fetch_events_command(
     response = client.http_request(url_suffix=url_suffix)
     results = response[:limit]
     for result in results:
-        result["Value"] = parse(result.get("Value"))
+        result["Value"] = parse(html.unescape(result.get("Value")))
         result['_time'] = result["ModificationTimeStamp"]
     cached_audits: List[str] = last_run.get('audit_cache', [])
     updated_results, updated_cached_audits = remove_duplicated_events(results, cached_audits)
