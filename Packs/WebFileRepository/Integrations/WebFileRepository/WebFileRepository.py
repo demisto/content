@@ -3379,7 +3379,7 @@ class FileReceiver:
             self.__expiry = expiry
             self.__sess_id = sess_id
             self.__valid_until = int(datetime.now().timestamp()) + expiry
-            self.__file = NamedTemporaryFile()
+            self.__file: NamedTemporaryFile | None = NamedTemporaryFile()
             self.append_chunk(data, 0)
 
         def is_active(
@@ -3436,13 +3436,16 @@ class FileReceiver:
         def finish(
             self,
             total_size: int
-        ) -> NamedTemporaryFile:
+        ) -> IO[bytes]:
             """ Finish uploading chunk data
                 The payload file returned must be closed after using it.
 
             :param total_size: The total size in bytes.
             :return: The payload file that all the chunk data have been concatinated.
             """
+            if self.__file is None:
+                raise DemistoException('The session has already closed.')
+
             self.__file.flush()
             cur_size = self.__file.tell()
             if cur_size != total_size:
@@ -3468,7 +3471,7 @@ class FileReceiver:
     def handle_chunk_file(
         self,
         request: BaseRequest
-    ) -> Tuple[str, NamedTemporaryFile] | None:
+    ) -> Tuple[str, IO[bytes]] | None:
         """ Handle for a uploaded chunk file
 
         :param request: A HTTP request data.
