@@ -1,3 +1,4 @@
+from __future__ import annotations
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import base64
@@ -3379,7 +3380,7 @@ class FileReceiver:
             self.__expiry = expiry
             self.__sess_id = sess_id
             self.__valid_until = int(datetime.now().timestamp()) + expiry
-            self.__file: NamedTemporaryFile | None = NamedTemporaryFile()
+            self.__file: IO[bytes] | None = NamedTemporaryFile()
             self.append_chunk(data, 0)
 
         def is_active(
@@ -3459,7 +3460,7 @@ class FileReceiver:
     def __init__(
         self
     ) -> None:
-        self.__cache: dict[str, self.UploadingData] = {}
+        self.__cache: dict[str, UploadingData] = {}
         self.__expires = 60
 
     def remove_expired_cache_entries(
