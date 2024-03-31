@@ -239,13 +239,13 @@ def test_get_custom_device_field_list_command(mocker, absolute_client):
                            "when setting passcode_type to be UserDefined, you must specify the passcode arg."),
                           # passcode_type is UserDefined and 'passcode' is missing
                           ({'passcode_type': 'RandomForEach'},
-                           "when setting passcode_type to be RandomForEach or RandomForAl, "
+                           "when setting passcode_type to be RandomForEach or RandomForAll, "
                            "you must specify the passcode_length arg to be between 4 to 8."),
                           # passcode_type is RandomForEach and 'passcode_length' is missing
-                          ({'passcode_type': 'RandomForAl', 'passcode_length': '1'},
-                           "when setting passcode_type to be RandomForEach or RandomForAl, "
+                          ({'passcode_type': 'RandomForAll', 'passcode_length': '1'},
+                           "when setting passcode_type to be RandomForEach or RandomForAll, "
                            "you must specify the passcode_length arg to be between 4 to 8."),
-                          # passcode_type is RandomForAl and 'passcode_length' is not valid number
+                          # passcode_type is RandomForAll and 'passcode_length' is not valid number
                           ])
 def test_prepare_payload_to_freeze_request_with_invalid_args(args, expected_error):
     from Absolute import prepare_payload_to_freeze_request
