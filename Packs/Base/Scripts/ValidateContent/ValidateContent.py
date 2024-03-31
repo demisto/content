@@ -221,7 +221,8 @@ def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_d
     pack_name = 'TmpPack'
     pack_dir = content.path / 'Packs' / pack_name
     # create pack_metadata.json file in TmpPack
-    contrib_converter = ContributionConverter(name=pack_name, base_dir=tmp_directory, pack_dir_name=pack_name, contribution=pack_name)
+    contrib_converter = ContributionConverter(name=pack_name, base_dir=tmp_directory, pack_dir_name=pack_name,
+                                              contribution=pack_name)
     contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
     prefix = '-'.join(filename.split('-')[:-1])
     containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Integrations')
