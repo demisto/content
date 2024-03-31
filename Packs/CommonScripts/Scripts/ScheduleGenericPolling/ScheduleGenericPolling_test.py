@@ -50,7 +50,7 @@ def test_is_command_sanitized():
     # Twice additionalPollingCommandArgNames - fail
     command = "additionalPollingCommandArgNames additionalPollingCommandArgNames"
     result = is_command_sanitized(command)
-    assert result == (False, 'The value of additionalPollingCommandArgNames is malformed.')
+    assert result == (False, 'The value of additionalPollingCommandArgNames is malformed.'), '2 additionalPollingCommandArgNames'
 
     # 2 different args - pass
     command = "pollingCommandArgName additionalPollingCommandArgNames"
@@ -60,15 +60,21 @@ def test_is_command_sanitized():
     # 2 and 2 - fail
     command = "pollingCommandArgName additionalPollingCommandArgValues pollingCommandArgName additionalPollingCommandArgValues"
     result = is_command_sanitized(command)
-    assert result == (False, 'The value of additionalPollingCommandArgValues, pollingCommandArgName is malformed.')
+    result_message = 'The value of additionalPollingCommandArgValues, pollingCommandArgName is malformed.'
+    assert result == (False, result_message), '2 and 2'
 
     # 2 and 2 and 2 - fail
     command = "pollingCommand pollingCommandArgName additionalPollingCommandArgValues pollingCommand " \
               "pollingCommandArgName additionalPollingCommandArgValues"
     result = is_command_sanitized(command)
-
     result_message = 'The value of additionalPollingCommandArgValues, pollingCommandArgName, pollingCommand is malformed.'
-    assert result == (False, result_message)
+    assert result == (False, result_message), '2 and 2 and 2'
+
+    # case insensitive 2 and 2 - fail
+    command = "pollingcommandargname additionalpollingcommandargvalues pollingCommandArgName additionalPollingCommandArgValues"
+    result = is_command_sanitized(command)
+    result_message = 'The value of additionalPollingCommandArgValues, pollingCommandArgName is malformed.'
+    assert result == (False, result_message), 'case insensitive 2 and 2'
 
 
 def test_get_command_string_pass():
@@ -103,6 +109,7 @@ def test_get_command_string_pass():
                                         good_input.get('tag'),
                                         good_input.get('args_names'),
                                         good_input.get('args_values'),
+                                        None,
                                         )
 
     expected_command = '!GenericPollingScheduledTask ids="123" pollingCommand="jira-get-issue" pollingCommandArgName=' \
@@ -151,6 +158,7 @@ def test_get_command_string_fail():
                                         fail_input.get('tag,'),
                                         fail_input.get('args_names'),
                                         fail_input.get('args_values'),
+                                        None,
                                         )
 
     expected_command_String = '!GenericPollingScheduledTask ids="123" pollingCommand="jira-get-issue" pollingCommandArgName=' \
@@ -166,6 +174,47 @@ def test_get_command_string_fail():
     expected_result = (False, 'The value of additionalPollingCommandArgValues, additionalPollingCommandArgNames, '
                        'pollingCommandArgName, pollingCommand is malformed.')
     assert result == expected_result
+
+
+def test_get_command_string_with_extract_mode():
+    '''
+    Given:
+        - inputs with extractMode
+    When:
+        - run get_command_string function
+    Then:
+        - Ensure the `auto-extract` and `extractMode` is present in the command_string
+    '''
+    inputs = {
+        'ids': "123",
+        'pollingCommand': "jira-get-issue",
+        'pollingCommandArgName': "issueId",
+        'playbookId': "pi",
+        'dt': "Ticket(val.Status != 'Done').Id",
+        'interval': "3",
+        'timeout': "5",
+        'tag': "polling",
+        'args_names': "my_arg_name",
+        'args_values': "test",
+        'extractMode': 'none',
+    }
+
+    command_string = get_command_string(
+        inputs['ids'],
+        inputs['pollingCommand'],
+        inputs['pollingCommandArgName'],
+        inputs['playbookId'],
+        inputs['dt'],
+        inputs['interval'],
+        inputs['timeout'],
+        inputs['tag'],
+        inputs['args_names'],
+        inputs['args_values'],
+        inputs['extractMode'],
+    )
+
+    assert 'auto-extract=none' in command_string
+    assert 'extractMode=none' in command_string
 
 
 def test_main_pass(mocker):

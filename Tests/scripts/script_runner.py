@@ -5,28 +5,25 @@
 import subprocess
 import os
 import sys
-from multiprocessing.pool import ThreadPool
 
 
 def run_script(args, files):
+    results = []
     try:
-        # can't use with in python2
-        pool = ThreadPool()
-        results = pool.map(run_command, [(args + [os.path.abspath(file)], os.path.dirname(file)) for file in files])
-        pool.close()
+        for file in files:
+            results.append(run_command(args + [os.path.abspath(file)], os.path.dirname(file)))
         if any(result != 0 for result in results):
-            raise Exception
+            return 1
     except subprocess.CalledProcessError as e:
         print("Error: {e}".format(e=e))  # noqa: T201,UP032
-        raise
+        return 1
     except Exception as e:
         print("An error occurred: {e}".format(e=e))  # noqa: T201,UP032
-        raise
+        return 1
     return 0
 
 
-def run_command(args_dir):
-    args, directory = args_dir
+def run_command(args, directory):
     if sys.version_info[0] < 3:
         return subprocess.call(args, cwd=directory)
     return subprocess.run(args, cwd=directory).returncode
@@ -41,8 +38,11 @@ def main():
         files = args[files_index + 1:]
 
     # Run the script
-    return run_script(script_args, files)
+    exit_code = run_script(script_args, files)
+    if exit_code:
+        raise SystemExit(exit_code)
+    SystemExit(exit_code)
 
 
 if __name__ == "__main__":
-    SystemExit(main())
+    main()

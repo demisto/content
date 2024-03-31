@@ -1354,13 +1354,13 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.27.1"
+version = "1.28.0"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
-python-versions = ">=3.8,<3.11"
+python-versions = "<3.11,>=3.8"
 files = [
-    {file = "demisto_sdk-1.27.1-py3-none-any.whl", hash = "sha256:316e33b70787bbd93a300687dfb7ce0c5cb51f5314aebea2c6bc989eb6f24447"},
-    {file = "demisto_sdk-1.27.1.tar.gz", hash = "sha256:9bc3b2d58acb909f496df2e49ceac7636511b3ce29936e04f337e0c57d2287f1"},
+    {file = "demisto_sdk-1.28.0-py3-none-any.whl", hash = "sha256:e42a2d6d2debc5928a442e29911dc3a95da0a6b5148e1501a671dac7bb53e89c"},
+    {file = "demisto_sdk-1.28.0.tar.gz", hash = "sha256:9dd2951ea040f324ef5d0771c355b7a376d3d6f0d7448bfb66d9a33eba21876f"},
 ]
 
 [package.dependencies]
@@ -1372,7 +1372,6 @@ click = ">=8.0.0,<9.0.0"
 coloredlogs = ">=15.0.1,<16.0.0"
 configparser = ">=5.2.0,<6.0.0"
 coverage = ">=7.2.1,<8.0.0"
-cryptography = ">=36.0.2,<37.0.0"
 dateparser = ">=1.1.1,<2.0.0"
 decorator = ">=5.1.1,<6.0.0"
 demisto-py = ">=3.2.10,<4.0.0"
@@ -1418,7 +1417,7 @@ slack-sdk = ">=3.17.0,<4.0.0"
 tabulate = ">=0.8.9,<0.10.0"
 tenacity = ">=8.2.3,<9.0.0"
 typed-ast = ">=1.5.2,<2.0.0"
-typer = {version = ">=0.6.1,<0.8.0", extras = ["all"]}
+typer = {version = ">=0.9.0,<0.10.0", extras = ["all"]}
 types-chardet = ">=4.0.3,<6.0.0"
 types-dateparser = ">=1.1.0,<2.0.0"
 types-decorator = ">=5.1.8,<6.0.0"
@@ -1445,6 +1444,7 @@ types-ujson = ">=5.6.0.0,<6.0.0.0"
 typing-extensions = ">=4.1.1,<5.0.0"
 ujson = ">=5.1.0,<6.0.0"
 urllib3 = ">=1.26.9,<2.0.0"
+uv = ">=0.1.5,<0.2.0"
 vulture = ">=2.3,<3.0"
 wcmatch = ">=8.3,<9.0"
 yamlordereddictloader = ">=0.4.0,<0.5.0"
@@ -6244,26 +6244,27 @@ files = [
 
 [[package]]
 name = "typer"
-version = "0.7.0"
+version = "0.9.4"
 description = "Typer, build great CLIs. Easy to code. Based on Python type hints."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "typer-0.7.0-py3-none-any.whl", hash = "sha256:b5e704f4e48ec263de1c0b3a2387cd405a13767d2f907f44c1a08cbad96f606d"},
-    {file = "typer-0.7.0.tar.gz", hash = "sha256:ff797846578a9f2a201b53442aedeb543319466870fbe1c701eab66dd7681165"},
+    {file = "typer-0.9.4-py3-none-any.whl", hash = "sha256:aa6c4a4e2329d868b80ecbaf16f807f2b54e192209d7ac9dd42691d63f7a54eb"},
+    {file = "typer-0.9.4.tar.gz", hash = "sha256:f714c2d90afae3a7929fcd72a3abb08df305e1ff61719381384211c4070af57f"},
 ]
 
 [package.dependencies]
 click = ">=7.1.1,<9.0.0"
 colorama = {version = ">=0.4.3,<0.5.0", optional = true, markers = "extra == \"all\""}
-rich = {version = ">=10.11.0,<13.0.0", optional = true, markers = "extra == \"all\""}
+rich = {version = ">=10.11.0,<14.0.0", optional = true, markers = "extra == \"all\""}
 shellingham = {version = ">=1.3.0,<2.0.0", optional = true, markers = "extra == \"all\""}
+typing-extensions = ">=3.7.4.3"
 
 [package.extras]
-all = ["colorama (>=0.4.3,<0.5.0)", "rich (>=10.11.0,<13.0.0)", "shellingham (>=1.3.0,<2.0.0)"]
+all = ["colorama (>=0.4.3,<0.5.0)", "rich (>=10.11.0,<14.0.0)", "shellingham (>=1.3.0,<2.0.0)"]
 dev = ["autoflake (>=1.3.1,<2.0.0)", "flake8 (>=3.8.3,<4.0.0)", "pre-commit (>=2.17.0,<3.0.0)"]
 doc = ["cairosvg (>=2.5.2,<3.0.0)", "mdx-include (>=1.4.1,<2.0.0)", "mkdocs (>=1.1.2,<2.0.0)", "mkdocs-material (>=8.1.4,<9.0.0)", "pillow (>=9.3.0,<10.0.0)"]
-test = ["black (>=22.3.0,<23.0.0)", "coverage (>=6.2,<7.0)", "isort (>=5.0.6,<6.0.0)", "mypy (==0.910)", "pytest (>=4.4.0,<8.0.0)", "pytest-cov (>=2.10.0,<5.0.0)", "pytest-sugar (>=0.9.4,<0.10.0)", "pytest-xdist (>=1.32.0,<4.0.0)", "rich (>=10.11.0,<13.0.0)", "shellingham (>=1.3.0,<2.0.0)"]
+test = ["black (>=22.3.0,<23.0.0)", "coverage (>=6.2,<7.0)", "isort (>=5.0.6,<6.0.0)", "mypy (==0.971)", "pytest (>=4.4.0,<8.0.0)", "pytest-cov (>=2.10.0,<5.0.0)", "pytest-sugar (>=0.9.4,<0.10.0)", "pytest-xdist (>=1.32.0,<4.0.0)", "rich (>=10.11.0,<14.0.0)", "shellingham (>=1.3.0,<2.0.0)"]
 
 [[package]]
 name = "types-awscrt"
@@ -6721,6 +6722,32 @@ secure = ["certifi", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "ipaddress", "p
 socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
+name = "uv"
+version = "0.1.24"
+description = "An extremely fast Python package installer and resolver, written in Rust."
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "uv-0.1.24-py3-none-linux_armv6l.whl", hash = "sha256:d87a9c4b35a4a1347586ec8f194045d96e314b822a66c48eebb5787d9c49461a"},
+    {file = "uv-0.1.24-py3-none-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:33d74c4c67df34de18c4318a6c568efef9dfab6d05332b1d1eddc8e516fc8806"},
+    {file = "uv-0.1.24-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:76a8abb05b957beddf7fb35b4da5e8b1d43326a423615eefa043f61f9720f381"},
+    {file = "uv-0.1.24-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:735c11c977dfe044ee5395c523503b9ffd9d055e924a86dba75130f60411a5d2"},
+    {file = "uv-0.1.24-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:2e4d09bed7759253a81c1141e01d58242fb964e6eea85ed2f3d15f6597c504fa"},
+    {file = "uv-0.1.24-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:9de5d816da9a46f9119f0980f92ad275ec1a87c4e25818e7f3e8b46a503afe23"},
+    {file = "uv-0.1.24-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:f95f5224367186d4d4ee48795c7476a9ec21c48bcd141caf1d5cc5c9c811ab35"},
+    {file = "uv-0.1.24-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:e026831b555d219549275b52d64098c0b6f8bade8cc48c9b26dd88680f083743"},
+    {file = "uv-0.1.24-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:94dfba0b9879e0141b9bcf6e6f990fe585f73082dbaac61d1ef3acd0dd013b9b"},
+    {file = "uv-0.1.24-py3-none-manylinux_2_28_aarch64.whl", hash = "sha256:53bed670553025d7034592954454df5e31493d4e111c32a14c091669da0d38ba"},
+    {file = "uv-0.1.24-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:7ed69aa1798cb7f5000d4ac7d0b0185b39fd2798364a4f22f48ef97fd7e487e2"},
+    {file = "uv-0.1.24-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:850373ba442ee33328a89a83ceb053f3b53cb93d7505ff01b0a8575d9462f012"},
+    {file = "uv-0.1.24-py3-none-musllinux_1_2_i686.whl", hash = "sha256:4d51afe18f1283417d2fccfc375a093c149a993ce25559982deeeb0b996c0c04"},
+    {file = "uv-0.1.24-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:a407f128672d1c4d924f3bf36fbba3df66d4d73a713811dd98aab5224528f201"},
+    {file = "uv-0.1.24-py3-none-win32.whl", hash = "sha256:a273f468f170b12e6cb6362aa90a65dd12a397db02df55ffb47a21c11b577d8c"},
+    {file = "uv-0.1.24-py3-none-win_amd64.whl", hash = "sha256:87cce6b44a86e761f845a85e52ea0de44fcd579b9a63b2d856118b0d1847bca7"},
+    {file = "uv-0.1.24.tar.gz", hash = "sha256:1f8abf3330570acbf6188da635c4fe9cc936f9f36b49ce4992a2df56b2155421"},
+]
+
+[[package]]
 name = "virtualenv"
 version = "20.24.6"
 description = "Virtual Python Environment builder"
@@ -7145,4 +7172,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "2995537e2f53ee9145fb53de441a83bb0844821d47357969b3648e8404bc11a0"
+content-hash = "c334b4b7820f27371135bb6a413c3456c0c0f6fc9dcdd6af74588c82157e9d56"

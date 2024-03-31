@@ -50,10 +50,19 @@
       fi
 
 run-validations-upload-flow:
+  variables:
+    DEMISTO_SDK_GRAPH_FORCE_CREATE: "true"
   extends:
     - .run-validations
     - .bucket-upload-rule
 
+run-validations-upload-flow-new-validate-flow:
+  variables:
+    DEMISTO_SDK_GRAPH_FORCE_CREATE: "true"
+  extends:
+    - .run-validations-new-validate-flow
+    - .bucket-upload-rule
+  allow_failure: true
 
 run-unittests-and-lint-upload-flow:
   cache:
