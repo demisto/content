@@ -1611,8 +1611,10 @@ def main():  # pragma: no cover
 
         elif command in ('xdr-set-user-role', 'xdr-remove-user-role'):
             return_results(change_user_role_command(client, args))
+            
         elif command == 'xdr-update-alert':
             return_results(update_alerts_in_xdr_command(client, args))
+   
     except Exception as err:
         return_error(str(err))
 
