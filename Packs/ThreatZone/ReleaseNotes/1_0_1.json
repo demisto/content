@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "SANITIZED key removed from readable output in WarRoom and ThreatZone.Analysis.SANITIZED key removed from context data, use !tz-get-sanitized to get sanitized file, check status using !tz-get-result"
+    "breakingChangesNotes": "Updated the ***tz-get-sanitized*** command to get sanitized file, and ***tz-get-result*** command to check the status."
 }
