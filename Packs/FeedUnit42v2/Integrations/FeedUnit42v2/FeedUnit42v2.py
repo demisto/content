@@ -35,6 +35,7 @@ DEFAULT_INDICATOR_SCORE = 3  # default verdict of fetched indicators is maliciou
 
 from TAXII2ApiModule import *  # noqa: E402
 
+
 class Client(STIX2XSOARParser):
 
     def __init__(self, api_key, verify):
