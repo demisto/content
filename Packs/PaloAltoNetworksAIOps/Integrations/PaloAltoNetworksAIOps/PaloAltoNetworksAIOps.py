@@ -282,9 +282,9 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     requester_email = args.get('requester_email')
     requester_name = args.get('requester_name')
     global INTERVAL_FOR_POLLING
-    INTERVAL_FOR_POLLING = args.get('interval_in_seconds', None) or INTERVAL_FOR_POLLING
+    INTERVAL_FOR_POLLING = int(args.get('interval_in_seconds', INTERVAL_FOR_POLLING))
     global TIMEOUT_FOR_POLLING
-    TIMEOUT_FOR_POLLING = args.get('timeout', None) or TIMEOUT_FOR_POLLING
+    TIMEOUT_FOR_POLLING = int(args.get('timeout', TIMEOUT_FOR_POLLING))
 
     # Get info about device - system info
     system_info_xml = client.get_info_about_device_request()
@@ -311,6 +311,7 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     interval=INTERVAL_FOR_POLLING,
     timeout=TIMEOUT_FOR_POLLING,
     requires_polling_arg=False,
+    poll_message="",
 )
 def polling_until_upload_report_command(args: dict[str, Any], client: Client) -> PollResult:
     report_id = args.get('report_id')
@@ -363,7 +364,6 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
             continue_to_poll=True,
             args_for_next_run={'report_id': report_id, 'hide_polling_output': True},
             response=None,
-            partial_result=None,
         )
 
 
