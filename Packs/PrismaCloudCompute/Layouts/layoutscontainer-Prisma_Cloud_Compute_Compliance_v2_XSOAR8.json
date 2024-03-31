@@ -1,9 +1,4 @@
 {
-    "id": "Prisma Cloud Compute Compliance Incident v2",
-    "version": -1,
-    "name": "Prisma Cloud Compute Compliance Incident v2",
-    "system": false,
-    "group": "incident",
     "detailsV2": {
         "tabs": [
             {
@@ -290,7 +285,7 @@
                             }
                         ],
                         "description": "Buttons description:\n- **Enrich Host Compliance Issues** - provide further details like issue cause and description for a specific host. You also have the option to input specific compliance IDs. Once the results are fetched, they will be displayed in a new tab named \"Detailed Compliance Issues.\"\n- **Send Compliance Issues via Email** - Send the enriched compliance issues table via email in html format or in XLSX attachment.",
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 8,
                         "hideName": false,
                         "i": "caseinfoid-golgtolmvy-field-changed-golgtolmvy-caseinfoid-golgtolmvy-caseinfoid-5be896c0-b51e-11ee-953e-756485313d90",
@@ -315,8 +310,19 @@
                                 "index": 0,
                                 "listId": "caseinfoid-5be896c0-b51e-11ee-953e-756485313d90",
                                 "name": "Enrich Host Compliance Issues",
-                                "scriptId": "PCComputeHostComplianceIssuesButton",
+                                "scriptId": "4005625e-f0bc-4593-887c-0f86c9c9f67b",
                                 "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "renderedhtml",
+                                "height": 44,
+                                "id": "edb03fb0-ef5a-11ee-93bc-2f9991eb8c88",
+                                "index": 1,
+                                "listId": "caseinfoid-golgtolmvy-field-changed-golgtolmvy-caseinfoid-golgtolmvy-caseinfoid-5be896c0-b51e-11ee-953e-756485313d90",
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
@@ -344,9 +350,9 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "98819060-d3ea-11ee-8ff5-2b0c5e4bbbdf",
-                                "index": 1,
+                                "index": 0,
                                 "name": "Send Compliance Issues via Email",
-                                "scriptId": "CreatePrismaCloudComputeResourceComplianceReportButton",
+                                "scriptId": "b5fce012-73f9-4a2c-844e-81c30d2840e6",
                                 "sectionItemType": "button",
                                 "startCol": 2
                             }
@@ -471,7 +477,7 @@
                             }
                         ],
                         "description": "Buttons description:\n- **Enrich Container Compliance Issues** - provide further details like issue cause and description for a specific container. You also have the option to input specific compliance IDs. Once the results are fetched, they will be displayed in a new tab named \"Detailed Compliance Issues.\"\n- **Send Compliance Issues via Email** - Send the enriched compliance issues table via email in html format or in XLSX attachment.",
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 8,
                         "hideName": false,
                         "i": "caseinfoid-27c35970-c112-11ee-bda4-e12716dd436c",
@@ -492,8 +498,17 @@
                                 "index": 0,
                                 "listId": "caseinfoid-27c35970-c112-11ee-bda4-e12716dd436c",
                                 "name": "Enrich Container Compliance Issue",
-                                "scriptId": "PCComputeContainerComplianceIssuesButton",
+                                "scriptId": "a6abac72-98e7-4194-8f52-133fea016089",
                                 "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "renderedhtml",
+                                "height": 44,
+                                "id": "002c26e0-ef5b-11ee-93bc-2f9991eb8c88",
+                                "index": 1,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
@@ -519,11 +534,11 @@
                                 "buttonClass": "success",
                                 "endCol": 4,
                                 "fieldId": "",
-                                "height": 22,
+                                "height": 44,
                                 "id": "53ea7ed0-d3cc-11ee-a07b-65cce8bb8474",
-                                "index": 2,
+                                "index": 0,
                                 "name": "Send Compliance Issues via Email",
-                                "scriptId": "CreatePrismaCloudComputeResourceComplianceReportButton",
+                                "scriptId": "b5fce012-73f9-4a2c-844e-81c30d2840e6",
                                 "sectionItemType": "button",
                                 "startCol": 2
                             }
@@ -648,7 +663,7 @@
                             }
                         ],
                         "description": "Buttons description:\n- **Enrich Image Compliance Issues** - provide further details like issue cause and description for a specific image. You also have the option to input specific compliance IDs. Once the results are fetched, they will be displayed in a new tab named \"Detailed Compliance Issues.\"\n- **Send Compliance Issues via Email** - Send the enriched compliance issues table via email in html format or in XLSX attachment.",
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 8,
                         "hideName": false,
                         "i": "caseinfoid-g6zyzr3vyg-caseinfoid-b606f0e0-c2c8-11ee-ade5-b3726450e5e4",
@@ -673,8 +688,17 @@
                                 "index": 0,
                                 "listId": "caseinfoid-b606f0e0-c2c8-11ee-ade5-b3726450e5e4",
                                 "name": "Enrich Image Compliance Issues",
-                                "scriptId": "PCComputeImageComplianceIssuesButton",
+                                "scriptId": "35b12127-b374-4961-882d-86b8ab8a10d3",
                                 "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "renderedhtml",
+                                "height": 44,
+                                "id": "09bc6cb0-ef5b-11ee-93bc-2f9991eb8c88",
+                                "index": 1,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
@@ -706,7 +730,7 @@
                                 "index": 0,
                                 "listId": "caseinfoid-g6zyzr3vyg-caseinfoid-b606f0e0-c2c8-11ee-ade5-b3726450e5e4",
                                 "name": "Send Compliance Issues via Email",
-                                "scriptId": "CreatePrismaCloudComputeResourceComplianceReportButton",
+                                "scriptId": "b5fce012-73f9-4a2c-844e-81c30d2840e6",
                                 "sectionItemType": "button",
                                 "startCol": 2
                             }
@@ -866,7 +890,17 @@
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "caseinfoid-7b3bd030-e478-11ee-b58e-03c58d3ab8bd",
-                        "items": [],
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "prismacloudcomputeticketsinfo",
+                                "height": 106,
+                                "id": "85528410-e478-11ee-b58e-03c58d3ab8bd",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -879,13 +913,76 @@
                     }
                 ],
                 "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "kwdjydewhw",
+                "name": "New tab",
+                "sections": [
+                    {
+                        "h": 7,
+                        "i": "caseinfoid-11d836f0-ed16-11ee-a620-3337c137bba2",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "General Purpose Dynamic Section",
+                        "query": "23f51c87-512f-4813-8cec-f032ca7e9f02",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "nuvksljtfx",
+                "name": "New tab 1",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 7,
+                        "hideName": false,
+                        "i": "caseinfoid-6a8c8d30-ed40-11ee-9f95-3d8cc9406ea5",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "renderedhtml",
+                                "height": 44,
+                                "id": "6e954430-ed40-11ee-9f95-3d8cc9406ea5",
+                                "index": 0,
+                                "listId": "caseinfoid-6a8c8d30-ed40-11ee-9f95-3d8cc9406ea5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
             }
         ]
     },
-    "fromVersion": "6.10.0",
-    "toVersion": "6.99.99",
+    "group": "incident",
+    "id": "Prisma Cloud Compute Compliance Incident v2",
+    "name": "Prisma Cloud Compute Compliance Incident v2",
+    "system": false,
+    "version": -1,
     "marketplaces": [
         "xsoar"
     ],
+    "fromVersion": "8.0.0",
     "description": ""
 }
