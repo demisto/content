@@ -5,7 +5,7 @@ from Tests.scripts.utils.log_util import install_logging
 from time import sleep
 import random
 import requests
-from google.cloud import storage  # noqa
+from google.cloud import storage # type: ignore[attr-defined]
 import argparse
 from Utils.github_workflow_scripts.utils import get_env_var
 from slack_sdk import WebClient as SlackWebClient

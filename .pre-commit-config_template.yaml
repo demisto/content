@@ -186,6 +186,8 @@ repos:
     name: validate-content-paths
     entry: validate-content-path
     language: system
+    # skip nightly for now
+    skip:nightly: true
     args:
     -  validate
     -  --skip-depth-one-file

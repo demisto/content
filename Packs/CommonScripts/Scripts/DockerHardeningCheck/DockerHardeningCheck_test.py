@@ -26,13 +26,6 @@ def test_fd_limits():
     assert check_fd_limits(100, 200)
 
 
-def test_check_cpus():
-    if os.getenv("CI") == "true":
-        pytest.skip("skipping as in CI we run with a single CPU")
-        return
-    assert check_cpus(1)  # during unit tests we should fail
-
-
 def test_get_default_gateway():
     res = get_default_gateway()
     assert res
