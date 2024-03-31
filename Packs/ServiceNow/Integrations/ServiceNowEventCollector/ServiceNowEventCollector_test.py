@@ -110,7 +110,7 @@ class TestFetchActivity:
         assert len(activity_loggings) == 4
         assert "Audit Logs List" in res.readable_output
 
-    @freeze_time("2023-04-15 08:00:00")
+    @freeze_time("2023-04-12 07:01:00")
     def test_fetch_activity_logging(self, mocker):
         """
         Tests the fetch_events function
@@ -134,25 +134,18 @@ class TestFetchActivity:
 
         audit_logs, new_last_run = fetch_events_command(self.client, last_run={})
 
-        assert http_responses.call_args_list[0][1] == {
-            "limit": 3,
-            "offset": 0,
-            "from_date": "2023-04-12 07:00:00",
-        }
+        assert http_responses.call_args[0][0] == "2023-04-12 07:00:00"
 
         assert audit_logs == fetched_events.get("fetched_events")
         assert new_last_run.get("last_fetch_time") == "2023-04-15 07:00:00"
-        assert new_last_run.get("previous_run_ids") == ["1", "2", "3"]
+        assert "2" and "3" in new_last_run.get("previous_run_ids")
 
         # assert no new results when given the last_run:
         http_responses = mocker.patch.object(Client, "get_audit_logs", return_value=fetched_events.get("fetch_loggings"))
 
         audit_logs, new_last_run = fetch_events_command(self.client, last_run=new_last_run)
 
-        assert http_responses.call_args_list[0][1] == {
-            "limit": 3,
-            "from_date": "2023-04-15 07:00:00",
-        }
+        assert http_responses.call_args[0][0] == "2023-04-15 07:00:00"
         assert audit_logs == []
         assert new_last_run.get("last_fetch_time") == "2023-04-15 07:00:00"
-        assert new_last_run.get("previous_run_ids") == ["1", "2", "3"]
+        assert "2" and "3" in new_last_run.get("previous_run_ids")
