@@ -1012,6 +1012,7 @@ def main():  # pragma: no cover
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)
 
+
 from TAXII2ApiModule import *  # noqa: E402
 from NGINXApiModule import *  # noqa: E402
 
