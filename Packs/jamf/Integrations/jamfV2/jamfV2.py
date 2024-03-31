@@ -25,6 +25,7 @@ GET_HEADERS = {
 MAX_PAGE_SIZE = 200
 
 INTEGRATION_NAME = 'JAMF v2'
+AUTHENTICATION_ERROR = 'Please provide either client_id and client_secret or username and password'
 
 ''' CLIENT CLASS '''
 
@@ -904,7 +905,7 @@ def test_module(client: Client) -> str:
         message = f'Read Timeout Error: Make sure your username is correctly set. Original error: {str(e)}'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Unauthorized' in str(e):
-            message = 'Authorization Error: Make sure server url and password are correctly set.'
+            message = 'Authorization Error: Make sure server url and credentials are correctly set.'
         else:
             raise e
     return message
@@ -1309,6 +1310,16 @@ def endpoint_command(client, args):
     return command_results
 
 
+def check_authentication_parameters(client_id:str|None, client_secret:str|None,
+                                    username:str|None, password:str|None)-> DemistoException:
+    """
+    Validate that the authentication parameters are correctly provided
+    """
+    if (not all([client_id and client_secret]) and not all([username and password])) or \
+        any([client_id, client_secret]) and any([username, password]):
+        raise DemistoException(AUTHENTICATION_ERROR)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1320,9 +1331,9 @@ def main() -> None:
         password = params.get('credentials', {}).get('password')
         client_id= params.get('client_credentials', {}).get('identifier')
         client_secret= params.get('client_credentials', {}).get('password')
-        #TODO make sure the client entered one, and only one method of authentication
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
+        check_authentication_parameters(client_id, client_secret, username, password)
         basic_auth_flag = True
 
         if client_id and client_secret:
