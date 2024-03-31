@@ -34,9 +34,6 @@ RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 DEFAULT_INDICATOR_SCORE = 3  # default verdict of fetched indicators is malicious
 
 
-from TAXII2ApiModule import *  # noqa: E402
-
-
 class Client(STIX2XSOARParser):
 
     def __init__(self, api_key, verify):
@@ -649,6 +646,7 @@ def main():  # pragma: no cover
     except Exception as err:
         return_error(str(err))
 
+from TAXII2ApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

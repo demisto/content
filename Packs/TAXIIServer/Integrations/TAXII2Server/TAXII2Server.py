@@ -40,8 +40,6 @@ TAXII_V20_REQUIRED_FILTER_FIELDS = {"tags", "identity_class"}
 TAXII_V21_REQUIRED_FILTER_FIELDS = {"ismalwarefamily", "published"}
 PAGE_SIZE = 2000
 
-from TAXII2ApiModule import *  # noqa: E402
-
 ''' TAXII2 Server '''
 
 
@@ -1014,7 +1012,7 @@ def main():  # pragma: no cover
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'
         return_error(err_msg)
 
-
+from TAXII2ApiModule import *  # noqa: E402
 from NGINXApiModule import *  # noqa: E402
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
