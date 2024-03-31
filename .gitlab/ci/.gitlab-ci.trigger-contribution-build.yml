@@ -14,6 +14,7 @@ trigger-contribution-build:
     TRIGGER_CONTRIBUTION: $TRIGGER_CONTRIBUTION
   extends:
     - .trigger-contribution-build-role
+    - .default-job-settings
   script:
     - pip install PyGithub python-gitlab coloredlogs demisto_sdk
     - python3 ./Utils/trigger_contribution_build.py --github-token "${GITHUB_TOKEN}" --gitlab-api-token "${GITLAB_API_TOKEN}" --gitlab-trigger-token "${TRIGGER_CONTRIBUTION}"
