@@ -1,14 +1,15 @@
+This integration supports three authentication methods:
 
-#### Server URL:
-Your server URL (e.g.: https://yourdomain.jamfcloud.com)
-#### Username:
-The username of a user with relevant permissions to your Jamf Pro admin console
-#### Password:
-The login password for the above username.
+1. **Basic authentication:** Deprecated starting from version *10.35.0* of Jamf. For more information, click [here](https://developer.jamf.com/jamf-pro/docs/classic-api-authentication-changes).
 
-#### Authentication
-`Basic Authentication` is deprecated from version *10.35.0* of Jamf. For more information, click [here](https://developer.jamf.com/jamf-pro/docs/classic-api-authentication-changes).
 
-This integration supports:
-- `Bearer Token Authentication` for versions *10.35.0* or later
-- `Basic Authentication` for version *10.34.0* or earlier.
+2. **Bearer token based on basic authentication:** 
+Use `username and password`.
+The username and password of a user with relevant permissions to your Jamf Pro admin console
+3. **Bearer token based on client credentials:**
+Use `client ID and client secret`.
+See this [link](https://learn.jamf.com/en-US/bundle/jamf-pro-documentation-current/page/API_Roles_and_Clients.html) how te retrieve a client id and client secret.
+
+*Important*: Before creating an AI client, ensure that you create an API role with all the privileges as mentioned in the integration documentation. Then, associate the API client with that role.
+
+When using the first two methods, provide a username and password. The system will automatically attempt to generate a token (second method), and if unsuccessful, it will fallback to using the first method.
