@@ -88,7 +88,7 @@ class Client(BaseClient):
             resp = self._http_request(method='POST', url_suffix='api/v1/auth/token', resp_type='json',
                                       auth=(self.username, self.password))
             token = resp.get('token')
-            expiration_time = int(dateparser.parse(resp.get('expires')).timestamp()) 
+            expiration_time = int(dateparser.parse(resp.get('expires')).timestamp())
         else:   #client id and client secret are used to create a token
 
             resp = self._http_request(method='POST', url_suffix="/api/v1/oauth/token",data={
@@ -1336,7 +1336,7 @@ def main() -> None:
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
         check_authentication_parameters(client_id, client_secret, username, password)
-
+        basic_auth_flag = True
         if client_id and client_secret:
             basic_auth_flag = False
         client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, username=username, password=password,
