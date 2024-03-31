@@ -1,7 +1,6 @@
 import json
 from MatterMost_V2 import get_team_command, list_channels_command, create_channel_command, add_channel_member_command, remove_channel_member_command, list_users_command, close_channel_command, send_file_command
 import pytest
-import demistomock as demisto
 
 
 def util_load_json(path):
@@ -37,7 +36,7 @@ def client(mocker):
         verify=True,
         proxy=False,
         bot_access_token='bot_access_token',
-        personal_access_bot='personal_access_bot',
+        personal_access_token='personal_access_token',
         team_name='team_name',
         notification_channel='notification_channel',
     )

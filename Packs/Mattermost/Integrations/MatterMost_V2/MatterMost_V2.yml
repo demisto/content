@@ -20,7 +20,7 @@ configuration:
   section: Connect
 - displaypassword: Personal Access Token
   additionalinfo: The Personal Access Token to use for connection
-  name: personal_access_bot
+  name: personal_access_token
   required: true
   hiddenusername: true
   type: 9
@@ -33,14 +33,14 @@ configuration:
 - display: Default Notifications Channel
   name: notification_channel
   advanced: true
-  required: true
+  required: false
   type: 0
-  section: Connect
+  section: Connect - Advanced
 - defaultvalue: 'true'
   display: Enable Incident Mirroring
   name: mirroring
   type: 8
-  section: Collect
+  section: Connect - Advanced
   required: false
 - defaultvalue: 'true'
   display: Long running instance. Required for investigation mirroring and direct messages.
@@ -53,17 +53,19 @@ configuration:
   name: insecure
   type: 8
   required: false
+  section: Connect - Advanced
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect - Advanced
 description: 
 display: MatterMost_V2
 name: MatterMost_V2
 script:
   commands:
   - arguments:
-    - description: The name of the team to retrive.
+    - description: The name of the team to retrieve.
       name: team_name
       required: true
     description: Gets a team details.
@@ -115,29 +117,26 @@ script:
       description: The policy id of the team.
       type: String
   - arguments:
-    - description: The name of the team to retrieve. Default is the Team Name in the integration configuration.
-      name: team_name
+    - description: The name of the team to list channels from. Default is the Team Name in the integration configuration.
+      name: team
       required: false
-    - description: include_private_channels or not. Default is false.
+    - description: Include private channels or not. Default is false.
       name: include_private_channels
       required: false
       predefined:
       - true
       - false
       auto: PREDEFINED
-    - description: The name of the team to retrieve. Default is the Team Name in the integration configuration.
-      name: team_name
-      required: false
-    - description: The page number to retrieve.
+    - description: The page number to retrieve. Default value is 0.
       name: page
       required: false
-    - description: The size of the page to retrieve.
+    - description: The size of the page to retrieve. Default value is 50.
       name: page_size
       required: false
-    - description: How many results to retrieve.
+    - description: How many results to retrieve. Default value is 50. Will override the page and page_size arguments if given.
       name: limit
       required: false
-    description: Gets a team details.
+    description: Lists channels.
     name: mattermost-list-channels
     outputs:
     - contextPath: Mattermost.Channel.id
@@ -186,8 +185,12 @@ script:
     - description: The name of the channel to create.
       name: name
       required: true
-    - description: The type of the channel to create.
+    - description: The type of the channel to create. Default value is Public.
       name: type
+      predefined:
+      - Public
+      - Private
+      auto: PREDEFINED
       required: true
     - description: The purpose of the channel to create.
       name: purpose
@@ -195,9 +198,9 @@ script:
     - description: The header of the channel to create.
       name: header
       required: false
-    - description: The team id of the channel to create.
-      name: team_id
-      required: true
+    - description: The team name of the channel to create. Default is the Team Name in the configuration.
+      name: team
+      required: false
     description: Creates a channel.
     name: mattermost-create-channel
     outputs:
@@ -244,11 +247,11 @@ script:
       description: The scheme ID of the channel.
       type: String
   - arguments:
-    - description: The team name of the channel to add the user to.
-      name: team_name
-      required: true
+    - description: The team name of the channel to add the user to. Default is the Team Name in the configuration.
+      name: team
+      required: false
     - description: The channel name of the channel to add the user to.
-      name: channel_name
+      name: channel
       required: true
     - description: The ID of the user to add. Use the command 'mattermost-list-users' to fetch the user ID.
       name: user_id
@@ -257,11 +260,11 @@ script:
     name: mattermost-add-channel-member
     outputs: []
   - arguments:
-    - description: The team name of the channel to remove the user from.
-      name: team_name
-      required: true
+    - description: The team name of the channel to add the user to. Default is the Team Name in the configuration.
+      name: team
+      required: false
     - description: The channel name of the channel to remove the user from.
-      name: channel_name
+      name: channel
       required: true
     - description: The ID of the user to remove. Use the command 'mattermost-list-users' to fetch the user ID.
       name: user_id
@@ -273,8 +276,8 @@ script:
     - description: The name of the team to filter users by.
       name: team_name
       required: false
-    - description: The ID of the channel to filters users by.
-      name: channel_id
+    - description: The name of the channel to filters users by. If mentioned, a team name must be mentioned as well.
+      name: channel_name
       required: false
     - description: The page number to retrieve.
       name: page
@@ -334,19 +337,9 @@ script:
       description: The timezone of the user.
       type: Unknown
   - arguments:
-    - description: The team name of the channel to delete.
+    - description: The team name of the channel to send the file to. Default is the Team Name in the integration configuration.
       name: team_name
-      required: true
-    - description: The channel name of the channel to delete.
-      name: channel_name
-      required: true
-    description: Deletes a channel.
-    name: mattermost-close-channel
-    outputs: []
-  - arguments:
-    - description: The team name of the channel to send the file to.
-      name: team_name
-      required: true
+      required: false
     - description: The channel name of the channel to send the file to.
       name: channel_name
       required: true
@@ -365,7 +358,7 @@ script:
       required: true
     - description: The channel name to send the notification to. Default value is the channel config parameter.
       name: channel
-      required: true
+      required: false
     - description: The entry id of the file to upload with the message.
       name: entry
       required: false
@@ -389,11 +382,51 @@ script:
     description: Deletes a channel.
     name: mattermost-close-channel
     outputs: []
+  - arguments:
+    - description: The team name of the channel to delete.
+      name: team_name
+      required: true
+    - description: The channel name of the channel to delete.
+      name: channel_name
+      required: true
+    description: Deletes a channel.
+    name: close-channel
+    outputs: []
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: all
+      description: The mirroring type. Can be "all", which mirrors everything, "chat", which mirrors only chats (not commands), or "none", which stops all mirroring.
+      name: type
+      predefined:
+      - all
+      - chat
+      - none
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether the channel is auto-closed when an investigation is closed.
+      name: autoclose
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: Both
+      description: The mirroring direction.
+      name: direction
+      predefined:
+      - Both
+      - FromDemisto
+      - ToDemisto
+    - description: The name of the channel. The default is "incident-<incidentID>".
+      name: channelName
+    description: Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
+    name: mirror-investigation
+  longRunning: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/slackv3:1.0.0.88538
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
