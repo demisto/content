@@ -322,9 +322,9 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
         human_readable_markdown = create_markdown(converted_json)
         # added for context data
         context_json = [{'report_id': report_id,
-            'report_status': upload_status,
-            'data': converted_json
-        }]
+                         'report_status': upload_status,
+                         'data': converted_json
+                         }]
         return PollResult(
             response=CommandResults(
                 outputs_prefix='AiOps.BPAReport',
