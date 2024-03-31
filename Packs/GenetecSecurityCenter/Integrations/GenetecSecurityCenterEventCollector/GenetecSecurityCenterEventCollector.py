@@ -99,6 +99,8 @@ def fetch_events_command(
     else:
         start_time_str = last_run.get("start_time", "")
     time_now_str = time_now.strftime(DATE_FORMAT_EVENT)
+    if end_time := args.get("end_time"):
+        time_now_str = end_time
     time_range = f"TimeRange.SetTimeRange({start_time_str},{time_now_str})"
     limit: int = int(args.get('limit') or client.limit)
     query: str = f"{time_range},SortOrder=Ascending"

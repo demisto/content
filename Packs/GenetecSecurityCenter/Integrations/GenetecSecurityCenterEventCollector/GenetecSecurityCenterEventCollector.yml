@@ -55,6 +55,8 @@ script:
       required: true
     - name: start_time
       description: The start time to fetch_from, should be in the format of YYYY-MM-DDTHH:MM:SS (e.g. 2024-02-21T23:00:00).
+    - name: end_time
+      description: The end time to fetch_from, should be in the format of YYYY-MM-DDTHH:MM:SS (e.g. 2024-02-21T23:00:00).
   runonce: false
   script: '-'
   type: python
