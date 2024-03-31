@@ -320,6 +320,17 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "prismacloudcomputehostcomplianceissues",
+                                "height": 106,
+                                "id": "13106b10-c2e0-11ee-ab9b-1fe3c1ce7b17",
+                                "index": 1,
+                                "listId": "caseinfoid-5be896c0-b51e-11ee-953e-756485313d90",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
                                 "args": {
                                     "desired_resources": {
                                         "simple": "",
@@ -494,6 +505,15 @@
                                 "name": "Enrich Container Compliance Issue",
                                 "scriptId": "PCComputeContainerComplianceIssuesButton",
                                 "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "prismacloudcomputecontainercomplianceissues",
+                                "height": 106,
+                                "id": "36a48db0-c112-11ee-bda4-e12716dd436c",
+                                "index": 1,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
@@ -675,6 +695,15 @@
                                 "name": "Enrich Image Compliance Issues",
                                 "scriptId": "PCComputeImageComplianceIssuesButton",
                                 "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "prismacloudcomputeimagecomplianceissues",
+                                "height": 106,
+                                "id": "a0981b90-c2e0-11ee-ab9b-1fe3c1ce7b17",
+                                "index": 1,
+                                "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
@@ -866,7 +895,17 @@
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "caseinfoid-7b3bd030-e478-11ee-b58e-03c58d3ab8bd",
-                        "items": [],
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "prismacloudcomputeticketsinfo",
+                                "height": 106,
+                                "id": "85528410-e478-11ee-b58e-03c58d3ab8bd",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
