@@ -26,9 +26,10 @@ def test_create_issue_command(mocker, redmine_client):
             'custom_fields': '1:https://test:appear'}
     create_issue_command(redmine_client, args=args)
     http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue':
-        {'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': '1', 'custom_fields':
-            [{'id': '1', 'value': 'https://test:appear'}], 'project_id': '1', 'watcher_user_ids': [1]}},
+                                                                                  {'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': '1', 'custom_fields':
+                                                                                   [{'id': '1', 'value': 'https://test:appear'}], 'project_id': '1', 'watcher_user_ids': [1]}},
                                     headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
+
 
 def test_create_issue_command_not_url_cf(mocker, redmine_client):
     """
@@ -48,8 +49,9 @@ def test_create_issue_command_not_url_cf(mocker, redmine_client):
     http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue': {
         'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': '1', 'custom_fields':
             [{'id': '1', 'value': 'hello'}], 'project_id': '1', 'watcher_user_ids': [1]}},
-                                    headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
-    
+        headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
+
+
 def test_create_issue_command_response(mocker, redmine_client):
     """
     Given:
@@ -230,7 +232,8 @@ def test_update_issue_command_response(mocker, redmine_client):
     """
     from Redmine import update_issue_command
     update_issue_request_mock = mocker.patch.object(redmine_client, 'update_issue_request')
-    args = {'issue_id': '1', 'subject': 'changefortest', 'tracker_id': 'Bug', 'watcher_user_ids': '[1]', 'custom_fields': '1:https://test:appear'}
+    args = {'issue_id': '1', 'subject': 'changefortest', 'tracker_id': 'Bug',
+            'watcher_user_ids': '[1]', 'custom_fields': '1:https://test:appear'}
     update_issue_request_mock.return_value = {}
     result = update_issue_command(redmine_client, args=args)
     assert result.readable_output == 'Issue with id 1 was successfully updated.'
@@ -312,7 +315,7 @@ def test_get_issues_list_command(mocker, redmine_client):
     args = {'sort': 'priority:desc', 'limit': '1', 'custom_field': '1:https://tests'}
     get_issues_list_command(redmine_client, args)
     http_request.assert_called_with('GET', '/issues.json', params={'status_id': 'open', 'offset': 0, 'limit': 1, 'sort':
-        'priority:desc', 'cf_1': 'https://tests'}, headers={'X-Redmine-API-Key': True})
+                                                                   'priority:desc', 'cf_1': 'https://tests'}, headers={'X-Redmine-API-Key': True})
 
 
 def test_get_issues_list_command_response(mocker, redmine_client):
