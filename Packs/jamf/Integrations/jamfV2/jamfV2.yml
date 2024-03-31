@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: jamf v2
+  id: jamf v2 test
   version: -1
 configuration:
 - display: Server URL
@@ -9,7 +9,12 @@ configuration:
   type: 0
 - display: Username
   name: credentials
-  required: true
+  required: false
+  type: 9
+- display: Client ID
+  name: client_credentials
+  displaypassword: Client Secret
+  required: false
   type: 9
 - display: Trust any certificate (not secure)
   name: insecure
@@ -20,8 +25,8 @@ configuration:
   type: 8
   required: false
 description: Enterprise Mobility Management (EMM) for Apple devices (Mac, iPhone, Apple TV, iPad). Can be used to control various configurations via different policies, install and uninstall applications, lock devices, smart groups searches, and more.
-display: JAMF v2
-name: jamf v2
+display: JAMF v2 test
+name: jamf v2 test
 script:
   commands:
   - arguments:

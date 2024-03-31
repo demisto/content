@@ -30,8 +30,16 @@ INTEGRATION_NAME = 'JAMF v2'
 
 
 class Client(BaseClient):
-    def __init__(self, base_url: str, verify: bool, username: str = "", password: str = "", proxy: bool = False):
-        super().__init__(base_url=base_url, auth=(username, password), verify=verify, proxy=proxy)
+    def __init__(self, base_url: str, verify: bool, username: str = "", password: str = "", proxy: bool = False,
+                basic_auth_flag: bool = False, _token: str|None = None,
+                client_id: str|None = None, client_secret: str|None = None):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self.username = username
+        self.password = password
+        self._token = _token
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.basic_auth_flag = basic_auth_flag     #this flag is used to determine if its possible to use basic auth if the token generation fails
 
         """ due to deprecating the basic auth option from the classical API versions 10.35 and up
             the client will try to generate an auth token first, if it failed to do generate the token,
@@ -74,12 +82,26 @@ class Client(BaseClient):
         """
         Generates new token.
         """
-        resp = self._http_request(method='POST', url_suffix='api/v1/auth/token', resp_type='json')
-        token = resp.get('token')
-        expiration_time = int(dateparser.parse(resp.get('expires')).timestamp())  # type: ignore[union-attr]
+        if self.basic_auth_flag:
+            resp = self._http_request(method='POST', url_suffix='api/v1/auth/token', resp_type='json',
+                                      auth=(self.username, self.password))
+            token = resp.get('token')
+            expiration_time = int(dateparser.parse(resp.get('expires')).timestamp()) 
+        else:
+
+            resp = self._http_request(method='POST', url_suffix="/api/v1/oauth/token",data={
+                'client_id': self.client_id,
+                'grant_type': 'client_credentials',
+                'client_secret': self.client_secret},
+                                    headers = {"Content-Type": "application/x-www-form-urlencoded"}, resp_type='json')
+            token = resp.get('access_token')
+            now_timestamp = arg_to_datetime('now').timestamp()
+            expiration_time = now_timestamp + resp.get('expires_in')
+            
+         # type: ignore[union-attr]
         integration_context = get_integration_context()
         integration_context.update({'token': token})
-        # Add 10 minutes buffer for the token
+        # Add 1 minute buffer for the token
         integration_context.update({'expires': expiration_time - 60})
         set_integration_context(integration_context)
 
@@ -88,15 +110,17 @@ class Client(BaseClient):
     def _classic_api_post(self, url_suffix, data, error_handler):
         post_headers = ((self._headers or {}) | POST_HEADERS)  # merge the token and the POST headers
         classic_url_suffix = urljoin('/JSSResource', url_suffix)  # classic API endpoints starts with JSSResource
+        auth = (self.username, self.password) if (not self._token) and self.basic_auth_flag else None
         return self._http_request(method='POST', data=data, url_suffix=classic_url_suffix,
                                   headers=post_headers, resp_type='response',
-                                  error_handler=error_handler)
+                                  error_handler=error_handler,auth=auth)
 
     def _classic_api_get(self, url_suffix, error_handler=None):
         get_headers = ((self._headers or {}) | GET_HEADERS)  # merge the token and the GET headers
         classic_url_suffix = urljoin('/JSSResource', url_suffix)  # classic API endpoints starts with JSSResource
+        auth = (self.username, self.password) if (not self._token) and self.basic_auth_flag else None
         return self._http_request(method='GET', url_suffix=classic_url_suffix, headers=get_headers,
-                                  error_handler=error_handler)
+                                  error_handler=error_handler,auth=auth)
 
     def get_computers_request(self, computer_id: str = None, basic_subset: bool = False, match: str = None):
         """Retrieve the computers results.
@@ -1294,11 +1318,17 @@ def main() -> None:
         base_url = params.get('url', '').rstrip('/')
         username = params.get('credentials', {}).get('identifier')
         password = params.get('credentials', {}).get('password')
-
+        client_id= params.get('client_credentials', {}).get('identifier')
+        client_secret= params.get('client_credentials', {}).get('password')
+        #TODO make sure the client entered one, and only one method of authentication
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
+        basic_auth_flag = True
 
-        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, username=username, password=password)
+        if client_id and client_secret:
+            basic_auth_flag = False
+        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, username=username, password=password,
+                        client_id=client_id, client_secret=client_secret, basic_auth_flag=basic_auth_flag)
 
         if demisto.command() == 'test-module':
             result = test_module(client)
