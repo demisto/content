@@ -32,7 +32,7 @@ AUTHENTICATION_PARAMS_ERROR = 'Please provide either client_id and client_secret
 
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, username: str = "", password: str = "", proxy: bool = False,
-                basic_auth_flag: bool = False, _token: str|None = None,
+                basic_auth_flag: bool = True, _token: str|None = None,
                 client_id: str|None = None, client_secret: str|None = None):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.username = username
@@ -1336,7 +1336,6 @@ def main() -> None:
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
         check_authentication_parameters(client_id, client_secret, username, password)
-        basic_auth_flag = True
 
         if client_id and client_secret:
             basic_auth_flag = False
