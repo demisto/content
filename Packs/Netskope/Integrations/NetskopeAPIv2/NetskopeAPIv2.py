@@ -1249,7 +1249,7 @@ def optional_arg_to_boolean(arg: str | bool | None) -> bool | None:
     return argToBoolean(arg) if arg is not None else None
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
 
