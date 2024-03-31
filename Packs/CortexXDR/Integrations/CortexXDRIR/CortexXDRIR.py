@@ -434,6 +434,8 @@ class Client(CoreClient):
         request_data = {"request_data": {
             "alert_id_list": [alerts_ids],
         }}
+        if severity or status or comment:
+            request_data["update_data"] = {}
         if severity:
             request_data["update_data"]["severity"] = severity
         if status:

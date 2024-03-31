@@ -1267,3 +1267,60 @@ def test_get_incident_extra_data_incident_not_exist(mocker):
     with pytest.raises(DemistoException) as e:
         _, outputs, raw_incident = get_incident_extra_data_command(client, args)
     assert str(e.value) == 'Incident 1 is not found'
+
+
+def test_update_alerts_in_xdr_command_expected_result(mocker):
+    """
+    Given:
+        -  an XDR client
+        - arguments (incident_id)
+    When
+        - Running update_alerts_in_xdr_command
+    Then
+        - Verify that if the incident id is not found, it returns an error.
+    """
+    from CortexXDRIR import update_alerts_in_xdr_command, Client
+    xdrIr_client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
+    http_request = mocker.patch.object(xdrIr_client, '_http_request')
+    http_request.return_value = {"reply": {"alerts_ids": ['1','2','3']}}
+    args = {"alert_ids": "1,2,3", "severity": "high", "status": "resolved_threat_handled", "comment": "fixed from test"}
+    res = update_alerts_in_xdr_command(xdrIr_client, args)
+    assert res.readable_output == "Alerts with IDs 1,2,3 have been updated successfully."
+    
+def test_update_alerts_in_xdr_command_invalid_response_no_reply(mocker):
+    """
+    Given:
+        -  an XDR client
+        - arguments (incident_id)
+    When
+        - Running update_alerts_in_xdr_command
+    Then
+        - Verify that if the incident id is not found, it returns an error.
+    """
+    from CortexXDRIR import update_alerts_in_xdr_command, Client
+    xdrIr_client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
+    http_request = mocker.patch.object(xdrIr_client, '_http_request')
+    http_request.return_value = {"alerts_ids": ['1','2','3']}
+    args = {"alert_ids": "1,2,3", "severity": "high", "status": "resolved_threat_handled", "comment": "fixed from test"}
+    with pytest.raises(DemistoException) as e:
+        update_alerts_in_xdr_command(xdrIr_client, args)
+    assert e.value.message == "Parse Error. Response not in format, can't find reply key."
+
+def test_update_alerts_in_xdr_command_invalid_response_no_alerts_ids(mocker):
+    """
+    Given:
+        -  an XDR client
+        - arguments (incident_id)
+    When
+        - Running update_alerts_in_xdr_command
+    Then
+        - Verify that if the incident id is not found, it returns an error.
+    """
+    from CortexXDRIR import update_alerts_in_xdr_command, Client
+    xdrIr_client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
+    http_request = mocker.patch.object(xdrIr_client, '_http_request')
+    http_request.return_value = {"reply": ['1','2','3']}
+    args = {"alert_ids": "1,2,3", "severity": "high", "status": "resolved_threat_handled", "comment": "fixed from test"}
+    with pytest.raises(DemistoException) as e:
+        update_alerts_in_xdr_command(xdrIr_client, args)
+    assert e.value.message == "Parse Error. Response not in format, can't find reply key."
