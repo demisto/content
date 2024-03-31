@@ -1231,12 +1231,6 @@ script:
           predefined:
             - ""
         - auto: PREDEFINED
-          description: A list of compatible architectures.
-          name: compatible-architectures
-          predefined:
-            - x86_64
-            - arm64
-        - auto: PREDEFINED
           description: The AWS Region. If not specified, the default region will be used.
           name: region
           predefined:
@@ -1262,6 +1256,12 @@ script:
           name: roleSessionName
         - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
           name: roleSessionDuration
+        - auto: PREDEFINED
+          description: A list of compatible architectures.
+          name: compatible-architectures
+          predefined:
+            - x86_64
+            - arm64
       outputs:
         - contextPath: AWS.Lambda.Layers.LayerVersionArn
           description: The ARN of the layer version.
