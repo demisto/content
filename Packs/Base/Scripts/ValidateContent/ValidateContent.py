@@ -210,7 +210,7 @@ def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_director
 
     pack_name = get_pack_name(zip_path)
     contrib_converter = ContributionConverter(name=pack_name, contribution=zip_path, base_dir=tmp_directory)
-    code_fp_to_row_offset = contrib_converter.convert_contribution_to_pack()
+    code_fp_to_row_offset = convert_contribution_to_pack(contrib_converter)
     # Call the standalone function and get the raw response
     os.remove(zip_path)
     return contrib_converter.pack_dir_path, code_fp_to_row_offset
