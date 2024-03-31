@@ -26,8 +26,10 @@ def test_create_issue_command(mocker, redmine_client):
             'custom_fields': '1:https://test:appear'}
     create_issue_command(redmine_client, args=args)
     http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue':
-                                                                                  {'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': '1', 'custom_fields':
-                                                                                   [{'id': '1', 'value': 'https://test:appear'}], 'project_id': '1', 'watcher_user_ids': [1]}},
+                                                                                  {'issue_id': '1', 'subject': 'changeFromCode',
+                                                                                   'tracker_id': '1', 'custom_fields':
+                                                                                   [{'id': '1', 'value': 'https://test:appear'}],
+                                                                                   'project_id': '1', 'watcher_user_ids': [1]}},
                                     headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
 
 
@@ -92,8 +94,8 @@ def test_create_issue_command_invalid_custom_fields(redmine_client):
     """
     from Redmine import create_issue_command
     from CommonServerPython import DemistoException
-    args = {'project_id': '1', 'custom_fields': '1:https://test:appear,111', 'issue_id': '1', 'subject': 'testSub', 'tracker_id': 'Bug',
-            'watcher_user_ids': '[1]', 'status_id': 'New', 'priority_id': 'High'}
+    args = {'project_id': '1', 'custom_fields': '1:https://test:appear,111', 'issue_id': '1', 'subject': 'testSub',
+            'tracker_id': 'Bug', 'watcher_user_ids': '[1]', 'status_id': 'New', 'priority_id': 'High'}
     with pytest.raises(DemistoException) as e:
         create_issue_command(redmine_client, args)
     assert e.value.message == "Custom fields not in format, please follow the instructions"
@@ -314,8 +316,11 @@ def test_get_issues_list_command(mocker, redmine_client):
     http_request = mocker.patch.object(redmine_client, '_http_request')
     args = {'sort': 'priority:desc', 'limit': '1', 'custom_field': '1:https://tests'}
     get_issues_list_command(redmine_client, args)
-    http_request.assert_called_with('GET', '/issues.json', params={'status_id': 'open', 'offset': 0, 'limit': 1, 'sort':
-                                                                   'priority:desc', 'cf_1': 'https://tests'}, headers={'X-Redmine-API-Key': True})
+    http_request.assert_called_with('GET', '/issues.json', params={'status_id': 'open',
+                                                                   'offset': 0, 'limit': 1,
+                                                                   'sort': 'priority:desc', 
+                                                                   'cf_1': 'https://tests'},
+                                    headers={'X-Redmine-API-Key': True})
 
 
 def test_get_issues_list_command_response(mocker, redmine_client):
