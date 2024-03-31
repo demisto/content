@@ -413,10 +413,10 @@ def fetch_events_command(
                 event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
                 event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
             except Exception as e:
-                config_id = event['attackData']['configId']
-                policy_id = event['attackData']['policyId']
+                config_id = event.get('attackData', {}).get('configId', "")
+                policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-            
+
         total_events_count += len(events)
         yield events, offset
 
@@ -430,6 +430,7 @@ def decode_url(headers):
             key, value = parts
             decoded_dict[key.replace("-", "_")] = value.replace('"', '')
     return decoded_dict
+
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 

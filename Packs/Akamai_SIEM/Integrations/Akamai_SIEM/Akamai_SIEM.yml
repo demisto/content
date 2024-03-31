@@ -67,6 +67,8 @@ configuration:
   defaultvalue: 1 hours
   required: false
   section: Collect
+  hidden:
+  - marketplacev2
 - display: Fetch limit (minimum is 20)
   name: fetchLimit
   type: 0
