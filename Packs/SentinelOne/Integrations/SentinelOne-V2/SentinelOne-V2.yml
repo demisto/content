@@ -334,6 +334,9 @@ script:
     description: Gets the file reputation by a SHA1 hash.
     name: sentinelone-get-hash
     outputs:
+    - contextPath: SentinelOne.Hash.Rank
+      description: The hash reputation (1-10).
+      type: Number
     - contextPath: SentinelOne.Hash.Verdict
       description: The verdict of a hash.
       type: String
