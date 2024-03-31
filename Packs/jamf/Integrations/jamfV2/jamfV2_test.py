@@ -13,7 +13,9 @@ you are implementing with your integration
 import json
 import io
 from CommonServerPython import *
-
+import pytest
+from jamfV2 import check_authentication_parameters
+from CommonServerPython import DemistoException
 
 def load_xml_response(file_name: str) -> str:
     with io.open(file_name, mode='r', encoding='utf-8') as xml_file:
@@ -437,3 +439,34 @@ def test_endpoint_command(mocker):
         assert results.get("EntryContext")[key] == get_endpoints_response[key]
     assert results.get("EntryContext") == get_endpoints_response
     assert len(outputs) == 1
+
+
+@pytest.mark.parametrize('client_id, client_secret, username, password, should_raise', [
+    ("client_id", "client_secret", None, None, False),
+    (None, None, "username", "password", False),
+    ("client_id", "client_secret", "username", "password", True),
+    (None, None, None, None, True),
+    ("client_id", None, "username", None, True),
+    (None, "client_secret", None, "password", True),
+])
+def test_check_authentication_parameters(client_id, client_secret, username, password, should_raise):
+    """
+    Given:
+        - client_id, client_secret, username, password and should_raise
+        case 1: client_id and client_secret are provided, but username, password are not - should not raise an exception
+        case 2: client_id, client_secret are not provided, but username, password are provided - should not raise an exception
+        case 3: None of the parameters are provided - should raise an exception
+        case 4: client_id and username are provided, but client_secret, password are not - should raise an exception
+        case 5: client_secret and password are provided, but client_id, username are not - should raise an exception
+        
+    When:
+        - check_authentication_parameters is called
+    Then:
+        - Ensure the function raises an exception if the right parameters are not provided
+    """
+    if should_raise:
+        with pytest.raises(DemistoException):
+            check_authentication_parameters(client_id, client_secret, username, password)
+    else:
+        check_authentication_parameters(client_id, client_secret, username, password)
+    
