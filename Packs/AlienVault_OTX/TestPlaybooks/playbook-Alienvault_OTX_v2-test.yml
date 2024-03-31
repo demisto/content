@@ -216,7 +216,7 @@ tasks:
       - "7"
     scriptarguments:
       domain:
-        simple: rghost.net
+        simple: example.com
       threshold: {}
     continueonerror: true
     separatecontext: false

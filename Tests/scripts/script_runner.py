@@ -38,7 +38,10 @@ def main():
         files = args[files_index + 1:]
 
     # Run the script
-    SystemExit(run_script(script_args, files))
+    exit_code = run_script(script_args, files)
+    if exit_code:
+        raise SystemExit(exit_code)
+    SystemExit(exit_code)
 
 
 if __name__ == "__main__":
