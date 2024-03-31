@@ -10,7 +10,7 @@ from contextlib import redirect_stderr, redirect_stdout
 from datetime import datetime
 from pathlib import Path
 from shutil import copy
-from tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory, TemporaryFile
 from typing import Any, Dict, List, Optional, Tuple
 import logging
 
@@ -210,7 +210,7 @@ def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_director
 
     pack_name = get_pack_name(zip_path)
     contrib_converter = ContributionConverter(name=pack_name, contribution=zip_path, base_dir=tmp_directory)
-    code_fp_to_row_offset = convert_contribution_to_pack(contrib_converter)
+    code_fp_to_row_offset = contrib_converter.convert_contribution_to_pack()
     # Call the standalone function and get the raw response
     os.remove(zip_path)
     return contrib_converter.pack_dir_path, code_fp_to_row_offset
@@ -221,7 +221,7 @@ def prepare_single_content_item_for_validation(filename: str, data: bytes, tmp_d
     pack_name = 'TmpPack'
     pack_dir = content.path / 'Packs' / pack_name
     # create pack_metadata.json file in TmpPack
-    contrib_converter = ContributionConverter(name=pack_name, base_dir=tmp_directory, pack_dir_name=pack_name)
+    contrib_converter = ContributionConverter(name=pack_name, base_dir=tmp_directory, pack_dir_name=pack_name, contribution=pack_name)
     contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
     prefix = '-'.join(filename.split('-')[:-1])
     containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Integrations')
@@ -257,10 +257,16 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     json_output_path = os.path.join(tmp_directory, 'validation_res.json')
     lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
     output_capture = io.StringIO()
-    log_capture = io.StringIO()
 
-    with redirect_stdout(output_capture):
-        with redirect_stderr(output_capture):
+    with redirect_stderr(output_capture):
+        with TemporaryFile(mode='w+') as tmp:
+            logging_setup(
+                console_log_threshold=logging.INFO,
+                file_log_threshold=logging.DEBUG,
+                log_file_path=tmp.name,
+                skip_log_file_creation=True
+            )
+
             if filename.endswith('.zip'):
                 path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
                     filename, data, tmp_directory
@@ -269,38 +275,29 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
                 path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
                     filename, data, tmp_directory
                 )
-
-            handler = logging.StreamHandler(log_capture)
-            for name in [None, 'demisto-sdk']:
-                logger = logging.getLogger(name)
-                logger.handlers.clear()
-                logger.addHandler(handler)
-
             run_validate(path_to_validate, json_output_path)
             run_lint(path_to_validate, lint_output_path)
 
-            handler.flush()
-            handler.close()
+            demisto.debug("log capture:" + tmp.read())
 
-    demisto.debug("log capture:" + log_capture.getvalue())
-    all_outputs = []
-    with open(json_output_path, 'r') as json_outputs:
-        outputs_as_json = json.load(json_outputs)
-        if outputs_as_json:
-            if type(outputs_as_json) == list:
-                all_outputs.extend(outputs_as_json)
-            else:
-                all_outputs.append(outputs_as_json)
+            all_outputs = []
+            with open(json_output_path, 'r') as json_outputs:
+                outputs_as_json = json.load(json_outputs)
+                if outputs_as_json:
+                    if type(outputs_as_json) == list:
+                        all_outputs.extend(outputs_as_json)
+                    else:
+                        all_outputs.append(outputs_as_json)
 
-    with open(lint_output_path, 'r') as json_outputs:
-        outputs_as_json = json.load(json_outputs)
-        if outputs_as_json:
-            if type(outputs_as_json) == list:
-                for validation in outputs_as_json:
-                    adjust_linter_row_and_col(validation, code_fp_to_row_offset)
-                all_outputs.extend(outputs_as_json)
-            else:
-                all_outputs.append(outputs_as_json)
+            with open(lint_output_path, 'r') as json_outputs:
+                outputs_as_json = json.load(json_outputs)
+                if outputs_as_json:
+                    if type(outputs_as_json) == list:
+                        for validation in outputs_as_json:
+                            adjust_linter_row_and_col(validation, code_fp_to_row_offset)
+                        all_outputs.extend(outputs_as_json)
+                    else:
+                        all_outputs.append(outputs_as_json)
     return all_outputs
 
 
