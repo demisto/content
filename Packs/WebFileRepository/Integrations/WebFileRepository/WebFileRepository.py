@@ -3460,7 +3460,7 @@ class FileReceiver:
     def __init__(
         self
     ) -> None:
-        self.__cache: dict[str, UploadingData] = {}
+        self.__cache: dict[str, self.UploadingData] = {}
         self.__expires = 60
 
     def remove_expired_cache_entries(
