@@ -1134,8 +1134,9 @@ script:
     - description: The ID of the computer that you want to erase.
       name: id
       required: true
-    description: Sends the “EraseDevice'' command to a computer. Permanently erases all the data on the computer and sets a passcode when required by the computer hardware type.
+    description: Deprecated. Sends the “EraseDevice'' command to a computer. Permanently erases all the data on the computer and sets a passcode when required by the computer hardware type.
     name: jamf-computer-erase
+    deprecated: true
     outputs:
     - contextPath: JAMF.ComputerCommand.name
       description: The command name.
