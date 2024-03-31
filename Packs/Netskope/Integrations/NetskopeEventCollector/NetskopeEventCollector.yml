@@ -27,7 +27,7 @@ configuration:
 - section: Collect
   advanced: true
   display: Events Fetch Interval
-  additionalinfo: Alerts and activity events.
+  additionalinfo: default fetch interval (This collector has an optimization feature that enables it to bring events as soon as possible if they exist).
   name: eventFetchInterval
   defaultvalue: "5"
   type: 19
