@@ -264,7 +264,7 @@ def test_module(client: Client) -> str:
     try:
         client.generate_access_token_request()
     except DemistoException as e:
-        if 'access token' in str(e) or 'Forbidden' in str(e) or 'Authorization' in str(e) or 'access token' in str(e):
+        if 'access token' in e.message or 'Forbidden' in e.message or 'Authorization' in e.message:
             raise DemistoException(f"Authorization Error: make sure your tsg_id, client_id, client_secret are correctly set. "
                                    f"With error {e}")
         else:
@@ -278,6 +278,7 @@ def test_module(client: Client) -> str:
 
 
 def generate_report_command(client: Client, args: dict[str, Any]):
+    client.generate_access_token_request()
     config_file_from_user = args.get('entry_id')
     requester_email = args.get('requester_email')
     requester_name = args.get('requester_name')
@@ -310,6 +311,7 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     poll_message="",
 )
 def polling_until_upload_report_command(args: dict[str, Any], client: Client) -> PollResult:
+    client.generate_access_token_request()
     report_id = args.get('report_id')
     upload_status = client.check_upload_status_request(report_id)
     if upload_status == 'COMPLETED_WITH_SUCCESS':
@@ -389,10 +391,7 @@ def main() -> None:
             client_secret=client_secret,
             verify=verify_certificate,
             proxy=proxy)
-
-        # Generate an access token for pan-OS/panorama
-        client.generate_access_token_request()
-
+     
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'pan-aiops-bpa-report-generate':
