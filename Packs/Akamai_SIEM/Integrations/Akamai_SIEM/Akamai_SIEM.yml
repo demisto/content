@@ -93,6 +93,30 @@ configuration:
   type: 8
   required: false
   section: Connect
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+  section: Collect
+  hidden:
+  - marketplacev2
+- defaultvalue: '1'
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  advanced: true
+  section: Collect
+  hidden:
+  - xsoar
+- display: Fetch Events
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
 description: Use the Akamai WAF SIEM integration to retrieve security events from Akamai Web Application Firewall (WAF) service.
 display: Akamai WAF SIEM
 name: Akamai WAF SIEM
@@ -190,7 +214,9 @@ script:
       type: String
   dockerimage: demisto/auth-utils:1.0.0.90978
   isfetch: true
+  isfetch:marketplacev2: false
   isfetchevents: true
+  isfetchevents:xsoar: false
   runonce: false
   script: '-'
   subtype: python3
