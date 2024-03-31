@@ -6,7 +6,7 @@ import traceback
 import types
 import zipfile
 from base64 import b64decode
-from contextlib import redirect_stderr, redirect_stdout
+from contextlib import redirect_stderr
 from datetime import datetime
 from pathlib import Path
 from shutil import copy
