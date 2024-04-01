@@ -1,6 +1,7 @@
+import json
 import pytest
 import demistomock as demisto
-from CertStream import *
+from CertStream import get_homographs_list, levenshtein_distance
 
 
 @pytest.mark.parametrize("list_name", [
