@@ -542,7 +542,7 @@ def test_publish_layer_version_command(mocker):
 
     assert results.outputs_key_field == 'LayerVersionArn'
     assert results.outputs_prefix == 'AWS.Lambda.Layers'
-    assert len(results.outputs.keys()) == 6
+    assert len(results.outputs.keys()) == 7
 
 
 def test_delete_layer_version_command(mocker):
