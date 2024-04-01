@@ -3412,6 +3412,7 @@ class FileReceiver:
         ) -> None:
             if self.__file is not None:
                 self.__file.close()
+                self.__file = None
 
         def append_chunk(
             self,
