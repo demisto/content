@@ -7,7 +7,7 @@ configuration:
   name: url
   required: true
   type: 0
-  additionalinfo: 'Your server URL (e.g.: https://yourdomain.jamfcloud.com)'
+  additionalinfo: 'Your server URL (e.g., https://yourdomain.jamfcloud.com)'
 - display: Username
   name: credentials
   required: false
