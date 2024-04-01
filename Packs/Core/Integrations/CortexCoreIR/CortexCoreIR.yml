@@ -11,7 +11,7 @@ configuration:
 - display: Server URL (copy URL from Core - click ? to see more info.)
   name: url
   type: 0
-  hidden: false
+  hidden: true
   required: false
 - display: API Key ID
   name: apikey_id
@@ -23,6 +23,13 @@ configuration:
   type: 4
   hidden: false
   required: false
+- display: API Key ID
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+  section: Connect
+  displaypassword: API Key
 - additionalinfo: The timeout of the HTTP requests sent to Cortex API (in seconds).
   defaultvalue: '120'
   display: HTTP Timeout
@@ -2938,4 +2945,4 @@ script:
   dockerimage: demisto/python3:3.10.13.85667
 tests:
 - No tests
-fromversion: 8.0.0
+fromversion: 6.2.0

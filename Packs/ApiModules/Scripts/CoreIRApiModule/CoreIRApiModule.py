@@ -149,7 +149,7 @@ class CoreClient(BaseClient):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
     
-    def _http_request_(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
                 params=None, data=None, timeout=None, raise_on_status=False):
         '''
         """A wrapper for requests lib to send our requests and handle requests and responses better.
@@ -189,7 +189,7 @@ class CoreClient(BaseClient):
         '''
         try:
             # Replace params if supplied
-            address = url_suffix # full_url if full_url else urljoin(self._base_url, url_suffix)
+            address = full_url if full_url else urljoin(self._base_url, url_suffix)
             headers = headers if headers else self._headers
             data = json.dumps(json_data) if json_data else data
             demisto.debug(f'address {address} | headers : {headers} | data {data}')
@@ -197,7 +197,7 @@ class CoreClient(BaseClient):
                         method=method,
                         path=address,
                         data=data,
-                        headers=headers,
+                        headers=self._headers,
                         timeout=timeout
                     )
             return res
