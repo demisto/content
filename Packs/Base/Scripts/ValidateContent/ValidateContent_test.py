@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import shutil
 import pytest
 from _pytest._py.path import LocalPath
 from pytest_mock import MockerFixture
@@ -179,6 +180,9 @@ class TestValidateContent:
             ]
         )
 
+    def _cleanup():
+        shutil.rmtree(Path(__file__).parent.resolve() / "MagicMock")
+
     def test_validate_automation_with_errors(
             self,
             mocker: MockerFixture,
@@ -218,7 +222,9 @@ class TestValidateContent:
             == self.test_invalid_script_path.stem
         assert results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_LINE] == "41"
         assert "unterminated string literal" in \
-        results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_ERROR]
+            results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_ERROR]
+        
+        self._cleanup()
 
     # FIXME this test currently fails because https://jira-dc.paloaltonetworks.com/browse/CIAC-10138
     @pytest.mark.xfail
@@ -262,6 +268,8 @@ class TestValidateContent:
         assert results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_LINE] == "41"
         assert "unterminated string literal" in \
             results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_ERROR]
+
+        self._cleanup()
 
     def test_validate_valid_script(self):
         pass
