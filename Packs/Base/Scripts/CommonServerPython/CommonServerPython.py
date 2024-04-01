@@ -350,6 +350,14 @@ class EntryFormat(object):
         )
 
 
+class FileAttachmentType(object):
+    """
+    Enum: contains the file attachment types,
+    Used to add information in the description of the attachment whether the image is inline or attached
+    """
+    ATTACHED = "attached_file"
+
+
 brands = {
     'xfe': 'xfe',
     'vt': 'virustotal',

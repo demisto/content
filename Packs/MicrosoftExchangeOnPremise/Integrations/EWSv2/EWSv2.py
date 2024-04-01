@@ -1276,7 +1276,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 incident['attachment'].append({
                                     'path': file_result['FileID'],
                                     'name': get_attachment_name(attachment.name),
-                                    "description": "is_attached_file" if not attachment.is_inline else ""
+                                    "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                                 })
                         except TypeError as e:
                             if str(e) != "must be string or buffer, not None":
@@ -1325,13 +1325,13 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                             incident['attachment'].append({
                                 'path': file_result['FileID'],
                                 'name': get_attachment_name(attachment.name) + ".eml",
-                                "description": "is_attached_file" if not attachment.is_inline else ""
+                                "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                             })
 
                         else:
                             incident['attachment'].append({
                                 'name': get_attachment_name(attachment.name) + ".eml",
-                                "description": "is_attached_file" if not attachment.is_inline else ""
+                                "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                             })
 
                     labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment.name)})

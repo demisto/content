@@ -2169,7 +2169,7 @@ def parse_incident_from_item(item):     # pragma: no cover
                             {
                                 "path": file_result["FileID"],
                                 "name": get_attachment_name(attachment.name),
-                                "description": "is_attached_file" if not attachment.is_inline else "",
+                                "description": FileAttachmentType.ATTACHED if not attachment.is_inline else "",
                             }
                         )
                 except TypeError as e:
@@ -2262,7 +2262,7 @@ def parse_incident_from_item(item):     # pragma: no cover
                         {
                             "path": file_result["FileID"],
                             "name": get_attachment_name(attachment.name, eml_extension=True),
-                            "description": "is_attached_file" if not attachment.is_inline else "",
+                            "description": FileAttachmentType.ATTACHED if not attachment.is_inline else "",
                         }
                     )
 
