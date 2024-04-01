@@ -11,7 +11,7 @@ from CommonServerUserPython import *
 from typing import Any
 from MicrosoftApiModule import *  # noqa: E402
 
-# disable insecure warnings
+#  disable insecure warnings
 DEFAULT_KEYS_TO_REPLACE = {'createdDateTime': 'CreatedDate'}
 urllib3.disable_warnings()
 
