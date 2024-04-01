@@ -58,12 +58,12 @@ class Client(BaseClient):
         return res
 
     def ip_reputation_request(self, ip):
-        url_suffix = f"/api/v2/hosts/search?q=labels: * and {ip} or {ip}"
+        url_suffix = f"/api/v2/hosts/search?q=labels: * and ip={ip} or ip={ip}"
         res = self._http_request('GET', url_suffix)
         return res
 
     def domain_reputation_request(self, domain):
-        url_suffix = f"/api/v2/hosts/search?q=labels: * and {domain} or {domain}"
+        url_suffix = f"/api/v2/hosts/search?q=labels: * and dns.names={domain} or dns.names={domain}"
         res = self._http_request('GET', url_suffix)
         return res
 
@@ -83,8 +83,8 @@ def censys_view_command(client: Client, args: dict[str, Any]) -> CommandResults:
     index = args.get('index', '')
     query = args.get('query', '')
     res = client.censys_view_request(index, query)
+    result = res.get('result', {})
     if index == 'ipv4':
-        result = res.get('result', {})
         content = {
             'Name': result.get('autonomous_system', {}).get('name'),
             'Bgp Prefix': result.get('autonomous_system', {}).get('bgp_prefix'),
@@ -128,13 +128,13 @@ def censys_view_command(client: Client, args: dict[str, Any]) -> CommandResults:
             raw_response=res
         )
     else:
-        metadata = res.get('metadata', {})
         content = {
-            'SHA 256': res.get('fingerprint_sha256'),
-            'Tags': res.get('tags'),
-            'Source': metadata.get('source'),
-            'Added': metadata.get('added_at'),
-            'Updated': metadata.get('updated_at')
+            'SHA 256': result.get('fingerprint_sha256'),
+            'Added': result.get('added_at'),
+            'Updated': result.get('modified_at'),
+            # 'Browser Trust': metadata.get('validation', {}).get(name)
+            # 'Tags': res.get('tags'),
+            # 'Source': metadata.get('source'),
         }
         human_readable = tableToMarkdown('Information for certificate', content)
         return CommandResults(
@@ -167,10 +167,10 @@ def censys_search_command(client: Client, args: dict[str, Any]) -> CommandResult
                 'IP': hit.get('ip'),
                 'Services': ', '.join([f"{service['port']}/{service['service_name']}" for service in hit.get('services', [])]),
                 'Location Country code': hit.get('location', {}).get('country_code'),
-                'Registered Country Code': hit.get('location', {}).get('registered_country_code'),
                 'ASN': hit.get('autonomous_system', {}).get('asn'),
                 'Description': hit.get('autonomous_system', {}).get('description'),
-                'Name': hit.get('autonomous_system', {}).get('name')
+                'Name': hit.get('autonomous_system', {}).get('name'),
+                # 'Registered Country Code': hit.get('location', {}).get('registered_country_code'),
             })
         headers = ['IP', 'Name', 'Description', 'ASN', 'Location Country code', 'Registered Country Code', 'Services']
         human_readable = tableToMarkdown(f'Search results for query "{query}"', contents, headers)
@@ -187,29 +187,29 @@ def censys_search_command(client: Client, args: dict[str, Any]) -> CommandResult
 
 
 def search_certs_command(client: Client, args: dict[str, Any], query: str, limit: Optional[int]):
-    fields = ['parsed.fingerprint_sha256', 'parsed.subject_dn', 'parsed.issuer_dn', 'parsed.issuer.organization',
-              'parsed.validity.start', 'parsed.validity.end', 'parsed.names']
-    search_fields = argToList(args.get('fields'))
-    if search_fields:
-        fields.extend(search_fields)
+    # fields = ['parsed.fingerprint_sha256', 'parsed.subject_dn', 'parsed.issuer_dn', 'parsed.issuer.organization',
+    #           'parsed.validity.start', 'parsed.validity.end', 'parsed.names']
+    # search_fields = argToList(args.get('fields'))
+    # if search_fields:
+    #     fields.extend(search_fields)
     contents = []
     data = {
         'query': query,
         'page': int(args.get('page', 1)),
-        'fields': fields,
+        # 'fields': fields,
         'flatten': False
     }
 
     res = client.censys_search_certs_request(data)
-    results = res.get('results', {})[:limit]
+    results = res.get('result', {}).get('hits', [])[:limit]
     for result in results:
         contents.append({
-            'SHA256': result.get('parsed').get('fingerprint_sha256'),
+            'SHA256': result.get('fingerprint_sha256'),
             'Issuer dn': result.get('parsed').get('issuer_dn'),
             'Subject dn': result.get('parsed').get('subject_dn'),
-            'Names': result.get('parsed').get('names'),
-            'Validity': result.get('parsed').get('validity'),
-            'Issuer': result.get('parsed').get('issuer'),
+            'Names': result.get('names'),
+            'Validity': result.get('parsed').get('validity_period'),
+            # 'Issuer': result.get('parsed').get('issuer'),
         })
 
     human_readable = tableToMarkdown(f'Search results for query "{query}"', contents)
@@ -250,7 +250,7 @@ def ip_command(client: Client, args: dict):
     ips: list = argToList(args.get('ip'))
     results: List[CommandResults] = []
     for ip in ips:
-        res = client.ip_reputation_request(ip)
+        res = client.ip_reputation_request(ip).get('result', {}).get('hits')[0]
         dbot_score = Common.DBotScore(
             indicator=ip,
             indicator_type=DBotScoreType.IP,
@@ -258,25 +258,25 @@ def ip_command(client: Client, args: dict):
             score=get_dbot_score(args, res),
             reliability=args.get('reliability')
         )
-        indicator = Common.IP(
-            ip=ip,
-            dbot_score=dbot_score,
-            asn=res.get("autonomous_system", {}).get('asn'),
-            region=res.get('location', {}).get('country'),
-            updated_date=res.get('last_updated_at'),
-            port=res.get('services', {}).get('port'),
-            whois_records=res.get('whois'),
-            geo_latitude=res.get('location', {}).get('latitude'),
-            geo_longitude=res.get('location', {}).get('longitude'),
-            geo_country=res.get('location', {}).get('country'),
-            registrar_abuse_email=res.get('whois', {}).get('organization', {}).get('abuse_contacts', {}).get('email'),
-            registrar_abuse_name=res.get('whois', {}).get('organization', {}).get('abuse_contacts', {}).get('name'),
-            organization_name=res.get('services', {}).get('tls', {}).get('issuer', {}).get('organization'),
-        )
+        content = {
+            'ip': ip,
+            'asn': res.get("autonomous_system", {}).get('asn'),
+            'region': res.get('location', {}).get('country'),
+            'updated_date': res.get('last_updated_at'),
+            'geo_latitude': res.get('location', {}).get('coordinates', {}).get('latitude'),
+            'geo_longitude': res.get('location', {}).get('coordinates', {}).get('longitude'),
+            'geo_country': res.get('location', {}).get('country'),
+            # 'whois_records':res.get('whois'),
+            # 'registrar_abuse_email':res.get('whois', {}).get('organization', {}).get('abuse_contacts', {}).get('email'),
+            # 'registrar_abuse_name':res.get('whois', {}).get('organization', {}).get('abuse_contacts', {}).get('name'),
+            # # 'port': res.get('services', {}).get('port'),
+            # "organization_name":res.get('services', {}).get('tls', {}).get('issuer', {}).get('organization'),
+        }
+        indicator = Common.IP(dbot_score=dbot_score, **content)
         results.append(CommandResults(
             outputs_prefix='Censys.IP',
             outputs_key_field='IP',
-            readable_output=tableToMarkdown(f'censys results for IP: {ip}', res),
+            readable_output=tableToMarkdown(f'censys results for IP: {ip}', content),
             outputs=res,
             raw_response=res,
             indicator=indicator,
@@ -288,7 +288,7 @@ def domain_command(client: Client, args: dict):
     domains: list = argToList(args.get('domain'))
     results: List[CommandResults] = []
     for domain in domains:
-        res = client.domain_reputation_request(domain)
+        res = client.domain_reputation_request(domain).get('result').get('hits')[0]
         dbot_score = Common.DBotScore(
             indicator=domain,
             indicator_type=DBotScoreType.DOMAIN,
@@ -296,20 +296,20 @@ def domain_command(client: Client, args: dict):
             score=get_dbot_score(args, res),
             reliability=args.get('reliability')
         )
-        indicator = Common.Domain(
-            domain=domain,
-            dbot_score=dbot_score,
-            description=res.get('autonomous_system', {}).get('description'),
-            dns_records=res.get('dns', {}).get('reverse_dns', {}).get('names'),
-            updated_date=res.get('last_updated_at'),
-            port=res.get('services', {}).get('port'),
-            geo_country=res.get('location', {}).get('country'),
-            certificates=res.get('services', {}).get('certificate'),
-        )
+        content = {
+            "domain": domain,
+            'description': res.get('autonomous_system', {}).get('description'),
+            'updated_date': res.get('last_updated_at'),
+            'geo_country': res.get('location', {}).get('country'),
+            # 'dns_records':res.get('dns', {}).get('reverse_dns', {}).get('names'),
+            # 'port':res.get('services', {}).get('port'),
+            # 'certificates':res.get('services', {}).get('certificate'),
+        }
+        indicator = Common.Domain(dbot_score=dbot_score, **content)
         results.append(CommandResults(
             outputs_prefix='Censys.Domain',
             outputs_key_field='Domain',
-            readable_output=tableToMarkdown(f'Censys results for Domain: {domain}', res),
+            readable_output=tableToMarkdown(f'Censys results for Domain: {domain}', content),
             outputs=res,
             raw_response=res,
             indicator=indicator,
