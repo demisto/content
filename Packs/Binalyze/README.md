@@ -19,6 +19,7 @@ You can use two features of Binalyze AIR within CORTEX XSoar:
 One of the core features of AIR is collecting evidence remotely. This feature is made possible by "Acquisition Profiles," a group of different evidence categories. Using the AIR's UI, you can create, update, and delete custom Acquisition Profiles tailored to your unique needs. Specify the evidence categories, settings, and parameters relevant to your investigation.
 With this integration, you can use your custom profiles as well as following preset profiles:
 
+
 - Full,
 - Quick,
 - Memory (RAM + PageFile),
