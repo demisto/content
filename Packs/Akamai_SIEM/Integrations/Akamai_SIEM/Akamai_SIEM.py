@@ -421,16 +421,16 @@ def fetch_events_command(
         yield events, offset
 
 
-def decode_url(headers):
-    """Decoding the httpMessage parts of the response.
+def decode_url(headers: str) -> dict:
+    """Decoding the httpMessage headers parts of the response.
 
     Args:
-        headers (_type_): _description_
+        headers (str): The headers to decode
 
     Returns:
-        _type_: _description_
+        dict: The decoded and parsed headers as a dictionary.
     """
-    decoded_lines = urllib.parse.unquote(headers).split("\r\n")
+    decoded_lines = urllib.parse.unquote(headers).replace("\r", "").split("\n")
     decoded_dict = {}
     for line in decoded_lines:
         parts = line.split(': ', 1)
