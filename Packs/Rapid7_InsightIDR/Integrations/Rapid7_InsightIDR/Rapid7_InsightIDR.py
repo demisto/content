@@ -10,6 +10,10 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from requests import Response
 
+API_V1 = "V1"
+
+API_V2 = "V2"
+
 
 @dataclass
 class Constants:
@@ -113,7 +117,7 @@ class Client(BaseClient):
 
     def list_investigations(
         self,
-        api_version: str = "V1",
+        api_version: str = API_V1,
         investigation_id: str = None,
         statuses: str = None,
         start_time: str = None,
@@ -131,7 +135,7 @@ class Client(BaseClient):
         List investigations.
 
         Args:
-            api_version (str, optional): The InsightIDR API version to request to. Defaults to "V1".
+            api_version (str, optional): The InsightIDR API version to request to. Defaults to API_V1.
             investigation_id (str, optional): _description_. Defaults to None.
             statuses (str, optional): A comma-separated list of investigation statuses to include in the result.
             Defaults to None.
@@ -165,7 +169,7 @@ class Client(BaseClient):
                     "sort_field": sort_field,
                     "sort_direction": sort_direction,
                     "tags": tags,
-                    "multi-customer": self.is_multi_customer if api_version == "V2" else None,
+                    "multi-customer": self.is_multi_customer if api_version == API_V2 else None,
                 }
             )
             if not investigation_id
@@ -174,7 +178,7 @@ class Client(BaseClient):
         endpoint = f"idr/{api_version.lower()}/investigations"
         url = (
             urljoin(endpoint, investigation_id)
-            if investigation_id and api_version == "V2"
+            if investigation_id and api_version == API_V2
             else endpoint
         )
         return self._http_request(
@@ -626,7 +630,7 @@ def insight_idr_list_investigations_command(
     )
 
     results = client.list_investigations(
-        api_version=args["api_version"],
+        api_version=args.get("api_version") or API_V1,
         statuses=args.get("statuses"),
         start_time=start_time,
         end_time=end_time,
@@ -667,7 +671,7 @@ def insight_idr_get_investigation_command(
     """
     investigation_data = {}
     investigation_id = args["investigation_id"]
-    api_version = args["api_version"]
+    api_version = args.get("api_version") or  API_V1
     results = client.list_investigations(api_version=api_version, investigation_id=investigation_id)
     if constants.IS_V1:
         demisto.debug("Find the investigation ID in list response (V1)")
@@ -761,7 +765,7 @@ def insight_idr_assign_user_command(
 
         result = client.assign_user(
             investigation,
-            api_version=args["api_version"],
+            api_version=args.get("api_version") or API_V1,
             user_email_address=user_email_address,
         )
         outputs.append(result)
@@ -808,7 +812,7 @@ def insight_idr_set_status_command(
     status = args["status"]
     for investigation_id in argToList(investigation_ids):
         result = client.set_status(
-            api_version=args["api_version"],
+            api_version=args.get("api_version") or API_V1,
             investigation_id=investigation_id,
             status=status,
             **v2_params,
@@ -1766,11 +1770,11 @@ def main():
         api_version = (
             "V2"
             if argToBoolean(demisto.params().get("is_v2"))
-            else (demisto.args().get("api_version", "V1") or "V1")
+            else (demisto.args().get("api_version", API_V1) or API_V1)
         )
 
         api_version_constants: Constants = {
-            "V1": ConstantsV1,
+            API_V1: ConstantsV1,
             "V2": ConstantsV2,
         }.get(api_version, ConstantsV1)()
         if command == "test-module":

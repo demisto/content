@@ -87,7 +87,7 @@ script:
           predefined:
             - V1
             - V2
-          required: true
+          required: false
         - description: "The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0."
           name: index
           defaultValue: "0"
@@ -215,7 +215,7 @@ script:
             - V2
         - name: investigation_id
           description: The ID or Rapid7 Resource Names (RRN) of the investigation to retrieve. (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
-          required: true
+          required: false
           default: true
       description: Get a specific investigation. This investigation is specified by either ID or Rapid7 Resource Names (RRN). (If multi-customer is set to true, the investigation_id must be in the RRN format).
       name: rapid7-insight-idr-get-investigation
@@ -316,7 +316,7 @@ script:
             - V2
         - description: Comma-separated list of the ID or Rapid7 Resource Names (RRN) of the investigation to assign the user to. (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
           name: investigation_id
-          required: true
+          required: false
           default: true
         - name: user_email_address
           required: true
@@ -385,7 +385,7 @@ script:
             - V2
         - description: Comma-separated list of the ID or Rapid7 Resource Names (RRN) of the investigation to be changed.  (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
           name: investigation_id
-          required: true
+          required: false
           default: true
         - name: status
           description: The new status for the investigation.  Open - The default status for all new investigations. Investigating - The investigation is in progress. Waiting - Progress on the investigation has paused while more information is gathered. Closed - The investigation has ended. A disposition must be selected to set this status.
