@@ -51,7 +51,7 @@ class Client(BaseClient):
             }
             add_sensitive_log_strs(self.token)
 
-        except Exception as e:
+        except DemistoException as e:
             demisto.info(str(e))
             demisto.info("Couldn't create token will proceed using basic auth")
             # if token is not available, use basic auth directly if username and password are provided
