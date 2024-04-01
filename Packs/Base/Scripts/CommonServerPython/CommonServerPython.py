@@ -11537,7 +11537,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type should_update_health_module: ``bool``
     :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
 
-    :type add_proxy_to_request ``bool``
+    :type add_proxy_to_request :``bool``
     :param should_update_health_module: whether to add proxy to the send evnets request.
 
     :return: None
