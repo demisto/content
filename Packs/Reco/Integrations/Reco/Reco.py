@@ -769,7 +769,7 @@ class RecoClient(BaseClient):
                 url_suffix="/policy-subsystem/alert-inbox?limit=1",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
             )
-            if response.get("dataSources") is None:
+            if response.get("alerts") is None:
                 demisto.info(f"got bad response, {response}")
             else:
                 demisto.info(f"got good response, {response}")
