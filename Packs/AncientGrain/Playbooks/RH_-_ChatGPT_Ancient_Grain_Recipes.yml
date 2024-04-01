@@ -1,0 +1,333 @@
+id: 'RH - ChatGPT Ancient Grain Recipes'
+inputs: []
+name: RH - ChatGPT Ancient Grain Recipes
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 35b1b8cf-7816-4c8e-8bc4-5852276e1a07
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 35b1b8cf-7816-4c8e-8bc4-5852276e1a07
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.marcancientgrain
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f68b2fa2-8db9-4987-8194-b7e81d0f7a38
+      iscommand: false
+      name: Has the Ancient Grain Been Collected?
+      type: condition
+      version: -1
+    taskid: f68b2fa2-8db9-4987-8194-b7e81d0f7a38
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Please Specify Ancient Grain
+        options: []
+        optionsarg:
+        - simple: amaranth
+        - simple: quinoa
+        - simple: teff
+        - simple: farro
+        - simple: spelt
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: Specify Ancient Grain
+      totalanswers: 0
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: Is the ancient grain already collected?
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a968ecb2-e2d3-4dd7-8346-cb23f69e0894
+      iscommand: false
+      name: Collect Ancient Grain
+      type: collection
+      version: -1
+    taskid: a968ecb2-e2d3-4dd7-8346-cb23f69e0894
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 545
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      marcancientgrain:
+        simple: ${Specify Ancient Grain.Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 0e37c512-d678-4f44-858a-738c494dbafa
+      iscommand: true
+      name: Set Ancient Grain
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 0e37c512-d678-4f44-858a-738c494dbafa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: =.
+      prompt:
+        simple: Provide a recipe using the ancient grain of ${incident.marcancientgrain}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Perplexity LLM Custom
+      description: Send Text Message as a prompt to Perplexity
+      id: 38757eb4-8751-4b0b-8bd5-2d3c76396543
+      iscommand: true
+      name: Send Ancient Grain to ChatGPT for Recipe
+      script: Perplexity LLM Custom|||perplexity-send-prompt
+      type: regular
+      version: -1
+    taskid: 38757eb4-8751-4b0b-8bd5-2d3c76396543
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 808c9a55-91d6-4698-8977-364f6ee801b4
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 808c9a55-91d6-4698-8977-364f6ee801b4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      value:
+        simple: ${ChatGPTResponse.ChatGPT Response}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 9bf87ed1-5ce1-418c-8b00-9eb287c54e26
+      iscommand: false
+      name: Print
+      script: Print
+      type: regular
+      version: -1
+    taskid: 9bf87ed1-5ce1-418c-8b00-9eb287c54e26
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6704b489-f22b-45f2-8f3b-484f3c2252f1
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 6704b489-f22b-45f2-8f3b-484f3c2252f1
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }

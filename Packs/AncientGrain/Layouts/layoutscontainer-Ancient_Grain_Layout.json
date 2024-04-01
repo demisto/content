@@ -1,0 +1,195 @@
+{
+	"cacheVersn": 0,
+	"close": null,
+	"definitionId": "",
+	"description": "",
+	"detached": false,
+	"details": null,
+	"detailsV2": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 22,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 22,
+								"id": "incident-severity-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 22,
+								"id": "incident-owner-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 22,
+								"id": "incident-sourceBrand-field",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 22,
+								"id": "incident-sourceInstance-field",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 22,
+								"id": "incident-playbookId-field",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-48ae87c0-530a-11ee-a5be-d918a122d254",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "marcancientgrain",
+								"height": 22,
+								"id": "cd997a30-530a-11ee-a5be-d918a122d254",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"args": {},
+								"buttonClass": "warning",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 22,
+								"id": "d6ed2c30-530a-11ee-a5be-d918a122d254",
+								"index": 1,
+								"name": "Take This with a Grain of Salt",
+								"scriptId": "AncientGrainDemoSetPlaybook",
+								"sectionItemType": "button",
+								"startCol": 0
+							}
+						],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Specify Ancient Grain Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"description": "",
+						"h": 4,
+						"i": "caseinfoid-56930520-530d-11ee-a5be-d918a122d254",
+						"items": [],
+						"maxH": null,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Ancient Grain Recipe",
+						"query": "PrintGrainRecipe",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"edit": null,
+	"fromServerVersion": "",
+	"group": "incident",
+	"id": "Ancient Grain Layout",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "Ancient Grain Layout",
+	"packID": "",
+	"packName": "",
+	"quickView": null,
+	"quickViewV2": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1
+}
