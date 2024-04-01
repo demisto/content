@@ -11539,7 +11539,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
 
     :type add_proxy_to_request :``bool``
-    :param should_update_health_module: whether to add proxy to the send evnets request.
+    :param add_proxy_to_request: whether to add proxy to the send evnets request.
 
     :return: None
     :rtype: ``None``
@@ -11702,7 +11702,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         This can be useful when using send_data_to_xsiam in batches for the same fetch.
 
     :type add_proxy_to_request: ``bool``
-    :param should_update_health_module: whether to add proxy to the send evnets request.
+    :param add_proxy_to_request: whether to add proxy to the send evnets request.
 
     :return: None
     :rtype: ``None``
