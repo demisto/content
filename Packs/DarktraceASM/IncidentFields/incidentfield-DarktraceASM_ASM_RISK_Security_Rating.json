@@ -4,6 +4,7 @@
     "modified": "2024-01-30T20:02:35.371217706Z",
     "itemVersion": "",
     "toServerVersion": "",
+    "fromVersion": "6.6.0",
     "name": "Darktrace ASM Risk Security Rating",
     "ownerOnly": false,
     "placeholder": "",

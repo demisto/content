@@ -4,6 +4,7 @@
     "modified": "2024-01-26T22:28:09.656199895Z",
     "itemVersion": "",
     "toServerVersion": "",
+    "fromVersion": "6.6.0",
     "name": "Darktrace ASM Risk ID",
     "ownerOnly": false,
     "placeholder": "",

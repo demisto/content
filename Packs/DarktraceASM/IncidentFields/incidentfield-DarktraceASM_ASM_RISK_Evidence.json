@@ -4,6 +4,7 @@
     "modified": "2024-01-30T19:47:23.87179797Z",
     "itemVersion": "",
     "toServerVersion": "",
+    "fromVersion": "6.6.0",
     "name": "Darktrace ASM Risk Evidence",
     "ownerOnly": false,
     "placeholder": "",

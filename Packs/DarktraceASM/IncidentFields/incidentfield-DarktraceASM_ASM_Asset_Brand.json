@@ -3,6 +3,7 @@
     "version": 1,
     "modified": "2024-01-30T19:57:21.352753259Z",
     "itemVersion": "",
+    "fromVersion": "6.6.0",
     "toServerVersion": "",
     "name": "Darktrace ASM Asset Brand",
     "ownerOnly": false,

@@ -4,6 +4,7 @@
     "modified": "2024-01-30T19:49:44.878013767Z",
     "itemVersion": "",
     "toServerVersion": "",
+    "fromVersion": "6.6.0",
     "name": "Darktrace ASM Asset ID ",
     "ownerOnly": false,
     "placeholder": "",

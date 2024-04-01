@@ -4,6 +4,7 @@
     "modified": "2024-02-28T19:37:31.951385914Z",
     "itemVersion": "",
     "toServerVersion": "",
+    "fromVersion": "6.6.0",
     "name": "Darktrace ASM Risk End Time",
     "ownerOnly": false,
     "placeholder": "",

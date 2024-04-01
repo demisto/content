@@ -4,6 +4,7 @@
     "modified": "2024-02-28T19:37:16.244341931Z",
     "itemVersion": "",
     "toServerVersion": "",
+    "fromVersion": "6.6.0",
     "name": "Darktrace ASM Risk Start Time",
     "ownerOnly": false,
     "placeholder": "",

@@ -4,6 +4,7 @@
     "modified": "2024-02-28T00:44:13.350507021Z",
     "itemVersion": "",
     "toServerVersion": "",
+    "fromVersion": "6.6.0",
     "name": "Darktrace ASM Asset is Malicious",
     "ownerOnly": false,
     "placeholder": "",
