@@ -104,7 +104,7 @@ class Client(BaseClient):
         resp = self._http_request(method='POST', url_suffix='api/v1/auth/token', resp_type='json',
                                   auth=(self.username, self.password))
         token = resp.get('token')
-        expiration_time = int(dateparser.parse(resp.get('expires')).timestamp())
+        expiration_time = int(dateparser.parse(resp.get('expires')).timestamp())    # type: ignore
         return token, expiration_time
 
     def generate_client_credentials_token(self) -> tuple[str, int]:
@@ -117,7 +117,7 @@ class Client(BaseClient):
             'client_secret': self.client_secret},
             headers={"Content-Type": "application/x-www-form-urlencoded"}, resp_type='json')
         token = resp.get('access_token')
-        now_timestamp = arg_to_datetime('now').timestamp()
+        now_timestamp = arg_to_datetime('now').timestamp()  # type:ignore
         expiration_time = now_timestamp + resp.get('expires_in')
         return token, expiration_time
 
