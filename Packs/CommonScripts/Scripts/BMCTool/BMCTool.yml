@@ -2,10 +2,10 @@ args:
 - name: EntryID
   description: The RDP cache file's entryID to process.
 - defaultValue: "False"
-  name: verbose
+  name: verbose_test
   description: Should the command produce verbose output.
 - defaultValue: "64"
-  name: width
+  name: width_test
   description: Image width.
 commonfields:
   id: BMCTool
