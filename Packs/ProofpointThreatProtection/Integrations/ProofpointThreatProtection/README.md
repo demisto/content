@@ -1,7 +1,7 @@
 Threat Protection APIs are REST APIs that allow our Proofpoint On Demand customers to retrieve, add, update or delete certain PoD configurations.
 ## Configure Proofpoint Threat Protection on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Integrations** > **Instances**.
 2. Search for Proofpoint Threat Protection.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -32,8 +32,7 @@ Get all entries in the Organizational Block List
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -54,15 +53,18 @@ Add/Delete entry from the Organizational Block List
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | None Possible values are: add, delete. | Required | 
-| attribute | None Possible values are: $from, $hfrom, $ip, $host, $helo, $rcpt. | Required | 
-| operator | None Possible values are: equal, not_equal, contain, not_contain. | Required | 
+| action | Possible values are: add, delete. | Required | 
+| attribute | Possible values are: $from, $hfrom, $ip, $host, $helo, $rcpt. | Required | 
+| operator | Possible values are: equal, not_equal, contain, not_contain. | Required | 
 | value | Entry to be added to list. | Required | 
 | comment | A short comment about the entry (max 150 chars). "comment" is ignored for the "delete" action. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ProofpointThreatProtection.Blocklist | unknown |  | 
+
 ### proofpoint-tp-safelist-get
 
 ***
@@ -74,14 +76,13 @@ Get all entries in the Organizational Safe List
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofpointThreatProtection.Blocklist | unknown |  | 
+| ProofpointThreatProtection.Safelist | unknown |  | 
 
 ### proofpoint-tp-safelist-add-or-delete-entry
 
@@ -96,12 +97,14 @@ Add To/Delete From the Organizational Safe List
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | None Possible values are: add, delete. | Required | 
-| attribute | None Possible values are: $from, $hfrom, $ip, $host, $helo, $rcpt. | Required | 
-| operator | None Possible values are: equal, not_equal, contain, not_contain. | Required | 
+| action | Possible values are: add, delete. | Required | 
+| attribute | Possible values are: $from, $hfrom, $ip, $host, $helo, $rcpt. | Required | 
+| operator | Possible values are: equal, not_equal, contain, not_contain. | Required | 
 | value | Entry to be added to list. | Required | 
 | comment | A short comment about the entry (max 150 chars). "comment" is optional for "add" action and ignored for the "delete" action. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ProofpointThreatProtection.Safelist | unknown |  | 
