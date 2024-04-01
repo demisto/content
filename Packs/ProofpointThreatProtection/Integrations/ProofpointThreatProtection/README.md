@@ -38,7 +38,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofpointThreatProtection.Blocklist | unknown |  | 
+| ProofpointThreatProtection.Blocklist | unknown | A list of entries in the blocklist. | 
 
 ### proofpoint-tp-blocklist-add-or-delete-entry
 
@@ -63,7 +63,7 @@ Add/Delete entry from the Organizational Block List
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofpointThreatProtection.Blocklist | unknown |  | 
+| ProofpointThreatProtection.Blocklist | unknown | Standard HTTP response with status code 200. | 
 
 ### proofpoint-tp-safelist-get
 
@@ -82,7 +82,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofpointThreatProtection.Safelist | unknown |  | 
+| ProofpointThreatProtection.Safelist | unknown | A list of entries in the safelist. | 
 
 ### proofpoint-tp-safelist-add-or-delete-entry
 
@@ -107,4 +107,4 @@ Add To/Delete From the Organizational Safe List
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofpointThreatProtection.Safelist | unknown |  | 
+| ProofpointThreatProtection.Safelist | unknown | Standard HTTP response with status code 200. | 
