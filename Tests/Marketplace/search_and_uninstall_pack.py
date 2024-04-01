@@ -18,6 +18,7 @@ from Tests.Marketplace.configure_and_install_packs import search_and_install_pac
 from Tests.configure_and_test_integration_instances import CloudBuild, get_custom_user_agent
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
+from demisto_sdk.commands.common.tools import string_to_bool
 
 
 TEST_DATA_PATTERN = '*_testdata.json'
@@ -440,6 +441,7 @@ def options_handler() -> argparse.Namespace:
     parser.add_argument('--one-by-one', help='Uninstall pack one pack at a time.', action='store_true')
     parser.add_argument('--build-number', help='CI job number where the instances were created', required=True)
     parser.add_argument('--modeling_rules_to_test_files', help='List of modeling rules test data to check.', required=True)
+    parser.add_argument('--reset-core-pack-version', help='Reset the core pack version.', type=string_to_bool)
 
     options = parser.parse_args()
 
@@ -462,7 +464,8 @@ def clean_machine(options: argparse.Namespace, cloud_machine: str) -> bool:
     # in earlier builds they will appear in the bucket as it is cached.
     success = sync_marketplace(client=client)
     non_removable_packs = options.non_removable_packs.split(',')
-    success &= reset_core_pack_version(client, non_removable_packs)
+    if options.reset_core_pack_version:
+        success &= reset_core_pack_version(client, non_removable_packs)
     if success:
         if options.one_by_one:
             success = uninstall_all_packs_one_by_one(client, cloud_machine, non_removable_packs)
