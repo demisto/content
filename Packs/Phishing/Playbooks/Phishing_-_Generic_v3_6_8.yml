@@ -98,8 +98,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -920,
-          "y": 3025
+          "x": -590,
+          "y": 3200
         }
       }
     note: false
@@ -688,7 +688,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 2860
+          "y": 2880
         }
       }
     note: false
@@ -720,7 +720,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -920,
+          "x": -590,
           "y": 3370
         }
       }
@@ -1626,7 +1626,7 @@ tasks:
       version: -1
       name: Detect & Manage Phishing Campaigns
       description: |-
-        This playbook is part of the Phishing Campaign content pack.
+        This playbook is part of the Phishing Campaign content pack, available only on Cortex XSOAR.
         It is used to find, create, and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to do the following:
         1. Find and link related incidents to the same phishing attack (a phishing campaign).
         2. Search for an existing Phishing Campaign incident, or create a new incident for the linked Phishing incidents.
@@ -2162,11 +2162,11 @@ tasks:
       id: 9ff4d990-f0b2-4085-8352-137c92a77882
       version: -1
       name: Phishing - Machine Learning Analysis
+      description: Predicts phishing emails and URLs using machine-learning, available on Cortex XSOAR.
       playbookName: Phishing - Machine Learning Analysis
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "84"
@@ -2211,7 +2211,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -3576,7 +3576,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: "Should be reviewed by analyst?"
     nexttasks:
       '#default#':
       - "226"
@@ -3600,7 +3600,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 2990
+          "y": 3010
         }
       }
     note: false
@@ -3633,6 +3633,8 @@ view: |-
       "222_53_yes": 0.42,
       "222_56_#default#": 0.17,
       "223_224_yes": 0.47,
+      "228_7_yes": 0.65,
+      "33_226_No": 0.55,
       "33_30_yes": 0.34,
       "36_152_Yes": 0.49,
       "79_82_yes": 0.46,
@@ -3881,6 +3883,7 @@ inputSections:
   - SendMailInstance
   - UserEngagement
   - TakeManualActions
+  - NonMaliciousEmailReview
   name: Incident Management
   description: Incident management settings and data, including escalation processes, and user engagements.
 - inputs:
