@@ -453,7 +453,7 @@ script:
       description: The input URL encoded in Base64.
       type: String
     - contextPath: FortiSandbox.Submission.false_positive_negative
-      description: 'Not false positive or false negative, 1: false positive, 2: false negative'
+      description: 'Not false positive or false negative, 1: false positive, 2: false negative.'
       type: Number
     - contextPath: FortiSandbox.Submission.file_name
       description: The name of the submitted file.
