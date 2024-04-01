@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 import traceback
 from datetime import datetime
-from typing import Any, Dict, List, Mapping, Optional, Tuple, cast
+from typing import Any, Optional
 import dateparser
 import urllib3
 
@@ -67,7 +67,7 @@ ASM_ASSET_QUERY = '''
                     }
                 '''
 ASM_ASSET_QUERY_DICT = {
-            'application': ASM_ASSET_QUERY + '''
+    'application': ASM_ASSET_QUERY + '''
             protocol
             uri
             fqdns {
@@ -118,7 +118,7 @@ SEVERITY_MAP = {"Low": 1,
                 "Medium": 2,
                 "High": 3,
                 "Critical": 4
-}
+                }
 
 MIN_SEVERITY_TO_FETCH = 1
 MAX_INCIDENTS_TO_FETCH = 50
@@ -135,21 +135,27 @@ DARKTRACE_API_ERRORS = {
 }
 
 """*****CUSTOM EXCEPTIONS*****"""
+
+
 class InvalidAssetStateError(Exception):
     def __init__(self, state: str):
         super().__init__(f'{state} is not a valid state.  Valid states include "Confirmed" and "Unconfirmed".')
+
 
 class InvalidAssetID(Exception):
     def __init__(self, asset_id: str = None):
         super().__init__(f"ASM Asset ID \"{asset_id}\" is not a valid ID.")
 
+
 class AssetNotFound(Exception):
-    def __init__(self, asset_type:str, id: str = None, message: str = None):
+    def __init__(self, asset_type: str, id: str = None, message: str = None):
         super().__init__(f"ASM {asset_type} Asset with id \"{id}\" not found. {message}")
+
 
 class TagNotFound(Exception):
     def __init__(self, name: str, message: str = None):
         super().__init__(f"ASM Tag with name \"{name}\" not found. {message}")
+
 
 class CommentNotFound(Exception):
     def __init__(self, id: str = None, message: str = None):
@@ -158,8 +164,10 @@ class CommentNotFound(Exception):
         else:
             super().__init__(f"ASM Comment with id \"{id}\" not found.")
 
+
 """*****CLIENT CLASS*****
 Wraps all the code that interacts with the Darktrace API."""
+
 
 class Client(BaseClient):
     """Client class to interact with the Darktrace API
@@ -180,7 +188,7 @@ class Client(BaseClient):
         params: dict = None,
         data: dict = None,
         json: dict = None,
-        headers: Dict[str, str] = None,
+        headers: dict[str, str] = None,
     ):
         """Handles Darktrace API calls"""
         try:
@@ -451,7 +459,7 @@ class Client(BaseClient):
         response = self.asm_post(ASM_URI, payload)
         return response['data']['unassignTag']
 
-    def get_asm_risks(self, start_time) -> Dict[str, Any]:
+    def get_asm_risks(self, start_time) -> dict[str, Any]:
         """Function to pull all Risks after a given start time.
         :type start_time: ``datetime``
         :param start_time: Date to start pulling Risks from.
@@ -473,7 +481,9 @@ class Client(BaseClient):
         response = self.asm_post(ASM_URI, payload)
         return response["data"]["allRisks"]["edges"]
 
+
 """*****HELPER FUNCTIONS****"""
+
 
 def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
@@ -533,26 +543,27 @@ def check_required_fields(args, *fields):
             raise ValueError(f'Argument error could not find {field} in {args}')
 
 
-def format_JSON_for_risk(risk: Dict[str, Any]) -> Dict[str, Any]:
+def format_JSON_for_risk(risk: dict[str, Any]) -> dict[str, Any]:
     """Formats JSON for get_risk command, specifically reformat comments from API response.
     :type risk: ``Dict[str, Any]``
     :param risk: JSON risk as returned by API for fetch incident.
     :return: Reformatted JSON risk.
     :rtype: ``Dict[str, Any]``
     """
-    new_json ={}
-    for key in risk.keys():
+    new_json = {}
+    for key in risk:
         if key == 'comments':
             if risk[key] is None:
                 new_json[key] = {}
             else:
-                comments = {comment['node']['id']:comment['node']['text'] for comment in risk[key]['edges']}
+                comments = {comment['node']['id']: comment['node']['text'] for comment in risk[key]['edges']}
                 new_json[key] = comments
         else:
             new_json[key] = risk[key]
     return new_json
 
-def format_JSON_for_asset(asset: Dict[str, Any]) -> Dict[str, Any]:
+
+def format_JSON_for_asset(asset: dict[str, Any]) -> dict[str, Any]:
     """Formats JSON for get_asm command, specifically lists of dicts.
     :type asset: ``Dict[str, Any]``
     :param asset: JSON asset as returned by API.
@@ -560,36 +571,36 @@ def format_JSON_for_asset(asset: Dict[str, Any]) -> Dict[str, Any]:
     :rtype: ``Dict[str, Any]``
     """
     new_json = {}
-    for key in asset.keys():
+    for key in asset:
         if key == 'comments':
             if asset[key] is None:
                 new_json[key] = {}
             else:
-                comments = {comment['id']:comment['text'] for comment in asset[key]}
+                comments = {comment['id']: comment['text'] for comment in asset[key]}
                 new_json[key] = comments
         elif key == 'discoverySources':
             if asset[key] is None:
                 new_json[key] = {}
             else:
-                sources = {source["id"]:source["description"] for source in asset[key]}
+                sources = {source["id"]: source["description"] for source in asset[key]}
                 new_json[key] = sources
         elif key == 'risks':
             if asset[key] is None:
                 new_json[key] = {}
             else:
-                risks = {risk["id"]:risk["title"] for risk in asset[key]}
+                risks = {risk["id"]: risk["title"] for risk in asset[key]}
                 new_json[key] = risks
         elif key in ['fqdns', 'technologies', 'registeredDomain']:
             if asset[key] is None:
                 new_json[key] = {}
             else:
-                values = {value["id"]:value["name"] for value in asset[key]}
+                values = {value["id"]: value["name"] for value in asset[key]}
                 new_json[key] = values
         elif key in ['ipaddresses', 'ipAddresses', 'resolvesTo']:
             if asset[key] is None:
                 new_json[key] = {}
             else:
-                addresses = {ip["id"]:ip["address"] for ip in asset[key]}
+                addresses = {ip["id"]: ip["address"] for ip in asset[key]}
                 new_json[key] = addresses
         else:
             new_json[key] = asset[key]
@@ -601,7 +612,7 @@ def _compute_xsoar_severity(security_rating: str) -> int:
     :type security_rating: ``str``
     :param security_rating: ASM security rating to convert.
     :return: Integer equivalent of XSOAR severity scores.
-    :rtype: ``int`` 
+    :rtype: ``int``
     """
     if security_rating in ['c', 'd']:
         return 2
@@ -613,6 +624,7 @@ def _compute_xsoar_severity(security_rating: str) -> int:
 
 
 """*****COMMAND FUNCTIONS****"""
+
 
 def test_module(client: Client, first_fetch_time: Optional[int]) -> str:
     """
@@ -639,7 +651,8 @@ def test_module(client: Client, first_fetch_time: Optional[int]) -> str:
             raise e
     return 'ok'
 
-def fetch_incidents(client: Client, last_run: Dict[str, str], first_fetch_time: int, max_alerts: int, min_severity: int, alert_types: List[str]) -> Tuple[Dict[str, Any], List[dict]]:
+
+def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch_time: int, max_alerts: int, min_severity: int, alert_types: list[str]) -> tuple[dict[str, Any], list[dict]]:
     """Function used to pull incidents into XSOAR every few minutes.  """
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
@@ -655,7 +668,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, str], first_fetch_time: 
     latest_created_time = last_fetch
 
     # Each incident is a dict with a string as a key
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     asm_risks = client.get_asm_risks(start_time=last_fetch)
 
@@ -664,9 +677,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, str], first_fetch_time: 
         incident_created_time = datetime.strptime(alert['node']['startedAt'][:19], "%Y-%m-%dT%H:%M:%S")
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-        if last_fetch:
-            if incident_created_time <= last_fetch:
-                continue
+        if last_fetch and incident_created_time <= last_fetch:
+            continue
 
         brand = alert['node']['asset']['brand']
         title = alert['node']['title']
@@ -704,7 +716,8 @@ def fetch_incidents(client: Client, last_run: Dict[str, str], first_fetch_time: 
     next_run = {'last_fetch': latest_created_time.strftime("%Y-%m-%dT%H:%M:%S")}
     return next_run, incidents
 
-def get_asm_risk_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+def get_asm_risk_command(client: Client, args: dict[str, Any]) -> CommandResults:
     check_required_fields(args, 'risk_id')
     risk_id = str(args.get('risk_id', None))
 
@@ -712,7 +725,7 @@ def get_asm_risk_command(client: Client, args: Dict[str, Any]) -> CommandResults
 
     formatted_response = format_JSON_for_risk(response)
 
-    readable_output = tableToMarkdown(f'Darktrace ASM Risk', formatted_response)
+    readable_output = tableToMarkdown('Darktrace ASM Risk', formatted_response)
 
     return CommandResults(
         readable_output=readable_output,
@@ -721,13 +734,14 @@ def get_asm_risk_command(client: Client, args: Dict[str, Any]) -> CommandResults
         outputs=response
     )
 
-def mitigate_asm_risk_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+def mitigate_asm_risk_command(client: Client, args: dict[str, Any]) -> CommandResults:
     check_required_fields(args, 'risk_id')
     risk_id = str(args.get('risk_id', None))
 
     response = client.mitigate_asm_risk(risk_id)
 
-    readable_output = tableToMarkdown(f'Darktrace ASM Risk Mitigation', response)
+    readable_output = tableToMarkdown('Darktrace ASM Risk Mitigation', response)
 
     return CommandResults(
         readable_output=readable_output,
@@ -736,7 +750,8 @@ def mitigate_asm_risk_command(client: Client, args: Dict[str, Any]) -> CommandRe
         outputs=response
     )
 
-def get_asm_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+def get_asm_asset_command(client: Client, args: dict[str, Any]) -> CommandResults:
     check_required_fields(args, 'asset_id')
     asset_id = str(args.get('asset_id', None))
 
@@ -744,7 +759,7 @@ def get_asm_asset_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     formatted_response = format_JSON_for_asset(response)
 
-    readable_output = tableToMarkdown(f'Darktrace ASM Asset', formatted_response)
+    readable_output = tableToMarkdown('Darktrace ASM Asset', formatted_response)
 
     return CommandResults(
         readable_output=readable_output,
@@ -753,14 +768,15 @@ def get_asm_asset_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs=response
     )
 
-def post_asm_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+def post_asm_comment_command(client: Client, args: dict[str, Any]) -> CommandResults:
     check_required_fields(args, 'id', 'comment')
     id = str(args.get('id', None))
     comment = str(args.get('comment', None))
 
     response = client.post_asm_comment(id, comment)
 
-    readable_output = tableToMarkdown(f'Darktrace ASM Comment', response)
+    readable_output = tableToMarkdown('Darktrace ASM Comment', response)
 
     return CommandResults(
         readable_output=readable_output,
@@ -769,14 +785,15 @@ def post_asm_comment_command(client: Client, args: Dict[str, Any]) -> CommandRes
         outputs=response
     )
 
-def edit_asm_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+def edit_asm_comment_command(client: Client, args: dict[str, Any]) -> CommandResults:
     check_required_fields(args, 'comment_id', 'comment')
     comment_id = str(args.get('comment_id', None))
     comment = str(args.get('comment', None))
 
     response = client.edit_asm_comment(comment_id, comment)
 
-    readable_output = tableToMarkdown(f'Darktrace ASM Comment Edit', response)
+    readable_output = tableToMarkdown('Darktrace ASM Comment Edit', response)
 
     return CommandResults(
         readable_output=readable_output,
@@ -785,13 +802,14 @@ def edit_asm_comment_command(client: Client, args: Dict[str, Any]) -> CommandRes
         outputs=response
     )
 
-def delete_asm_comment_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+def delete_asm_comment_command(client: Client, args: dict[str, Any]) -> CommandResults:
     check_required_fields(args, 'comment_id')
     comment_id = str(args.get('comment_id', None))
 
     response = client.delete_asm_comment(comment_id)
 
-    readable_output = tableToMarkdown(f'Darktrace ASM Comment Deletion', response)
+    readable_output = tableToMarkdown('Darktrace ASM Comment Deletion', response)
 
     return CommandResults(
         readable_output=readable_output,
@@ -800,13 +818,14 @@ def delete_asm_comment_command(client: Client, args: Dict[str, Any]) -> CommandR
         outputs=response
     )
 
-def create_asm_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+def create_asm_tag_command(client: Client, args: dict[str, Any]) -> CommandResults:
     check_required_fields(args, 'tag_name')
     tag_name = str(args.get('tag_name', None))
 
     response = client.create_asm_tag(tag_name)
 
-    readable_output = tableToMarkdown(f'Darktrace ASM Tag Creation', response)
+    readable_output = tableToMarkdown('Darktrace ASM Tag Creation', response)
 
     return CommandResults(
         readable_output=readable_output,
@@ -815,14 +834,15 @@ def create_asm_tag_command(client: Client, args: Dict[str, Any]) -> CommandResul
         outputs=response
     )
 
-def assign_asm_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+def assign_asm_tag_command(client: Client, args: dict[str, Any]) -> CommandResults:
     check_required_fields(args, 'tag_name', 'asset_id')
     tag_name = str(args.get('tag_name', None))
     asset_id = str(args.get('asset_id', None))
 
     response = client.assign_asm_tag(tag_name, asset_id)
 
-    readable_output = tableToMarkdown(f'Darktrace ASM Tag Assignment', response)
+    readable_output = tableToMarkdown('Darktrace ASM Tag Assignment', response)
 
     return CommandResults(
         readable_output=readable_output,
@@ -831,14 +851,15 @@ def assign_asm_tag_command(client: Client, args: Dict[str, Any]) -> CommandResul
         outputs=response
     )
 
-def unassign_asm_tag_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+
+def unassign_asm_tag_command(client: Client, args: dict[str, Any]) -> CommandResults:
     check_required_fields(args, 'tag_name', 'asset_id')
     tag_name = str(args.get('tag_name', None))
     asset_id = str(args.get('asset_id', None))
 
     response = client.unassign_asm_tag(tag_name, asset_id)
 
-    readable_output = tableToMarkdown(f'Darktrace ASM Tag Unassignment', response)
+    readable_output = tableToMarkdown('Darktrace ASM Tag Unassignment', response)
 
     return CommandResults(
         readable_output=readable_output,
@@ -846,6 +867,7 @@ def unassign_asm_tag_command(client: Client, args: Dict[str, Any]) -> CommandRes
         outputs_key_field='success',
         outputs=response
     )
+
 
 """*****MAIN FUNCTIONS****
 Takes care of reading the integration parameters via
@@ -858,6 +880,7 @@ command function passing to it ``demisto.args()`` and returning the data to
 returns an error message via ``return_error()``.
 """
 
+
 def main() -> None:     # pragma: no cover
     """main function, parses params and runs command functions
     :return:
@@ -867,7 +890,7 @@ def main() -> None:     # pragma: no cover
     # Collect Darktrace URL
     base_url = demisto.params().get('url')
 
-    #API key
+    # API key
     api_token = (demisto.params().get('apikey', ''))
     headers = {"Authorization": f"Token {api_token}"}
 
@@ -921,7 +944,6 @@ def main() -> None:     # pragma: no cover
                 alert_types = ALERT_TYPES
             else:
                 alert_types = [item.lower() for item in alert_types]
-
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_alerts = arg_to_number(

@@ -1,19 +1,9 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
-	"id": "16f3d363-4e17-43f4-8697-f2915422d967",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 10,
 	"mapping": {
 		"Darktrace ASM Risk": {
 			"dontMapEventToLabels": true,
@@ -200,16 +190,6 @@
 		}
 	},
 	"name": "Darktrace ASM Mapper",
-	"nameRaw": "Darktrace ASM Mapper",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
 	"transformer": {},
-	"type": "mapping-incoming",
-	"unclassifiedCases": null,
 	"version": -1
 }

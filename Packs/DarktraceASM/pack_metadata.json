@@ -1,9 +1,9 @@
 {
     "name": "Darktrace",
-    "description": "Populates Darktrace Attack Surface Management Risks in Cortex XSOAR, allowing for cross-platform automated investigation and response.",
+    "description": "Populates Darktrace ASM Risks in Cortex XSOAR, allowing for cross-platform automated investigation and response.",
     "support": "partner",
     "currentVersion": "1.0.1",
-    "fromVersion": "4.35.0",
+    "fromVersion": "6.6.0",
     "author": "Darktrace",
     "githubUser": "",
     "url": "https://customerportal.darktrace.com",

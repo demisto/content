@@ -44,9 +44,18 @@ Returns the Risk object associated with the given Risk ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| Darktrace.risk | dict | Darktrace Risk object. |
 | Darktrace.risk.asset | dict | Darktrace ASM Asset object associated with the given Risk. |
-| Darktrace.risk.comments | dict | List of comments by comment ID. |
-| Darktrace.risk.descirption | string | Description of Risk. |
+| Darktrace.risk.asset.brand | string | Brand of associtated Asset. |
+| Darktrace.risk.asset.tags | list | List of Tags associated with Asset. |
+| Darktrace.risk.asset.id | string | Asset ID. |
+| Darktrace.risk.asset.updatedAt | timestamp | Last time Asset was updated. |
+| Darktrace.risk.asset.securityrating | string | Security rating of Asset. |
+| Darktrace.risk.asset.isMalicious | boolean | Malicious state of the Asset. | 
+| Darktrace.risk.asset.createdAt | timestamp | Time Asset was created. |
+| Darktrace.risk.asset.state | string | State of Asset. |
+| Darktrace.risk.comments | dict | Dictionary of comments by comment ID. |
+| Darktrace.risk.description | string | Description of Risk. |
 | Darktrace.risk.endedAt | timestamp | End time of Risk. |
 | Darktrace.risk.evidence | string | Evidence gathered indicating the Risk. |
 | Darktrace.risk.id | string | Risk ID. |
@@ -134,6 +143,7 @@ Returns the Asset object associated with the given Asset ID.  The output will de
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+" Darktrace.asset | dict | Darktrace ASM Asset object. |
 | Darktrace.asset.brand | string | Brand that the Asset is associated with. |
 | Darktrace.asset.comments | list | List of comments by comment ID. |
 | Darktrace.asset.createdAt | timestamp | Creation time of Asset. |
@@ -311,6 +321,28 @@ Mitigates Risk within the Darktrace UI.  **Warning: Mitigating a Risk without ta
 
 #### Context Output
 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Darktrace.risk.success | boolean | Status of mitigation. |
+
+### Command Example
+
+```!darktrace-asm-mitigate-risk risk_id=Umlza1R5cGU6MTE5Nzc=```
+
+#### Context Example
+
+```
+"closeRisk": {
+      "success": true,
+    }
+```
+
+#### Human Readable Output
+
+>| Field | Value |
+>| --- | --- |
+>| success | true |
+
 ### darktrace-asm-post-comment
 
 ***
@@ -328,6 +360,18 @@ Post a comment to a Risk or an Asset within the Darktrace UI.
 | comment | Text of comment to be applied | Required |
 
 #### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Darktrace.comment.comment.id | string | Unique ID of Comment. |
+| Darktrace.comment.comment.text | string | Text of Comment. |
+| Darktrace.comment.success | boolean | Status of post. |
+
+### Command Example
+
+```!darktrace-asm-post-comment id=QXBwbGljYXRpb25UeXBlOjI2NjI4 comment="API Test Comment"```
+
+#### Context Example
 
 ```
 "placeComment": {
@@ -364,6 +408,18 @@ Edit an existing comment within the Darktrace UI.
 
 #### Context Output
 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Darktrace.comment.comment.id | string | Unique ID of Comment. |
+| Darktrace.comment.comment.text | string | Text of Comment. |
+| Darktrace.comment.success | boolean | Status of edit. |
+
+### Command Example
+
+```!darktrace-asm-edit-comment comment_id=Q29tbWVudFR5cGU6OTg= comment="API Test Comment Edited"```
+
+#### Context Example
+
 ```
 "editComment": {
       "success": true,
@@ -398,6 +454,16 @@ Delete an existing comment within the Darktrace UI.
 
 #### Context Output
 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Darktrace.comment.success | boolean | Status of deletion. |
+
+### Command Example
+
+```!darktrace-asm-delete-comment comment_id=Q29tbWVudFR5cGU6OTg=```
+
+#### Context Example
+
 ```
 "deleteComment": {
       "success": true
@@ -426,6 +492,18 @@ Creat a new Tag within the Darktrace UI.  Tags can be applied to Assets.
 | tag_name | Name of Tag to create | Required |
 
 #### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Darktrace.tag.success | boolean | Status of creation. |
+| Darktrace.tag.tag.id | string | Tag ID. |
+| Darktrace.tag.tag.name | string | Name of Tag. |
+
+### Command Example
+
+```!darktrace-asm-create-tag tag_name="API TEST"```
+
+#### Context Example
 
 ```
 "createTag": {
@@ -461,6 +539,18 @@ Assign an existing Tag to an Asset within the Darktrace UI.
 | asset_id | Asset ID to apply Tag to | Required |
 
 #### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Darktrace.tag.success | boolean | Status of assignment. |
+| Darktrace.tag.asset.id | string | Asset ID. |
+| Darktrace.tag.asset.tags | list | List of Tags assigned to Asset. |
+
+### Command Example
+
+```!darktrace-asm-assign-tag tag_name="API TEST" asset_id=SVBBZGRyZXNzVHlwZTox```
+
+#### Context Example
 
 ```
 "assignTag": {
@@ -498,6 +588,18 @@ Unssign an existing Tag from an Asset within the Darktrace UI.
 | asset_id | Asset ID to remove Tag from | Required |
 
 #### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Darktrace.tag.success | boolean | Status of assignment. |
+| Darktrace.tag.asset.id | string | Asset ID. |
+| Darktrace.tag.asset.tags | list | List of Tags assigned to Asset. |
+
+### Command Example
+
+```!darktrace-asm-unassign-tag tag_name="API TEST" asset_id=SVBBZGRyZXNzVHlwZTox```
+
+#### Context Example
 
 ```
 "unassignTag": {

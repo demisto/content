@@ -33,7 +33,7 @@ def test_extract_files(tmpdir):
     results = upload_files(file_path, tmpdir)
     if type(results) is CommandResults:     # Otherwise 'results' has not 'readable_output' or 'outputs' attributes.
         assert 'Pcap Extracted Files' in results.readable_output
-        assert OUTPUTS == results.outputs
+        assert results.outputs == OUTPUTS
     assert os.path.isfile(os.path.join(tmpdir, 'rfc1350.txt'))
 
 
@@ -94,7 +94,7 @@ def test_decryption_wpa_pwd(tmpdir):
     file_path = './TestData/wpa-Induction.pcap'
     password = 'Induction'
     results = upload_files(file_path, tmpdir, wpa_pwd=password)
-    assert 5 == len(results.outputs)
+    assert len(results.outputs) == 5
 
 
 def test_decryption_rsa(tmpdir):
@@ -112,7 +112,7 @@ def test_decryption_rsa(tmpdir):
     file_path = './TestData/rsa.cap'
     key_path = './TestData/rsa.key'
     results = upload_files(file_path, tmpdir, rsa_path=key_path)
-    assert 5 == len(results.outputs)
+    assert len(results.outputs) == 5
 
 
 def test_assertion_types_and_extension(tmpdir):

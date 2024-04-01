@@ -1,7 +1,7 @@
 from CommonServerPython import *
 
 from json import JSONDecodeError
-from typing import List, Union, Tuple, Any, Optional
+from typing import Any
 
 from bson.objectid import ObjectId
 from pymongo import UpdateMany, UpdateOne
@@ -20,7 +20,7 @@ SORT_TYPE_DICT = {'asc': 1,
 class Client:
     def __init__(
             self,
-            urls: List[str],
+            urls: list[str],
             username: str,
             password: str,
             database: str,
@@ -52,17 +52,17 @@ class Client:
             f'Collection \'{collection}\' has not found in database \'{self.db.name}\''
         )
 
-    def get_entry_by_id(self, collection: str, alert_ids: List[str]) -> List[dict]:
+    def get_entry_by_id(self, collection: str, alert_ids: list[str]) -> list[dict]:
         collection_obj = self.get_collection(collection)
-        entries: List[dict] = list()
+        entries: list[dict] = []
         for alert_id in alert_ids:
             results = collection_obj.find({'_id': ObjectId(alert_id)})
             entries.extend([self.normalize_id(entry) for entry in results])
         entries = self.datetime_to_str(entries)
         return entries
 
-    def query(self, collection: str, query: dict, limit: int = 50, sort_str: str = '', fields: Optional[str] = None) \
-            -> List[dict]:
+    def query(self, collection: str, query: dict, limit: int = 50, sort_str: str = '', fields: str | None = None) \
+            -> list[dict]:
         collection_obj = self.get_collection(collection)
         if fields:
             entries = collection_obj.find(query, {field: 1 for field in argToList(fields)}).limit(limit)
@@ -120,7 +120,7 @@ class Client:
         else:
             return obj
 
-    def insert_entry(self, collection: str, entries: List[dict]) -> InsertManyResult:
+    def insert_entry(self, collection: str, entries: list[dict]) -> InsertManyResult:
         collection_object = self.get_collection(collection)
         raw = collection_object.insert_many(entries)
         return self.datetime_to_str(raw)
@@ -148,7 +148,7 @@ class Client:
     def drop_collection(self, collection):
         return self.db.drop_collection(collection)
 
-    def pipeline_query(self, collection: str, pipeline: Union[Dict[Any, Any], List[Any]]) -> List[dict]:
+    def pipeline_query(self, collection: str, pipeline: Dict[Any, Any] | list[Any]) -> list[dict]:
         collection_obj = self.get_collection(collection)
         entries = collection_obj.aggregate(pipeline=pipeline)
         entries = self.datetime_to_str(entries)
@@ -177,7 +177,7 @@ class Client:
         return self.datetime_to_str(raw)
 
 
-def convert_id_to_object_id(entries: Union[List[dict], dict]) -> Union[List[dict], dict]:
+def convert_id_to_object_id(entries: list[dict] | dict) -> list[dict] | dict:
     """ Converts list or dict with `_id` key of type str to ObjectID
 
     Args:
@@ -200,7 +200,7 @@ def convert_id_to_object_id(entries: Union[List[dict], dict]) -> Union[List[dict
             if isinstance(id_data, str):
                 entry['_id'] = ObjectId(id_data)
             if isinstance(id_data, dict):
-                entry['_id'] = dict((key, ObjectId(id_data[key])) for key in id_data)
+                entry['_id'] = {key: ObjectId(id_data[key]) for key in id_data}
 
         return entry
 
@@ -240,7 +240,7 @@ def convert_str_to_datetime(entries: Any) -> Any:
     return entries
 
 
-def convert_object_id_to_str(entries: List[ObjectId]) -> List[str]:
+def convert_object_id_to_str(entries: list[ObjectId]) -> list[str]:
     ''' Converts list of ObjectID to list of str.
 
     Args:
@@ -257,8 +257,8 @@ def convert_object_id_to_str(entries: List[ObjectId]) -> List[str]:
 
 
 def handle_bulk_update_string_query_arguments(
-        argument: Tuple[str, str],
-        filter_valid_input_example: str, update_valid_input_example: str) -> List[dict]:
+        argument: tuple[str, str],
+        filter_valid_input_example: str, update_valid_input_example: str) -> list[dict]:
     """Handles the case where the filter or update arguments are strings when using mongodb-bulk-update command.
         (the other case is a list of dictionaries from context)
 
@@ -283,7 +283,7 @@ def handle_bulk_update_string_query_arguments(
     return argToList(argument_value)
 
 
-def parse_and_validate_bulk_update_arguments(filter: str | list, update: str | list) -> Tuple[List, List]:
+def parse_and_validate_bulk_update_arguments(filter: str | list, update: str | list) -> tuple[list, list]:
     """Parses and validates the bulk update queries (filter and update command arguments).
 
     Args:
@@ -325,7 +325,7 @@ def parse_and_validate_bulk_update_arguments(filter: str | list, update: str | l
     return filter_list, update_list
 
 
-def test_module(client: Client, **kwargs) -> Tuple[str, dict]:
+def test_module(client: Client, **kwargs) -> tuple[str, dict]:
     # Using kwargs so vulture will let it go
     kwargs.get("")
     try:
@@ -338,14 +338,14 @@ def test_module(client: Client, **kwargs) -> Tuple[str, dict]:
 
 def get_entry_by_id_command(
         client: Client, collection: str, object_id: str, **kwargs
-) -> Tuple[str, dict, list]:
+) -> tuple[str, dict, list]:
     raw_response = client.get_entry_by_id(collection, argToList(object_id))
     if raw_response:
         readable_outputs = tableToMarkdown(
             f'Total of {len(raw_response)} found in MongoDB collection `{collection}`:',
             raw_response,
         )
-        entries = list()
+        entries = []
         for item in raw_response:
             item['collection'] = collection
             entries.append(item)
@@ -359,7 +359,7 @@ def get_entry_by_id_command(
 
 def search_query(client: Client, collection: str, query: str, limit: str, sort: str = '', fields: str = None,
                  **kwargs) \
-        -> Tuple[str, dict, list]:
+        -> tuple[str, dict, list]:
     # test if query is a valid json
     try:
         query_json = validate_json_objects(json.loads(query))
@@ -372,7 +372,7 @@ def search_query(client: Client, collection: str, query: str, limit: str, sort: 
             [entry.get('_id') for entry in raw_response],
             headers=['_id'],
         )
-        outputs_objects = list()
+        outputs_objects = []
         for item in raw_response:
             item.update({'collection': collection})
             outputs_objects.append(item)
@@ -384,7 +384,7 @@ def search_query(client: Client, collection: str, query: str, limit: str, sort: 
 
 def insert_entry_command(
         client: Client, collection: str, entry: str, **kwargs
-) -> Tuple[str, dict, list]:
+) -> tuple[str, dict, list]:
     # test if query is a valid json
     try:
         entry_json = validate_json_objects(json.loads(entry))
@@ -412,7 +412,7 @@ def insert_entry_command(
         raise DemistoException('The `entry` argument is not a valid json.')
 
 
-def validate_json_objects(json_obj: Union[dict, list]) -> Union[dict, list]:
+def validate_json_objects(json_obj: dict | list) -> dict | list:
     """ Validate that all objects in the json are according to MongoDB convention.
 
     Args:
@@ -436,7 +436,7 @@ def format_sort(sort_str: str) -> list:
         list accepted by pymongo.sort()
     """
     sort_fields = sort_str.split(',')
-    sort_list = list()
+    sort_list = []
     for field in sort_fields:
         if ':' not in field:
             raise ValueError("`sort` is not in the correct format.")
@@ -455,7 +455,7 @@ def update_entry_command(
         update_one=False,
         upsert=False,
         **kwargs,
-) -> Tuple[str, None]:
+) -> tuple[str, None]:
 
     filter_valid_input_example = '`{"key": "value"}`'
     update_valid_input_example = '`{"$set": {"key": "value"}`'
@@ -484,7 +484,7 @@ def update_entry_command(
 
 def delete_entry_command(
         client: Client, collection, filter, delete_one, **kwargs
-) -> Tuple[str, None]:
+) -> tuple[str, None]:
     try:
         json_filter = json.loads(filter)
         json_filter = convert_id_to_object_id(json_filter)
@@ -498,7 +498,7 @@ def delete_entry_command(
 
 def create_collection_command(
         client: Client, collection: str, **kwargs
-) -> Tuple[str, None]:
+) -> tuple[str, None]:
     if client.is_collection_in_db(collection):
         raise DemistoException(f'Collection \'{collection}\' is already exists')
     _ = client.create_collection(collection)
@@ -508,7 +508,7 @@ def create_collection_command(
     )
 
 
-def list_collections_command(client: Client, **kwargs) -> Tuple[str, dict, list]:
+def list_collections_command(client: Client, **kwargs) -> tuple[str, dict, list]:
     raw_response = client.db.list_collection_names()
     if raw_response:
         readable_outputs = tableToMarkdown(
@@ -526,7 +526,7 @@ def list_collections_command(client: Client, **kwargs) -> Tuple[str, dict, list]
 
 def drop_collection_command(
         client: Client, collection: str, **kwargs
-) -> Tuple[str, None]:
+) -> tuple[str, None]:
     response = client.drop_collection(collection)
     if (
             hasattr(response, 'acknowledged')
@@ -539,7 +539,7 @@ def drop_collection_command(
 
 
 def pipeline_query_command(client: Client, collection: str, pipeline: str, limit: str = '50', offset: str = '0',
-                           **kwargs) -> Tuple[str, dict, list]:
+                           **kwargs) -> tuple[str, dict, list]:
     limit = arg_to_number(limit)
     offset = arg_to_number(offset)
     try:
@@ -575,7 +575,7 @@ def bulk_update_command(
         update_one=True,
         upsert=False,
         **kwargs,
-) -> Tuple[str, None]:
+) -> tuple[str, None]:
 
     filter_list, update_list = parse_and_validate_bulk_update_arguments(filter, update)
 

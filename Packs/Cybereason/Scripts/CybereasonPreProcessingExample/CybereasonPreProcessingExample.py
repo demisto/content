@@ -1,9 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict
 
 
-def get_guid_from_system_incident(incident: Dict[str, Any]) -> str:
+def get_guid_from_system_incident(incident: dict[str, Any]) -> str:
     malop_guid = ''
     for label in incident['labels']:
         if label['type'] == 'guidString':
@@ -16,7 +15,7 @@ res = True
 incident = demisto.incidents()[0]
 malop_guid = get_guid_from_system_incident(incident)
 
-response = demisto.executeCommand('getIncidents', {'query': '-status:Closed and malopguid: {}'.format(malop_guid)})
+response = demisto.executeCommand('getIncidents', {'query': f'-status:Closed and malopguid: {malop_guid}'})
 malop_incident = response[0]['Contents']['data']
 
 if malop_incident:

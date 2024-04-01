@@ -1,7 +1,6 @@
 commonfields:
   id: Darktrace ASM
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Darktrace ASM
 display: Darktrace ASM
 category: Network Security
@@ -1127,6 +1126,7 @@ script:
     arguments:
     - name: risk_id
       required: true
+      description: Unique ID of Risk.
     outputs:
     - contextPath: Darktrace.risk.id
       description: Risk ID.
@@ -1181,7 +1181,7 @@ script:
       type: boolean
     - contextPath: Darktrace.risk.asset.tags
       description: Tags applied to the asset.
-    - contextPath: Darktrace.risk.comments.edges
+    - contextPath: Darktrace.risk.comments
       description: Comments posted to the risk.
     - contextPath: Darktrace.risk
       description: Risk object dictionary.
@@ -1191,6 +1191,8 @@ script:
   - name: darktrace-asm-get-asset
     arguments:
     - name: asset_id
+      required: true
+      description: Unique ID of Asset.
     outputs:
     - contextPath: Darktrace.asset
       description: Asset object dictionary.
@@ -1213,6 +1215,8 @@ script:
       description: Whether or note the asset is malicious.
     - contextPath: Darktrace.asset.tags
       description: Tags applied to the asset.
+    - contextPath: Darktrace.asset.type
+      description: Type of Asset.
     - contextPath: Darktrace.asset.comments
       description: Comments posted to the risk.
     - contextPath: Darktrace.asset.discoverySources
@@ -1223,7 +1227,8 @@ script:
   - name: darktrace-asm-post-comment
     arguments:
     - name: id
-      description: Can be a risk ID or an asset ID
+      required: true
+      description: Can be a Risk ID or an Asset ID.
     - name: comment
       description: 'enter your comment '
     outputs:
@@ -1241,8 +1246,11 @@ script:
   - name: darktrace-asm-edit-comment
     arguments:
     - name: comment_id
+      required: true
+      description: Unique ID of Comment.
     - name: comment
-      description: enter comment here
+      required: true
+      description: Enter comment here.
     outputs:
     - contextPath: Darktrace.comment.success
       description: Whether or not comment was edited.
@@ -1257,6 +1265,8 @@ script:
   - name: darktrace-asm-delete-comment
     arguments:
     - name: comment_id
+      required: true
+      description: Unique ID of Comment.
     outputs:
     - contextPath: Darktrace.comment.success
       description: Whether or not comment was deleted.
@@ -1265,6 +1275,7 @@ script:
     arguments:
     - name: risk_id
       required: true
+      description: Unique ID of Risk.
     outputs:
     - contextPath: Darktrace.risk.success
       description: Whether or not risk was mitigated.
@@ -1275,7 +1286,7 @@ script:
     arguments:
     - name: tag_name
       required: true
-      description: Name of tag being created.
+      description: Name of Tag being created.
     outputs:
     - contextPath: Darktrace.tag.success
       description: Whether or not the tag was created.
@@ -1311,7 +1322,7 @@ script:
     arguments:
     - name: tag_name
       required: true
-      description: Name of tag to be assigned.
+      description: Name of Tag to be assigned.
     - name: asset_id
       required: true
       description: ID of asset tag should be assigned to.
@@ -1330,4 +1341,3 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
-sourcemoduleid: TestASM2

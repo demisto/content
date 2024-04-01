@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 import traceback
-from typing import Any, Dict
+from typing import Any
 
 import urllib3
 
@@ -107,7 +107,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def get_lists(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_lists(client: Client, args: dict[str, Any]) -> CommandResults:
     r = client.get_lists()
 
     markdown = tableToMarkdown('Retrieved all applied and pending lists', r)
@@ -122,7 +122,7 @@ def get_lists(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_list(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_list(client: Client, args: dict[str, Any]) -> CommandResults:
     list_name = args.get('list_name')
 
     list_id = get_list_id_from_name(client, list_name)
@@ -141,7 +141,7 @@ def get_list(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def add_url(client: Client, args: Dict[str, Any]) -> CommandResults:
+def add_url(client: Client, args: dict[str, Any]) -> CommandResults:
     list_name = args.get('list_name')
     url = argToList(args.get('url'))
 
@@ -174,7 +174,7 @@ def add_url(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def remove_url(client: Client, args: Dict[str, Any]) -> CommandResults:
+def remove_url(client: Client, args: dict[str, Any]) -> CommandResults:
     list_name = args.get('list_name')
     url = argToList(args.get('url'))
 

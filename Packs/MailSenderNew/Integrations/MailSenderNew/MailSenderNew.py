@@ -8,7 +8,6 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.message import Message
 from email.header import Header
 from smtplib import SMTP, SMTP_SSL
 from smtplib import SMTPRecipientsRefused
@@ -102,7 +101,7 @@ def handle_html(html_body):
             'subtype': subtype,
             'data': base64.b64decode(m.group(3)),
             'name': name,
-            'cid': '%r@%r.%r' % (name, randomword(8), randomword(8))
+            'cid': f'{name!r}@{randomword(8)!r}.{randomword(8)!r}'
         }
         attachments.append(att)
         clean_body += html_body[last_index:m.start(1)] + 'cid:' + att['cid']
@@ -174,17 +173,17 @@ def collect_attachments():
                 'cid': cid
             })
         except Exception as exc:
-            demisto.error("Invalid entry {} with exception: {}".format(aid, exc))
+            demisto.error(f"Invalid entry {aid} with exception: {exc}")
             return_error_mail_sender('Entry %s is not valid or is not a file entry' % aid)
 
     # handle transient files
     args = demisto.args()
     f_names = args.get('transientFile', [])
-    f_names = f_names if isinstance(f_names, (list, tuple)) else f_names.split(',')
+    f_names = f_names if isinstance(f_names, list | tuple) else f_names.split(',')
     f_contents = args.get('transientFileContent', [])
-    f_contents = f_contents if isinstance(f_contents, (list, tuple)) else f_contents.split(',')
+    f_contents = f_contents if isinstance(f_contents, list | tuple) else f_contents.split(',')
     f_cids = args.get('transientFileCID', [])
-    f_cids = f_cids if isinstance(f_cids, (list, tuple)) else f_cids.split(',')
+    f_cids = f_cids if isinstance(f_cids, list | tuple) else f_cids.split(',')
 
     for name, data, cid in zip_longest(f_names, f_contents, f_cids):
         if name is None or data is None:
@@ -225,6 +224,7 @@ def parse_template_params():
                 return parse_params(json.loads(params_str))
             except (ValueError, TypeError) as e:
                 return_error_mail_sender('Unable to parse templateParams: %s' % (str(e)))
+    return None
 
 
 def header(s):
@@ -333,9 +333,9 @@ def swap_stderr(new_stderr):
         module = smtplib
     else:
         module = sys  # type: ignore
-    old_stderr = getattr(module, 'stderr')
+    old_stderr = module.stderr
     if new_stderr:
-        setattr(module, 'stderr', new_stderr)
+        module.stderr = new_stderr
     return old_stderr
 
 
@@ -372,7 +372,7 @@ def main():
         # also reset at the bottom finally
         swap_stderr(stderr_org)  # type: ignore[union-attr]
         smtplib.SMTP.debuglevel = 0
-        demisto.error('Failed test: {}\nStack trace: {}'.format(e, traceback.format_exc()))
+        demisto.error(f'Failed test: {e}\nStack trace: {traceback.format_exc()}')
         return_error_mail_sender(e)
         return  # so mypy knows that we don't continue after this
     # -- COMMANDS --
@@ -411,8 +411,8 @@ def main():
         else:
             return_error_mail_sender('Command not recognized')
     except SMTPRecipientsRefused as e:
-        error_msg = ''.join('{}\n'.format(val) for key, val in e.recipients.items())
-        return_error_mail_sender("Encountered error: {}".format(error_msg))
+        error_msg = ''.join(f'{val}\n' for key, val in e.recipients.items())
+        return_error_mail_sender(f"Encountered error: {error_msg}")
     except Exception as e:
         return_error_mail_sender(e)
     finally:

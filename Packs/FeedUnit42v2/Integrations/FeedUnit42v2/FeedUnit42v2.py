@@ -97,6 +97,7 @@ class Client(BaseClient):
         if test:
             return data
         self.objects_data[kwargs.get('type')] = data
+        return None
 
 
 def extract_ioc_value(value: str):
@@ -128,7 +129,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None, 
             raw_name = indicator_object.get('name', '')
             pattern = indicator_object.get('pattern') or ''
 
-            for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
+            for key in UNIT42_TYPES_TO_DEMISTO_TYPES:
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
                     indicator_obj = {
                         "value": raw_name,
@@ -181,10 +182,7 @@ def get_campaign_from_sub_reports(report_object, id_to_object):
 
 def is_sub_report(report_obj):
     obj_refs = report_obj.get('object_refs', [])
-    for obj_ref in obj_refs:
-        if obj_ref.startswith('report--'):
-            return False
-    return True
+    return all(not obj_ref.startswith('report--') for obj_ref in obj_refs)
 
 
 def parse_reports_and_report_relationships(report_objects: list, feed_tags: Optional[list] = None,
@@ -212,7 +210,7 @@ def parse_reports_and_report_relationships(report_objects: list, feed_tags: Opti
         if is_sub_report(report_object):
             continue
 
-        report = dict()  # type: Dict[str, Any]
+        report = {}  # type: Dict[str, Any]
 
         report['type'] = ThreatIntel.ObjectsNames.REPORT
         report['value'] = f"[Unit42 ATOM] {report_object.get('name')}"
@@ -269,7 +267,7 @@ def parse_campaigns(campaigns_obj, feed_tags, tlp_color):
                 "modified": campaign.get('modified'),
                 'description': campaign.get('description'),
                 "reportedby": 'Unit42',
-                "tags": [tag for tag in feed_tags],
+                "tags": list(feed_tags),
             }
         }
 
@@ -392,7 +390,7 @@ def create_attack_pattern_indicator(attack_indicator_objects, feed_tags, tlp_col
                 "publications": publications,
                 "mitreid": mitre_id,
                 "reportedby": 'Unit42',
-                "tags": [tag for tag in feed_tags],
+                "tags": list(feed_tags),
             }
         }
         indicator['fields']['tags'].extend([mitre_id])
@@ -435,7 +433,7 @@ def create_course_of_action_indicators(course_of_action_objects, feed_tags, tlp_
                 'description': coa_indicator.get('description', ''),
                 "publications": publications,
                 "reportedby": 'Unit42',
-                "tags": [tag for tag in feed_tags],
+                "tags": list(feed_tags),
             }
         }
         if tlp_color:
@@ -464,7 +462,7 @@ def create_intrusion_sets(intrusion_sets_objects, feed_tags, tlp_color):
                 'description': intrusion_set.get('description', ''),
                 "publications": publications,
                 "reportedby": 'Unit42',
-                "tags": [tag for tag in feed_tags],
+                "tags": list(feed_tags),
             }
         }
         if tlp_color:
@@ -510,7 +508,7 @@ def get_ioc_value(ioc, id_to_obj):
     """
     ioc_obj = id_to_obj.get(ioc)
     if not ioc_obj:
-        return
+        return None
 
     if ioc_obj.get('type') == 'report':
         return f"[Unit42 ATOM] {ioc_obj.get('name')}"
@@ -549,14 +547,14 @@ def create_list_relationships(relationships_objects, id_to_object):
 
         a_threat_intel_type = relationships_object.get('source_ref').split('--')[0]
         a_type = ''
-        if a_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.keys():
+        if a_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES:
             a_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(a_threat_intel_type)  # type: ignore
         elif a_threat_intel_type == 'indicator':
             a_type = get_ioc_type(relationships_object.get('source_ref'), id_to_object)
 
         b_threat_intel_type = relationships_object.get('target_ref').split('--')[0]
         b_type = ''
-        if b_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.keys():
+        if b_threat_intel_type in THREAT_INTEL_TYPE_TO_DEMISTO_TYPES:
             b_type = THREAT_INTEL_TYPE_TO_DEMISTO_TYPES.get(b_threat_intel_type)  # type: ignore
         if b_threat_intel_type == 'indicator':
             b_type = get_ioc_type(relationships_object.get('target_ref'), id_to_object)

@@ -10,7 +10,8 @@ import math
 import os
 import shutil
 from distutils.version import LooseVersion
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any
+from collections.abc import Callable
 
 import dateparser
 import urllib3
@@ -65,10 +66,10 @@ class Client(BaseClient):
             return True
         return False
 
-    def get_list_with_query(self, list_type: str, start: Optional[int] = None, page_size: Optional[int] = None,
-                            query: Optional[str] = None, modification_date_start: Optional[str] = None,
-                            modification_date_end: Optional[str] = None, creation_date_start: Optional[str] = None,
-                            creation_date_end: Optional[str] = None, fields: Optional[str] = None) -> List[Dict[str, Any]]:
+    def get_list_with_query(self, list_type: str, start: int | None = None, page_size: int | None = None,
+                            query: str | None = None, modification_date_start: str | None = None,
+                            modification_date_end: str | None = None, creation_date_start: str | None = None,
+                            creation_date_end: str | None = None, fields: str | None = None) -> list[dict[str, Any]]:
         """Get list of objects that support start, page_size and query arguments.
 
         Args:
@@ -96,7 +97,7 @@ class Client(BaseClient):
 
         url_suffix = f"/{list_type}"
         inline_parameters = False
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
         if start:
             url_suffix = f"{url_suffix}?start={start}"
             inline_parameters = True
@@ -153,7 +154,7 @@ class Client(BaseClient):
             result = []
         return (result)
 
-    def get_list(self, endpoint: str) -> List[Dict[str, Any]]:
+    def get_list(self, endpoint: str) -> list[dict[str, Any]]:
         """Get list of objects using the API endpoint."""
 
         return self._http_request(
@@ -161,7 +162,7 @@ class Client(BaseClient):
             url_suffix=f"{endpoint}",
         )
 
-    def get_single_endpoint(self, endpoint: str) -> Dict[str, Any]:
+    def get_single_endpoint(self, endpoint: str) -> dict[str, Any]:
         """Get an object using the API endpoint."""
 
         return self._http_request(
@@ -169,7 +170,7 @@ class Client(BaseClient):
             url_suffix=f"{endpoint}",
         )
 
-    def create_incident(self, args: Dict[str, Any] = {}) -> Dict[str, Any]:
+    def create_incident(self, args: dict[str, Any] = {}) -> dict[str, Any]:
         """Create incident in TOPdesk.
 
         Args:
@@ -192,7 +193,7 @@ class Client(BaseClient):
             json_data=request_params
         )
 
-    def update_incident(self, args: Dict[str, Any]) -> Dict[str, Any]:
+    def update_incident(self, args: dict[str, Any]) -> dict[str, Any]:
         """Update incident in TOPdesk.
 
         Args:
@@ -215,8 +216,8 @@ class Client(BaseClient):
             json_data=prepare_touch_request_params(args)
         )
 
-    def incident_do(self, action: str, incident_id: Optional[str], incident_number: Optional[str],
-                    reason_id: Optional[str]) -> Dict[str, Any]:
+    def incident_do(self, action: str, incident_id: str | None, incident_number: str | None,
+                    reason_id: str | None) -> dict[str, Any]:
         """Preform action on TOPdesk incident with specified reason_id if needed.
         This function implements "escalate"/ "deescalate"/ "archive"/ "unarchive" commands.
 
@@ -230,7 +231,7 @@ class Client(BaseClient):
         Return the updated incident on success or the API error otherwise.
         """
         allowed_actions = ["escalate", "deescalate", "archive", "unarchive"]
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
         if action not in allowed_actions:
             raise ValueError(f'Endpoint {action} not in allowed endpoint list: {allowed_actions}')
 
@@ -251,8 +252,8 @@ class Client(BaseClient):
             json_data=request_params
         )
 
-    def attachment_upload(self, incident_id: Optional[str], incident_number: Optional[str], file_entry: str,
-                          file_name: str, invisible_for_caller: bool, file_description: Optional[str]):
+    def attachment_upload(self, incident_id: str | None, incident_number: str | None, file_entry: str,
+                          file_name: str, invisible_for_caller: bool, file_description: str | None):
         """Upload an attachment from file_entry to TOPdesk incident.
 
         Args:
@@ -274,7 +275,7 @@ class Client(BaseClient):
         else:
             endpoint = f"/incidents/number/{incident_number}"
 
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
         request_params["invisibleForCaller"] = invisible_for_caller
         if file_description:
             request_params["description"] = file_description
@@ -293,7 +294,7 @@ class Client(BaseClient):
         os.remove(file_name)
         return response
 
-    def list_attachments(self, incident_id: Optional[str], incident_number: Optional[str]) -> List[Dict[str, Any]]:
+    def list_attachments(self, incident_id: str | None, incident_number: str | None) -> list[dict[str, Any]]:
         """List attachments of a given incident.
 
         Args:
@@ -314,7 +315,7 @@ class Client(BaseClient):
 
         return attachments
 
-    def list_actions(self, incident_id: Optional[str], incident_number: Optional[str]) -> List[Dict[str, Any]]:
+    def list_actions(self, incident_id: str | None, incident_number: str | None) -> list[dict[str, Any]]:
         """List actions of a given incident.
 
         Args:
@@ -335,8 +336,8 @@ class Client(BaseClient):
         return actions
 
     @staticmethod
-    def add_filter_to_query(query: Optional[str], filter_name: str, filter_arg: str,
-                            use_new_query: bool = True) -> Optional[str]:
+    def add_filter_to_query(query: str | None, filter_name: str, filter_arg: str,
+                            use_new_query: bool = True) -> str | None:
         """Enhance query to include filter argument. Consider the supported query type.
 
         Args:
@@ -361,7 +362,7 @@ class Client(BaseClient):
         return query
 
     @staticmethod
-    def add_query_to_request(query: Optional[str], url_suffix: str, new_query: bool,
+    def add_query_to_request(query: str | None, url_suffix: str, new_query: bool,
                              inline_parameters: bool) -> str:
         """Add the inline query parameter to the url suffix of a request.
         Consider the supported query type.
@@ -387,7 +388,7 @@ class Client(BaseClient):
         return url_suffix
 
     @staticmethod
-    def convert_query_types(current_query: Optional[str], to_new_query: bool) -> Optional[str]:
+    def convert_query_types(current_query: str | None, to_new_query: bool) -> str | None:
         """Convert inline params to FIQL query and otherwise
 
         Args:
@@ -423,7 +424,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def trim_results_by_limit(results: List[Any], limit: Union[int, str] = 100) -> List[Any]:
+def trim_results_by_limit(results: list[Any], limit: int | str = 100) -> list[Any]:
     """Trim list of results so only a limited number is returned.
 
     Args:
@@ -437,8 +438,8 @@ def trim_results_by_limit(results: List[Any], limit: Union[int, str] = 100) -> L
     return results[:int(limit)]
 
 
-def attachments_to_command_results(client: Client, attachments: List[Dict[str, Any]], incident_id: Optional[str],
-                                   incident_number: Optional[str]) -> CommandResults:
+def attachments_to_command_results(client: Client, attachments: list[dict[str, Any]], incident_id: str | None,
+                                   incident_number: str | None) -> CommandResults:
     """Transform raw attachments to CommandResults.
 
     Args:
@@ -471,8 +472,8 @@ def attachments_to_command_results(client: Client, attachments: List[Dict[str, A
     )
 
 
-def actions_to_command_results(client: Client, actions: List[Dict[str, Any]], incident_id: Optional[str],
-                               incident_number: Optional[str]) -> CommandResults:
+def actions_to_command_results(client: Client, actions: list[dict[str, Any]], incident_id: str | None,
+                               incident_number: str | None) -> CommandResults:
     """Transform raw actions to CommandResults.
 
     Args:
@@ -501,7 +502,7 @@ def actions_to_command_results(client: Client, actions: List[Dict[str, Any]], in
     )
 
 
-def prepare_touch_request_params(args: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_touch_request_params(args: dict[str, Any]) -> dict[str, Any]:
     """Prepare request parameters for incident-create and incident-update commands.
     Convert snake_case and specific names of command to halfCamelizedCase and API names.
 
@@ -510,7 +511,7 @@ def prepare_touch_request_params(args: Dict[str, Any]) -> Dict[str, Any]:
 
     Return a request body dictionary ready for sending.
     """
-    request_params: Dict[str, Any] = {}
+    request_params: dict[str, Any] = {}
     if args.get("entry_type", None):
         request_params["entryType"] = {"name": args["entry_type"]}
 
@@ -562,7 +563,7 @@ def capitalize(word: str):
     return word[:1].upper() + word[1:]
 
 
-def capitalize_for_outputs(outputs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def capitalize_for_outputs(outputs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Capitalize for XSOAR readable outputs.
 
     Args:
@@ -570,11 +571,11 @@ def capitalize_for_outputs(outputs: List[Dict[str, Any]]) -> List[Dict[str, Any]
 
     Return same object with capitalized field names.
     """
-    capitalized_outputs: List[Dict[str, Any]] = []
+    capitalized_outputs: list[dict[str, Any]] = []
     for output in outputs:
-        capitalized_output: Dict[str, Any] = {}
+        capitalized_output: dict[str, Any] = {}
         for field, value in output.items():
-            if isinstance(value, str) or isinstance(value, bool):
+            if isinstance(value, bool | str):
                 capitalized_output[capitalize(field)] = value
             elif isinstance(value, dict):
                 capitalized_output[capitalize(field)] = {}
@@ -591,7 +592,7 @@ def capitalize_for_outputs(outputs: List[Dict[str, Any]]) -> List[Dict[str, Any]
     return capitalized_outputs
 
 
-def command_with_all_fields_readable_list(results: List[Dict[str, Any]], result_name: str, output_prefix: str,
+def command_with_all_fields_readable_list(results: list[dict[str, Any]], result_name: str, output_prefix: str,
                                           outputs_key_field: str = 'id') -> CommandResults:
     """Return CommandResults with all the fields.
 
@@ -620,11 +621,11 @@ def command_with_all_fields_readable_list(results: List[Dict[str, Any]], result_
 
 
 def get_incidents_with_pagination(client: Client, max_fetch: int, query: str,
-                                  modification_date_start: Optional[str] = None,
-                                  modification_date_end: Optional[str] = None,
-                                  creation_date_start: Optional[str] = None,
-                                  creation_date_end: Optional[str] = None,
-                                  fields: Optional[str] = None) -> List[Dict[str, Any]]:
+                                  modification_date_start: str | None = None,
+                                  modification_date_end: str | None = None,
+                                  creation_date_start: str | None = None,
+                                  creation_date_end: str | None = None,
+                                  fields: str | None = None) -> list[dict[str, Any]]:
     """Implement pagination for fetching incidents.
 
     Args:
@@ -649,7 +650,7 @@ def get_incidents_with_pagination(client: Client, max_fetch: int, query: str,
         page_size = MAX_API_PAGE_SIZE
 
     start = 0
-    for index in range(number_of_requests):
+    for _index in range(number_of_requests):
         incidents += client.get_list_with_query(list_type="incidents",
                                                 start=start,
                                                 page_size=page_size,
@@ -664,7 +665,7 @@ def get_incidents_with_pagination(client: Client, max_fetch: int, query: str,
 
 
 def get_incidents_list(client: Client, modification_date_start: str = None, modification_date_end: str = None,
-                       args: Dict[str, Any] = {}) -> List[Dict[str, Any]]:
+                       args: dict[str, Any] = {}) -> list[dict[str, Any]]:
     """Get list of incidents from TOPdesk.
 
     Args:
@@ -685,7 +686,7 @@ def get_incidents_list(client: Client, modification_date_start: str = None, modi
             raise (ValueError(f"status {args.get('status', None)} id not in "
                               f"the allowed statuses list: {allowed_statuses}"))
         else:
-            filter_arguments: Dict[str, Any] = {"status": "status",
+            filter_arguments: dict[str, Any] = {"status": "status",
                                                 "caller_id": "caller",
                                                 "branch_id": "branch",
                                                 "category": "category",
@@ -695,10 +696,9 @@ def get_incidents_list(client: Client, modification_date_start: str = None, modi
             old_query_not_allowed_filters = ["category", "subcategory", "call_type", "entry_type"]
 
             query = args.get('query', None)
-            for filter_arg in filter_arguments.keys():
-                if not client.rest_api_new_query:
-                    if args.get(filter_arg, None) and filter_arg in old_query_not_allowed_filters:
-                        raise KeyError(f"Filtering via {filter_arg} is not supported in older TOPdeskRestApi versions.")
+            for filter_arg in filter_arguments:
+                if not client.rest_api_new_query and args.get(filter_arg, None) and filter_arg in old_query_not_allowed_filters:
+                    raise KeyError(f"Filtering via {filter_arg} is not supported in older TOPdeskRestApi versions.")
 
                 query = client.add_filter_to_query(query=query,
                                                    filter_name=filter_arguments.get(filter_arg, None),
@@ -715,7 +715,7 @@ def get_incidents_list(client: Client, modification_date_start: str = None, modi
     return incidents
 
 
-def incidents_to_command_results(client: Client, incidents: List[Dict[str, Any]]) -> CommandResults:
+def incidents_to_command_results(client: Client, incidents: list[dict[str, Any]]) -> CommandResults:
     """Receive incidents from api and convert to CommandResults.
 
     Args:
@@ -760,7 +760,7 @@ def incidents_to_command_results(client: Client, incidents: List[Dict[str, Any]]
     )
 
 
-def incident_func_command(client: Client, args: Dict[str, Any], client_func: Callable, action: str) -> CommandResults:
+def incident_func_command(client: Client, args: dict[str, Any], client_func: Callable, action: str) -> CommandResults:
     """Abstract class for executing client_func and returning TOPdesk incident as a result.
 
     Args:
@@ -783,7 +783,7 @@ def incident_func_command(client: Client, args: Dict[str, Any], client_func: Cal
 ''' List Commands '''
 
 
-def list_persons_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_persons_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get persons list from TOPdesk.
 
     Args:
@@ -833,7 +833,7 @@ def list_persons_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
 
 
-def list_operators_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_operators_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get operators list from TOPdesk.
 
     Args:
@@ -880,7 +880,7 @@ def list_operators_command(client: Client, args: Dict[str, Any]) -> CommandResul
     )
 
 
-def entry_types_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def entry_types_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get entry types list from TOPdesk.
 
     Args:
@@ -897,7 +897,7 @@ def entry_types_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                                  outputs_key_field='Id')
 
 
-def call_types_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def call_types_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get call types list from TOPdesk.
 
     Args:
@@ -915,7 +915,7 @@ def call_types_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                                  outputs_key_field='Id')
 
 
-def categories_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def categories_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get categories list from TOPdesk
 
     Args:
@@ -933,7 +933,7 @@ def categories_command(client: Client, args: Dict[str, Any]) -> CommandResults:
                                                  outputs_key_field='Id')
 
 
-def escalation_reasons_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def escalation_reasons_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get escalation reasons list from TOPdesk.
 
     Args:
@@ -950,7 +950,7 @@ def escalation_reasons_command(client: Client, args: Dict[str, Any]) -> CommandR
                                                  outputs_key_field='Id')
 
 
-def deescalation_reasons_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, str]:
+def deescalation_reasons_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
     """Get deescalation reasons list from TOPdesk.
 
     Args:
@@ -972,7 +972,7 @@ def deescalation_reasons_command(client: Client, args: Dict[str, Any]) -> Union[
                                                  outputs_key_field='Id')
 
 
-def archiving_reasons_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def archiving_reasons_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get archiving reasons list from TOPdesk.
 
     Args:
@@ -990,7 +990,7 @@ def archiving_reasons_command(client: Client, args: Dict[str, Any]) -> CommandRe
                                                  outputs_key_field='Id')
 
 
-def subcategories_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def subcategories_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get subcategories list from TOPdesk.
 
     Args:
@@ -1033,7 +1033,7 @@ def subcategories_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def list_attachments_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_attachments_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get attachments list from TOPdesk incident.
 
     Args:
@@ -1052,7 +1052,7 @@ def list_attachments_command(client: Client, args: Dict[str, Any]) -> CommandRes
                                           args.get('incident_number', None))
 
 
-def list_actions_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def list_actions_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get actions list from TOPdesk incident.
 
     Args:
@@ -1071,7 +1071,7 @@ def list_actions_command(client: Client, args: Dict[str, Any]) -> CommandResults
                                       args.get('incident_number', None))
 
 
-def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def branches_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Get branches list from TOPdesk.
 
     Args:
@@ -1117,7 +1117,7 @@ def branches_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_incidents_list_command(client: Client, args: Dict[str, Any]) -> Union[CommandResults, str]:
+def get_incidents_list_command(client: Client, args: dict[str, Any]) -> CommandResults | str:
     """Parse arguments and return incidents list as CommandResults.
 
     Args:
@@ -1137,7 +1137,7 @@ def get_incidents_list_command(client: Client, args: Dict[str, Any]) -> Union[Co
             raise e
 
 
-def incident_touch_command(client: Client, args: Dict[str, Any], client_func: Callable, action: str) -> CommandResults:
+def incident_touch_command(client: Client, args: dict[str, Any], client_func: Callable, action: str) -> CommandResults:
     """This function implements incident_create and incident_update commands.
 
     Try setting caller as a reqistered caller. If caller is not registered, set the caller argument as caller name.
@@ -1169,7 +1169,7 @@ def incident_touch_command(client: Client, args: Dict[str, Any], client_func: Ca
             raise e
 
 
-def incident_do_command(client: Client, args: Dict[str, Any], action: str) -> CommandResults:
+def incident_do_command(client: Client, args: dict[str, Any], action: str) -> CommandResults:
     """Preform an action on an incident and return it as CommandResults.
 
     Args:
@@ -1187,7 +1187,7 @@ def incident_do_command(client: Client, args: Dict[str, Any], action: str) -> Co
                                                             reason_id=args.get(f"{action}_reason_id", None))])
 
 
-def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def attachment_upload_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Upload attachment to certain incident in TOPdesk.
 
     Args:
@@ -1232,8 +1232,8 @@ def attachment_upload_command(client: Client, args: Dict[str, Any]) -> CommandRe
 
 
 def fetch_incidents(client: Client,
-                    last_run: Dict[str, Any],
-                    demisto_params: Dict[str, Any]) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
+                    last_run: dict[str, Any],
+                    demisto_params: dict[str, Any]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     """Fetches incidents from TOPdesk.
 
     Args:
@@ -1257,7 +1257,7 @@ def fetch_incidents(client: Client,
 
     assert last_fetch_datetime is not None
     latest_created_time = last_fetch_datetime
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     creation_date_start = last_fetch_datetime.strftime("<%Y-%m-%d>")
 
@@ -1287,7 +1287,7 @@ def fetch_incidents(client: Client,
             except DemistoException as error:
                 demisto.debug(f'{error=}')
                 # make sure we catch only JSONDecodeError errors, in case it is a different exception, should be raised.
-                if isinstance(error.exception, (json.decoder.JSONDecodeError, requests.exceptions.JSONDecodeError)):
+                if isinstance(error.exception, json.decoder.JSONDecodeError | requests.exceptions.JSONDecodeError):
                     actions = []
                 else:
                     raise error
@@ -1321,7 +1321,7 @@ def fetch_incidents(client: Client,
     return {'last_fetch': latest_created_time.strftime(DATE_FORMAT_FULL)}, incidents
 
 
-def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> GetRemoteDataResponse:
+def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) -> GetRemoteDataResponse:
     """
     get-remote-data command: Returns an updated incident and entries
     Args:
@@ -1393,17 +1393,16 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                         'Note': True  # boolean, True for Note, False otherwise
                     })
 
-        if ticket.get('closed'):
-            if params.get('close_incident'):
-                demisto.debug(f'ticket is closed: {ticket}')
-                entries.append({
-                    'Type': EntryType.NOTE,
-                    'Contents': {
-                        'dbotIncidentClose': True,
-                        'closeReason': 'Closed by TOPdesk'
-                    },
-                    'ContentsFormat': EntryFormat.JSON
-                })
+        if ticket.get('closed') and params.get('close_incident'):
+            demisto.debug(f'ticket is closed: {ticket}')
+            entries.append({
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeReason': 'Closed by TOPdesk'
+                },
+                'ContentsFormat': EntryFormat.JSON
+            })
 
         demisto.debug(f'Pull result is {ticket}')
         return GetRemoteDataResponse(mirrored_object=ticket, entries=entries)
@@ -1418,7 +1417,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         return GetRemoteDataResponse(mirrored_object=ticket, entries=[])
 
 
-def get_modified_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) -> GetModifiedRemoteDataResponse:
+def get_modified_remote_data_command(client: Client, args: dict[str, Any], params: dict) -> GetModifiedRemoteDataResponse:
     remote_args = GetModifiedRemoteDataArgs(args)
     query_date = dateparser.parse(remote_args.last_update,
                                   settings={'TIMEZONE': 'UTC'}).strftime(DATE_FORMAT)  # type: ignore
@@ -1438,7 +1437,7 @@ def get_modified_remote_data_command(client: Client, args: Dict[str, Any], param
     return GetModifiedRemoteDataResponse(modified_records_ids)
 
 
-def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:
+def update_remote_system_command(client: Client, args: dict[str, Any], params: dict[str, Any]) -> str:
     """
     This command pushes local changes to the remote system.
     Args:
@@ -1547,7 +1546,7 @@ def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def test_module(client: Client, demisto_last_run: Dict[str, Any], demisto_params: Dict[str, Any]) -> str:
+def test_module(client: Client, demisto_last_run: dict[str, Any], demisto_params: dict[str, Any]) -> str:
     """Test API connectivity and authentication.
     Use fetch incidents for testing if the integration supports it.
 

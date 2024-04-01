@@ -1,8 +1,9 @@
 id: 395bd0d7-764f-445b-84f9-b9d94ef0803c
 version: 18
-vcShouldKeepItemLegacyProdMachine: false
 name: Darktrace ASM Risk Handler
 starttaskid: "0"
+description: Runs a common ASM Risk workflow for fetched ASM Risk alerts.
+fromversion: 6.6.0
 tasks:
   "0":
     id: "0"
@@ -14,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -111,6 +113,7 @@ tasks:
       type: condition
       iscommand: false
       brand: Darktrace ASM
+      description: Add a comment to the Risk within the Darktrace UI.
     nexttasks:
       "No":
       - "6"
@@ -196,6 +199,7 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -260,6 +264,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Mitigate Risk within Darktrace UI. Warning: This will remove the Risk entirely from the UI and it will not reappear even if no steps were taken to mitigate it."
     nexttasks:
       "No":
       - "7"

@@ -1,12 +1,9 @@
 {
-	"cacheVersn": 0,
 	"close": null,
 	"definitionId": "",
 	"description": "",
-	"detached": false,
 	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -559,22 +556,14 @@
 		]
 	},
 	"edit": null,
-	"fromServerVersion": "",
+	"fromVersion": "6.6.0",
 	"group": "incident",
 	"id": "9583aa61-522b-48d1-8c17-3e7a1afa79e3",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
 	"mobile": null,
 	"name": "Darktrace ASM Layout",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
 	"quickView": null,
-	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "",
 	"version": -1
 }

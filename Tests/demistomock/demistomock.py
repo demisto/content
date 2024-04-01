@@ -1,4 +1,3 @@
-from __future__ import print_function
 
 import json
 import logging
@@ -571,7 +570,7 @@ def setLastRun(obj):
       None: No data returned
 
     """
-    return None
+    return
 
 
 def info(msg, *args):
@@ -652,7 +651,7 @@ def results(results):
     """
     if isinstance(results, dict) and results.get("contents"):
         results = results.get("contents")
-    log("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))
+    log(f"demisto results: {json.dumps(results, indent=4, sort_keys=True)}")
 
 
 def credentials(credentials):
@@ -666,7 +665,7 @@ def credentials(credentials):
       None: No data returned
 
     """
-    log("credentials: {}".format(credentials))
+    log(f"credentials: {credentials}")
 
 
 def getFilePath(id):
@@ -1222,7 +1221,7 @@ def setLastMirrorRun(obj):
       None: No data returned
 
     """
-    return None
+    return
 
 
 def searchRelationships(args):

@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 """ IMPORTS """
-from typing import Any, Dict
+from typing import Any
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -111,6 +111,7 @@ class Client(BaseClient):
             ):
                 workflow_id = workflow["workflow"]["id"]
                 return workflow_id
+        return None
 
     def create_pp_ticket(self, auth_token, payload):
         parameters = {"includeDisabled": False, "pageSize": 10}
@@ -201,7 +202,7 @@ class Client(BaseClient):
         )
         return rule_rec_api_response
 
-    def get_paged_search_secrule(self, auth_token: str, payload: Dict[str, Any]):
+    def get_paged_search_secrule(self, auth_token: str, payload: dict[str, Any]):
         """Calling siql paged search api for searching security rules
         using `SIQL` language query
 
@@ -209,7 +210,7 @@ class Client(BaseClient):
             auth_token (str): authentication token
             payload (Dict[str, Any]): payload to be used for making request
         """
-        parameters: Dict[str, Any] = {
+        parameters: dict[str, Any] = {
             "q": payload["q"],
             "pageSize": payload["pageSize"],
             "page": payload["page"],
@@ -227,14 +228,14 @@ class Client(BaseClient):
         )
         return secrule_page_search_response
 
-    def get_paged_all_collectors(self, auth_token: str, payload: Dict[str, Any]):
+    def get_paged_all_collectors(self, auth_token: str, payload: dict[str, Any]):
         """Calling get paged search api for collector
 
         Args:
             auth_token (str): authentication token
             payload (Dict[str, Any]): payload to be used for making request
         """
-        parameters: Dict[str, Any] = {
+        parameters: dict[str, Any] = {
             "pageSize": payload["pageSize"],
             "page": payload["page"],
         }
@@ -294,13 +295,13 @@ def authenticate_command(client):
 def create_pp_ticket_command(client, args):
     auth_token_cmd_result = authenticate_command(client)
     auth_token = auth_token_cmd_result.outputs
-    payload = dict(
-        domainId=args.get("domain_id"),
-        workflowName=args.get("workflow_name"),
-        requirements=args.get("requirement"),
-        priority=args.get("priority"),
-        due_date=args.get("due_date"),
-    )
+    payload = {
+        "domainId": args.get("domain_id"),
+        "workflowName": args.get("workflow_name"),
+        "requirements": args.get("requirement"),
+        "priority": args.get("priority"),
+        "due_date": args.get("due_date"),
+    }
     response = client.create_pp_ticket(auth_token, payload)
     return CommandResults(
         outputs_prefix="FireMonSecurityManager.CreatePPTicket",
@@ -314,14 +315,14 @@ def create_pp_ticket_command(client, args):
 def pca_command(client, args):
     auth_token_cmd_result = authenticate_command(client)
     auth_token = auth_token_cmd_result.outputs
-    payload = dict(
-        sources=list(args.get("sources").split(",")),
-        destinations=list(args.get("destinations").split(",")),
-        services=list(args.get("services").split(",")),
-        action=args.get("action"),
-        domainId=args.get("domain_id"),
-        deviceGroupId=args.get("device_group_id"),
-    )
+    payload = {
+        "sources": list(args.get("sources").split(",")),
+        "destinations": list(args.get("destinations").split(",")),
+        "services": list(args.get("services").split(",")),
+        "action": args.get("action"),
+        "domainId": args.get("domain_id"),
+        "deviceGroupId": args.get("device_group_id"),
+    }
     payload_rule_rec = client.rule_rec_api(auth_token, payload)
     result = {}
     list_of_device_changes = payload_rule_rec["deviceChanges"]
@@ -399,7 +400,7 @@ def pca_command(client, args):
     )
 
 
-def get_paged_search_secrule(client: Client, auth_token: str, payload: Dict[str, Any]) -> List:
+def get_paged_search_secrule(client: Client, auth_token: str, payload: dict[str, Any]) -> List:
     """Make subsequent requests using client and other arguments
 
     Args:
@@ -410,21 +411,21 @@ def get_paged_search_secrule(client: Client, auth_token: str, payload: Dict[str,
     Returns:
         (List[Dict[str, Any]]): results list
     """
-    result = list()
+    result = []
     response = client.get_paged_search_secrule(auth_token, payload)
     total_pages = response.get("total", 0) // payload.get("pageSize")
 
-    result.extend(response.get("results", list()))
+    result.extend(response.get("results", []))
 
     while payload.get("page") < total_pages:  # NOTE: Check if we can implement async here
         payload["page"] += 1
         response = client.get_paged_search_secrule(auth_token, payload)
-        result.extend(response.get("results", list()))
+        result.extend(response.get("results", []))
 
     return result
 
 
-def secmgr_secrule_search_command(client: Client, args: Dict[str, Any]):
+def secmgr_secrule_search_command(client: Client, args: dict[str, Any]):
     """Searches for security rules using the SIQL language query
 
     Args:
@@ -436,11 +437,11 @@ def secmgr_secrule_search_command(client: Client, args: Dict[str, Any]):
 
     # page size can't be less than 1
     page_size = 1 if int(args.get("pageSize", 10)) < 1 else int(args.get("pageSize", 10))
-    payload = dict(
-        q=str(args.get("q")),
-        pageSize=page_size,
-        page=int(args.get("page", 0)),
-    )
+    payload = {
+        "q": str(args.get("q")),
+        "pageSize": page_size,
+        "page": int(args.get("page", 0)),
+    }
     results = get_paged_search_secrule(client, auth_token, payload)
 
     return CommandResults(
@@ -457,7 +458,7 @@ def secmgr_secrule_search_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_paged_all_collectors(client: Client, auth_token: str, payload: Dict[str, Any]) -> List:
+def get_paged_all_collectors(client: Client, auth_token: str, payload: dict[str, Any]) -> List:
     """Make subsequent requests using client and other arguments
 
     Args:
@@ -468,21 +469,21 @@ def get_paged_all_collectors(client: Client, auth_token: str, payload: Dict[str,
     Returns:
         (List[Dict[str, Any]]): results list
     """
-    result = list()
+    result = []
     response = client.get_paged_all_collectors(auth_token, payload)
     total_pages = response.get("total", 0) // payload.get("pageSize")
 
-    result.extend(response.get("results", list()))
+    result.extend(response.get("results", []))
 
     while payload.get("page") < total_pages:  # NOTE: Check if we can implement async here
         payload["page"] += 1
         response = client.get_paged_all_collectors(auth_token, payload)
-        result.extend(response.get("results", list()))
+        result.extend(response.get("results", []))
 
     return result
 
 
-def collector_get_all_command(client: Client, args: Dict[str, Any]):
+def collector_get_all_command(client: Client, args: dict[str, Any]):
     """List all the collectors in the inventory
 
     Args:
@@ -493,10 +494,10 @@ def collector_get_all_command(client: Client, args: Dict[str, Any]):
     auth_token = auth_token_cmd_result.outputs
 
     page_size = 1 if int(args.get("pageSize", 10)) < 1 else int(args.get("pageSize", 10))
-    payload = dict(
-        pageSize=page_size,
-        page=int(args.get("page", 0)),
-    )
+    payload = {
+        "pageSize": page_size,
+        "page": int(args.get("page", 0)),
+    }
     results = get_paged_all_collectors(client, auth_token, payload)
 
     return CommandResults(
@@ -513,7 +514,7 @@ def collector_get_all_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def collector_get_status_byid_command(client: Client, args: Dict[str, Any]):
+def collector_get_status_byid_command(client: Client, args: dict[str, Any]):
     """Get collector status by ID
 
     Args:

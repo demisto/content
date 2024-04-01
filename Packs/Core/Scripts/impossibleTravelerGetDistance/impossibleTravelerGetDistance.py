@@ -14,7 +14,7 @@ def get_distances_list(src_coords_list: list, events_dict: dict):
     distance_list = []
     for unique_pair in itertools.combinations(src_coords_list, 2):
         geo_distance = round(geopy.distance.geodesic(unique_pair[0], unique_pair[1]).miles, 2)
-        hr = 'Calculated Distance: {} miles.'.format(str(geo_distance))
+        hr = f'Calculated Distance: {str(geo_distance)} miles.'
         context = {
             "distance": geo_distance,
             "src_coords": unique_pair[0],
