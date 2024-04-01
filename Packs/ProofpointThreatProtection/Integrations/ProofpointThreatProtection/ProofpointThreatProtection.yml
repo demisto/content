@@ -41,6 +41,7 @@ script:
     name: proofpoint-tp-blocklist-get
     outputs:
     - contextPath: ProofpointThreatProtection.Blocklist
+      description: A list of entries in the blocklist.
   - arguments:
     - auto: PREDEFINED
       name: action
@@ -48,6 +49,7 @@ script:
       - add
       - delete
       required: true
+      description: add or delete.
     - auto: PREDEFINED
       name: attribute
       predefined:
@@ -58,6 +60,7 @@ script:
       - $helo
       - $rcpt
       required: true
+      description: Supported Attributes for the Organizational Safe List.
     - auto: PREDEFINED
       name: operator
       predefined:
@@ -66,6 +69,7 @@ script:
       - contain
       - not_contain
       required: true
+      description: Supported Operators for the Organizational Safe List.
     - description: Entry to be added to list.
       name: value
       required: true
@@ -77,7 +81,8 @@ script:
     description: Get all entries in the Organizational Safe List.
     name: proofpoint-tp-safelist-get
     outputs:
-    - contextPath: ProofpointThreatProtection.Blocklist
+    - contextPath: ProofpointThreatProtection.Safelist
+      description: A list of entries in the safelist.
   - arguments:
     - auto: PREDEFINED
       name: action
@@ -85,6 +90,7 @@ script:
       - add
       - delete
       required: true
+      description: add or delete.
     - auto: PREDEFINED
       name: attribute
       predefined:
@@ -95,6 +101,7 @@ script:
       - $helo
       - $rcpt
       required: true
+      description: Supported Attributes for the Organizational Safe List.
     - auto: PREDEFINED
       name: operator
       predefined:
@@ -103,6 +110,7 @@ script:
       - contain
       - not_contain
       required: true
+      description: Supported Operators for the Organizational Safe List.
     - description: Entry to be added to list.
       name: value
       required: true
