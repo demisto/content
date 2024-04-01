@@ -5,7 +5,6 @@ import logging
 import pytest
 import glob
 import os
-import subprocess
 
 RETURN_ERROR_TARGET = 'ConvertFile.return_error'
 
