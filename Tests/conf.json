@@ -863,7 +863,8 @@
         },
         {
             "integrations": "AlienVault OTX v2",
-            "playbookID": "Alienvault_OTX_v2 - Test"
+            "playbookID": "Alienvault_OTX_v2 - Test",
+            "memory_threshold": 130
         },
         {
             "integrations": "AWS - CloudWatchLogs",
