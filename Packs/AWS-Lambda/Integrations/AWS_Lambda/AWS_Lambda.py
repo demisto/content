@@ -703,7 +703,7 @@ def list_layer_version_command(args, aws_client):
         'CompatibleRuntime': args.get('compatible-runtime'),
         'Marker': args.get('token'),
         'MaxItems': arg_to_number(args.get('limit')),
-        'CompatibleArchitecture': args.get('compatible_architecture')
+        'CompatibleArchitecture': args.get('compatible-architecture')
     }
 
     res = aws_client.list_layer_versions(**remove_empty_elements(kwargs))
