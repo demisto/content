@@ -12,4 +12,4 @@ See this [link](https://learn.jamf.com/en-US/bundle/jamf-pro-documentation-curre
 
 *Important*: Before creating an API client, ensure that you create an API role with all the privileges as mentioned in the integration documentation. Then, associate the API client with that role.
 
-When using the first two methods, a username and password must be provided.. The system will automatically attempt to generate a token (second method), and if unsuccessful, it will fallback to using the first method, but only if basic authentication is permitted by the user.
+When using the first two methods, a username and password must be provided. The system will automatically attempt to generate a token (second method), and if unsuccessful, it will fallback to using the first method, but only if basic authentication is permitted by the user.
