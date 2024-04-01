@@ -114,7 +114,7 @@ class Client(BaseClient):
         data = {'username': username, 'password': password}
         demisto.debug("Sending request to get the auth token")
 
-        response = self._http_request('POST', 'login', json_data=data, retries=self.retries, timeout=10)
+        response = self._http_request('POST', 'login', json_data=data, retries=self.retries, timeout=self.timeout)
         try:
             token = response.get('token')
             if not token:
