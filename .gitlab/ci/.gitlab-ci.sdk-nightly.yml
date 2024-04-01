@@ -91,15 +91,15 @@ demisto-sdk-nightly:run-unittests-and-lint:
     - .run-unittests-and-lint
     - .sdk-nightly-schedule-rule
 
-demisto-sdk-nightly:run-validations:
-  extends:
-    - .run-validations
-    - .sdk-nightly-schedule-rule
-
 demisto-sdk-nightly:run-pre-commit:
   allow_failure: true
   extends:
     - .run-pre-commit
+    - .sdk-nightly-schedule-rule
+
+demisto-sdk-nightly:run-validations:
+  extends:
+    - .run-validations
     - .sdk-nightly-schedule-rule
 
 demisto-sdk-nightly:run-validations-new-validate-flow:
