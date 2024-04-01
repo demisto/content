@@ -95,7 +95,11 @@ MOCK_SIMULTANEOUS_LOGIN_ALERT = {
     '"facility":"user","username":"test%40test.com","geolocation":"421%'
     'C2W","timestamp":"2019-09-20+20%3A41%3A37.395"}',
 }
-MOCK_QUERY_RESULTS = [MOCK_HIGH_CPU_ALERT, MOCK_SIMULTANEOUS_LOGIN_ALERT]
+# Create a dictionary containing the list of alerts
+mock_query_result = {"object": [MOCK_HIGH_CPU_ALERT, MOCK_SIMULTANEOUS_LOGIN_ALERT]}
+
+# Convert the dictionary to a JSON string
+MOCK_QUERY_RESULTS = json.dumps(mock_query_result)
 MOCK_LAST_RUN = {"from_time": time.time() - 60}
 MOCK_QUERY_ARGS = {
     "query": "from whatever",
@@ -210,7 +214,7 @@ EXPECTED_LABELS = [
 ]
 LAST_RUN_DATA = {"from_time": 1691307869.0, "last_fetch_events": [{'123': 1691307869.0}]}
 
-MOCK_EVENTS = [
+EVENTS = [
     {
         "alertId": "123",
         "extraData": {"key1": "value1", "key2": "value2"},
@@ -230,6 +234,7 @@ MOCK_EVENTS = [
         "context": "value3",
     },
 ]
+MOCK_EVENTS = json.dumps({"object": EVENTS})
 
 EXPECTED_LAST_RUN_DATA = {'from_time': 1691480669.0, 'last_fetch_events': [{'456': 1691394269.0}, {'789': 1691480669.0}]}
 
@@ -281,7 +286,11 @@ def test_time_range():
     assert get_time_range(time_from_string, time_to_string)[1] - time_to_string_ts < abs(tolerance)
     # Test Python datetime object input
     dt_from = datetime.fromtimestamp(time_from)
-    assert abs(get_time_range(dt_from, None)[0] - time_from) < tolerance
+    datetime.fromtimestamp(time_to)
+    # Convert Python datetime object timestamps to milliseconds
+    result_timestamp_ms = get_time_range(dt_from, None)[0] * 1000
+    expected_from = round(dt_from.timestamp() * 1000)
+    assert abs(result_timestamp_ms - expected_from) < tolerance
     # Additional test for Python datetime object input
     dt_additional = datetime.now()
     assert get_time_range(dt_additional, None)[0] == dt_additional.timestamp()
@@ -299,8 +308,8 @@ def test_time_range():
 @patch("Devo_v2.WRITE_CREDENTIALS", MOCK_WRITER_CREDENTIALS, create=True)
 @patch("Devo_v2.FETCH_INCIDENTS_FILTER", MOCK_FETCH_INCIDENTS_FILTER, create=True)
 @patch("Devo_v2.FETCH_INCIDENTS_DEDUPE", MOCK_FETCH_INCIDENTS_DEDUPE, create=True)
-@patch("Devo_v2.ds.Reader.query")
 @patch("Devo_v2.Sender")
+@patch("Devo_v2.Client.query")
 def test_command(mock_query_results, mock_write_args):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_write_args.return_value = MOCK_WRITER_ARGS
@@ -310,7 +319,7 @@ def test_command(mock_query_results, mock_write_args):
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.FETCH_INCIDENTS_FILTER", MOCK_FETCH_INCIDENTS_FILTER, create=True)
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_first_fetch_incidents(mock_query_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     incidents = fetch_incidents()
@@ -325,7 +334,7 @@ def test_first_fetch_incidents(mock_query_results):
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.FETCH_INCIDENTS_FILTER", MOCK_FETCH_INCIDENTS_FILTER, create=True)
 @patch("Devo_v2.demisto.getLastRun")
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_next_fetch(mock_query_results, mock_last_run):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_last_run.return_value = MOCK_LAST_RUN
@@ -340,7 +349,7 @@ def test_next_fetch(mock_query_results, mock_last_run):
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_get_alerts(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_ALERT_ARGS
@@ -352,7 +361,7 @@ def test_get_alerts(mock_query_results, mock_args_results):
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_get_alerts_check_result_columns(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_ALERT_ARGS
@@ -372,7 +381,7 @@ def test_get_alerts_check_result_columns(mock_query_results, mock_args_results):
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_get_alerts_with_repeated_fields(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_ALERT_ARGS_REPEATED_FIELDS
@@ -395,7 +404,7 @@ def test_get_alerts_with_repeated_fields(mock_query_results, mock_args_results):
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_get_alerts_with_empty_filtered_columns_param(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_ALERT_ARGS_EMPTY_filtered_columns_PRAM
@@ -406,7 +415,7 @@ def test_get_alerts_with_empty_filtered_columns_param(mock_query_results, mock_a
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_run_query(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_QUERY_ARGS
@@ -419,7 +428,7 @@ def test_run_query(mock_query_results, mock_args_results):
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
 @patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
+@patch("Devo_v2.Client.query")
 def test_run_query_with_invalid_column_name(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_QUERY_ARGS_INVALIDE_COLUMN_NAME
@@ -432,8 +441,8 @@ def test_run_query_with_invalid_column_name(mock_query_results, mock_args_result
 @patch("Devo_v2.concurrent.futures.wait")
 @patch("Devo_v2.concurrent.futures.ThreadPoolExecutor.submit")
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
-@patch("Devo_v2.ds.Reader")
+@patch("Devo_v2.Client.query")
+@patch("Devo_v2.Client")
 @patch("Devo_v2.get_types")
 def test_multi_query(
     mock_query_types,
@@ -517,7 +526,7 @@ def test_alert_to_incident_missing_data(mock_demisto_ISO):
 
 
 @patch("Devo_v2.demisto.getLastRun")
-@patch("Devo_v2.ds.Reader")
+@patch("Devo_v2.Client")
 @patch("Devo_v2.demisto.setLastRun")
 @patch("Devo_v2.demisto.incidents")
 def test_fetch_incidents(

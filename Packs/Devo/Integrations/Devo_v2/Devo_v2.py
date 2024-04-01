@@ -5,15 +5,15 @@ from CommonServerPython import *
 import base64
 import json
 import time
-import devodsconnector as ds
+from devo.api import Client, ClientConfig
 import concurrent.futures
 import tempfile
 import urllib.parse
 import re
 import os
+import pandas as pd
 from datetime import datetime
 from devo.sender import Lookup, SenderConfigSSL, Sender
-from devodsconnector import error_checking
 from functools import partial
 
 
@@ -93,6 +93,11 @@ SEVERITY_LEVELS_MAP = {
 """ HELPER FUNCTIONS """
 
 
+def timestamp_to_date(timestamp):
+    datetime_obj = datetime.fromtimestamp(timestamp)
+    return datetime_obj.strftime('%Y-%m-%d %H:%M:%S')
+
+
 def alert_to_incident(alert, user_prefix):
     alert_severity = float(1)
     context = f"{user_prefix}context"
@@ -155,25 +160,59 @@ def alert_to_incident(alert, user_prefix):
 
 
 # Monkey patching for backwards compatibility
+def _to_unix(date, milliseconds=False):
+    """
+    Convert date to a unix timestamp
+
+    date: A unix timestamp in second, a datetime object,
+    pandas.Timestamp object, or string to be parsed
+    by pandas.to_datetime
+    """
+
+    if date is None:
+        return None
+
+    elif date == 'now':
+        epoch = datetime.now().timestamp()
+    elif type(date) == str:
+        epoch = pd.to_datetime(date).timestamp()
+    elif isinstance(date, pd.Timestamp | datetime):
+        if date.tzinfo is None:
+            epoch = date.replace(tzinfo=timezone.utc).timestamp()
+        else:
+            epoch = date.timestamp()
+    elif isinstance(date, int | float):
+        epoch = date
+    else:
+        raise Exception('Invalid Date')
+
+    if milliseconds:
+        epoch *= 1000
+
+    return int(epoch)
 
 
-def get_types(self, linq_query, start, ts_format):
-    type_map = self._make_type_map(ts_format)
-    stop = self._to_unix(start)
-    start = stop - 1
+def get_types(self, linq_query, start):
+    # Calculate stop time
+    stop = _to_unix(start)
+    start = stop - 100
 
-    response = self._query(
-        linq_query, start=start, stop=stop, mode="json/compact", limit=1
+    # Query the data
+    response = self.query(
+        query=linq_query,
+        dates={'from': timestamp_to_date(start), 'to': timestamp_to_date(stop)}
     )
 
     try:
         data = json.loads(response)
-        error_checking.check_status(data)
+        object_data = data.get("object", [])
     except ValueError:
         raise Exception("API V2 response error")
 
-    col_data = data["object"]["m"]
-    type_dict = {c: type_map[v["type"]] for c, v in col_data.items()}
+    type_dict = {}
+    for obj in object_data:
+        for key, value in obj.items():
+            type_dict[key] = type(value)
 
     return type_dict
 
@@ -202,20 +241,18 @@ def build_link(query, start_ts_milli, end_ts_milli, mode="queryApp", linq_base=N
 
 
 def check_configuration():
-    # Check all settings related if set
+    api = Client(auth={"token": READER_OAUTH_TOKEN},
+                 address=READER_ENDPOINT,
+                 config=ClientConfig(response="json", stream=False))
+
     # Basic functionality of integration
-    list(
-        ds.Reader(
-            oauth_token=READER_OAUTH_TOKEN,
-            end_point=READER_ENDPOINT,
-            verify=not ALLOW_INSECURE,
-        ).query(
-            HEALTHCHECK_QUERY,
-            start=int(time.time() - 1),
-            stop=int(time.time()),
-            output="dict",
-        )
-    )
+    demisto.debug("inside fetch from time : ", int(time.time() - 1))
+    response = api.query(query=HEALTHCHECK_QUERY,
+                         dates={'from': int(time.time() - 1), 'to': int(time.time())}
+                         )
+
+    demisto.debug("check_configuration output:")
+    demisto.debug((json.loads(response)).get("object", []))
 
     if WRITER_RELAY and WRITER_CREDENTIALS:
         creds = get_writer_creds()
@@ -358,17 +395,13 @@ def get_writer_creds():
 def parallel_query_helper(sub_query, append_list, timestamp_from, timestamp_to):
     append_list.extend(
         list(
-            ds.Reader(
-                oauth_token=READER_OAUTH_TOKEN,
-                end_point=READER_ENDPOINT,
-                verify=not ALLOW_INSECURE,
-            ).query(
-                sub_query,
-                start=float(timestamp_from),
-                stop=float(timestamp_to),
-                output="dict",
-                ts_format="iso",
-            )
+            json.loads(Client(auth={"token": READER_OAUTH_TOKEN},
+                              address=READER_ENDPOINT,
+                              config=ClientConfig(response="json", stream=False)
+                              ).query(query=sub_query,
+                                      dates={'from': timestamp_to_date(timestamp_from), 'to': timestamp_to_date(timestamp_to)}
+                                      )
+                       ).get("object", [])
         )
     )
 
@@ -377,14 +410,18 @@ def parallel_query_helper(sub_query, append_list, timestamp_from, timestamp_to):
 
 
 def fetch_incidents():
+    api = Client(auth={"token": READER_OAUTH_TOKEN},
+                 address=READER_ENDPOINT,
+                 config=ClientConfig(response="json", stream=False))
+
     demisto.debug(f"ts: {time.time()} | func: fetch_incidents | msg: begin fetch incidents")
     last_run = demisto.getLastRun()
-    demisto.debug(f"ts: {time.time()} | func: fetch_incidents | msg: last_run = {last_run}")
     user_prefix = f"{USER_PREFIX}_" if USER_PREFIX else ""
     user_alert_table = USER_ALERT_TABLE if USER_ALERT_TABLE else DEFAULT_ALERT_TABLE
     alert_query = ALERTS_QUERY.format(
         table_name=user_alert_table, user_prefix=user_prefix
     )
+
     to_time = time.time()
     from_time = 0.0
     alert_id = f"{user_prefix}alertId"
@@ -431,33 +468,30 @@ def fetch_incidents():
         from_time = to_time - float(FETCH_INCIDENTS_LOOKBACK_SECONDS)
         new_last_run["from_time"] = from_time
 
-    demisto.debug(f"ts: {time.time()} | func: fetch_incidents | msg: alerts_query = {alert_query}")
-    demisto.debug(f"ts: {time.time()} | func: fetch_incidents | msg: start = {from_time} , stop = {to_time}")
+    # execute the query and get the events
+    from_timestamp = timestamp_to_date(from_time)
+    to_timestamp = timestamp_to_date(to_time)
+
+    demisto.debug("inside fetch_incident method: ")
+    demisto.debug("from time :", from_time)
+    demisto.debug("to time : ", to_time)
 
     # execute the query and get the events
     # reverse the list so that the most recent event timestamp event is taken when de-duping if needed.
-    events = list(
-        ds.Reader(
-            oauth_token=READER_OAUTH_TOKEN,
-            end_point=READER_ENDPOINT,
-            verify=not ALLOW_INSECURE,
-            timeout=int(TIMEOUT),
-        ).query(
-            alert_query,
-            start=float(from_time),
-            stop=float(to_time),
-            output="dict",
-            ts_format="timestamp",
-        )
-    )
+    events = api.query(query=alert_query, dates={'from': from_timestamp, 'to': to_timestamp})
 
+    # Parse the JSON string
+    data_dict = json.loads(events)
+
+    # Access the "object" property
+    object_data = data_dict.get("object", [])
     extra_data = f"{user_prefix}extraData"
     event_date = "eventdate"
 
     # convert the events to demisto incident
     incidents = []
 
-    demisto.debug(f"ts: {time.time()} | func: fetch_incidents | msg: number of alerts returned {len(events)}")
+    demisto.debug(f"ts: {time.time()} | func: fetch_incidents | msg: number of alerts returned {len(object_data)}")
 
     # de duplicate events between two consecutive fetches
     if "last_fetch_events" in last_run:
@@ -467,15 +501,16 @@ def fetch_incidents():
             for key in record:
                 last_events_ids.append(key)
         demisto.debug(f"List of event ids fetched in last poll: {last_events_ids}")
-        for event in events:
+        for event in object_data:
             if event[alert_id] not in last_events_ids:
                 final_events.append(event)
     else:
-        final_events = events
+        final_events = object_data
 
     demisto.debug(f"ts: {time.time()} | func: fetch_incidents | msg: number of final_events {len(final_events)}")
 
     # Store in a list alert_id and timestamp of the alerts. [{alert_id:timestamp},{alert_id:timestamp}]
+    demisto.debug(final_events)
     for event in final_events:
         if not isinstance(event[extra_data], dict):
             event[extra_data] = json.loads(event[extra_data])
@@ -567,27 +602,39 @@ def run_query_command(offset, items):
     timestamp_from = demisto.args()["from"]
     timestamp_to = demisto.args().get("to", None)
     write_context = demisto.args()["writeToContext"].lower()
-    query_timeout = int(demisto.args().get("queryTimeout", TIMEOUT))
+    int(demisto.args().get("queryTimeout", TIMEOUT))
     linq_base = demisto.args().get("linqLinkBase", None)
     time_range = get_time_range(timestamp_from, timestamp_to)
     to_query = f"{to_query} offset {offset} limit {items}"
     filtered_columns = demisto.args().get("filtered_columns", None)
-    results = list(
-        ds.Reader(
-            oauth_token=READER_OAUTH_TOKEN,
-            end_point=READER_ENDPOINT,
-            verify=not ALLOW_INSECURE,
-            timeout=query_timeout,
-        ).query(
-            to_query,
-            start=float(time_range[0]),
-            stop=float(time_range[1]),
-            output="dict",
-            ts_format="iso",
-        )
-    )
+    results: Union[str, bytes] = ""
+
+    from_time = timestamp_to_date(time_range[0])
+    to_time = timestamp_to_date(time_range[1])
+
+    demisto.debug("inside run_query_command method: ")
+    demisto.debug("from time :", from_time)
+    demisto.debug("to time : ", to_time)
+
+    try:
+        api = Client(auth={"token": READER_OAUTH_TOKEN},
+                     address=READER_ENDPOINT,
+                     config=ClientConfig(response="json", stream=False))
+
+        results = api.query(query=to_query, dates={'from': from_time, 'to': to_time})
+    except Exception as e:
+        return_error(f"Failed to execute Devo query: {str(e)}")
+
+    # Parse the JSON string
+    data_dict = json.loads(results)
+
+    # Access the "object" property
+    object_data = data_dict.get("object", [])
+
+    demisto.debug("result in run-query function :")
+    demisto.debug(data_dict)
     global COUNT_SINGLE_TABLE
-    COUNT_SINGLE_TABLE = len(results)
+    COUNT_SINGLE_TABLE = len(object_data)
     querylink = {
         "DevoTableLink": build_link(
             to_query,
@@ -596,8 +643,7 @@ def run_query_command(offset, items):
             linq_base=linq_base,
         )
     }
-
-    results = filter_results_by_fields(results, filtered_columns)
+    results = filter_results_by_fields(object_data, filtered_columns)
 
     entry = {
         "Type": entryTypes["note"],
@@ -639,7 +685,7 @@ def get_alerts_command(offset, items):
     timestamp_to = demisto.args().get("to", None)
     alert_filters = demisto.args().get("filters", None)
     write_context = demisto.args()["writeToContext"].lower()
-    query_timeout = int(demisto.args().get("queryTimeout", TIMEOUT))
+    int(demisto.args().get("queryTimeout", TIMEOUT))
     linq_base = demisto.args().get("linqLinkBase", None)
     user_alert_table = demisto.args().get("table_name", None)
     user_prefix = demisto.args().get("prefix", "")
@@ -653,6 +699,8 @@ def get_alerts_command(offset, items):
 
     query = f"{alert_query} offset {offset} limit {items}"
     time_range = get_time_range(timestamp_from, timestamp_to)
+    from_time = timestamp_to_date(time_range[0])
+    to_time = timestamp_to_date(time_range[1])
 
     if alert_filters:
         alert_filters = check_type(alert_filters, dict)
@@ -672,23 +720,20 @@ def get_alerts_command(offset, items):
             )
         alert_query = f"{alert_query} where {filter_string}"
 
-    results = list(
-        ds.Reader(
-            oauth_token=READER_OAUTH_TOKEN,
-            end_point=READER_ENDPOINT,
-            verify=not ALLOW_INSECURE,
-            timeout=query_timeout,
-        ).query(
-            query,
-            start=float(time_range[0]),
-            stop=float(time_range[1]),
-            output="dict",
-            ts_format="iso",
-        )
-    )
+    api = Client(auth={"token": READER_OAUTH_TOKEN},
+                 address=READER_ENDPOINT,
+                 config=ClientConfig(response="json", stream=False))
+
+    results = api.query(query=query, dates={'from': from_time, 'to': to_time})
+
+    # Parse the JSON string
+    data_dict = json.loads(results)
+
+    # Access the "object" property
+    object_data = data_dict.get("object", [])
 
     global COUNT_ALERTS
-    COUNT_ALERTS = len(results)
+    COUNT_ALERTS = len(object_data)
 
     querylink = {
         "DevoTableLink": build_link(
@@ -701,18 +746,18 @@ def get_alerts_command(offset, items):
 
     extra_data = f"{user_prefix}extraData"
 
-    for res in results:
+    for res in object_data:
         if not isinstance(res[extra_data], dict):
             res[extra_data] = json.loads(res[extra_data])
 
         for ed in res[extra_data]:
             res[extra_data][ed] = urllib.parse.unquote_plus(res[extra_data][ed])
 
-    results = filter_results_by_fields(results, filtered_columns)
+    result = filter_results_by_fields(object_data, filtered_columns)
 
     entry = {
         "Type": entryTypes["note"],
-        "Contents": results,
+        "Contents": result,
         "ContentsFormat": formats["json"],
         "ReadableContentsFormat": formats["markdown"],
     }
@@ -723,15 +768,15 @@ def get_alerts_command(offset, items):
         "ReadableContentsFormat": formats["markdown"],
     }
 
-    if len(results) == 0:
+    if len(result) == 0:
         entry["HumanReadable"] = "No results found"
         entry["Devo.AlertsResults"] = None
         entry_linq["Devo.QueryLink"] = querylink
         return entry
 
-    headers = list(results[0].keys())
+    headers = list(result[0].keys())
 
-    md = tableToMarkdown("Devo query results", results, headers)
+    md = tableToMarkdown("Devo query results", result, headers)
     entry["HumanReadable"] = md
 
     md_linq = tableToMarkdown(
@@ -741,7 +786,7 @@ def get_alerts_command(offset, items):
     entry_linq["HumanReadable"] = md_linq
 
     if write_context == "true":
-        entry["EntryContext"] = {"Devo.AlertsResults": createContext(results)}
+        entry["EntryContext"] = {"Devo.AlertsResults": createContext(result)}
         entry_linq["EntryContext"] = {"Devo.QueryLink": createContext(querylink)}
 
     # raise Exception("on line 530")
@@ -754,7 +799,7 @@ def multi_table_query_command(offset, items):
     timestamp_from = demisto.args()["from"]
     timestamp_to = demisto.args().get("to", None)
     write_context = demisto.args()["writeToContext"].lower()
-    query_timeout = int(demisto.args().get("queryTimeout", TIMEOUT))
+    int(demisto.args().get("queryTimeout", TIMEOUT))
     filtered_columns = demisto.args().get("filtered_columns", None)
     global COUNT_MULTI_TABLE
     time_range = get_time_range(timestamp_from, timestamp_to)
@@ -763,16 +808,20 @@ def multi_table_query_command(offset, items):
     all_results: List[dict] = []
     sub_queries = []
 
-    ds_read = ds.Reader(
-        oauth_token=READER_OAUTH_TOKEN,
-        end_point=READER_ENDPOINT,
-        verify=not ALLOW_INSECURE,
-        timeout=query_timeout,
-    )
-    ds_read.get_types = partial(get_types, ds_read)
+    api = Client(auth={"token": READER_OAUTH_TOKEN},
+                 address=READER_ENDPOINT,
+                 config=ClientConfig(response="json", stream=False))
+
+    # ds_read = ds.Reader(
+    #     oauth_token=READER_OAUTH_TOKEN,
+    #     end_point=READER_ENDPOINT,
+    #     verify=not ALLOW_INSECURE,
+    #     timeout=query_timeout,
+    # )
+    api.get_types = partial(get_types, api)
 
     for table in tables_to_query:
-        fields = ds_read.get_types(f"from {table} select *", "now", "iso").keys()
+        fields = api.get_types(f"from {table} select *", "now").keys()
         clauses = [
             f'( isnotnull({field}) and str({field})->"' + search_token + '")'
             for field in fields
@@ -788,6 +837,8 @@ def multi_table_query_command(offset, items):
             + " limit "
             + str(items)
         )
+    # demisto.debug("fields from get_types")
+    # demisto.debug(fields)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         for q in sub_queries:
