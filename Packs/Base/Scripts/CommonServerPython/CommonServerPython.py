@@ -1939,7 +1939,7 @@ def argToList(arg, separator=',', transform=None):
 def remove_duplicates_from_list_arg(args, field):
     """
         Removes duplicates from a list after calling argToList.
-        For example: args: {'ids': "1,2,1"}, field='ids'
+        For example: args: `{'ids': "1,2,1"}`, field='ids'
         The return output will be ["1", "2"]
 
         :type args: ``dict``
@@ -9981,7 +9981,7 @@ class IndicatorsSearcher:
     :param limit: the current upper limit of the search (can be updated after init)
 
     :type sort: ``List[Dict]``
-    :param sort: An array of sort params ordered by importance. Item structure: {"field": string, "asc": boolean}
+    :param sort: An array of sort params ordered by importance. Item structure: `{"field": string, "asc": boolean}`
 
     :return: No data returned
     :rtype: ``None``
