@@ -190,7 +190,6 @@ repos:
     -  validate
     -  --skip-depth-one-file
     -  --skip-depth-one-folder
-    -  --skip-depth-zero-file
     -  --skip-integration-script-file-name
     -  --skip-integration-script-file-type
     -  --skip-markdown
