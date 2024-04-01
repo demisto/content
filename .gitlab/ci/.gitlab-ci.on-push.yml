@@ -387,6 +387,12 @@ xpanse-prepare-testing-bucket:
     - echo "Done sleeping!"
     - section_end "Wait Until Server Ready"
     - !reference [.run_tests]
+    - section_start "Get instance ssh-command"
+    - |
+      # Reading instance name from 'env_results.json'.
+      INSTANCE_NAME=$(jq -r '.[] | select(.Role == $INSTANCE_ROLE) | .InstanceName' ./artifacts/env_results.json)
+      echo -e "\e[1m gcloud compute ssh --zone \"us-central1-a\" \"$INSTANCE_NAME\"  --tunnel-through-iap --project "xsoar-content-build" $RESULT\e[0m"
+    - section_end "Get instance ssh-command
     - section_start "Cleanup env results from artifacts folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk
