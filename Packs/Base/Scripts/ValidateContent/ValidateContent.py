@@ -131,10 +131,13 @@ def run_validate(file_path: str, json_output_file: str) -> None:
 
 def run_lint(file_path: str, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
-    logging_setup(console_log_threshold=logging.DEBUG)
+    logging_setup(console_log_threshold=logging.DEBUG, skip_log_file_creation=True)
     lint_manager = LintManager(
-        input=str(file_path), git=False, all_packs=False,
-        prev_ver='origin/master', json_file_path=json_output_file
+        input=str(file_path),
+        git=False,
+        all_packs=False,
+        prev_ver='origin/master',
+        json_file_path=json_output_file
     )
     lint_manager.run(
         parallel=1, no_flake8=False, no_xsoar_linter=False, no_bandit=False, no_mypy=False,

@@ -210,7 +210,6 @@ class TestValidateContent:
         results = mocker.patch.object(demisto, 'results')
 
         with capfd.disabled():
-
             main()
 
         assert results.called
