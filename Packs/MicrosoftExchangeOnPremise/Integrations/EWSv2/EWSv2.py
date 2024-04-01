@@ -35,6 +35,7 @@ from exchangelib.version import VERSIONS as EXC_VERSIONS
 WINDOWS_LINE_ENDING = '\r\n'
 UNIX_LINE_ENDING = '\n'
 
+
 def convert_from_lf_to_crlf(content: str) -> str:
     """
     Convert the content from Linux/Unix/MacOS to Windows (LF ➡ CRLF)
@@ -48,6 +49,8 @@ def convert_from_lf_to_crlf(content: str) -> str:
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
 # overriding this function to remove minor version test and remove error throw.
 # opened bug for exchanglib here https://github.com/ecederstrand/exchangelib/issues/1210
+
+
 def our_fullname(self):  # pragma: no cover
     for build, api_version, full_name in EXC_VERSIONS:
         # removed 'or self.build.minor_version != build.minor_version'
