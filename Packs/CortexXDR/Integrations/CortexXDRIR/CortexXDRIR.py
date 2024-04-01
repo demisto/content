@@ -432,7 +432,7 @@ class Client(CoreClient):
 
     def update_alerts_in_xdr_request(self, alerts_ids, severity, status, comment) -> List[Any]:
         request_data = {"request_data": {
-            "alert_id_list": [alerts_ids],
+            "alert_id_list": f'[{alerts_ids}]',
         }}
         if severity or status or comment:
             request_data["update_data"] = {}
@@ -445,7 +445,7 @@ class Client(CoreClient):
 
         response = self._http_request(
             method='POST',
-            url_suffix='/incidents/get_multiple_incidents_extra_data/',
+            url_suffix='/public_api/v1/alerts/update_alerts',
             json_data=request_data,
             headers=self.headers,
             timeout=self.timeout,
@@ -950,7 +950,9 @@ def get_remote_data_command(client, args):
 
 def update_remote_system_command(client, args):
     remote_args = UpdateRemoteSystemArgs(args)
+    demisto.debug(f"{remote_args=}")
     incident_id = remote_args.remote_incident_id
+    demisto.debug(f"{incident_id}")
     demisto.debug(f"update_remote_system_command {incident_id=} {remote_args=}")
 
     if remote_args.delta:
@@ -961,10 +963,25 @@ def update_remote_system_command(client, args):
         if remote_args.incident_changed:
             demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
             update_args = get_update_args(remote_args)
-
+            demisto.debug(f"{update_args}")
             update_args['incident_id'] = remote_args.remote_incident_id
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
             update_incident_command(client, update_args)
+            
+            close_alerts_in_xdr = client._params.get("close_alerts_in_xdr", False)
+            status = update_args.get('status')
+            comment = args.get('add_comment')
+            if close_alerts_in_xdr and status:
+                severity = args.get('manual_severity')
+                incident_extra_data = client.get_incident_extra_data(incident_id)
+                if 'alerts' in incident_extra_data and 'data' in incident_extra_data['alerts']:
+                    alerts_array = incident_extra_data['alerts']['data']
+                    related_alerts_ids_array = []
+                    for alert in alerts_array:
+                        if '1' in alert:
+                            related_alerts_ids_array.append(alert['1'])
+                    related_alerts_ids_string = ','.join(related_alerts_ids_array)
+                    client.update_alerts_in_xdr_request(related_alerts_ids_string, severity, status, comment)
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
@@ -1195,6 +1212,7 @@ def main():  # pragma: no cover
     """
     command = demisto.command()
     params = demisto.params()
+    # print(params)
     LOG(f'Command being called is {command}')
 
     # using two different credentials object as they both fields need to be encrypted
