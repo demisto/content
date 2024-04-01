@@ -225,6 +225,9 @@ class PychromeEventHandler:
             except pychrome.exceptions.PyChromeException as pce:
                 demisto.info(f'Exception when Frame stopped loading: {frameId}, {pce}')
 
+    def page_frame_navigated(self, frame, type):
+        demisto.debug(f'PychromeEventHandler.page_frame_navigated, {frame=}, {type=}')
+
     def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # noqa: F841
         demisto.debug(f'PychromeEventHandler.network_data_received, {requestId=}')
         if requestId and not self.request_id:
@@ -436,6 +439,7 @@ def setup_tab_event(browser, tab):
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
     tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
+    tab.Page.frameNavigated = tab_event_handler.page_frame_navigated
 
     return tab_event_handler, tab_ready_event
 
@@ -513,6 +517,8 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
             screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True)['data']
         else:
             screenshot_data = tab.Page.captureScreenshot()['data']
+        navigation_history = tab.Page.getNavigationHistory()
+        demisto.debug(f'{navigation_history=}')
     except Exception as ex:
         demisto.info(f'Failed to capture screenshot due to {ex}')
         raise ex
