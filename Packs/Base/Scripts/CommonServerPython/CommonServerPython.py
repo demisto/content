@@ -11553,7 +11553,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         chunk_size,
         data_type="events",
         should_update_health_module=should_update_health_module,
-        add_proxy_to_request=add_proxy_to_request
+        add_proxy_to_request=add_proxy_to_request,
     )
 
 
