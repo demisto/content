@@ -394,7 +394,7 @@ def main() -> None:  # pragma: no cover
 
     # Log exceptions and return errors
     except Exception as e:
-        last_run = demisto.getLastRun()
+        last_run = new_last_run if new_last_run else demisto.getLastRun()
         last_run.pop('nextTrigger', None)
         demisto.setLastRun(last_run)
         demisto.debug(f'last run after removing nextTrigger {last_run}')
