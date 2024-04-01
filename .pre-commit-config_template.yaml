@@ -191,7 +191,6 @@ repos:
     -  --skip-depth-one-file
     -  --skip-depth-one-folder
     -  --skip-integration-script-file-name
-    -  --skip-integration-script-file-type
     -  --skip-markdown
     -  --skip-suffix
 
