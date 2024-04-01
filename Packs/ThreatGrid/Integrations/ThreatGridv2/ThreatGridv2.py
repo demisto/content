@@ -66,6 +66,7 @@ PREFIX_OUTPUTS: dict[str, Any] = {
 DEFAULT_MALICIOUS_THRESHOLD = 85
 DEFAULT_SUSPICIOUS_THRESHOLD = 50
 
+
 class Client(BaseClient):
     """API Client to communicate with ThreatGrid API."""
 
