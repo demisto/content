@@ -1333,7 +1333,7 @@ def check_authentication_parameters(client_id: str | None, client_secret: str | 
     if (not all([client_id and client_secret]) and not all([username and password])) or \
             any([client_id, client_secret]) and any([username, password]):
         raise DemistoException(AUTHENTICATION_PARAMS_ERROR)
-    return
+    return None
 
 
 ''' MAIN FUNCTION '''
