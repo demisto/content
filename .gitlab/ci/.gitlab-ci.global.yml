@@ -502,8 +502,7 @@
   extends:
     - .unittests-and-lint-settings
   variables:
-    # to limit the number of parallel jobs
-    TRAVIS: "true"
+    PRE_COMMIT_NO_CONCURRENCY: "true"
   script:
     - section_start "Revoking GCP Auth and Configure Docker"
     # we need to configure the docker with the registry in order to be able to pull the images
