@@ -443,7 +443,7 @@ def test_endpoint_command(mocker):
     assert len(outputs) == 1
 
 
-@pytest.mark.parametrize('client_id, client_secret, username, password',[
+@pytest.mark.parametrize('client_id, client_secret, username, password', [
     ("client_id", "client_secret", None, None),
     (None, None, "username", "password"),
 ])
@@ -508,7 +508,6 @@ def test_generate_token__basic_auth_no_token(mocker):
     assert client._http_request.call_args.kwargs.get('auth') == ('username', 'password')
 
 
-
 @freeze_time("2024-04-01")
 def test_generate_basic_auth_token(mocker):
     """
@@ -521,9 +520,9 @@ def test_generate_basic_auth_token(mocker):
         - Ensure the http_request is called with the correct arguments
     """
     from jamfV2 import Client
-    mocker.patch.object(Client, '_http_request').return_value ={"token": "mocked token", "expires": "2022-12-31T23:59:59Z"}
+    mocker.patch.object(Client, '_http_request').return_value = {"token": "mocked token", "expires": "2022-12-31T23:59:59Z"}
     client = Client(base_url="https://example.com", verify=False, proxy=False, username="username", password="password")
-    
+
     assert client.generate_basic_auth_token() == ('mocked token', 1672531199)
     assert client._http_request.call_args.kwargs == {'method': 'POST', 'url_suffix': 'api/v1/auth/token', 'resp_type': 'json', 'auth': ('username', 'password')}    # noqa
 
@@ -540,15 +539,16 @@ def test_generate_client_credentials_token(mocker):
         - Ensure the http_request is called with the correct arguments
     """
     from jamfV2 import Client
-    mocker.patch.object(Client, '_http_request').return_value ={"access_token": "mocked token",
-                                                                "expires_in": 1119}
+    mocker.patch.object(Client, '_http_request').return_value = {"access_token": "mocked token",
+                                                                 "expires_in": 1119}
     client = Client(base_url="https://example.com",
                     verify=False, proxy=False, client_id="client_id", client_secret="client_secret")
     assert client.generate_client_credentials_token() == ('mocked token', 1711930719.0)
-    assert client._http_request.call_args.kwargs["url_suffix"] == "api/v1/oauth/token"
+    assert client._http_request.call_args.kwargs["url_suffix"] == "/api/v1/oauth/token"
     assert client._http_request.call_args.kwargs["data"] == {'client_id': 'client_id', 'grant_type': 'client_credentials', 'client_secret': 'client_secret'}    # noqa
     assert client._http_request.call_args.kwargs["headers"] == {'Content-Type': 'application/x-www-form-urlencoded'}
-    
+
+
 def test_generate_token(mocker):
     """
     Given:
@@ -559,14 +559,11 @@ def test_generate_token(mocker):
         - Ensure the function calls the correct token generation function based on the provided parameters
     """
     from jamfV2 import Client
-    client_credentials_token= mocker.patch.object(Client, 'generate_client_credentials_token')
-    basic_auth_token =mocker.patch.object(Client, 'generate_basic_auth_token')
-    
+    client_credentials_token = mocker.patch.object(Client, 'generate_client_credentials_token')
+    basic_auth_token = mocker.patch.object(Client, 'generate_basic_auth_token')
+
     Client(base_url="https://example.com", verify=False, proxy=False, client_id="client_id", client_secret="client_secret")
     assert client_credentials_token.call_count == 1
-    
+
     Client(base_url="https://example.com", verify=False, proxy=False, username="username", password="password")
     assert basic_auth_token.call_count == 1
-    
-
-    

@@ -5,7 +5,7 @@ from CommonServerUserPython import *  # noqa
 import dateparser
 import requests
 import traceback
-from typing import Any, Tuple
+from typing import Any
 from bs4 import BeautifulSoup
 import urllib3
 
@@ -32,8 +32,8 @@ AUTHENTICATION_PARAMS_ERROR = 'Please provide either client_id and client_secret
 
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, username: str = "", password: str = "", proxy: bool = False,
-                token: str | None = None,client_id: str | None = None,
-                client_secret: str | None = None, auth: str | None | tuple[str,str]= None):
+                 token: str | None = None, client_id: str | None = None,
+                 client_secret: str | None = None, auth: str | None | tuple[str, str] = None):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.username = username
         self.password = password
@@ -44,19 +44,18 @@ class Client(BaseClient):
 
         # Basic authentication is deprecated in classical API versions 10.35 and above,
         # therefore, serving only as a fallback if token generation fails.
-    
         try:
             self.token = self._get_token()
             self._headers = {
                 'Authorization': f'Bearer {self.token}'
             }
             add_sensitive_log_strs(self.token)
-            
+
         except Exception as e:
             demisto.info(str(e))
             demisto.info("Couldn't create token will proceed using basic auth")
             # if token is not available, use basic auth directly if username and password are provided
-            self.auth=(self.username, self.password) if self.username and self.password else None
+            self.auth = (self.username, self.password) if self.username and self.password else None
 
     def _get_token(self) -> str:
         """
@@ -86,10 +85,10 @@ class Client(BaseClient):
         """
         if self.username and self.password:  # basic auth is used to create a token
             token, expiration_time = self.generate_basic_auth_token()
-        
+
         elif self.client_id and self.client_secret:  # client id and client secret are used to create a token
             token, expiration_time = self.generate_client_credentials_token()
-        
+
         integration_context = get_integration_context()
         integration_context.update({'token': token})
         # subtract 60 seconds from the expiration time to make sure the token is still valid
@@ -98,32 +97,29 @@ class Client(BaseClient):
 
         return token
 
-
-    def generate_basic_auth_token(self)-> tuple[str, int]:
+    def generate_basic_auth_token(self) -> tuple[str, int]:
         """
         Generates a token using basic authentication.
         """
         resp = self._http_request(method='POST', url_suffix='api/v1/auth/token', resp_type='json',
-                                      auth=(self.username, self.password))
+                                  auth=(self.username, self.password))
         token = resp.get('token')
         expiration_time = int(dateparser.parse(resp.get('expires')).timestamp())
         return token, expiration_time
 
-
-    def generate_client_credentials_token(self)-> Tuple[str, int]:
+    def generate_client_credentials_token(self) -> tuple[str, int]:
         """
         Generates a token using client credentials.
         """
         resp = self._http_request(method='POST', url_suffix="/api/v1/oauth/token", data={
-                'client_id': self.client_id,
-                'grant_type': 'client_credentials',
-                'client_secret': self.client_secret},
-                headers={"Content-Type": "application/x-www-form-urlencoded"}, resp_type='json')
+            'client_id': self.client_id,
+            'grant_type': 'client_credentials',
+            'client_secret': self.client_secret},
+            headers={"Content-Type": "application/x-www-form-urlencoded"}, resp_type='json')
         token = resp.get('access_token')
         now_timestamp = arg_to_datetime('now').timestamp()
         expiration_time = now_timestamp + resp.get('expires_in')
         return token, expiration_time
-    
 
     def _classic_api_post(self, url_suffix, data, error_handler):
         post_headers = ((self._headers or {}) | POST_HEADERS)  # merge the token and the POST headers
