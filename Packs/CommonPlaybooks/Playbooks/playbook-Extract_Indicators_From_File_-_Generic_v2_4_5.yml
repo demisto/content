@@ -1937,15 +1937,6 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: docx
-                    ignorecase: true
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: inputs.File.Extension
-                      iscontext: true
-                    right:
-                      value:
                         simple: pptx
                     ignorecase: true
                 - - operator: containsGeneral
@@ -1974,15 +1965,6 @@ tasks:
                     right:
                       value:
                         simple: Microsoft Excel 2007+
-                    ignorecase: true
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: inputs.File.Type
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Microsoft Word 2007+
                     ignorecase: true
                 accessor: EntryID
                 transformers:
@@ -2042,15 +2024,6 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: docx
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: inputs.File.Extension
-                iscontext: true
-              right:
-                value:
                   simple: pptx
               ignorecase: true
           - - operator: containsGeneral
@@ -2070,15 +2043,6 @@ tasks:
               right:
                 value:
                   simple: Microsoft PowerPoint 2007+
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: inputs.File.Type
-                iscontext: true
-              right:
-                value:
-                  simple: Microsoft Word 2007+
               ignorecase: true
             - operator: isEqualString
               left:
