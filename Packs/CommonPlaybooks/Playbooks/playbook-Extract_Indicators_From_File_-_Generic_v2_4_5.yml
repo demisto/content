@@ -1667,6 +1667,15 @@ tasks:
                 value:
                   simple: Zip archive data
               ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: Microsoft Excel 2007+
+              ignorecase: true
           - - operator: isEqualString
               left:
                 value:
@@ -1731,6 +1740,15 @@ tasks:
                     right:
                       value:
                         simple: Zip archive data
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: inputs.File.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Excel 2007+
                     ignorecase: true
                 - - operator: isEqualString
                     left:
@@ -1901,7 +1919,7 @@ tasks:
     task:
       id: 608bdaf3-5ea5-4ea7-85bc-0343f8535b0d
       version: -1
-      name: Is there a DOCX/PPTX/XSLX file?
+      name: Is there a PPTX/XSLX file?
       description: Checks if there is a Word file (DOC, DOCX) in context.
       type: condition
       iscommand: false
