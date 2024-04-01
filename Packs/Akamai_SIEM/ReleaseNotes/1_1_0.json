@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Once updating to this version, the fetch alerts system won't be visible nor working on Xsiam. To add events as alerts, make sure to add correlation rules."
+}

@@ -416,12 +416,20 @@ def fetch_events_command(
                 config_id = event.get('attackData', {}).get('configId', "")
                 policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-
+        demisto.debug(f"Got {len(events)} events, and {offset=}")
         total_events_count += len(events)
         yield events, offset
 
 
 def decode_url(headers):
+    """Decoding the httpMessage parts of the response.
+
+    Args:
+        headers (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     decoded_lines = urllib.parse.unquote(headers).split("\r\n")
     decoded_dict = {}
     for line in decoded_lines:
