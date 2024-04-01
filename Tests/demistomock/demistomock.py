@@ -974,7 +974,7 @@ def createIncidents(incidents, lastRun=None, userID=None):
       incidents (list): List of incident objects to create, with the following optional keys:
             - name (str)
             - type (str) - If not provided, an Unclassified incident will be created
-            - labels (list) - List of {"type": _, "value": _} objects
+            - labels (list) - List of `{"type": _, "value": _}` objects
             - rawJSON (str) - Will be omitted after the classification & mapping step
             - occurred (str)
             - details (str)
@@ -1310,7 +1310,7 @@ def _apiCall(name, params=None, data=None):
 
     Args:
         name: name of the api (currently only wfReportIncorrectVerdict is supported)
-        params: url query args to pass. Use a dictionary such as: `{"key":"value"}
+        params: url query args to pass. Use a dictionary such as: `{"key":"value"}`
         data: POST data as a string. Make sure to json.dumps.
         Note: if data is empty then a GET request is performed instead of a POST.
 
