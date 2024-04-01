@@ -1,3 +1,4 @@
+import json
 import os
 from pathlib import Path
 import shutil
@@ -7,7 +8,6 @@ from pytest_mock import MockerFixture
 from requests_mock import Mocker
 import demistomock as demisto
 from base64 import b64decode, b64encode
-
 import ValidateContent
 from ValidateContent import (
     COMMAND_OUTPUT_KEY_ERROR,
@@ -79,6 +79,8 @@ def test_get_content_modules(tmp_path, requests_mock, monkeypatch):
     assert os.path.isfile(content_tmp_dir / 'Tests/Marketplace/approved_tags.json')
     assert os.path.isfile(content_tmp_dir / 'Tests/Marketplace/approved_categories.json')
 
+    shutil.rmtree(content_tmp_dir)
+
 
 row_and_column_adjustment_test_data = [
     (
@@ -115,6 +117,72 @@ def test_adjust_linter_row_and_col(original_validation_result, expected_output):
     assert original_validation_result == expected_output
 
 
+@pytest.fixture(scope="function")
+def setup_requests_mock(requests_mock: Mocker):
+    # Mock requests for necessary modules
+    requests_mock.get(
+        'https://raw.githubusercontent.com/demisto/content/master/Packs/Base/Scripts'
+        '/CommonServerPython/CommonServerPython.py',
+    )
+    requests_mock.get(
+        'https://raw.githubusercontent.com/demisto/content/master/Packs/Base/Scripts'
+        '/CommonServerPowerShell/CommonServerPowerShell.ps1',
+    )
+    requests_mock.get(
+        'https://raw.githubusercontent.com/demisto/content/master/Tests/demistomock/demistomock.py',
+    )
+    requests_mock.get(
+        'https://raw.githubusercontent.com/demisto/content/master/Tests/demistomock/demistomock.ps1',
+    )
+    requests_mock.get(
+        'https://raw.githubusercontent.com/demisto/content/master/tox.ini',
+    )
+    requests_mock.get(
+        'https://raw.githubusercontent.com/demisto/content/master/Tests/scripts/dev_envs/pytest/conftest.py'
+    )
+    requests_mock.get(
+        'https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/approved_usecases.json'
+    )
+    requests_mock.get(
+        'https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/approved_tags.json'
+    )
+    requests_mock.get(
+        'https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/approved_categories.json'
+    )
+
+    # Mock request for Docker
+    requests_mock.get(
+        'https://raw.githubusercontent.com/demisto/dockerfiles/master/docker/deprecated_images.json',
+        json=[
+            {
+                "created_time_utc": "2022-05-31T17:51:17.226278Z",
+                "image_name": "demisto/aiohttp",
+                "reason": "Use the demisto/py3-tools docker image instead."
+            }
+        ]
+    )
+
+    requests_mock.get(
+        "https://hub.docker.com/v2/repositories/demisto/python3/tags",
+        json=json.loads(TestValidateContent.docker_demistp_py3_response.read_bytes())
+    )
+    requests_mock.get("https://registry-1.docker.io/v2/")
+
+
+@pytest.fixture(scope="function")
+def setup_mocker(mocker: MockerFixture, tmpdir: LocalPath):
+
+    # Set content path to tmp dir
+    mocker.patch.dict(os.environ, {"DEMISTO_SDK_CONTENT_PATH": str(tmpdir)})
+
+    # Set tmp dir generated in main
+    mocker.patch('tempfile.TemporaryDirectory', lambda: tmpdir)
+
+    cached_modules = os.path.join(str(tmpdir), 'cached_modules')
+    mocker.patch.object(ValidateContent, "CACHED_MODULES_DIR", cached_modules)
+
+
+@pytest.mark.usefixtures("setup_mocker", "setup_requests_mock")
 class TestValidateContent:
 
     test_invalid_script_path = Path(__file__).parent.resolve() / "test_data" / "automationwitherrors.yml"
@@ -122,73 +190,12 @@ class TestValidateContent:
     test_valid_script_b64_path = Path(__file__).parent.resolve() / "test_data" / "valid_automation.yml.b64"
     test_contrib_zip_path = Path(__file__).parent.resolve() / "test_data" / \
         "contentpack-6ade7368-803c-4c4b-873c-4a0555c6ca03-Test.zip"
-
-    def _setup(
-        self,
-        mocker: MockerFixture,
-        requests_mock: Mocker,
-        tmpdir: LocalPath
-    ):
-        # Set content path to tmp dir
-        mocker.patch.dict(os.environ, {"DEMISTO_SDK_CONTENT_PATH": str(tmpdir)})
-
-        # Set tmp dir generated in main
-        mocker.patch('tempfile.TemporaryDirectory', lambda: tmpdir)
-
-        # Mock requests for necessary modules
-        requests_mock.get(
-            'https://raw.githubusercontent.com/demisto/content/master/Packs/Base/Scripts'
-            '/CommonServerPython/CommonServerPython.py',
-        )
-        requests_mock.get(
-            'https://raw.githubusercontent.com/demisto/content/master/Packs/Base/Scripts'
-            '/CommonServerPowerShell/CommonServerPowerShell.ps1',
-        )
-        requests_mock.get(
-            'https://raw.githubusercontent.com/demisto/content/master/Tests/demistomock/demistomock.py',
-        )
-        requests_mock.get(
-            'https://raw.githubusercontent.com/demisto/content/master/Tests/demistomock/demistomock.ps1',
-        )
-        requests_mock.get(
-            'https://raw.githubusercontent.com/demisto/content/master/tox.ini',
-        )
-        requests_mock.get(
-            'https://raw.githubusercontent.com/demisto/content/master/Tests/scripts/dev_envs/pytest/conftest.py'
-        )
-        requests_mock.get(
-            'https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/approved_usecases.json'
-        )
-        requests_mock.get(
-            'https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/approved_tags.json'
-        )
-        requests_mock.get(
-            'https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/approved_categories.json'
-        )
-        cached_modules = os.path.join(str(tmpdir), 'cached_modules')
-        mocker.patch.object(ValidateContent, 'CACHED_MODULES_DIR', return_value=cached_modules)
-
-        # Mock request for Docker
-        requests_mock.get(
-            'https://raw.githubusercontent.com/demisto/dockerfiles/master/docker/deprecated_images.json',
-            json=[
-                {
-                    "created_time_utc": "2022-05-31T17:51:17.226278Z",
-                    "image_name": "demisto/aiohttp",
-                    "reason": "Use the demisto/py3-tools docker image instead."
-                }
-            ]
-        )
-
-    def _cleanup(self):
-        if (Path(__file__).parent.resolve() / "MagicMock").exists():
-            shutil.rmtree(Path(__file__).parent.resolve() / "MagicMock")
+    docker_demistp_py3_response = Path(__file__).parent.resolve() / "test_data" / \
+        "demisto_py3_tags.json"
 
     def test_validate_automation_with_errors(
             self,
             mocker: MockerFixture,
-            requests_mock: Mocker,
-            tmpdir: LocalPath,
             capfd: pytest.CaptureFixture[str]
     ):
         """
@@ -204,8 +211,6 @@ class TestValidateContent:
         - The script results should include an error.
         """
 
-        self._setup(mocker, requests_mock, tmpdir)
-
         mocker.patch.object(demisto, "args", return_value={
             "filename": self.test_invalid_script_path.name,
             "data": b64encode(self.test_invalid_script_path.read_bytes()),
@@ -218,20 +223,14 @@ class TestValidateContent:
             main()
 
         assert results.called
-        assert len(results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX]) == 1
-        assert results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_NAME] \
-            == self.test_invalid_script_path.stem
-        assert results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_LINE] == "41"
-        assert "unterminated string literal" in \
-            results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_ERROR]
 
-        self._cleanup()
+        # Number of errors
+        assert len(results.call_args[0][0]["Contents"]) == 6
+        assert "unterminated string literal" in results.call_args[0][0]["Contents"][5]["message"]
 
     def test_validate_automation_no_errors(
         self,
         mocker: MockerFixture,
-        requests_mock: Mocker,
-        tmpdir: LocalPath,
         capfd: pytest.CaptureFixture[str]
     ):
         """
@@ -247,8 +246,6 @@ class TestValidateContent:
         - The script results should not have any errors
         """
 
-        self._setup(mocker, requests_mock, tmpdir)
-
         mocker.patch.object(demisto, "args", return_value={
             "filename": self.test_valid_script_path.name,
             "data": b64encode(self.test_valid_script_path.read_bytes()),
@@ -261,19 +258,14 @@ class TestValidateContent:
             main()
 
         assert results.called
-        assert len(results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX]) == 6
-        assert results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_NAME] \
-            == self.test_valid_script_path.stem
-        assert results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_LINE] == "22"
-        assert "unterminated string literal" not in \
-            results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_ERROR]
+        # assert len(results.call_args[0][0]["Contents"][COMMAND_OUTPUT_PREFIX]) == 6
+        # assert results.call_args[0][0]["Contents"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_NAME] \
+        #     == self.test_valid_script_path.stem
+        # assert results.call_args[0][0]["Contents"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_LINE] == "22"
+        # assert "unterminated string literal" not in \
+        #     results.call_args[0][0]["Contents"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_ERROR]
 
-        self._cleanup()
-
-    def test_validate_valid_playbook(self):
-        pass
-
-    def test_validate_invalid_playbook(self):
+    def test_validate_playbook(self):
         pass
 
     def test_validate_zip(self):

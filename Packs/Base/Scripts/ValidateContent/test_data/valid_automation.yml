@@ -1,6 +1,6 @@
 commonfields:
-  id: c2315777-c63f-44ac-82f6-9b5395dd96d7
-  version: 5
+  id: valid_automation
+  version: -1
 name: valid_automation
 script: |+
   """This is a valid_automation
@@ -65,3 +65,5 @@ pswd: ""
 runas: DBotWeakRole
 engineinfo: {}
 mainengineinfo: {}
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.14.91134

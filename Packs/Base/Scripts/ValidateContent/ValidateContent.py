@@ -15,14 +15,13 @@ import logging
 
 import git
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType
-from demisto_sdk.commands.common.content import Content
 from demisto_sdk.commands.common.logger import logging_setup
 from demisto_sdk.commands.common.tools import find_type
+from demisto_sdk.commands.common.handlers import YAML_Handler
 from demisto_sdk.commands.init.contribution_converter import (ContributionConverter)
 from demisto_sdk.commands.lint.lint_manager import LintManager
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.validate.old_validate_manager import OldValidateManager as ValidateManager
-from ruamel.yaml import YAML
 
 
 COMMAND_OUTPUT_PREFIX = "ValidationResult"
@@ -30,7 +29,7 @@ COMMAND_OUTPUT_KEY_NAME = "Name"
 COMMAND_OUTPUT_KEY_LINE = "Line"
 COMMAND_OUTPUT_KEY_ERROR = "Error"
 CACHED_MODULES_DIR = '/tmp/cached_modules'
-yaml = YAML()
+yaml = YAML_Handler()
 
 
 def get_extracted_code_filepath(extractor: YmlSplitter) -> str:
@@ -94,6 +93,31 @@ def adjust_linter_row_and_col(
                       f'\n{e}')
 
 
+def get_files_to_validate(file_path: str) -> str:
+    """
+    Returns the files to validate.
+
+    Args:
+    - `file_path` (``str``): The input path. If the path is a directory,
+    we get all files within that directory.
+
+    Returns:
+    - `str` of the file(s) to validate/lint. If it's multiple files,
+    it will return a comma-separated list of them.
+    """
+
+    if not Path(file_path).is_dir():
+        return file_path
+
+    # Get all files in the directory
+    files = [str(file) for file in Path(file_path).iterdir() if file.is_file()]
+
+    # Join the files into a comma-separated string
+    files_csv = ','.join(files)
+
+    return files_csv
+
+
 def run_validate(file_path: str, json_output_file: str) -> None:
     os.environ['DEMISTO_SDK_SKIP_VERSION_CHECK'] = '1'
     tests_dir = 'Tests'
@@ -101,6 +125,8 @@ def run_validate(file_path: str, json_output_file: str) -> None:
         os.makedirs(tests_dir)
     with open(f'{tests_dir}/id_set.json', 'w') as f:
         json.dump({}, f)
+
+    files_to_validate = get_files_to_validate(file_path)
 
     # FIXME use the new validation manager
     v_manager = ValidateManager(
@@ -111,7 +137,7 @@ def run_validate(file_path: str, json_output_file: str) -> None:
         print_ignored_files=False,
         skip_conf_json=True,
         validate_id_set=False,
-        file_path=str(file_path),
+        file_path=files_to_validate,
         validate_all=False,
         is_external_repo=False,
         skip_pack_rn_validation=False,
@@ -132,6 +158,7 @@ def run_validate(file_path: str, json_output_file: str) -> None:
 def run_lint(file_path: str, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
     logging_setup(console_log_threshold=logging.DEBUG, skip_log_file_creation=True)
+
     lint_manager = LintManager(
         input=str(file_path),
         git=False,
@@ -155,6 +182,7 @@ def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_director
 
     pack_name = get_pack_name(zip_path)
     contrib_converter = ContributionConverter(name=pack_name, contribution=zip_path, base_dir=tmp_directory)
+    # FIXME convert_contribution_to_pack doesn't return anything
     code_fp_to_row_offset = contrib_converter.convert_contribution_to_pack()
     # Call the standalone function and get the raw response
     os.remove(zip_path)
@@ -167,45 +195,34 @@ def prepare_single_content_item_for_validation(
     tmp_directory: str
 ) -> tuple[str, dict]:
 
-    content = Content(tmp_directory)
-    pack_name = 'TmpPack'
-    pack_dir = content.path / 'Packs' / pack_name
-    # create pack_metadata.json file in TmpPack
-    contrib_converter = ContributionConverter(name=pack_name, contribution=filename,
-                                              base_dir=tmp_directory, pack_dir_name=pack_name)
-    contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
-    prefix = '-'.join(filename.split('-')[:-1])
-    is_json = filename.casefold().endswith('.json')
-    data_as_string = data.decode()
-    loaded_data = json.loads(data_as_string) if is_json else yaml.load(data_as_string)
-    file_type = find_type(filename, _dict=loaded_data)
-    if file_type == FileType.SCRIPT.value:
-        containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Scripts')
+    tmp_path_file_to_validate = Path(tmp_directory, filename)
+    tmp_path_file_to_validate.touch()
+    tmp_path_file_to_validate.write_bytes(data)
+
+    file_type = find_type(path=str(tmp_path_file_to_validate))
+
+    # If the content item is a JSON
+    # or a Playbook, we return the path as is
+    if tmp_path_file_to_validate.suffix == ".json" or file_type in (FileType.PLAYBOOK.value, FileType.TEST_PLAYBOOK.value):
+        return str(tmp_path_file_to_validate), {}
     else:
-        containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Integrations')
-    containing_dir.mkdir(exist_ok=True)
-    if is_json:
-        data_as_string = json.dumps(loaded_data)
-    else:
-        buff = io.StringIO()
-        yaml.dump(loaded_data, buff)
-        data_as_string = buff.getvalue()
-    # write content item file to file system
-    file_path = containing_dir / filename
-    file_path.write_text(data_as_string)
-    file_type = find_type(str(file_path))
-    file_type = file_type.value if file_type else file_type
-    if is_json or file_type in (FileType.PLAYBOOK.value, FileType.TEST_PLAYBOOK.value):
-        return str(file_path), {}
-    extractor = YmlSplitter(
-        input=str(file_path), file_type=file_type, output=containing_dir,
-        no_logging=True, no_pipenv=True, no_basic_fmt=True
-    )
-    # validate the resulting package files, ergo set path_to_validate to the package directory that results
-    # from extracting the unified yaml to a package format
-    extractor.extract_to_package_format()
-    code_fp_to_row_offset = {get_extracted_code_filepath(extractor): extractor.lines_inserted_at_code_start}
-    return extractor.get_output_path(), code_fp_to_row_offset
+        output_path = Path(tmp_directory, "Packs", "Base", ENTITY_TYPE_TO_DIR.get(file_type))
+        with Path(tmp_directory, "Packs", "Base", "pack_metadata.json").open("w") as md:
+            json.dump({'description': 'Temporary Pack', 'author': 'xsoar'}, md)
+        extractor = YmlSplitter(
+            input=str(tmp_path_file_to_validate),
+            output=output_path,
+            file_type=file_type,
+            no_logging=True,
+            no_pipenv=True,
+            no_basic_fmt=True
+        )
+        tmp_path_file_to_validate.unlink()
+        # validate the resulting package files, ergo set path_to_validate to the package directory that results
+        # from extracting the unified yaml to a package format
+        extractor.extract_to_package_format()
+        code_fp_to_row_offset = {get_extracted_code_filepath(extractor): extractor.lines_inserted_at_code_start}
+        return extractor.get_output_path(), code_fp_to_row_offset
 
 
 def validate_content(filename: str, data: bytes, tmp_directory: str) -> list:
