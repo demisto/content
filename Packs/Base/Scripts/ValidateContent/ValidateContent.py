@@ -175,11 +175,15 @@ def prepare_single_content_item_for_validation(
                                               base_dir=tmp_directory, pack_dir_name=pack_name)
     contrib_converter.create_metadata_file({'description': 'Temporary Pack', 'author': 'xsoar'})
     prefix = '-'.join(filename.split('-')[:-1])
-    containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Integrations')
-    containing_dir.mkdir(exist_ok=True)
     is_json = filename.casefold().endswith('.json')
     data_as_string = data.decode()
     loaded_data = json.loads(data_as_string) if is_json else yaml.load(data_as_string)
+    file_type = find_type(filename, _dict=loaded_data)
+    if file_type == FileType.SCRIPT.value:
+        containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Scripts')
+    else:
+        containing_dir = pack_dir / ENTITY_TYPE_TO_DIR.get(prefix, 'Integrations')
+    containing_dir.mkdir(exist_ok=True)
     if is_json:
         data_as_string = json.dumps(loaded_data)
     else:

@@ -226,8 +226,6 @@ class TestValidateContent:
 
         self._cleanup()
 
-    # FIXME this test currently fails because https://jira-dc.paloaltonetworks.com/browse/CIAC-10138
-    @pytest.mark.xfail
     def test_validate_automation_no_errors(
         self,
         mocker: MockerFixture,
