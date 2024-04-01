@@ -6,9 +6,8 @@ alter // Extractions & Initializations
     client_application = arrayindex(regextract(SourceApplicationAsString, "(?:\S+\s*\-\s*)?(\S+)"), 0),
     event_type_id = to_string(AuditTrailModificationType), 
     entity_type = arrayindex(regextract(Description, "\S+:\s*(.+?)\s+modified\."), 0),
-    group_name = arrayindex(regextract(value, "groupName\>([^\<]+)"), 0),
-    operation_type = arrayindex(regextract(value, "ChType\>([^\<]+)"), 0),
-    role_name = arrayindex(regextract(value, "roleName\>([^\<]+)"), 0),
+    group_name = Value -> AuditData.Ex.AuditDataMem.groupName,
+    role_name = Value -> AuditData.Ex.AuditDataMem.roleName,
     resource_type_id = to_string(Type)
 | alter resource_type = coalesce(entity_type, changed_property)
 | alter event_name = if( // Construct event name according to AuditTrailModificationType value & Description format 
@@ -45,7 +44,6 @@ alter // Extractions & Initializations
     xdm.event.id = to_string(Id), // The unique Id number.
     xdm.event.original_event_type = event_type_id, // The audit trail modification type
     xdm.event.type = event_name, // The constructed event name. 
-    xdm.event.operation_sub_type = operation_type, // Added, Removed etc. 
     xdm.observer.name = Machine, // The machine name.
     xdm.observer.type = coalesce(concat(client_application_type_id, " (", client_application, ")"), client_application_type_id),
     xdm.observer.unique_identifier = SourceApplicationGuid, // The Guid of the application entity that modified the audited entity. This can be Config Tool, Security Desk, the SDK, etc.
