@@ -8,14 +8,14 @@ commonfields:
 configuration:
 - name: base_url
   display: Base URL
-  additional_info: The API base URL.
+  additionalinfo: The API base URL.
   required: true
   type: 0
   section: Connect
   defaultvalue: www.example.com
 - name: credentials
   display: Username
-  additional_info: The login credentials.
+  additionalinfo: The login credentials.
   required: true
   type: 9
   section: Connect
