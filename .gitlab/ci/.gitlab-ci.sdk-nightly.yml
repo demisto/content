@@ -91,12 +91,6 @@ demisto-sdk-nightly:run-unittests-and-lint:
     - .run-unittests-and-lint
     - .sdk-nightly-schedule-rule
 
-demisto-sdk-nightly:run-pre-commit:
-  allow_failure: true
-  extends:
-    - .run-pre-commit
-    - .sdk-nightly-schedule-rule
-
 demisto-sdk-nightly:run-validations:
   extends:
     - .run-validations
@@ -263,7 +257,7 @@ demisto-sdk-nightly:test-upload-flow:
     - .default-job-settings
     - .sdk-nightly-schedule-rule
   variables:
-    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
+    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV,$GCS_MARKET_XSOAR_SAAS_BUCKET_DEV"
   needs: []
   stage: unittests-and-validations
   script:
