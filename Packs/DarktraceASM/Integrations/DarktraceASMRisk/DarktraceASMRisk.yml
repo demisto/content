@@ -16,6 +16,7 @@ detaileddescription: "### Community Contributed Integration\n#### Integration Au
   the connection to your Darktrace instance, you will provide:\n- Server URL of Darktrace
   ASM instance (ex: example-asm.darktrace.com) and any necessary proxy information\n-
   Darktrace ASM API token\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/darktrace-admin)"
+fromVersion: 6.6.0
 configuration:
 - display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
