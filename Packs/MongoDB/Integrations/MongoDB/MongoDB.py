@@ -76,7 +76,7 @@ class Client:
 
     @staticmethod
     def normalize_id(entry: dict):
-        """ Convert ObjectID to str in given dict
+        """ Convert ObjectID to  str in given dict
 
         Args:
             entry:
