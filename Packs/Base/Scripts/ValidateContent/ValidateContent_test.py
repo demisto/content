@@ -183,7 +183,8 @@ class TestValidateContent:
             self,
             mocker: MockerFixture,
             requests_mock: Mocker,
-            tmpdir: LocalPath
+            tmpdir: LocalPath,
+            capfd: pytest.CaptureFixture[str]
     ):
         """
         Test ValidateContent on a script with a SyntaxError.
@@ -207,7 +208,10 @@ class TestValidateContent:
         })
 
         results = mocker.patch.object(demisto, 'results')
-        main()
+
+        with capfd.disabled():
+
+            main()
 
         assert results.called
         assert len(results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX]) == 1
@@ -215,7 +219,7 @@ class TestValidateContent:
             == self.test_invalid_script_path.stem
         assert results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_LINE] == "41"
         assert "unterminated string literal" in \
-            results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_ERROR]
+        results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_ERROR]
 
     # FIXME this test currently fails because https://jira-dc.paloaltonetworks.com/browse/CIAC-10138
     @pytest.mark.xfail
@@ -223,7 +227,8 @@ class TestValidateContent:
         self,
         mocker: MockerFixture,
         requests_mock: Mocker,
-        tmpdir: LocalPath
+        tmpdir: LocalPath,
+        capfd: pytest.CaptureFixture[str]
     ):
         """
         Test ValidateContent on a valid script.
@@ -247,7 +252,9 @@ class TestValidateContent:
         })
 
         results = mocker.patch.object(demisto, 'results')
-        main()
+
+        with capfd.disabled():
+            main()
 
         assert results.called
         assert len(results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX]) == 1
@@ -273,11 +280,13 @@ class TestValidateContent:
         """
         Test ValidateContent on a valid contribution zip.
         """
+        pass
 
     def test_validate_zip_with_errors(self):
         """
         Test ValidateContent on a invalid contribution zip.
         """
+        pass
 
     def test_get_file_name_and_contents_filename_data(self):
         """
