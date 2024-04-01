@@ -85,7 +85,7 @@ def test_get_computers_by_id_command(mocker):
     - Get results on specific computer ID.
     """
     from jamfV2 import Client, get_computer_by_id_command
-    
+
     mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 1}
@@ -577,8 +577,9 @@ def test_generate_token(mocker):
         - Ensure the function calls the correct token generation function based on the provided parameters
     """
     from jamfV2 import Client
-    client_credentials_token = mocker.patch.object(Client, 'generate_client_credentials_token',return_value = ('mocked token', 1711930719.0))
-    basic_auth_token = mocker.patch.object(Client, 'generate_basic_auth_token',return_value = ('mocked token', 1672531199))
+    client_credentials_token = mocker.patch.object(
+        Client, 'generate_client_credentials_token', return_value=('mocked token', 1711930719.0))
+    basic_auth_token = mocker.patch.object(Client, 'generate_basic_auth_token', return_value=('mocked token', 1672531199))
 
     Client(base_url="https://example.com", verify=False, proxy=False, client_id="client_id", client_secret="client_secret")
     assert client_credentials_token.call_count == 1

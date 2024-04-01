@@ -88,6 +88,9 @@ class Client(BaseClient):
 
         elif self.client_id and self.client_secret:  # client id and client secret are used to create a token
             token, expiration_time = self.generate_client_credentials_token()
+        else:
+            raise ValueError(
+                "Invalid authentication configuration. Please provide either username and password or client id and client secret.")
 
         integration_context = get_integration_context()
         integration_context.update({'token': token})
