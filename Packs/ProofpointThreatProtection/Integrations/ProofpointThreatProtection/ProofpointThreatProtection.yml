@@ -77,6 +77,9 @@ script:
       name: comment
     description: Add/Delete entry from the Organizational Block List.
     name: proofpoint-tp-blocklist-add-or-delete-entry
+    outputs:
+    - contextPath: ProofpointThreatProtection.Blocklist
+      description: Standard HTTP response with status code 200.
   - arguments: []
     description: Get all entries in the Organizational Safe List.
     name: proofpoint-tp-safelist-get
@@ -118,6 +121,9 @@ script:
       name: comment
     description: Add To/Delete From the Organizational Safe List.
     name: proofpoint-tp-safelist-add-or-delete-entry
+    outputs:
+    - contextPath: ProofpointThreatProtection.Safelist
+      description: Standard HTTP response with status code 200.
   dockerimage: demisto/python3:3.10.14.91134
   runonce: false
   script: ''
