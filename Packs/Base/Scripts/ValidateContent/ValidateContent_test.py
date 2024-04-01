@@ -280,13 +280,11 @@ class TestValidateContent:
         """
         Test ValidateContent on a valid contribution zip.
         """
-        pass
 
     def test_validate_zip_with_errors(self):
         """
         Test ValidateContent on a invalid contribution zip.
         """
-        pass
 
     def test_get_file_name_and_contents_filename_data(self):
         """
