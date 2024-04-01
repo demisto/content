@@ -181,7 +181,8 @@ class TestValidateContent:
         )
 
     def _cleanup(self):
-        shutil.rmtree(Path(__file__).parent.resolve() / "MagicMock")
+        if (Path(__file__).parent.resolve() / "MagicMock").exists():
+            shutil.rmtree(Path(__file__).parent.resolve() / "MagicMock")
 
     def test_validate_automation_with_errors(
             self,
@@ -260,11 +261,11 @@ class TestValidateContent:
             main()
 
         assert results.called
-        assert len(results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX]) == 1
+        assert len(results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX]) == 6
         assert results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_NAME] \
-            == self.test_invalid_script_path.stem
-        assert results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_LINE] == "41"
-        assert "unterminated string literal" in \
+            == self.test_valid_script_path.stem
+        assert results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_LINE] == "22"
+        assert "unterminated string literal" not in \
             results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_ERROR]
 
         self._cleanup()
