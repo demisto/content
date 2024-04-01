@@ -37,7 +37,8 @@ else
   python3 ./Tests/Marketplace/search_and_uninstall_pack.py --cloud_machine "${CLOUD_CHOSEN_MACHINE_IDS}" \
     --cloud_servers_path "${CLOUD_SERVERS_PATH}" --cloud_servers_api_keys "cloud_api_keys.json" \
     --non-removable-packs "${NON_REMOVABLE_PACKS}" --one-by-one --build-number "${CI_PIPELINE_ID}" \
-    --modeling_rules_to_test_files "${ARTIFACTS_FOLDER_SERVER_TYPE}/modeling_rules_to_test.txt"
+    --modeling_rules_to_test_files "${ARTIFACTS_FOLDER_SERVER_TYPE}/modeling_rules_to_test.txt" \
+    --reset-core-pack-version "${RESET_CORE_PACK_VERSION}"
   exit_on_error $? "Failed to uninstall packs from cloud machines:${CLOUD_CHOSEN_MACHINE_IDS}"
 
   echo "Successfully finished uninstalling packs from cloud machines"

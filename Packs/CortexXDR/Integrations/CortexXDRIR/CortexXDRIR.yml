@@ -3535,7 +3535,7 @@ script:
     description: |- 
       Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored.Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB
     name: xdr-update-alert
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.10.14.91134
   isfetch: true
   isfetch:xpanse: false
   script: ''
