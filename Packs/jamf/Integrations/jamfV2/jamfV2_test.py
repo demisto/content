@@ -525,3 +525,27 @@ def test_generate_token__basic_auth(mocker):
     assert client._token == "mocked token"
     assert mock_set_integration_context.call_args_list[0][0][0] == {'token': 'mocked token', 'expires': 1711898550}
     assert not client._auth
+
+
+def test_generate_token__basic_auth_no_token(mocker):
+    """
+    Given:
+        - A Client instance with username and password and basic_auth_flag set to True
+    When:
+        - _generate_token is called but no token is generated
+    Then:
+        - Ensure the http_request will use the username and password for authentication (basic auth) since
+        their is no token, and the basic_auth_flag is set to True
+        
+    """
+
+    from jamfV2 import Client
+    mocker.patch.object(Client, '_http_request').return_value = {}
+    mocker.patch.object(Client, '_get_token', side_effect=DemistoException("Mocked exception"))
+    client = Client(base_url="https://example.com", verify=False, proxy=False, _token=None,
+                    username="username", password="password", basic_auth_flag=True)
+    mocker.patch('jamfV2.get_integration_context', return_value={})
+    mocker.patch('jamfV2.set_integration_context')
+    client._classic_api_post(url_suffix="test", data=None, error_handler=None)
+
+    assert client._http_request.call_args.kwargs.get('auth') == ('username', 'password')
