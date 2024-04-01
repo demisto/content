@@ -1,6 +1,5 @@
 from io import BytesIO
 from pathlib import Path
-import tempfile
 from zipfile import ZipFile
 import requests
 import typer
@@ -49,22 +48,22 @@ class GitHubClient:
     def base_url(self) -> str:
         return f"{REPOS_API_PREFIX}/{self.organization}/{self.repo}"
 
-    def _get_file_sha(self, path: Path) -> str:
+    def get_file(self, path: Path) -> dict:
         res = requests.get(
             url=f"https://raw.githubusercontent.com/{ORG_NAME}/{DOCS_REPO_NAME}/{self.branch_name}/{path!s}",
             headers=self.headers,
         )
         res.raise_for_status()
-        return res.json()["sha"]
+        return res.json()
 
-    def commit_file(self, path: Path, content: str, message: str):
+    def commit_file(self, path_in_repo: Path, content: str, commit_message: str):
         res = requests.put(
-            url=f"{self.base_url}/contents/{path!s}",
+            url=f"{self.base_url}/contents/{path_in_repo!s}",
             params={
-                "message": message,
+                "message": commit_message,
                 "content": content,
                 "branch": self.branch_name,
-                "sha": self._get_file_sha(path),
+                "sha": self.get_file(path_in_repo)["sha"],
             },
             headers=self.headers,
         )
@@ -151,6 +150,23 @@ class GitHubClient:
         return ZipFile(BytesIO(file.content))
 
 
+def compile_validate_docs(readme_markdown: str, checks_markdown: str) -> str:
+    document_header = "\n".join(
+        (
+            "---",
+            "id: demisto-sdk-validate",
+            "title: Demisto-SDK Validate checks",
+            "---",
+        )
+    )
+
+    return (
+        "\n\n".join((document_header, readme_markdown, checks_markdown))
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+    )  # required for docusaurus
+
+
 def main(
     github_token: str, branch_name: str, release_owner: str, is_draft: bool
 ) -> None:
@@ -164,18 +180,14 @@ def main(
     )
 
     try:
-        doc_artifact_zip = sdk_client.get_workflow_artifact_zip(
+        checks_markdown_artifact_zip = sdk_client.get_workflow_artifact_zip(
             artifact_name="validation_docs",
             workflow_id=sdk_client.get_most_recent_workflow_run_id(
                 workflow_name="CI - On Push"
             ),
         )
     except CannotFindArtifactError:
-        raise typer.Exit(1) # TODO log
-        
-    validate_docs_markdown = str(
-        doc_artifact_zip.read("validation_docs.md"), encoding="utf-8"
-    )
+        raise typer.Exit(0)  # TODO log
 
     # Commit to content-docs
     docs_client = GitHubClient(
@@ -187,12 +199,20 @@ def main(
     )
 
     docs_client.commit_file(
-        Path("docs/concepts/demisto-sdk-validate.md"),
-        content=validate_docs_markdown,
-        message=f"SDK v{branch_name} Validate docs",
+        path_in_repo=Path("docs/concepts/demisto-sdk-validate.md"),
+        content=compile_validate_docs(
+            readme_markdown=sdk_client.get_file(
+                Path("demisto_sdk/commands/validate/README.md")
+            )["content"],
+            checks_markdown=str(
+                checks_markdown_artifact_zip.read("validation_docs.md"),
+                encoding="utf-8",
+            ),
+        ),
+        commit_message=f"SDK v{branch_name} Validate docs",
     )
     docs_client.create_pr(
-        f"SDK Validate docs: {branch_name}",
+        title=f"SDK Validate docs: {branch_name}",
         body="Automated update of SDK validate docs",
         reviewer=release_owner,
     )
