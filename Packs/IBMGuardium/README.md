@@ -18,10 +18,10 @@ Password: \<password\> 
 
 |  Event Type   | Command   
 | :---          | :---        
-| `informational events` | store remote add daemon.info \<IP address>:\<port> <tcp\|udp>
-| `warning events` | store remote add daemon.warning \<IP address>:\<port> <tcp\|udp>
-| `error events` | store remote add daemon.err \<IP address>:\<port> <tcp\|udp>
-| `alert events` | store remote add daemon.alert \<IP address>:\<port> <tcp\|udp>
+| `informational events` | store remote add daemon.info \<IP address\>:\<port\> \<tcp\|udp\>
+| `warning events` | store remote add daemon.warning \<IP address\>:\<port\> \<tcp\|udp\>
+| `error events` | store remote add daemon.err \<IP address\>:\<port\> \<tcp\|udp\>
+| `alert events` | store remote add daemon.alert \<IP address\>:\<port\> \<tcp\|udp\>
    
 
 > **IP address** - IP address of the event collector  
@@ -102,5 +102,8 @@ You can configure the specific vendor and product for this instance.
    | `Vendor`      | Enter **IBM**.
    | `Product`     | Enter **Guardium**.
 
+
+> [!NOTE]
+This content refers to IBM Guardium version 10.0
 
 </~XSIAM>
