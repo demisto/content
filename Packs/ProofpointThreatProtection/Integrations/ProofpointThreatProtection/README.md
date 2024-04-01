@@ -53,9 +53,9 @@ Add/Delete entry from the Organizational Block List
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Possible values are: add, delete. | Required | 
-| attribute | Possible values are: $from, $hfrom, $ip, $host, $helo, $rcpt. | Required | 
-| operator | Possible values are: equal, not_equal, contain, not_contain. | Required | 
+| action | add or delete. Possible values are: add, delete. | Required | 
+| attribute | Supported Attributes for the Organizational Block List. Possible values are: $from, $hfrom, $ip, $host, $helo, $rcpt. | Required | 
+| operator | Supported Operators for the Organizational Block List. Possible values are: equal, not_equal, contain, not_contain. | Required | 
 | value | Entry to be added to list. | Required | 
 | comment | A short comment about the entry (max 150 chars). "comment" is ignored for the "delete" action. | Optional | 
 
@@ -97,9 +97,9 @@ Add To/Delete From the Organizational Safe List
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Possible values are: add, delete. | Required | 
-| attribute | Possible values are: $from, $hfrom, $ip, $host, $helo, $rcpt. | Required | 
-| operator | Possible values are: equal, not_equal, contain, not_contain. | Required | 
+| action | add or delete. Possible values are: add, delete. | Required | 
+| attribute | Supported Attributes for the Organizational Safe List. Possible values are: $from, $hfrom, $ip, $host, $helo, $rcpt. | Required | 
+| operator | Supported Operators for the Organizational Safe List. Possible values are: equal, not_equal, contain, not_contain. | Required | 
 | value | Entry to be added to list. | Required | 
 | comment | A short comment about the entry (max 150 chars). "comment" is optional for "add" action and ignored for the "delete" action. | Optional | 
 
