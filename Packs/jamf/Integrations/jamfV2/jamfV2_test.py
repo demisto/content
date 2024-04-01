@@ -40,6 +40,7 @@ def test_get_computers_command(mocker):
     """
     from jamfV2 import Client, get_computers_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {}
     mock_response = util_load_json('test_data/get_computer/get_computer_raw_response.json')
@@ -62,6 +63,7 @@ def test_get_computers_limit_command(mocker):
     """
     from jamfV2 import Client, get_computers_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'limit': 10, 'page': 2}
     mock_response = util_load_json('test_data/get_computer/get_computer_raw_response.json')
@@ -83,7 +85,8 @@ def test_get_computers_by_id_command(mocker):
     - Get results on specific computer ID.
     """
     from jamfV2 import Client, get_computer_by_id_command
-
+    
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 1}
     mock_response = util_load_json('test_data/get_computer/get_computer_by_id_raw_response.json')
@@ -106,6 +109,7 @@ def test_get_computers_by_match_command(mocker):
     """
     from jamfV2 import Client, get_computers_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'match': '564D26*'}
     mock_response = util_load_json('test_data/get_computer/get_computer_by_match_raw_response.json')
@@ -128,6 +132,7 @@ def test_get_computer_general_subset_command(mocker):
     """
     from jamfV2 import Client, get_computer_subset_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'identifier': 'name', 'identifier_value': 'Computer 95'}
     mock_response_general_subset = util_load_json(
@@ -151,6 +156,7 @@ def test_computer_lock_command(mocker):
     """
     from jamfV2 import Client, computer_lock_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 138, 'passcode': 123456, 'lock_msg': 'Test'}
     mock_response = load_xml_response('test_data/computer_lock/computer_lock_raw_response.xml')
@@ -173,6 +179,7 @@ def test_computer_erase_command(mocker):
     """
     from jamfV2 import Client, computer_erase_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 138, 'passcode': 123456}
     mock_response = load_xml_response('test_data/computer_erase/computer_erase_raw_response.xml')
@@ -195,6 +202,7 @@ def test_get_users_command(mocker):
     """
     from jamfV2 import Client, get_users_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {}
     mock_response = util_load_json('test_data/get_users/get_users_raw_response.json')
@@ -217,6 +225,7 @@ def test_get_users_limit_command(mocker):
     """
     from jamfV2 import Client, get_users_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'limit': 10, 'page': 2}
     mock_response = util_load_json('test_data/get_users/get_users_raw_response.json')
@@ -239,6 +248,7 @@ def test_get_mobile_devices_command(mocker):
     """
     from jamfV2 import Client, get_mobile_devices_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {}
     mock_response = util_load_json('test_data/get_mobile_devices/get_mobile_devices_raw_response.json')
@@ -261,6 +271,7 @@ def test_get_mobile_devices_limit_command(mocker):
     """
     from jamfV2 import Client, get_mobile_devices_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'limit': 10, 'page': 1}
     mock_response = util_load_json('test_data/get_mobile_devices/get_mobile_devices_raw_response.json')
@@ -283,6 +294,7 @@ def test_get_mobile_devices_by_id_command(mocker):
     """
     from jamfV2 import Client, get_mobile_device_by_id_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 1}
     mock_response = util_load_json('test_data/get_mobile_devices/get_mobile_device_by_id_raw_response.json')
@@ -305,6 +317,7 @@ def test_get_mobile_devices_by_match_command(mocker):
     """
     from jamfV2 import Client, get_mobile_devices_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'match': 'ab12cdc060a311e490b812*'}
     mock_response = util_load_json('test_data/get_mobile_devices/get_mobile_device_by_match_raw_response.json')
@@ -327,6 +340,7 @@ def test_get_mobile_device_general_subset_command(mocker):
     """
     from jamfV2 import Client, get_mobile_device_subset_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'identifier': 'udid', 'identifier_value': 'ab12f4c660a311e490b812df261f2c7e'}
     mock_response = util_load_json(
@@ -351,6 +365,7 @@ def test_get_computers_by_app_command(mocker):
     """
     from jamfV2 import Client, get_computers_by_app_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'application': 'safar*'}
     mock_response = util_load_json('test_data/get_computer_by_app/get_computer_by_app_raw_response.json')
@@ -373,6 +388,7 @@ def test_mobile_device_lost_command(mocker):
     """
     from jamfV2 import Client, mobile_device_lost_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 114, 'lost_mode_message': 'test'}
     mock_response = load_xml_response('test_data/mobile_device_lost/mobile_device_lost_raw_response.xml')
@@ -395,6 +411,7 @@ def test_mobile_device_erase_command(mocker):
     """
     from jamfV2 import Client, mobile_device_erase_command
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 114}
     mock_response = load_xml_response('test_data/mobile_device_erase/mobile_device_erase_raw_response.xml')
@@ -419,6 +436,7 @@ def test_endpoint_command(mocker):
     from jamfV2 import endpoint_command, Client
     from CommonServerPython import Common
 
+    mocker.patch.object(Client, '_get_token')
     client = Client(base_url='https://paloaltonfr3.jamfcloud.com', verify=False)
     args = {'id': 'id', 'hostname': 'hostname'}
     endpoint_response = util_load_json(
@@ -559,8 +577,8 @@ def test_generate_token(mocker):
         - Ensure the function calls the correct token generation function based on the provided parameters
     """
     from jamfV2 import Client
-    client_credentials_token = mocker.patch.object(Client, 'generate_client_credentials_token')
-    basic_auth_token = mocker.patch.object(Client, 'generate_basic_auth_token')
+    client_credentials_token = mocker.patch.object(Client, 'generate_client_credentials_token',return_value = ('mocked token', 1711930719.0))
+    basic_auth_token = mocker.patch.object(Client, 'generate_basic_auth_token',return_value = ('mocked token', 1672531199))
 
     Client(base_url="https://example.com", verify=False, proxy=False, client_id="client_id", client_secret="client_secret")
     assert client_credentials_token.call_count == 1
