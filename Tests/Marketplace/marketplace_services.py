@@ -412,10 +412,8 @@ class Pack:
 
         update_metadata_fields = {}
         if self.is_metadata_updated:
-            pack_metadata = self.pack_metadata
-            for field in pack_metadata:
-                if field not in PACK_METADATA_REQUIRE_RN_FIELDS:
-                    update_metadata_fields[field] = pack_metadata.get(field)
+            update_metadata_fields = {f: self.pack_metadata.get(f) for f in self.pack_metadata
+                                      if f not in PACK_METADATA_REQUIRE_RN_FIELDS}
             logging.debug(
                 f"Updating metadata with statistics and metadata changes because {self._pack_name=} "
                 f"{self.is_modified=} {self.is_metadata_updated=}")
