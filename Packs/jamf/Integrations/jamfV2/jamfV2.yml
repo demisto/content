@@ -14,9 +14,9 @@ configuration:
   type: 9
 - display: Client ID
   name: client_credentials
-  displaypassword: Client Secret
-  required: false
   type: 9
+  required: false
+  displaypassword: Client Secret
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -1136,7 +1136,6 @@ script:
       required: true
     description: Deprecated. Sends the “EraseDevice'' command to a computer. Permanently erases all the data on the computer and sets a passcode when required by the computer hardware type.
     name: jamf-computer-erase
-    deprecated: true
     outputs:
     - contextPath: JAMF.ComputerCommand.name
       description: The command name.
@@ -1147,6 +1146,7 @@ script:
     - contextPath: JAMF.ComputerCommand.computer_id
       description: The computer ID.
       type: String
+    deprecated: true
   - arguments:
     - defaultValue: '50'
       description: Maximum number of users to retrieve. The maximal value is 200.
@@ -1713,7 +1713,7 @@ script:
       description: The mobile device site name.
       type: String
   - arguments:
-    - description: 'The specific characteristics by which to match devices such as: name, udid, serial_number, mac_address, username, email. e.g: “match=john*”, “match=C52F72FACB9T”. (Supports wildcards)'
+    - description: 'The specific characteristics by which to match devices such as: name, udid, serial_number, mac_address, username, email. e.g: “match=john*”, “match=C52F72FACB9T”. (Supports wildcards).'
       name: match
       predefined:
       - ''
@@ -2520,7 +2520,7 @@ script:
       description: The mobile device command ID.
       type: String
   - arguments:
-    - description: The device’s ID
+    - description: The device’s ID.
       name: id
       required: true
     - auto: PREDEFINED

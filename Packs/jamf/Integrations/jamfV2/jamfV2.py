@@ -1326,13 +1326,14 @@ def endpoint_command(client, args):
 
 
 def check_authentication_parameters(client_id: str | None, client_secret: str | None,
-                                    username: str | None, password: str | None) -> DemistoException:
+                                    username: str | None, password: str | None) -> DemistoException | None:
     """
     Validate that the authentication parameters are correctly provided
     """
     if (not all([client_id and client_secret]) and not all([username and password])) or \
             any([client_id, client_secret]) and any([username, password]):
         raise DemistoException(AUTHENTICATION_PARAMS_ERROR)
+    return
 
 
 ''' MAIN FUNCTION '''
