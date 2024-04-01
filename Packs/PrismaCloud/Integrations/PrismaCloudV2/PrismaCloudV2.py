@@ -103,6 +103,7 @@ class Client(BaseClient):
         self.close_incident = close_incident
         self.close_alert = close_alert
         self.retries = 0 if is_test_module else 2
+        self.timeout = 30.0 if is_test_module else self.timeout
         self.generate_auth_token(username, password)
 
     def generate_auth_token(self, username: str, password: str) -> None:
@@ -113,7 +114,7 @@ class Client(BaseClient):
         data = {'username': username, 'password': password}
         demisto.debug("Sending request to get the auth token")
 
-        response = self._http_request('POST', 'login', json_data=data, retries=self.retries)
+        response = self._http_request('POST', 'login', json_data=data, retries=self.retries, timeout=10)
         try:
             token = response.get('token')
             if not token:
