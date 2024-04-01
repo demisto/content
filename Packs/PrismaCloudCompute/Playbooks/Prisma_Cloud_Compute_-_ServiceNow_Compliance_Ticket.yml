@@ -656,7 +656,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -710,7 +710,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
