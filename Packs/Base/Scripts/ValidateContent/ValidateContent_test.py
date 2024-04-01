@@ -180,7 +180,7 @@ class TestValidateContent:
             ]
         )
 
-    def _cleanup():
+    def _cleanup(self):
         shutil.rmtree(Path(__file__).parent.resolve() / "MagicMock")
 
     def test_validate_automation_with_errors(
@@ -223,7 +223,7 @@ class TestValidateContent:
         assert results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_LINE] == "41"
         assert "unterminated string literal" in \
             results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_ERROR]
-        
+
         self._cleanup()
 
     # FIXME this test currently fails because https://jira-dc.paloaltonetworks.com/browse/CIAC-10138
@@ -270,12 +270,6 @@ class TestValidateContent:
             results.call_args[0][0]["EntryContext"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_ERROR]
 
         self._cleanup()
-
-    def test_validate_valid_script(self):
-        pass
-
-    def test_validate_invalid_script(self):
-        pass
 
     def test_validate_valid_playbook(self):
         pass
