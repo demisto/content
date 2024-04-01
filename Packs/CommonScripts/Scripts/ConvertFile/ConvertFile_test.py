@@ -85,6 +85,7 @@ def test_convert_pdf_to_html(mocker):
     zombies, output = find_zombie_processes()
     assert not zombies
 
+
 def test_convert_failure(mocker):
     # test with BAD format to see that we fail
     file = 'MS-DOCX-190319.docx'  # disable-secrets-detection
@@ -100,4 +101,3 @@ def test_convert_failure(mocker):
     err_msg = return_error_mock.call_args[0][0]
     assert 'BAD' in err_msg
     assert 'Error: no export filter' in err_msg
-
