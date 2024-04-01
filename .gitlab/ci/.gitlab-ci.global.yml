@@ -270,6 +270,10 @@
       export XSIAM_TOKEN=$(jq -r ".[\"${CLOUD_CHOSEN_MACHINE_ID}\"]" < "cloud_api_tokens.json")
       break
     done
+  
+.override_os_cpucount: &override_os_cpucount
+  - section_start "Override OS CPU count" --collapsed
+  - export export PYTHONSTARTUP=.gitlab/ci/override_os.py
 
 .default-before-script:
   before_script:
@@ -289,7 +293,7 @@
     - *build_parameters
     - *gitlab_ci_build_parameters
     - *checkout-upload-commit-content-nightly
-
+    - *override_os_cpucount
 .default-after-script:
   - source .gitlab/helper_functions.sh
   - *setup-network-certs
@@ -501,8 +505,6 @@
 .run-pre-commit:
   extends:
     - .unittests-and-lint-settings
-  variables:
-    PRE_COMMIT_NO_CONCURRENCY: "true"
   script:
     - section_start "Revoking GCP Auth and Configure Docker"
     # we need to configure the docker with the registry in order to be able to pull the images
