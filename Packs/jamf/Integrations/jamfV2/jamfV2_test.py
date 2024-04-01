@@ -443,88 +443,45 @@ def test_endpoint_command(mocker):
     assert len(outputs) == 1
 
 
-@pytest.mark.parametrize('client_id, client_secret, username, password, should_raise', [
-    ("client_id", "client_secret", None, None, False),
-    (None, None, "username", "password", False),
-    ("client_id", "client_secret", "username", "password", True),
-    (None, None, None, None, True),
-    ("client_id", None, "username", None, True),
-    (None, "client_secret", None, "password", True),
+@pytest.mark.parametrize('client_id, client_secret, username, password',[
+    ("client_id", "client_secret", None, None),
+    (None, None, "username", "password"),
 ])
-def test_check_authentication_parameters(client_id, client_secret, username, password, should_raise):
+def test_check_authentication_parameters__no_exception(client_id, client_secret, username, password):
     """
     Given:
-        - client_id, client_secret, username, password and should_raise
-        case 1: client_id and client_secret are provided, but username, password are not - should not raise an exception
-        case 2: client_id, client_secret are not provided, but username, password are provided - should not raise an exception
-        case 3: None of the parameters are provided - should raise an exception
-        case 4: client_id and username are provided, but client_secret, password are not - should raise an exception
-        case 5: client_secret and password are provided, but client_id, username are not - should raise an exception
+        - client_id, client_secret, username, and password
+        case 1: client_id and client_secret are provided, but username, password are not
+        case 2: client_id, client_secret are not provided, but username, password are provided
+    When:
+        - check_authentication_parameters is called
+    Then:
+        - Ensure the function dose not raise an exception
+    """
+    check_authentication_parameters(client_id, client_secret, username, password)
+
+
+@pytest.mark.parametrize('client_id, client_secret, username, password', [
+    ("client_id", "client_secret", "username", "password"),
+    (None, None, None, None),
+    ("client_id", None, "username", None),
+    (None, "client_secret", None, "password"),
+])
+def test_check_authentication_parameters__raises_exception(client_id, client_secret, username, password):
+    """
+    Given:
+        - client_id, client_secret, username, and password
+        case 1: None of the parameters are provided
+        case 2: client_id and username are provided, but client_secret, password are not
+        case 3: client_secret and password are provided, but client_id, username are not
 
     When:
         - check_authentication_parameters is called
     Then:
-        - Ensure the function raises an exception if the right parameters are not provided
+        - Ensure the function raises an exception
     """
-    if should_raise:
-        with pytest.raises(DemistoException):
-            check_authentication_parameters(client_id, client_secret, username, password)
-    else:
+    with pytest.raises(DemistoException):
         check_authentication_parameters(client_id, client_secret, username, password)
-
-
-@freeze_time("2024-04-01")
-def test_generate_token__client_credentials(mocker):
-    """
-    Given:
-        - A Client instance with client credentials and basic_auth_flag set to False since client_id and client_secret are provided
-    When:
-        - _generate_token is called
-    Then:
-        - Ensure the response is parsed as it expected, and the token is updated with the new token
-        - Ensure the integration context is updated with the new token and expiration time
-        - Ensure the _auth attribute is set to None since basic_auth_flag is False
-    """
-
-    from jamfV2 import Client
-    mocker.patch.object(Client, '_http_request').return_value = {"access_token": "mocked token", "expires_in": 3600}
-    client = Client(base_url="https://example.com", verify=False, proxy=False, _token="token",
-                    client_id="client_id", client_secret="client_secrert", basic_auth_flag=False)
-
-    mocker.patch('jamfV2.get_integration_context', return_value={})
-    mock_set_integration_context = mocker.patch('jamfV2.set_integration_context')
-    client._generate_token()
-
-    assert client._token == "mocked token"
-    assert mock_set_integration_context.call_args_list[0][0][0] == {'token': 'mocked token', 'expires': 1711933140.0}
-    assert not client._auth
-
-
-@freeze_time("2024-04-01")
-def test_generate_token__basic_auth(mocker):
-    """
-    Given:
-        - A Client instance with username and password and basic_auth_flag set to True
-    When:
-        - _generate_token is called
-    Then:
-        - Ensure the response is parsed as it expected, and the token is updated with the new token
-        - Ensure the integration context is updated with the new token and expiration time
-        - Ensure the _auth attribute is set to None since we are using a token (based on basic_auth)
-    """
-
-    from jamfV2 import Client
-    mocker.patch.object(Client, '_http_request').return_value = {"token": "mocked token", "expires": '2024-03-31T15:23:30.164Z'}
-    client = Client(base_url="https://example.com", verify=False, proxy=False, _token="token",
-                    username="username", password="password", basic_auth_flag=True)
-
-    mocker.patch('jamfV2.get_integration_context', return_value={})
-    mock_set_integration_context = mocker.patch('jamfV2.set_integration_context')
-    client._generate_token()
-
-    assert client._token == "mocked token"
-    assert mock_set_integration_context.call_args_list[0][0][0] == {'token': 'mocked token', 'expires': 1711898550}
-    assert not client._auth
 
 
 def test_generate_token__basic_auth_no_token(mocker):
@@ -540,12 +497,76 @@ def test_generate_token__basic_auth_no_token(mocker):
     """
 
     from jamfV2 import Client
-    mocker.patch.object(Client, '_http_request').return_value = {}
+    mocker.patch.object(Client, '_http_request')
     mocker.patch.object(Client, '_get_token', side_effect=DemistoException("Mocked exception"))
-    client = Client(base_url="https://example.com", verify=False, proxy=False, _token=None,
-                    username="username", password="password", basic_auth_flag=True)
-    mocker.patch('jamfV2.get_integration_context', return_value={})
+    client = Client(base_url="https://example.com", verify=False, proxy=False, token=None,
+                    username="username", password="password")
+    mocker.patch('jamfV2.get_integration_context')
     mocker.patch('jamfV2.set_integration_context')
     client._classic_api_post(url_suffix="test", data=None, error_handler=None)
 
     assert client._http_request.call_args.kwargs.get('auth') == ('username', 'password')
+
+
+
+@freeze_time("2024-04-01")
+def test_generate_basic_auth_token(mocker):
+    """
+    Given:
+        - A Client instance with username and password
+    When:
+        - generate_basic_auth_token is called
+    Then:
+        - Ensure the function returns the token and expiration time correctly
+        - Ensure the http_request is called with the correct arguments
+    """
+    from jamfV2 import Client
+    mocker.patch.object(Client, '_http_request').return_value ={"token": "mocked token", "expires": "2022-12-31T23:59:59Z"}
+    client = Client(base_url="https://example.com", verify=False, proxy=False, username="username", password="password")
+    
+    assert client.generate_basic_auth_token() == ('mocked token', 1672531199)
+    assert client._http_request.call_args.kwargs == {'method': 'POST', 'url_suffix': 'api/v1/auth/token', 'resp_type': 'json', 'auth': ('username', 'password')}    # noqa
+
+
+@freeze_time("2024-04-01")
+def test_generate_client_credentials_token(mocker):
+    """
+    Given:
+        - A Client instance with client_id and client_secret
+    When:
+        - generate_client_credentials_token is called
+    Then:
+        - Ensure the function returns the token and expiration time correctly
+        - Ensure the http_request is called with the correct arguments
+    """
+    from jamfV2 import Client
+    mocker.patch.object(Client, '_http_request').return_value ={"access_token": "mocked token",
+                                                                "expires_in": 1119}
+    client = Client(base_url="https://example.com",
+                    verify=False, proxy=False, client_id="client_id", client_secret="client_secret")
+    assert client.generate_client_credentials_token() == ('mocked token', 1711930719.0)
+    assert client._http_request.call_args.kwargs["url_suffix"] == "api/v1/oauth/token"
+    assert client._http_request.call_args.kwargs["data"] == {'client_id': 'client_id', 'grant_type': 'client_credentials', 'client_secret': 'client_secret'}    # noqa
+    assert client._http_request.call_args.kwargs["headers"] == {'Content-Type': 'application/x-www-form-urlencoded'}
+    
+def test_generate_token(mocker):
+    """
+    Given:
+        - A Client instance with client_id and client_secret or username and password
+    When:
+        - generate_token is called
+    Then:
+        - Ensure the function calls the correct token generation function based on the provided parameters
+    """
+    from jamfV2 import Client
+    client_credentials_token= mocker.patch.object(Client, 'generate_client_credentials_token')
+    basic_auth_token =mocker.patch.object(Client, 'generate_basic_auth_token')
+    
+    Client(base_url="https://example.com", verify=False, proxy=False, client_id="client_id", client_secret="client_secret")
+    assert client_credentials_token.call_count == 1
+    
+    Client(base_url="https://example.com", verify=False, proxy=False, username="username", password="password")
+    assert basic_auth_token.call_count == 1
+    
+
+    
