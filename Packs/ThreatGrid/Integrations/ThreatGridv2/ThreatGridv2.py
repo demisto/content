@@ -63,6 +63,8 @@ PREFIX_OUTPUTS: dict[str, Any] = {
     "registry_key": "RegistryKey",
 }
 
+DEFAULT_MALICIOUS_THRESHOLD = 85
+DEFAULT_SUSPICIOUS_THRESHOLD = 50
 
 class Client(BaseClient):
     """API Client to communicate with ThreatGrid API."""
@@ -1039,9 +1041,9 @@ def get_dbotscore(
     """
     if api_score == 0:
         score = Common.DBotScore.NONE
-    elif api_score >= 85:
+    elif api_score >= DEFAULT_MALICIOUS_THRESHOLD:
         score = Common.DBotScore.BAD
-    elif api_score >= 50:
+    elif api_score >= DEFAULT_SUSPICIOUS_THRESHOLD:
         score = Common.DBotScore.SUSPICIOUS
     else:
         score = Common.DBotScore.GOOD
