@@ -661,3 +661,5 @@ quiet: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
+marketplaces:
+- xsoar
