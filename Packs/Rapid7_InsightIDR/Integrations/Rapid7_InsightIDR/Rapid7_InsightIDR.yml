@@ -57,7 +57,7 @@ configuration:
     type: 8
     required: false
     additionalinfo: Indicates whether the requester has multi-customer access.
-  - display: Use for API Version 2 by default.
+  - display: Use API Version 2 by default
     name: is_v2
     type: 8
     required: false

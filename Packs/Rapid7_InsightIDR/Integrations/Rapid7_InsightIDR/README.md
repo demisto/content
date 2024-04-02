@@ -16,7 +16,7 @@ This integration was integrated and tested with cloud version of Rapid7 InsightI
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Fetch Limit | Max number of alerts per fetch. Default is 50. | False |
     | Multi customer | Indicates whether the requester has multi-customer access. | False |
-    | Force Use for API Version 2 | Whether to force the use of API version 2 in commands that allow choosing the API version. | False |
+    | Use API Version 2 by default | Whether to use API version 2 by default for investigation commands (Can be overriden by passing the api_version argument). | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
