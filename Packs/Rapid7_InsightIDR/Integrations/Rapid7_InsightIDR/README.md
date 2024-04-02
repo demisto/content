@@ -39,21 +39,21 @@ List all investigations. Retrieve a list of investigations matching the given re
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| api_version | The InsightIDR API version to request to. Possible values are: V1, V2. Default is V1. | Required |
-| index | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional |
-| page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional |
-| statuses | A comma-separated list of investigation statuses to include in the result. For example, Open,Closed. Possible values are: open, investigating, closed. | Optional |
-| sources | A comma-separated list of investigation sources to include in the result. For example, User,Alert. Relevant when api_version is V2 only. Possible values are: User, Alert. | Optional |
-| priorities | A comma-separated list of investigation priorities to include in the result. For example, Low,Medium. Relevant when api_version is V2 only. Possible values are: Unspecified, Low, Medium, High, Critical. | Optional |
-| assignee_email | A user's email address. Only investigations assigned to that user will be included. For example, test@test.com. | Optional |
-| time_range | An optional time range string (i.e., 1 week, 1 day). | Optional |
-| start_time | The time an investigation is opened. Only investigations whose created_time is after this date will be returned by the API. Must be an ISO-formatted timestamp. For example, 2018-07-01T00:00:00Z. Default is 28 days prior. Relevant when api_version is V2 only. | Optional |
-| end_time | The time an investigation is closed. Only investigations whose created_time is before this date will be returned by the API. Must be an ISO-formatted timestamp. For example, 2018-07-28T23:59:00Z. Default is the current time. Relevant when api_version is V2 only. | Optional |
-| sort_field | A field for investigations to be sorted by. Relevant when api_version is V2 only. Possible values are: Created time, Priority, RRN Last Created Alert, Last Detection Alert. Default is Created time. | Optional |
-| sort_direction | The sorting direction. Relevant when api_version is V2 only. Possible values are: ASC, DESC. Default is DESC. | Optional |
-| tags | A comma-separated list of tags to include in the result. Only investigations who have all specified tags will be included. For example, my_teg,test_tag. Relevant when api_version is V2 only. | Optional |
+| --- | --- |--------------|
+| api_version | The InsightIDR API version to request to. Possible values are: V1, V2, Default. Default is Default. | Optional     |
+| index | The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0. Default is 0. | Optional     |
+| page_size | The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000. | Optional     |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional     |
+| statuses | A comma-separated list of investigation statuses to include in the result. For example, Open,Closed. Possible values are: open, investigating, closed. | Optional     |
+| sources | A comma-separated list of investigation sources to include in the result. For example, User,Alert. Relevant when api_version is V2 only. Possible values are: User, Alert. | Optional     |
+| priorities | A comma-separated list of investigation priorities to include in the result. For example, Low,Medium. Relevant when api_version is V2 only. Possible values are: Unspecified, Low, Medium, High, Critical. | Optional     |
+| assignee_email | A user's email address. Only investigations assigned to that user will be included. For example, test@test.com. | Optional     |
+| time_range | An optional time range string (i.e., 1 week, 1 day). | Optional     |
+| start_time | The time an investigation is opened. Only investigations whose created_time is after this date will be returned by the API. Must be an ISO-formatted timestamp. For example, 2018-07-01T00:00:00Z. Default is 28 days prior. Relevant when api_version is V2 only. | Optional     |
+| end_time | The time an investigation is closed. Only investigations whose created_time is before this date will be returned by the API. Must be an ISO-formatted timestamp. For example, 2018-07-28T23:59:00Z. Default is the current time. Relevant when api_version is V2 only. | Optional     |
+| sort_field | A field for investigations to be sorted by. Relevant when api_version is V2 only. Possible values are: Created time, Priority, RRN Last Created Alert, Last Detection Alert. Default is Created time. | Optional     |
+| sort_direction | The sorting direction. Relevant when api_version is V2 only. Possible values are: ASC, DESC. Default is DESC. | Optional     |
+| tags | A comma-separated list of tags to include in the result. Only investigations who have all specified tags will be included. For example, my_teg,test_tag. Relevant when api_version is V2 only. | Optional     |
 
 #### Context Output
 
@@ -125,9 +125,9 @@ Get a specific investigation. This investigation is specified by either ID or Ra
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| api_version | The InsightIDR API version to request to. Possible values are: V1, V2. Default is V1. | Optional |
+| **Argument Name** | **Description**                                                                                                                                                                                                                   | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| api_version | The InsightIDR API version to request to. Possible values are: V1, V2, Default. Default is Default.                                                                                                                               | Optional |
 | investigation_id | The ID or Rapid7 Resource Names (RRN) of the investigation to retrieve. (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs. | Required |
 
 #### Context Output
@@ -232,11 +232,11 @@ Assign a user by email to an investigation. Users will receive an email whenever
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| api_version | The InsightIDR API version to request to. Possible values are: V1, V2. Default is V1. | Optional |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                     | **Required** |
+| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| api_version | The InsightIDR API version to request to. Possible values are: V1, V2, Default. Default is Default.                                                                                                                                                                 | Optional |
 | investigation_id | Comma-separated list of the ID or Rapid7 Resource Names (RRN) of the investigation to assign the user to. (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs. | Required |
-| user_email_address | The email address of the user to assign to this investigation. This is the same email used to log into the insight platform. For example, test@test.com. Use rapid7-insight-idr-list-users to retrieve the user email list. Relevant when api_version is V2 only. | Required |
+| user_email_address | The email address of the user to assign to this investigation. This is the same email used to log into the insight platform. For example, test@test.com. Use rapid7-insight-idr-list-users to retrieve the user email list. Relevant when api_version is V2 only.   | Required |
 
 #### Context Output
 
@@ -307,14 +307,14 @@ Set the status of the investigation, which is specified by ID or Rapid7 Resource
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| api_version | The InsightIDR API version to request to. Possible values are: V1, V2. Default is V1. | Optional |
-| investigation_id | Comma-separated list of the ID or Rapid7 Resource Names (RRN) of the investigation to be changed.  (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs. | Required |
-| status | The new status for the investigation.  Open - The default status for all new investigations. Investigating - The investigation is in progress. Waiting - Progress on the investigation has paused while more information is gathered. Closed - The investigation has ended. A disposition must be selected to set this status. Possible values are: open, closed, investigating, waiting. | Required |
-| threat_command_free_text | Additional information provided by the user when closing a Threat Command alert. Relevant when status=closed and api_version is V2 only. | Optional |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                       | **Required** |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| api_version | The InsightIDR API version to request to. Possible values are: V1, V2, Default. Default is Default.                                                                                                                                                                                                                                                                                                                                                                   | Optional |
+| investigation_id | Comma-separated list of the ID or Rapid7 Resource Names (RRN) of the investigation to be changed.  (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.                                                                                                                                                                                                          | Required |
+| status | The new status for the investigation.  Open - The default status for all new investigations. Investigating - The investigation is in progress. Waiting - Progress on the investigation has paused while more information is gathered. Closed - The investigation has ended. A disposition must be selected to set this status. Possible values are: open, closed, investigating, waiting.                                                                             | Required |
+| threat_command_free_text | Additional information provided by the user when closing a Threat Command alert. Relevant when status=closed and api_version is V2 only.                                                                                                                                                                                                                                                                                                                              | Optional |
 | threat_command_close_reason | The Threat Command reason for closing, applicable only if the investigation being closed has an associated alert in Threat Command. The Close Reason description depends on the Threat Command alert type. Relevant when status=closed and api_version is V2 only. Possible values are: Problem Solved, Informational Only, Problem We Are Already Aware Of, Not Related To My Company, False Positive, Legitimate Application/ Profile, Company Owned Domain, Other. | Optional |
-| disposition | A disposition to set the investigation to. Relevant when status=closed and api_version is V2 only. Possible values are: benign, malicious, not_applicable. | Optional |
+| disposition | A disposition to set the investigation to. Relevant when status=closed and api_version is V2 only. Possible values are: benign, malicious, not_applicable.                                                                                                                                                                                                                                                                                                            | Optional |
 
 #### Context Output
 
