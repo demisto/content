@@ -66,18 +66,16 @@ script:
       auto: PREDEFINED
       description: Export the generated report as a file.
       defaultValue: true
-      type: boolean
       predefined: 
-      - true
-      - false
+      - 'true'
+      - 'false'
     - name: show_in_context
       auto: PREDEFINED
       description: Show the report data inside the context.
       defaultValue: false
-      type: boolean
       predefined: 
-      - true
-      - false
+      - 'true'
+      - 'false'
     description: |- 
       Generates a bpa report. Steps - 
       - Get information about Pan-OS/Panorama device.
@@ -94,19 +92,15 @@ script:
       description: Hide polling output from war-room.
       required: true
       defaultValue: true
-      type: boolean
     - name: export_as_file
       description: Export the generated report as a file.
       defaultValue: true
-      type: boolean
     - name: show_in_context
       description: Show the report data inside the context.
       defaultValue: false
-      type: boolean
     - name: first_round
       description: Does this polling round is the first round.
       defaultValue: false
-      type: boolean
     description: Polling mechanism to upload report.
     polling: true
     hidden: true
