@@ -79,8 +79,6 @@ configuration:
   type: 8
   required: false
   section: Collect
-  hidden:
-  - marketplacev2
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
