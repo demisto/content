@@ -7,7 +7,7 @@
       prefix: dev-content
     paths:
       - $PIP_CACHE_DIR
-      - /root/.cache/pre-commit
+      - $PRE_COMMIT_HOME
       - .venv/
       - node_modules/
       - .npm/
