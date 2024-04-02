@@ -40,7 +40,8 @@ class AzureNSGClient:
                                  # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
                                  # flow and most of the same arguments should be set, as we're !not! using OProxy.
             auth_id=app_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Device' in
+                                                                                                       connection_type else None,
             grant_type=GRANT_BY_CONNECTION.get(connection_type),  # disable-secrets-detection
             base_url=base_url,
             verify=verify,
