@@ -252,8 +252,8 @@ def create_response(client, report_id, show_in_context,export_as_file, upload_st
     downloaded_BPA_json = client.data_of_download_bpa_request(downloaded_BPA_url)
     converted_json = convert_response_for_hr(downloaded_BPA_json)
     human_readable_markdown = create_markdown(converted_json)
-    # added for context data
     response = []
+    # CommandResults depends on show_in_context arg
     if show_in_context:
         context_json = [{'report_id': report_id,
             'report_status': upload_status,
@@ -271,6 +271,7 @@ def create_response(client, report_id, show_in_context,export_as_file, upload_st
                 raw_response=downloaded_BPA_json,
                 readable_output=human_readable_markdown
             ))
+    # Insert the markdown into a file
     if export_as_file:
         response.append(fileResult(f'report-id-{report_id}.md', human_readable_markdown))
     return response
