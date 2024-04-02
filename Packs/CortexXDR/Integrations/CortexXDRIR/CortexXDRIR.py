@@ -1014,7 +1014,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         for raw_incident in raw_incidents:
             incident_data: dict[str, Any] = sort_incident_data(raw_incident) if raw_incident.get('incident') else raw_incident
             incident_id = incident_data.get('incident_id')
-            demisto.debug(f"Fetching incident {incident_id} {raw_incident}")
+            demisto.debug(f"Fetching incident {incident_id}")
             alert_count = arg_to_number(incident_data.get('alert_count')) or 0
             if alert_count > ALERTS_LIMIT_PER_INCIDENTS:
                 demisto.debug(f'for incident:{incident_id} using the old call since alert_count:{alert_count} >" \
@@ -1022,7 +1022,6 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
                 raw_incident_ = client.get_incident_extra_data(incident_id=incident_id)
                 incident_data = sort_incident_data(raw_incident_)
             sort_all_list_incident_fields(incident_data)
-            demisto.debug(f"!!! AFTER sort_all_list_incident_fields  {incident_id} {raw_incident}")
             incident_data['mirror_direction'] = MIRROR_DIRECTION.get(demisto.params().get('mirror_direction', 'None'),
                                                                      None)
             incident_data['mirror_instance'] = integration_instance
@@ -1041,9 +1040,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             # Update last run and add incident if the incident is newer than last fetch
             if incident_data.get('creation_time', 0) > last_fetch:
                 last_fetch = incident_data['creation_time']
-            demisto.debug(f'!!! finished creating the incident, adding to incidents list {len(incidents)}')
             incidents.append(incident)
-            demisto.debug(f'!!! AFTER adding to incidents list {len(incidents)}')
             non_created_incidents.remove(raw_incident)
 
             count_incidents += 1
