@@ -194,7 +194,7 @@ xpanse-prepare-testing-bucket-upload-flow:
     - echo "INSTANCE_ROLE -> ${INSTANCE_ROLE}"
     - INSTANCE_NAME=$(jq -r --arg role "$INSTANCE_ROLE" '.[] | select(.Role == $role) | .InstanceName' $ENV_RESULTS_PATH)
     - echo -e "\e[1m gcloud compute ssh --zone \"us-central1-a\" \"${INSTANCE_NAME}\"  --tunnel-through-iap --project "xsoar-content-build" $RESULT\e[0m"
-    - section_end "Get instance ssh-command
+    - section_end "Get instance ssh-command"
     - job-done
     - exit "${EXIT_CODE}"
   after_script:
