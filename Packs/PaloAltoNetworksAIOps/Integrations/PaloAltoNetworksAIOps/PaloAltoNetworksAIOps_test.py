@@ -361,12 +361,12 @@ def test_generate_bpa_report_request_called_with(mocker, AIOps_client):
                                               full_url='https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/requests',
                                               headers={'Content-Type': 'application/json', 'Accept': 'application/json',
                                                        'Authorization': 'Bearer None'}, json_data={'requester-email':
-                                                                                                 'test@gmail.com',
-                                                                                                 'requester-name': 'test',
-                                                                                                 'serial': 'test3',
-                                                                                                 'version': 'test4',
-                                                                                                 'model': 'test2',
-                                                                                                 'family': 'test1'})
+                                                                                                   'test@gmail.com',
+                                                                                                   'requester-name': 'test',
+                                                                                                   'serial': 'test3',
+                                                                                                   'version': 'test4',
+                                                                                                   'model': 'test2',
+                                                                                                   'family': 'test1'})
 
 
 def test_generate_bpa_report_request_return(mocker, AIOps_client):
