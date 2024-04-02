@@ -126,7 +126,6 @@
             "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
             "timeout": 1200,
             "integrations": "Cortex XDR - IR",
-            "is_mockable": false
         },
         {
             "integrations": [
