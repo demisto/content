@@ -1,0 +1,11 @@
+{
+    "id": "10",
+    "ver": "2.1",
+    "result": {
+        "url": "/scan/result/file",
+        "status": {
+            "code": 3,
+            "message": "DATA_NOT_EXIST"
+        }
+    }
+}
