@@ -8,7 +8,7 @@ tags:
 - Utility
 comment: "Takes the comments of a given entry ID and stores them in the incident context,\
   \ under a provided context key. \nFor accessing the last executed task's comments,\
-  \ provide ${lastCompletedTaskEntries.[0]} as the value for the entryId input parameter."
+  \ provide $\{lastCompletedTaskEntries.[0]} as the value for the entryId input parameter."
 enabled: true
 args:
 - name: entryId
