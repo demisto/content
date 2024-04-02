@@ -61,7 +61,7 @@ def test_generate_report_command(mocker, AIOps_client):
         http_request_mock.assert_called_once_with(method='POST',
                                                   full_url='https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/requests',
                                                   headers={'Content-Type': 'application/json', 'Accept': 'application/json',
-                                                           'Authorization': 'Bearer {}'},
+                                                           'Authorization': 'Bearer None'},
                                                   json_data={'requester-email': 'test@gmail.com', 'requester-name': 'test',
                                                              'serial': 'test3', 'version': 'test4', 'model': 'test2',
                                                              'family': 'test1'})
@@ -360,7 +360,7 @@ def test_generate_bpa_report_request_called_with(mocker, AIOps_client):
     http_request_mock.assert_called_once_with(method='POST',
                                               full_url='https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/requests',
                                               headers={'Content-Type': 'application/json', 'Accept': 'application/json',
-                                                       'Authorization': 'Bearer {}'}, json_data={'requester-email':
+                                                       'Authorization': 'Bearer None'}, json_data={'requester-email':
                                                                                                  'test@gmail.com',
                                                                                                  'requester-name': 'test',
                                                                                                  'serial': 'test3',
@@ -421,7 +421,7 @@ def test_config_file_to_report_request_called_with(mocker, AIOps_client):
     http_request_mock.assert_called_once_with(method='PUT', full_url='cloud.test', headers={'Content-Type':
                                                                                             'application/octet-stream',
                                                                                             'Accept': '*/*',
-                                                                                            'Authorization': 'Bearer {}'},
+                                                                                            'Authorization': 'Bearer None'},
                                               data=b'<?xml version="1.0"?>\n <config>test</config>', empty_valid_codes=[200],
                                               return_empty_response=True)
 
@@ -452,7 +452,7 @@ def test_check_upload_status_request_called_with(mocker, AIOps_client):
     report_id = "123456789"
     AIOps_client.check_upload_status_request(report_id)
     http_request_mock.assert_called_once_with(method='GET', full_url='https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/jobs/123456789',
-                                              headers={'Accept': '*/*', 'Authorization': 'Bearer {}'})
+                                              headers={'Accept': '*/*', 'Authorization': 'Bearer None'})
 
 
 def test_check_upload_status_request_check_return(mocker, AIOps_client):
@@ -478,7 +478,7 @@ def test_download_bpa_request_called_with(mocker, AIOps_client):
     report_id = "123456789"
     AIOps_client.download_bpa_request(report_id)
     http_request_mock.assert_called_once_with(method='GET', full_url='https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/reports/123456789',
-                                              headers={'Accept': 'application/json', 'Authorization': 'Bearer {}'})
+                                              headers={'Accept': 'application/json', 'Authorization': 'Bearer None'})
 
 
 def test_download_bpa_request_check_return(mocker, AIOps_client):
@@ -503,7 +503,7 @@ def test_data_of_download_bpa_request_called_with(mocker, AIOps_client):
     http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
     downloaded_BPA_url = "cloud.com"
     AIOps_client.data_of_download_bpa_request(downloaded_BPA_url)
-    http_request_mock.assert_called_once_with(method='GET', full_url='cloud.com', headers={'Authorization': 'Bearer {}'})
+    http_request_mock.assert_called_once_with(method='GET', full_url='cloud.com', headers={'Authorization': 'Bearer None'})
 
 
 ''' HELPER FUNCTIONS'''
