@@ -191,7 +191,7 @@ script:
       - Public
       - Private
       auto: PREDEFINED
-      required: true
+      required: false
     - description: The purpose of the channel to create.
       name: purpose
       required: false
