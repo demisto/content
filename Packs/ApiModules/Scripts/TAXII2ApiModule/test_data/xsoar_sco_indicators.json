@@ -129,7 +129,7 @@
                 "isPreventable": false
             },
             "stix_type": {
-                "type": "asn"
+                "type": "autonomous-system"
             }
         }
     ]
