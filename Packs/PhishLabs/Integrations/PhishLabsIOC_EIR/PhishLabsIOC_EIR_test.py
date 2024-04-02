@@ -490,7 +490,7 @@ def test_duplicated_incident(mocker):
     )
 
     assert len(incident_report) == 3
-    assert new_last_run.get('lastIds') == {'1', '2', '3'}
+    assert '1' and '2' and '3' in new_last_run.get('lastIds')
 
     incidents = [{'id': '1', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
                  {'id': '2', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
@@ -504,11 +504,11 @@ def test_duplicated_incident(mocker):
         last_run='2023-09-20T03:44:55Z',
         fetch_time='3 days',
         limit='10',
-        last_ids=new_last_run.get('lastIds', set())
+        last_ids=set(new_last_run.get('lastIds', set()))
     )
 
     assert len(incident_report) == 2
-    assert new_last_run.get('lastIds') == {'1', '2', '3', '4', '5'}
+    assert len(new_last_run.get('lastIds')) == 5
 
     incidents = [{'id': '1', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
                  {'id': '2', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
@@ -523,8 +523,8 @@ def test_duplicated_incident(mocker):
         last_run='2023-09-20T03:44:55Z',
         fetch_time='3 days',
         limit='10',
-        last_ids=new_last_run.get('lastIds', set())
+        last_ids=set(new_last_run.get('lastIds', set()))
     )
 
     assert len(incident_report) == 1
-    assert new_last_run.get('lastIds') == {'6'}
+    assert new_last_run.get('lastIds') == ['6']

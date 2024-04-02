@@ -302,6 +302,7 @@ def test_module_command(client: Client, *_) -> Tuple[None, None, str]:
         DemistoException: If test failed.
     """
     results = client.test_module()
+    demisto.debug(str(results))
     if 'incidents' in results:
         return None, None, 'ok'
     raise DemistoException(f'Test module failed, {results}')
@@ -352,7 +353,7 @@ def fetch_incidents_command(
         client: Client,
         fetch_time: str,
         limit: str,
-        last_ids: Set,
+        last_ids: set,
         last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
@@ -362,6 +363,7 @@ def fetch_incidents_command(
         fetch_time: From when to fetch if first time, e.g. `3 days`
         limit: limit of incidents in a fetch
         last_run: Last fetch object occurs.
+        last_ids: Last IDs with same time from last fetches.
 
     Returns:
         incidents, new last_run
@@ -445,8 +447,12 @@ def fetch_incidents_command(
                 'rawJSON': json.dumps(incident_raw)
             })
 
+    demisto.debug(f'finished processing incidents. returning {len(incidents_report)} incidents,'
+                  f'with {str(datetime_new_last_run)} as last run,'
+                  f'and {str(last_ids)} as lastIds')
+
     # Return results
-    return incidents_report, {'lastRun': datetime_new_last_run, 'lastIds': last_ids}
+    return incidents_report, {'lastRun': datetime_new_last_run, 'lastIds': list(last_ids)}
 
 
 @logger
@@ -557,11 +563,13 @@ def main():
     }
     try:
         if command == 'fetch-incidents':
+            last_run = demisto.getLastRun()
+            last_ids = set(last_run.get('lastIds')) if last_run.get('lastIds') else set()
             incidents, new_last_run = fetch_incidents_command(client,
                                                               fetch_time=params.get('fetchTime'),
-                                                              last_run=demisto.getLastRun().get('lastRun'),
+                                                              last_run=last_run.get('lastRun'),
                                                               limit=params.get('fetchLimit'),
-                                                              last_ids=demisto.getLastRun().get('lastIds', set()))
+                                                              last_ids=last_ids)
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         else:
