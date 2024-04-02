@@ -853,6 +853,9 @@ def test_get_item_as_eml(mocker):
     item_headers = [
         MessageHeader(name="Mime-Version", value="1.0"),
         MessageHeader(name="Content-Type", value='application/ms-tnef'),
+        MessageHeader(name="X-Fake-Header", value="HVALue"),
+        MessageHeader(name="X-WHO-header", value="whovALUE"),
+        MessageHeader(name="X-EXTRA-Missed-Header", value="EXTRA")
     ]
     expected_data = 'MIME-Version: 1.0\r\n' \
                     'Message-ID: \r\n' \
@@ -861,7 +864,7 @@ def test_get_item_as_eml(mocker):
                     'Content-Transfer-Encoding: quoted-printable\r\n' \
                     'X-FAKE-Header: HVALue\r\n' \
                     'X-Who-header: whovALUE\r\n' \
-                    'Mime-Version: 1.0\r\n' \
+                    'X-EXTRA-Missed-Header: EXTRA\r\n' \
                     '\r\nHello'
     mock_file_result = mocker.patch('EWSv2.fileResult')
     mocker.patch.object(EWSv2, 'get_item_from_mailbox', return_value=Item(mime_content=content, headers=item_headers))
