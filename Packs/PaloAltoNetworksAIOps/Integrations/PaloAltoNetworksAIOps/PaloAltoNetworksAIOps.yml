@@ -40,13 +40,15 @@ configuration:
   required: false
 description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
 display: Palo Alto Networks AIOps
-name: Palo Alto Networks AIOps
+name: PaloAltoNetworksAIOps
 script:
   commands:
   - name: aiops-bpa-report-generate
     arguments:
     - name: entry_id
-      description: Entry_id from xsoar war-room after uploading a file - should be a config file in xml format.
+      description: |-
+        - Entry_id from xsoar war-room after uploading a file - should be a config file in xml format.
+        - If you used this argument and the process failed or reached time out- make sure the config file is in format.
     - name: requester_email
       required: true
       description: Requester email.
