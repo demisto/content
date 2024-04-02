@@ -205,7 +205,7 @@ def prepare_single_content_item_for_validation(
     # or a Playbook, we return the path as is
     if tmp_path_file_to_validate.suffix == ".json" or file_type in (FileType.PLAYBOOK.value, FileType.TEST_PLAYBOOK.value):
         return str(tmp_path_file_to_validate), {}
-    else:
+    elif file_type in (FileType.INTEGRATION.value, FileType.SCRIPT.value):
         output_path = Path(tmp_directory, "Packs", "Base", ENTITY_TYPE_TO_DIR.get(file_type))
         with Path(tmp_directory, "Packs", "Base", "pack_metadata.json").open("w") as md:
             json.dump({'description': 'Temporary Pack', 'author': 'xsoar'}, md)
@@ -223,6 +223,8 @@ def prepare_single_content_item_for_validation(
         extractor.extract_to_package_format()
         code_fp_to_row_offset = {get_extracted_code_filepath(extractor): extractor.lines_inserted_at_code_start}
         return extractor.get_output_path(), code_fp_to_row_offset
+    else:
+        raise NotImplementedError(f"Validation for file type '{file_type}' not supported")
 
 
 def validate_content(filename: str, data: bytes, tmp_directory: str) -> list:

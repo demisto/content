@@ -277,6 +277,82 @@ def setup_requests_mock(requests_mock: Mocker):
     )
 
     requests_mock.get(
+        "https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/core_packs_xpanse_list.json",
+        json={
+            "core_packs_list": [
+                "AWS-EC2",
+                "AWS-IAM",
+                "AWS-Route53",
+                "AWS-S3",
+                "AccessInvestigation",
+                "Asset",
+                "Azure-Enrichment-Remediation",
+                "AzureCompute",
+                "AzureNetworkSecurityGroups",
+                "Base",
+                "CommonPlaybooks",
+                "CommonScripts",
+                "CommonTypes",
+                "Core",
+                "CoreAlertFields",
+                "CortexAttackSurfaceManagement",
+                "FiltersAndTransformers",
+                "GCP-Enrichment-Remediation",
+                "GCP-IAM",
+                "GoogleCloudCompute",
+                "GoogleKeyManagementService",
+                "Identity",
+                "Malware",
+                "MicrosoftGraphIdentityandAccess",
+                "MicrosoftGraphUser",
+                "Jira",
+                "PAN-OS",
+                "PrismaCloud",
+                "qualys",
+                "Rapid7_Nexpose",
+                "ServiceNow",
+                "SplunkPy",
+                "Tenable_io"
+            ],
+            "update_core_packs_list": [
+                "AWS-EC2",
+                "AWS-IAM",
+                "AWS-Route53",
+                "AWS-S3",
+                "AccessInvestigation",
+                "Asset",
+                "Azure-Enrichment-Remediation",
+                "AzureCompute",
+                "AzureNetworkSecurityGroups",
+                "Base",
+                "CommonPlaybooks",
+                "CommonScripts",
+                "CommonTypes",
+                "Core",
+                "CoreAlertFields",
+                "CortexAttackSurfaceManagement",
+                "FiltersAndTransformers",
+                "GCP-Enrichment-Remediation",
+                "GCP-IAM",
+                "GoogleCloudCompute",
+                "GoogleKeyManagementService",
+                "Identity",
+                "Malware",
+                "MicrosoftGraphIdentityandAccess",
+                "MicrosoftGraphUser",
+                "Jira",
+                "PAN-OS",
+                "PrismaCloud",
+                "qualys",
+                "Rapid7_Nexpose",
+                "ServiceNow",
+                "SplunkPy",
+                "Tenable_io"
+            ]
+        }
+    )
+
+    requests_mock.get(
         "https://hub.docker.com/v2/repositories/demisto/python3/tags",
         json=json.loads(TestValidateContent.docker_demistp_py3_response.read_bytes())
     )
@@ -372,12 +448,6 @@ class TestValidateContent:
             main()
 
         assert results.called
-        # assert len(results.call_args[0][0]["Contents"][COMMAND_OUTPUT_PREFIX]) == 6
-        # assert results.call_args[0][0]["Contents"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_NAME] \
-        #     == self.test_valid_script_path.stem
-        # assert results.call_args[0][0]["Contents"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_LINE] == "22"
-        # assert "unterminated string literal" not in \
-        #     results.call_args[0][0]["Contents"][COMMAND_OUTPUT_PREFIX][0][COMMAND_OUTPUT_KEY_ERROR]
 
     def test_validate_playbook(self):
         pass
