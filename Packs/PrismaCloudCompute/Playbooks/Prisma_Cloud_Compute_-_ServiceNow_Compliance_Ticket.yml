@@ -692,6 +692,15 @@ tasks:
       TicketID:
         complex:
           root: Ticket
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Ticket.Active
+                iscontext: true
+              right:
+                value:
+                  simple: "true"
           accessor: ID
     separatecontext: true
     continueonerrortype: ""
