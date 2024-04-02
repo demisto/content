@@ -282,3 +282,7 @@ Symantec
 XQL
 VPC
 instantiation
+STS
+DB
+WAF
+VPC
