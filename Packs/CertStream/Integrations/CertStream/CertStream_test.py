@@ -1,7 +1,7 @@
 import json
 import pytest
 import demistomock as demisto
-from CertStream import get_homographs_list, levenshtein_distance
+from CertStream import get_homographs_list, levenshtein_distance, check_homographs, main
 
 
 @pytest.mark.parametrize("list_name", [
@@ -30,5 +30,16 @@ def test_levenshtein_distance(original_string: str, reference_string: str, expec
 
     assert result == expected_result
 
-
+@pytest.mark.parametrize("domain, levenshtein_distance_threshold, expected_result", [
+    ("test.com", 0.3, True),
+    ("another.org", 0.3, False),
+    ("lest.com", 0.3, True)])
+def test_check_homographs(domain: str, levenshtein_distance_threshold, expected_result, mocker, capfd):
+    expected_result = expected_result
+    homographs = {"test.com": ["best.com", "last.com"]}
+    mocker.patch("CertStream.homographs", homographs)
+    mocker.patch("CertStream.levenshtein_distance_threshold", levenshtein_distance_threshold)
+    result = check_homographs(domain)
+    assert result[0] == expected_result
+    
 # Additional tests for other commands

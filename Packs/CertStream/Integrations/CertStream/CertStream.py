@@ -14,6 +14,19 @@ FETCH_SLEEP = 5
 XSOAR_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S+00:00'
 DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 
+global word_list_name
+global list_update_interval
+global levenshtein_distance_threshold
+global incident_type
+global homographs
+global fetch_time
+    
+word_list_name: str = ""
+list_update_interval: int = 30
+levenshtein_distance_threshold:float = 0.85
+homographs: dict = {}
+fetch_time: str = datetime.now().strftime(DATETIME_FORMAT)
+incident_type: float
 
 def test_module(host: str):
     # set the fetch interval to 2 seconds so we don't get timeout for the test module
@@ -48,16 +61,19 @@ def long_running_execution_command(host: str, fetch_interval: int):
         with websocket_connections(host) as (message_connection):
             demisto.info("Connected to websocket")
             while True:
+                global homographs
+                global fetch_time
+                global list_update_interval
                 now = datetime.now()
-                context = json.loads(demisto.getIntegrationContext()["context"])
-                last_fetch_time = datetime.strptime(context["fetch_time"], DATETIME_FORMAT)
-                fetch_interval = context["list_update_interval"]
+                
+                last_fetch_time = datetime.strptime(fetch_time, DATETIME_FORMAT)
+                fetch_interval = list_update_interval
 
                 if now - last_fetch_time >= timedelta(minutes=fetch_interval):
-                    demisto.info(f"Updating homographs list from {context['word_list_name']}")
-                    context["homographs"] = get_homographs_list(context["word_list_name"])
-                    context["fetch_time"] = datetime.now().strftime(DATETIME_FORMAT)
-                    demisto.setIntegrationContext({"context": json.dumps(context)})
+                    demisto.info(f"Updating homographs list from {word_list_name}")
+                    homographs = get_homographs_list(word_list_name)
+                    fetch_time = datetime.now().strftime(DATETIME_FORMAT)
+                    
 
                 try:
                     message = message_connection.recv()
@@ -139,7 +155,7 @@ def create_xsoar_incident(certificate: dict, domain: str, current_time: datetime
     incident = {
         "name": f"Suspicious Domain Discovered - {domain}",
         "occured": current_time.strftime(DATETIME_FORMAT),
-        "type": get_integration_context()["incident_type"],
+        "type": incident_type,
         "severity": set_incident_severity(result["similarity"]),
         "CustomFields": {
             "certstreamfingerprint": certificate["leaf_cert"]["fingerprint"],
@@ -239,13 +255,14 @@ def check_homographs(domain: str) -> tuple[bool, dict]:
         bool: Returns True if any word in the domain matches a homograph, False otherwise
     """
     demisto.info("Checking domain for homographs")
-    integration_context = json.loads(demisto.getIntegrationContext()["context"])
-    user_homographs = integration_context["homographs"]
-    levenshtein_distance_threshold = integration_context["levenshtein_distance_threshold"]
+    global levenshtein_distance_threshold
+    global homographs
 
+    user_homographs = homographs
     words = domain.split(".")[:-1]  # All words in the domain without the TLD
-
+    similarity = levenshtein_distance_threshold
     for word in words:
+        demisto.debug(f"{user_homographs=}")
         for asset, homographs in user_homographs.items():
             for homograph in homographs:
                 similarity = compute_similarity(homograph, word)
@@ -255,8 +272,8 @@ def check_homographs(domain: str) -> tuple[bool, dict]:
                                   "asset": asset}
 
     return False, {"similarity": similarity,
-                   "homograph": homograph,
-                   "asset": asset}
+                   "homograph": user_homographs,
+                   "asset": user_homographs.items()}
 
 
 def get_homographs_list(list_name: str) -> dict:
@@ -330,23 +347,22 @@ def compute_similarity(input_string: str, reference_string: str) -> float:
 
 
 def main():  # pragma: no cover
-    command = demisto.command()
+    global levenshtein_distance_threshold
+    global incident_type
+    global homographs
+    global word_list_name
+    
     params = demisto.params()
-    host: str = params["url"]
-    word_list_name: str = params["list_name"]
+    word_list_name = params["list_name"]
     list_update_interval: int = params.get("update_interval", 30)
-    levenshtein_distance_threshold: float = float(params.get("levenshtein_distance_threshold", 0.85))
+    levenshtein_distance_threshold = float(params.get("levenshtein_distance_threshold", 0.85))
     incident_type = params["incidentType"]
-    logging.getLogger('websockets.client').setLevel(logging.ERROR)
+    homographs = get_homographs_list(word_list_name)
+    
+    command = demisto.command()
+    host: str = params["url"]
 
-    demisto.setIntegrationContext({"context": json.dumps({
-        "word_list_name": word_list_name,
-        "list_update_interval": list_update_interval,
-        "levenshtein_distance_threshold": levenshtein_distance_threshold,
-        "homographs": get_homographs_list(word_list_name),
-        "fetch_time": datetime.now().strftime(DATETIME_FORMAT),
-        "incident_type": incident_type
-    }, default=str)})
+    logging.getLogger('websockets.client').setLevel(logging.ERROR)
 
     try:
         if command == "long-running-execution":
