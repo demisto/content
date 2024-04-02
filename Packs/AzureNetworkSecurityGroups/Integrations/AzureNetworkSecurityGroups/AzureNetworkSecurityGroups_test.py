@@ -1,5 +1,4 @@
 import json
-import io
 
 import pytest
 
@@ -23,7 +22,7 @@ def mock_client(mocker, http_request_result=None):
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -90,9 +89,9 @@ def test_update_rule_command(mocker):
                                                                                  'resource_group_name': 'resourceGroupName'})
     properties = client.http_request.call_args_list[1][1].get('data').get('properties')
     assert 'destinationPortRange' not in properties.keys()
-    assert 'destinationPortRanges' in properties.keys()
+    assert 'destinationPortRanges' in properties
     assert 'sourcePortRanges' not in properties.keys()
-    assert 'sourcePortRange' in properties.keys()
+    assert 'sourcePortRange' in properties
     assert properties.get('protocol') == properties.get('sourceAddressPrefix') == '*'
 
 
@@ -197,3 +196,49 @@ def test_generate_login_url(mocker):
                    f'&client_id={client_id}&redirect_uri={redirect_uri}&prompt=consent)'
     res = AzureNetworkSecurityGroups.return_results.call_args[0][0].readable_output
     assert expected_url in res
+
+
+def test_auth_code_params(mocker):
+    """
+    Given:
+        - The auth_type is Authorization Code
+    When:
+        - Creating a Microsoft client.
+    Then:
+        - Ensure that the token_retrieval_url isn't in the MicrosoftClient args.
+    """
+    from AzureNetworkSecurityGroups import main
+    redirect_uri = 'redirect_uri'
+    tenant_id = 'tenant_id'
+    client_id = 'client_id'
+    mocked_params = {
+        'redirect_uri': redirect_uri,
+        'auth_type': 'Authorization Code',
+        'tenant_id': tenant_id,
+        'app_id': client_id,
+        'credentials': {
+            'password': 'client_secret'
+        }
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='command')
+    mocked_request = mocker.patch('AzureNetworkSecurityGroups.MicrosoftClient.__init__', return_value=None)
+    expected_args = {
+        'self_deployed': True,
+        'auth_id': 'client_id',
+        'grant_type': 'authorization_code',
+        'base_url': 'https://management.azure.com/subscriptions//resourceGroups//providers/Microsoft.Network/networkSecurityGroups',
+        'verify': True,
+        'proxy': False,
+        'scope': 'https://management.azure.com/.default',
+        'ok_codes': (200, 201, 202, 204),
+        'azure_ad_endpoint': 'https://login.microsoftonline.com',
+        'tenant_id': 'tenant_id',
+        'enc_key': 'client_secret',
+        'redirect_uri': 'redirect_uri',
+        'managed_identities_resource_uri': 'https://management.azure.com/',
+        'command_prefix': 'azure-nsg'}
+
+    main()
+
+    mocked_request.assert_called_with(**expected_args)
