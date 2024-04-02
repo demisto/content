@@ -126,6 +126,7 @@ class Client(BaseClient):
         return token, expiration_time
 
     def _classic_api_post(self, url_suffix, data, error_handler):
+        # If using a token, it will be available in the headers. If token creation failed, the basic auth is found in self.auth.
         post_headers = ((self._headers or {}) | POST_HEADERS)  # merge the token and the POST headers
         classic_url_suffix = urljoin('/JSSResource', url_suffix)  # classic API endpoints starts with JSSResource
         return self._http_request(method='POST', data=data, url_suffix=classic_url_suffix,
