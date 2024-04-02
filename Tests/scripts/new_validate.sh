@@ -8,7 +8,7 @@ if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_
         echo "Packs upload - Validating only the supplied packs"
         PACKS_TO_UPLOAD_SPACED=${PACKS_TO_UPLOAD//,/ }
         for item in $PACKS_TO_UPLOAD_SPACED; do
-            python3 -m demisto_sdk validate -i Packs/"$item" --post-commit --skip-old-validate --run-new-validate --config-path validation_config.toml
+            python3 -m demisto_sdk validate -i Packs/"$item" --post-commit --config-path validation_config.toml
         done       
     else
         if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
@@ -16,8 +16,8 @@ if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_
         else
             PREV_VER="origin/master"
         fi
-        python3 -m demisto_sdk validate -a --skip-old-validate --prev-ver $PREV_VER --run-new-validate --config-path validation_config.toml
+        python3 -m demisto_sdk validate -a --skip-old-validate --prev-ver $PREV_VER --config-path validation_config.toml
     fi
 else
-    python3 -m demisto_sdk validate -g --post-commit  --skip-old-validate --run-new-validate --config-path validation_config.toml
+    python3 -m demisto_sdk validate -g --post-commit --config-path validation_config.toml
 fi
