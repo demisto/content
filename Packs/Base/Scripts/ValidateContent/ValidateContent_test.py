@@ -159,6 +159,60 @@ def setup_requests_mock(requests_mock: Mocker):
     )
 
     requests_mock.get(
+        "https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/core_packs_mpv2_list.json",
+        json={
+            "core_packs_list": [
+                "AutoFocus",
+                "Base",
+                "CommonPlaybooks",
+                "CommonScripts",
+                "CommonTypes",
+                "Core",
+                "CoreAlertFields",
+                "CortexAttackSurfaceManagement",
+                "DemistoLocking",
+                "DemistoRESTAPI",
+                "EDL",
+                "FeedMitreAttackv2",
+                "FeedUnit42v2",
+                "FiltersAndTransformers",
+                "HelloWorld",
+                "ImageOCR",
+                "Palo_Alto_Networks_WildFire",
+                "ThreatIntelligenceManagement",
+                "Unit42Intel",
+                "VirusTotal",
+                "Whois",
+                "rasterize"
+            ],
+            "update_core_packs_list": [
+                "AutoFocus",
+                "Base",
+                "CommonPlaybooks",
+                "CommonScripts",
+                "CommonTypes",
+                "Core",
+                "CoreAlertFields",
+                "CortexAttackSurfaceManagement",
+                "DemistoLocking",
+                "DemistoRESTAPI",
+                "EDL",
+                "FeedMitreAttackv2",
+                "FeedUnit42v2",
+                "FiltersAndTransformers",
+                "HelloWorld",
+                "ImageOCR",
+                "Palo_Alto_Networks_WildFire",
+                "ThreatIntelligenceManagement",
+                "Unit42Intel",
+                "VirusTotal",
+                "Whois",
+                "rasterize"
+            ]
+        }
+    )
+
+    requests_mock.get(
         "https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/core_packs_list.json",
         json={
             "core_packs_list": [
