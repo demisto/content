@@ -1,0 +1,43 @@
+{
+    "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#security/incidents",
+    "value": [
+        {
+            "id": "12345",
+            "tenantId": "",
+            "status": "active",
+            "incidentWebUrl": "https://security.microsoft.com/incidents/",
+            "redirectIncidentId": null,
+            "displayName": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min) involving one user",
+            "createdDateTime": "2024-03-26T13:34:15.0433333Z",
+            "lastUpdateDateTime": "2024-03-26T13:35:45.23Z",
+            "assignedTo": null,
+            "classification": "unknown",
+            "determination": "unknown",
+            "severity": "medium",
+            "customTags": [],
+            "systemTags": [],
+            "description": null,
+            "lastModifiedBy": "Microsoft 365 Defender-IncidentCreation",
+            "comments": []
+        },
+        {
+            "id": "12346",
+            "tenantId": "",
+            "status": "resolved",
+            "incidentWebUrl": "https://security.microsoft.com/incidents/",
+            "redirectIncidentId": null,
+            "displayName": "Automated investigation started manually on one endpoint",
+            "createdDateTime": "2024-03-26T13:16:45.3466667Z",
+            "lastUpdateDateTime": "2024-03-26T13:31:46.5066667Z",
+            "assignedTo": null,
+            "classification": "unknown",
+            "determination": "unknown",
+            "severity": "informational",
+            "customTags": [],
+            "systemTags": [],
+            "description": null,
+            "lastModifiedBy": "API-App:API Action",
+            "comments": []
+        }
+    ]
+}
