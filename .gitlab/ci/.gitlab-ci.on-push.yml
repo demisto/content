@@ -88,6 +88,8 @@ run-unittests-and-lint:
       when: never
     - if: '$SECURITY_SCANS == "true"'
       when: never
+    - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
+      when: never
     - if: '$BUILD_MACHINES_CLEANUP == "true"'
       when: never
     - if: '$SDK_RELEASE == "true"'
@@ -105,7 +107,6 @@ run-pre-commit:
     - .run-pre-commit
   cache:
     policy: pull-push
-
   rules:
     - if: '$BUCKET_UPLOAD == "true"'
       when: never
@@ -117,7 +118,8 @@ run-pre-commit:
       when: never
     - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
       when: never
-
+    - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
+      when: never
     # In sdk nighly we run this separately 
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
@@ -324,7 +326,7 @@ xpanse-prepare-testing-bucket:
       ./Tests/scripts/run_e2e_tests.sh || EXIT_CODE=$?
     else
       ./Tests/scripts/run_e2e_tests.sh --generate-empty-result-file
-      if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then	
+      if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then
         cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
       fi
       ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
