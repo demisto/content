@@ -10,10 +10,6 @@ import demistomock as demisto
 from base64 import b64decode, b64encode
 import ValidateContent
 from ValidateContent import (
-    COMMAND_OUTPUT_KEY_ERROR,
-    COMMAND_OUTPUT_KEY_LINE,
-    COMMAND_OUTPUT_KEY_NAME,
-    COMMAND_OUTPUT_PREFIX,
     get_content_modules,
     adjust_linter_row_and_col,
     get_file_name_and_contents,
@@ -160,6 +156,70 @@ def setup_requests_mock(requests_mock: Mocker):
                 "reason": "Use the demisto/py3-tools docker image instead."
             }
         ]
+    )
+
+    requests_mock.get(
+        "https://raw.githubusercontent.com/demisto/content/master/Tests/Marketplace/core_packs_list.json",
+        json={
+            "core_packs_list": [
+                "AutoFocus",
+                "Base",
+                "CommonDashboards",
+                "CommonPlaybooks",
+                "CommonReports",
+                "CommonScripts",
+                "CommonTypes",
+                "CommonWidgets",
+                "DefaultPlaybook",
+                "DemistoLocking",
+                "DemistoRESTAPI",
+                "EDL",
+                "FeedMitreAttackv2",
+                "FeedUnit42v2",
+                "FiltersAndTransformers",
+                "HelloWorld",
+                "ImageOCR",
+                "Palo_Alto_Networks_WildFire",
+                "PAN-OS",
+                "TIM_Processing",
+                "TIM_SIEM",
+                "ThreatIntelReports",
+                "ThreatIntelligenceManagement",
+                "Unit42Intel",
+                "VirusTotal",
+                "Whois",
+                "rasterize"
+            ],
+            "update_core_packs_list": [
+                "AutoFocus",
+                "Base",
+                "CommonDashboards",
+                "CommonPlaybooks",
+                "CommonReports",
+                "CommonScripts",
+                "CommonTypes",
+                "CommonWidgets",
+                "DefaultPlaybook",
+                "DemistoLocking",
+                "DemistoRESTAPI",
+                "EDL",
+                "FeedMitreAttackv2",
+                "FeedUnit42v2",
+                "FiltersAndTransformers",
+                "HelloWorld",
+                "ImageOCR",
+                "Palo_Alto_Networks_WildFire",
+                "PAN-OS",
+                "TIM_Processing",
+                "TIM_SIEM",
+                "ThreatIntelReports",
+                "ThreatIntelligenceManagement",
+                "Unit42Intel",
+                "VirusTotal",
+                "Whois",
+                "rasterize"
+            ]
+        }
     )
 
     requests_mock.get(
