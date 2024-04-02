@@ -1,8 +1,8 @@
 args:
-- description: The Incident ID of the main Insight incident
+- description: The Incident ID of the main Insight incident.
   name: id
   type: textArea
-comment: Close the linked signal incidents when the main Insight incident is closed
+comment: Close the linked signal incidents when the main Insight incident is closed.
 commonfields:
   id: SumoLogicCloseLinkSignalIncidents
   version: -1
