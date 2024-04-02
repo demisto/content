@@ -1,10 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import copy
 from http import HTTPStatus
 from typing import Any, NamedTuple
 from collections.abc import Callable
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 MIN_PAGE_NUM = 1
 MAX_PAGE_SIZE = 50
@@ -104,11 +104,6 @@ URL_HEADER = [
     "modify_time",
     "modify_type",
 ]
-
-URL_LIST_TYPE = {
-    "Exact": "exact",
-    "Regex": "regex",
-}
 
 
 class Pagination(NamedTuple):
@@ -256,6 +251,31 @@ class Client(BaseClient):
 
         return self._http_request(
             "PUT", f"api/v2/policy/urllist/{url_list_id}", json_data=data
+        )
+
+    def patch_url_list(
+        self,
+        url_list_id: str,
+        urls: list[str] = None,
+        list_type: str = None,
+    ) -> dict[str, Any]:
+        """Update the given URL list.
+
+        Args:
+            url_list_id (str): URL list ID.
+            urls (List[str]): URL lists.
+            list_type (str): URL list type.
+
+        Returns:
+            Dict[str, Any]: API response from Netskope.
+        """
+
+        data = {
+            "data": {"type": list_type, "urls": urls}
+        }
+
+        return self._http_request(
+            "PATCH", f"api/v2/policy/urllist/{url_list_id}/append", json_data=data
         )
 
     def create_url_list(
@@ -511,7 +531,7 @@ def update_url_list_command(
     url_list_id = args["url_list_id"]
     name = args.get("name")
     urls = argToList(args.get("urls"))
-    list_type = URL_LIST_TYPE[args["list_type"]] if args.get("list_type") else None
+    list_type = args.get("list_type", '').lower() or None
     is_overwrite = optional_arg_to_boolean(args.get("is_overwrite"))
 
     if not all([name, urls, list_type]) or not is_overwrite:
@@ -552,6 +572,48 @@ def update_url_list_command(
     )
 
 
+def add_url_list_command(
+    client: Client,
+    args: dict[str, Any],
+) -> CommandResults:
+    """Update URL List.
+
+    Args:
+        client (Client): Netskope API client.
+        args (Dict[str, Any]): command arguments.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    url_list_id = args["url_list_id"]
+    urls = argToList(args.get("urls"))
+    list_type = args.get("list_type", '').lower() or None
+
+    response = client.patch_url_list(
+        url_list_id,
+        urls,
+        list_type
+    )
+
+    deploy_url_list_if_required(args, client.deploy_url_list)
+    output = get_updated_url_list(response)
+
+    readable_output = tableToMarkdown(
+        name="URL list was updated successfully",
+        t=remove_empty_elements(output),
+        headers=URL_HEADER,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Netskope.URLList",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
 def create_url_list_command(
     client: Client,
     args: dict[str, Any],
@@ -568,7 +630,7 @@ def create_url_list_command(
 
     name = args["name"]
     urls = argToList(args["urls"])
-    list_type = URL_LIST_TYPE[args["list_type"]]
+    list_type = args.get("list_type", '').lower()
 
     response = client.create_url_list(
         name,
@@ -1187,7 +1249,7 @@ def optional_arg_to_boolean(arg: str | bool | None) -> bool | None:
     return argToBoolean(arg) if arg is not None else None
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
 
@@ -1215,6 +1277,7 @@ def main() -> None:
             "netskope-url-lists-list": lists_url_list_command,
             "netskope-url-list-delete": delete_url_list_command,
             "netskope-client-list": list_client_command,
+            "netskope-url-list-add": add_url_list_command
         }
 
         if command == "test-module":
