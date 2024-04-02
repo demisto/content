@@ -181,6 +181,8 @@ tasks:
           root: inputs.FileSha256
           transformers:
           - operator: uniq
+      limit:
+        simple: "1"
     separatecontext: false
     view: |-
       {
@@ -289,10 +291,10 @@ tasks:
         simple: "true"
       ids:
         complex:
-          root: csfalconx.resource.FindReport
-          accessor: reportIds
+          root: csfalconx.resource
+          accessor: resources
           transformers:
-          - operator: FirstArrayElement
+          - operator: uniq
     separatecontext: false
     view: |-
       {
