@@ -41,6 +41,31 @@ def test_generate_access_token_request_check_return(mocker, AIOps_client):
         assert AIOps_client._access_token == '123'
 
 
+def test_generate_report_command(mocker, AIOps_client):
+    from PaloAltoNetworksAIOps import generate_report_command
+    args = {'entry_id': '1234', 'requester_email': 'test@gmail.com', 'requester_name': 'test', 'export_as_file': 'false',
+            'show_in_context': 'false'}
+    generate_access_token_request_mock = mocker.patch.object(AIOps_client, 'generate_access_token_request')
+    generate_access_token_request_mock.return_value = {}
+    get_info_about_device_request_mock = mocker.patch.object(AIOps_client, 'get_info_about_device_request')
+    get_info_about_device_request_mock.return_value = ('<system ><family>test1</family><model>test2</model><serial>test3</serial><hostname>test</hostname><sw-version>'
+                                                       'test4</sw-version><ip-address>1.1.1.1</ip-address></system>')
+    http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
+    http_request_mock.return_value = {'upload-url': 'url_test', 'id': '1234'}
+    config_file_to_report_request_mock = mocker.patch.object(AIOps_client, 'config_file_to_report_request')
+    config_file_to_report_request_mock.return_value = {}
+    with patch('PaloAltoNetworksAIOps.convert_config_to_bytes', return_value=(b'<?xml version="1.0"?><config>test</config>')), \
+            patch('PaloAltoNetworksAIOps.polling_until_upload_report_command', return_value=None):
+        generate_report_command(AIOps_client, args)
+        http_request_mock.assert_called_once_with(method='POST',
+                                                  full_url='https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/requests',
+                                                  headers={'Content-Type': 'application/json', 'Accept': 'application/json',
+                                                           'Authorization': 'Bearer {}'},
+                                                  json_data={'requester-email': 'test@gmail.com', 'requester-name': 'test',
+                                                             'serial': 'test3', 'version': 'test4', 'model': 'test2',
+                                                             'family': 'test1'})
+
+
 def test_polling_until_upload_report_command_upload_initiated_status_first_round(mocker, AIOps_client):
     from PaloAltoNetworksAIOps import polling_until_upload_report_command
     check_upload_status_request_mock = mocker.patch.object(AIOps_client, 'check_upload_status_request')
@@ -135,6 +160,7 @@ def test_polling_until_upload_report_command_completed_with_success(mocker, AIOp
                                             'check_feature': 'feature2', 'check_category': 'device'}]}]
     assert result[1].get('File') == "report-id-123456789.md"
 
+
 def test_polling_until_upload_report_command_completed_with_success_no_context(mocker, AIOps_client):
     from PaloAltoNetworksAIOps import polling_until_upload_report_command
     bpa_json = {
@@ -172,6 +198,7 @@ def test_polling_until_upload_report_command_completed_with_success_no_context(m
                                          'Warning message 2 | warning |\n| 4 | device | feature2 | Note message 2 | note |\n')
     assert not result[0].outputs
     assert len(result) == 1
+
 
 def test_get_info_about_device_request_called_with(mocker, AIOps_client):
     """

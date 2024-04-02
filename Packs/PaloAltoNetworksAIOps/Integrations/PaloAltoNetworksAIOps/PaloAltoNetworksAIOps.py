@@ -328,7 +328,7 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     elif config_file:
         config_in_binary = convert_config_to_bytes(config_file, 'Download')
     else:
-        raise DemistoException("Can not uplaod a config file since it was not provided.")
+        raise DemistoException("Can not upload a config file since it was not provided.")
     upload_url, report_id = client.generate_bpa_report_request(requester_email, requester_name, dict(zip(tags, xml_tags_values)))
     client.config_file_to_report_request(upload_url, config_in_binary)
     return_results(polling_until_upload_report_command({'report_id': report_id, 'export_as_file': export_as_file,
