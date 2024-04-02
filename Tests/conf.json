@@ -83,6 +83,11 @@
             ]
         },
         {
+            "integrations": "AWS-EKS",
+            "playbookID": "AWSEKS-Test",
+            "fromversion": "6.9.0"
+        },
+        {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE Malware - Incident Enrichment",
             "instance_names": "microsoft_defender_atp_dev"
@@ -236,13 +241,14 @@
             "fromversion": "6.5.0",
             "instance_names": "using_v9",
             "memory_threshold": 200,
-            "timeout": 300
+            "timeout": 600
         },
         {
             "integrations": "McAfeeNSMv2",
             "playbookID": "Test_McAfeeNSMv2_using_v10",
             "instance_names": "using_v10",
-            "fromversion": "6.5.0"
+            "fromversion": "6.5.0",
+            "timeout": 600
         },
         {
             "playbookID": "Generic Polling Test",
@@ -857,7 +863,8 @@
         },
         {
             "integrations": "AlienVault OTX v2",
-            "playbookID": "Alienvault_OTX_v2 - Test"
+            "playbookID": "Alienvault_OTX_v2 - Test",
+            "memory_threshold": 130
         },
         {
             "integrations": "AWS - CloudWatchLogs",
@@ -2854,7 +2861,7 @@
             "integrations": [
                 "Cylance Protect v2",
                 "carbonblack-v2",
-                "epo",
+                "McAfee ePO v2",
                 "Active Directory Query v2",
                 "VMware Carbon Black EDR v2"
             ],
@@ -3291,7 +3298,8 @@
         {
             "integrations": "Unit42v2 Feed",
             "playbookID": "unit42_atoms",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "memory_threshold": 115
         },
         {
             "integrations": "QRadar v3",
@@ -5972,8 +5980,7 @@
         "PhishLabs IOC EIR": "No instance, CRTX-91214",
         "fortimail": "No instance",
         "JoeSecurityV2": "CIAC-9872",
-        "Aha": "No instance",
-        "MongoDB": "CIAC-10102"
+        "Aha": "No instance"
     },
     "nightly_packs": [
         "CommonScripts",
