@@ -1,3 +1,4 @@
+import subprocess
 from ConvertFile import main, find_zombie_processes
 import demistomock as demisto
 from CommonServerPython import entryTypes
@@ -100,3 +101,23 @@ def test_convert_failure(mocker):
     err_msg = return_error_mock.call_args[0][0]
     assert 'BAD' in err_msg
     assert 'Error: no export filter' in err_msg
+
+
+def test_zombie_prcesses(mocker):
+    ps_output = '''   PID  PPID S CMD
+    1     0 S python /tmp/pyrunner/_script_docker_python_loop.py
+   39     1 Z [soffice.bin] <defunct>
+   55     1 Z [gpgconf] <defunct>
+   57     1 Z [gpgconf] <defunct>
+   59     1 Z [gpg] <defunct>
+   61     1 Z [gpgsm] <defunct>
+   63     1 Z [gpgconf] <defunct>
+   98     1 Z [gpgconf] <defunct>
+  100     1 Z [gpgconf] <defunct>
+  102     1 Z [gpg] <defunct>
+'''
+    mocker.patch.object(subprocess, 'check_output', return_value=ps_output)
+    mocker.patch.object(os, 'getpid', return_value=1)
+    zombies, output = find_zombie_processes()
+    assert len(zombies) == 9
+    assert output == ps_output
