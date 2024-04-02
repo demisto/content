@@ -807,7 +807,7 @@ inputs:
 outputs: []
 quiet: true
 tests:
-- PaloAltoNetworks_PrismaCloudCompute-Test
+- No tests (auto formatted)
 fromversion: 8.0.0
 marketplaces:
 - xsoar
