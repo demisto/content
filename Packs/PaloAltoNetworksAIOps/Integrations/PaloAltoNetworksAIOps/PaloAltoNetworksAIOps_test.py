@@ -48,7 +48,8 @@ def test_generate_report_command(mocker, AIOps_client):
     generate_access_token_request_mock = mocker.patch.object(AIOps_client, 'generate_access_token_request')
     generate_access_token_request_mock.return_value = {}
     get_info_about_device_request_mock = mocker.patch.object(AIOps_client, 'get_info_about_device_request')
-    get_info_about_device_request_mock.return_value = ('<system ><family>test1</family><model>test2</model><serial>test3</serial><hostname>test</hostname><sw-version>'
+    get_info_about_device_request_mock.return_value = ('<system ><family>test1</family><model>test2</model><serial>test3</serial>'
+                                                       '<hostname>test</hostname><sw-version>'
                                                        'test4</sw-version><ip-address>1.1.1.1</ip-address></system>')
     http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
     http_request_mock.return_value = {'upload-url': 'url_test', 'id': '1234'}

@@ -22,7 +22,7 @@ class Client(BaseClient):
         self._tsg_id = tsg_id
         self._client_id = client_id
         self._client_secret = client_secret
-        self._access_token = {}
+        self._access_token = ""
 
     def generate_access_token_request(self):
         integration_context = get_integration_context()
