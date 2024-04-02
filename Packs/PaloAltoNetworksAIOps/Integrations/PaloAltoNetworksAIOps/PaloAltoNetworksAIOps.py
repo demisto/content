@@ -247,7 +247,8 @@ def convert_response_for_hr(response_json):
                         converted_array.append(note)
     return converted_array
 
-def create_response(client, report_id, show_in_context,export_as_file, upload_status):
+
+def create_response(client, report_id, show_in_context, export_as_file, upload_status):
     downloaded_BPA_url = client.download_bpa_request(report_id)
     downloaded_BPA_json = client.data_of_download_bpa_request(downloaded_BPA_url)
     converted_json = convert_response_for_hr(downloaded_BPA_json)
@@ -256,25 +257,26 @@ def create_response(client, report_id, show_in_context,export_as_file, upload_st
     # CommandResults depends on show_in_context arg
     if show_in_context:
         context_json = [{'report_id': report_id,
-            'report_status': upload_status,
-            'data': converted_json
-            }]
+                         'report_status': upload_status,
+                         'data': converted_json
+                         }]
         response.append(CommandResults(
-                outputs_prefix='AiOps.BPAReport',
-                outputs_key_field='report_id',
-                outputs=context_json,
-                raw_response=downloaded_BPA_json,
-                readable_output=human_readable_markdown,
-            ))
+            outputs_prefix='AiOps.BPAReport',
+            outputs_key_field='report_id',
+            outputs=context_json,
+            raw_response=downloaded_BPA_json,
+            readable_output=human_readable_markdown,
+        ))
     else:
         response.append(CommandResults(
-                raw_response=downloaded_BPA_json,
-                readable_output=human_readable_markdown
-            ))
+            raw_response=downloaded_BPA_json,
+            readable_output=human_readable_markdown
+        ))
     # Insert the markdown into a file
     if export_as_file:
         response.append(fileResult(f'report-id-{report_id}.md', human_readable_markdown))
     return response
+
 
 def create_markdown(original_dict):
     headers = ['check_id', 'check_category', 'check_feature', 'check_message', 'check_name', 'check_passed', 'check_type',
@@ -349,7 +351,7 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
     first_round = argToBoolean(args.get('first_round', False))
     upload_status = client.check_upload_status_request(report_id)
     if upload_status == 'COMPLETED_WITH_SUCCESS':
-        response = create_response(client, report_id, show_in_context,export_as_file, upload_status)
+        response = create_response(client, report_id, show_in_context, export_as_file, upload_status)
         return PollResult(
             response=response,
             continue_to_poll=False,
@@ -361,7 +363,7 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
                 response=results,
                 continue_to_poll=True,
                 args_for_next_run={'report_id': report_id, 'export_as_file': export_as_file, 'show_in_context': show_in_context,
-                                'hide_polling_output': True},
+                                   'hide_polling_output': True},
                 partial_result=CommandResults(
                     readable_output=f'The report with id {report_id} was sent successfully. Download in progress...'
                 )
@@ -371,7 +373,7 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
                 response=results,
                 continue_to_poll=True,
                 args_for_next_run={'report_id': report_id, 'export_as_file': export_as_file, 'show_in_context': show_in_context,
-                                'hide_polling_output': True},
+                                   'hide_polling_output': True},
             )
     elif upload_status == 'COMPLETED_WITH_ERROR':
         fail_output = {"report_id": report_id, "report_status": upload_status}
@@ -418,7 +420,7 @@ def main() -> None:
             client_secret=client_secret,
             verify=verify_certificate,
             proxy=proxy)
-     
+
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'aiops-bpa-report-generate':

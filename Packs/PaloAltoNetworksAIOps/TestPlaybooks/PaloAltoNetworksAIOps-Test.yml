@@ -1,6 +1,6 @@
-id: AIOps-BPA
+id: PaloAltoNetworksAIOps-Test
 version: -1
-name: AIOps-BPA
+name: PaloAltoNetworksAIOps-Test
 starttaskid: "0"
 tasks:
   "0":
