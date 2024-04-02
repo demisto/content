@@ -353,7 +353,7 @@ class EntryFormat(object):
 class FileAttachmentType(object):
     """
     Enum: contains the file attachment types,
-    Used to add information in the description of the attachment whether the image is inline or attached
+    Used to add metadata to the description of the attachment whether the file content is expected to be inline or attached as a file
     """
     ATTACHED = "attached_file"
 
