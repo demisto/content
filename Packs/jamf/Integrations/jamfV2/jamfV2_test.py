@@ -554,7 +554,7 @@ def test_generate_client_credentials_token(mocker):
         - generate_client_credentials_token is called
     Then:
         - Ensure the function returns the token and expiration time correctly
-        - Ensure the http_request is called with the correct arguments
+        - Ensure the http_request is called with the correct arguments.
     """
     from jamfV2 import Client
     mocker.patch.object(Client, '_http_request').return_value = {"access_token": "mocked token",
