@@ -6035,7 +6035,8 @@
         "PrismaCloudCompute",
         "ExpanseV2",
         "PrismaSaasSecurity",
-        "PaloAltoNetworks_IoT"
+        "PaloAltoNetworks_IoT",
+        "PaloAltoNetworksAIOps"
     ],
     "unmockable_integrations": {
         "NetscoutArborSightline": "Uses timestamp",

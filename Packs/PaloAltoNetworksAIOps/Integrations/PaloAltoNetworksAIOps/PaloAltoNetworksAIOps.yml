@@ -21,10 +21,12 @@ configuration:
   type: 0
   required: true
 - section: Connect
-  display: Client ID
+  display: ""
+  displaypassword: Client ID
   name: client_id
-  type: 0
+  type: 9
   required: true
+  hiddenusername: true
 - section: Connect
   display: ""
   displaypassword: Client Secret
@@ -47,20 +49,39 @@ script:
       description: Entry_id from xsoar war-room after uploading a file - should be a config file in xml format.
     - name: requester_email
       required: true
-      description: Enter the requester email.
+      description: Requester email.
     - name: requester_name
       required: true
-      description: Enter the requester name.
+      description: Requester name.
     - name: interval_in_seconds
-      description: Enter the interval for polling mechanism.
+      description: Interval for polling mechanism.
       defaultValue: "30"
     - name: timeout
       default: true
-      description: Enter the timeout for downloading the file.
+      description: Timeout for downloading the file.
       defaultValue: "600"
-    description: Generates a bpa.
+    - name: export_as_file
+      auto: PREDEFINED
+      description: Export the generated report as a file.
+      defaultValue: true
+      predefined: 
+      - true
+      - false
+    - name: show_in_context
+      auto: PREDEFINED
+      description: Show the report data inside the context.
+      defaultValue: true
+      predefined: 
+      - true
+      - false
+    description: |- 
+      Generates a bpa report. Steps - 
+      - Get information about Pan-OS/Panorama device.
+      - Get configuration file of Pan-OS/Panorama, if the user provides an entry_id to a config file this steps is skipped.
+      - Use the two above in order to generate a bpa report.
+      - During this process the API generates also a report_id for internal use.
     polling: true
-  - name: pan-aiops-polling-upload-report
+  - name: aiops-polling-upload-report
     arguments:
     - name: report_id
       description: Report_id recieved from generate_bpa_report_request.

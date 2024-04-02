@@ -282,6 +282,8 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     config_file_from_user = args.get('entry_id')
     requester_email = args.get('requester_email')
     requester_name = args.get('requester_name')
+    export_as_file = args.get('export_as_file')
+    show_in_context = args.get('show_in_context')
 
     # Get info about device - system info
     system_info_xml = client.get_info_about_device_request()
@@ -300,7 +302,9 @@ def generate_report_command(client: Client, args: dict[str, Any]):
         raise DemistoException("Can not uplaod a config file since it was not provided.")
     upload_url, report_id = client.generate_bpa_report_request(requester_email, requester_name, dict(zip(tags, xml_tags_values)))
     client.config_file_to_report_request(upload_url, config_in_binary)
-    return_results(polling_until_upload_report_command({'report_id': report_id, 'hide_polling_output': True}, client))
+    return_results(polling_until_upload_report_command({'report_id': report_id, 'export_as_file': export_as_file,
+                                                        'show_in_context': show_in_context, 'hide_polling_output': True,
+                                                        'first_round': True}, client))
 
 
 @polling_function(
@@ -313,6 +317,9 @@ def generate_report_command(client: Client, args: dict[str, Any]):
 def polling_until_upload_report_command(args: dict[str, Any], client: Client) -> PollResult:
     client.generate_access_token_request()
     report_id = args.get('report_id')
+    export_as_file = args.get('export_as_file')
+    show_in_context = args.get('show_in_context')
+    first_round = args.get('first_round', False)
     upload_status = client.check_upload_status_request(report_id)
     if upload_status == 'COMPLETED_WITH_SUCCESS':
         downloaded_BPA_url = client.download_bpa_request(report_id)
@@ -336,16 +343,25 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
         )
 
     elif upload_status == 'UPLOAD_INITIATED':
-        results = CommandResults(readable_output="Polling job failed.")
-        return PollResult(
-            response=results,
-            continue_to_poll=True,
-            args_for_next_run={'report_id': report_id},
-            partial_result=CommandResults(
-                readable_output=f'The report with id {report_id} was sent successfully. Download in progress...'
+        if first_round:
+            results = CommandResults(readable_output="Polling job failed.")
+            return PollResult(
+                response=results,
+                continue_to_poll=True,
+                args_for_next_run={'report_id': report_id, 'export_as_file': export_as_file, 'show_in_context': show_in_context,
+                                'hide_polling_output': True},
+                partial_result=CommandResults(
+                    readable_output=f'The report with id {report_id} was sent successfully. Download in progress...'
+                )
             )
-        )
-
+        else:
+            results = CommandResults(readable_output="Polling job failed.")
+            return PollResult(
+                response=results,
+                continue_to_poll=True,
+                args_for_next_run={'report_id': report_id, 'export_as_file': export_as_file, 'show_in_context': show_in_context,
+                                'hide_polling_output': True},
+            )
     elif upload_status == 'COMPLETED_WITH_ERROR':
         fail_output = {"report_id": report_id, "report_status": upload_status}
         return PollResult(
@@ -360,7 +376,8 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
     else:
         return PollResult(
             continue_to_poll=True,
-            args_for_next_run={'report_id': report_id, 'hide_polling_output': True},
+            args_for_next_run={'report_id': report_id, 'hide_polling_output': True, 'export_as_file': export_as_file,
+                               'show_in_context': show_in_context},
             response=None,
         )
 
