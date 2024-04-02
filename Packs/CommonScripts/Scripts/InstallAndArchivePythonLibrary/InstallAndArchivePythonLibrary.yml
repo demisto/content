@@ -1,0 +1,28 @@
+commonfields:
+  id: InstallAndArchivePythonLibrary
+  version: -1
+name: InstallAndArchivePythonLibrary
+script: ''
+type: python
+tags:
+- Utility
+- file
+comment: The script installs a Python library using pip and archive it.
+enabled: true
+args:
+- name: library_name
+  required: true
+  description: The Python library you wish to install and archive.
+outputs:
+- contextPath: ExtractedFiles
+  description: A list of file names that were extracted from the ZIP file.
+  type: Unknown
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/py3-tools:1.0.0.89345
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
