@@ -1,4 +1,5 @@
-from demisto_sdk.commands.generate_yml_from_python.yml_metadata_collector import (CommandMetadata, ConfKey, InputArgument, YMLMetadataCollector, OutputArgument, ParameterTypes)
+from demisto_sdk.commands.generate_yml_from_python.yml_metadata_collector import (
+    ConfKey, InputArgument, YMLMetadataCollector, OutputArgument, ParameterTypes)
 from CommonServerPython import *
 
 import demistomock as demisto
@@ -344,7 +345,7 @@ def test_outputs_headers_transform(header):
 metadata_collector = YMLMetadataCollector(
     integration_name="Safebreach",
     description="SafeBreach automatically executes thousands of breach methods from its extensive"
-    + "and growing Hacker’s Playbook™ to validate security control effectiveness. "
+    + "and growing Hacker's Playbook™ to validate security control effectiveness. "
     + "Simulations are automatically correlated with network, endpoint, and SIEM solutions "
     + "providing data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.",
     display="Safebreach",
@@ -549,14 +550,14 @@ class Client(BaseClient):
         This function calls API endpoint and handles the response
 
         Args:
-            url (str, optional): endpoint url which follows base URL will be this input . Defaults to "".
+            url (str, optional): endpoint url which follows base URL will be this input . Defaults to "". 
             method (str, optional): HTTP method to be used, Defaults to "GET".
             request_params (dict, optional): request parameters if any. Defaults to {}.
             body (dict, optional): request body for API call. Defaults to None.
 
         Returns:
             (dict,list,Exception): a dictionary or list with data based on API call OR Throws an error based on status code
-        """
+        """  # noqa: W291
         # base_url = demisto.params().get("base_url", "").strip()
 
         base_url = self.base_url.strip()
@@ -578,7 +579,7 @@ class Client(BaseClient):
         )
         return (
             response
-            if not ((type(response) == dict) and (response.get("error") and not response.get("errorCode")))
+            if not ((type(response) == dict) and (response.get("error") and not response.get("errorCode")))  # noqa: E721
             else self.handle_sbcodes(response)
         )
 
@@ -1780,11 +1781,11 @@ class Client(BaseClient):
         nodeId = demisto.args().get("simulator_id", "")
         simulator_version = demisto.args().get("simulator_version", "")
         url = "/updater/v2/simulatorUpdate/"
-        body_dict = [{
+        body_dict = {
             "enableUpdates": True,
             "nodeId": nodeId,
             "selectedVersion": simulator_version,
-        }]
+        }
         simulator_data = self.get_response(url=url, method="POST", body=body_dict)
         return simulator_data
 
@@ -2078,10 +2079,10 @@ def get_all_users(client: Client):
         ),
     ],
     description="The command retrieves users based on the provided inputs. "
-    + "If an email is provided, it returns the user associated with that email, as email is a unique identifier" +
-    "If a name is provided, exact name matching is required to ensure accurate retrieval of a single user;" +
-    "otherwise, multiple users may be returned. It's essential to note that either a name or an email must be populated as input;"
-    +"failure to provide either results in an error.",
+    + "If an email is provided, it returns the user associated with that email, as email is a unique identifier"
+    + "If a name is provided, exact name matching is required to ensure accurate retrieval of a single user;"
+    + "otherwise, multiple users may be returned. It's essential to note that either a name or an email must be populated as input;"  # noqa: E501
+    + "failure to provide either results in an error.",
 )
 def get_user_id_by_name_or_email(client: Client):
     """
@@ -3388,8 +3389,8 @@ def get_simulator_with_name(client: Client):
     ],
     outputs_prefix="SafeBreach.Simulator",
     outputs_list=simulators_output_fields,
-    description="The provided command facilitates the deletion of a simulator identified by its unique ID." +
-    "To obtain the respective simulator ID, execute the \"safebreach-get-all-simulators\" command."
+    description="The provided command facilitates the deletion of a simulator identified by its unique ID."
+    + "To obtain the respective simulator ID, execute the \"safebreach-get-all-simulators\" command."
 )
 def delete_simulator_with_given_name(client: Client):
     """
@@ -3805,7 +3806,7 @@ def plan_id_name_map(test_summaries):
             name="scenario_id", description="the matrix ID of the schedule.", prefix="SafeBreach.Schedules", output_type=str
         ),
         OutputArgument(
-            name="created_at", description="the creation datetime of the schedule.", prefix="SafeBreach.Schedules", output_type=str
+            name="created_at", description="the creation datetime of the schedule.", prefix="SafeBreach.Schedules", output_type=str  # noqa: E501
         ),
         OutputArgument(
             name="updated_at", description="the updated datetime of the schedule.", prefix="SafeBreach.Schedules", output_type=str
@@ -3944,7 +3945,7 @@ def delete_schedules(client: Client):
     demisto.debug(f"Delete schedules result is: {schedules_data}")
 
     if schedules_data.get("data"):
-         human_readable = tableToMarkdown("Deleted scheduled scenario:", schedules_data.get("data"))
+        human_readable = tableToMarkdown("Deleted scheduled scenario:", schedules_data.get("data"))
     else:
         human_readable = f"Unable to delete schedules: {schedules_data.get('data')}"
 
@@ -4217,9 +4218,9 @@ def get_custom_scenarios(client: Client):
         ),
         OutputArgument(name="error", description="error status of service.", prefix="SafeBreach.Service", output_type=str),
     ],
-    description="This command facilitates the retrieval of service statuses from SafeBreach," +
-    "presenting them to the user in a tabular format. In the event that services are inactive," +
-    "pertinent details regarding their downtime or last operational status are also displayed.",
+    description="This command facilitates the retrieval of service statuses from SafeBreach,"
+    + "presenting them to the user in a tabular format. In the event that services are inactive,"
+    + "pertinent details regarding their downtime or last operational status are also displayed.",
 )
 def get_services_status(client: Client):
     """
@@ -4316,7 +4317,7 @@ def simulations_transformer(header):
             name="attack_description", description="attack details.", prefix="SafeBreach.Simulation", output_type=str
         ),
     ],
-    description="This command facilitates the retrieval of simulations and their associated data for a specified test. It can be used as a precursor command for the rerun-simulations command, streamlining the process of queuing simulations. It's important to note that this command currently lacks pagination limiters, potentially resulting in the retrieval of a large volume of data.",
+    description="This command facilitates the retrieval of simulations and their associated data for a specified test. It can be used as a precursor command for the rerun-simulations command, streamlining the process of queuing simulations. It's important to note that this command currently lacks pagination limiters, potentially resulting in the retrieval of a large volume of data."  # noqa: E501
 )
 def get_simulations(client: Client):
     """
