@@ -81,6 +81,8 @@ repos:
     exclude: _test\.py|\.vulture_whitelist\.py|test_data|tests_data|TestData
     require_serial: true
     language: system
+    # skip nightly since we don't care about warnings in nightly
+    nightly:skip: true
 
   - id: pylint-in-docker
     name: pylint-in-docker
