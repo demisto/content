@@ -696,7 +696,7 @@ class Pack:
             Metadata.NAME: self._display_name or self._pack_name,
             Metadata.ID: self._pack_name,
             Metadata.DESCRIPTION: self._description or self._pack_name,
-            Metadata.CREATED: self._create_date,
+            Metadata.FIRST_CREATED: self._create_date,
             Metadata.UPDATED: self._update_date,
             Metadata.LEGACY: self._legacy,
             Metadata.SUPPORT: self._support_type,
@@ -2597,10 +2597,14 @@ class Pack:
         metadata = load_json(os.path.join(index_folder_path, pack_name, Pack.METADATA))
 
         if metadata:
-            if metadata.get(Metadata.CREATED):
-                created_time = metadata.get(Metadata.CREATED, '')
+            if metadata.get(Metadata.FIRST_CREATED):
+                created_time = metadata.get(Metadata.FIRST_CREATED, '')
+            elif metadata.get('created') and not metadata.get(Metadata.FIRST_CREATED):
+                metadata[Metadata.FIRST_CREATED] = metadata.get('created')
+                created_time = metadata.get(Metadata.FIRST_CREATED, '')
+                logging.debug(f"Found deprecated create date field in the {pack_name} pack, updating to firstCreated.")
             else:
-                raise Exception(f'The metadata file of the {pack_name} pack does not contain "{Metadata.CREATED}" time')
+                raise Exception(f'The metadata file of the {pack_name} pack does not contain "{Metadata.FIRST_CREATED}" time')
 
         return created_time
 
