@@ -11,13 +11,20 @@ configuration:
 - display: API Key ID
   name: apikey_id
   type: 4
-  hidden: false
+  hidden: true
   required: false
 - display: API Key
   name: apikey
   type: 4
-  hidden: false
+  hidden: true
   required: false
+- display: API Key ID
+  name: credentials
+  defaultvalue: ""
+  type: 9
+  required: false
+  section: Connect
+  displaypassword: API Key
 - additionalinfo: Map the severity of each indicator that will be synced to Cortex.
   display: Cortex Severity
   name: severity

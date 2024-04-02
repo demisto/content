@@ -422,11 +422,13 @@ class CoreClient(BaseClient):
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
-        reply = response.get('Data')
+        demisto.debug(f'response {response} ')
+        # reply = response.get('Data')
         demisto.debug(f"get_endpoints response = {reply}")
 
-        endpoints = reply.get('reply').get('endpoints', [])
-        return endpoints
+        #endpoints = reply.get('reply', {}).get('endpoints', [])
+        
+        return response
 
     def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:  # pragma: no cover
         """
