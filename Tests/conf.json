@@ -2734,7 +2734,8 @@
                 "Active Directory Query v2"
             ],
             "instance_names": "active_directory_ninja",
-            "fromversion": "4.5.0"
+            "fromversion": "4.5.0",
+            "memory_threshold": 80
         },
         {
             "integrations": "Freshdesk",
@@ -3619,6 +3620,9 @@
             ],
             "timeout": 300,
             "is_mockable": false
+        },
+        {
+            "playbookID": "GetIndicatorsByQuery - Test"
         },
         {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",

@@ -612,6 +612,7 @@ def test_get_all_content_packs_dependencies(mocker: MockFixture):
     client = mocker.Mock()
     mock_request = [
         {
+            "total": 3,
             "packs": [
                 {
                     "id": "Pack1",
@@ -628,6 +629,7 @@ def test_get_all_content_packs_dependencies(mocker: MockFixture):
             ]
         },
         {
+            "total": 3,
             "packs": [
                 {
                     "id": "Pack3",
@@ -661,7 +663,7 @@ def test_get_all_content_packs_dependencies_empty(mocker: MockFixture):
     """
     client = mocker.Mock()
     mocker.patch.object(
-        script, "get_one_page_of_packs_dependencies", return_value={"packs": []}
+        script, "get_one_page_of_packs_dependencies", return_value={"total": 3, "packs": []}
     )
 
     result = script.get_all_content_packs_dependencies(client)

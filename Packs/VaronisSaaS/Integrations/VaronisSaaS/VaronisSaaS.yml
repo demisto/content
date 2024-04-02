@@ -565,7 +565,7 @@ script:
       description: Predefined/User-defined.
       type: String
     name: varonis-get-threat-models
-  dockerimage: demisto/python3:3.10.13.85667
+  dockerimage: demisto/python3:3.10.13.86272
   feed: false
   isfetch: true
   longRunning: false

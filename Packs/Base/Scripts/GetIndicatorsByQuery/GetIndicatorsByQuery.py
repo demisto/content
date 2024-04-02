@@ -37,7 +37,7 @@ def is_key_match_fields_to_hash(key, fields_to_hash):
 
 def hash_multiple(value, fields_to_hash, to_hash=False):
     if isinstance(value, list):
-        return list(map(lambda x: hash_multiple(x, fields_to_hash, to_hash), value))
+        return [hash_multiple(x, fields_to_hash, to_hash) for x in value]
     if isinstance(value, dict):
         for k, v in value.items():
             _hash = to_hash or is_key_match_fields_to_hash(k, fields_to_hash)
@@ -45,7 +45,7 @@ def hash_multiple(value, fields_to_hash, to_hash=False):
         return value
     else:
         try:
-            if isinstance(value, (int, float, bool)):
+            if isinstance(value, int | float | bool):
                 to_hash = False
             if not isinstance(value, str):
                 value = str(value)
@@ -88,11 +88,16 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int):
     Finds indicators using while loop with demisto.searchIndicators, and returns result and last page
     """
     iocs: List[dict] = []
-    search_indicators = IndicatorsSearcher(query=indicator_query, limit=limit, size=PAGE_SIZE)
+    search_indicators = IndicatorsSearcher(
+        query=indicator_query,
+        limit=limit,
+        size=PAGE_SIZE,
+        filter_fields=",".join(populate_fields) if populate_fields else None,
+    )
     for ioc_res in search_indicators:
         fetched_iocs = ioc_res.get('iocs') or []
         iocs.extend(fetched_iocs)
-    return list(map(lambda x: parse_ioc(x), iocs))
+    return [parse_ioc(x) for x in iocs]
 
 
 fields_to_hash, unpopulate_fields, populate_fields = [], [], []  # type: ignore
@@ -102,8 +107,8 @@ def main():
     global fields_to_hash, unpopulate_fields, populate_fields
     args = demisto.args()
     fields_to_hash = frozenset([x for x in argToList(args.get('fieldsToHash', '')) if x])  # type: ignore
-    unpopulate_fields = frozenset([x for x in argToList(args.get('dontPopulateFields', ''))])  # type: ignore
-    populate_fields = frozenset([x for x in argToList(args.get('populateFields', ''))])  # type: ignore
+    unpopulate_fields = frozenset([x for x in argToList(args.get('dontPopulateFields', '')) if x])  # type: ignore
+    populate_fields = frozenset([x for x in argToList(args.get('populateFields', '')) if x])  # type: ignore
     limit = int(args.get('limit', PAGE_SIZE))
     query = args.get('query', '')
     offset = int(args.get('offset', 0))

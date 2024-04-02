@@ -80,6 +80,7 @@ FileResult
 JavaScript
 CPE
 CPEs
+debug-entry
 
 [tests_require_network]
 CommonServerPython

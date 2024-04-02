@@ -247,6 +247,7 @@ entryTypes = {
     'entryInfoFile': 9,
     'warning': 11,
     'map': 15,
+    'debug': 16,
     'widget': 17
 }
 
@@ -7711,8 +7712,7 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
             return res
         else:
             return True, res
-
-    contents = [entry.get('Contents', {}) for entry in res]
+    contents = [entry.get('Contents', {}) for entry in res if entry['Type'] != entryTypes['debug']]
     contents = contents[0] if len(contents) == 1 else contents
 
     if fail_on_error:

@@ -19,8 +19,8 @@ from datetime import timezone
 from email import parser as email_parser
 from enum import Enum
 from tempfile import NamedTemporaryFile
-from typing import (IO, Any, Callable, Dict, Generator, List, Optional, Set,
-                    Tuple, Union)
+from typing import (IO, Any)
+from collections.abc import Callable, Generator
 
 import bottle
 from bottle import BaseRequest, HTTPResponse
@@ -1603,7 +1603,7 @@ LnBuZwoAIAAAAAAAAQAYAB2xvW2s/NgBtQ04ILj82AF7GhB5rPzYAVBLAQI/AAoAAAAAAPeK
 dFVwwzDRxgIAAMYCAAAOACQAAAAAAAAAIAAAACBDAQBmaV91bmtub3duLnBuZwoAIAAAAAAA
 AQAYAPbxqWe5/NgB/RpAo7n82AElXftTrfzYAVBLBQYAAAAABgAGAEICAAASRgEAAAA=
 '''
-RESOURCES_ZIP: Optional[zipfile.ZipFile] = None
+RESOURCES_ZIP: zipfile.ZipFile | None = None
 
 DEFAULT_MIME_TYPES = '''
 {
@@ -2917,17 +2917,17 @@ VALIDATION = Enum('VALIDATION', ['SUCCESS', 'FAILURE', 'NONCE_EXPIRED'])
 
 class Settings:
     @staticmethod
-    def parse_attachment_exts(text: str) -> Set[str]:
+    def parse_attachment_exts(text: str) -> set[str]:
         """ Parse a text to build a attachment extentions.
 
         :param text: A attachment extentions configuration
         :return: A set of extentions.
         """
-        return set(ext if ext == '*' or ext.startswith('.') else f'.{ext}'
-                   for ext in text.replace(',', ' ').split())
+        return {ext if ext == '*' or ext.startswith('.') else f'.{ext}'
+                for ext in text.replace(',', ' ').split()}
 
     @staticmethod
-    def parse_mime_types(text: str) -> Dict[str, str]:
+    def parse_mime_types(text: str) -> dict[str, str]:
         """ Parse a text to build a mime type mapping to extensions
 
         :param text: A mapping configuration
@@ -2948,7 +2948,7 @@ class Settings:
         return mapping
 
     @staticmethod
-    def parse_human_size(size: str) -> Optional[int]:
+    def parse_human_size(size: str) -> int | None:
         """ Parse a human readable size string
 
         :return: Size in bytes
@@ -2960,7 +2960,7 @@ class Settings:
         UNITS = {None: 1, 'B': 1, 'KB': 2**10, 'MB': 2**20, 'GB': 2**30, 'TB': 2**40}
         return int(float(num) * UNITS[unit])
 
-    def __init__(self, params: Dict[str, Any]):
+    def __init__(self, params: dict[str, Any]):
         max_storage_size_str = params.get('maxStorageSize') or '100 MB'
         if (max_storage_size := Settings.parse_human_size(max_storage_size_str)) is None:
             raise DemistoException('Invalid max storage size')
@@ -3001,7 +3001,7 @@ class Settings:
         self.__ro_username = creds.get('identifier') or ''
         self.__ro_password = creds.get('password') or ''
 
-    def get_user_password(self, username: Optional[str]) -> Optional[str]:
+    def get_user_password(self, username: str | None) -> str | None:
         if username == self.__rw_username:
             return self.__rw_password
         elif username == self.__ro_username:
@@ -3009,7 +3009,7 @@ class Settings:
         else:
             return None
 
-    def get_user_permissions(self, username: Optional[str]) -> Set[PERMISSION]:
+    def get_user_permissions(self, username: str | None) -> set[PERMISSION]:
         if username == self.__rw_username:
             return set({PERMISSION.READ, PERMISSION.WRITE})
         elif username == self.__ro_username:
@@ -3039,11 +3039,11 @@ class Settings:
         return self.__docker_port
 
     @property
-    def attachment_exts(self) -> Set[str]:
+    def attachment_exts(self) -> set[str]:
         return self.__attachment_exts
 
     @property
-    def ext_to_mimetype(self) -> Dict[str, str]:
+    def ext_to_mimetype(self) -> dict[str, str]:
         return self.__ext_to_mimetype
 
     @property
@@ -3063,22 +3063,22 @@ class Settings:
         return self.__storage_protection  # type: ignore
 
     @property
-    def auth_method(self) -> Optional[str]:
+    def auth_method(self) -> str | None:
         return self.__auth_method
 
     @property
-    def rw_user_credentials(self) -> Tuple[str, str]:
+    def rw_user_credentials(self) -> tuple[str, str]:
         return self.__rw_username, self.__rw_password
 
     @property
-    def ro_user_credentials(self) -> Tuple[str, str]:
+    def ro_user_credentials(self) -> tuple[str, str]:
         return self.__ro_username, self.__ro_password
 
 
 SETTINGS = Settings(demisto.params())
 
 
-def get_default_gateway() -> Optional[str]:
+def get_default_gateway() -> str | None:
     """ Get a default gateway address.
 
     :return: A default gateway address found.
@@ -3109,7 +3109,7 @@ def get_local_ip() -> str:
         return ip
 
 
-def detect_service_ip_port(settings: Settings) -> Tuple[str, int]:
+def detect_service_ip_port(settings: Settings) -> tuple[str, int]:
     """ Detect the IP:port of the local server
 
     :param settings: The instance settings.
@@ -3129,7 +3129,7 @@ def detect_service_ip_port(settings: Settings) -> Tuple[str, int]:
     return server_addr, server_port
 
 
-def new_client(host_port: Tuple[str, int], settings: Settings) -> BaseClient:
+def new_client(host_port: tuple[str, int], settings: Settings) -> BaseClient:
     """ Create a new BasicClient
 
     :param host_port: The IP and port number
@@ -3137,7 +3137,7 @@ def new_client(host_port: Tuple[str, int], settings: Settings) -> BaseClient:
     :return: A new BasicClient created.
     """
     server_addr, server_port = host_port
-    auth: Optional[Union[HTTPBasicAuth, HTTPDigestAuth]] = None
+    auth: HTTPBasicAuth | HTTPDigestAuth | None = None
 
     username, password = settings.rw_user_credentials
     if settings.auth_method in ('', None):
@@ -3164,12 +3164,12 @@ def pretty_size(size: int) -> str:
 
 class NonceManager:
     def __init__(self):
-        self.__cache: Dict[str, Dict[str, Any]] = {}
+        self.__cache: dict[str, dict[str, Any]] = {}
         self.__expires = 10
         self.__max_replays = 20
         self.__max_nonce = 4096
 
-    def __remove_expired_oldest(self, now: Optional[int] = None) -> bool:
+    def __remove_expired_oldest(self, now: int | None = None) -> bool:
         """ Remove the expired oldest nonce from the cache
 
         :param now: The current timestamp
@@ -3192,7 +3192,7 @@ class NonceManager:
         else:
             return False
 
-    def __new_nonce(self) -> Tuple[int, str]:
+    def __new_nonce(self) -> tuple[int, str]:
         """ Create a new nonce
 
         :return: The current timestamp and a new nonce.
@@ -3249,7 +3249,7 @@ class Master:
 
         :param storage_protection: The storage protection mode
         """
-        self.__repo: Optional[Dict[str, str]] = None
+        self.__repo: dict[str, str] | None = None
         self.__storage_protection = storage_protection
         self.__total_data_usage = None
 
@@ -3264,7 +3264,7 @@ class Master:
         if self.storage_protection == STORAGE_PROTECTION.READ_WRITE:
             set_integration_context({})
 
-    def get_full_repository(self) -> Dict[str, str]:
+    def get_full_repository(self) -> dict[str, str]:
         """ Get the full context data from the integration context
 
         :return: The integration context.
@@ -3280,7 +3280,7 @@ class Master:
 
         return ctx
 
-    def get_attrs_repository(self) -> Dict[str, str]:
+    def get_attrs_repository(self) -> dict[str, str]:
         """ Get the file entries without payloads from the integration context.
 
         :return: The integration context without file payloads.
@@ -3291,7 +3291,7 @@ class Master:
         else:
             return self.get_full_repository()
 
-    def set_full_repository(self, repo: Dict[str, str]) -> None:
+    def set_full_repository(self, repo: dict[str, str]) -> None:
         """ Set the full context data to the integration context.
 
         :param repo: The integration context.
@@ -3302,7 +3302,7 @@ class Master:
             self.__repo = {k: v for k, v in repo.items() if k.startswith(os.sep)}
             set_integration_context(repo)
 
-    def total_data_usage(self) -> Tuple[int, int]:
+    def total_data_usage(self) -> tuple[int, int]:
         """ Get the data usage
 
         :return: The sum of all the saved sizes in the DB / on the file system.
@@ -3334,11 +3334,11 @@ MASTER_REPOSITORY = Master(storage_protection=SETTINGS.storage_protection)
 
 
 class AttrsRepository:
-    def __init__(self, repo: Dict[str, str]):
+    def __init__(self, repo: dict[str, str]):
         self.repo = repo
 
     @staticmethod
-    def __split_path_components(abs_path: str) -> List[str]:
+    def __split_path_components(abs_path: str) -> list[str]:
         comps = []
         path = os.path.normpath(to_abs_path(abs_path))
         while path:
@@ -3349,12 +3349,12 @@ class AttrsRepository:
             path = parent
         return list(reversed(comps[:-1]))
 
-    def is_file_type(self, data_type: Optional[str]) -> bool:
+    def is_file_type(self, data_type: str | None) -> bool:
         return data_type == 'gzip-file'
 
     def list_file_entries(self,
                           abs_dir: str,
-                          recursive: bool = False) -> Dict[str, Dict[str, Any]]:
+                          recursive: bool = False) -> dict[str, dict[str, Any]]:
         """ List the file entries on a directory
 
         :param abs_dir: The directory path in absolute path on which to list file entries
@@ -3405,7 +3405,7 @@ class AttrsRepository:
 
 class FullRepository(AttrsRepository):
     @staticmethod
-    def new_decoder(data_type: Optional[str], data: str) -> Generator[bytes, None, None]:
+    def new_decoder(data_type: str | None, data: str) -> Generator[bytes, None, None]:
         """ Decode a file content in chunks
 
         :param data_type: The encoding mode of the payload.
@@ -3423,7 +3423,7 @@ class FullRepository(AttrsRepository):
             raise DemistoException(f'Unknown data type: {data_type}')
 
     @staticmethod
-    def new_reader(data_type: Optional[str], path: str) -> Generator[bytes, None, None]:
+    def new_reader(data_type: str | None, path: str) -> Generator[bytes, None, None]:
         """ Read a file content in chunks
 
         :param data_type: The file type.
@@ -3476,15 +3476,14 @@ class FullRepository(AttrsRepository):
 
         # Remove file entries under the directory
         repo = self.repo
-        for path in [path for path in repo.keys() if path.startswith(sub_path)]:
+        for path in [path for path in repo if path.startswith(sub_path)]:
             attrs = json.loads(repo.pop(path, '{}'))
             if not self.is_file_type(attrs.get('data-type')):
                 data = repo.pop((attrs.get('data-id') or ''), None)
                 self.__total_data_usage -= len(data or '')
             else:
-                if path := attrs.get('data-id'):
-                    if os.path.isfile(path):
-                        os.unlink(path)
+                if (path := attrs.get('data-id')) and os.path.isfile(path):
+                    os.unlink(path)
                 self.__total_file_usage -= attrs.get('saved-size') or 0
 
         # Remove the file entry
@@ -3493,12 +3492,11 @@ class FullRepository(AttrsRepository):
             data = repo.pop((attrs.get('data-id') or ''), None)
             self.__total_data_usage -= len(data or '')
         else:
-            if path := attrs.get('data-id'):
-                if os.path.isfile(path):
-                    os.unlink(path)
+            if (path := attrs.get('data-id')) and os.path.isfile(path):
+                os.unlink(path)
             self.__total_file_usage -= attrs.get('saved-size') or 0
 
-    def save_file(self, abs_dir: str, name: str, data: IO[bytes]) -> Dict[str, Any]:
+    def save_file(self, abs_dir: str, name: str, data: IO[bytes]) -> dict[str, Any]:
         """ Save a file
 
         :param abs_dir: The directory path in absolute path
@@ -3578,7 +3576,7 @@ class FullRepository(AttrsRepository):
                 os.unlink(gtmp.name)
             raise
 
-    def save_files(self, abs_dir: str, files: Dict[str, IO[bytes]], extract: bool) -> None:
+    def save_files(self, abs_dir: str, files: dict[str, IO[bytes]], extract: bool) -> None:
         """ Save files
 
         :param abs_dir: The directory path in absolute path
@@ -3594,10 +3592,7 @@ class FullRepository(AttrsRepository):
                             with z.open(filename) as zd:
                                 self.save_file(abs_dir, filename, zd)
 
-                elif lowername.endswith('.tar') or \
-                        lowername.endswith('.tar.gz') or\
-                        lowername.endswith('.tar.bz2') or \
-                        lowername.endswith('.tar.xz'):
+                elif lowername.endswith(('.tar', '.tar.gz', '.tar.bz2', '.tar.xz')):
                     with tarfile.open(mode='r:*', fileobj=file) as t:
                         for tinfo in t:
                             if tinfo.isfile() and ((td := t.extractfile(tinfo)) is not None):
@@ -3607,8 +3602,8 @@ class FullRepository(AttrsRepository):
             else:
                 self.save_file(abs_dir, name, file)
 
-    def read_file(self, abs_path: str) -> Tuple[Dict[str, Any],
-                                                Optional[Generator[bytes, None, None]]]:
+    def read_file(self, abs_path: str) -> tuple[dict[str, Any],
+                                                Generator[bytes, None, None] | None]:
         """ Read a file content with its attributes
 
         :param abs_path: The file path
@@ -3616,7 +3611,7 @@ class FullRepository(AttrsRepository):
         """
         repo = self.repo
         if eattrs := repo.get(os.path.normpath(abs_path)):
-            attrs: Dict[str, Any] = json.loads(eattrs)
+            attrs: dict[str, Any] = json.loads(eattrs)
             if data_id := attrs.get('data-id'):
                 attrs['name'] = os.path.basename(abs_path)
                 attrs['path'] = abs_path
@@ -3688,7 +3683,7 @@ class ServiceHandler:
         self.__settings = settings
         self.__master = master
 
-    def __validate_basic_auth(self, auth_value) -> Set[PERMISSION]:
+    def __validate_basic_auth(self, auth_value) -> set[PERMISSION]:
         """ Checks whether the authentication is valid
 
         :param auth_value: Credentials given to the Authentication header
@@ -3703,7 +3698,7 @@ class ServiceHandler:
                                auth_value: str,
                                request_method: str,
                                realm: str,
-                               hash_name: Tuple[str, str]) -> Tuple[VALIDATION, Set[PERMISSION]]:
+                               hash_name: tuple[str, str]) -> tuple[VALIDATION, set[PERMISSION]]:
         """ Checks whether the authentication is valid
 
         :param auth_value: Credentials given to the Authentication header
@@ -3738,7 +3733,7 @@ class ServiceHandler:
         else:
             return VALIDATION.FAILURE, set()
 
-    def authenticate(self, request: BaseRequest, permission: PERMISSION) -> Optional[HTTPResponse]:
+    def authenticate(self, request: BaseRequest, permission: PERMISSION) -> HTTPResponse | None:
         """ Authenticate user to the required permission
 
         :param request: The request data
@@ -3877,7 +3872,7 @@ class ServiceHandler:
         response.body = FullRepository(self.__master).archive_zip()
         return response
 
-    def __handle_post_health(self, request: BaseRequest) -> Optional[HTTPResponse]:
+    def __handle_post_health(self, request: BaseRequest) -> HTTPResponse | None:
         if permission := request.json.get('permission'):
             return self.authenticate(
                 request,
@@ -4027,7 +4022,7 @@ def run_long_running(settings: Settings, is_test: bool = False):
         bottle.run(host='0.0.0.0', port=settings.docker_port, debug=True)
 
 
-def test_module(args: Dict[str, str], settings: Settings) -> str:
+def test_module(args: dict[str, str], settings: Settings) -> str:
     """
     Validates:
     """
@@ -4035,7 +4030,7 @@ def test_module(args: Dict[str, str], settings: Settings) -> str:
     return 'ok'
 
 
-def command_status(args: Dict[str, str], settings: Settings) -> CommandResults:
+def command_status(args: dict[str, str], settings: Settings) -> CommandResults:
     """ Get the service status
 
     :param args: The parameters which were given to the command.
@@ -4077,7 +4072,7 @@ def command_status(args: Dict[str, str], settings: Settings) -> CommandResults:
         raw_response=outputs)
 
 
-def command_cleanup(args: Dict[str, str], settings: Settings) -> str:
+def command_cleanup(args: dict[str, str], settings: Settings) -> str:
     """ Remove all the files from the repository
 
     :param args: The parameters which were given to the command.
@@ -4092,7 +4087,7 @@ def command_cleanup(args: Dict[str, str], settings: Settings) -> str:
     return 'Done.'
 
 
-def command_reset(args: Dict[str, str], settings: Settings) -> str:
+def command_reset(args: dict[str, str], settings: Settings) -> str:
     """ Reset the repostiory data
 
     :param args: The parameters which were given to the command.
@@ -4107,7 +4102,40 @@ def command_reset(args: Dict[str, str], settings: Settings) -> str:
     return 'Done.'
 
 
-def command_upload_file(args: Dict[str, str], settings: Settings) -> str:
+def command_upload_as_file(args: dict[str, str], settings: Settings) -> str:
+    """ Upload data as a file
+
+    :param args: The parameters which were given to the command.
+    :param settings: The instance settings.
+    """
+    client = new_client(detect_service_ip_port(settings), settings)
+
+    input_data = args.get('data', '')
+    encoding = args.get('encoding', 'utf-8')
+    match encoding:
+        case 'utf-8':
+            file_data = input_data.encode(encoding)
+
+        case 'base64':
+            file_data = base64.b64decode(input_data)
+
+        case _:
+            raise ValueError(f'Invalid encoding name: {encoding}')
+
+    files = [('file', [args.get('file_name'), file_data])]
+
+    data = assign_params(
+        q='upload',
+        dir=args.get('upload_directory', '/'),
+        extract=args.get('extract_archive', 'false'),
+    )
+    resp = client._http_request('POST', data=data, files=files, raise_on_status=True)
+    if not resp.get('success'):
+        raise ValueError(f'Failed to upload a file: {resp.get("message")}')
+    return 'Done.'
+
+
+def command_upload_file(args: dict[str, str], settings: Settings) -> str:
     """ Upload a file
 
     :param args: The parameters which were given to the command.
@@ -4135,7 +4163,7 @@ def command_upload_file(args: Dict[str, str], settings: Settings) -> str:
     return 'Done.'
 
 
-def command_upload_files(args: Dict[str, str], settings: Settings) -> str:
+def command_upload_files(args: dict[str, str], settings: Settings) -> str:
     """ Upload files
 
     :param args: The parameters which were given to the command.
@@ -4162,7 +4190,7 @@ def command_upload_files(args: Dict[str, str], settings: Settings) -> str:
     return 'Done.'
 
 
-def command_list_files(args: Dict[str, str], settings: Settings) -> CommandResults:
+def command_list_files(args: dict[str, str], settings: Settings) -> CommandResults:
     """ List file entries in the repository
 
     :param args: The parameters which were given to the command.
@@ -4211,7 +4239,7 @@ def command_list_files(args: Dict[str, str], settings: Settings) -> CommandResul
         raw_response=file_ents)
 
 
-def command_remove_files(args: Dict[str, str], settings: Settings) -> str:
+def command_remove_files(args: dict[str, str], settings: Settings) -> str:
     """ Remove files from the repository
 
     :param args: The parameters which were given to the command.
@@ -4229,7 +4257,7 @@ def command_remove_files(args: Dict[str, str], settings: Settings) -> str:
     return 'Done.'
 
 
-def command_download_file(args: Dict[str, str], settings: Settings) -> Dict[str, Any]:
+def command_download_file(args: dict[str, str], settings: Settings) -> dict[str, Any]:
     """ Download a file from the repository
 
     :param args: The parameters which were given to the command.
@@ -4247,15 +4275,14 @@ def command_download_file(args: Dict[str, str], settings: Settings) -> Dict[str,
                                 raise_on_status=True,
                                 resp_type='response')
 
-    if not (filename := args.get('save_as')):
-        if content_disposition := resp.headers.get('Content-Disposition'):
-            cdp = email_parser.Parser().parsestr(f'Content-Disposition: {content_disposition}', headersonly=True)
-            filename = cdp.get_filename()
+    if not (filename := args.get('save_as')) and (content_disposition := resp.headers.get('Content-Disposition')):
+        cdp = email_parser.Parser().parsestr(f'Content-Disposition: {content_disposition}', headersonly=True)
+        filename = cdp.get_filename()
 
     return fileResult(filename or str(uuid.uuid4()), resp.content)
 
 
-def command_archive_zip(args: Dict[str, str], settings: Settings) -> Dict[str, Any]:
+def command_archive_zip(args: dict[str, str], settings: Settings) -> dict[str, Any]:
     """ Archive all the files into a zip file
 
     :param args: The parameters which were given to the command.
@@ -4267,10 +4294,9 @@ def command_archive_zip(args: Dict[str, str], settings: Settings) -> Dict[str, A
                                 raise_on_status=True,
                                 resp_type='response')
 
-    if not (filename := args.get('save_as')):
-        if content_disposition := resp.headers.get('Content-Disposition'):
-            cdp = email_parser.Parser().parsestr(f'Content-Disposition: {content_disposition}', headersonly=True)
-            filename = cdp.get_filename()
+    if not (filename := args.get('save_as')) and (content_disposition := resp.headers.get('Content-Disposition')):
+        cdp = email_parser.Parser().parsestr(f'Content-Disposition: {content_disposition}', headersonly=True)
+        filename = cdp.get_filename()
 
     return fileResult(filename or str(uuid.uuid4()), resp.content)
 
@@ -4288,6 +4314,7 @@ def main() -> None:
         'wfr-cleanup': command_cleanup,
         'wfr-reset': command_reset,
         'wfr-upload-file': command_upload_file,
+        'wfr-upload-as-file': command_upload_as_file,
         'wfr-upload-files': command_upload_files,
         'wfr-list-files': command_list_files,
         'wfr-remove-files': command_remove_files,

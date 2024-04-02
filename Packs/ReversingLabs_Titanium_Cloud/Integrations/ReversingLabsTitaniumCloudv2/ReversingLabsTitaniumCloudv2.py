@@ -926,7 +926,7 @@ def detonate_sample_command():
         response = da.detonate_sample(sample_sha1=sha1, platform=platform)
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, "
+            return_error(f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
                          f"message: {e.response_object.text}")  # type: ignore[attr-defined]
 
         return_error(str(e))
@@ -968,7 +968,7 @@ def sample_dynamic_analysis_results_command():
         )
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, "
+            return_error(f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
                          f"message: {e.response_object.text}")  # type: ignore[attr-defined]
 
         return_error(str(e))
@@ -1036,7 +1036,7 @@ def detonate_url_command():
         response = da.detonate_url(url_string=url, platform=platform)
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, "
+            return_error(f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
                          f"message: {e.response_object.text}")  # type: ignore[attr-defined]
 
         return_error(str(e))
@@ -1084,7 +1084,7 @@ def url_dynamic_analysis_results_command():
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(f"status code: {e.response_object.status_code}, "
+            return_error(f"status code: {e.response_object.status_code}, "  # type: ignore[attr-defined]
                          f"message: {e.response_object.text}")  # type: ignore[attr-defined]
 
         return_error(str(e))
@@ -1100,21 +1100,46 @@ def url_dynamic_analysis_results_command():
 
 
 def url_dynamic_analysis_results_output(response_json, passed_url=None, passed_sha1=None):
-    url = response_json.get("rl", {}).get("report", {}).get("url", passed_url)
-    sha1 = response_json.get("rl", {}).get("report", {}).get("sha1", passed_sha1)
-    classification = response_json.get("rl", {}).get("report", {}).get("classification")
-    last_analysis = response_json.get("rl", {}).get("report", {}).get("last_analysis")
+    report = response_json.get("rl", {}).get("report", {})
+    is_merged = report.get("history_analysis")
+    classification = report.get("classification")
+    url = report.get("url", passed_url)
 
-    markdown = f"## ReversingLabs URL Dynamic Analysis output for URL\n **Classification**: {classification}\n"
+    markdown = f"""## ReversingLabs URL Dynamic Analysis output for URL\n **URL**: {url}
+    **Classification**: {classification}
+    **URL SHA1**: {report.get("sha1", passed_sha1)}
+    **URL BASE64**: {report.get("url_base64")}
+    **Risk score**: {report.get("risk_score")}
+    """
 
-    if last_analysis:
-        markdown = markdown + f"**Last analysis**: {last_analysis}\n"
+    if is_merged:
+        markdown = markdown + f"**Last analysis**: {report.get('last_analysis')}\n"
 
-    if url:
-        markdown = markdown + f"**Requested URL**: {url}\n"
+    else:
+        markdown = markdown + f"""**Analysis ID**: {report.get("analysis_id")}\n **Analysis time**: {report.get("analysis_time")}
+        **Analysis duration**: {report.get("analysis_duration")}
+        **Platform**: {report.get("platform")}
+        **Configuration**: {report.get("configuration")}
+        **PCAP link**: {report.get("pcap")}
+        **Memory strings link**: {report.get("memory_strings")}
+        **Screenshots lin**: {report.get("screenshots")}
+        **Dropped files link**: {report.get("dropped_files_url")}
+        """
 
-    if sha1:
-        markdown = markdown + f"**URL SHA1**: {sha1}"
+    network = report.get("network", {})
+    if network:
+        markdown = markdown + "\n### Network"
+
+        for key in network:
+            table = tableToMarkdown(key, network.get(key))
+            markdown = markdown + "\n" + table
+
+    signatures_table = tableToMarkdown("Signatures", report.get("signatures"))
+    markdown = f"{markdown}\n {signatures_table}\n"
+
+    if not is_merged:
+        dropped_files_table = tableToMarkdown("Dropped files", report.get("dropped_files"))
+        markdown = f"{markdown}\n {dropped_files_table}"
 
     d_bot_score = classification_to_score(classification.upper())
 
