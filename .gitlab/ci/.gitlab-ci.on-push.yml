@@ -107,7 +107,6 @@ run-pre-commit:
     - .run-pre-commit
   cache:
     policy: pull-push
-
   rules:
     - if: '$BUCKET_UPLOAD == "true"'
       when: never
@@ -119,7 +118,8 @@ run-pre-commit:
       when: never
     - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
       when: never
-
+    - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
+      when: never
     # In sdk nighly we run this separately 
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
