@@ -625,7 +625,8 @@ def publish_layer_version_command(args: dict[str, str], aws_client) -> CommandRe
     Returns:
         CommandResults: An object containing the result of the deletion operation as a readable output in Markdown format.
     """
-    output_headers = ['LayerVersionArn', 'LayerArn', 'Description', 'CreatedDate', 'Version', 'CompatibleRuntimes', 'CompatibleArchitectures']
+    output_headers = ['LayerVersionArn', 'LayerArn', 'Description', 'CreatedDate', 'Version', \
+                      'CompatibleRuntimes', 'CompatibleArchitectures']
 
     content = {}
     s3_bucket = args.get('s3-bucket')
