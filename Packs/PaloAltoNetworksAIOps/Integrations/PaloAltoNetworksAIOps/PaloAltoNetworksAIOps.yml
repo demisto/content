@@ -66,6 +66,7 @@ script:
       auto: PREDEFINED
       description: Export the generated report as a file.
       defaultValue: true
+      type: boolean
       predefined: 
       - true
       - false
@@ -73,6 +74,7 @@ script:
       auto: PREDEFINED
       description: Show the report data inside the context.
       defaultValue: false
+      type: boolean
       predefined: 
       - true
       - false

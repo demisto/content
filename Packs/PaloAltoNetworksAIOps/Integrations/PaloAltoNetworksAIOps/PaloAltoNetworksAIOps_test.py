@@ -267,8 +267,7 @@ def test_get_info_about_device_request_fails(mocker: MockerFixture, AIOps_client
     http_request_mock.return_value = response_mock
     with pytest.raises(DemistoException) as e:
         AIOps_client.get_info_about_device_request()
-    assert e.value.message == ("Request Succeeded, A parse error occurred- could not find {new_root_tag} tag to adjust to AIOps "
-                               "API.")
+    assert e.value.message == ("Request Succeeded, A parse error occurred- could not find system tag to adjust to AIOps API.")
 
 
 def test_get_config_file_request_called_with(mocker, AIOps_client):
@@ -336,8 +335,7 @@ def test_get_config_file_request_fails(mocker: MockerFixture, AIOps_client):
     http_request_mock.return_value = response_mock
     with pytest.raises(DemistoException) as e:
         AIOps_client.get_config_file_request()
-    assert e.value.message == ("Request Succeeded, A parse error occurred- could not find {new_root_tag} tag to adjust to AIOps "
-                               "API.")
+    assert e.value.message == ("Request Succeeded, A parse error occurred- could not find config tag to adjust to AIOps API.")
 
 
 def test_generate_bpa_report_request_called_with(mocker, AIOps_client):
@@ -549,8 +547,7 @@ def test_adjust_xml_format_invalid():
     new_root_tag = 'systems'
     with pytest.raises(DemistoException) as e:
         adjust_xml_format(xml_data, new_root_tag)
-    assert e.value.message == ('Request Succeeded, A parse error occurred- could not find {new_root_tag} tag to adjust to AIOps '
-                               'API.')
+    assert e.value.message == 'Request Succeeded, A parse error occurred- could not find systems tag to adjust to AIOps API.'
 
 
 def test_get_values_from_xml():
