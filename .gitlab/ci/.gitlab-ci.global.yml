@@ -521,6 +521,7 @@
       fi
 
     - echo "PRE_COMMIT_SUCCESS=$PRE_COMMIT_SUCCESS"
+    - exit $PRE_COMMIT_SUCCESS
     - job-done
 
 
