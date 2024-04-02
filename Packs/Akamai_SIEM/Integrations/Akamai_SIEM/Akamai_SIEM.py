@@ -477,7 +477,7 @@ def main():
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "fetch-events":
-            for events, offset, total_events_count in fetch_events_command(
+            for events, offset, total_events_count in fetch_events_command(  # noqa: B007
                 client,
                 params.get("fetchTime"),
                 params.get("fetchLimit"),
