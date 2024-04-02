@@ -1,5 +1,3 @@
-from demisto_sdk.commands.generate_yml_from_python.yml_metadata_collector import (
-    ConfKey, InputArgument, YMLMetadataCollector, OutputArgument, ParameterTypes)
 from CommonServerPython import *
 
 import demistomock as demisto
