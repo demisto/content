@@ -403,15 +403,17 @@ def fetch_events_command(
         for event in events:
             try:
                 event["_time"] = event["httpMessage"]["start"]
-                event['attackData']['rules'] = decode_message(event.get('attackData', {}).get('rules', ""))
-                event['attackData']['ruleMessages'] = decode_message(event.get('attackData', {}).get('ruleMessages', ""))
-                event['attackData']['ruleTags'] = decode_message(event.get('attackData', {}).get('ruleTags', ""))
-                event['attackData']['ruleData'] = decode_message(event.get('attackData', {}).get('ruleData', ""))
-                event['attackData']['ruleSelectors'] = decode_message(event.get('attackData', {}).get('ruleSelectors', ""))
-                event['attackData']['ruleActions'] = decode_message(event.get('attackData', {}).get('ruleActions', ""))
-                event['attackData']['ruleVersions'] = decode_message(event.get('attackData', {}).get('ruleVersions', ""))
-                event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
-                event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
+                if "attackData" in event:
+                    event['attackData']['rules'] = decode_message(event.get('attackData', {}).get('rules', ""))
+                    event['attackData']['ruleMessages'] = decode_message(event.get('attackData', {}).get('ruleMessages', ""))
+                    event['attackData']['ruleTags'] = decode_message(event.get('attackData', {}).get('ruleTags', ""))
+                    event['attackData']['ruleData'] = decode_message(event.get('attackData', {}).get('ruleData', ""))
+                    event['attackData']['ruleSelectors'] = decode_message(event.get('attackData', {}).get('ruleSelectors', ""))
+                    event['attackData']['ruleActions'] = decode_message(event.get('attackData', {}).get('ruleActions', ""))
+                    event['attackData']['ruleVersions'] = decode_message(event.get('attackData', {}).get('ruleVersions', ""))
+                if "httpMessage" in event:
+                    event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
+                    event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
             except Exception as e:
                 config_id = event.get('attackData', {}).get('configId', "")
                 policy_id = event.get('attackData', {}).get('policyId', "")
