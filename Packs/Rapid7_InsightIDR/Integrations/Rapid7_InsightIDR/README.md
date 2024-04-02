@@ -212,7 +212,11 @@ Close all investigations that match the provided request parameters. If there ar
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Rapid7InsightIDR.Investigation.id | String | The ID of the investigation. |
+| Rapid7InsightIDR.Investigation.status | String | The new status (Closed) of the investigation. |
+
 #### Command example
 ```!rapid7-insight-idr-close-investigations source=HUNT start_time=2020-12-04T10:00:00.515Z end_time=2020-12-29T10:00:00.526Z```
 #### Human Readable Output
