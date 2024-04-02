@@ -327,24 +327,34 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
         converted_json = convert_response_for_hr(downloaded_BPA_json)
         human_readable_markdown = create_markdown(converted_json)
         # added for context data
-        context_json = [{'report_id': report_id,
-                         'report_status': upload_status,
-                         'data': converted_json
-                         }]
-        return PollResult(
-            response=CommandResults(
-                outputs_prefix='AiOps.BPAReport',
-                outputs_key_field='report_id',
-                outputs=context_json,
-                raw_response=downloaded_BPA_json,
-                readable_output=human_readable_markdown
-            ),
-            continue_to_poll=False,
-        )
-
+        if show_in_context:
+            context_json = [{'report_id': report_id,
+                            'report_status': upload_status,
+                            'data': converted_json
+                            }]
+            return PollResult(
+                response=CommandResults(
+                    outputs_prefix='AiOps.BPAReport',
+                    outputs_key_field='report_id',
+                    outputs=context_json,
+                    raw_response=downloaded_BPA_json,
+                    readable_output=human_readable_markdown
+                ),
+                continue_to_poll=False,
+            )
+        else:
+            return PollResult(
+                response=CommandResults(
+                    raw_response=downloaded_BPA_json,
+                    readable_output=human_readable_markdown
+                ),
+                continue_to_poll=False,
+            )
+        # if export_as_file:
+        #     return_results(fileResult(f'{report_id}', human_readable_markdown))
     elif upload_status == 'UPLOAD_INITIATED':
+        results = CommandResults(readable_output="Polling job failed.")
         if first_round:
-            results = CommandResults(readable_output="Polling job failed.")
             return PollResult(
                 response=results,
                 continue_to_poll=True,
@@ -355,7 +365,6 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
                 )
             )
         else:
-            results = CommandResults(readable_output="Polling job failed.")
             return PollResult(
                 response=results,
                 continue_to_poll=True,
