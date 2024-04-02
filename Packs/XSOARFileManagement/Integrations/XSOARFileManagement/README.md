@@ -121,3 +121,87 @@ Rename a file. Warning: use this only if necessary, it's HEAVY to run, this will
 #### Context Output
 
 There is no context output for this command.
+### file-management-download-file
+
+***
+Download files from server.
+
+#### Base Command
+
+`file-management-download-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| fileURI | File URI ex:'/markdown/image/123_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg'. | Required | 
+| fileName | Name of the new downloaded file. | Required | 
+| incidentID | Incident ID to upload the file. If empty, the current incident ID is taken. | Optional | 
+| target | Where to upload the file - Available options are: - 'war room entry': the file will be uploaded as war room entry. - 'incident attachment': the file will be uploaded as incident attachment. - default are 'war room entry'. Possible values are: war room entry, incident attachment. Default is war room entry. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```
+!file-management-download-file file_uri="/markdown/image/12142_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg"
+!file-management-download-file file_uri="/markdown/image/12142_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg" fileName="my_image.jpg"
+!file-management-download-file file_uri="/markdown/image/12142_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg" fileName="my_image.jpg" incidentID="1234"
+```
+
+#### Human Readable Output
+
+> File my_image.jpg uploaded successfully to incident 1234. Entry ID is 1@1234
+
+### file-management-get-file-hash
+
+***
+Get file hash from URI.
+
+#### Base Command
+
+`file-management-get-file-hash`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| fileURI | File URI ex:'/markdown/image/123_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg'. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File_Hash.Extension | String | Extension of the file. | 
+| File_Hash.MD5 | String | MD5 of the file. | 
+| File_Hash.Name | String | Name of the file. | 
+| File_Hash.SHA1 | String | SHA1 of the file. | 
+| File_Hash.SHA256 | String | SHA256 of the file. | 
+| File_Hash.SHA512 | String | SHA512 of the file. | 
+| File_Hash.Size | String | Size of the file. | 
+
+#### Command Example
+
+```!file-management-get-file-hash fileURI="/markdown/image/12142_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg" ```
+
+#### Context Example
+
+```json
+{
+  "File_Hash": {
+    "Extension": "jpg",
+    "MD5": "e2f28a722de24003257ded589ac10eee",
+    "Name": "12142_60cad1a9-6f90-42c5-8b1b-514d66d74fc0.jpg",
+    "SHA1": "0e5e761a2e6794a4d1c445667d4944db34f78d22",
+    "SHA256": "877383f34532683580b53d2f5a36e68155de58175524a99d4c25d0da96202e5c",
+    "SHA512": "5ba5455f0ff3e545f8212b4811d22c66451e1a96a0d886b4550bb287c310f52b4ac37559e90546ef2eae69c1a7942223fb0d2660b9fe273562a96376bc0fdd03",
+    "Size": "1569787"
+  }
+}
+```
+
+#### Human Readable Output
+
+> Hash save under the key 'File_Hash'.
