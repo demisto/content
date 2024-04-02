@@ -89,7 +89,7 @@ jobs:
           cd $GITHUB_WORKSPACE/repository
 
           # Run validate on all changed files
-          demisto-sdk validate --quiet-bc-validation --no-conf-json --allow-skipped
+          demisto-sdk validate --quiet-bc-validation --no-conf-json --allow-skipped --run-old-validate --skip-new-validate
       - name: Run Unit Testing and Lint
         if: always()
         run: |
