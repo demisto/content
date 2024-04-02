@@ -41,20 +41,34 @@ def test_generate_access_token_request_check_return(mocker, AIOps_client):
         assert AIOps_client._access_token == '123'
 
 
-def test_polling_until_upload_report_command_upload_initiated_status(mocker, AIOps_client):
+def test_polling_until_upload_report_command_upload_initiated_status_first_round(mocker, AIOps_client):
     from PaloAltoNetworksAIOps import polling_until_upload_report_command
     check_upload_status_request_mock = mocker.patch.object(AIOps_client, 'check_upload_status_request')
     check_upload_status_request_mock.return_value = 'UPLOAD_INITIATED'
-    args = {'report_id': '123456789'}
+    generate_access_token_request_mock = mocker.patch.object(AIOps_client, 'generate_access_token_request')
+    generate_access_token_request_mock.return_value = {}
+    args = {'report_id': '123456789', 'first_round': 'true'}
     result = polling_until_upload_report_command(args, AIOps_client)
     assert result.scheduled_command
     assert result.readable_output == 'The report with id 123456789 was sent successfully. Download in progress...'
 
-
+def test_polling_until_upload_report_command_upload_initiated_status_not_first_round(mocker, AIOps_client):
+    from PaloAltoNetworksAIOps import polling_until_upload_report_command
+    check_upload_status_request_mock = mocker.patch.object(AIOps_client, 'check_upload_status_request')
+    check_upload_status_request_mock.return_value = 'UPLOAD_INITIATED'
+    generate_access_token_request_mock = mocker.patch.object(AIOps_client, 'generate_access_token_request')
+    generate_access_token_request_mock.return_value = {}
+    args = {'report_id': '123456789', 'first_round': 'false'}
+    result = polling_until_upload_report_command(args, AIOps_client)
+    assert result.scheduled_command
+    assert result.readable_output == ''
+    
 def test_polling_until_upload_report_command_completed_with_error(mocker, AIOps_client):
     from PaloAltoNetworksAIOps import polling_until_upload_report_command
     check_upload_status_request_mock = mocker.patch.object(AIOps_client, 'check_upload_status_request')
     check_upload_status_request_mock.return_value = 'COMPLETED_WITH_ERROR'
+    generate_access_token_request_mock = mocker.patch.object(AIOps_client, 'generate_access_token_request')
+    generate_access_token_request_mock.return_value = {}
     args = {'report_id': '123456789'}
     result = polling_until_upload_report_command(args, AIOps_client)
     assert not result.scheduled_command
@@ -65,6 +79,8 @@ def test_polling_until_upload_report_command_config_parsed(mocker, AIOps_client)
     from PaloAltoNetworksAIOps import polling_until_upload_report_command
     check_upload_status_request_mock = mocker.patch.object(AIOps_client, 'check_upload_status_request')
     check_upload_status_request_mock.return_value = 'CONFIG_PARSED'
+    generate_access_token_request_mock = mocker.patch.object(AIOps_client, 'generate_access_token_request')
+    generate_access_token_request_mock.return_value = {}
     args = {'report_id': '123456789'}
     result = polling_until_upload_report_command(args, AIOps_client)
     assert result.scheduled_command
@@ -96,14 +112,16 @@ def test_polling_until_upload_report_command_completed_with_success(mocker, AIOp
     download_bpa_request_mock.return_value = "cloud.com"
     download_bpa_request_mock = mocker.patch.object(AIOps_client, 'data_of_download_bpa_request')
     download_bpa_request_mock.return_value = bpa_json
-    args = {'report_id': '123456789'}
+    args = {'report_id': '123456789', 'show_in_context': 'true', 'export_as_file': 'true'}
+    generate_access_token_request_mock = mocker.patch.object(AIOps_client, 'generate_access_token_request')
+    generate_access_token_request_mock.return_value = {}
     result = polling_until_upload_report_command(args, AIOps_client)
-    assert not result.scheduled_command
-    assert result.readable_output == ('### BPA results:\n|Check Id|Check Category|Check Feature|Check Message|Check Type|\n'
+    assert not result[0].scheduled_command
+    assert result[0].readable_output == ('### BPA results:\n|Check Id|Check Category|Check Feature|Check Message|Check Type|\n'
                                       '|---|---|---|---|---|\n| 1 | device | feature1 | Warning message 1 | warning |\n'
                                       '| 2 | device | feature1 | Note message 1 | note |\n| 3 | device | feature2 | '
                                       'Warning message 2 | warning |\n| 4 | device | feature2 | Note message 2 | note |\n')
-    assert result.outputs == [{'report_id': '123456789',
+    assert result[0].outputs == [{'report_id': '123456789',
                                'report_status': 'COMPLETED_WITH_SUCCESS',
                                'data': [{'check_id': 1, 'check_message': 'Warning message 1', 'check_type': 'warning',
                                          'check_feature': 'feature1', 'check_category': 'device'},
@@ -113,6 +131,7 @@ def test_polling_until_upload_report_command_completed_with_success(mocker, AIOp
                                          'check_feature': 'feature2', 'check_category': 'device'},
                                         {'check_id': 4, 'check_message': 'Note message 2', 'check_type': 'note',
                                          'check_feature': 'feature2', 'check_category': 'device'}]}]
+    assert result[1].get('File') == "report-id-123456789.md"
 
 
 def test_get_info_about_device_request_called_with(mocker, AIOps_client):
