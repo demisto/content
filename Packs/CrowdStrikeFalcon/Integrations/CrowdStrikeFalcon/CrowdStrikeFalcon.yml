@@ -222,6 +222,8 @@ script:
       - Linux
     - description: 'The site name of the device.'
       name: site_name
+    - description: The property to sort by (e.g. status.desc or hostname.asc).
+      name: sort
     description: Searches for a device that matches the query.
     name: cs-falcon-search-device
     outputs:
@@ -2285,6 +2287,8 @@ script:
       defaultValue: '50'
       description: The maximum number of results on a page.
       name: limit
+    - description: The property to sort by (e.g. status.desc or hostname.asc).
+      name: sort
     description: Gets the list of host group members.
     name: cs-falcon-list-host-group-members
     outputs:
@@ -5011,7 +5015,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA Rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.88283
+  dockerimage: demisto/py3-tools:1.0.0.91603
   isfetch: true
   ismappable: true
   isremotesyncin: true
