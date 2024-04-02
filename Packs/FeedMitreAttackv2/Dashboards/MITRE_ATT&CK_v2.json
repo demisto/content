@@ -26,7 +26,6 @@
                 "id": "this-is-aest2",
                 "version": 1,
                 "modified": "2020-05-24T20:24:46.630583045Z",
-                "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
                 "fromServerVersion": "",
@@ -42,8 +41,7 @@
                 "prevName": "Test 2",
                 "dataType": "indicators",
                 "widgetType": "bar",
-                "query": "type:\"Attack Pattern\" and investigationsCount:\u003e0 and -incident.type:\"MITRE ATT&CK CoA\"",
-                "sort": null,
+                "query": "type:\"Attack Pattern\" and investigationsCount:\u003e0 and -incident.type:\"MITRE ATT\u0026CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -135,14 +133,20 @@
                     ]
                 },
                 "size": 10,
-                "category": ""
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
             },
             "reflectDimensions": false
         },
         {
             "id": "8b8478b0-9f31-11ea-9d1e-efa455bba3f4",
             "forceRange": true,
-            "x": 0,
+            "x": 4,
             "y": 3,
             "i": "8b8478b0-9f31-11ea-9d1e-efa455bba3f4",
             "w": 2,
@@ -151,7 +155,6 @@
                 "id": "",
                 "version": 0,
                 "modified": "0001-01-01T00:00:00Z",
-                "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
                 "fromServerVersion": "",
@@ -167,8 +170,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Initial Access\" -incident.type:\"MITRE ATT&CK CoA\"",
-                "sort": null,
+                "query": "-status:closed -category:job indicator.killchainphases:\"Initial Access\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -185,31 +187,36 @@
                 },
                 "params": {
                     "colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
                 },
-                "size": 0,
-                "category": ""
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
             },
             "reflectDimensions": false
         },
         {
             "id": "34f20330-a348-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 2,
+            "x": 6,
             "y": 3,
             "i": "34f20330-a348-11ea-a2b7-37dacd919b68",
             "w": 2,
@@ -218,7 +225,6 @@
                 "id": "",
                 "version": 0,
                 "modified": "0001-01-01T00:00:00Z",
-                "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
                 "fromServerVersion": "",
@@ -234,8 +240,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Execution\" -incident.type:\"MITRE ATT&CK CoA\"",
-                "sort": null,
+                "query": "-status:closed -category:job indicator.killchainphases:\"Execution\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -252,31 +257,36 @@
                 },
                 "params": {
                     "colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
                 },
-                "size": 0,
-                "category": ""
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
             },
             "reflectDimensions": false
         },
         {
             "id": "673b1700-a348-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 4,
+            "x": 8,
             "y": 3,
             "i": "673b1700-a348-11ea-a2b7-37dacd919b68",
             "w": 2,
@@ -285,7 +295,6 @@
                 "id": "",
                 "version": 0,
                 "modified": "0001-01-01T00:00:00Z",
-                "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
                 "fromServerVersion": "",
@@ -301,8 +310,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Persistence\" -incident.type:\"MITRE ATT&CK CoA\"",
-                "sort": null,
+                "query": "-status:closed -category:job indicator.killchainphases:\"Persistence\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -319,31 +327,36 @@
                 },
                 "params": {
                     "colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
                 },
-                "size": 0,
-                "category": ""
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
             },
             "reflectDimensions": false
         },
         {
             "id": "85a61b90-a348-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 6,
+            "x": 10,
             "y": 3,
             "i": "85a61b90-a348-11ea-a2b7-37dacd919b68",
             "w": 2,
@@ -352,7 +365,6 @@
                 "id": "",
                 "version": 0,
                 "modified": "0001-01-01T00:00:00Z",
-                "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
                 "fromServerVersion": "",
@@ -368,8 +380,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Privilege Escalation\" -incident.type:\"MITRE ATT&CK CoA\"",
-                "sort": null,
+                "query": "-status:closed -category:job indicator.killchainphases:\"Privilege Escalation\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -386,32 +397,37 @@
                 },
                 "params": {
                     "colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
                 },
-                "size": 0,
-                "category": ""
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
             },
             "reflectDimensions": false
         },
         {
             "id": "a5d42ce0-a348-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 8,
-            "y": 3,
+            "x": 0,
+            "y": 4,
             "i": "a5d42ce0-a348-11ea-a2b7-37dacd919b68",
             "w": 2,
             "h": 1,
@@ -419,7 +435,6 @@
                 "id": "",
                 "version": 0,
                 "modified": "0001-01-01T00:00:00Z",
-                "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
                 "fromServerVersion": "",
@@ -435,8 +450,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Defense Evasion\" -incident.type:\"MITRE ATT&CK CoA\"",
-                "sort": null,
+                "query": "-status:closed -category:job indicator.killchainphases:\"Defense Evasion\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -453,31 +467,36 @@
                 },
                 "params": {
                     "colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
                 },
-                "size": 0,
-                "category": ""
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
             },
             "reflectDimensions": false
         },
         {
             "id": "08cf87e0-a349-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 0,
+            "x": 4,
             "y": 4,
             "i": "08cf87e0-a349-11ea-a2b7-37dacd919b68",
             "w": 2,
@@ -486,7 +505,6 @@
                 "id": "",
                 "version": 0,
                 "modified": "0001-01-01T00:00:00Z",
-                "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
                 "fromServerVersion": "",
@@ -502,8 +520,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Discovery\" -incident.type:\"MITRE ATT&CK CoA\"",
-                "sort": null,
+                "query": "-status:closed -category:job indicator.killchainphases:\"Discovery\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -520,31 +537,36 @@
                 },
                 "params": {
                     "colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
                 },
-                "size": 0,
-                "category": ""
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
             },
             "reflectDimensions": false
         },
         {
             "id": "315ed4e0-a349-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 2,
+            "x": 6,
             "y": 4,
             "i": "315ed4e0-a349-11ea-a2b7-37dacd919b68",
             "w": 2,
@@ -553,7 +575,6 @@
                 "id": "",
                 "version": 0,
                 "modified": "0001-01-01T00:00:00Z",
-                "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
                 "fromServerVersion": "",
@@ -569,8 +590,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Lateral Movement\" -incident.type:\"MITRE ATT&CK CoA\"",
-                "sort": null,
+                "query": "-status:closed -category:job indicator.killchainphases:\"Lateral Movement\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -587,31 +607,36 @@
                 },
                 "params": {
                     "colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
                 },
-                "size": 0,
-                "category": ""
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
             },
             "reflectDimensions": false
         },
         {
             "id": "605dc6c0-a349-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 4,
+            "x": 8,
             "y": 4,
             "i": "605dc6c0-a349-11ea-a2b7-37dacd919b68",
             "w": 2,
@@ -620,7 +645,6 @@
                 "id": "",
                 "version": 0,
                 "modified": "0001-01-01T00:00:00Z",
-                "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
                 "fromServerVersion": "",
@@ -636,8 +660,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Collection\" -incident.type:\"MITRE ATT&CK CoA\"",
-                "sort": null,
+                "query": "-status:closed -category:job indicator.killchainphases:\"Collection\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -654,31 +677,36 @@
                 },
                 "params": {
                     "colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
                 },
-                "size": 0,
-                "category": ""
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
             },
             "reflectDimensions": false
         },
         {
             "id": "ce291380-a349-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 6,
+            "x": 10,
             "y": 4,
             "i": "ce291380-a349-11ea-a2b7-37dacd919b68",
             "w": 2,
@@ -687,7 +715,6 @@
                 "id": "",
                 "version": 0,
                 "modified": "0001-01-01T00:00:00Z",
-                "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
                 "fromServerVersion": "",
@@ -703,8 +730,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Command \u0026 Control\" -incident.type:\"MITRE ATT&CK CoA\"",
-                "sort": null,
+                "query": "-status:closed -category:job indicator.killchainphases:\"Command \u0026 Control\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -721,32 +747,37 @@
                 },
                 "params": {
                     "colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
                 },
-                "size": 0,
-                "category": ""
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
             },
             "reflectDimensions": false
         },
         {
             "id": "0e3e4210-a34a-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 8,
-            "y": 4,
+            "x": 6,
+            "y": 5,
             "i": "0e3e4210-a34a-11ea-a2b7-37dacd919b68",
             "w": 2,
             "h": 1,
@@ -754,7 +785,6 @@
                 "id": "",
                 "version": 0,
                 "modified": "0001-01-01T00:00:00Z",
-                "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
                 "fromServerVersion": "",
@@ -770,8 +800,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Exfiltration\" -incident.type:\"MITRE ATT&CK CoA\"",
-                "sort": null,
+                "query": "-status:closed -category:job indicator.killchainphases:\"Exfiltration\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -788,32 +817,37 @@
                 },
                 "params": {
                     "colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
                 },
-                "size": 0,
-                "category": ""
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
             },
             "reflectDimensions": false
         },
         {
             "id": "38d3bf50-a34a-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 10,
-            "y": 3,
+            "x": 4,
+            "y": 5,
             "i": "38d3bf50-a34a-11ea-a2b7-37dacd919b68",
             "w": 2,
             "h": 1,
@@ -821,7 +855,6 @@
                 "id": "",
                 "version": 0,
                 "modified": "0001-01-01T00:00:00Z",
-                "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
                 "fromServerVersion": "",
@@ -837,8 +870,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Impact\" -incident.type:\"MITRE ATT&CK CoA\"",
-                "sort": null,
+                "query": "-status:closed -category:job indicator.killchainphases:\"Impact\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -855,24 +887,29 @@
                 },
                 "params": {
                     "colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
                 },
-                "size": 0,
-                "category": ""
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
             },
             "reflectDimensions": false
         },
@@ -888,7 +925,6 @@
                 "id": "5add0cf9-010b-4e6b-8912-945fb49d7770",
                 "version": 1,
                 "modified": "2020-06-02T13:34:46.221937925Z",
-                "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
                 "fromServerVersion": "",
@@ -905,7 +941,6 @@
                 "dataType": "scripts",
                 "widgetType": "text",
                 "query": "MITREIndicatorsByOpenIncidentsV2",
-                "sort": null,
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -923,15 +958,20 @@
                 "params": {
                     "tableColumns": []
                 },
-                "size": 0,
-                "category": ""
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
             },
             "reflectDimensions": false
         },
         {
             "id": "84e563a0-b247-11eb-bba6-a17854c1d523",
             "forceRange": false,
-            "x": 10,
+            "x": 2,
             "y": 4,
             "i": "84e563a0-b247-11eb-bba6-a17854c1d523",
             "w": 2,
@@ -940,7 +980,6 @@
                 "id": "",
                 "version": 0,
                 "modified": "0001-01-01T00:00:00Z",
-                "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
                 "fromServerVersion": "",
@@ -956,8 +995,7 @@
                 "prevName": "",
                 "dataType": "incidents",
                 "widgetType": "number",
-                "query": "-status:closed -category:job indicator.killchainphases:\"Credential Access\" -incident.type:\"MITRE ATT&CK CoA\"",
-                "sort": null,
+                "query": "-status:closed -category:job indicator.killchainphases:\"Credential Access\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
                 "isPredefined": false,
                 "dateRange": {
                     "fromDate": "0001-01-01T00:00:00Z",
@@ -974,23 +1012,168 @@
                 },
                 "params": {
                     "colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 10
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
                 },
-                "size": 0,
+                "category": "",
+                "cacheVersn": 0,
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packName": "",
+                "definitionId": "",
+                "Cache": null
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "d30a7f40-f004-11ee-8364-358ac255f0be",
+            "forceRange": true,
+            "x": 2,
+            "y": 3,
+            "i": "d30a7f40-f004-11ee-8364-358ac255f0be",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Reconnaissance",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Reconnaissance\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": false
+        },
+        {
+            "id": "464d2e30-f005-11ee-8364-358ac255f0be",
+            "forceRange": true,
+            "x": 0,
+            "y": 3,
+            "i": "464d2e30-f005-11ee-8364-358ac255f0be",
+            "w": 2,
+            "h": 1,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "0001-01-01T00:00:00Z",
+                "created": "0001-01-01T00:00:00Z",
+                "sizeInBytes": 0,
+                "packID": "",
+                "packName": "",
+                "itemVersion": "",
+                "fromServerVersion": "",
+                "toServerVersion": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Resource Development",
+                "prevName": "",
+                "dataType": "incidents",
+                "widgetType": "number",
+                "query": "-status:closed -category:job indicator.killchainphases:\"Resource Development\" -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 10
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
                 "category": ""
             },
             "reflectDimensions": false
