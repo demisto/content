@@ -103,7 +103,7 @@ class Client(BaseClient):
         self.close_incident = close_incident
         self.close_alert = close_alert
         self.retries = 0 if is_test_module else 2
-        self.timeout = 30.0 if is_test_module else self.timeout
+        self.timeout = 15 if is_test_module else self.timeout
         self.generate_auth_token(username, password)
 
     def generate_auth_token(self, username: str, password: str) -> None:
