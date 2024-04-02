@@ -968,7 +968,6 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
                     statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
                     fields_to_exclude: bool = True):
     global ALERTS_LIMIT_PER_INCIDENTS
-    demisto.debug('**** STARTING fetch_incidents ****')
     # Get the last fetch time, if exists
     last_fetch = last_run.get('time') if isinstance(last_run, dict) else None
     incidents_from_previous_run = last_run.get('incidents_from_previous_run', []) if isinstance(last_run,
@@ -988,13 +987,14 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         if statuses:
             raw_incidents = []
             for status in statuses:
-                raw_incidents.append(client.get_multiple_incidents_extra_data(
+                raw_incident_status = client.get_multiple_incidents_extra_data(
                                      gte_creation_time_milliseconds=last_fetch,
                                      status=status,
                                      limit=max_fetch, starred=starred,
                                      starred_incidents_fetch_window=starred_incidents_fetch_window,
-                                     fields_to_exclude=fields_to_exclude))
-            raw_incidents = sorted(raw_incidents, key=lambda inc: inc['incident']['creation_time'])
+                                     fields_to_exclude=fields_to_exclude)
+                raw_incidents.extend(raw_incident_status)
+            raw_incidents = sorted(raw_incidents, key=lambda inc: inc.get('incident', {}).get('creation_time'))
         else:
             raw_incidents = client.get_multiple_incidents_extra_data(
                 gte_creation_time_milliseconds=last_fetch, limit=max_fetch,
