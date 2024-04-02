@@ -11,6 +11,7 @@ from collections.abc import Iterable, Sequence
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
 from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
+from demisto_sdk.commands.common.git_util import GitUtil
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
@@ -1050,7 +1051,7 @@ class BranchTestCollector(TestCollector):
             content_item = ContentItem(path)
             self._validate_content_item_compatibility(content_item, is_integration='Integrations' in path.parts)
         except IncompatibleMarketplaceException:
-            if file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES):
+            if file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES | {FileType.METADATA}):
                 raise
         except NonDictException:
             content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
@@ -1489,13 +1490,40 @@ class SDKNightlyTestCollector(TestCollector):
         return self.sanity_tests
 
 
+def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[list, list]:
+    """
+    :param: packs_to_upload: The resultant list of packs to upload
+    :return:
+     Tuple[list, list]:
+        packs_to_upload: list of packs to upload (hard upload - changed files with RN and version bump)
+        packs_to_update_metadata: list of packs to update
+         (soft upload - changed only to packmetadata file without RN and version bump)
+    """
+    packs_to_update_metadata = set()
+    git_util = GitUtil()
+    changed_files = git_util._get_all_changed_files()
+    for pack_id in packs_to_upload:
+        current_version = PACK_MANAGER.get_current_version(pack_id) or ""
+        rn_path = Path(f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
+        pack_metadata_path = Path(f"Packs/{pack_id}/pack_metadata.json")
+
+        if rn_path not in changed_files and pack_metadata_path in changed_files:
+            packs_to_update_metadata.add(pack_id)
+
+    packs_to_upload = packs_to_upload - packs_to_update_metadata
+    packs_to_upload = sorted(packs_to_upload, key=lambda x: x.lower()) if packs_to_upload else []
+    packs_to_update_metadata = sorted(packs_to_update_metadata, key=lambda x: x.lower()) if packs_to_update_metadata else []
+    return packs_to_upload, packs_to_update_metadata
+
+
 def output(result: CollectionResult | None):
     """
     writes to both log and files
     """
     tests = sorted(result.tests, key=lambda x: x.lower()) if result else ()
     packs_to_install = sorted(result.packs_to_install, key=lambda x: x.lower()) if result else ()
-    packs_to_upload = sorted(result.packs_to_upload, key=lambda x: x.lower()) if result else ()
+    packs_to_upload, packs_to_update_metadata = sort_packs_to_upload(result.packs_to_upload) if result else ([], [])
+
     modeling_rules_to_test = sorted(
         result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()
     ) if result else ()
@@ -1506,6 +1534,7 @@ def output(result: CollectionResult | None):
     test_str = '\n'.join(tests)
     packs_to_install_str = '\n'.join(packs_to_install)
     packs_to_upload_str = '\n'.join(packs_to_upload)
+    packs_to_update_metadata_str = '\n'.join(packs_to_update_metadata)
     modeling_rules_to_test_str = '\n'.join(modeling_rules_to_test)
     machine_str = ', '.join(sorted(map(str, machines)))
     packs_to_reinstall_test_str = '\n'.join(packs_to_reinstall_test)
@@ -1513,6 +1542,7 @@ def output(result: CollectionResult | None):
     logger.info(f'collected {len(tests)} test playbooks:\n{test_str}')
     logger.info(f'collected {len(packs_to_install)} packs to install:\n{packs_to_install_str}')
     logger.info(f'collected {len(packs_to_upload)} packs to upload:\n{packs_to_upload_str}')
+    logger.info(f'collected {len(packs_to_update_metadata)} packs to update:\n{packs_to_update_metadata_str}')
     num_of_modeling_rules = len(modeling_rules_to_test_str.split("\n"))
     logger.info(f'collected {num_of_modeling_rules} modeling rules to test:\n{modeling_rules_to_test_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
@@ -1521,6 +1551,8 @@ def output(result: CollectionResult | None):
     PATHS.output_tests_file.write_text(test_str)
     PATHS.output_packs_file.write_text(packs_to_install_str)
     PATHS.output_packs_to_upload_file.write_text(packs_to_upload_str)
+    PATHS.output_packs_to_upload_file.write_text(json.dumps({'packs_to_upload': packs_to_upload,
+                                                             'packs_to_update_metadata': packs_to_update_metadata}))
     PATHS.output_modeling_rules_to_test_file.write_text(modeling_rules_to_test_str)
     PATHS.output_machines_file.write_text(json.dumps({str(machine): (machine in machines) for machine in Machine}))
     PATHS.output_packs_to_reinstall_test_file.write_text(packs_to_reinstall_test_str)

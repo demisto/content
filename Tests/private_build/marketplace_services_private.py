@@ -406,7 +406,7 @@ class Pack:
         return self._all_levels_dependencies
 
     @property
-    def statistics_metadata(self):
+    def update_metadata(self):
         return {
             Metadata.DOWNLOADS: self.downloads_count,
             Metadata.SEARCH_RANK: self._search_rank,
