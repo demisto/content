@@ -31,7 +31,7 @@ class Client(BaseClient):
         previous_token = integration_context.get(tsg_access_token)
         previous_token_expiry_time = integration_context.get(tsg_expiry_time)
 
-        if previous_token and previous_token_expiry_time > date_to_timestamp(datetime.now()):  # type: ignore
+        if previous_token and previous_token_expiry_time and previous_token_expiry_time > date_to_timestamp(datetime.now()):  # type: ignore
             self._access_token = previous_token
         else:
             data = {
@@ -68,7 +68,7 @@ class Client(BaseClient):
                 }
                 # stores received token and expiration time in the integration context
                 set_integration_context(new_token)
-                self._access_token = new_token.get(tsg_access_token, {})
+                self._access_token = new_token.get(tsg_access_token)
             else:
                 raise DemistoException('Error occurred while creating an access token. Access token field has not'
                                        ' found in the response data. Please check the instance configuration.\n')
@@ -78,8 +78,8 @@ class Client(BaseClient):
         params = assign_params(type='op', cmd='<show><system><info></info></system></show>', key=self._api_key)
         try:
             response = self._http_request('GET', '/api', params=params, headers=headers, resp_type='xml')
-        except DemistoException:
-            raise DemistoException("Could not get info about device. Request finished with an error {e}.")
+        except DemistoException as e:
+            raise DemistoException(f"Could not get info about device. Request finished with an error {e}.")
         formated_xml = adjust_xml_format(response.text, 'system')
         return formated_xml
 
@@ -88,8 +88,8 @@ class Client(BaseClient):
         params = assign_params(type='config', action='show', key=self._api_key)
         try:
             response = self._http_request('GET', '/api', params=params, headers=headers, resp_type='xml')
-        except DemistoException:
-            raise DemistoException("Could not get config file. Request finished with an error {e}.")
+        except DemistoException as e:
+            raise DemistoException(f"Could not get config file. Request finished with an error {e}.")
         formated_xml = adjust_xml_format(response.text, 'config')
         return formated_xml
 
@@ -116,8 +116,7 @@ class Client(BaseClient):
         report_id = res.get('id', None)
         if upload_url and report_id:
             return upload_url, report_id
-        else:
-            raise DemistoException('Response not in format, can not find uploaded-url or report id.')
+        raise DemistoException('Response not in format, can not find uploaded-url or report id.')
 
     def config_file_to_report_request(self, upload_url, config_in_binary):
         headers = {
@@ -298,7 +297,7 @@ def test_module(client: Client) -> str:
             raise DemistoException(f"Authorization Error: make sure your tsg_id, client_id, client_secret are correctly set. "
                                    f"With error {e}")
         else:
-            raise e
+            raise
     try:
         client.get_info_about_device_request()
         message = 'ok'
