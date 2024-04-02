@@ -71,7 +71,7 @@ configuration:
   required: false
 - display: Private Key (Required for HTTPS)
   additionalinfo: (For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server.
-  name: key_ttt
+  name: key
   type: 14
   section: Connect
   advanced: true
@@ -102,7 +102,7 @@ script:
       - Corporate
     description: Create a new user in zoom account.
     execution: true
-    name: zoom-create-user_test
+    name: zoom-create-user
     outputs:
     - contextPath: Zoom.User.id
       description: The ID of the created user.
@@ -126,7 +126,7 @@ script:
     - auto: PREDEFINED
       defaultValue: Instant
       description: The type of the meeting.
-      name: type_test
+      name: type
       predefined:
       - Instant
       - Scheduled
@@ -295,7 +295,7 @@ script:
       - "false"
       - "true"
     description: Get the meeting record and save it as a file in the War Room.
-    name: zoom-fetch-recording_test
+    name: zoom-fetch-recording
     outputs:
     - contextPath: File.SHA256
       description: Attachment's SHA256.
@@ -425,7 +425,7 @@ script:
     name: zoom-delete-user
   - name: zoom-meeting-get
     arguments:
-    - name: meeting_id_test_test
+    - name: meeting_id
       required: true
       description: The ID of the existing meeting.
       type: string
