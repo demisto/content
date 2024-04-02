@@ -420,7 +420,7 @@ def fetch_events_command(
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
         demisto.debug(f"Got {len(events)} events, and {offset=}")
         total_events_count += len(events)
-        yield events, offset
+        yield events, offset, total_events_count
 
 
 def decode_url(headers: str) -> dict:
@@ -477,15 +477,16 @@ def main():
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "fetch-events":
-            for events, offset in fetch_events_command(
+            for events, offset, total_events_count in fetch_events_command(
                 client,
                 params.get("fetchTime"),
                 params.get("fetchLimit"),
                 params.get("configIds"),
                 ctx=get_integration_context() or {},
             ):
-                send_events_to_xsiam(events, VENDOR, PRODUCT)
+                send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
                 set_integration_context({"offset": offset})
+            demisto.updateModuleHealth({'eventsPulled': total_events_count})
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
             return_outputs(human_readable, entry_context, raw_response)
