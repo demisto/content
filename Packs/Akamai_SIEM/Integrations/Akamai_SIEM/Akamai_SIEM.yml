@@ -59,8 +59,6 @@ configuration:
   type: 13
   required: false
   section: Collect
-  hidden:
-  - marketplacev2
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetchTime
   type: 0
