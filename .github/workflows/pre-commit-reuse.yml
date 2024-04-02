@@ -84,8 +84,8 @@ jobs:
       if: |
         always() && 
         steps.check-coverage-xml-exists.outputs.files_exists == 'true' && 
-        steps.check-pytest-junit-exists.outputs.files_exists == true && 
-        github.event.pull_request.head.repo.fork == false
+        steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
+        ! github.event.pull_request.head.repo.fork
       uses: MishaKav/pytest-coverage-comment@main
       with:
         pytest-xml-coverage-path: coverage_report/coverage.xml
