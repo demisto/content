@@ -178,7 +178,8 @@ class TestCommandsFunctions:
         last_offset = "11111"
         requests_mock.get(f'{BASE_URL}/50170?limit={size}&from=1575966002&offset={last_offset}', text=SEC_EVENTS_EMPTY_TXT)
 
-        for _, offset, total_events_count in Akamai_SIEM.fetch_events_command(client, '12 hours', 6, '50170', {"offset": last_offset}):  # noqa: B007
+        for _, offset, total_events_count in Akamai_SIEM.fetch_events_command(client, '12 hours', 6,  # noqa: B007
+                                                                              '50170', {"offset": last_offset}):
             last_offset = offset
         assert total_events_count == 0
         assert last_offset == "11111"
