@@ -186,7 +186,7 @@ repos:
     name: validate-content-paths
     entry: validate-content-path
     language: system
-    skip:nightly: true
+    require_serial: true
     args:
     -  validate
     -  --skip-depth-one-file
