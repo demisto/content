@@ -521,10 +521,8 @@
       fi
 
     - echo "PRE_COMMIT_SUCCESS=$PRE_COMMIT_SUCCESS"
-    - exit $PRE_COMMIT_SUCCESS
     - job-done
-
-
+    - exit $PRE_COMMIT_SUCCESS
 
 .run-validations:
   stage: unittests-and-validations
