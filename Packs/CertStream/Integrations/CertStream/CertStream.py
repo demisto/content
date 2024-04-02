@@ -258,13 +258,12 @@ def check_homographs(domain: str) -> tuple[bool, dict]:
     global levenshtein_distance_threshold
     global homographs
 
-    user_homographs = homographs
+    user_homographs = dict(homographs)
     words = domain.split(".")[:-1]  # All words in the domain without the TLD
     similarity = levenshtein_distance_threshold
     for word in words:
-        demisto.debug(f"{user_homographs=}")
-        for asset, homographs in user_homographs.items():
-            for homograph in homographs:
+        for asset, homographs_list in user_homographs.items():
+            for homograph in homographs_list:
                 similarity = compute_similarity(homograph, word)
                 if similarity > levenshtein_distance_threshold:
                     return True, {"similarity": similarity,
