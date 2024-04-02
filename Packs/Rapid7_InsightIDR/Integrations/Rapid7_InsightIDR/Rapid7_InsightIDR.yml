@@ -57,11 +57,11 @@ configuration:
     type: 8
     required: false
     additionalinfo: Indicates whether the requester has multi-customer access.
-  - display: Force Use for API Version 2
+  - display: Use for API Version 2 by default.
     name: is_v2
     type: 8
     required: false
-    additionalinfo: Whether to force the use of API version 2 for investigation commands.
+    additionalinfo: Whether to use API version 2 by default for investigation commands (Can be overriden by passing the api_version argument).
   - display: Trust any certificate (not secure)
     name: insecure
     type: 8
@@ -82,11 +82,12 @@ script:
     - arguments:
         - description: The InsightIDR API version to request to.
           name: api_version
-          defaultValue: V1
+          defaultValue: Default
           auto: PREDEFINED
           predefined:
             - V1
             - V2
+            - Default
           required: false
         - description: "The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0."
           name: index
@@ -208,11 +209,12 @@ script:
     - arguments:
         - description: The InsightIDR API version to request to.
           name: api_version
-          defaultValue: V1
+          defaultValue: Default
           auto: PREDEFINED
           predefined:
             - V1
             - V2
+            - Default
         - name: investigation_id
           description: The ID or Rapid7 Resource Names (RRN) of the investigation to retrieve. (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
           required: false
@@ -316,11 +318,12 @@ script:
     - arguments:
         - description: The InsightIDR API version to request to.
           name: api_version
-          defaultValue: V1
+          defaultValue: Default
           auto: PREDEFINED
           predefined:
             - V1
             - V2
+            - Default
         - description: Comma-separated list of the ID or Rapid7 Resource Names (RRN) of the investigation to assign the user to. (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
           name: investigation_id
           required: false
@@ -385,11 +388,12 @@ script:
     - arguments:
         - description: The InsightIDR API version to request to.
           name: api_version
-          defaultValue: V1
+          defaultValue: Default
           auto: PREDEFINED
           predefined:
             - V1
             - V2
+            - Default
         - description: Comma-separated list of the ID or Rapid7 Resource Names (RRN) of the investigation to be changed.  (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
           name: investigation_id
           required: false

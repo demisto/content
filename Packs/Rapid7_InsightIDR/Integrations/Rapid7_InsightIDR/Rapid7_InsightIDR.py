@@ -26,6 +26,7 @@ class Constants:
     INVESTIGATIONS_HEADERS: tuple = ()
     INVESTIGATION_KEY_FIELD = ""
     DEFAULT_KEY_FIELD = ""
+    VERSION = ""
 
 
 @dataclass
@@ -33,7 +34,7 @@ class ConstantsV1(Constants):
     """
     This class contains constants for the API version 1.
     """
-
+    VERSION = API_V1
     IS_V1 = True
     IS_V2 = False
     INVESTIGATIONS_HEADERS: tuple = (
@@ -67,7 +68,7 @@ class ConstantsV2(Constants):
         "priority",
     )
     DEFAULT_KEY_FIELD = "rrn"
-
+    VERSION = API_V2
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -287,7 +288,7 @@ class Client(BaseClient):
             }
         )
         params = remove_empty_elements(
-            {"multi-customer": self.is_multi_customer if api_version == "V2" else None}
+            {"multi-customer": self.is_multi_customer if api_version == API_V2 else None}
         )
         return self._http_request(
             method="PUT",
@@ -630,7 +631,7 @@ def insight_idr_list_investigations_command(
     )
 
     results = client.list_investigations(
-        api_version=args.get("api_version") or API_V1,
+        api_version=constants.VERSION,
         statuses=args.get("statuses"),
         start_time=start_time,
         end_time=end_time,
@@ -671,7 +672,7 @@ def insight_idr_get_investigation_command(
     """
     investigation_data = {}
     investigation_id = args["investigation_id"]
-    api_version = args.get("api_version") or API_V1
+    api_version = constants.VERSION
     results = client.list_investigations(api_version=api_version, investigation_id=investigation_id)
     if constants.IS_V1:
         demisto.debug("Find the investigation ID in list response (V1)")
@@ -765,7 +766,7 @@ def insight_idr_assign_user_command(
 
         result = client.assign_user(
             investigation,
-            api_version=args.get("api_version") or API_V1,
+            api_version=constants.VERSION,
             user_email_address=user_email_address,
         )
         outputs.append(result)
@@ -812,7 +813,7 @@ def insight_idr_set_status_command(
     status = args["status"]
     for investigation_id in argToList(investigation_ids):
         result = client.set_status(
-            api_version=args.get("api_version") or API_V1,
+            api_version=constants.VERSION,
             investigation_id=investigation_id,
             status=status,
             **v2_params,
@@ -1767,15 +1768,16 @@ def main():
             proxy=proxy,
             is_multi_customer=is_multi_customer,
         )
-        api_version = (
-            "V2"
-            if argToBoolean(demisto.params().get("is_v2"))
-            else (demisto.args().get("api_version", API_V1) or API_V1)
-        )
+        if demisto.args().get("api_version") == API_V1:
+            api_version = API_V1
+        elif demisto.args().get("api_version") == API_V2:
+            api_version = API_V2
+        else:
+            api_version = API_V2 if argToBoolean(demisto.params().get("is_v2")) else API_V1
 
         api_version_constants: Constants = {
             API_V1: ConstantsV1,
-            "V2": ConstantsV2,
+            API_V2: ConstantsV2,
         }.get(api_version, ConstantsV1)()
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
