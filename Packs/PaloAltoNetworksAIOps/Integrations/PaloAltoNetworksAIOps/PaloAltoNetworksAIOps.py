@@ -31,7 +31,8 @@ class Client(BaseClient):
         previous_token = integration_context.get(tsg_access_token)
         previous_token_expiry_time = integration_context.get(tsg_expiry_time)
 
-        if previous_token and previous_token_expiry_time and previous_token_expiry_time > date_to_timestamp(datetime.now()):  # type: ignore
+        # type: ignore
+        if previous_token and previous_token_expiry_time and previous_token_expiry_time > date_to_timestamp(datetime.now()):
             self._access_token = previous_token
         else:
             data = {
