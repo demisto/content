@@ -8,7 +8,7 @@ alter tmp_src_ipv4 = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src),
 
 // mapping ip protocol
 | alter tmp_ip_proto = proto
-| alter xdm.network.ip_protocol = if(proto = "6", XDM_CONST.IP_PROTOCOL_TCP , proto = "17",XDM_CONST.IP_PROTOCOL_UDP , tmp_ip_proto)
+| alter xdm.network.ip_protocol = if(proto="1",XDM_CONST.IP_PROTOCOL_ICMP, proto="4",XDM_CONST.IP_PROTOCOL_IP, proto = "6", XDM_CONST.IP_PROTOCOL_TCP , proto = "17",XDM_CONST.IP_PROTOCOL_UDP, proto="41",XDM_CONST.IP_PROTOCOL_IPV6, tmp_ip_proto)
 
 // regular mapping
 | alter xdm.observer.action = act, 
