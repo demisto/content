@@ -70,6 +70,7 @@ class ConstantsV2(Constants):
     DEFAULT_KEY_FIELD = "rrn"
     VERSION = API_V2
 
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
