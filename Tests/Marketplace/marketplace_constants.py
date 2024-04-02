@@ -378,6 +378,8 @@ class PackStatus(enum.Enum):
     FAILED_PREPARING_INDEX_FOLDER = "Failed in preparing and cleaning necessary index files"
     FAILED_UPDATING_INDEX_FOLDER = "Failed updating index folder"
     FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
+    FAILED_DOWNLOADING_PACK_FOLDER = "Failed in downloading the pack zip from gcs"
+    FAILED_UPDATING_PACK_FOLDER_METADATA = "Failed updating pack folder metadata"
     PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
     PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD = "Specific pack is not updated in current build"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"
