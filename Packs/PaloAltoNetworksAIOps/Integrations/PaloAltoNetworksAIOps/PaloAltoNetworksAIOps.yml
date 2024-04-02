@@ -43,7 +43,7 @@ display: Palo Alto Networks AIOps
 name: PaloAltoNetworksAIOps
 script:
   commands:
-  - name: pan-aiops-bpa-report-generate
+  - name: aiops-bpa-report-generate
     arguments:
     - name: entry_id
       description: Entry_id from xsoar war-room after uploading a file - should be a config file in xml format.
@@ -70,7 +70,7 @@ script:
     - name: show_in_context
       auto: PREDEFINED
       description: Show the report data inside the context.
-      defaultValue: true
+      defaultValue: false
       predefined: 
       - true
       - false
@@ -86,6 +86,19 @@ script:
     - name: report_id
       description: Report_id recieved from generate_bpa_report_request.
       required: true
+    - name: hide_polling_output
+      description: Hide polling output from war-room.
+      required: true
+      defaultValue: true
+    - name: export_as_file
+      description: Export the generated report as a file.
+      defaultValue: true
+    - name: show_in_context
+      description: Show the report data inside the context.
+      defaultValue: false
+    - name: first_round
+      description: Does this polling round is the first round.
+      defaultValue: false
     description: Polling mechanism to upload report.
     polling: true
     hidden: true

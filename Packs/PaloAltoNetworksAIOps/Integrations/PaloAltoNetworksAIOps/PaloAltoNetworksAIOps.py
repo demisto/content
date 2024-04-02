@@ -247,6 +247,33 @@ def convert_response_for_hr(response_json):
                         converted_array.append(note)
     return converted_array
 
+def create_response(client, report_id, show_in_context,export_as_file, upload_status):
+    downloaded_BPA_url = client.download_bpa_request(report_id)
+    downloaded_BPA_json = client.data_of_download_bpa_request(downloaded_BPA_url)
+    converted_json = convert_response_for_hr(downloaded_BPA_json)
+    human_readable_markdown = create_markdown(converted_json)
+    # added for context data
+    response = []
+    if show_in_context:
+        context_json = [{'report_id': report_id,
+            'report_status': upload_status,
+            'data': converted_json
+            }]
+        response.append(CommandResults(
+                outputs_prefix='AiOps.BPAReport',
+                outputs_key_field='report_id',
+                outputs=context_json,
+                raw_response=downloaded_BPA_json,
+                readable_output=human_readable_markdown,
+            ))
+    else:
+        response.append(CommandResults(
+                raw_response=downloaded_BPA_json,
+                readable_output=human_readable_markdown
+            ))
+    if export_as_file:
+        response.append(fileResult(f'report-id-{report_id}.md', human_readable_markdown))
+    return response
 
 def create_markdown(original_dict):
     headers = ['check_id', 'check_category', 'check_feature', 'check_message', 'check_name', 'check_passed', 'check_type',
@@ -282,9 +309,8 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     config_file_from_user = args.get('entry_id')
     requester_email = args.get('requester_email')
     requester_name = args.get('requester_name')
-    export_as_file = args.get('export_as_file')
-    show_in_context = args.get('show_in_context')
-
+    export_as_file = argToBoolean(args.get('export_as_file', True))
+    show_in_context = argToBoolean(args.get('show_in_context', False))
     # Get info about device - system info
     system_info_xml = client.get_info_about_device_request()
     config_file = None
@@ -308,7 +334,7 @@ def generate_report_command(client: Client, args: dict[str, Any]):
 
 
 @polling_function(
-    name="pan-aiops-polling-upload-report",
+    name="aiops-polling-upload-report",
     interval=arg_to_number(demisto.args().get("interval_in_seconds", INTERVAL_FOR_POLLING_DEFAULT)),  # type: ignore
     timeout=arg_to_number(demisto.args().get("timeout", TIMEOUT_FOR_POLLING_DEFAULT)),  # type: ignore
     requires_polling_arg=False,
@@ -317,41 +343,16 @@ def generate_report_command(client: Client, args: dict[str, Any]):
 def polling_until_upload_report_command(args: dict[str, Any], client: Client) -> PollResult:
     client.generate_access_token_request()
     report_id = args.get('report_id')
-    export_as_file = args.get('export_as_file')
-    show_in_context = args.get('show_in_context')
-    first_round = args.get('first_round', False)
+    export_as_file = argToBoolean(args.get('export_as_file', True))
+    show_in_context = argToBoolean(args.get('show_in_context', False))
+    first_round = argToBoolean(args.get('first_round', False))
     upload_status = client.check_upload_status_request(report_id)
     if upload_status == 'COMPLETED_WITH_SUCCESS':
-        downloaded_BPA_url = client.download_bpa_request(report_id)
-        downloaded_BPA_json = client.data_of_download_bpa_request(downloaded_BPA_url)
-        converted_json = convert_response_for_hr(downloaded_BPA_json)
-        human_readable_markdown = create_markdown(converted_json)
-        # added for context data
-        if show_in_context:
-            context_json = [{'report_id': report_id,
-                            'report_status': upload_status,
-                            'data': converted_json
-                            }]
-            return PollResult(
-                response=CommandResults(
-                    outputs_prefix='AiOps.BPAReport',
-                    outputs_key_field='report_id',
-                    outputs=context_json,
-                    raw_response=downloaded_BPA_json,
-                    readable_output=human_readable_markdown
-                ),
-                continue_to_poll=False,
-            )
-        else:
-            return PollResult(
-                response=CommandResults(
-                    raw_response=downloaded_BPA_json,
-                    readable_output=human_readable_markdown
-                ),
-                continue_to_poll=False,
-            )
-        # if export_as_file:
-        #     return_results(fileResult(f'{report_id}', human_readable_markdown))
+        response = create_response(client, report_id, show_in_context,export_as_file, upload_status)
+        return PollResult(
+            response=response,
+            continue_to_poll=False,
+        )
     elif upload_status == 'UPLOAD_INITIATED':
         results = CommandResults(readable_output="Polling job failed.")
         if first_round:
@@ -402,10 +403,9 @@ def main() -> None:
     base_url = params.get('url')
     api_key = params.get('credentials', {}).get('password')
     tsg_id = params.get('tsg_id')
-    client_id = params.get('client_id')
+    client_id = params.get('client_id', {}).get('password')
     client_secret = params.get('client_secret', {}).get('password')
     proxy = params.get('proxy', False)
-
     demisto.debug(f'Command being called is {command}')
 
     try:
@@ -420,9 +420,9 @@ def main() -> None:
      
         if command == 'test-module':
             return_results(test_module(client))
-        elif command == 'pan-aiops-bpa-report-generate':
+        elif command == 'aiops-bpa-report-generate':
             generate_report_command(client, args)
-        elif command == 'pan-aiops-polling-upload-report':
+        elif command == 'aiops-polling-upload-report':
             return_results(polling_until_upload_report_command(args, client))
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
