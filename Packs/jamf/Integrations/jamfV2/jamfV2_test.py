@@ -510,7 +510,7 @@ def test_generate_token__basic_auth_no_token(mocker):
         - _generate_token is called but no token is generated
     Then:
         - Ensure the http_request will use the username and password for authentication (basic auth) since
-        their is no token, and the basic_auth_flag is set to True
+        their is no token, and the basic_auth_flag is set to True.
 
     """
 
