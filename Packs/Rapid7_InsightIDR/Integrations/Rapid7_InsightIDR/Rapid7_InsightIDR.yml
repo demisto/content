@@ -306,6 +306,13 @@ script:
           description: The maximum number of alerts to close. If this parameter is not specified then there is no maximum. The minimum description is 0.
       description: Close all investigations that match the provided request parameters. If there are any investigations found associated with Threat Command alerts within the given request parameters, they will be closed in Threat Command with the close reason, "Other".
       name: rapid7-insight-idr-close-investigations
+      outputs:
+        - contextPath: Rapid7InsightIDR.Investigation.id
+          description: The ID of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.status
+          description: The new status (Closed) of the investigation.
+          type: String
     - arguments:
         - description: The InsightIDR API version to request to.
           name: api_version

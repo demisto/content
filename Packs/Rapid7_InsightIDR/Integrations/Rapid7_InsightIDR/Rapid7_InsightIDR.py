@@ -1,7 +1,7 @@
 import json
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import dateparser
 import demistomock as demisto
@@ -501,7 +501,7 @@ class Client(BaseClient):
 
     def search_users(
         self,
-        search: List[Dict[str, Any]],
+        search: list[dict[str, Any]],
         sort: list[dict[str, Any]],
         index: str,
         page_size: str,
@@ -671,7 +671,7 @@ def insight_idr_get_investigation_command(
     """
     investigation_data = {}
     investigation_id = args["investigation_id"]
-    api_version = args.get("api_version") or  API_V1
+    api_version = args.get("api_version") or API_V1
     results = client.list_investigations(api_version=api_version, investigation_id=investigation_id)
     if constants.IS_V1:
         demisto.debug("Find the investigation ID in list response (V1)")
@@ -1174,7 +1174,7 @@ def insight_idr_query_log_set_command(
     return command_results
 
 
-def handle_query_log_results(client: Client, result: dict) -> Tuple[list, list]:
+def handle_query_log_results(client: Client, result: dict) -> tuple[list, list]:
     """
     This function get the first result of the query,
     then handles if the query is still in progress, and handle pagination.
@@ -1491,8 +1491,8 @@ def test_module(client: Client) -> str:
 
 @logger
 def fetch_incidents(
-    client: Client, last_run: Dict, first_fetch_time: str, max_fetch: str
-) -> Tuple[Dict[str, int], List[dict]]:
+    client: Client, last_run: dict, first_fetch_time: str, max_fetch: str
+) -> tuple[dict[str, int], list[dict]]:
     """
     Fetch incidents (investigations) each minute (by default).
 
