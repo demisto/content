@@ -1771,6 +1771,7 @@ def search_device(filter_operator='AND'):
     }
     limit = int(args.get('limit', 50))
     offset = int(args.get('offset', 0))
+    sort = args.get('sort', '')
     url_filter = '{}'.format(str(args.get('filter', '')))
     op = ',' if filter_operator == 'OR' else '+'
     # In Falcon Query Language, '+' stands for AND and ',' for OR
@@ -1791,7 +1792,8 @@ def search_device(filter_operator='AND'):
                 # All args should be a list. this is a fallback
                 url_filter = "{url_filter}{operator}{inp_arg}:'{arg_val}'".format(url_filter=url_filter, operator=op,
                                                                                   inp_arg=k, arg_val=arg)
-    raw_res = http_request('GET', '/devices/queries/devices/v1', params={'filter': url_filter, 'limit': limit, 'offset': offset})
+    raw_res = http_request('GET', '/devices/queries/devices/v1',
+                           params={'filter': url_filter, 'limit': limit, 'offset': offset, 'sort': sort})
     device_ids = raw_res.get('resources')
     if not device_ids:
         return None
@@ -1966,11 +1968,13 @@ def change_host_group_members(action_name: str,
 def host_group_members(filter: str | None,
                        host_group_id: str | None,
                        limit: str | None,
-                       offset: str | None):
+                       offset: str | None,
+                       sort: str | None):
     params = {'id': host_group_id,
               'filter': filter,
               'offset': offset,
-              'limit': limit}
+              'limit': limit,
+              'sort': sort}
     response = http_request(method='GET',
                             url_suffix='/devices/combined/host-group-members/v1',
                             params=params)
@@ -4734,8 +4738,9 @@ def update_host_group_command(host_group_id: str,
 def list_host_group_members_command(host_group_id: str | None = None,
                                     filter: str | None = None,
                                     offset: str | None = None,
-                                    limit: str | None = None) -> CommandResults:
-    response = host_group_members(filter, host_group_id, limit, offset)
+                                    limit: str | None = None,
+                                    sort: str | None = None) -> CommandResults:
+    response = host_group_members(filter, host_group_id, limit, offset, sort)
     devices = response.get('resources')
     if not devices:
         return CommandResults(readable_output='No hosts are found',
