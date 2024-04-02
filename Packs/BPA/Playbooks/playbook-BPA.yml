@@ -1,7 +1,7 @@
 id: Run Panorama Best Practice Assessment
 version: -1
 name: Run Panorama Best Practice Assessment
-description: "Deprecated. Use Palo Alto Networks AIOps instead."
+description: "Deprecated. Use Palo Alto Networks AIOps instead and run aiops-bpa-report-generate command."
 starttaskid: "0"
 tasks:
   "0":

@@ -1,6 +1,6 @@
 {
-    "name": "Best Practice Assessment (BPA) by Palo Alto Networks",
-    "description": "Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.",
+    "name": "Best Practice Assessment (BPA) by Palo Alto Networks(Deprecated)",
+    "description": "Deprecated. please use Palo Alto Networks AIOps instead.",
     "support": "xsoar",
     "currentVersion": "1.2.22",
     "author": "Cortex XSOAR",
