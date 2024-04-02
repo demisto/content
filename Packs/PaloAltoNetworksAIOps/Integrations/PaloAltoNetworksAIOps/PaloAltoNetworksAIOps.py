@@ -179,8 +179,8 @@ def adjust_xml_format(xml_string, new_root_tag):
     root = ET.fromstring(xml_string)
     sub_tags = root.find(f'.//{new_root_tag}')
     if not sub_tags:
-        raise DemistoException("Request Succeeded, A parse error occurred- could not find {new_root_tag} tag to adjust to AIOps "
-                               "API.")
+        raise DemistoException(f"Request Succeeded, A parse error occurred- could not find {new_root_tag} tag to adjust to AIOps "
+                               f"API.")
     attributes = ' '.join([f'{k}="{v}"' for k, v in sub_tags.attrib.items()])
     new_xml = f"<{new_root_tag} {attributes}>"
     for child in sub_tags:  # type: ignore
