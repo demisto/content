@@ -174,6 +174,13 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Microsoft 365 Defender context
+  name: microsoft_365_defender_context
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: Save Hunting Query result to the Microsoft 365 Defender context.
+    path
 description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
 display: Microsoft Graph Security
 name: Microsoft Graph
@@ -2038,6 +2045,217 @@ script:
     - contextPath: MSGraphMail.AssessmentRequest.ResultMessage
       description: The result message of the assessment request.
       type: String
+  - arguments:
+    - name: query
+      description: Advanced hunting query.
+      required: true
+    - name: limit
+      description: Number of entries. Enter -1 for unlimited query. In case a limit also appears in the query, priority will be given to the query.
+      defaultValue: '50'
+    - name: timeout
+      description: The time limit in seconds for the http request to run.
+      defaultValue: '50'
+    description: Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft Graph Security.
+    name: msg-advanced-hunting
+    outputs:
+    - contextPath: MsGraph.Hunt.query
+      description: The query used. Also acted as a key.
+      type: String
+    - contextPath: MsGraph.Hunt.results
+      description: The results of the query.
+      type: Unknown
+    - contextPath: Microsoft365Defender.Hunt.query
+      description: The query used. Also acted as a key.
+      type: String
+    - contextPath: Microsoft365Defender.Hunt.results
+      description: The results of the query.
+      type: Unknown
+  - arguments:
+    - name: incident_id
+      description: Incident's ID.
+    - name: limit
+      description: Number of incidents in the list. Maximum is 50.
+      defaultValue: '50'
+    - name: timeout
+      description: The time limit in seconds for the http request to run.
+      defaultValue: '50'
+    - name: status
+      description: The status of the incident.
+      auto: PREDEFINED
+      predefined:
+      - 'active'
+      - 'redirected'
+      - 'resolved'
+      - 'inProgress'
+      - 'unknownFutureValue'
+      - 'awaitingAction'
+    - name: assigned_to
+      description: Owner of the incident.
+    - name: severity
+      description: Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention.
+      auto: PREDEFINED
+      predefined:
+      - 'unknown'
+      - 'informational'
+      - 'low'
+      - 'medium'
+      - 'high'
+      - 'unknownFutureValue'
+    - name: classification
+      description: The specification for the incident.
+    - name: odata
+      description: Filter incidents using 'odata' query.
+    description: Get a list of incident objects that Microsoft graph created to track attacks in an organization. If you want a specific incident, just enter incident_id.
+    name: msg-list-security-incident
+    outputs:
+    - contextPath: MsGraph.Incident.assignedTo
+      description: Owner of the incident, or null if no owner is assigned. Free editable text.
+      type: string
+    - contextPath: MsGraph.Incident.classification
+      description: The specification for the incident. Possible values are unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue.
+      type: string
+    - contextPath: MsGraph.Incident.comments
+      description: Array of comments created by the Security Operations (SecOps) team when the incident is managed.
+      type: string
+    - contextPath: MsGraph.Incident.createdDateTime
+      description: Time when the incident was first created.
+      type: date
+    - contextPath: MsGraph.Incident.customTags
+      description: Array of custom tags associated with an incident.
+      type: string
+    - contextPath: MsGraph.Incident.description
+      description: Description of the incident.
+      type: string
+    - contextPath: MsGraph.Incident.determination
+      description: Specifies the determination of the incident. Possible values are unknown, apt, malware, securityPersonnel, securityTesting, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, clean, insufficientData, confirmedUserActivity, lineOfBusinessApplication, unknownFutureValue.
+      type: string
+    - contextPath: MsGraph.Incident.displayName
+      description: The incident name.
+      type: string
+    - contextPath: MsGraph.Incident.id
+      description: Unique identifier to represent the incident.
+      type: number
+    - contextPath: MsGraph.Incident.incidentWebUrl
+      description: The URL for the incident page in the Microsoft 365 Defender portal.
+      type: string
+    - contextPath: MsGraph.Incident.lastModifiedBy
+      description: The identity that last modified the incident.
+      type: string
+    - contextPath: MsGraph.Incident.lastUpdateDateTime
+      description: Time when the incident was last updated.
+      type: string
+    - contextPath: MsGraph.Incident.redirectIncidentId
+      description: Only populated in case an incident is grouped with another incident, as part of the logic that processes incidents. In such a case, the status property is redirected.
+      type: string
+    - contextPath: MsGraph.Incident.severity
+      description: Indicates the possible impact on assets. The higher the severity, the bigger the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue.
+      type: string
+    - contextPath: MsGraph.Incident.status
+      description: The status of the incident. Possible values are active, resolved, inProgress, redirected, unknownFutureValue, and awaitingAction.
+      type: string
+    - contextPath: MsGraph.Incident.tenantId
+      description: The Microsoft Entra tenant in which the alert was created.
+      type: string
+    - contextPath: MsGraph.Incident.systemTags
+      description: The system tags associated with the incident.
+      type: string
+  - arguments:
+    - name: incident_id
+      description: Incident's ID.
+      required: true
+    - name: status
+      description: Categorize incidents (as Active, Resolved, or Redirected).
+      auto: PREDEFINED
+      predefined:
+      - active
+      - resolved
+      - redirected
+      - unknownFutureValue
+    - name: assigned_to
+      description: Owner of the incident.
+    - name: determination
+      description: Determination of the incident.
+      auto: PREDEFINED
+      predefined:
+      - unknown
+      - apt
+      - malware
+      - securityPersonnel
+      - unwantedSoftware
+      - other
+      - multiStagedAttack
+      - compromisedUser
+      - phishing
+      - maliciousUserActivity
+      - notMalicious
+    - name: classification
+      description: The specification for the incident.
+      auto: PREDEFINED
+      predefined:
+      - unknown
+      - falsePositive
+      - truePositive
+      - informationalExpectedActivity
+      - unknownFutureValue
+    - name: custom_tags
+      description: Array of custom tags associated with an incident.
+    - name: timeout
+      description: The time limit in seconds for the http request to run.
+      defaultValue: '50'
+    description: Update the incident with the given ID.
+    name: msg-update-security-incident
+    outputs:
+    - contextPath: MsGraph.Incident.assignedTo
+      description: Owner of the incident, or null if no owner is assigned. Free editable text.
+      type: String
+    - contextPath: MsGraph.Incident.classification
+      description: The specification for the incident. Possible values are unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue.
+      type: String
+    - contextPath: MsGraph.Incident.comments
+      description: Array of comments created by the Security Operations (SecOps) team when the incident is managed.
+      type: String
+    - contextPath: MsGraph.Incident.createdDateTime
+      description: Time when the incident was first created.
+      type: Date
+    - contextPath: MsGraph.Incident.customTags
+      description: Array of custom tags associated with an incident.
+      type: String
+    - contextPath: MsGraph.Incident.description
+      description: Description of the incident.
+      type: String
+    - contextPath: MsGraph.Incident.determination
+      description: Specifies the determination of the incident. Possible values are unknown, apt, malware, securityPersonnel, securityTesting, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, clean, insufficientData, confirmedUserActivity, lineOfBusinessApplication, unknownFutureValue.
+      type: String
+    - contextPath: MsGraph.Incident.displayName
+      description: The incident name.
+      type: String
+    - contextPath: MsGraph.Incident.id
+      description: Unique identifier to represent the incident.
+      type: String
+    - contextPath: MsGraph.Incident.incidentWebUrl
+      description: The URL for the incident page in the Microsoft 365 Defender portal.
+      type: String
+    - contextPath: MsGraph.Incident.lastModifiedBy
+      description: The identity that last modified the incident.
+      type: String
+    - contextPath: MsGraph.Incident.lastUpdateDateTime
+      description: Time when the incident was last updated.
+      type: Date
+    - contextPath: MsGraph.Incident.redirectIncidentId
+      description: Only populated in case an incident is grouped with another incident, as part of the logic that processes incidents. In such a case, the status property is redirected.
+      type: String
+    - contextPath: MsGraph.Incident.severity
+      description: Indicates the possible impact on assets. The higher the severity, the bigger the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue.
+      type: String
+    - contextPath: MsGraph.Incident.status
+      description: The status of the incident. Possible values are active, resolved, inProgress, redirected, unknownFutureValue, and awaitingAction.
+      type: String
+    - contextPath: MsGraph.Incident.tenantId
+      description: The Microsoft Entra tenant in which the alert was created.
+      type: String
+    - contextPath: MsGraph.Incident.systemTags
+      description: The system tags associated with the incident.
+      type: String collection
   dockerimage: demisto/crypto:1.0.0.87358
   isfetch: true
   runonce: false
@@ -2054,4 +2272,4 @@ tests:
 - Microsoft Graph Security Test self deployed v2
 - MSG-ediscovery-tpb
 - MSG-Threat-Assessment-test
-fromversion: 5.0.0
+fromversion: 5.0.0 
