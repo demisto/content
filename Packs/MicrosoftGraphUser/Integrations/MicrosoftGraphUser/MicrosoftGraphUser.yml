@@ -14,19 +14,19 @@ configuration:
   section: Connect
 - name: creds_auth_id
   type: 9
-  displaypassword: ID (received from the admin consent - see Detailed Instructions)
+  displaypassword: ID / client ID
   hiddenusername: true
   section: Connect
   required: false
 - name: creds_tenant_id
   type: 9
-  displaypassword: Token (received from the admin consent - see Detailed Instructions)
+  displaypassword: Token / Tenant ID
   hiddenusername: true
   section: Connect
   required: false
 - name: creds_enc_key
   type: 9
-  displaypassword: Key (received from the admin consent - see Detailed Instructions)
+  displaypassword: Key / Client Secret
   hiddenusername: true
   section: Connect
   required: false
@@ -75,14 +75,14 @@ configuration:
   section: Connect
   advanced: false
   required: false
-- display: Application redirect URI (for Authorization Code flow mode)
+- display: Application redirect URI (for Self Deployed - Authorization Code Flow)
   name: redirect_uri
   type: 0
   section: Connect
   required: false
 - name: creds_auth_code
   type: 9
-  displaypassword: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions)
+  displaypassword: Authorization code (for Self Deployed - Authorization Code Flow)
   hiddenusername: true
   required: false
 - display: Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions (?) section)
@@ -618,7 +618,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.83343
+  dockerimage: demisto/crypto:1.0.0.86361
   runonce: false
   script: '-'
   subtype: python3

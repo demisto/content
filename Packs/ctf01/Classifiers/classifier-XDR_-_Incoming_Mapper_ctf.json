@@ -366,8 +366,8 @@
                     "simple": "incident_id"
                 },
                 "MITRE Tactic Name": {
-					"simple": "mitre_tactics_ids_and_names"
-				},
+                    "simple": "mitre_tactics_ids_and_names"
+                },
                 "XDR Low Severity Alert Count": {
                     "simple": "low_severity_alert_count"
                 },

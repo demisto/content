@@ -1,0 +1,299 @@
+id: AWS_-_SecurityLake_Test_Playbook
+version: -1
+name: AWS_-_SecurityLake_Test_Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ee59c709-f930-48e2-8976-d461cde3c3e9
+    type: start
+    task:
+      id: ee59c709-f930-48e2-8976-d461cde3c3e9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 105d8eea-b36b-4b54-810e-2991dba795fb
+    type: regular
+    task:
+      id: 105d8eea-b36b-4b54-810e-2991dba795fb
+      version: -1
+      name: List Catalogs
+      description: Lists the data catalogs in the current Amazon Web Services account.
+      script: '|||aws-security-lake-data-catalogs-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 889f293e-23cd-41c4-8219-28021fa569df
+    type: regular
+    task:
+      id: 889f293e-23cd-41c4-8219-28021fa569df
+      version: -1
+      name: List Databases
+      description: Lists the databases in the specified data catalog.
+      script: '|||aws-security-lake-databases-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      catalog_name:
+        simple: ${AWS.SecurityLake.Catalog.CatalogName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d6c1317e-6083-4a1e-869f-2f5df2813220
+    type: regular
+    task:
+      id: d6c1317e-6083-4a1e-869f-2f5df2813220
+      version: -1
+      name: List table metadata
+      description: Lists the metadata for the tables in the specified data catalog database.
+      script: '|||aws-security-lake-table-metadata-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      catalog_name:
+        simple: ${AWS.SecurityLake.Catalog.CatalogName}
+      database_name:
+        simple: ${AWS.SecurityLake.Database.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 59f35a9e-8445-4e06-8576-818148e1b0a2
+    type: regular
+    task:
+      id: 59f35a9e-8445-4e06-8576-818148e1b0a2
+      version: -1
+      name: List sources
+      description: Retrieves a snapshot of the current region, including whether Amazon Security Lake is enabled for those accounts and which sources Security Lake is collecting data from.
+      script: '|||aws-security-lake-data-sources-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 93606b8e-6e73-4a60-885e-2ec46f092773
+    type: regular
+    task:
+      id: 93606b8e-6e73-4a60-885e-2ec46f092773
+      version: -1
+      name: List data Lakes
+      description: Retrieves the Amazon Security Lake configuration object for the specified Amazon Web Services Regions.
+      script: '|||aws-security-lake-data-lakes-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 3b3284b2-84e6-4212-8ac7-9709eea9d918
+    type: condition
+    task:
+      id: 3b3284b2-84e6-4212-8ac7-9709eea9d918
+      version: -1
+      name: Validate catalog
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AWS.SecurityLake.Catalog.CatalogName
+            iscontext: true
+          right:
+            value:
+              simple: AwsDataCatalog
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 807591e1-1bf6-48de-8f27-a38a52f3fa7d
+    type: condition
+    task:
+      id: 807591e1-1bf6-48de-8f27-a38a52f3fa7d
+      version: -1
+      name: Validate databases
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: AWS.SecurityLake.Database
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1290,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.10.0
+description: ''

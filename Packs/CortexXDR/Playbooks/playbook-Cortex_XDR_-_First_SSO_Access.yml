@@ -2,6 +2,7 @@ id: Cortex XDR - First SSO Access
 version: -1
 name: Cortex XDR - First SSO Access
 description: |-
+  Deprecated. Use `Cortex XDR - Identity Analytics` instead.
   Investigates a Cortex XDR incident containing First SSO access from ASN in organization
    or First successful SSO connection from a country in organization.
 
@@ -12,6 +13,7 @@ description: |-
   - Response based on the verdict.
 
   The playbook is used as a sub-playbook in ‘Cortex XDR Incident Handling - v3’.
+deprecated: true
 starttaskid: "0"
 tasks:
   "0":

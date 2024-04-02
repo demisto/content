@@ -10,8 +10,19 @@ from pymisp import ExpandedPyMISP, PyMISPError, MISPObject, MISPSighting, MISPEv
 from pymisp.tools import GenericObjectGenerator, EMailObject
 from pymisp.tools import FileObject
 from base64 import b64decode
+import tempfile
 
 logging.getLogger("pymisp").setLevel(logging.CRITICAL)
+
+
+class TempFile:
+    def __init__(self, data):
+        _, self.path = tempfile.mkstemp()
+        with open(self.path, 'w') as temp_file:
+            temp_file.write(data)
+
+    def __del__(self):
+        os.remove(self.path)
 
 
 def handle_connection_errors(error):
@@ -47,9 +58,15 @@ MISP_URL = params.get('url')
 TO_IDS = params.get('check_to_ids')
 ALLOWED_ORGS = argToList(params.get('allowed_orgs'), ',')
 VERIFY = not params.get('insecure')
+CERTIFICATE = replace_spaces_in_credential(params.get('certificate', {}).get('identifier'))
+PRIVATE_KEY = replace_spaces_in_credential(params.get('certificate', {}).get('password'))
+cert = TempFile(CERTIFICATE) if CERTIFICATE else None
+key = TempFile(PRIVATE_KEY) if PRIVATE_KEY else None
+misp_client_cert = (cert.path, key.path) if cert and key else None
+
 PROXIES = handle_proxy()  # type: ignore
 try:
-    PYMISP = ExpandedPyMISP(url=MISP_URL, key=MISP_API_KEY, ssl=VERIFY, proxies=PROXIES)
+    PYMISP = ExpandedPyMISP(url=MISP_URL, key=MISP_API_KEY, ssl=VERIFY, proxies=PROXIES, cert=misp_client_cert)
 except PyMISPError as e:
     handle_connection_errors(e.message)
 
@@ -300,6 +317,28 @@ def build_generic_object(template_name: str, args: list[dict]) -> GenericObjectG
     misp_object = GenericObjectGenerator(template_name)
     misp_object.generate_attributes(args)
     return misp_object
+
+
+def build_custom_object(template_name: str, args: list[dict]):
+    obj = PYMISP.object_templates()
+    for entry in obj:
+        if str(entry.get('ObjectTemplate').get('name')).lower() == template_name:
+
+            custom_obj = PYMISP.get_raw_object_template(template_name)
+
+            if not os.path.exists('/tmp/{}'.format(template_name)):
+                os.mkdir('/tmp/{}'.format(template_name))
+            open('/tmp/{}/definition.json'.format(template_name), 'w').write(json.dumps(custom_obj))
+
+            misp_object = MISPObject(name=template_name, misp_objects_path_custom='/tmp')
+
+            for arg in args:
+                for key, value in arg.items():
+                    misp_object.add_attribute(key, value)
+
+            return misp_object
+
+    return False
 
 
 def misp_convert_timestamp_to_date_string(timestamp: str | int) -> str:
@@ -1496,6 +1535,27 @@ def add_generic_object_command(demisto_args: dict):
             f'`attribute` parameter could not be decoded, may not a valid JSON\nattribute: {attributes}', str(e))
 
 
+def add_custom_object_command(demisto_args: dict):
+    event_id = demisto_args.get('event_id', '')
+    template = demisto_args.get('template', '')
+    attributes = demisto_args.get('attributes', '').replace("'", '"')
+
+    try:
+        args = json.loads(attributes)
+        if not isinstance(args, list):
+            args = dict_to_generic_object_format(args)
+
+        obj = build_custom_object(template, args)
+        if obj is not False:
+            return add_object(event_id, obj)
+        else:
+            raise DemistoException('Unable to find custom template {}'. format(template))
+
+    except ValueError as e:
+        raise DemistoException(
+            f'`attribute` parameter could not be decoded, may not a valid JSON\nattribute: {attributes}', str(e))
+
+
 def convert_arg_to_misp_args(demisto_args, args_names):
     return [{arg.replace('_', '-'): demisto_args.get(arg)} for arg in args_names if demisto_args.get(arg)]
 
@@ -1768,6 +1828,8 @@ def main():
             return_results(add_ip_object(args))
         elif command == 'misp-add-object':
             return_results(add_generic_object_command(args))
+        elif command == 'misp-add-custom-object':
+            return_results(add_custom_object_command(args))
         elif command == 'misp-update-attribute':
             return_results(update_attribute_command(args))
         elif command == 'misp-delete-attribute':

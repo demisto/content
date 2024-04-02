@@ -5035,6 +5035,9 @@ script:
   - arguments:
     - description: The serial number of the device.
       name: target
+    - defaultValue: 'running_config'
+      description: Name of the file to save the configuration to.
+      name: filename
     description: Pull the running config file.
     name: pan-os-get-running-config
   - arguments:
@@ -5145,6 +5148,8 @@ script:
       - bottom
     - description: The destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument.
       name: dst
+    - description: An audit comment for the rule.
+      name: audit_comment
     description: Creates a policy rule.
     execution: true
     name: pan-os-create-rule
@@ -7157,7 +7162,6 @@ script:
       defaultValue: disable
     description: Enables assigning EDL to the anti-spyware profile under "DNS Signature Policies".
     name: pan-os-apply-dns-signature-policy
-    outputs: []
   - arguments: []
     description: Gets file-blocking best practices.
     name: pan-os-get-file-blocking-best-practice
@@ -8434,6 +8438,8 @@ script:
     - description: Serial number of the device from which to fetch the device state.
       name: target
       required: true
+    - description: Name of the file for the state file to be saved. Default will use the hostname as the filename.
+      name: filename
     description: Get the device state from the provided device. Note; This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in "show system info" is unreachable, this command will fail.
     name: pan-os-platform-get-device-state
     outputs:
@@ -8670,9 +8676,10 @@ script:
       predefined:
       - forward
       - reverse
+    - description: An audit comment for the rule.
+      name: audit_comment
     description: Creates a new NAT rule in a Panorama/firewall instance.
     name: pan-os-create-nat-rule
-    outputs: []
   - arguments:
     - description: The name of the NAT rule to delete. Can be retrieved from the pan-os-list-nat-rules command.
       name: rulename
@@ -8687,7 +8694,6 @@ script:
       - post-rulebase
     description: Deletes a NAT rule.
     name: pan-os-delete-nat-rule
-    outputs: []
   - arguments:
     - description: The name of the NAT rule to edit. Can be retrieved from the pan-os-list-nat-rules command.
       name: rulename
@@ -8733,13 +8739,13 @@ script:
       - destination_translation_dynamic_ip
       - destination_translation_dynamic_distribution_method
       - disabled
+      - audit-comment
     - description: The value of the element to change. Can be a list for certain elements.
       isArray: true
       name: element_value
       required: true
     description: Edits a NAT rule.
     name: pan-os-edit-nat-rule
-    outputs: []
   - arguments:
     - description: The name of the virtual router to retrieve. If not mentioned, will bring all the virtual routers.
       name: virtual_router
@@ -8893,7 +8899,6 @@ script:
       name: filter_bgp_extended_community
     description: Creates a new redistribution-profile under a virtual-router for a Panorama/firewall instance.
     name: pan-os-create-redistribution-profile
-    outputs: []
   - arguments:
     - description: The name of the redistribution-profile to edit.
       name: name
@@ -8933,7 +8938,6 @@ script:
       defaultValue: 'replace'
     description: Edits a redistribution-profile in a virtual-router.
     name: pan-os-edit-redistribution-profile
-    outputs: []
   - arguments:
     - description: The name of the redistribution-profile to delete.
       name: name
@@ -8945,7 +8949,6 @@ script:
       name: template
     description: Deletes a redistribution-profile from a virtual-router.
     name: pan-os-delete-redistribution-profile
-    outputs: []
   - arguments:
     - description: The name of the pbf-rule to retrieve. If not mentioned, will bring all the pbf rules.
       name: rulename
@@ -9115,9 +9118,10 @@ script:
     - description: The nexthop addresses list for the symmetric return.
       isArray: true
       name: nexthop_address_list
+    - description: An audit comment for the rule.
+      name: audit_comment
     description: Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance.
     name: pan-os-create-pbf-rule
-    outputs: []
   - arguments:
     - description: The name of the PBF rule to edit. Can be retrieved from the pan-os-list-pbf-rules command.
       name: rulename
@@ -9151,6 +9155,7 @@ script:
       - action_forward_discard
       - action_forward_no_pbf
       - disabled
+      - audit-comment
     - description: The value of the element to change. Can be a list for some of the elements. When element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically.
       isArray: true
       name: element_value
@@ -9271,7 +9276,6 @@ script:
       name: device-group
     description: Deletes an application-group.
     name: pan-os-delete-application-group
-    outputs: []
   - arguments:
     - description: Whether to include shared tags in the list.
       name: include_shared_tags
@@ -9368,7 +9372,130 @@ script:
       description: The job ID to use when polling.
     description: Exports a tech support file (TSF).
     polling: true
-  dockerimage: demisto/pan-os-python:1.0.0.85910
+  - arguments:
+    - description: A given group name to return the data for.
+      name: group_name
+    - description: The device group that the security profile groups are part of.
+      name: device-group
+    description: Returns a list of security profile groups from Panorama.
+    name: pan-os-list-security-profile-group
+    outputs:
+    - contextPath: Panorama.ProfileGroup.name
+      description: The name of the group.
+      type: String
+    - contextPath: Panorama.ProfileGroup.location
+      description: The security profile group's device group location.
+      type: String
+    - contextPath: Panorama.ProfileGroup.virus
+      description: The antivirus profile.
+      type: String
+    - contextPath: Panorama.ProfileGroup.spyware
+      description: The anti-spyware profile.
+      type: String
+    - contextPath: Panorama.ProfileGroup.vulnerability
+      description: The vulnerability protection profile.
+      type: String
+    - contextPath: Panorama.ProfileGroup.url-filtering
+      description: The URL filtering profile.
+      type: String
+    - contextPath: Panorama.ProfileGroup.file-blocking
+      description: The file blocking profile.
+      type: String
+    - contextPath: Panorama.ProfileGroup.data-filtering
+      description: The data filtering profile.
+      type: String
+    - contextPath: Panorama.ProfileGroup.wildfire-analysis
+      description: The WildFire analysis profile.
+      type: String
+    - contextPath: Panorama.ProfileGroup.disable-override
+      description: Whether overriding the security profile group is disabled.
+      type: String
+  - arguments:
+    - description: The name of the security profile group.
+      name: group_name
+      required: true
+    - description: The device group that the security profile group will be part of.
+      name: device-group
+    - description: The antivirus profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: antivirus_profile
+    - description: The anti-spyware profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: anti_spyware_profile
+    - description: The vulnerability protection profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: vulnerability_protection_profile
+    - description: The URL filtering profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: URL_filtering_profile
+    - description: The file blocking profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: file_blocking_profile
+    - description: The data filtering profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: data_filtering_profile
+    - description: The WildFire analysis profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: wildfire_analysis_profile
+    description: Creates a new security profile group in Panorama.
+    name: pan-os-create-security-profile-group
+  - arguments:
+    - description: The name of the security profile group to edit.
+      name: group_name
+      required: true
+    - description: The profile to edit in the group.
+      name: profile_to_change
+      auto: PREDEFINED
+      predefined:
+      - 'Antivirus Profile'
+      - 'Anti-Spyware Profile'
+      - 'Vulnerability Protection Profile'
+      - 'URL Filtering Profile'
+      - 'File Blocking Profile'
+      - 'Data Filtering  Profile'
+      - 'WildFire Analysis Profile'
+      required: true
+    - description: The value to set in the profile. If you want the profile value to be empty, set the value to "None". You can get the possible values for this argument by running the pan-os-get-security-profile command.
+      name: profile_value
+      required: true
+    - description: The device group that the security profile group is part of.
+      name: device-group
+    description: Edits the security profile group in Panorama.
+    name: pan-os-edit-security-profile-group
+  - arguments:
+    - description: The name of the security profile group to delete.
+      name: group_name
+      required: true
+    - description: The device group that the security profile group is part of.
+      name: device-group
+    description: Deletes a security profile group from Panorama.
+    name: pan-os-delete-security-profile-group
+  - arguments:
+    - description: The rule name to apply.
+      name: rule_name
+      required: true
+    - auto: PREDEFINED
+      description: The rule type. 
+      name: rule_type
+      required: true
+      predefined:
+      - Security Rule
+      - NAT Rule
+      - PBF Rule
+    - auto: PREDEFINED
+      description: The pre-rule or post-rule (Panorama instances only).
+      name: pre_post
+      predefined:
+      - Pre
+      - Post
+    - description: The device group that the rule is part of.
+      name: device-group
+    description: Gets the audit comment of a rule.
+    name: pan-os-get-audit-comment
+    outputs:
+    - contextPath: Panorama.AuditComment.comment
+      description: The audit comment ot the rule.
+      type: String
+    - contextPath: Panorama.AuditComment.rule_name
+      description: The rule name.
+      type: String
+    - contextPath: Panorama.AuditComment.rule_type
+      description: The rule type.
+      type: String
+  dockerimage: demisto/pan-os-python:1.0.0.89330
   isfetch: true
   runonce: false
   script: ''

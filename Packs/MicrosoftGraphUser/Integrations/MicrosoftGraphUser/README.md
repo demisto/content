@@ -13,8 +13,8 @@ Required Permissions:
 
 There are two different authentication methods for a self-deployed configuration:
 
-- [Client Credentials flow](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow)
-- [Authorization Code flow](https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
+- [Client Credentials flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#client-credentials-flow)
+- [Authorization Code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorization-code-flow)
 
 We recommend using the Client Credentials flow.
 In order to use the msgraph-user-change-password command, you must configure with the Authorization Code flow.
@@ -27,30 +27,25 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 2. Search for Azure Active Directory Users.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Host URL (e.g., https://graph.microsoft.com) |  | True |
-    | ID (received from the admin consent - see Detailed Instructions) |  |  |
-    | Token (received from the admin consent - see Detailed Instructions) |  |  |
-    | Key (received from the admin consent - see Detailed Instructions) |  |  |
-    | ID (received from the admin consent - see Detailed Instructions (?) |  |  |
-    | Token (received from the admin consent - see Detailed Instructions (?) section) |  |  |
-    | Key (received from the admin consent - see Detailed Instructions (?) |  | False |
-    | Certificate Thumbprint |  |  |
-    | Private Key |  |  |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
-    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Use a self-deployed Azure application |  | False |
-    | Application redirect URI (for Authorization Code flow mode) |  | False |
-    | Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions) |  |  |
-    | Authorization code (for Authorization Code flow mode - received from the authorization step. see Detailed Instructions (?) section) |  | False |
-    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
-    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Suppress Errors for Non Found Users |  | False |
+    | **Parameter**                                                          | **Description**                                                                                                                                                                                                                                                                                                                                        | **Required** |
+    |------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+    | Host URL (e.g., https://graph.microsoft.com)                           |                                                                                                                                                                                                                                                                                                                                                        | True         |
+    | ID / client ID                                                         |                                                                                                                                                                                                                                                                                                                                                        | False        |
+    | Token / Tenant ID                                                      |                                                                                                                                                                                                                                                                                                                                                        | False        |
+    | Key / Client Secret                                                    |                                                                                                                                                                                                                                                                                                                                                        | False        |
+    | Certificate Thumbprint                                                 | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app.                                                                                                                                                                                                                                               | False        |
+    | Private Key                                                            | Used for certificate authentication. The private key of the registered certificate.                                                                                                                                                                                                                                                                    | False        |
+    | Use a self-deployed Azure application                                  |                                                                                                                                                                                                                                                                                                                                                        | False        |
+    | Application redirect URI (for Self Deployed - Authorization Code Flow) |                                                                                                                                                                                                                                                                                                                                                        | False        |
+    | Authorization code (for Self Deployed - Authorization Code Flow)       |                                                                                                                                                                                                                                                                                                                                                        | False        |
+    | Use Azure Managed Identities                                           | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False        |
+    | Azure Managed Identities Client ID                                     | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.                                                                                                                                                                                                                                         | False        |
+    | Trust any certificate (not secure)                                     |                                                                                                                                                                                                                                                                                                                                                        | False        |
+    | Use system proxy settings                                              |                                                                                                                                                                                                                                                                                                                                                        | False        |
+    | Suppress Errors for Non Found Users                                    |                                                                                                                                                                                                                                                                                                                                                        | False        |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

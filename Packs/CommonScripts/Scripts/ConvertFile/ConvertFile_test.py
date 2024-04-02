@@ -53,9 +53,9 @@ def test_convert_to_html(mocker):
     assert results[0]['Type'] == entryTypes['file']
     assert results[0]['File'] == 'test.html'
     glob_list = glob.glob('./*' + results[0]['FileID'])
-    logging.getLogger().info('glob list for results: {}. list: {}'.format(results[0], glob_list))
+    logging.getLogger().info(f'glob list for results: {results[0]}. list: {glob_list}')
     assert glob_list
-    with open(glob_list[0], "r") as f:
+    with open(glob_list[0]) as f:
         contents = f.read()
         assert 'Extensions to the Office Open XML' in contents
     # assert the next result is an image
@@ -79,7 +79,7 @@ def test_convert_pdf_to_html(mocker):
     assert results[0]['Type'] == entryTypes['file']
     assert results[0]['File'] == 'test.html'
     glob_list = glob.glob('./*' + results[0]['FileID'])
-    logging.getLogger().info('glob list for results: {}. list: {}'.format(results[0], glob_list))
+    logging.getLogger().info(f'glob list for results: {results[0]}. list: {glob_list}')
     assert glob_list
     # check no defunct processed
     zombies, output = find_zombie_processes()

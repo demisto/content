@@ -1,62 +1,60 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import email
+import hashlib
+import json
+import logging
+import os
 import random
 import string
 import subprocess
-from xml.sax import SAXParseException
-
-import dateparser
-import chardet
-
-from CommonServerUserPython import *
-
 import sys
 import traceback
-import json
-import os
-import hashlib
-from io import StringIO
-import logging
 import warnings
-import email
 from email.policy import SMTP, SMTPUTF8
-from requests.exceptions import ConnectionError
+from io import StringIO
 from multiprocessing import Process
+from xml.sax import SAXParseException
+
+import chardet
+import dateparser
 import exchangelib
-from exchangelib.errors import (
-    ErrorItemNotFound,
-    ResponseMessageError,
-    RateLimitError,
-    ErrorInvalidIdMalformed,
-    ErrorFolderNotFound,
-    ErrorMailboxStoreUnavailable,
-    ErrorMailboxMoveInProgress,
-    ErrorNameResolutionNoResults,
-    MalformedResponseError,
-)
-from exchangelib.items import Item, Message, Contact
-from exchangelib.services.common import EWSService, EWSAccountService
-from exchangelib.util import create_element, add_xml_child, MNS, TNS
 from exchangelib import (
     IMPERSONATION,
+    OAUTH2,
     Account,
+    Body,
+    Configuration,
     EWSDateTime,
     EWSTimeZone,
-    Configuration,
+    ExtendedProperty,
     FileAttachment,
-    Version,
     Folder,
     HTMLBody,
-    Body,
-    ItemAttachment,
-    OAUTH2,
-    OAuth2AuthorizationCodeCredentials,
     Identity,
-    ExtendedProperty
+    ItemAttachment,
+    OAuth2AuthorizationCodeCredentials,
+    Version,
 )
-from oauthlib.oauth2 import OAuth2Token
-from exchangelib.version import EXCHANGE_O365
+from exchangelib.errors import (
+    ErrorFolderNotFound,
+    ErrorInvalidIdMalformed,
+    ErrorItemNotFound,
+    ErrorMailboxMoveInProgress,
+    ErrorMailboxStoreUnavailable,
+    ErrorNameResolutionNoResults,
+    MalformedResponseError,
+    RateLimitError,
+    ResponseMessageError,
+)
+from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+from exchangelib.services.common import EWSAccountService, EWSService
+from exchangelib.util import MNS, TNS, add_xml_child, create_element
+from exchangelib.version import EXCHANGE_O365
+from oauthlib.oauth2 import OAuth2Token
+from requests.exceptions import ConnectionError
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from MicrosoftApiModule import *
 
 # Ignore warnings print to stdout
@@ -2039,6 +2037,59 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):      # pra
     return None
 
 
+def handle_attached_email_with_incorrect_message_id(attached_email: Message):
+    """This function handles a malformed Message-ID value which can be returned in the header of certain email objects.
+    This issue happens due to a current bug in "email" library and further explained in XSUP-32074.
+    Public issue link: https://github.com/python/cpython/issues/105802
+
+    The function will run on every attached email if exists, check its Message-ID header value and fix it if possible.
+    Args:
+        attached_email (Message): attached email object.
+
+    Returns:
+        Message: attached email object.
+    """
+    message_id_value = ""
+    for i in range(len(attached_email._headers)):
+        if attached_email._headers[i][0].lower() == "message-id":
+            message_id = attached_email._headers[i][1]
+            message_header = attached_email._headers[i][0]
+            demisto.debug(f'Handling Message-ID header, {message_id=}.')
+            try:
+                message_id_value = handle_incorrect_message_id(message_id)
+                if message_id_value != message_id:
+                    # If the Message-ID header was fixed in the context of this function
+                    # the header will be replaced in _headers list
+                    attached_email._headers.pop(i)
+                    attached_email._headers.append((message_header, message_id_value))
+
+            except Exception as e:
+                # The function is designed to handle a specific format error for the Message-ID header
+                # as explained in the docstring.
+                # That being said, we do expect the header to be in a known format.
+                # If this function encounters a header format which is not in the known format and can't be fixed,
+                # the header will be ignored completely to prevent crashing the fetch command.
+                demisto.debug(f"Invalid {message_id=}, Error: {e}")
+                break
+            break
+    return attached_email
+
+
+def handle_incorrect_message_id(message_id: str) -> str:
+    """
+    Use regex to identify and correct one of the following invalid message_id formats:
+    1. '<[message_id]>' --> '<message_id>'
+    2. '\r\n\t<[message_id]>' --> '\r\n\t<message_id>'
+    If no necessary changes identified the original 'message_id' argument value is returned.
+    """
+    if re.search("\<\[.*\]\>", message_id):
+        # find and replace "<[" with "<" and "]>" with ">"
+        fixed_message_id = re.sub(r'<\[(.*?)\]>', r'<\1>', message_id)
+        demisto.debug('Fixed message id {message_id} to {fixed_message_id}')
+        return fixed_message_id
+    return message_id
+
+
 def parse_incident_from_item(item):     # pragma: no cover
     """
     Parses an incident from an item
@@ -2148,6 +2199,7 @@ def parse_incident_from_item(item):     # pragma: no cover
                     if attachment.item.headers:
                         # compare header keys case-insensitive
                         attached_email_headers = []
+                        attached_email = handle_attached_email_with_incorrect_message_id(attached_email)
                         for h, v in attached_email.items():
                             if not isinstance(v, str):
                                 try:
@@ -2158,6 +2210,7 @@ def parse_incident_from_item(item):     # pragma: no cover
 
                             v = ' '.join(map(str.strip, v.split('\r\n')))
                             attached_email_headers.append((h.lower(), v))
+                        demisto.debug(f'{attached_email_headers=}')
                         for header in attachment.item.headers:
                             if (
                                     (header.name.lower(), header.value)
@@ -2165,7 +2218,16 @@ def parse_incident_from_item(item):     # pragma: no cover
                                     and header.name.lower() != "content-type"
                             ):
                                 try:
-                                    attached_email.add_header(header.name, header.value)
+                                    if header.name.lower() == "message-id":
+                                        """ Handle a case where a Message-ID header was NOT already in attached_email,
+                                        and instead is coming from attachment.item.headers.
+                                        Meaning it wasn't handled in handle_attached_email_with_incorrect_message_id function
+                                        and instead it is handled here using handle_incorrect_message_id function."""
+                                        correct_message_id = handle_incorrect_message_id(header.value)
+                                        if (header.name.lower(), correct_message_id) not in attached_email_headers:
+                                            attached_email.add_header(header.name, correct_message_id)
+                                    else:
+                                        attached_email.add_header(header.name, header.value)
                                 except ValueError as err:
                                     if "There may be at most" not in str(err):
                                         raise err

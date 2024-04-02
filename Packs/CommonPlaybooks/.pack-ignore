@@ -22,6 +22,9 @@ NonFoundHashes
 opswat
 filescan
 Stringify
+QR
+unescape_url
+unescape
 
 [file:playbook-File_Enrichment_-_File_reputation.yml]
 ignore=BA101

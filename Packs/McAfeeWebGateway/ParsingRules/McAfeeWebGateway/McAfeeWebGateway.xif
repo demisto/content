@@ -1,0 +1,10 @@
+[INGEST:vendor="mcafee", product="webgateway", target_dataset="mcafee_webgateway_raw", no_hit=keep]
+filter _raw_log ~= "time_stamp\=\[\d+\/\w+\/\d+\:\d+\:\d+\:\d+\s+[\+\-]\d+\]"
+| alter
+    tmp_get_date = arraystring(regextract(_raw_log, "time_stamp\=\[(\d+\/\w+\/\d+)\:\d+\:\d+\:\d+\s+[\+\-]\d+\]"), ""),
+    tmp_get_time_and_zone = arraystring(regextract(_raw_log, "time_stamp\=\[\d+\/\w+\/\d+\:(\d+\:\d+\:\d+\s+[\+\-]\d+)\]"), "")
+| alter
+    tmp_unite_format = arraystring(arraycreate(tmp_get_date, tmp_get_time_and_zone), " ")
+| alter
+    _time = parse_timestamp("%d/%h/%Y %H:%M:%S %z", tmp_unite_format)
+| fields -tmp_get_date, tmp_get_time_and_zone, tmp_get_time_and_zone;

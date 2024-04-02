@@ -1,7 +1,10 @@
 import pytest
+from freezegun import freeze_time
+
 from CommonServerPython import *
 import json
 import demistomock as demisto
+from SendEmailReply import get_unique_code
 
 
 def util_open_file(path):
@@ -273,17 +276,17 @@ def test_get_query_window(list_response, expected_result, mocker):
         (
             [{'Metadata': {'user': 'DBot'}, 'Contents': 'note1'}, {'Metadata': {'user': 'DBot'}, 'Contents': 'note2'}],
             [{'name': 'attachment1.png'}, {'name': 'attachment2.png'}],
-            "DBot: \nnote1\n\nDBot: \nnote2\n\nAttachments: ['attachment1.png', 'attachment2.png']\n\n"
+            "DBot: \n\nnote1\n\nDBot: \n\nnote2\n\nAttachments: ['attachment1.png', 'attachment2.png']\n\n"
         ),
         (
             [{'Metadata': {'user': 'DBot'}, 'Contents': 'note1'}, {'Metadata': {'user': 'DBot'}, 'Contents': 'note2'}],
             [],
-            "DBot: \nnote1\n\nDBot: \nnote2\n\n"
+            "DBot: \n\nnote1\n\nDBot: \n\nnote2\n\n"
         ),
         (
             [{'Metadata': {'user': 'DBot'}, 'Contents': 'note1'}, {'Metadata': {'user': 'DBot'}, 'Contents': 'note2'}],
             "[]",
-            "DBot: \nnote1\n\nDBot: \nnote2\n\n"
+            "DBot: \n\nnote1\n\nDBot: \n\nnote2\n\n"
         )
     ]
 )
@@ -650,7 +653,7 @@ def test_multi_thread_new(scenario, mocker):
     reset_fields_mocker = mocker.patch.object(SendEmailReply, 'reset_fields', return_value=True)
     if scenario == 'required_fields_missing':
         # Test Scenario 1
-        expected = "The following required fields have not been set.  Please set them and try again. " \
+        expected = "The following required fields have not been set. Please set them and try again. " \
                    "['New Email Subject', 'New Email Recipients', 'New Email Body']"
         multi_thread_new('', False, '', '', 'html', 1, '12345678', '', '', 'soc_sender@company.com', 'cc_user@company.com',
                          'bcc_user@company.com', 'soc_sender@company.com', '')
@@ -884,7 +887,7 @@ def test_main(new_thread, mocker):
     if new_thread == 'n/a':
         single_thread_reply_args = single_thread_reply_mocker.call_args
         expected_args = ('87654321', '10', '', 'test_cc@example.com', '', 'html', [], {}, None, False, 'end_user@company.com',
-                         'soc_sender@company.com', '123456', 'mail-sender-instance-1')
+                         'soc_sender@company.com', '123456', 'mail-sender-instance-1', False)
         assert single_thread_reply_args.args == expected_args
     elif new_thread == 'true':
         multi_thread_new_args = multi_thread_new_mocker.call_args
@@ -897,3 +900,123 @@ def test_main(new_thread, mocker):
         expected_args = ('This is a test email.', 'html', '10', 1, {}, {}, 'test_cc@example.com', 'test_bcc@example.com',
                          'soc_sender@company.com', 'mail-sender-instance-1', 'None', False)
         assert multi_thread_reply_args.args == expected_args
+
+
+# Parametrized test for happy path scenarios with various realistic markdown inputs
+@pytest.mark.parametrize("input_md, expected_html, test_id", [
+    # Test ID: #1 - Simple text conversion
+    ("Hello, World!", "<p>Hello, World!</p>", "simple_text"),
+
+    # Test ID: #2 - Header conversion
+    ("# Header 1", "<h1>Header 1</h1>", "header_conversion"),
+
+    # Test ID: #3 - Table conversion
+    ("| Header1 | Header2 |\n| ------- | ------- |\n| Cell1   | Cell2   |",
+     "<table>\n<thead>\n<tr>\n<th>Header1</th>\n<th>Header2</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>Cell1</td>\n"
+     "<td>Cell2</td>\n</tr>\n</tbody>\n</table>",
+     "table_conversion"),
+
+    # Test ID: #4 - Emphasis conversion using legacy syntax
+    ("_italic_ **bold**",
+     "<p><em>italic</em> <strong>bold</strong></p>",
+     "emphasis_conversion"),
+
+    # Test ID: #5 - List conversion
+    ("- Item 1\n- Item 2",
+     "<ul>\n<li>Item 1</li>\n<li>Item 2</li>\n</ul>",
+     "list_conversion"),
+
+    # Test ID: #6 - New lines to <br> conversion
+    ("Line 1\nLine 2",
+     "<p>Line 1<br />\nLine 2</p>",
+     "newline_to_br_conversion"),
+], ids=lambda test_id: test_id)
+def test_format_body_happy_path(input_md, expected_html, test_id):
+    # Act
+    from SendEmailReply import format_body
+    result = format_body(input_md)
+
+    # Assert
+    assert result == expected_html, f"Test failed for {test_id}"
+
+
+# Parametrized test for edge cases
+@pytest.mark.parametrize("input_md, expected_html, test_id", [
+    # Test ID: #1 - Empty string
+    ("", "", "empty_string"),
+
+    # Test ID: #2 - Markdown with only special characters
+    ("# $%^&*()",
+     "<h1>$%^&amp;*()</h1>",
+     "special_characters_only"),
+], ids=lambda test_id: test_id)
+def test_format_body_edge_cases(input_md, expected_html, test_id):
+    # Act
+    from SendEmailReply import format_body
+    result = format_body(input_md)
+
+    # Assert
+    assert result == expected_html, f"Test failed for {test_id}"
+
+
+# Parametrized test for edge cases
+@pytest.mark.parametrize("input_md, expected_html, test_id", [
+    # Test ID: #1 - Demisto custom markdown underline syntax.
+    ("+underline+", "<p><u>underline</u></p>", "underline"),
+
+    # Test ID: #2 - Demisto custom markdown strikethrough syntax.
+    ("~~strikethrough~~", "<p><s>strikethrough</s></p>", "strikethrough"),
+], ids=lambda test_id: test_id)
+def test_demisto_custom_markdown_syntax(input_md, expected_html, test_id):
+    # Act
+    from SendEmailReply import format_body
+    result = format_body(input_md)
+
+    # Assert
+    assert result == expected_html, f"Test failed for {test_id}"
+
+
+@freeze_time("2024-02-22 10:00:00 UTC")
+def test_get_unique_code_happy_path(mocker):
+    # Arrange
+    incident_id = "123"
+    max_tries = 1000
+    expected_code = "1231708596000000"
+    mocker.patch('SendEmailReply.demisto', return_value=None)
+    mocker.patch('SendEmailReply.get_incident_by_query', return_value=None)
+
+    # Act
+    code = get_unique_code(incident_id, max_tries)
+
+    # Assert
+    assert code == expected_code
+
+
+@freeze_time("2024-02-22 10:00:00 UTC")
+def test_get_unique_code_edge_cases(mocker):
+    # Arrange
+    incident_id = "1"
+    max_tries = 1000
+    expected_code = "0011708596000000"
+    mocker.patch('SendEmailReply.get_incident_by_query', return_value=None)
+
+    # Act
+    code = get_unique_code(incident_id, max_tries)
+
+    # Assert
+    assert code == expected_code
+
+
+@freeze_time("2024-02-22 10:00:00 UTC")
+def test_get_unique_code_error_case(mocker):
+    # Arrange
+    incident_id = "123"
+    max_tries = 0
+    mocker.patch('SendEmailReply.get_incident_by_query', return_value=[{"id": "existing_incident"}])
+    mocked_return_error = mocker.patch('SendEmailReply.return_error', side_effect=Exception('Error'))
+
+# Act and Assert
+    with pytest.raises(Exception):
+        get_unique_code(incident_id, max_tries)
+    mocked_return_error.assert_called_once_with(
+        f'Failed to generate unique code for incident {incident_id} after {max_tries} tries')

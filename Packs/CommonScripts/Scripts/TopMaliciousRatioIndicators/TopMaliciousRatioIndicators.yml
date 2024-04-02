@@ -15,7 +15,7 @@ enabled: true
 args:
 - name: maxNumberOfIndicators
   description: Maximum number of indicators for malicious ratio calculation.
-  defaultValue: "10000"
+  defaultValue: "1000"
 - name: minimumNumberOfInvs
   description: Minimum number of investigation the indicator has to appear in.
   defaultValue: "3"

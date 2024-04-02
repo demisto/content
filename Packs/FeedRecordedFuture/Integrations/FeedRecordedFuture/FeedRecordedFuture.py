@@ -15,7 +15,9 @@ import urllib.parse
 urllib3.disable_warnings()
 BATCH_SIZE = 2000
 CHUNK_SIZE = 1024 * 1024 * 10  # 10 MB
-
+DEFAULT_MALICIOUS_THRESHOLD_VALUE: int = 65
+DEFAULT_SUSPICIOUS_THRESHOLD_VALUE: int = 25
+DEFAULT_RISK_SCORE_THRESHOLD_VALUE: int = 0
 INTEGRATION_NAME = 'Recorded Future'
 
 # taken from recorded future docs
@@ -80,9 +82,9 @@ class Client(BaseClient):
         self.api_token = self.headers['X-RFToken'] = api_token
         self.services = services
         self.indicator_type = indicator_type
-        self.malicious_threshold = int(malicious_threshold) if malicious_threshold else malicious_threshold
-        self.suspicious_threshold = int(suspicious_threshold) if suspicious_threshold else suspicious_threshold
-        self.risk_score_threshold = int(risk_score_threshold) if risk_score_threshold else risk_score_threshold
+        self.malicious_threshold = int(malicious_threshold) if malicious_threshold else DEFAULT_MALICIOUS_THRESHOLD_VALUE
+        self.suspicious_threshold = int(suspicious_threshold) if suspicious_threshold else DEFAULT_SUSPICIOUS_THRESHOLD_VALUE
+        self.risk_score_threshold = int(risk_score_threshold) if risk_score_threshold else DEFAULT_RISK_SCORE_THRESHOLD_VALUE
         self.tags = tags
         self.tlp_color = tlp_color
 
@@ -576,7 +578,7 @@ def main():  # pragma: no cover
         raise DemistoException('API Token must be provided.')
     client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], api_token, params.get('services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
-                    params.get('polling_timeout'), params.get('proxy'), params.get('malicious_threshold'),
+                    params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
                     params.get('suspicious_threshold'), params.get('risk_score_threshold'),
                     argToList(params.get('feedTags')), params.get('tlp_color'))
     command = demisto.command()

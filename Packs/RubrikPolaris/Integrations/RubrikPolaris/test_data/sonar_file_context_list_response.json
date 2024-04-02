@@ -1,0 +1,434 @@
+{
+  "raw_response": {
+    "data": {
+      "policyObj": {
+        "id": "00000000-0000-0000-0000-000000000001",
+        "fileResultConnection": {
+          "edges": [
+            {
+              "cursor": "cursor_1",
+              "node": {
+                "nativePath": "/C:/File Shares/drivers_license_number.xlsx",
+                "stdPath": "/C:/File Shares/uk_drivers_license_number.xlsx",
+                "filename": "uk_drivers_license_number.xlsx",
+                "mode": "FILE",
+                "size": 85708,
+                "lastAccessTime": 1648099578,
+                "lastModifiedTime": 1648099578,
+                "directory": "/C:/File Shares",
+                "numDescendantFiles": 0,
+                "numDescendantErrorFiles": 0,
+                "numDescendantSkippedExtFiles": 0,
+                "numDescendantSkippedSizeFiles": 0,
+                "errorCode": "NO_ERROR",
+                "hits": {
+                  "totalHits": 0,
+                  "violations": 2000,
+                  "violationsDelta": 0,
+                  "totalHitsDelta": 0,
+                  "__typename": "Hits"
+                },
+                "filesWithHits": {
+                  "totalHits": 0,
+                  "violations": 1,
+                  "__typename": "Hits"
+                },
+                "openAccessFilesWithHits": {
+                  "totalHits": 0,
+                  "violations": 1,
+                  "__typename": "Hits"
+                },
+                "staleFilesWithHits": {
+                  "totalHits": 0,
+                  "violations": 1,
+                  "__typename": "Hits"
+                },
+                "analyzerGroupResults": [
+                  {
+                    "analyzerGroup": {
+                      "groupType": "CUSTOM",
+                      "id": "00000000-0000-0000-0000-000000000001",
+                      "name": "UK PII",
+                      "__typename": "AnalyzerGroup"
+                    },
+                    "analyzerResults": [
+                      {
+                        "hits": {
+                          "totalHits": 0,
+                          "violations": 0,
+                          "__typename": "Hits"
+                        },
+                        "analyzer": {
+                          "id": "00000000-0000-0000-0000-000000000001",
+                          "name": "UK UTR",
+                          "analyzerType": "UK_UTR",
+                          "__typename": "Analyzer"
+                        },
+                        "__typename": "AnalyzerResult"
+                      }
+                    ],
+                    "hits": {
+                      "totalHits": 0,
+                      "violations": 2000,
+                      "violationsDelta": 0,
+                      "totalHitsDelta": 0,
+                      "__typename": "Hits"
+                    },
+                    "__typename": "AnalyzerGroupResult"
+                  }
+                ],
+                "sensitiveFiles": {
+                  "highRiskFileCount": {
+                    "totalCount": 0,
+                    "violatedCount": 1,
+                    "__typename": "SummaryCount"
+                  },
+                  "mediumRiskFileCount": {
+                    "totalCount": 0,
+                    "violatedCount": 0,
+                    "__typename": "SummaryCount"
+                  },
+                  "lowRiskFileCount": {
+                    "totalCount": 0,
+                    "violatedCount": 0,
+                    "__typename": "SummaryCount"
+                  },
+                  "__typename": "SensitiveFiles"
+                },
+                "openAccessType": "INHERITED",
+                "stalenessType": "IS_STALE",
+                "numActivities": 0,
+                "numActivitiesDelta": 0,
+                "__typename": "FileResult"
+              },
+              "__typename": "FileResultEdge"
+            }
+          ],
+          "pageInfo": {
+            "endCursor": "cursor_2",
+            "hasNextPage": true,
+            "__typename": "PageInfo"
+          },
+          "__typename": "FileResultConnection"
+        },
+        "__typename": "PolicyObj"
+      }
+    }
+  },
+  "raw_response_when_not_whitelisted": {
+    "data": {
+      "policyObj": {
+        "id": "00000000-0000-0000-0000-000000000001",
+        "fileResultConnection": {
+          "edges": [
+            {
+              "cursor": "cursor_1",
+              "node": {
+                "nativePath": "/C:/File Shares/drivers_license_number.xlsx",
+                "stdPath": "/C:/File Shares/uk_drivers_license_number.xlsx",
+                "filename": "uk_drivers_license_number.xlsx",
+                "mode": "FILE",
+                "size": 85708,
+                "lastAccessTime": 1648099578,
+                "lastModifiedTime": 1648099578,
+                "directory": "/C:/File Shares",
+                "numDescendantFiles": 0,
+                "numDescendantErrorFiles": 0,
+                "numDescendantSkippedExtFiles": 0,
+                "numDescendantSkippedSizeFiles": 0,
+                "errorCode": "NO_ERROR",
+                "hits": {
+                  "totalHits": 2000,
+                  "violations": 0,
+                  "violationsDelta": 0,
+                  "totalHitsDelta": 0,
+                  "__typename": "Hits"
+                },
+                "filesWithHits": {
+                  "totalHits": 1,
+                  "violations": 0,
+                  "__typename": "Hits"
+                },
+                "openAccessFilesWithHits": {
+                  "totalHits": 1,
+                  "violations": 0,
+                  "__typename": "Hits"
+                },
+                "staleFilesWithHits": {
+                  "totalHits": 1,
+                  "violations": 0,
+                  "__typename": "Hits"
+                },
+                "analyzerGroupResults": [
+                  {
+                    "analyzerGroup": {
+                      "groupType": "CUSTOM",
+                      "id": "00000000-0000-0000-0000-000000000001",
+                      "name": "UK PII",
+                      "__typename": "AnalyzerGroup"
+                    },
+                    "analyzerResults": [
+                      {
+                        "hits": {
+                          "totalHits": 0,
+                          "violations": 0,
+                          "__typename": "Hits"
+                        },
+                        "analyzer": {
+                          "id": "00000000-0000-0000-0000-000000000001",
+                          "name": "UK UTR",
+                          "analyzerType": "UK_UTR",
+                          "__typename": "Analyzer"
+                        },
+                        "__typename": "AnalyzerResult"
+                      }
+                    ],
+                    "hits": {
+                      "totalHits": 2000,
+                      "violations": 0,
+                      "violationsDelta": 0,
+                      "totalHitsDelta": 0,
+                      "__typename": "Hits"
+                    },
+                    "__typename": "AnalyzerGroupResult"
+                  }
+                ],
+                "sensitiveFiles": {
+                  "highRiskFileCount": {
+                    "totalCount": 1,
+                    "violatedCount": 0,
+                    "__typename": "SummaryCount"
+                  },
+                  "mediumRiskFileCount": {
+                    "totalCount": 0,
+                    "violatedCount": 0,
+                    "__typename": "SummaryCount"
+                  },
+                  "lowRiskFileCount": {
+                    "totalCount": 0,
+                    "violatedCount": 0,
+                    "__typename": "SummaryCount"
+                  },
+                  "__typename": "SensitiveFiles"
+                },
+                "openAccessType": "INHERITED",
+                "stalenessType": "IS_STALE",
+                "numActivities": 0,
+                "numActivitiesDelta": 0,
+                "__typename": "FileResult"
+              },
+              "__typename": "FileResultEdge"
+            }
+          ],
+          "pageInfo": {
+            "endCursor": "cursor_2",
+            "hasNextPage": true,
+            "__typename": "PageInfo"
+          },
+          "__typename": "FileResultConnection"
+        },
+        "__typename": "PolicyObj"
+      }
+    }
+  },
+  "empty_response": {
+    "data": {}
+  },
+  "outputs": [
+    {
+      "nativePath": "/C:/File Shares/drivers_license_number.xlsx",
+      "stdPath": "/C:/File Shares/uk_drivers_license_number.xlsx",
+      "filename": "uk_drivers_license_number.xlsx",
+      "mode": "FILE",
+      "size": 85708,
+      "lastAccessTime": 1648099578,
+      "lastModifiedTime": 1648099578,
+      "directory": "/C:/File Shares",
+      "numDescendantFiles": 0,
+      "numDescendantErrorFiles": 0,
+      "numDescendantSkippedExtFiles": 0,
+      "numDescendantSkippedSizeFiles": 0,
+      "errorCode": "NO_ERROR",
+      "hits": {
+        "totalHits": 0,
+        "violations": 2000,
+        "violationsDelta": 0,
+        "totalHitsDelta": 0,
+        "__typename": "Hits"
+      },
+      "filesWithHits": {
+        "totalHits": 0,
+        "violations": 1,
+        "__typename": "Hits"
+      },
+      "openAccessFilesWithHits": {
+        "totalHits": 0,
+        "violations": 1,
+        "__typename": "Hits"
+      },
+      "staleFilesWithHits": {
+        "totalHits": 0,
+        "violations": 1,
+        "__typename": "Hits"
+      },
+      "analyzerGroupResults": [
+        {
+          "analyzerGroup": {
+            "groupType": "CUSTOM",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "name": "UK PII",
+            "__typename": "AnalyzerGroup"
+          },
+          "analyzerResults": [
+            {
+              "hits": {
+                "totalHits": 0,
+                "violations": 0,
+                "__typename": "Hits"
+              },
+              "analyzer": {
+                "id": "00000000-0000-0000-0000-000000000001",
+                "name": "UK UTR",
+                "analyzerType": "UK_UTR",
+                "__typename": "Analyzer"
+              },
+              "__typename": "AnalyzerResult"
+            }
+          ],
+          "hits": {
+            "totalHits": 0,
+            "violations": 2000,
+            "violationsDelta": 0,
+            "totalHitsDelta": 0,
+            "__typename": "Hits"
+          },
+          "__typename": "AnalyzerGroupResult"
+        }
+      ],
+      "sensitiveFiles": {
+        "highRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 1,
+          "__typename": "SummaryCount"
+        },
+        "mediumRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "lowRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "__typename": "SensitiveFiles"
+      },
+      "openAccessType": "INHERITED",
+      "stalenessType": "IS_STALE",
+      "numActivities": 0,
+      "numActivitiesDelta": 0,
+      "__typename": "FileResult"
+    }
+  ],
+  "outputs_when_not_whitelisted": [
+    {
+      "nativePath": "/C:/File Shares/drivers_license_number.xlsx",
+      "stdPath": "/C:/File Shares/uk_drivers_license_number.xlsx",
+      "filename": "uk_drivers_license_number.xlsx",
+      "mode": "FILE",
+      "size": 85708,
+      "lastAccessTime": 1648099578,
+      "lastModifiedTime": 1648099578,
+      "directory": "/C:/File Shares",
+      "numDescendantFiles": 0,
+      "numDescendantErrorFiles": 0,
+      "numDescendantSkippedExtFiles": 0,
+      "numDescendantSkippedSizeFiles": 0,
+      "errorCode": "NO_ERROR",
+      "hits": {
+        "totalHits": 2000,
+        "violations": 0,
+        "violationsDelta": 0,
+        "totalHitsDelta": 0,
+        "__typename": "Hits"
+      },
+      "filesWithHits": {
+        "totalHits": 1,
+        "violations": 0,
+        "__typename": "Hits"
+      },
+      "openAccessFilesWithHits": {
+        "totalHits": 1,
+        "violations": 0,
+        "__typename": "Hits"
+      },
+      "staleFilesWithHits": {
+        "totalHits": 1,
+        "violations": 0,
+        "__typename": "Hits"
+      },
+      "analyzerGroupResults": [
+        {
+          "analyzerGroup": {
+            "groupType": "CUSTOM",
+            "id": "00000000-0000-0000-0000-000000000001",
+            "name": "UK PII",
+            "__typename": "AnalyzerGroup"
+          },
+          "analyzerResults": [
+            {
+              "hits": {
+                "totalHits": 0,
+                "violations": 0,
+                "__typename": "Hits"
+              },
+              "analyzer": {
+                "id": "00000000-0000-0000-0000-000000000001",
+                "name": "UK UTR",
+                "analyzerType": "UK_UTR",
+                "__typename": "Analyzer"
+              },
+              "__typename": "AnalyzerResult"
+            }
+          ],
+          "hits": {
+            "totalHits": 2000,
+            "violations": 0,
+            "violationsDelta": 0,
+            "totalHitsDelta": 0,
+            "__typename": "Hits"
+          },
+          "__typename": "AnalyzerGroupResult"
+        }
+      ],
+      "sensitiveFiles": {
+        "highRiskFileCount": {
+          "totalCount": 1,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "mediumRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "lowRiskFileCount": {
+          "totalCount": 0,
+          "violatedCount": 0,
+          "__typename": "SummaryCount"
+        },
+        "__typename": "SensitiveFiles"
+      },
+      "openAccessType": "INHERITED",
+      "stalenessType": "IS_STALE",
+      "numActivities": 0,
+      "numActivitiesDelta": 0,
+      "__typename": "FileResult"
+    }
+  ],
+  "page_token": {
+    "endCursor": "cursor_2",
+    "hasNextPage": true,
+    "name": "rubrik-sonar-file-context-list"
+  }
+}
