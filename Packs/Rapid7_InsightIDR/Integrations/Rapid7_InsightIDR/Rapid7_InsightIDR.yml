@@ -438,10 +438,18 @@ script:
           description: The create time of the most recent alert belonging to this investigation (if any). Relevant when api_version is V2 only.
           type: String
         - contextPath: Rapid7InsightIDR.Investigation.assignee.email
-          description: The email of the assigned user.
+          description: The email of the assigned user. Relevant when api_version is V2 only.
           type: String
+        - contextPath: Rapid7InsightIDR.Investigation.assignee_email
+          description: Email address of the investigation assignee Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.assignee_name
+          description: Name of the investigation assignee Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert_type
+          description: Type of alert in the investigation Relevant when api_version is V1 only.
         - contextPath: Rapid7InsightIDR.Investigation.assignee.name
-          description: The name of the assigned user.
+          description: The name of the assigned user. Relevant when api_version is V2 only.
           type: String
         - contextPath: Rapid7InsightIDR.Investigation.disposition
           description: The disposition of this investigation. Relevant when api_version is V2 only.
@@ -477,7 +485,7 @@ script:
           description: The description of this type of alert (if any). Relevant when api_version is V1 only.
           type: String
         - contextPath: Rapid7InsightIDR.Investigation.alert.type
-          description: The alert's type. Relevant when api_version is V1 only.
+          description: The alert's type. Relevant when api_version is V2 only.
           type: String
         - contextPath: Rapid7InsightIDR.Investigation.alert.first_event_time
           description: The create time of the first alert belonging to this investigation (if any). Relevant when api_version is V1 only.
