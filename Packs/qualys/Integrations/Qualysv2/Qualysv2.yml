@@ -32,7 +32,7 @@ configuration:
   advanced: true
 - defaultvalue: 3 days
   section: Collect
-  display: First event fetch time
+  display: Event first fetch time
   name: first_fetch
   additionalinfo: If "First event fetch time" is set for a long time ago, it may cause performance issues.
   required: false
@@ -46,7 +46,7 @@ configuration:
   advanced: true
   required: false
   type: 0
-description: Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
+description: Qualys Vulnerability Management lets you create, run, manage reports and to fetch Activity Logs, Assets and Vulnerabilities, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 display: Qualys VMDR
 name: QualysV2
 script:
