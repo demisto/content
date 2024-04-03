@@ -831,14 +831,18 @@ def test_parse_physical_address():
 
 
 def test_parse_item_as_dict_return_json_serializable():
-    class NestedObject:
-        name: str
-        item_id: ItemId
-        
-    class Object:
-        cc_recipients: list[NestedObject]
+    """
+    Given:
+        - A message with cc_recipients with an object that includes a non-serializable object (ItemId).
+    When:
+        - Calling parse_item_as_dict
 
-    item = Object()
-    item.cc_recipients = [NestedObject(name="my_test_nested_object", item_id=ItemId(id='id123', changekey='change'))]
+    Then:
+        - Verify that the received dict is json serializable,
+        and that the ItemId appears both in the received dict and the json serialized object.
+    """
+    item = Message(cc_recipients=[Mailbox(item_id=ItemId(id='id123', changekey='change'))])
     item_as_dict = parse_item_as_dict(item, None)
-    item_as_json = json.dumps(item_as_json, ensure_ascii=False)
+    item_as_json = json.dumps(item_as_dict, ensure_ascii=False)
+    assert isinstance((item_as_dict.get("cc_recipients", [])[0]).get("item_id"), dict)
+    assert '"item_id": {"id": "id123", "changekey": "change"}' in item_as_json
