@@ -96,7 +96,7 @@ MOCK_SIMULTANEOUS_LOGIN_ALERT = {
     'C2W","timestamp":"2019-09-20+20%3A41%3A37.395"}',
 }
 # Create a dictionary containing the list of alerts
-mock_query_result = {"object": [MOCK_HIGH_CPU_ALERT, MOCK_SIMULTANEOUS_LOGIN_ALERT]}
+mock_query_result = {"object": [MOCK_HIGH_CPU_ALERT, MOCK_SIMULTANEOUS_LOGIN_ALERT], "status": 0}
 
 # Convert the dictionary to a JSON string
 MOCK_QUERY_RESULTS = json.dumps(mock_query_result)
@@ -234,7 +234,7 @@ EVENTS = [
         "context": "value3",
     },
 ]
-MOCK_EVENTS = json.dumps({"object": EVENTS})
+MOCK_EVENTS = json.dumps({"object": EVENTS, "status": 0})
 
 EXPECTED_LAST_RUN_DATA = {'from_time': 1691480669.0, 'last_fetch_events': [{'456': 1691394269.0}, {'789': 1691480669.0}]}
 
@@ -314,6 +314,20 @@ def test_command(mock_query_results, mock_write_args):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_write_args.return_value = MOCK_WRITER_ARGS
     assert check_configuration()
+
+
+@patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
+@patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
+@patch("Devo_v2.WRITER_RELAY", MOCK_WRITER_RELAY, create=True)
+@patch("Devo_v2.WRITE_CREDENTIALS", {"key": "fake", "chain": "fake"}, create=True)
+@patch("Devo_v2.FETCH_INCIDENTS_FILTER", MOCK_FETCH_INCIDENTS_FILTER, create=True)
+@patch("Devo_v2.FETCH_INCIDENTS_DEDUPE", MOCK_FETCH_INCIDENTS_DEDUPE, create=True)
+@patch("Devo_v2.Sender")
+@patch("Devo_v2.Client.query")
+def test_command_new(mock_query_results, mock_write_args):
+    mock_query_results.return_value = json.dumps({"success": False})
+    mock_write_args.return_value = MOCK_WRITER_ARGS
+    assert check_configuration() is False
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
