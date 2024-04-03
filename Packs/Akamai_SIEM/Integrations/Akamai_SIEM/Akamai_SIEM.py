@@ -7,7 +7,7 @@ from base64 import b64decode
 
 # 3-rd party imports
 from typing import Any
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
 import urllib.parse
 import urllib3
 from akamai.edgegrid import EdgeGridAuth
@@ -31,6 +31,11 @@ Attributes:
 INTEGRATION_NAME = 'Akamai SIEM'
 INTEGRATION_COMMAND_NAME = 'akamai-siem'
 INTEGRATION_CONTEXT_NAME = 'Akamai'
+
+
+VENDOR = "Akamai"
+PRODUCT = "WAF"
+FETCH_EVENTS_PAGE_SIZE = 50000
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -86,6 +91,28 @@ class Client(BaseClient):
         else:
             new_offset = str(from_epoch)
         return events, new_offset
+
+    def get_events_with_offset(
+        self,
+        config_ids: str,
+        offset: str | None = '',
+        limit: str | int | None = None,
+        from_epoch: str | None = ''
+    ) -> tuple[list[dict], str | None]:
+        params = {
+            'offset': offset,
+            'limit': limit,
+            'from': from_epoch,
+        }
+        raw_response: str = self._http_request(
+            method='GET',
+            url_suffix=f'/{config_ids}',
+            params=assign_params(**params),
+            resp_type='text',
+        )
+        events: list[dict] = [json.loads(e) for e in raw_response.split('\n') if e]
+        offset = events.pop().get("offset")
+        return events, offset
 
 
 '''HELPER FUNCIONS'''
@@ -346,6 +373,76 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
+@logger
+def fetch_events_command(
+    client: Client,
+    fetch_time: str,
+    fetch_limit: str | int,
+    config_ids: str,
+    ctx: dict,
+) -> Iterator[Any]:
+    """Iteratively gathers events from Akamai SIEM. Stores the offset in integration context.
+
+    Args:
+        client: Client object with request
+        fetch_time: From when to fetch if first time, e.g. `3 days`
+        fetch_limit: limit of events in a fetch
+        config_ids: security configuration ids to fetch, e.g. `51000;56080`
+        ctx: The integration context
+
+    Yields:
+        (list[dict], str): events and new offset.
+    """
+    total_events_count = 0
+
+    from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
+    offset = ctx.get("offset")
+    while total_events_count < int(fetch_limit):
+        events, offset = client.get_events_with_offset(config_ids, offset, FETCH_EVENTS_PAGE_SIZE, from_epoch)
+        if not events:
+            break
+        for event in events:
+            try:
+                event["_time"] = event["httpMessage"]["start"]
+                if "attackData" in event:
+                    event['attackData']['rules'] = decode_message(event.get('attackData', {}).get('rules', ""))
+                    event['attackData']['ruleMessages'] = decode_message(event.get('attackData', {}).get('ruleMessages', ""))
+                    event['attackData']['ruleTags'] = decode_message(event.get('attackData', {}).get('ruleTags', ""))
+                    event['attackData']['ruleData'] = decode_message(event.get('attackData', {}).get('ruleData', ""))
+                    event['attackData']['ruleSelectors'] = decode_message(event.get('attackData', {}).get('ruleSelectors', ""))
+                    event['attackData']['ruleActions'] = decode_message(event.get('attackData', {}).get('ruleActions', ""))
+                    event['attackData']['ruleVersions'] = decode_message(event.get('attackData', {}).get('ruleVersions', ""))
+                if "httpMessage" in event:
+                    event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
+                    event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
+            except Exception as e:
+                config_id = event.get('attackData', {}).get('configId', "")
+                policy_id = event.get('attackData', {}).get('policyId', "")
+                demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
+        demisto.debug(f"Got {len(events)} events, and {offset=}")
+        total_events_count += len(events)
+        yield events, offset, total_events_count
+
+
+def decode_url(headers: str) -> dict:
+    """Decoding the httpMessage headers parts of the response.
+
+    Args:
+        headers (str): The headers to decode
+
+    Returns:
+        dict: The decoded and parsed headers as a dictionary.
+    """
+    decoded_lines = urllib.parse.unquote(headers).replace("\r", "").split("\n")
+    decoded_dict = {}
+    for line in decoded_lines:
+        parts = line.split(': ', 1)
+        if len(parts) == 2:
+            key, value = parts
+            decoded_dict[key.replace("-", "_")] = value.replace('"', '')
+    return decoded_dict
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -380,6 +477,17 @@ def main():
                                                               last_run=demisto.getLastRun().get('lastRun'))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
+        elif command == "fetch-events":
+            for events, offset, total_events_count in fetch_events_command(  # noqa: B007
+                client,
+                params.get("fetchTime"),
+                params.get("fetchLimit"),
+                params.get("configIds"),
+                ctx=get_integration_context() or {},
+            ):
+                send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
+                set_integration_context({"offset": offset})
+            demisto.updateModuleHealth({'eventsPulled': total_events_count})
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
             return_outputs(human_readable, entry_context, raw_response)
