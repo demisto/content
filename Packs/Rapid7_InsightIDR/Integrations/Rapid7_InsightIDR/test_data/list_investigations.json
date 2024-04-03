@@ -9,7 +9,7 @@
       }
     ],
     "assignee": {
-      "email": "example@test.com",
+      "email": "test@test.com",
       "name": "Ellen Example"
     },
     "created_time": "2018-06-06T16:56:42Z",
@@ -27,7 +27,7 @@
       }
     ],
     "assignee": {
-      "email": "example@test.com",
+      "email": "test@test.com",
       "name": "Ellen Example"
     },
     "created_time": "2018-06-06T16:56:43.000Z",
