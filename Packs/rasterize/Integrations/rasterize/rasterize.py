@@ -225,6 +225,12 @@ class PychromeEventHandler:
             except pychrome.exceptions.PyChromeException as pce:
                 demisto.info(f'Exception when Frame stopped loading: {frameId}, {pce}')
 
+    def request_will_be_sent(self, **kwargs):
+        demisto.debug(f'request_will_be_sent {kwargs=}')
+
+    def request_will_be_sent_extra_info(self, **kwargs):
+        demisto.debug(f'request_will_be_sent_extra_info {kwargs=}')
+
     def page_frame_navigated(self, frame, type):
         demisto.debug(f'PychromeEventHandler.page_frame_navigated, {frame=}, {type=}')
 
@@ -435,6 +441,9 @@ def setup_tab_event(browser, tab):
     tab_event_handler = PychromeEventHandler(browser, tab, tab_ready_event)
 
     tab.Network.enable()
+
+    tab.Network.requestWillBeSent = tab_event_handler.request_will_be_sent
+    tab.Network.requestWillBeSent = tab_event_handler.request_will_be_sent_extra_info
     tab.Network.dataReceived = tab_event_handler.network_data_received
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
