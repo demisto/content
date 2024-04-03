@@ -8,7 +8,7 @@ import json
 import os
 import random
 import glob
-from unittest.mock import mock_open, patch
+from unittest.mock import mock_open, patch, MagicMock
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from packaging.version import Version
@@ -3181,37 +3181,77 @@ def test_write_json(tmp_path):
 
 
 class TestCalculatePackCreationDate(unittest.TestCase):
-    def setUp(self):
-        self.pack_name = "SamplePack"
-        self.index_folder_path = "/path/to/index"
-        self.default_created_time = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
+    def setUp(self) -> None:
+        """Setup test resources before each test method execution."""
+        self.pack_name: str = "SamplePack"
+        self.index_folder_path: str = "/path/to/index"
+        self.default_created_time: str = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
 
-    @patch('Tests.Marketplace.marketplace_services.load_json')  # Adjust this import to match your module structure
+    @patch('Tests.Marketplace.marketplace_services.load_json')
     @patch('os.path.join')
-    def test_metadata_with_first_created(self, mock_join, mock_load_json):
+    def test_metadata_with_first_created(self, mock_join: MagicMock, mock_load_json: MagicMock) -> None:
+        """
+        Test the pack creation date is correctly retrieved from the 'firstCreated' field in metadata.
+
+        Given:
+            - Metadata contains 'firstCreated' field.
+        When:
+            - Retrieving pack creation date.
+        Then:
+            - Ensure the returned creation date matches the 'firstCreated' field value.
+        """
         mock_load_json.return_value = {Metadata.FIRST_CREATED: "2023-01-01T00:00:00Z"}
-        created_time = Pack._calculate_pack_creation_date(self.pack_name, self.index_folder_path)
+        created_time: str = Pack._calculate_pack_creation_date(self.pack_name, self.index_folder_path)
         self.assertEqual(created_time, "2023-01-01T00:00:00Z")
 
-    @patch('Tests.Marketplace.marketplace_services.load_json')  # Adjust this import to match your module structure
+    @patch('Tests.Marketplace.marketplace_services.load_json')
     @patch('os.path.join')
-    def test_metadata_with_created_needs_update(self, mock_join, mock_load_json):
+    def test_metadata_with_created_needs_update(self, mock_join: MagicMock, mock_load_json: MagicMock) -> None:
+        """
+        Test the pack creation date is correctly updated and retrieved when only 'created' field is present.
+
+        Given:
+            - Metadata contains 'created' field but not 'firstCreated'.
+        When:
+            - Retrieving pack creation date.
+        Then:
+            - Ensure the returned creation date matches the 'created' field value.
+        """
         mock_load_json.return_value = {'created': "2023-01-01T00:00:00Z"}
-        created_time = Pack._calculate_pack_creation_date(self.pack_name, self.index_folder_path)
+        created_time: str = Pack._calculate_pack_creation_date(self.pack_name, self.index_folder_path)
         self.assertEqual(created_time, "2023-01-01T00:00:00Z")
 
-    @patch('Tests.Marketplace.marketplace_services.load_json')  # Adjust this import to match your module structure
+    @patch('Tests.Marketplace.marketplace_services.load_json')
     @patch('os.path.join')
-    def test_metadata_without_required_fields_raises_exception(self, mock_join, mock_load_json):
-        mock_load_json.return_value = {}
+    def test_metadata_without_required_fields_raises_exception(self, mock_join: MagicMock, mock_load_json: MagicMock) -> None:
+        """
+        Test an exception is raised when metadata does not contain required fields for pack creation date.
+
+        Given:
+            - Metadata does not contain 'firstCreated' or 'created' fields.
+        When:
+            - Retrieving pack creation date.
+        Then:
+            - Ensure an exception is raised indicating missing required fields.
+        """
+        mock_load_json.return_value = {'firstCreated': None}
         with self.assertRaises(Exception) as context:
             Pack._calculate_pack_creation_date(self.pack_name, self.index_folder_path)
         self.assertTrue("does not contain" in str(context.exception))
 
-    @patch('Tests.Marketplace.marketplace_services.load_json')  # Adjust this import to match your module structure
+    @patch('Tests.Marketplace.marketplace_services.load_json')
     @patch('os.path.join')
-    def test_empty_metadata_defaults_to_utc_now(self, mock_join, mock_load_json):
+    def test_empty_metadata_defaults_to_utc_now(self, mock_join: MagicMock, mock_load_json: MagicMock) -> None:
+        """
+        Test the default creation date (current UTC time) is used when metadata is empty or missing.
+
+        Given:
+            - Metadata is empty or missing.
+        When:
+            - Retrieving pack creation date.
+        Then:
+            - Ensure the returned creation date is a string representing a datetime.
+        """
         mock_load_json.return_value = None
-        created_time = Pack._calculate_pack_creation_date(self.pack_name, self.index_folder_path)
-        # This assertion assumes the test runs quickly; consider mocking datetime if precise matching is needed
+        created_time: str = Pack._calculate_pack_creation_date(self.pack_name, self.index_folder_path)
         self.assertTrue(isinstance(created_time, str))

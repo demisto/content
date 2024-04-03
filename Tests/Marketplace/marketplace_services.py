@@ -418,7 +418,7 @@ class Pack:
                 f"Updating metadata with statistics and metadata changes because {self._pack_name=} "
                 f"{self.is_modified=} {self.is_metadata_updated=}")
         elif self.is_modified:
-            update_metadata_fields = {Metadata.CREATED: self._create_date, Metadata.UPDATED: self._update_date}
+            update_metadata_fields = {Metadata.FIRST_CREATED: self._create_date, Metadata.UPDATED: self._update_date}
             logging.debug(
                 f"Updating metadata with statistics, created, updated fields because {self._pack_name=} "
                 f"{self.is_modified=} {self.is_metadata_updated=}")
@@ -519,7 +519,6 @@ class Pack:
         Returns:
             dict: parsed pack metadata.
         """
-
         pack_metadata = self.update_metadata
         if parse_dependencies:
             pack_metadata[Metadata.DEPENDENCIES] = self._dependencies
