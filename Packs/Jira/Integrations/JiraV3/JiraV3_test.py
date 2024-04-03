@@ -1497,6 +1497,32 @@ class TestJiraUploadFileCommand:
         command_results = upload_file_command(client=client, args={'issue_key': 'COMPANYSA-35'})
         assert command_results.to_context()['HumanReadable'] == expected_command_results_context['HumanReadable']
 
+    def test_upload_XSOAR_attachment_to_jira_mime_type_check(self, mocker):
+        """
+        Given:
+            - A Jira client.
+        When
+            - When calling the jira-issue-upload-file command.
+        Then
+            - Validate that correct mime_type was given to the file.
+        """
+        from JiraV3 import upload_XSOAR_attachment_to_jira
+        client = jira_base_client_mock()
+        file_name = 'dummy_file_name.pdf'
+        issue_key = 'COMPANYSA-35'
+        file_bytes = b'dummy content'
+        expected_file_mime_type = 'application/pdf'
+        upload_file_raw_response = util_load_json('test_data/upload_file_test/raw_response.json')
+        files = {'file': (file_name, file_bytes, expected_file_mime_type)}
+        mocker.patch('JiraV3.get_file_name_and_content', return_value=('dummy_file_name.pdf', b'dummy content'))
+        mocker.patch('JiraV3.guess_type', return_value=(expected_file_mime_type, ''))
+        mock_request = mocker.patch.object(client, 'upload_attachment', return_value=upload_file_raw_response)
+        upload_XSOAR_attachment_to_jira(client=client,
+                                        entry_id='',
+                                        issue_id_or_key=issue_key)
+        mock_request.assert_called_with(issue_id_or_key=issue_key,
+                                        files=files)
+
 
 class TestJiraGetIdByAttribute:
     @pytest.mark.parametrize('raw_response_path,parsed_result_path', [

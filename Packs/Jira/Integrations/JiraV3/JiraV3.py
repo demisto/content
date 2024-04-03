@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from datetime import timezone
 import hashlib
 from copy import deepcopy
+from mimetypes import guess_type
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
 
@@ -2408,6 +2409,7 @@ def upload_file_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
     attachment_name = args.get('attachment_name', '')
     res = upload_XSOAR_attachment_to_jira(client=client, entry_id=entry_id, attachment_name=attachment_name,
                                           issue_id_or_key=issue_id_or_key)
+    demisto.debug(f'The result of upload_XSOAR_attachment_to_jira {res=}')
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
     markdown_dict: List[Dict[str, str]] = []
     for attachment_entry in res:
@@ -2443,8 +2445,26 @@ def upload_XSOAR_attachment_to_jira(client: JiraBaseClient, entry_id: str,
         List[Dict[str, Any]]: The results of the API, which will hold the newly added attachment.
     """
     file_name, file_bytes = get_file_name_and_content(entry_id=entry_id)
-    files = {'file': (attachment_name or file_name, file_bytes, 'application-type')}
-    return client.upload_attachment(issue_id_or_key=issue_id_or_key, files=files)
+    file_mime_type, _ = guess_type(file_name)
+    # guess_type can return a None mime type if the type can’t be guessed (missing or unknown suffix). In this case, we should use
+    # a default mime type
+    file_mime_type = file_mime_type if file_mime_type else 'application-type'
+    demisto.debug(f'{file_mime_type=}')
+    files = {'file': (attachment_name or file_name, file_bytes, file_mime_type)}
+    # try upload the attachment with the specific mime type
+    try:
+        return client.upload_attachment(issue_id_or_key=issue_id_or_key, files=files)
+    except Exception as e:
+        # in case the first call to upload_attachment() failed, check if file_mime_type is the default value,
+        # if yes, we should raise exception
+        if file_mime_type == 'application-type':
+            raise e
+        # if we used a specific mime type, try upload_attachment() again, with the default type.
+        else:
+            demisto.debug(f'The first call to upload_attachment() with {file_mime_type=} failed. '
+                          f'Trying again with file_mime_type=application-type')
+            files = {'file': (attachment_name or file_name, file_bytes, 'application-type')}
+            return client.upload_attachment(issue_id_or_key=issue_id_or_key, files=files)
 
 
 def issue_get_attachment_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Dict[str, Any]]:
