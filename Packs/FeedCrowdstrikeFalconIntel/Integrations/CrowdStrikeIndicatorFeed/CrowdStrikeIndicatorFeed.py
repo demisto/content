@@ -1,4 +1,3 @@
-from typing import Callable
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import copy
@@ -414,9 +413,7 @@ def create_relationships(
     return relationships
 
 
-def change_actors_from_id_to_name(
-    indicator_actors_array: List[str], get_name_of_actors__func: Callable[[str], List[Dict[str, Any]]]
-):
+def change_actors_from_id_to_name(indicator_actors_array: List[str], get_name_of_actors__func):
     integration_context = get_integration_context()
     actors_to_convert = []
     converted_actors_array = []
@@ -429,8 +426,8 @@ def change_actors_from_id_to_name(
         actor_ids_params = 'ids=' + '&ids='.join(actors_to_convert) + '&fields=name'
         actors_response = get_name_of_actors__func(actor_ids_params)
         converted_actors_from_request = []
-        for actor in actors_response:
-            converted_actors_from_request.append(actor.get('name'))
+        for actor_dict in actors_response:
+            converted_actors_from_request.append(actor_dict.get('name'))
         zipped_actors_list_to_context = dict(zip(actors_to_convert, converted_actors_from_request))
         update_integration_context(zipped_actors_list_to_context)
         converted_actors_array += converted_actors_from_request
