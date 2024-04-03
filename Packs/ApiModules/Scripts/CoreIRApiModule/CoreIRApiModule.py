@@ -200,7 +200,7 @@ class CoreClient(BaseClient):
                         headers=self._headers,
                         timeout=timeout
                     )
-            return res
+            return json.loads(res.get('data'))
         except requests.exceptions.ConnectTimeout as exception:
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
@@ -352,7 +352,7 @@ class CoreClient(BaseClient):
             headers=self._headers,
             timeout=self.timeout
         )
-        incidents = res.get('reply', {}).get('incidents', [])
+        incidents = res.get('incidents', [])
 
         return incidents
 
@@ -424,11 +424,11 @@ class CoreClient(BaseClient):
         )
         demisto.debug(f'response {response} ')
         # reply = response.get('Data')
-        demisto.debug(f"get_endpoints response = {reply}")
+        demisto.debug(f"get_endpoints response = {response}")
 
-        #endpoints = reply.get('reply', {}).get('endpoints', [])
+        endpoints = response.get('reply', {}).get('endpoints', [])
         
-        return response
+        return endpoints
 
     def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:  # pragma: no cover
         """
@@ -540,8 +540,8 @@ class CoreClient(BaseClient):
             json_data={},
             timeout=self.timeout
         )
-
-        return reply.get('reply')
+        demisto.debug(f'reply {reply}')
+        return reply
 
     def create_distribution(self, name, platform, package_type, agent_version, description):
         request_data = {}
@@ -3001,15 +3001,14 @@ def get_update_args(remote_args):
 
 def get_distribution_versions_command(client, args):
     versions = client.get_distribution_versions()
-
     readable_output = []
-    for operation_system in versions:
-        os_versions = versions[operation_system]
+    if versions:
+        for operation_system in versions:
+            os_versions = versions[operation_system]
 
-        readable_output.append(
-            tableToMarkdown(operation_system, os_versions or [], ['versions'])
-        )
-
+            readable_output.append(
+                tableToMarkdown(operation_system, os_versions or [], ['versions'])
+            )
     return (
         '\n\n'.join(readable_output),
         {
