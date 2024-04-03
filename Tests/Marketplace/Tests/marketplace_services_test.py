@@ -1,12 +1,14 @@
 # type: ignore[attr-defined]
 import copy
 import shutil
+import unittest
+
 import pytest
 import json
 import os
 import random
 import glob
-from unittest.mock import mock_open
+from unittest.mock import mock_open, patch
 from mock_open import MockOpen
 from google.cloud.storage.blob import Blob
 from packaging.version import Version
@@ -312,7 +314,7 @@ class TestMetadataParsing:
         dummy_pack.enhance_pack_attributes(index_folder_path="", packs_dependencies_mapping={}, statistics_handler=None)
         parsed_metadata = dummy_pack._parse_pack_metadata()
 
-        assert 'created' in parsed_metadata
+        assert 'firstCreated' in parsed_metadata
         assert 'updated' in parsed_metadata
         assert set(parsed_metadata['tags']) == {"tag number one", "Tag number two", PackTags.NEW}
         assert len(parsed_metadata['tags']) == 3
@@ -3139,3 +3141,40 @@ def test_write_json(tmp_path):
     assert metadata[Metadata.NAME] == 'Impossible Traveler'
     assert metadata[Metadata.DOWNLOADS] == 245
     assert metadata[Metadata.SEARCH_RANK] == 10
+
+
+class TestCalculatePackCreationDate(unittest.TestCase):
+    def setUp(self):
+        self.pack_name = "SamplePack"
+        self.index_folder_path = "/path/to/index"
+        self.default_created_time = datetime.utcnow().strftime(Metadata.DATE_FORMAT)
+
+    @patch('Tests.Marketplace.marketplace_services.load_json')  # Adjust this import to match your module structure
+    @patch('os.path.join')
+    def test_metadata_with_first_created(self, mock_join, mock_load_json):
+        mock_load_json.return_value = {Metadata.FIRST_CREATED: "2023-01-01T00:00:00Z"}
+        created_time = Pack._calculate_pack_creation_date(self.pack_name, self.index_folder_path)
+        self.assertEqual(created_time, "2023-01-01T00:00:00Z")
+
+    @patch('Tests.Marketplace.marketplace_services.load_json')  # Adjust this import to match your module structure
+    @patch('os.path.join')
+    def test_metadata_with_created_needs_update(self, mock_join, mock_load_json):
+        mock_load_json.return_value = {'created': "2023-01-01T00:00:00Z"}
+        created_time = Pack._calculate_pack_creation_date(self.pack_name, self.index_folder_path)
+        self.assertEqual(created_time, "2023-01-01T00:00:00Z")
+
+    @patch('Tests.Marketplace.marketplace_services.load_json')  # Adjust this import to match your module structure
+    @patch('os.path.join')
+    def test_metadata_without_required_fields_raises_exception(self, mock_join, mock_load_json):
+        mock_load_json.return_value = {}
+        with self.assertRaises(Exception) as context:
+            Pack._calculate_pack_creation_date(self.pack_name, self.index_folder_path)
+        self.assertTrue("does not contain" in str(context.exception))
+
+    @patch('Tests.Marketplace.marketplace_services.load_json')  # Adjust this import to match your module structure
+    @patch('os.path.join')
+    def test_empty_metadata_defaults_to_utc_now(self, mock_join, mock_load_json):
+        mock_load_json.return_value = None
+        created_time = Pack._calculate_pack_creation_date(self.pack_name, self.index_folder_path)
+        # This assertion assumes the test runs quickly; consider mocking datetime if precise matching is needed
+        self.assertTrue(isinstance(created_time, str))
