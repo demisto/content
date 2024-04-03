@@ -307,4 +307,4 @@ def test_last_run():
                {"id": "4", "calculatedTime": "2023-01-17T14:33:00.000Z"}]
     last_update, last_ids = update_last_fetch(MockClient(), ioc_lst)
     assert set(last_ids) == {"4", "3"}
-    assert last_update.isoformat() == "2023-01-17T14:33:00+00:00"
+    assert datetime.fromtimestamp(last_update // 1000).isoformat() == "2023-01-17T14:33:00"

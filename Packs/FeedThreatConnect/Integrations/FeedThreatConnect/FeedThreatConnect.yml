@@ -99,7 +99,6 @@ configuration:
   - URL
   - ASN
   - CIDR
-  - EmailSubject
   - Hashtag
   - Mutex
   - Registry Key
@@ -237,7 +236,7 @@ script:
     name: tc-get-indicators
   - description: Gets available indicators owners.
     name: tc-get-owners
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.13.87159
   feed: true
   runonce: false
   script: '-'

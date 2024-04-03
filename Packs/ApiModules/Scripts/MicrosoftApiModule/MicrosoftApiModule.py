@@ -1224,7 +1224,7 @@ class MicrosoftClient(BaseClient):
     def run_retry_on_rate_limit(args_for_next_run: dict):
         return CommandResults(readable_output="Rate limit reached, rerunning the command in 1 min",
                               scheduled_command=ScheduledCommand(command=demisto.command(), next_run_in_seconds=60,
-                                                                 args=args_for_next_run))
+                                                                 args=args_for_next_run, timeout_in_seconds=900))
 
     def handle_error_with_metrics(self, res):
         MicrosoftClient.create_api_metrics(res.status_code)
@@ -1496,7 +1496,7 @@ def generate_login_url(client: MicrosoftClient,
 
     login_url = urljoin(login_url, f'{client.tenant_id}/oauth2/v2.0/authorize?'
                                    f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}'
-                                   f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}')
+                                   f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}&prompt=consent')
 
     result_msg = f"""### Authorization instructions
 1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.

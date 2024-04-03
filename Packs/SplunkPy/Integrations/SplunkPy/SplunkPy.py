@@ -230,26 +230,46 @@ def extensive_log(message):
         demisto.debug(message)
 
 
-def remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind):
-    """Remove all the IDs of all the incidents that were found more than twice the look behind time frame,
-    to stop our IDs dict from becoming too large.
+def remove_irrelevant_incident_ids(last_run_fetched_ids: dict[str, dict[str, str]], window_start_time: str,
+                                   window_end_time: str) -> dict[str, Any]:
+    """Remove all the IDs of the fetched incidents that are no longer in the fetch window, to prevent our
+    last run object from becoming too large.
 
     Args:
-        last_run_fetched_ids (list): All the event IDs that weren't out of date in the last run + all the new event IDs
-        from newly fetched events in this run.
-        current_epoch_time (int): The current time in epoch.
-        occurred_look_behind (int): The max look behind time (parameter, as defined by the user).
+        last_run_fetched_ids (dict[str, tuple]): The IDs incidents that were fetched in previous fetches.
+        window_start_time (str): The window start time.
+        window_end_time (str): The window end time.
 
     Returns:
-        new_last_run_fetched_ids (list): The updated list of IDs, without old IDs.
+        dict[str, Any]: The updated list of IDs, without irrelevant IDs.
     """
-    new_last_run_fetched_ids = {}
-    for inc_id, addition_time in list(last_run_fetched_ids.items()):
-        max_look_behind_in_seconds = occurred_look_behind * 60
-        deletion_threshold_in_seconds = max_look_behind_in_seconds * 2
-        if current_epoch_time - addition_time < deletion_threshold_in_seconds:
-            new_last_run_fetched_ids[inc_id] = addition_time
-
+    new_last_run_fetched_ids: dict[str, dict[str, str]] = {}
+    window_start_datetime = datetime.strptime(window_start_time, SPLUNK_TIME_FORMAT)
+    demisto.debug(f'Beginning to filter irrelevant IDs with respect to window {window_start_time} - {window_end_time}')
+    for incident_id, incident_occurred_time in last_run_fetched_ids.items():
+        # We divided the handling of the last fetched IDs since we changed the handling of them
+        # The first implementation caused IDs to be removed from the cache, even though they were still relevant
+        # The second implementation now only removes the cached IDs that are not relevant to the fetch window
+        extensive_log(f'[SplunkPy] Checking if {incident_id} is relevant to fetch window')
+        if isinstance(incident_occurred_time, dict):
+            # To handle last fetched IDs
+            # Last fetched IDs hold the occurred time that they were seen, which is basically the end time of the fetch window
+            # they were fetched in, and will be deleted from the last fetched IDs once they pass the fetch window
+            incident_window_end_datetime = datetime.strptime(incident_occurred_time.get('occurred_time', ''), SPLUNK_TIME_FORMAT)
+            if incident_window_end_datetime >= window_start_datetime:
+                # We keep the incident, since it is still in the fetch window
+                extensive_log(f'[SplunkPy] Keeping {incident_id} as part of the last fetched IDs.'
+                              f' {incident_window_end_datetime=}')
+                new_last_run_fetched_ids[incident_id] = incident_occurred_time
+            else:
+                extensive_log(f'[SplunkPy] Removing {incident_id} from the last fetched IDs. {incident_window_end_datetime=}')
+        else:
+            # To handle last fetched IDs before version 3_1_20
+            # Last fetched IDs held the epoch time of their appearance, they will now hold the
+            # new format, with an occurred time equal to the end of the window
+            extensive_log(f'[SplunkPy] {incident_id} was saved using old implementation,'
+                          f' with value {incident_occurred_time}, keeping')
+            new_last_run_fetched_ids[incident_id] = {'occurred_time': window_end_time}
     return new_last_run_fetched_ids
 
 
@@ -349,7 +369,7 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     latest_time = last_run_latest_time or now
     kwargs_oneshot = build_fetch_kwargs(params, occured_start_time, latest_time, search_offset)
     fetch_query = build_fetch_query(params)
-    last_run_fetched_ids = last_run_data.get('found_incidents_ids', {})
+    last_run_fetched_ids: dict[str, Any] = last_run_data.get('found_incidents_ids', {})
     if late_indexed_pagination := last_run_data.get('late_indexed_pagination'):
         # This is for handling the case when events get indexed late, and inserted in pages
         # that we have already went through
@@ -389,12 +409,13 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
             num_of_dropped += 1
             extensive_log(f'[SplunkPy] - Dropped incident {incident_id} due to duplication.')
 
-    current_epoch_time = int(time.time())
     extensive_log(f'[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {len(last_run_fetched_ids)}')
     for incident_id in incident_ids_to_add:
-        last_run_fetched_ids[incident_id] = current_epoch_time
+        last_run_fetched_ids[incident_id] = {'occurred_time': latest_time}
     extensive_log(f'[SplunkPy] Size of last_run_fetched_ids after adding new IDs: {len(last_run_fetched_ids)}')
-    last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind)
+
+    # New way to remove IDs
+    last_run_fetched_ids = remove_irrelevant_incident_ids(last_run_fetched_ids, occured_start_time, latest_time)
     extensive_log('[SplunkPy] Size of last_run_fetched_ids after '
                   f'removing old IDs: {len(last_run_fetched_ids)}')
     extensive_log(f'[SplunkPy] SplunkPy - incidents fetched on last run = {last_run_fetched_ids}')
@@ -2375,7 +2396,8 @@ def splunk_submit_event_hec(
     index: str | None,
     source_type: str | None,
     source: str | None,
-    time_: str | None
+    time_: str | None,
+    request_channel: str | None
 ):
     if hec_token is None:
         raise Exception('The HEC Token was not provided')
@@ -2399,8 +2421,10 @@ def splunk_submit_event_hec(
 
     headers = {
         'Authorization': f'Splunk {hec_token}',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
     }
+    if request_channel:
+        headers['X-Splunk-Request-Channel'] = request_channel
 
     return requests.post(
         f'{baseurl}/services/collector/event',
@@ -2423,13 +2447,19 @@ def splunk_submit_event_hec_command(params: dict, args: dict):
     source_type = args.get('source_type')
     source = args.get('source')
     time_ = args.get('time')
+    request_channel = args.get('request_channel')
 
-    response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_)
+    response_info = splunk_submit_event_hec(hec_token, baseurl, event, fields, host, index, source_type, source, time_,
+                                            request_channel)
 
     if 'Success' not in response_info.text:
         return_error(f"Could not send event to Splunk {response_info.text}")
     else:
-        return_results('The event was sent successfully to Splunk.')
+        response_dict = json.loads(response_info.text)
+        if response_dict and 'ackId' in response_dict:
+            return_results(f"The event was sent successfully to Splunk. AckID: {response_dict['ackId']}")
+        else:
+            return_results('The event was sent successfully to Splunk.')
 
 
 def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str | None, args: dict) -> None:

@@ -5,11 +5,10 @@ import dateparser
 
 ''' IMPORTS '''
 import json
-import uuid
 from stix2 import Bundle, ExternalReference, Indicator, Vulnerability
 from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet, Report, ThreatActor
 from stix2 import Tool, CourseOfAction
-from stix2.exceptions import InvalidValueError
+from stix2.exceptions import InvalidValueError, MissingPropertiesError
 from typing import Any
 from collections.abc import Callable
 
@@ -44,50 +43,10 @@ SDOs: dict[str, Callable] = {  # pragma: no cover
     "course of action": CourseOfAction
 }
 
-SCO_DET_ID_NAMESPACE = uuid.UUID('00abedb4-aa42-466c-9c01-fed23315a9b7')
-PAWN_UUID = uuid.uuid5(uuid.NAMESPACE_URL, 'https://www.paloaltonetworks.com')
 
-XSOAR_TYPES_TO_STIX_SCO = {   # pragma: no cover
-    FeedIndicatorType.CIDR: 'ipv4-addr',
-    FeedIndicatorType.DomainGlob: 'domain-name',
-    FeedIndicatorType.IPv6: 'ipv6-addr',
-    FeedIndicatorType.IPv6CIDR: 'ipv6-addr',
-    FeedIndicatorType.Account: 'user-account',
-    FeedIndicatorType.Domain: 'domain-name',
-    FeedIndicatorType.Email: 'email-addr',
-    FeedIndicatorType.IP: 'ipv4-addr',
-    FeedIndicatorType.Registry: 'windows-registry-key',
-    FeedIndicatorType.File: 'file',
-    FeedIndicatorType.URL: 'url',
-    FeedIndicatorType.Software: 'software',
-    FeedIndicatorType.AS: 'autonomous-system',
-}
-
-XSOAR_TYPES_TO_STIX_SDO = {  # pragma: no cover
-    ThreatIntel.ObjectsNames.ATTACK_PATTERN: 'attack-pattern',
-    ThreatIntel.ObjectsNames.CAMPAIGN: 'campaign',
-    ThreatIntel.ObjectsNames.COURSE_OF_ACTION: 'course-of-action',
-    ThreatIntel.ObjectsNames.INFRASTRUCTURE: 'infrastructure',
-    ThreatIntel.ObjectsNames.INTRUSION_SET: 'intrusion-set',
-    ThreatIntel.ObjectsNames.REPORT: 'report',
-    ThreatIntel.ObjectsNames.THREAT_ACTOR: 'threat-actor',
-    ThreatIntel.ObjectsNames.TOOL: 'tool',
-    ThreatIntel.ObjectsNames.MALWARE: 'malware',
-    FeedIndicatorType.CVE: 'vulnerability',
-}
-
-
-HASH_TYPE_TO_STIX_HASH_TYPE = {  # pragma: no cover
-    'md5': 'MD5',
-    'sha1': 'SHA-1',
-    'sha256': 'SHA-256',
-    'sha512': 'SHA-512',
-}
-
-
-def search_related_indicators(value: str) -> list[dict]:
+def search_related_indicators(value: str) -> list[dict]:    # pragma: no cover
     relationships = demisto.searchRelationships({"entities": [value]}).get("data", [])
-
+    demisto.debug(f"found {len(relationships)} relationships")
     query = ""
     for rel in relationships:
         entity_a = rel.get("entityA", "").lower()
@@ -103,7 +62,10 @@ def search_related_indicators(value: str) -> list[dict]:
     if not query:
         demisto.info(f"No relevant relationship found for indicator: {value}")
         return []
+    query = query[:-4]
+    demisto.debug(f"using query: {query}")
     demisto_indicators = demisto.searchIndicators(query=query).get("iocs", [])
+    demisto.debug(f"found {len(demisto_indicators)} related indicators")
     return demisto_indicators
 
 
@@ -116,10 +78,10 @@ def get_indicators_stix_ids(value: str, indicator_type: str, indicators: list[di
         else:
             if indicator_type in SDOs:
                 stix_type = XSOAR_TYPES_TO_STIX_SDO.get(indicator.get("indicator_type", "indicator"))
-                stix_id = create_sdo_stix_uuid(indicator, stix_type, indicator.get("value", ""))
+                stix_id = XSOAR2STIXParser.create_sdo_stix_uuid(indicator, stix_type, PAWN_UUID, indicator.get("value", ""))
             elif indicator_type in SCOs:
                 stix_type = XSOAR_TYPES_TO_STIX_SCO.get(indicator.get("indicator_type", "indicator"), 'indicator')
-                stix_id = create_sco_stix_uuid(indicator, stix_type, indicator.get("value", ""))
+                stix_id = XSOAR2STIXParser.create_sco_stix_uuid(indicator, stix_type, indicator.get("value", ""))
             else:
                 demisto.info(f"Indicator type: {indicator_type}, with the value: {value} is unknown.")
                 continue
@@ -151,65 +113,6 @@ def guess_indicator_type(type_: str, val: str) -> str:
 
     # try to auto_detect by value
     return (auto_detect_indicator_type(val) or type_).lower()
-
-
-def create_sco_stix_uuid(xsoar_indicator: dict, stix_type: Optional[str], value: str) -> str:
-    """
-    Create uuid for SCO objects.
-    Args:
-        xsoar_indicator: dict - The XSOAR representation of the indicator.
-        stix_type: Optional[str] - The indicator type according to STIX.
-        value: str - The value of the indicator.
-    Returns:
-        The uuid that represents the indicator according to STIX.
-    """
-    if stixid := xsoar_indicator.get('CustomFields', {}).get('stixid'):
-        return stixid
-    if stix_type == 'user-account':
-        account_type = xsoar_indicator.get('CustomFields', {}).get('accounttype')
-        user_id = xsoar_indicator.get('CustomFields', {}).get('userid')
-        unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE,
-                               f'{{"account_login":"{value}","account_type":"{account_type}","user_id":"{user_id}"}}')
-    elif stix_type == 'windows-registry-key':
-        unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"key":"{value}"}}')
-    elif stix_type == 'file':
-        if get_hash_type(value) == 'md5':
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"MD5":"{value}"}}}}')
-        elif get_hash_type(value) == 'sha1':
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-1":"{value}"}}}}')
-        elif get_hash_type(value) == 'sha256':
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-256":"{value}"}}}}')
-        elif get_hash_type(value) == 'sha512':
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"hashes":{{"SHA-512":"{value}"}}}}')
-        else:
-            unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"value":"{value}"}}')
-    else:
-        unique_id = uuid.uuid5(SCO_DET_ID_NAMESPACE, f'{{"value":"{value}"}}')
-
-    return f'{stix_type}--{unique_id}'
-
-
-def create_sdo_stix_uuid(xsoar_indicator: dict, stix_type: Optional[str], value: str) -> str:
-    """
-    Create uuid for SDO objects.
-    Args:
-        xsoar_indicator: dict - The XSOAR representation of the indicator.
-        stix_type: Optional[str] - The indicator type according to STIX.
-        value: str - The value of the indicator.
-    Returns:
-        The uuid that represents the indicator according to STIX.
-    """
-    if stixid := xsoar_indicator.get('CustomFields', {}).get('stixid'):
-        return stixid
-    if stix_type == 'attack-pattern':
-        if mitre_id := xsoar_indicator.get('CustomFields', {}).get('mitreid'):
-            unique_id = uuid.uuid5(PAWN_UUID, f'{stix_type}:{mitre_id}')
-        else:
-            unique_id = uuid.uuid5(PAWN_UUID, f'{stix_type}:{value}')
-    else:
-        unique_id = uuid.uuid5(PAWN_UUID, f'{stix_type}:{value}')
-
-    return f'{stix_type}--{unique_id}'
 
 
 def add_file_fields_to_indicator(xsoar_indicator: Dict, value: str) -> Dict:
@@ -284,7 +187,7 @@ def main():
 
         if demisto_indicator_type in XSOAR_TYPES_TO_STIX_SCO and is_sco:
             stix_type = XSOAR_TYPES_TO_STIX_SCO.get(demisto_indicator_type)
-            stix_id = create_sco_stix_uuid(xsoar_indicator, stix_type, value)
+            stix_id = XSOAR2STIXParser.create_sco_stix_uuid(xsoar_indicator, stix_type, value)
             stix_indicator = create_stix_sco_indicator(stix_id, stix_type, value, xsoar_indicator)
             indicators.append(stix_indicator)
 
@@ -304,7 +207,7 @@ def main():
                 kwargs["score"] = "Not Specified"
 
             stix_type = XSOAR_TYPES_TO_STIX_SDO.get(demisto_indicator_type, 'indicator')
-            stix_id = create_sdo_stix_uuid(xsoar_indicator, stix_type, value)
+            stix_id = XSOAR2STIXParser.create_sdo_stix_uuid(xsoar_indicator, stix_type, PAWN_UUID, value)
             kwargs["id"] = stix_id
 
             kwargs["created"] = dateparser.parse(xsoar_indicator.get('timestamp', ''))
@@ -370,13 +273,13 @@ def main():
                     demisto.info(f"Export failure exception: {traceback.format_exc()}")
                     continue
 
-                except InvalidValueError:
+                except (InvalidValueError, MissingPropertiesError):
                     demisto.info(
                         f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
                     demisto.info(f"Export failure exception: {traceback.format_exc()}")
                     continue
 
-            except InvalidValueError:
+            except (InvalidValueError, MissingPropertiesError):
                 demisto.info(
                     f"Indicator type: {demisto_indicator_type}, with the value: {value} is not STIX compatible. Skipping.")
                 demisto.info(f"Export failure exception: {traceback.format_exc()}")
@@ -409,6 +312,8 @@ def main():
 
     return_results(res)
 
+
+from TAXII2ApiModule import *  # noqa: E402
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
