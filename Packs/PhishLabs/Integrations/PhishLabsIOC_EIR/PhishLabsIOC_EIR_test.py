@@ -372,7 +372,7 @@ def test_fetch__last_run_not_none(mocker):
         last_ids=set()
     )
 
-    assert last_run == {'lastRun': '2023-09-20T03:44:55Z', 'lastIds': set()}
+    assert last_run == {'lastRun': '2023-09-20T03:44:55Z', 'lastIds': []}
 
 
 def test_fetch_merge_open_closed(mocker):
@@ -418,7 +418,7 @@ def test_fetch_merge_open_closed(mocker):
         last_ids=set()
     )
 
-    assert last_run == {'lastRun': '2023-09-20T03:48:55Z', 'lastIds': {'4'}}
+    assert last_run == {'lastRun': '2023-09-20T03:48:55Z', 'lastIds': ['4']}
     assert len(incident_report) == 4
 
 
