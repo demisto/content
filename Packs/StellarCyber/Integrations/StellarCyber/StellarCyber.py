@@ -124,7 +124,6 @@ class Client(BaseClient):
         headers = {"Accept": "application/json", "Content-type": "application/json"}
         headers["Authorization"] = self._get_auth_header()
         response = self._http_request(method="GET", full_url=incident_summary_url, headers=headers)
-
         return response["data"]
 
     def get_alert(self, alert_id: str, alert_index: str) -> dict:
@@ -139,7 +138,6 @@ class Client(BaseClient):
             hit = hits[0].get("_source", None)
             alert_index = hits[0].get("_index", "")
             hit = demisto_alert_normalization(hit, alert_id, alert_index, self.dp_host)
-
         return hit
 
     def update_case(
@@ -164,7 +162,6 @@ class Client(BaseClient):
                 update_data["tags"]["add"] = case_tags_add
             if len(case_tags_remove):
                 update_data["tags"]["delete"] = case_tags_remove
-
         incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?id={case_id}"
         headers = {"Accept": "application/json", "Content-type": "application/json"}
         headers["Authorization"] = self._get_auth_header()
@@ -225,7 +222,6 @@ def fetch_incidents(client: Client, params: dict) -> list[dict]:
         List[dict]: A list of XSOAR incidents.
     """
     last_run = demisto.getLastRun()
-    demisto.debug(f"Last run: {last_run}")
     last_incident_ids = last_run.get("last_incidents", [])
     first_fetch_time = params.get("first_fetch", "3 days").strip()
     last_fetch = last_run.get("last_fetch", None)
@@ -374,27 +370,23 @@ def get_remote_data_command(client: Client, args) -> GetRemoteDataResponse | str
             return_error("API rate limit")
 
 
-def get_modified_remote_data_command(client: Client, args) -> GetModifiedRemoteDataResponse | str | None:
-    demisto.debug(f"get_modified_remote_data_command: {args}")
-    try:
-        remote_args = GetModifiedRemoteDataArgs(args)
-        last_update = remote_args.last_update
-        demisto.debug(f"last_update: {last_update}")
-        last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # type: ignore
-        demisto.debug(f"last_update_utc: {last_update_utc}")
-        assert last_update_utc is not None
-        last_run_ts = int((last_update_utc - timedelta(minutes=1)).timestamp() * 1000)
-        modified_incidents = client.get_updated_incidents(last_run=last_run_ts)
-        if len(modified_incidents):
-            modified_incident_ids = [
-                f"{str(i['ticket_id'])}:{i['cust_id']}"
-                for i in modified_incidents
-            ]
-        else:
-            modified_incident_ids = []
-        return GetModifiedRemoteDataResponse(modified_incident_ids)
-    except Exception as e:
-        return_error("skip update")
+def get_modified_remote_data_command(client: Client, args) -> GetModifiedRemoteDataResponse:
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update
+    demisto.debug(f"last_update: {last_update}")
+    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # type: ignore
+    demisto.debug(f"last_update_utc: {last_update_utc}")
+    assert last_update_utc is not None
+    last_run_ts = int((last_update_utc - timedelta(minutes=1)).timestamp() * 1000)
+    modified_incidents = client.get_updated_incidents(last_run=last_run_ts)
+    if len(modified_incidents):
+        modified_incident_ids = [
+            f"{str(i['ticket_id'])}:{i['cust_id']}"
+            for i in modified_incidents
+        ]
+    else:
+        modified_incident_ids = []
+    return GetModifiedRemoteDataResponse(modified_incident_ids)
 
 """ MAIN FUNCTION """
 

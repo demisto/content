@@ -9,8 +9,16 @@
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [],
-    "useCases": [],
+    "certification": "certified",
+    "tags": [
+        "Alerts",
+        "Incident Handling",
+        "Security",
+        "Security Analytics"
+    ],
+    "useCases": [
+        "Case Management"
+    ],
     "keywords": [],
     "marketplaces": [
         "xsoar",
@@ -18,5 +26,15 @@
     ],
     "githubUser": [
         "wfales"
-    ]
+    ],
+    "dependencies": {
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "display_name": "Filters And Transformers"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    }
 }

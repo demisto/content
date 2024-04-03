@@ -42,7 +42,7 @@ configuration:
   defaultvalue: 1 day
   type: 0
   section: Collect
-  additionalinfo: "The time to look back for initial pull of cases. Example values: 1 day, 5 hours, 30 minutes, etc."
+  additionalinfo: "The period of time to look back for initial pull of cases. (<number> <time unit>, i.e. 1 day, 5 hours, 30 minutes, etc.)"
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
@@ -211,65 +211,80 @@ script:
     description: Update the severity, status, assignee, or tags of a Case in Stellar Cyber.
     outputs:
     - contextPath: StellarCyber.Case.Update._id
-      description: 'Case ID'
+      description: Case ID.
       type: String
     - contextPath: StellarCyber.Case.Update.assignee
-      description: 'Case Assignee'
+      description: Case Assignee.
       type: String
     - contextPath: StellarCyber.Case.Update.created_at
-      description: 'Case Created Timestamp'
+      description: Case Created Timestamp.
       type: Date
     - contextPath: StellarCyber.Case.Update.created_by
-      description: 'Case Created By'
+      description: Case Created By.
       type: String
     - contextPath: StellarCyber.Case.Update.cust_id
-      description: 'Case Tenant ID'
+      description: Case Tenant ID.
       type: String
     - contextPath: StellarCyber.Case.Update.modified_at
-      description: 'Case Modified Timestamp'
+      description: Case Modified Timestamp.
       type: Date
     - contextPath: StellarCyber.Case.Update.modified_by
-      description: 'Case Modified By'
+      description: Case Modified By.
       type: String
     - contextPath: StellarCyber.Case.Update.name
-      description: 'Case Name'
+      description: Case Name.
       type: String
     - contextPath: StellarCyber.Case.Update.size
-      description: 'Case Size (Number of Alerts)'
+      description: Case Size (Number of Alerts).
       type: Number
     - contextPath: StellarCyber.Case.Update.status
-      description: 'Case Status'
+      description: Case Status.
       type: String
     - contextPath: StellarCyber.Case.Update.tags
-      description: 'Case Tags'
+      description: Case Tags.
       type: Unknown
     - contextPath: StellarCyber.Case.Update.ticket_id
-      description: 'Case Ticket ID'
+      description: Case Ticket ID.
       type: Number
     - contextPath: StellarCyber.Case.Update.version
-      description: 'Case Version'
+      description: Case Version.
       type: Number
     - contextPath: StellarCyber.Case.Update.priority
-      description: 'Case Priority'
+      description: Case Priority.
       type: String
     - contextPath: StellarCyber.Case.Update.incident_score
-      description: 'Case Score'
+      description: Case Score.
       type: Number
     - contextPath: StellarCyber.Case.Update.assignee_name
-      description: 'Case Assignee Name'
+      description: Case Assignee Name.
       type: String
+  - arguments:
+    - description: The remote incident ID.
+      name: id
+      required: true
+    - defaultValue: '0'
+      description: UTC timestamp in seconds. The incident is only updated if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets remote data from a remote incident. This method is only used for debugging purposes and will not update the current incident.
+    name: get-remote-data
+  - arguments:
+    - name: lastUpdate
+      required: true
+      description: UTC timestamp in seconds. The incident is only updated if it was modified after the last update time.
+    description: Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging purposes.
+    name: get-modified-remote-data
   runonce: false
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.10.14.91134
   feed: false
   isfetch: true
   ismappable: false
   isremotesyncin: true
   isremotesyncout: false
-fromversion: 6.6.0
+fromversion: 6.10.0
 defaultclassifier: Stellar Cyber Classifier
 defaultmapperin: Stellar Cyber - Incoming Mapper
 tests:
-- Stellar Cyber Test
+- No tests (auto formatted)

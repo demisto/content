@@ -1,5 +1,5 @@
 Fetches and mirrors in Cases from Stellar Cyber to XSOAR. In addition, provides a command to update Case severity/status/assignee/tags, and a command to query an Alert.
-This integration was integrated and tested with version 5.1.x/4.3.7 of StellarCyber.
+This integration was integrated and tested with version xx of StellarCyber.
 
 ## Configure Stellar Cyber on Cortex XSOAR
 
@@ -15,7 +15,7 @@ This integration was integrated and tested with version 5.1.x/4.3.7 of StellarCy
     | Stellar Cyber Host (e.g. example.stellarcyber.cloud) | Your Stellar Cyber Host FQDN. | True |
     | API User (Email Address) |  | True |
     | API Key |  | True |
-    | First fetch time | The time to look back for initial pull of cases. Example values: 1 day, 5 hours, 30 minutes, etc. | False |
+    | First fetch time | The period of time to look back for initial pull of cases. \(&lt;number&gt; &lt;time unit&gt;, i.e. 1 day, 5 hours, 30 minutes, etc.\) | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings | If set to true, will use the system proxy settings. | False |
     | Incidents Fetch Interval | The interval in minutes for fetching incidents from Stellar Cyber. | False |
@@ -28,6 +28,7 @@ This integration was integrated and tested with version 5.1.x/4.3.7 of StellarCy
 
 You can enable incident mirroring between Cortex XSOAR incidents and Stellar Cyber corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
@@ -39,7 +40,6 @@ To set up the mirroring:
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Stellar Cyber.
-
 
 ## Commands
 
@@ -119,20 +119,58 @@ Update the severity, status, assignee, or tags of a Case in Stellar Cyber.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| StellarCyber.Case.Update._id | String | Case ID | 
-| StellarCyber.Case.Update.assignee | String | Case Assignee | 
-| StellarCyber.Case.Update.created_at | Date | Case Created Timestamp | 
-| StellarCyber.Case.Update.created_by | String | Case Created By | 
-| StellarCyber.Case.Update.cust_id | String | Case Tenant ID | 
-| StellarCyber.Case.Update.modified_at | Date | Case Modified Timestamp | 
-| StellarCyber.Case.Update.modified_by | String | Case Modified By | 
-| StellarCyber.Case.Update.name | String | Case Name | 
-| StellarCyber.Case.Update.size | Number | Case Size \(Number of Alerts\) | 
-| StellarCyber.Case.Update.status | String | Case Status | 
-| StellarCyber.Case.Update.tags | Unknown | Case Tags | 
-| StellarCyber.Case.Update.ticket_id | Number | Case Ticket ID | 
-| StellarCyber.Case.Update.version | Number | Case Version | 
-| StellarCyber.Case.Update.priority | String | Case Priority | 
-| StellarCyber.Case.Update.incident_score | Number | Case Score | 
-| StellarCyber.Case.Update.assignee_name | String | Case Assignee Name | 
+| StellarCyber.Case.Update._id | String | Case ID. | 
+| StellarCyber.Case.Update.assignee | String | Case Assignee. | 
+| StellarCyber.Case.Update.created_at | Date | Case Created Timestamp. | 
+| StellarCyber.Case.Update.created_by | String | Case Created By. | 
+| StellarCyber.Case.Update.cust_id | String | Case Tenant ID. | 
+| StellarCyber.Case.Update.modified_at | Date | Case Modified Timestamp. | 
+| StellarCyber.Case.Update.modified_by | String | Case Modified By. | 
+| StellarCyber.Case.Update.name | String | Case Name. | 
+| StellarCyber.Case.Update.size | Number | Case Size \(Number of Alerts\). | 
+| StellarCyber.Case.Update.status | String | Case Status. | 
+| StellarCyber.Case.Update.tags | Unknown | Case Tags. | 
+| StellarCyber.Case.Update.ticket_id | Number | Case Ticket ID. | 
+| StellarCyber.Case.Update.version | Number | Case Version. | 
+| StellarCyber.Case.Update.priority | String | Case Priority. | 
+| StellarCyber.Case.Update.incident_score | Number | Case Score. | 
+| StellarCyber.Case.Update.assignee_name | String | Case Assignee Name. | 
 
+### get-remote-data
+
+***
+Gets remote data from a remote incident. This method is only used for debugging purposes and will not update the current incident.
+
+#### Base Command
+
+`get-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The remote incident ID. | Required | 
+| lastUpdate | UTC timestamp in seconds. The incident is only updated if it was modified after the last update time. Default is 0. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+### get-modified-remote-data
+
+***
+Available from Cortex XSOAR version 6.1.0. This command queries for incidents that were modified since the last update. This method is only used for debugging purposes.
+
+#### Base Command
+
+`get-modified-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lastUpdate | UTC timestamp in seconds. The incident is only updated if it was modified after the last update time. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
