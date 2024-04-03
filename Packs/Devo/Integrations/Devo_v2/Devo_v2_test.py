@@ -518,8 +518,8 @@ def test_multi_query(
 @patch("Devo_v2.concurrent.futures.wait")
 @patch("Devo_v2.concurrent.futures.ThreadPoolExecutor.submit")
 @patch("Devo_v2.demisto.args")
-@patch("Devo_v2.ds.Reader.query")
-@patch("Devo_v2.ds.Reader")
+@patch("Devo_v2.Client.query")
+@patch("Devo_v2.Client")
 @patch("Devo_v2.get_types")
 def test_multi_query_negative_items(
     mock_query_types,
