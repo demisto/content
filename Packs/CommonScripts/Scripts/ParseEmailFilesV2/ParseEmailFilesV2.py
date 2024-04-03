@@ -135,7 +135,7 @@ def main():
     nesting_level_to_return = args.get('nesting_level_to_return', 'All files')
 
     file_type, file_path, file_name = extract_file_info(entry_id)
-    demisto.debug(f'{file_type=}, {file_path=}, {file_name=}')
+    demisto.debug(f'{file_type=}, {file_path=}, {file_name=}, {max_depth=}, {nesting_level_to_return=}')
 
     try:
         email_parser = EmailParser(file_path=file_path, max_depth=max_depth, parse_only_headers=parse_only_headers,
@@ -149,7 +149,9 @@ def main():
             output = [output]
 
         elif output and nesting_level_to_return != 'All files':
+            demisto.debug(f'Parsing level {nesting_level_to_return=}')
             output = parse_nesting_level(nesting_level_to_return, output)
+            demisto.debug(f'Parsed level {nesting_level_to_return=}, {output=}')
 
         for email in output:
             if email.get('AttachmentsData'):
@@ -166,8 +168,12 @@ def main():
                 continue
 
             if isinstance(email.get("HTML"), bytes):
+                demisto.debug('email HTML instance is bytes.')
                 email['HTML'] = email.get("HTML").decode('utf-8')
+            else:
+                demisto.debug('email HTML instance is NOT bytes.')
 
+            demisto.debug(f'Appending result, {email=}')
             results.append(CommandResults(
                 outputs_prefix='Email',
                 outputs=email,
