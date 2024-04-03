@@ -20,13 +20,14 @@ global levenshtein_distance_threshold
 global incident_type
 global homographs
 global fetch_time
-    
+
 word_list_name: str = ""
 list_update_interval: int = 30
-levenshtein_distance_threshold:float = 0.85
+levenshtein_distance_threshold: float = 0.85
 homographs: dict = {}
 fetch_time: str = datetime.now().strftime(DATETIME_FORMAT)
 incident_type: float
+
 
 def test_module(host: str):
     # set the fetch interval to 2 seconds so we don't get timeout for the test module
@@ -65,7 +66,7 @@ def long_running_execution_command(host: str, fetch_interval: int):
                 global fetch_time
                 global list_update_interval
                 now = datetime.now()
-                
+
                 last_fetch_time = datetime.strptime(fetch_time, DATETIME_FORMAT)
                 fetch_interval = list_update_interval
 
@@ -73,7 +74,6 @@ def long_running_execution_command(host: str, fetch_interval: int):
                     demisto.info(f"Updating homographs list from {word_list_name}")
                     homographs = get_homographs_list(word_list_name)
                     fetch_time = datetime.now().strftime(DATETIME_FORMAT)
-                    
 
                 try:
                     message = message_connection.recv()
@@ -350,14 +350,14 @@ def main():  # pragma: no cover
     global incident_type
     global homographs
     global word_list_name
-    
+
     params = demisto.params()
     word_list_name = params["list_name"]
     list_update_interval: int = params.get("update_interval", 30)
     levenshtein_distance_threshold = float(params.get("levenshtein_distance_threshold", 0.85))
     incident_type = params["incidentType"]
     homographs = get_homographs_list(word_list_name)
-    
+
     command = demisto.command()
     host: str = params["url"]
 
