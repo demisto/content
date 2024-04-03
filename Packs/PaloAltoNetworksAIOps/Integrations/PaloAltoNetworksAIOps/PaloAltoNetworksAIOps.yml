@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: PaloAltoNetworksAIOps
+  id: Palo Alto Networks AIOps
   version: -1
 configuration:
 - section: Connect
@@ -43,7 +43,7 @@ configuration:
   required: false
 description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
 display: Palo Alto Networks AIOps
-name: PaloAltoNetworksAIOps
+name: Palo Alto Networks AIOps
 script:
   commands:
   - name: aiops-bpa-report-generate
