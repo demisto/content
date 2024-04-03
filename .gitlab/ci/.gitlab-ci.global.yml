@@ -510,22 +510,17 @@
     - SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
     - PRE_COMMIT_SUCCESS=0
     - |
-      if [[ -n $BUCKET_UPLOAD && $TEST_UPLOAD == "true" ]]; then
-        echo "Skipping validations when uploading to a test bucket."
-      
+      if [[ -n $BUCKET_UPLOAD ]]; then
+        demisto-sdk pre-commit -g --prev-version $LAST_UPLOAD_COMMIT --mode=nightly || PRE_COMMIT_SUCCESS=1
       else
-        if [[ -n $BUCKET_UPLOAD ]]; then
-          demisto-sdk pre-commit -g --prev-version $LAST_UPLOAD_COMMIT --mode=nightly || PRE_COMMIT_SUCCESS=1
+        if [[ -n "${SHOULD_LINT_ALL}" ]]; then
+          echo "Pre Commit all files"
+          # if we need to pre-commit all anyway we need the graph, and it's better (resource-wise) to create it here.
+          demisto-sdk graph update
+          demisto-sdk pre-commit -a --mode=nightly || PRE_COMMIT_SUCCESS=1
         else
-          if [[ -n "${SHOULD_LINT_ALL}" ]]; then
-            echo "Pre Commit all files"
-            # if we need to pre-commit all anyway we need the graph, and it's better (resource-wise) to create it here.
-            demisto-sdk graph update
-            demisto-sdk pre-commit -a --mode=nightly || PRE_COMMIT_SUCCESS=1
-          else
-            echo "Pre Commit only changed files"
-            demisto-sdk pre-commit --mode=ci || PRE_COMMIT_SUCCESS=1
-          fi
+          echo "Pre Commit only changed files"
+          demisto-sdk pre-commit --mode=ci || PRE_COMMIT_SUCCESS=1
         fi
       fi
 
