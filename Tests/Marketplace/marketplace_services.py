@@ -485,15 +485,7 @@ class Pack:
         Returns:
             dict: parsed pack metadata.
         """
-        pack_metadata = {
-            Metadata.FIRST_CREATED: self._create_date,
-            Metadata.UPDATED: self._update_date,
-            Metadata.DOWNLOADS: self._downloads_count,
-            Metadata.TAGS: list(self._tags or []),
-            Metadata.SEARCH_RANK: self._search_rank,
-            Metadata.INTEGRATIONS: self._related_integration_images,
-        }
-
+        pack_metadata = self.update_metadata
         if parse_dependencies:
             pack_metadata[Metadata.DEPENDENCIES] = self._dependencies
 
