@@ -52,7 +52,6 @@ repos:
   rev: v2.0.4
   hooks:
   - id: autopep8
-    args: ["-i", "--diff"]
     exclude_support_level:ci:
     - community
     exclude_support_level:nightly:
