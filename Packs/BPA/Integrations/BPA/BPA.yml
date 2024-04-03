@@ -2,6 +2,7 @@ category: Utilities
 commonfields:
   id: BPA
   version: -1
+deprecated: true
 configuration:
 - display: Server URL (either Firewall or Panorama). e.g., https://192.168.0.1
   name: server
@@ -34,9 +35,8 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
-
   required: false
-description: Deprecated. Use Palo Alto Networks AIOps instead.
+description: Deprecated. Use Palo Alto Networks AIops instead, run aiops-bpa-report-generate command.
 display: Palo Alto Networks BPA (Deprecated)
 name: BPA
 script:
@@ -131,6 +131,7 @@ script:
       name: check_name
     description: Returns the results of the BPA job.
     name: pan-os-bpa-get-job-results
+    deprecated: true
     outputs:
     - contextPath: PAN-OS-BPA.JobResults.JobID
       description: The submitted job ID.
@@ -159,7 +160,6 @@ script:
     - contextPath: InfoFile.Extension
       description: File extension.
       type: string
-    deprecated: true
   dockerimage: demisto/python3:3.10.12.68714
   runonce: false
   script: '-'
@@ -168,4 +168,3 @@ script:
 tests:
 - No tests (deprecated)
 fromversion: 5.0.0
-deprecated: true
