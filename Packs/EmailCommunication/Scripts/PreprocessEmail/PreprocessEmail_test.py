@@ -6,12 +6,12 @@ from datetime import datetime
 
 
 def util_open_file(path):
-    with open(path, mode='r') as f:
+    with open(path) as f:
         return f.read()
 
 
 def util_load_json(path):
-    with open(path, mode='r') as f:
+    with open(path) as f:
         return json.loads(f.read())
 
 
@@ -339,7 +339,6 @@ def test_get_entry_id_list_with_attached_file():
         }]
     expected = [('image_1.png', '35@119'), ('image_2.png', '36@119')]
 
-
     assert expected == get_entry_id_list(attachments, files)
 
 
@@ -535,6 +534,7 @@ def test_create_thread_context(email_code, scenario, mocker):
             return EMAIL_THREADS
         elif command == "executeCommandAt":
             return True
+        return None
 
     from PreprocessEmail import create_thread_context
 
