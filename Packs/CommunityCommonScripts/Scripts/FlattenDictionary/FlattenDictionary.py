@@ -23,18 +23,28 @@ def flatten_dict(d, parent_key='', sep='.') -> dict:
             items.extend(flatten_dict(v, n_key, sep).items())
         else:
             items.append((n_key, v))
-        
+            
     return dict(items)
+
+def flatten_dict_command():
+    try:
+        data = json.loads(demisto.args()["unflattened_dict"])
+        results = CommandResults(
+            outputs_prefix='FlattenDictionary',
+            outputs_key_field='',
+            outputs=flatten_dict(data)
+        )
+        return results
+    except Exception as ex:
+        return_error(f'Failed to execute FlattenDictionary. Error: {str(ex)}')
             
 ''' MAIN FUNCTION '''
 
 
 def main():
     try:
-        data = json.loads(demisto.args()["unflatten_dict"])
-        return_results(flatten_dict(data))
+        return_results(flatten_dict_command())
     except Exception as ex:
-
         return_error(f'Failed to execute FlattenDictionary. Error: {str(ex)}')
 
 
