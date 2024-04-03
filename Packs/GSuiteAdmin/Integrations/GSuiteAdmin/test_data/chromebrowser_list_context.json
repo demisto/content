@@ -10,7 +10,7 @@
                 "deviceId": "e8403671-d8e1-1111-b107-11111111",
                 "kind": "admin#directory#browserdevice",
                 "osPlatform": "Windows",
-                "osVersion": "10.0.1.1",
+                "osVersion": "111",
                 "machineName": "WIN10-test",
                 "lastRegistrationTime": "2024-02-20T21:16:00.902Z",
                 "lastActivityTime": "2024-02-20T21:16:00.902Z",
@@ -35,7 +35,7 @@
                 "deviceId": "e8403671-d8e1-1111-b107-11111111",
                 "kind": "admin#directory#browserdevice", 
                 "osPlatform": "Windows", 
-                "osVersion": "10.0.1.1",
+                "osVersion": "111",
                 "machineName": "WIN10-test",
                 "lastRegistrationTime": "2024-02-20T21:16:00.902Z", 
                 "lastActivityTime": "2024-02-20T21:16:00.902Z", 
@@ -47,6 +47,6 @@
             }
         ]
     },
-    "readable_output": "### Chrome Browser Device List\n|Device Id|Os Platform|Os Version|Machine Name|Serial Number|Org Unit Path|\n|---|---|---|---|---|---|\n| e8403671-d8e1-1111-b107-11111111 | Windows | 10.0.1.1 | WIN10-test | VMware-42 | /testing |\n",
+    "readable_output": "### Chrome Browser Device List\n|Device Id|Os Platform|Os Version|Machine Name|Serial Number|Org Unit Path|\n|---|---|---|---|---|---|\n| e8403671-d8e1-1111-b107-11111111 | Windows | 111 | WIN10-test | VMware-42 | /testing |\n",
     "replace_existing": "False"
 }
