@@ -1428,7 +1428,7 @@ def test_policy_schemas_command_schema_name(gsuite_client, mocker):
          "target_resource": "03ph8a2z1kjba6k", "target_type": "OrgUnit"},
         {"customer_id": "test", "page_size": "2", "limit": "4", "policy_schema_filter": "chrome.users.apps.InstallType",
          "target_resource": "03ph8a2z1kjba6k", "target_type": "OrgUnit"},
-        {"customer_id": "test", "page_size": "5000", "limit": "10000","policy_schema_filter": "chrome.users.apps.InstallType",
+        {"customer_id": "test", "page_size": "5000", "limit": "10000", "policy_schema_filter": "chrome.users.apps.InstallType",
          "target_resource": "03ph8a2z1kjba6k", "target_type": "OrgUnit"},
     ]
 )
