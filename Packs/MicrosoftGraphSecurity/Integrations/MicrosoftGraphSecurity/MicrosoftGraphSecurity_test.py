@@ -10,7 +10,8 @@ from MicrosoftGraphSecurity import MsGraphClient, create_search_alerts_filters, 
     release_ediscovery_custodian_command, close_ediscovery_case_command, reopen_ediscovery_case_command, \
     create_ediscovery_non_custodial_data_source_command, list_ediscovery_custodian_command, \
     create_mail_assessment_request_command, create_email_file_request_command, create_file_assessment_request_command, \
-    create_url_assessment_request_command, list_threat_assessment_requests_command, get_message_user
+    create_url_assessment_request_command, list_threat_assessment_requests_command, get_message_user, \
+    update_incident_command, advanced_hunting_command, get_list_security_incident_command
 from CommonServerPython import DemistoException
 import pytest
 import json
@@ -705,3 +706,66 @@ def test_get_message_user(mocker, user, expected_result):
                         return_value={'value': [{"id": "test user id"}]})
     message_user = get_message_user(client_mocker, user)
     assert message_user == expected_result
+
+
+def test_advanced_hunting_command(mocker):
+    response = load_json('./test_data/advanced_hunting_response.json')
+    mocker.patch.object(client_mocker, "advanced_hunting_request", return_value=response)
+    args = {'query': 'AlertInfo', 'limit': 2, 'timeout': 50}
+
+    results = advanced_hunting_command(client_mocker, args)
+
+    expected_results = load_json('./test_data/advanced_hunting_results.json')
+    assert results.outputs_prefix == expected_results['outputs_prefix']
+    assert results.outputs_key_field == expected_results['outputs_key_field']
+    assert results.outputs == expected_results['outputs']
+    assert results.readable_output == expected_results['readable_output']
+
+    mocker.patch.object(demisto, 'params', return_value={'microsoft_365_defender_context': True})
+    results = advanced_hunting_command(client_mocker, args)
+
+    expected_results = load_json('./test_data/advanced_hunting_results_365_defenfer.json')
+    assert results[1].outputs_prefix == expected_results['outputs_prefix']
+    assert results[1].outputs_key_field == expected_results['outputs_key_field']
+    assert results[1].outputs == expected_results['outputs']
+    assert results[1].readable_output == expected_results['readable_output']
+
+
+def test_get_list_security_incident_command_single_case(mocker):
+    response = load_json('./test_data/incidents_single_response.json')
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value=response)
+    args = {'incident_id': 12345, 'limit': 1, 'timeout': 50}
+    results = get_list_security_incident_command(client_mocker, args)
+    expected_results = load_json('./test_data/incidents_single_results.json')
+    assert results.outputs_prefix == expected_results['outputs_prefix']
+    assert results.outputs_key_field == expected_results['outputs_key_field']
+    assert results.outputs == expected_results['outputs']
+    assert results.readable_output == expected_results['readable_output']
+
+
+def test_get_list_security_incident_command_list_case(mocker):
+    response = load_json('./test_data/incidents_list_response.json')
+    mocker.patch.object(client_mocker, "get_incidents_request", return_value=response)
+    args = {'limit': 2, 'timeout': 50}
+    results = get_list_security_incident_command(client_mocker, args)
+    expected_results = load_json('./test_data/incidents_list_results.json')
+    assert results.outputs_prefix == expected_results['outputs_prefix']
+    assert results.outputs_key_field == expected_results['outputs_key_field']
+    assert results.outputs == expected_results['outputs']
+    assert results.readable_output == expected_results['readable_output']
+
+
+def test_update_incident_command(mocker):
+    response = load_json("./test_data/incident_update_response.json")
+    mocker.patch.object(client_mocker, "update_incident_request", return_value=response)
+    args = {'incident_id': '12345', 'custom_tags': 'test1,test2', 'status': 'active', 'classification': 'unknown',
+            'determination': 'unknown', 'assigned_to': "", 'timeout': 50}
+
+    results = update_incident_command(client_mocker, args)
+
+    expected_results = load_json("./test_data/incident_update_results.json")
+
+    assert results.outputs_prefix == expected_results['outputs_prefix']
+    assert results.outputs_key_field == expected_results['outputs_key_field']
+    assert results.outputs == expected_results['outputs']
+    assert results.readable_output == expected_results['readable_output']
