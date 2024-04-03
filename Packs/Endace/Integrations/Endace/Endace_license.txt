@@ -1,4 +1,10 @@
-Copyright 2020 Endace Technology Limited
+MIT
+Copyright 2020 to 2024 Endace Technology Limited
+LEGAL NOTICE: This source code:
+a) is copyright (C) to Endace Technology Limited or any of its related or affiliated companies, a New Zealand company,
+and its suppliers and licensors ("Endace"), 2020 to 2024.
+All rights reserved (except as provided in the license terms referred to in clause (b) below); and
+b) is licensed to you on the terms of the MIT license, detailed below.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the "Software"), to deal in the Software without restriction, including without limitation
