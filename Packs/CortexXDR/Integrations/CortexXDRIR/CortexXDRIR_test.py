@@ -94,8 +94,8 @@ def test_fetch_incidents_filtered_by_status(requests_mock, mocker):
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     incident_extra_data_under_investigation = load_test_data('./test_data/get_incident_extra_data_host_id_array.json')\
-        .get('reply', {}).get('incidents')[0]
-    incident_extra_data_new = load_test_data('./test_data/get_incident_extra_data_new_status.json').get('reply')
+        .get('reply', {}).get('incidents')
+    incident_extra_data_new = load_test_data('./test_data/get_incident_extra_data_new_status.json').get('reply').get('incidents')
     mocker.patch.object(Client, 'get_multiple_incidents_extra_data', side_effect=[incident_extra_data_under_investigation,
                                                                                   incident_extra_data_new])
     mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
