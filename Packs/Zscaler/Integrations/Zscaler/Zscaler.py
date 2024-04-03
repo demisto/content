@@ -1,5 +1,4 @@
 import json
-import random
 import time
 
 import requests
@@ -30,7 +29,8 @@ PROXY = demisto.params().get("proxy", True)
 REQUEST_TIMEOUT = int(demisto.params().get("requestTimeout", 15))
 DEFAULT_HEADERS = {"content-type": "application/json"}
 EXCEEDED_RATE_LIMIT_STATUS_CODE = 429
-MAX_SECONDS_TO_WAIT = 40
+TOTAL_RETRIES_TIME = 40
+TOTAL_NUMBER_OF_RETRIES = 5
 SESSION_ID_KEY = "session_id"
 ERROR_CODES_DICT = {
     400: "Invalid or bad request",
@@ -85,78 +85,75 @@ class AuthorizationError(DemistoException):
 """ HELPER FUNCTIONS """
 
 
-def extract_sleep_time_from_429(res: requests.Response):
-    sleep_time = 0
-    res_json: dict = res.json()
-    retry_after = res_json.get('Retry-After', None)
-    if not retry_after:
-        return sleep_time
-    
-    retry_split_res = retry_after.split()
-    if len(retry_split_res) == 2 and retry_split_res[1].lower() == 'seconds':
-        sleep_time = int(retry_split_res[0])
-    else:
-        demisto.debug(f'Cant parse 429 Retry-After response: {res.json()}')
-    return sleep_time
+def parse_retry_after(response: requests.Response, backoff_sleep_time_seconds: int = 2) -> int:
+    try:
+        res_json = response.json()
+        retry_after = res_json.get("Retry-After", "").split()
+        if retry_after and retry_after[-1].lower() == "seconds" and retry_after[0].isdigit():
+            sleep_time = int(retry_after[0])
+            if sleep_time > 15:
+                sleep_time = 15
+            return sleep_time
+        else:
+            return backoff_sleep_time_seconds
+    except ValueError:
+        # If the response was not a JSON or we got an unexpected format
+        return backoff_sleep_time_seconds
 
 
-def http_request(method, url_suffix, data=None, headers=None, epoch_time=time.time()):
+def http_request(method, url_suffix, data=None, headers=None):
     if headers is None:
         headers = DEFAULT_HEADERS
     data = {} if data is None else data
     url = BASE_URL + url_suffix
     try:
-        res = requests.request(
-            method,
-            url,
-            verify=USE_SSL,
-            data=data,
-            headers=headers,
-            timeout=REQUEST_TIMEOUT,
-        )
-        if res.status_code not in (200, 204):
-            if res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE:
-                sleep_time = extract_sleep_time_from_429(res)
-                if sleep_time == 0:
-                    raise Exception(f'429 unsupported format. {res}')
-                if time.time() - epoch_time + sleep_time < MAX_SECONDS_TO_WAIT:
+        start_time = time.time()
+        current_time = start_time
+        for _current_try in range(TOTAL_NUMBER_OF_RETRIES):
+            if current_time - start_time > TOTAL_RETRIES_TIME:
+                raise RateLimitError('Exceeded maximum retries time for rate limit.')
+            res = requests.request(
+                method,
+                url,
+                verify=USE_SSL,
+                data=data,
+                headers=headers,
+                timeout=REQUEST_TIMEOUT,
+            )
+            if res.status_code not in (200, 204):
+                if res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE:
+                    sleep_time = parse_retry_after(res)
                     demisto.debug(f'Got 429 will now sleep for:{sleep_time} seconds.')
                     time.sleep(sleep_time)
-                    return http_request(
-                        method,
-                        url_suffix,
-                        data,
-                        headers=headers,
-                        epoch_time=epoch_time)
+                elif res.status_code in (401, 403):
+                    raise AuthorizationError(res.content)
+                elif (
+                    res.status_code == 400
+                    and method == "PUT"
+                    and "/urlCategories/" in url_suffix
+                ):
+                    raise Exception(
+                        "Bad request, This could be due to reaching your organizations quota."
+                        " For more info about your quota usage, run the command zscaler-url-quota."
+                    )
                 else:
-                    raise RateLimitError('Exceeded maximum retries time for rate limit.')
-            elif res.status_code in (401, 403):
-                raise AuthorizationError(res.content)
-            elif (
-                res.status_code == 400
-                and method == "PUT"
-                and "/urlCategories/" in url_suffix
-            ):
-                raise Exception(
-                    "Bad request, This could be due to reaching your organizations quota."
-                    " For more info about your quota usage, run the command zscaler-url-quota."
-                )
+                    if res.status_code in ERROR_CODES_DICT:
+                        raise Exception(
+                            f"Your request failed with the following error: {ERROR_CODES_DICT[res.status_code]}.\nMessage: {res.text}"
+                        )
+                    else:
+                        raise Exception(
+                            f"Your request failed with the following error: {res.status_code}.\nMessage: {res.text}"
+                        )
+                current_time = time.time()
             else:
-                if res.status_code in ERROR_CODES_DICT:
-                    raise Exception(
-                        f"Your request failed with the following error: {ERROR_CODES_DICT[res.status_code]}.\nMessage: {res.text}"
-                    )
-                else:
-                    raise Exception(
-                        f"Your request failed with the following error: {res.status_code}.\nMessage: {res.text}"
-                    )
+                return res
     except Exception as e:
         LOG(
             f"Zscaler request failed with url={url}\tdata={data}"
         )
         LOG(e)
         raise e
-    return res
 
 
 def validate_urls(urls):

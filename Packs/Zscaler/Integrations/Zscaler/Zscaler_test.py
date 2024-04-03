@@ -87,37 +87,16 @@ def test_url_command(mocker):
                      mocker=mocker, result_validator=validator)
 
 
-@pytest.mark.parametrize('retry_after_key, retry_after_value, expected_output', [('Retry-After', '4', '429 unsupported format.'),
-                                                                                 ('Retry-After', '20 seconds', 'Exceeded maximum retries time for rate limit.'),
-                                                                                 ('', '20 seconds', '429 unsupported format.'),
-                                                                                 (None, None, '429 unsupported format.')])
-def test_url_fail_429_retries(mocker, requests_mock, retry_after_key, retry_after_value, expected_output):
+def test_url_fail_429_retries(mocker, requests_mock):
     """url"""
     import Zscaler
+    expected_output = 'Exceeded maximum retries time for rate limit.'
     Zscaler.BASE_URL = 'http://cloud/api/v1'
-    Zscaler.MAX_SECONDS_TO_WAIT = 10
+    Zscaler.TOTAL_RETRIES_TIME = 10
     data = {  # https://help.zscaler.com/zia/understanding-rate-limiting
         "message": "Rate Limit (4/SECOND) exceeded",
-        retry_after_key: retry_after_value
+        'Retry-After': '20 seconds'
     }
-    response = ResponseMock(response=data, status_code=429)
-    requests_mock.post(urljoin(Zscaler.BASE_URL, 'urlLookup'), status_code=429)
-    mocker.patch('requests.request', return_value=response)
-    args = {'url': 'https://www.demisto-news.com,https://www.demisto-search.com'}
-
-    try:
-        Zscaler.url_lookup(args)
-    except Exception as ex:
-        assert expected_output in str(ex)
-
-
-@pytest.mark.parametrize('data_input, expected_output', [({}, '429 unsupported format.'),
-                                                         (None, "'NoneType' object has no attribute 'get'")])
-def test_url_no_data_429(mocker, requests_mock, data_input, expected_output):
-    """url"""
-    import Zscaler
-    Zscaler.BASE_URL = 'http://cloud/api/v1'
-    data = data_input
     response = ResponseMock(response=data, status_code=429)
     requests_mock.post(urljoin(Zscaler.BASE_URL, 'urlLookup'), status_code=429)
     mocker.patch('requests.request', return_value=response)
@@ -132,13 +111,13 @@ def test_url_no_data_429(mocker, requests_mock, data_input, expected_output):
 def test_url_429(mocker, requests_mock):
     """url"""
     import Zscaler
-    Zscaler.MAX_SECONDS_TO_WAIT = 100
+    Zscaler.TOTAL_RETRIES_TIME = 100
     Zscaler.BASE_URL = 'http://cloud/api/v1'
     retry_data = {  # https://help.zscaler.com/zia/understanding-rate-limiting
         "message": "Rate Limit (4/SECOND) exceeded",
         "Retry-After": "4 seconds"
     }
-    with open('test_data/responses/url.json', 'r') as response_f:
+    with open('test_data/responses/url.json') as response_f:
         success_res_moc = ResponseMock(response=json.load(response_f), status_code=200)
     responses = [ResponseMock(response=retry_data, status_code=429), success_res_moc]
     requests_mock.post(urljoin(Zscaler.BASE_URL, 'urlLookup'), status_code=429)
@@ -146,7 +125,7 @@ def test_url_429(mocker, requests_mock):
     args = {'url': 'https://www.demisto-news.com,https://www.demisto-search.com'}
 
     results = Zscaler.url_lookup(args)
-    assert 2 == len(results)
+    assert len(results) == 2
     assert results[0].readable_output == '### Zscaler URL Lookup for https://www.demisto-news.com\n|url|urlClassifications|\n|---|---|\n| https://www.demisto-news.com | NEWS_AND_MEDIA |\n'
 
 
