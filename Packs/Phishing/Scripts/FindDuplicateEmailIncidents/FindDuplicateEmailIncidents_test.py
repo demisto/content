@@ -51,8 +51,8 @@ def executeCommand(command, args=None):
         return [{'Contents': incidents_str, 'Type': 'not error'}]
     if command == 'CloseInvestigationAsDuplicate':
         EXISTING_INCIDENT_ID = args['duplicateId']
-    if command == 'FormatURL':
-        return [{'Contents': [args['input']], 'Type': 'not error'}]
+        return None
+    return None
 
 
 def results(arg):
@@ -208,7 +208,7 @@ def test_html_text(mocker):
             </body>\
             </html>\
             '.format(text, text2)
-    clean_text = '{}\n{}'.format(text, text2)
+    clean_text = f'{text}\n{text2}'
     existing_incident = create_incident(body=clean_text, emailfrom='mt.kb.user@gmail.com')
     set_existing_incidents_list([existing_incident])
     mocker.patch.object(demisto, 'args', return_value={'fromPolicy': 'Domain'})
@@ -220,13 +220,12 @@ def test_html_text(mocker):
     assert duplicated_incidents_found(existing_incident)
 
 
-def test_eliminate_urls_extensions(mocker):
-    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    url = 'https://urldefense.proofpoint.com/v2/url?u=http-3A__fridmancpa.com_&d=DwIGaQ&c=XRWvQHnpdBDRh-yzrHjqLpXuH' \
+def test_eliminate_urls_extensions():
+    url = 'https://urldefense.proofpoint.com/v2/url?u=http-3A__hellothere.com_&d=DwIGaQ&c=XRWvQHnpdBDRh-yzrHjqLpXuH' \
           'NC_9nanQc6pPG_SpT0&r=sUpl2dZrOIls7oQLXwn74C7qVYSZVCdsK9UIY1nPz30&m=qD-Bndy5WGvuZizr-Jz7YQ5-8xXgRcK3w8NnNzX' \
           'lOsk&s=_NEaEUMVW0JU5b--ODhZKY9csky777X1jtFywaQyN2o&e='
     url_shortened = eliminate_urls_extensions(url)
-    assert url_shortened == 'https://urldefense.proofpoint.com/'
+    assert url_shortened == 'http://hellothere.com/'
     template = 'hello world {} goodbye'
     assert template.format(url_shortened) == eliminate_urls_extensions(template.format(url))
 
