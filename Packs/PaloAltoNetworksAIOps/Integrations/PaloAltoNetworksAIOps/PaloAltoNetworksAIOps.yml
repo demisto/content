@@ -51,7 +51,7 @@ script:
     - name: entry_id
       description: |-
         - Entry_id from Cortex XSOAR War Room after uploading a file - should be a config file in xml format.
-        - If you used this argument and the process failed or reached a timeout, make sure the config file is in xml format.
+        - If you used this argument and the process failed or reached a timeout, make sure the config file is in xml format and with correct tags.
     - name: requester_email
       required: true
       description: Requester email.
