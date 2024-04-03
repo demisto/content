@@ -159,6 +159,7 @@ Searches for a device that matches the query.
 | site_name | The site name of the device. | Optional | 
 | limit | The maximum number of records to return. Default is 50. | Optional | 
 | offset | The offset to begin the list from. For example, start from the 10th record and return the list. Default is 0. | Optional |
+| sort | The property to sort by (e.g. status.desc or hostname.asc). | Optional | 
 
 #### Context Output
 
@@ -2452,6 +2453,7 @@ Gets the list of host group members.
 | filter | The query to filter the devices that belong to the host group. | Optional | 
 | offset | Page offset. | Optional | 
 | limit | The maximum number of results on a page. Default is 50. | Optional | 
+| sort | The property to sort by (e.g. status.desc or hostname.asc). | Optional | 
 
 #### Context Output
 
