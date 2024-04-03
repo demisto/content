@@ -631,9 +631,10 @@ def test_convert_config_to_bytes_get_path_exception():
     """
     from PaloAltoNetworksAIOps import convert_config_to_bytes
     from CommonServerPython import DemistoException
-    with patch('demistomock.getFilePath', side_effect=Exception), pytest.raises(DemistoException) as e:
+    with patch('demistomock.getFilePath', side_effect=Exception("invalid to parse")), pytest.raises(DemistoException) as e:
         convert_config_to_bytes('config_file.txt', 'User')
-    assert e.value.message == 'The config file upload was unsuccessful or the file could not be converted.'
+    assert e.value.message == ('The config file upload was unsuccessful or the file could not be converted. '
+                               'With error: invalid to parse.')
 
 
 def test_convert_config_to_bytes_invalid_getFilePath_response():
@@ -651,7 +652,7 @@ def test_convert_config_to_bytes_invalid_getFilePath_response():
     from CommonServerPython import DemistoException
     with patch('demistomock.getFilePath', return_value={}), pytest.raises(DemistoException) as e:
         convert_config_to_bytes('config_file.txt', 'User')
-    assert e.value.message == 'The config file upload was unsuccessful or the file could not be converted.'
+    assert e.value.message == "The config file upload was unsuccessful or the file could not be converted. With error: 'path'."
 
 
 def test_convert_config_to_bytes_with_download_flag(mocker, AIOps_client):

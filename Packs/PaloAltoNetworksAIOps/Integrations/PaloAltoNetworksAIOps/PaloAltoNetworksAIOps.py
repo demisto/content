@@ -209,8 +209,9 @@ def convert_config_to_bytes(config_file, origin_flag):
             with open(file_path, 'rb') as f:
                 file_bytes = f.read()
             return file_bytes
-        except Exception:
-            raise DemistoException("The config file upload was unsuccessful or the file could not be converted.")
+        except Exception as e:
+            raise DemistoException(f"The config file upload was unsuccessful or the file could not be converted. "
+                                   f"With error: {e}.")
     else:
         try:
             # Add xml tag to xml
