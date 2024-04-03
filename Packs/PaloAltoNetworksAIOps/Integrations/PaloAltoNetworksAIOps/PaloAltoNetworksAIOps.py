@@ -316,16 +316,12 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     show_in_context = argToBoolean(args.get('show_in_context', False))
     # Get info about device - system info
     system_info_xml = client.get_info_about_device_request()
-    config_file = None
-    # Get info configurations
-    if not config_file_from_user:
-        config_file = client.get_config_file_request()
-
     tags = ['family', 'model', 'serial', 'sw-version']
     xml_tags_values = get_values_from_xml(system_info_xml, tags)
     if config_file_from_user:
         config_in_binary = convert_config_to_bytes(config_file_from_user, 'User')
-    elif config_file:
+     # Get info configurations and convert to format if user didn't upload a config file
+    elif config_file:=client.get_config_file_request():
         config_in_binary = convert_config_to_bytes(config_file, 'Download')
     else:
         raise DemistoException("Can not upload a config file since it was not provided.")
