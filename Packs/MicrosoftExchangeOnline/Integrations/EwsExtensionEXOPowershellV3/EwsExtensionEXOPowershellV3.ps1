@@ -1600,7 +1600,7 @@ function ListRulesCommand {
     }
     else{
         $parsed_raw_response = ParseRawResponse $raw_response
-        $md_columns = $raw_response | Select-Object -Property Identity, Name, Enabled, Priority, "RuleIdentity"
+        $md_columns = $raw_response | Select-Object -Property Identity, Name, Enabled, Priority, RuleIdentity
         $human_readable = TableToMarkdown $md_columns "Results of $command"
         $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule(obj.RuleIdentity === val.RuleIdentity)" = $parsed_raw_response }
         Write-Output $human_readable, $entry_context, $parsed_raw_response
