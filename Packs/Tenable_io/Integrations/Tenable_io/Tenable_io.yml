@@ -794,7 +794,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      required: true
+      required: false
     polling: true
     description: Retrieves details for the specified asset to include custom attributes.
     name: tenable-io-export-vulnerabilities
