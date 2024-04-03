@@ -17,7 +17,7 @@ function hasDuplicates(arr) {
  * @param {Array<string>} keys - An array of keys to delete.
  * @returns {string} A message summarizing the outcome of the delete operation.
  */
-function deleteKeys(keysToDelete) {
+function deleteKeys(keysToDelete, keysToKeep) {
     var deletedKeys = []
     var errors = []
     var message = "";
@@ -33,7 +33,9 @@ function deleteKeys(keysToDelete) {
         if (!result || result.type === entryTypes.error) {
             errors.push(result.Contents);
         } else {
-            deletedKeys.push(key);
+            if (!keysToKeep.includes(key) {
+                deletedKeys.push(key);
+            }
         }
     }
     if (deletedKeys.length > 0) {
@@ -94,7 +96,7 @@ if (shouldDeleteAll) {
     }
     var keysToDelete = Object.keys(invContext);
 
-    var message = deleteKeys(keysToDelete, isSubPlaybookKey)
+    var message = deleteKeys(keysToDelete, keysToKeep)
 
     return {
         Type: entryTypes.note,
