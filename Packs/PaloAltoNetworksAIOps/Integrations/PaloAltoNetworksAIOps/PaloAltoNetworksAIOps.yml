@@ -47,8 +47,8 @@ script:
     arguments:
     - name: entry_id
       description: |-
-        - Entry_id from xsoar war-room after uploading a file - should be a config file in xml format.
-        - If you used this argument and the process failed or reached time out- make sure the config file is in format.
+        - Entry_id from Cortex XSOAR War Room after uploading a file - should be a config file in xml format.
+        - If you used this argument and the process failed or reached a timeout, make sure the config file is in xml format.
     - name: requester_email
       required: true
       description: Requester email.
@@ -64,14 +64,14 @@ script:
       defaultValue: "600"
     - name: export_as_file
       auto: PREDEFINED
-      description: Export the generated report as a file.
+      description: Whether to export the generated report as a file.
       defaultValue: true
       predefined: 
       - 'true'
       - 'false'
     - name: show_in_context
       auto: PREDEFINED
-      description: Show the report data inside the context.
+      description: Whether to show the report data inside the context.
       defaultValue: false
       predefined: 
       - 'true'
@@ -79,9 +79,9 @@ script:
     description: |- 
       Generates a bpa report. Steps - 
       - Get information about Pan-OS/Panorama device.
-      - Get configuration file of Pan-OS/Panorama, if the user provides an entry_id to a config file this steps is skipped.
-      - Use the two above in order to generate a bpa report.
-      - During this process the API generates also a report_id for internal use.
+      - Get configuration file of Pan-OS/Panorama. If the user provided an entry_id to a config file this step is skipped.
+      - Use the information retrieved above to generate a BPA report.
+      - During this process the API also generates a report_id for internal use.
     polling: true
   - name: aiops-polling-upload-report
     arguments:
@@ -89,17 +89,17 @@ script:
       description: Report_id recieved from generate_bpa_report_request.
       required: true
     - name: hide_polling_output
-      description: Hide polling output from war-room.
+      description: Whether to hide polling output from the War Room.
       required: true
       defaultValue: true
     - name: export_as_file
-      description: Export the generated report as a file.
+      description: Whether to export the generated report as a file.
       defaultValue: true
     - name: show_in_context
-      description: Show the report data inside the context.
+      description: Whether to show the report data inside the context.
       defaultValue: false
     - name: first_round
-      description: Does this polling round is the first round.
+      description: Whether this polling round is the first round.
       defaultValue: false
     description: Polling mechanism to upload report.
     polling: true
