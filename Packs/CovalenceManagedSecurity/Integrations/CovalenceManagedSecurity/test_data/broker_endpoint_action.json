@@ -1,0 +1,6 @@
+{
+    "host_identifier": "test-host-identifier-string",
+    "agent_uuid": "4eec8641-80b1-410e-8b76-a7f33dad0b58",
+    "covalence_appliance": "test-appliance",
+    "task_id": 1
+}
