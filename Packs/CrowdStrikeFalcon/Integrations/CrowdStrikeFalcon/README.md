@@ -6813,3 +6813,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Mobile Detection(s) id_1, id_2 were successfully updated
+
+### Troubleshooting
+When encountering connectivity or authorization errors within XSOAR 8, 
+it necessary to include the IP corresponding to the relevant region into the CrowdStrike Falcon whitelist.
