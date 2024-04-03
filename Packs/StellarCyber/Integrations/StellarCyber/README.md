@@ -1,5 +1,5 @@
 Fetches and mirrors in Cases from Stellar Cyber to XSOAR. In addition, provides a command to update Case severity/status/assignee/tags, and a command to query an Alert.
-This integration was integrated and tested with version xx of StellarCyber.
+This integration was integrated and tested with version >= 4.3.7/5.0.4 of StellarCyber.
 
 ## Configure Stellar Cyber on Cortex XSOAR
 

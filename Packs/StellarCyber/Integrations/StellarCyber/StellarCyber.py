@@ -1,5 +1,5 @@
-"""Stellar Cyber Integration for Cortex XSOAR (aka Demisto)
-"""
+"""Stellar Cyber Integration for Cortex XSOAR (aka Demisto)"""
+
 import demistomock as demisto
 from CommonServerUserPython import *
 from CommonServerPython import *
@@ -8,7 +8,8 @@ import dateparser
 import json
 import urllib3
 import base64
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -20,6 +21,7 @@ urllib3.disable_warnings()
 
 """ CLIENT CLASS """
 
+
 class AccessToken:
     def __init__(self, token: str, expiration: int):
         self._expiration = expiration
@@ -30,7 +32,7 @@ class AccessToken:
 
     @property
     def expired(self) -> bool:
-        return self._expiration < int(datetime.utcnow().timestamp())
+        return self._expiration < int(datetime.now(timezone.utc).timestamp())
 
 
 class Client(BaseClient):
@@ -42,7 +44,7 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def __init__(self, dp_host: str, username: str, password: str, verify: bool, proxy, tenantid):
+    def __init__(self, dp_host: str, username: str, password: str, verify: bool, proxy: bool, tenantid: str | None):
         self.dp_host = dp_host
         super().__init__(base_url=f"https://{dp_host}", verify=verify, proxy=proxy)
         self._tenantid = tenantid
@@ -73,16 +75,14 @@ class Client(BaseClient):
         incident_url = f"https://{self.dp_host}/connect/api/data/aella-ser-*/_search?q=fidelity:<0"
         headers = {"Accept": "application/json", "Content-type": "application/json"}
         headers["Authorization"] = self._get_auth_header()
-        response = self._http_request(method="GET", full_url=incident_url, headers=headers)
+        self._http_request(method="GET", full_url=incident_url, headers=headers)
         return True
 
     def get_new_incidents(self, last_run: int, limit: int):
         if self._tenantid:
-            incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?tenantid={self._tenantid}&FROM~created_at={last_run}&sort=created_at&order=asc&limit={limit}"
+            incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?tenantid={self._tenantid}&FROM~created_at={last_run}&sort=created_at&order=asc&limit={limit}"  # noqa: E501
         else:
-            # incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?FROM~modified_at={last_run}&sort=modified_at&order=asc"
-            incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?FROM~created_at={last_run}&sort=created_at&order=asc&limit={limit}"
-
+            incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?FROM~created_at={last_run}&sort=created_at&order=asc&limit={limit}"  # noqa: E501
         headers = {"Accept": "application/json", "Content-type": "application/json"}
         headers["Authorization"] = self._get_auth_header()
         response = self._http_request(method="GET", full_url=incident_url, headers=headers)
@@ -90,21 +90,16 @@ class Client(BaseClient):
 
     def get_updated_incidents(self, last_run: int):
         if self._tenantid:
-            incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?tenantid={self._tenantid}&FROM~modified_at={last_run}&sort=modified_at&order=asc"
+            incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?tenantid={self._tenantid}&FROM~modified_at={last_run}&sort=modified_at&order=asc"  # noqa: E501
         else:
             incident_url = (
                 f"https://{self.dp_host}/connect/api/v1/incidents?FROM~modified_at={last_run}&sort=modified_at&order=asc"
             )
-
         headers = {"Accept": "application/json", "Content-type": "application/json"}
         headers["Authorization"] = self._get_auth_header()
         response = self._http_request(method="GET", full_url=incident_url, headers=headers)
         response_incidents = response["data"].get("incidents", [])
-        updated_incidents = [
-            incident
-            for incident in response_incidents
-            if incident["created_at"] < incident["modified_at"]
-        ]
+        updated_incidents = [incident for incident in response_incidents if incident["created_at"] < incident["modified_at"]]
         return updated_incidents
 
     def get_incident(self, remote_ticket_id: str):
@@ -133,7 +128,7 @@ class Client(BaseClient):
         headers["Authorization"] = self._get_auth_header()
         response = self._http_request(method="GET", full_url=alert_url, headers=headers)
         hits = response.get("hits", None).get("hits", None)
-        timed_out = response.get("timed_out", False)
+        # timed_out = response.get("timed_out", False)
         if hits:
             hit = hits[0].get("_source", None)
             alert_index = hits[0].get("_index", "")
@@ -146,10 +141,10 @@ class Client(BaseClient):
         case_severity=None,
         case_status=None,
         case_assignee=None,
-        case_tags_add=[],
-        case_tags_remove=[],
+        case_tags_add: list = [],
+        case_tags_remove: list = [],
     ):
-        update_data = {}
+        update_data: Dict[str, Any] = {}
         if case_severity:
             update_data["priority"] = str(case_severity)
         if case_status:
@@ -157,18 +152,19 @@ class Client(BaseClient):
         if case_assignee:
             update_data["assignee"] = str(case_assignee)
         if len(case_tags_add) or len(case_tags_remove):
-            update_data["tags"] = {}
             if len(case_tags_add):
-                update_data["tags"]["add"] = case_tags_add
+                update_data.update({"tags": {"add": case_tags_add}})
             if len(case_tags_remove):
-                update_data["tags"]["delete"] = case_tags_remove
+                update_data.update({"tags": {"add": case_tags_add}})
         incident_url = f"https://{self.dp_host}/connect/api/v1/incidents?id={case_id}"
         headers = {"Accept": "application/json", "Content-type": "application/json"}
         headers["Authorization"] = self._get_auth_header()
         response = self._http_request(method="POST", full_url=incident_url, headers=headers, json_data=update_data)
         return response["data"]
 
+
 """ HELPER FUNCTIONS """
+
 
 def get_xsoar_severity(severity):
     sev_map = {"Low": 1, "Medium": 2, "High": 3, "Critical": 4}
@@ -212,7 +208,9 @@ def demisto_alert_normalization(alert, alert_id, alert_index, dp_host):
 
     return ret_alert
 
+
 """ COMMAND FUNCTIONS """
+
 
 def fetch_incidents(client: Client, params: dict) -> list[dict]:
     """
@@ -229,7 +227,7 @@ def fetch_incidents(client: Client, params: dict) -> list[dict]:
     mirror_direction = params.get("mirror_direction", "None")
     # new_last_fetch = int(datetime.utcnow().timestamp() * 1000)
     if not last_fetch:
-        first_fetch = dateparser.parse(first_fetch_time, settings={'TIMEZONE': 'UTC'})
+        first_fetch = dateparser.parse(first_fetch_time, settings={"TIMEZONE": "UTC"})
         assert first_fetch is not None
         last_fetch = int(first_fetch.timestamp() * 1000)
     else:
@@ -244,10 +242,10 @@ def fetch_incidents(client: Client, params: dict) -> list[dict]:
         incident_id = incident["_id"]
         incident["case_url"] = f"https://{client.dp_host}/cases/case-detail/{incident_id}"
         incident_ticket_id = str(incident["ticket_id"])
-        if len(incident['metadata'].get('name_auto', [])):
-            incident_name = incident['metadata']['name_auto'][0]
+        if len(incident["metadata"].get("name_auto", [])):
+            incident_name = incident["metadata"]["name_auto"][0]
         else:
-            incident_name = incident['name']
+            incident_name = incident["name"]
         incident["name"] = incident_name
         incident_ts = incident["created_at"]
         if last_fetch < incident_ts:
@@ -259,7 +257,7 @@ def fetch_incidents(client: Client, params: dict) -> list[dict]:
         for event in event_ids:
             incident["security_alerts"].append(client.get_alert(alert_id=event["_id"], alert_index=event["_index"]))
         case_severity = get_xsoar_severity(incident["priority"])
-        case_mirror_id = f"{str(incident['ticket_id'])}:{incident['cust_id']}"
+        case_mirror_id = f"{incident_ticket_id}:{incident['cust_id']}"
         case_mirror_direction = None
         if mirror_direction == "Incoming":
             case_mirror_direction = "In"
@@ -268,10 +266,7 @@ def fetch_incidents(client: Client, params: dict) -> list[dict]:
         incident["mirror_direction"] = case_mirror_direction
         incident["mirror_instance"] = demisto.integrationInstance()
         if case_mirror_id not in last_incident_ids:
-            demisto_incident = {
-                "occurred": timestamp_to_datestring(incident_ts),
-                "rawJSON": json.dumps(incident)
-            }
+            demisto_incident = {"occurred": timestamp_to_datestring(incident_ts), "rawJSON": json.dumps(incident)}
             demisto_incidents.append(demisto_incident)
             incident_ids.append(case_mirror_id)
     if len(incident_ids) == 0:
@@ -293,14 +288,10 @@ def get_alert_command(client: Client, args: dict) -> CommandResults:
     Raises:
         Exception: If there is an issue with retrieving the alert.
     """
-    alert_id = args.get("alert_id", None)
+    alert_id = args.get("alert_id", "")
     demisto.info(f"Getting alert: {alert_id}")
     hit = client.get_alert(alert_id, "aella-ser-*")
-    return CommandResults(
-        outputs_prefix='StellarCyber.Alert',
-        outputs_key_field='alert_id',
-        outputs=[hit]
-    )
+    return CommandResults(outputs_prefix="StellarCyber.Alert", outputs_key_field="alert_id", outputs=[hit])
 
 
 def test_module_command(client: Client) -> str:
@@ -312,31 +303,24 @@ def test_module_command(client: Client) -> str:
     except Exception as e:
         return f"Test failed with the following error: {repr(e)}"
 
+
 def update_case_command(client: Client, args: dict) -> CommandResults:
-    case_id = args.get("stellar_case_id", None)
-    case_severity = args.get("stellar_case_severity", None)
-    case_status = args.get("stellar_case_status", None)
-    case_assignee = args.get("stellar_case_assignee", None)
+    case_id = args.get("stellar_case_id")
+    case_severity = args.get("stellar_case_severity")
+    case_status = args.get("stellar_case_status")
+    case_assignee = args.get("stellar_case_assignee")
     case_tags_add = args.get("stellar_case_tags_add", [])
     case_tags_remove = args.get("stellar_case_tags_remove", [])
     if not (case_severity or case_status or case_assignee or len(case_tags_add) or len(case_tags_remove)):
         raise Exception(f"No values to update for stellar case with id: [{case_id}]")
     demisto.info(f"Updating stellar case with id: [{case_id}]")
-    response = client.update_case(
-        case_id, case_severity, case_status, case_assignee, case_tags_add, case_tags_remove
-    )
-    return CommandResults(
-        outputs_prefix="StellarCyber.Case.Update",
-        outputs_key_field="_id",
-        outputs=response
-    )
+    response = client.update_case(case_id, case_severity, case_status, case_assignee, case_tags_add, case_tags_remove)
+    return CommandResults(outputs_prefix="StellarCyber.Case.Update", outputs_key_field="_id", outputs=response)
 
 
-def get_remote_data_command(client: Client, args) -> GetRemoteDataResponse | str | None:
-    demisto.debug(f"get_remote_data_command: {args}")
-    parsed_args = GetRemoteDataArgs(args)
-    demisto.debug(f"parsed_args: {parsed_args}")
+def get_remote_data_command(client: Client, args) -> GetRemoteDataResponse | str:
     try:
+        parsed_args = GetRemoteDataArgs(args)
         remote_incident_id = parsed_args.remote_incident_id
         incident = client.get_incident(remote_incident_id)
         if len(incident):
@@ -344,19 +328,17 @@ def get_remote_data_command(client: Client, args) -> GetRemoteDataResponse | str
             incident["case_url"] = f"https://{client.dp_host}/cases/case-detail/{incident_id}"
             incident_ticket_id = str(incident["ticket_id"])
             demisto.info(f"Retrieved case: {str(incident['ticket_id'])}")
-            if len(incident['metadata'].get('name_auto', [])):
-                incident_name = incident['metadata']['name_auto'][0]
+            if len(incident["metadata"].get("name_auto", [])):
+                incident_name = incident["metadata"]["name_auto"][0]
             else:
-                incident_name = incident['name']
+                incident_name = incident["name"]
             incident["name"] = incident_name
             incident_summary = client.get_incident_summary(incident_id)
             incident["summary"] = incident_summary
             event_ids = incident.get("event_ids", None)
             security_event_cnt = len(event_ids)
             demisto.info(
-                "Pulling security event info for case: [{}] [ticket id: {}] [event_cnt: [{}]".format(
-                    incident_id, incident_ticket_id, security_event_cnt
-                )
+                f"Pulling security event info for case: [{incident_id}] [ticket id: {incident_ticket_id}] [event_cnt: [{security_event_cnt}]"  # noqa: E501
             )
             incident["security_alerts"] = []
             for event in event_ids:
@@ -364,31 +346,35 @@ def get_remote_data_command(client: Client, args) -> GetRemoteDataResponse | str
             incident["severity"] = get_xsoar_severity(incident["priority"])
             return GetRemoteDataResponse(mirrored_object=incident, entries=[])
         else:
-            return_error(f"Failed to retrieve case: {str(incident['ticket_id'])}")
+            return f"Failed to retrieve case: {str(incident['ticket_id'])}"
     except Exception as e:
         if "Rate limit exceeded" in str(e):
-            return_error("API rate limit")
+            return "API rate limit"
+        else:
+            return f"Failed to update case with error: {str(e)}"
 
 
-def get_modified_remote_data_command(client: Client, args) -> GetModifiedRemoteDataResponse:
-    remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = remote_args.last_update
-    demisto.debug(f"last_update: {last_update}")
-    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # type: ignore
-    demisto.debug(f"last_update_utc: {last_update_utc}")
-    assert last_update_utc is not None
-    last_run_ts = int((last_update_utc - timedelta(minutes=1)).timestamp() * 1000)
-    modified_incidents = client.get_updated_incidents(last_run=last_run_ts)
-    if len(modified_incidents):
-        modified_incident_ids = [
-            f"{str(i['ticket_id'])}:{i['cust_id']}"
-            for i in modified_incidents
-        ]
-    else:
-        modified_incident_ids = []
-    return GetModifiedRemoteDataResponse(modified_incident_ids)
+def get_modified_remote_data_command(client: Client, args) -> GetModifiedRemoteDataResponse | str:
+    try:
+        remote_args = GetModifiedRemoteDataArgs(args)
+        last_update = remote_args.last_update
+        demisto.debug(f"last_update: {last_update}")
+        last_update_utc = dateparser.parse(last_update, settings={"TIMEZONE": "UTC"})  # type: ignore
+        demisto.debug(f"last_update_utc: {last_update_utc}")
+        assert last_update_utc is not None
+        last_run_ts = int((last_update_utc - timedelta(minutes=1)).timestamp() * 1000)
+        modified_incidents = client.get_updated_incidents(last_run=last_run_ts)
+        if len(modified_incidents):
+            modified_incident_ids = [f"{str(i['ticket_id'])}:{i['cust_id']}" for i in modified_incidents]
+        else:
+            modified_incident_ids = []
+        return GetModifiedRemoteDataResponse(modified_incident_ids)
+    except Exception:
+        return "No Results, skip update"
+
 
 """ MAIN FUNCTION """
+
 
 def main() -> None:
     """
@@ -407,7 +393,7 @@ def main() -> None:
             password=_ALERT_API_TOKEN_,
             verify=_VALIDATE_CERT_,
             proxy=_PROXY_,
-            tenantid=_TENANTID_
+            tenantid=_TENANTID_,
         )
         if demisto.command() == "test-module":
             result = test_module_command(client)
@@ -426,6 +412,7 @@ def main() -> None:
 
     except Exception as e:
         return_error(str(e))
+
 
 """ ENTRY POINT """
 
