@@ -1783,10 +1783,9 @@ def policy_resolve_command(client: Client, args: dict[str, str]) -> CommandResul
             policy_resolved_resp,
         'GSuite(true)': {'PolicyNextToken': page_token}
     }
-    a= CommandResults(outputs=outputs,
+    return CommandResults(outputs=outputs,
                           readable_output=readable_output,
                           raw_response=response)
-    return a
 
 def assign_params_policy_schemas(filter, page_size, page_token):
     return GSuiteClient.remove_empty_entities({
