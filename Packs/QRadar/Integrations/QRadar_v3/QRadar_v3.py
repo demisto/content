@@ -704,10 +704,10 @@ class Client(BaseClient):
         )
 
     def reference_set_value_delete(self, ref_name: str, value: str):
-        parse_value = parse.quote(parse.quote(value, safe=""), safe="")
+        double_encoded_value = parse.quote(parse.quote(value, safe=""), safe="")
         return self.http_request(
             method='DELETE',
-            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}/{parse_value}'
+            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}/{double_encoded_value}'
         )
 
     def domains_list(self, domain_id: Optional[int] = None, range_: Optional[str] = None, filter_: Optional[str] = None,
