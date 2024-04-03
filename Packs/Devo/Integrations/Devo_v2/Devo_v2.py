@@ -205,9 +205,12 @@ def get_types(self, linq_query, start):
 
     try:
         data = json.loads(response)
+        if data.get("status", 1) != 0:
+            raise ValueError("success value is set as false in response.")
+
         object_data = data.get("object", [])
-    except ValueError:
-        raise Exception("API V2 response error")
+    except ValueError as error:
+        raise Exception("Error while fetching data : ", error)
 
     type_dict = {}
     for obj in object_data:
@@ -251,6 +254,8 @@ def check_configuration():
                          dates={'from': int(time.time() - 1), 'to': int(time.time())}
                          )
 
+    if json.loads(response).get("status", 1) != 0:
+        return False
     demisto.debug("check_configuration output:")
     demisto.debug((json.loads(response)).get("object", []))
 
@@ -812,12 +817,6 @@ def multi_table_query_command(offset, items):
                  address=READER_ENDPOINT,
                  config=ClientConfig(response="json", stream=False))
 
-    # ds_read = ds.Reader(
-    #     oauth_token=READER_OAUTH_TOKEN,
-    #     end_point=READER_ENDPOINT,
-    #     verify=not ALLOW_INSECURE,
-    #     timeout=query_timeout,
-    # )
     api.get_types = partial(get_types, api)
 
     for table in tables_to_query:
