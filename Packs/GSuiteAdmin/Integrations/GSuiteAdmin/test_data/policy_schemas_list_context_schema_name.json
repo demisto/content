@@ -3,13 +3,14 @@
     "ignore_auto_extract": "False",
     "mark_as_note": "False",
     "outputs":
-    [
-        {
-            "name": "customers/test/policySchemas/chrome.users.appsconfig.AllowedAppTypes",
-            "policyDescription": "Allowed types of apps and extensions.",
-            "definition":
+    {
+        "GSuite.Policy(val.name && val.name == obj.name)":
+        [
             {
-                "messageType":
+                "name": "customers/test/policySchemas/chrome.users.appsconfig.AllowedAppTypes",
+                "policyDescription": "Allowed types of apps and extensions.",
+                "definition":
+                {"messageType":
                 [
                     {
                         "name": "AllowedAppTypes",
@@ -24,71 +25,62 @@
                         ]
                     }
                 ]
-            },
-            "fieldDescriptions":
-            [
+                },
+                "fieldDescriptions":
+                [
+                    {
+                        "field": "extensionAllowedTypes",
+                        "description": "Allows an admin to control what kinds of things (extensions, themes, etc.) from the Chrome Web Store that a managed Chrome user can install.",
+                        "knownValueDescriptions":
+                        [
+                            {
+                                "value": "extension",
+                                "description": "Extension."
+                            },
+                            {
+                                "value": "theme",
+                                "description": "Theme."
+                            },
+                            {
+                                "value": "user_script",
+                                "description": "Google Apps Script."
+                            },
+                            {
+                                "value": "hosted_app",
+                                "description": "Hosted app."
+                            },
+                            {
+                                "value": "legacy_packaged_app",
+                                "description": "Legacy packaged app."
+                            },
+                            {
+                                "value": "platform_app",
+                                "description": "Chrome packaged app."
+                            }
+                        ],
+                        "defaultValue":
+                        ["extension", "theme", "user_script", "hosted_app", "legacy_packaged_app", "platform_app"],
+                        "fieldDescription": "Allows an admin to control what kinds of things (extensions, themes, etc.) from the Chrome Web Store that a managed Chrome user can install.",
+                        "fieldConstraints": {}
+                    }
+                ],
+                "supportUri": "https://support.google.com/chrome/a/answer/1111",
+                "schemaName": "chrome.users.appsconfig.AllowedAppTypes",
+                "validTargetResources": ["ORG_UNIT"],
+                "policyApiLifecycle":
                 {
-                    "field": "extensionAllowedTypes",
-                    "description": "Allows an admin to control what kinds of things (extensions, themes, etc.) from the Chrome Web Store that a managed Chrome user can install.",
-                    "knownValueDescriptions":
-                    [
-                        {
-                            "value": "extension",
-                            "description": "Extension."
-                        },
-                        {
-                            "value": "theme",
-                            "description": "Theme."
-                        },
-                        {
-                            "value": "user_script",
-                            "description": "Google Apps Script."
-                        },
-                        {
-                            "value": "hosted_app",
-                            "description": "Hosted app."
-                        },
-                        {
-                            "value": "legacy_packaged_app",
-                            "description": "Legacy packaged app."
-                        },
-                        {
-                            "value": "platform_app",
-                            "description": "Chrome packaged app."
-                        }
-                    ],
-                    "defaultValue":
-                    [
-                        "extension",
-                        "theme",
-                        "user_script",
-                        "hosted_app",
-                        "legacy_packaged_app",
-                        "platform_app"
-                    ],
-                    "fieldDescription": "Allows an admin to control what kinds of things (extensions, themes, etc.) from the Chrome Web Store that a managed Chrome user can install.",
-                    "fieldConstraints": {}
-                }
-            ],
-            "supportUri": "https://support.google.com/chrome/a/answer/1111",
-            "schemaName": "chrome.users.appsconfig.AllowedAppTypes",
-            "validTargetResources": ["ORG_UNIT"],
-            "policyApiLifecycle":
-            {
-                "policyApiLifecycleStage": "API_CURRENT"
-            },
-            "categoryTitle": "Additional app settings",
-            "supportedPlatforms":
-            [
-                "CHROME_BROWSER",
-                "CHROME_OS"
-            ]
+                    "policyApiLifecycleStage": "API_CURRENT"
+                },
+                "categoryTitle": "Additional app settings",
+                "supportedPlatforms":
+                ["CHROME_BROWSER", "CHROME_OS"]
+            }
+        ],
+        "GSuite(true)":
+        {
+            "PolicySchemasNextToken": ""
         }
-    ],
-    "outputs_key_field": [
-        "name"
-    ],
-    "outputs_prefix": "GSuite.PolicySchema",
+    },
     "raw_response":
     {
         "name": "customers/test/policySchemas/chrome.users.appsconfig.AllowedAppTypes",

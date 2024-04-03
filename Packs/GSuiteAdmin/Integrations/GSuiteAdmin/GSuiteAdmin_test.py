@@ -1281,8 +1281,6 @@ def test_chromebrowser_list_command_multiple_limits(gsuite_client, mocker, args)
     assert command_result.readable_output == expected_entry_context['readable_output']
     assert command_result.outputs == expected_entry_context['outputs']
     assert command_result.raw_response == expected_entry_context['raw_response']
-    assert command_result.outputs_key_field == ['deviceId']
-    assert command_result.outputs_prefix == 'GSuite.ChromeBrowserDevices'
 
 
 def test_chromebrowser_list_command_device_id(gsuite_client, mocker):
@@ -1309,8 +1307,6 @@ def test_chromebrowser_list_command_device_id(gsuite_client, mocker):
     assert command_result.readable_output == expected_entry_context['readable_output']
     assert command_result.outputs == expected_entry_context['outputs']
     assert command_result.raw_response == expected_entry_context['raw_response']
-    assert command_result.outputs_key_field == ['deviceId']
-    assert command_result.outputs_prefix == 'GSuite.ChromeBrowserDevices'
 
 
 def test_modify_policy_command(gsuite_client, mocker):
@@ -1380,18 +1376,16 @@ def test_policy_schemas_command(gsuite_client, mocker, args):
         Then:
         - Ensure no error returns
     """
-    from GSuiteAdmin import policy_schemas_command
+    from GSuiteAdmin import policy_schemas_list_command
     with open('test_data/policy_schemas_list_reponse.json') as file:
         api_response = json.load(file)
     with open('test_data/policy_schemas_list_context.json') as file:
         expected_entry_context = json.load(file)
     mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
-    command_result = policy_schemas_command(gsuite_client, args)
+    command_result = policy_schemas_list_command(gsuite_client, args)
     assert command_result.readable_output == expected_entry_context['readable_output']
     assert command_result.outputs == expected_entry_context['outputs']
     assert command_result.raw_response == expected_entry_context['raw_response']
-    assert command_result.outputs_key_field == ['name']
-    assert command_result.outputs_prefix == 'GSuite.PolicySchema'
 
 
 def test_policy_schemas_command_schema_name(gsuite_client, mocker):
@@ -1407,19 +1401,17 @@ def test_policy_schemas_command_schema_name(gsuite_client, mocker):
         Then:
         - Ensure no error returns
     """
-    from GSuiteAdmin import policy_schemas_command
+    from GSuiteAdmin import policy_schemas_list_command
     args = {"customer_id": "test", "schema_name": "chrome.users.appsconfig.AllowedAppTypes"}
     with open('test_data/policy_schemas_list_reponse_schema_name.json') as file:
         api_response = json.load(file)
     with open('test_data/policy_schemas_list_context_schema_name.json') as file:
         expected_entry_context = json.load(file)
     mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
-    command_result = policy_schemas_command(gsuite_client, args)
+    command_result = policy_schemas_list_command(gsuite_client, args)
     assert command_result.readable_output == expected_entry_context['readable_output']
     assert command_result.outputs == expected_entry_context['outputs']
     assert command_result.raw_response == expected_entry_context['raw_response']
-    assert command_result.outputs_key_field == ['name']
-    assert command_result.outputs_prefix == 'GSuite.PolicySchema'
 
 
 @pytest.mark.parametrize(
@@ -1452,8 +1444,6 @@ def test_policy_resolve_command(gsuite_client, mocker, args):
     assert command_result.readable_output == expected_entry_context['readable_output']
     assert command_result.outputs == expected_entry_context['outputs']
     assert command_result.raw_response == expected_entry_context['raw_response']
-    assert command_result.outputs_key_field == ['deviceId']
-    assert command_result.outputs_prefix == 'GSuite.Policy'
 
 
 def test_group_delete_command(gsuite_client, mocker):

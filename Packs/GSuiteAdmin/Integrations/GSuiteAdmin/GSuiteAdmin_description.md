@@ -7,7 +7,7 @@ Provide at least one of the scopes mentioned for each command.
 ### Commands and its scopes
 * gsuite-user-create, gsuite-user-update, and gsuite-user-delete
 	* https://www.googleapis.com/auth/admin.directory.user  
-* gsuite-user-get
+* gsuite-user-get, gsuite-user-reset-password
 	* https://www.googleapis.com/auth/admin.directory.user
 * gsuite-mobile-update 
 	* https://www.googleapis.com/auth/admin.directory.device.mobile.action
@@ -46,7 +46,10 @@ Provide at least one of the scopes mentioned for each command.
 	* https://www.googleapis.com/auth/admin.directory.device.chromeos
 * gsuite-chromeosdevice-list
 	* https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly
-
+* gsuite-chromebrowserdevice-move-ou, gsuite-chromebrowserdevice-list
+  * https://www.googleapis.com/auth/admin.directory.device.chromebrowsers
+* gsuite-policy-modify, gsuite-policy-schemas-list, gsuite-policy-resolve and gsuite-policy-groups-delete
+  * https://www.googleapis.com/auth/chrome.management.policy
 
 To execute the command either provide the value of the Admin email in the integration configuration or provide the value of the *admin_email* argument for the command or provide the admin role to the created service account's email by performing the following steps:
 

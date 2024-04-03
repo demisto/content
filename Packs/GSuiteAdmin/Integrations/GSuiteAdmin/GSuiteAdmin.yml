@@ -2566,7 +2566,7 @@ script:
       - description: The unique identifier of the customer's Google account.
         name: customer_id
         required: true
-      - description: A comma-separated list of unique device IDs of Chrome browser devices to move. A maximum of 600 browsers may be moved per request.
+      - description: A comma-separated list of unique device IDs of Chrome browser devices to move. A maximum of 600 browsers may be moved per request. To get resource_id, please use gsuite-chromebrowserdevice-list command.
         name: resource_ids
         isArray: true
         required: true
@@ -2627,44 +2627,47 @@ script:
         name: page_token
       - description: Limit of number of devices. Default is 100.
         name: limit
-        defaultValue: '100'
+        defaultValue: '50'
     description: Retrieve all Chrome browser devices for an account or a specific Chrome browser device.
     name: gsuite-chromebrowserdevice-list
     outputs:
-      - contextPath: GSuite.ChromeBrowserDevices.deviceId
+      - contextPath: GSuite.ChromeBrowserDevices.nextPageToken
+        description: The token of the next page.
+        type: String
+      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.deviceId
         description: The unique Device ID for the device.
         type: String
-      - contextPath: GSuite.ChromeBrowserDevices.kind
+      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.kind
         description: The type of device.
         type: String
-      - contextPath: GSuite.ChromeBrowserDevices.osPlatform
+      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.osPlatform
         description: operating system platform.
         type: String
-      - contextPath: GSuite.ChromeBrowserDevices.osVersion
+      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.osVersion
         description: Device operating system version.
         type: String
-      - contextPath: GSuite.ChromeBrowserDevices.machineName
+      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.machineName
         description: Device machine name.
         type: String
-      - contextPath: GSuite.ChromeBrowserDevices.lastRegistrationTime
+      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.lastRegistrationTime
         description: Device last registration time.
         type: String
-      - contextPath: GSuite.ChromeBrowserDevices.lastActivityTime
+      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.lastActivityTime
         description: Device last activity time.
         type: String
-      - contextPath: GSuite.ChromeBrowserDevices.osPlatformVersion
+      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.osPlatformVersion
         description: Device operating system platform version.
         type: String
-      - contextPath: GSuite.ChromeBrowserDevices.serialNumber
+      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.serialNumber
         description: Device serial number.
         type: String
-      - contextPath: GSuite.ChromeBrowserDevices.virtualDeviceId
+      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.virtualDeviceId
         description: Device virtual ID.
         type: String
-      - contextPath: GSuite.ChromeBrowserDevices.orgUnitPath
+      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.orgUnitPath
         description: Device organizational unit path.
         type: String
-      - contextPath: GSuite.ChromeBrowserDevices.deviceIdentifiersHistory
+      - contextPath: GSuite.ChromeBrowserDevices.browserObjects.deviceIdentifiersHistory
         description: Device identifier history.
         type: String
   - arguments:
@@ -2736,45 +2739,84 @@ script:
         name: filter
       - description: The maximum number of policy schemas to return. Defaults to 100 and has a maximum of 1000.
         name: page_size
-        defaultValue: 100
       - description: Page token.
         name: page_token
       - description: Limit of policies returned.
         name: limit
+        defaultValue: '50'
     description: Gets a list of policy schemas that match a specified filter value for a given customer.
     name: gsuite-policy-schemas-list
     outputs:
-      - contextPath: GSuite.PolicySchema.name
+      - contextPath: GSuite.PolicySchema.nextPageToken
+        description: The token of the next page.
+        type: String
+      - contextPath: GSuite.PolicySchema.policySchemaObjects
+        description: A list of policy schemas objects.
+        type: List
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.name
         description: Policy name.
         type: String
-      - contextPath: GSuite.PolicySchema.policyDescription
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.policyDescription
         description: Policy description.
         type: String
-      - contextPath: GSuite.PolicySchema.definition
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.definition
         description: Policy definition.
         type: Array
-      - contextPath: GSuite.PolicySchema.fieldDescriptions
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.definition.enumType
+        description: Policy definition ENUM type.
+        type: List
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.definition.messageType
+        description: Policy definition message type.
+        type: List
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions
         description: Policy file description.
         type: Array
-      - contextPath: GSuite.PolicySchema.notices
-        description: Policy notice.
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.description
+        description: Policy file object description.
+        type: String
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.field
+        description: Policy file description field.
+        type: String
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.fieldConstraints
+        description: Policy file description field constraints.
         type: Array
-      - contextPath: GSuite.PolicySchema.supportUri
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.knownValueDescriptions
+        description: Policy file description known value description.
+        type: List
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.notices
+        description: Policy notice.
+        type: List
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.notices.acknowledgementRequired
+        description: Policy notice is acknowledgement required.
+        type: Boolean
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.notices.field
+        description: Policy notice field.
+        type: String
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.notices.noticeMessage
+        description: Policy notice message.
+        type: String
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.notices.noticeValue
+        description: Policy notice value.
+        type: String
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.supportUri
         description: Policy support URI.
         type: String
-      - contextPath: GSuite.PolicySchema.schemaName
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.schemaName
         description: Policy schema name.
         type: String
-      - contextPath: GSuite.PolicySchema.validTargetResources
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.validTargetResources
         description: Policy valid target resources.
-        type: Array
-      - contextPath: GSuite.PolicySchema.policyApiLifecycle
+        type: List
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.policyApiLifecycle
         description: Policy API lifecycle.
+        type: Array
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.policyApiLifecycle.policyApiLifecycleStage
+        description: Policy API lifecycle stage.
         type: String
-      - contextPath: GSuite.PolicySchema.categoryTitle
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.categoryTitle
         description: Policy category title.
         type: String
-      - contextPath: GSuite.PolicySchema.supportedPlatforms
+      - contextPath: GSuite.PolicySchema.policySchemaObjects.supportedPlatforms
         description: Policy supported platforms.
         type: String
   - arguments:
@@ -2798,31 +2840,33 @@ script:
         name: additional_target_keys
       - description: The maximum number of policy schemas to return. Defaults to 100 and has a maximum of 1000.
         name: page_size
-        defaultValue: '100'
       - description: Page token.
         name: page_token
       - description: Limit of policies returned.
         name: limit
-        defaultValue: 100
+        defaultValue: '50'
     description: Gets the resolved policy values for a list of policies that match a search query.
     name: gsuite-policy-resolve
     outputs:
-      - contextPath: GSuite.Policy.targetKey.targetResource
+      - contextPath: GSuite.Policy.nextPageToken
+        description: The token of the next page.
+        type: String
+      - contextPath: GSuite.Policy.policyObject.targetKey.targetResource
         description: Policy target key target resource.
         type: String
-      - contextPath: GSuite.Policy.targetKey.additionalTargetKeys
+      - contextPath: GSuite.Policy.policyObject.targetKey.additionalTargetKeys
         description: Policy target key additional target keys.
         type: String
-      - contextPath: GSuite.Policy.value.policySchema
+      - contextPath: GSuite.Policy.policyObject.value.policySchema
         description: Policy schema value.
         type: String
-      - contextPath: GSuite.Policy.value.value
+      - contextPath: GSuite.Policy.policyObject.value.value
         description: Policy value.
         type: String
-      - contextPath: GSuite.Policy.sourceKey.targetResource
+      - contextPath: GSuite.Policy.policyObject.sourceKey.targetResource
         description: Policy source key target resource.
         type: String
-      - contextPath: GSuite.Policy.addedSourceKey.targetResource
+      - contextPath: GSuite.Policy.policyObject.addedSourceKey.targetResource
         description: Policy added source key target resource.
         type: String
   - arguments:
@@ -2847,7 +2891,6 @@ script:
             "policySchema": string
           }
         name: policy_field_json_entry_id
-        required: true
       - description: |-
           The target resource on which this policy is applied. The following resources are supported:
 

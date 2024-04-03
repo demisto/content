@@ -2121,18 +2121,19 @@ Retrieve all Chrome browser devices for an account or a specific Chrome browser 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GSuite.ChromeBrowserDevices.deviceId | String | The unique Device ID for the device. | 
-| GSuite.ChromeBrowserDevices.kind | String | The type of device. | 
-| GSuite.ChromeBrowserDevices.osPlatform | String | Device operating system platform. | 
-| GSuite.ChromeBrowserDevices.osVersion | String | Device operating system version. | 
-| GSuite.ChromeBrowserDevices.machineName | String | Device machine name. | 
-| GSuite.ChromeBrowserDevices.lastRegistrationTime | String | Device last registration time. | 
-| GSuite.ChromeBrowserDevices.lastActivityTime | String | Device last activity time. | 
-| GSuite.ChromeBrowserDevices.osPlatformVersion | String | Device operating system platform version. | 
-| GSuite.ChromeBrowserDevices.serialNumber | String | Device serial number. | 
-| GSuite.ChromeBrowserDevices.virtualDeviceId | String | Device virtual ID. | 
-| GSuite.ChromeBrowserDevices.orgUnitPath | String | Device organizational unit path. | 
-| GSuite.ChromeBrowserDevices.deviceIdentifiersHistory | String | Device identifier history. |
+| GSuite.ChromeBrowserDevices.nextPageToken | String | The token of the next page. |
+| GSuite.ChromeBrowserDevices.browserObjects.deviceId | String | The unique Device ID for the device. | 
+| GSuite.ChromeBrowserDevices.browserObjects.kind | String | The type of device. | 
+| GSuite.ChromeBrowserDevices.browserObjects.osPlatform | String | Device operating system platform. | 
+| GSuite.ChromeBrowserDevices.browserObjects.osVersion | String | Device operating system version. | 
+| GSuite.ChromeBrowserDevices.browserObjects.machineName | String | Device machine name. | 
+| GSuite.ChromeBrowserDevices.browserObjects.lastRegistrationTime | String | Device last registration time. | 
+| GSuite.ChromeBrowserDevices.browserObjects.lastActivityTime | String | Device last activity time. | 
+| GSuite.ChromeBrowserDevices.browserObjects.osPlatformVersion | String | Device operating system platform version. | 
+| GSuite.ChromeBrowserDevices.browserObjects.serialNumber | String | Device serial number. | 
+| GSuite.ChromeBrowserDevices.browserObjects.virtualDeviceId | String | Device virtual ID. | 
+| GSuite.ChromeBrowserDevices.browserObjects.orgUnitPath | String | Device organizational unit path. | 
+| GSuite.ChromeBrowserDevices.browserObjects.deviceIdentifiersHistory | String | Device identifier history. |
 
 #### Command Example
 ```!gsuite-chromebrowserdevice-list customer_id=test```
@@ -2232,17 +2233,30 @@ Gets a list of policy schemas that match a specified filter value for a given cu
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GSuite.PolicySchema.name | String | Policy name | 
-| GSuite.PolicySchema.policyDescription | String | Policy description | 
-| GSuite.PolicySchema.definition | Array | Policy definition. | 
-| GSuite.PolicySchema.fieldDescriptions | Array | Policy file description. | 
-| GSuite.PolicySchema.notices | Array | Policy notice. | 
-| GSuite.PolicySchema.supportUri | String | Policy support URI. | 
-| GSuite.PolicySchema.schemaName | String | Policy schema name. | 
-| GSuite.PolicySchema.validTargetResources | Array | Policy valid target resources. | 
-| GSuite.PolicySchema.policyApiLifecycle | String | Policy API lifecycle. | 
-| GSuite.PolicySchema.categoryTitle | String | Policy category title. | 
-| GSuite.PolicySchema.supportedPlatforms | String | Policy supported platforms. | 
+| GSuite.PolicySchema.nextPageToken | String | The token of the next page. | 
+| GSuite.PolicySchema.policySchemaObjects | String | Policy name. |
+| GSuite.PolicySchema.policySchemaObjects.name | String | Policy name. |
+| GSuite.PolicySchema.policySchemaObjects.policyDescription | String | Policy description. | 
+| GSuite.PolicySchema.policySchemaObjects.definition | Array | Policy definition. | 
+| GSuite.PolicySchema.policySchemaObjects.definition.enumType | Array | Policy definition ENUM type. | 
+| GSuite.PolicySchema.policySchemaObjects.definition.messageType | Array | Policy definition message type.|
+| GSuite.PolicySchema.policySchemaObjects.fieldDescriptions | Array | Policy file description. |
+| GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.description | String | Policy file description. |
+| GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.field | String | Policy file description field. |
+| GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.fieldConstraints | Array | Policy file description field constraints. |
+| GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.knownValueDescriptions | List | Policy file description known value description. |
+| GSuite.PolicySchema.policySchemaObjects.notices | List | Policy notice. |
+| GSuite.PolicySchema.policySchemaObjects.notices.acknowledgementRequired | Boolean | Policy notice is acknowledgement required. | 
+| GSuite.PolicySchema.policySchemaObjects.notices.field | String | Policy notice field. | 
+| GSuite.PolicySchema.policySchemaObjects.notices.noticeMessage | String | Policy notice message. | 
+| GSuite.PolicySchema.policySchemaObjects.notices.noticeValue | String | Policy notice value. | 
+| GSuite.PolicySchema.policySchemaObjects.supportUri | String | Policy support URI. | 
+| GSuite.PolicySchema.policySchemaObjects.schemaName | String | Policy schema name. | 
+| GSuite.PolicySchema.policySchemaObjects.validTargetResources | List | Policy valid target resources. | 
+| GSuite.PolicySchema.policySchemaObjects.policyApiLifecycle | Array | Policy API lifecycle. | 
+| GSuite.PolicySchema.policySchemaObjects.policyApiLifecycle.policyApiLifecycleStage | String | Policy API lifecycle stage. | 
+| GSuite.PolicySchema.policySchemaObjects.categoryTitle | String | Policy category title. | 
+| GSuite.PolicySchema.policySchemaObjects.supportedPlatforms | String | Policy supported platforms. | 
 
 #### Command Example
 ```!gsuite-policy-schemas-list customer_id=test limit=2```
@@ -2402,12 +2416,13 @@ Gets the resolved policy values for a list of policies that match a search query
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GSuite.Policy.targetKey.targetResource | String | Policy target key target resource. | 
-| GSuite.Policy.targetKey.additionalTargetKeys | String | Policy target key additional target keys. | 
-| GSuite.Policy.value.policySchema | String | Policy schema value. | 
-| GSuite.Policy.value.value | String | Policy value. | 
-| GSuite.Policy.sourceKey.targetResource | String | Policy source key target resource. | 
-| GSuite.Policy.addedSourceKey.targetResource | String | Policy added source key target resource. | 
+| GSuite.Policy.nextPageToken | String | The token of the next page. | 
+| GSuite.Policy.policyObject.targetKey.targetResource | String | Policy target key target resource. | 
+| GSuite.Policy.policyObject.targetKey.additionalTargetKeys | String | Policy target key additional target keys. | 
+| GSuite.Policy.policyObject.value.policySchema | String | Policy schema value. | 
+| GSuite.Policy.policyObject.value.value | String | Policy value. | 
+| GSuite.Policy.policyObject.sourceKey.targetResource | String | Policy source key target resource. | 
+| GSuite.Policy.policyObject.addedSourceKey.targetResource | String | Policy added source key target resource. | 
 
 
 #### Command Example

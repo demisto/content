@@ -3,36 +3,41 @@
     "ignore_auto_extract": "False",
     "mark_as_note": "False",
     "outputs": 
-    [
-        {
-            "targetKey": 
+    {
+        "GSuite.Policy(val.targetKey.targetResource && val.targetKey.targetResource == obj.targetKey.targetResource)": 
+        [
             {
-                "targetResource": "orgunits/03ph8a2z1kjba6k", 
-                "additionalTargetKeys": 
+                "targetKey": 
                 {
-                    "app_id": "chrome:jldhpllghnbhlbpcmnajkpdmadaolakh"
-                }
-            }, 
-            "value": 
-            {
-                "policySchema": "chrome.users.apps.InstallType", 
+                    "targetResource": "orgunits/03ph8a2z1kjba6k", 
+                    "additionalTargetKeys": 
+                    {
+                        "app_id": "chrome:jldhpllghnbhlbpcmnajkpdmadaolakh"
+                    }
+                },
                 "value": 
                 {
-                    "appInstallType": "BLOCKED"
+                    "policySchema": "chrome.users.apps.InstallType", 
+                    "value": 
+                    {
+                        "appInstallType": "BLOCKED"
+                    }
+                },
+                "sourceKey": 
+                {
+                    "targetResource": "orgunits/03ph8a2z1kjba6k"
+                },
+                "addedSourceKey": 
+                {
+                    "targetResource": "orgunits/03ph8a2z1kjba6k"
                 }
-            }, 
-            "sourceKey": 
-            {
-                "targetResource": "orgunits/03ph8a2z1kjba6k"
-            }, 
-            "addedSourceKey": 
-            {
-                "targetResource": "orgunits/03ph8a2z1kjba6k"
             }
+        ],
+        "GSuite(true)": 
+        {
+            "PolicyNextToken": ""
         }
-    ],
-    "outputs_key_field": ["deviceId"],
-    "outputs_prefix": "GSuite.Policy",
+    },
     "raw_response": 
     {
         "resolvedPolicies": 
