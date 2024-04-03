@@ -1257,7 +1257,8 @@ def test_chromebrowser_move_ou_command(gsuite_client, mocker):
         {"customer_id": "test", "limit": "1"},
         {"customer_id": "test", "limit": "10000"},
         {"customer_id": "test", "page_size": "1", "limit": "10000"},
-        {"customer_id": "test", "page_token": "1aaa", "limit": "10000"}
+        {"customer_id": "test", "page_token": "1aaa", "limit": "10000"},
+        {"customer_id": "test", "page_size": "5000", "limit": "10000"},
     ]
 )
 def test_chromebrowser_list_command_multiple_limits(gsuite_client, mocker, args):
@@ -1426,6 +1427,8 @@ def test_policy_schemas_command_schema_name(gsuite_client, mocker):
         {"customer_id": "test", "limit": "10000", "policy_schema_filter": "chrome.users.apps.InstallType",
          "target_resource": "03ph8a2z1kjba6k", "target_type": "OrgUnit"},
         {"customer_id": "test", "page_size": "2", "limit": "4", "policy_schema_filter": "chrome.users.apps.InstallType",
+         "target_resource": "03ph8a2z1kjba6k", "target_type": "OrgUnit"},
+        {"customer_id": "test", "page_size": "5000", "limit": "10000","policy_schema_filter": "chrome.users.apps.InstallType",
          "target_resource": "03ph8a2z1kjba6k", "target_type": "OrgUnit"},
     ]
 )
