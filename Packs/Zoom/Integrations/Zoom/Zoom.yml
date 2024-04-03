@@ -845,7 +845,7 @@ script:
       description: Email or unique identifier of the user.
       required: true
       type: string
-    - name: member_id
+    - name: member_id_test
       description: >
         The email address or user ID or member ID of the member to remove from the channel.
       required: true
@@ -887,7 +887,7 @@ script:
       description: >
         Email address of the mention contact.
       type: string
-    - name: is_markdown
+    - name: is_markdown_rrr
       auto: PREDEFINED
       predefined:
       - "true"
