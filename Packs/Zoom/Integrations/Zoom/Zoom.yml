@@ -813,7 +813,7 @@ script:
       required: true
       type: string
     - description: Email or unique identifier of the user.
-      name: user_id
+      name: user_id_test
       required: true
     - name: members
       description: The member's email address.
@@ -841,7 +841,7 @@ script:
       description: The unique identifier of the channel from where to remove a member.
       required: true
       type: string
-    - name: user_id
+    - name: user_id_test
       description: Email or unique identifier of the user.
       required: true
       type: string
@@ -879,7 +879,7 @@ script:
       In order to send a style message you need to provide is-markdown=true and the message can contain a markdown format.
       If you are using mention markdown in a message, provide the email address in the at_contact argument.
     arguments:
-    - name: user_id_argument
+    - name: user_id_argument_tetst
       description: Email or unique identifier of the user.
       type: string
       required: true
