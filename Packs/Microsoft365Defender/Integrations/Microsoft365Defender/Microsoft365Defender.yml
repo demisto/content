@@ -166,8 +166,8 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.
-display: Microsoft 365 Defender
+description: Deprecated. Use Microsoft Graph Security instead.
+display: Microsoft 365 Defender (Deprecated)
 name: Microsoft 365 Defender
 script:
   commands:
