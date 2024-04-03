@@ -322,25 +322,29 @@ Set the status of the investigation, which is specified by ID or Rapid7 Resource
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Rapid7InsightIDR.Investigation.responsibility | String | The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection &amp; Response customers. Relevant when api_version is V2 only. |
-| Rapid7InsightIDR.Investigation.latest_alert_time | String | The create time of the most recent alert belonging to this investigation \(if any\). Relevant when api_version is V2 only. |
-| Rapid7InsightIDR.Investigation.assignee.email | String | The email of the assigned user. |
-| Rapid7InsightIDR.Investigation.assignee.name | String | The name of the assigned user. |
-| Rapid7InsightIDR.Investigation.disposition | String | The disposition of this investigation. Relevant when api_version is V2 only. |
-| Rapid7InsightIDR.Investigation.created_time | String | The time this investigation was created. |
-| Rapid7InsightIDR.Investigation.last_accessed | String | The time this investigation was last viewed or modified. Relevant when api_version is V2 only. |
-| Rapid7InsightIDR.Investigation.priority | String | The investigations priority. Relevant when api_version is V2 only. |
-| Rapid7InsightIDR.Investigation.status | String | The status of the investigation. |
-| Rapid7InsightIDR.Investigation.source | String | How this investigation was generated. |
-| Rapid7InsightIDR.Investigation.title | String | The name of the investigation. |
-| Rapid7InsightIDR.Investigation.organization_id | String | The ID of the organization that owns this investigation. Relevant when api_version is V2 only. |
-| Rapid7InsightIDR.Investigation.rrn | String | The Rapid7 Resource Names of the investigation. Relevant when api_version is V2 only. |
-| Rapid7InsightIDR.Investigation.id | String | The ID of the investigation. Relevant when api_version is V1 only. |
-| Rapid7InsightIDR.Investigation.alert.type_description | String | The description of this type of alert \(if any\). Relevant when api_version is V1 only. |
-| Rapid7InsightIDR.Investigation.alert.type | String | The alert's type. Relevant when api_version is V1 only. |
-| Rapid7InsightIDR.Investigation.alert.first_event_time | String | The create time of the first alert belonging to this investigation \(if any\). Relevant when api_version is V1 only. |
+| **Path**                                              | **Type** | **Description**                                                                                                                                                                                                               |
+|-------------------------------------------------------| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Rapid7InsightIDR.Investigation.responsibility         | String | The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection &amp; Response customers. Relevant when api_version is V2 only. |
+| Rapid7InsightIDR.Investigation.latest_alert_time      | String | The create time of the most recent alert belonging to this investigation \(if any\). Relevant when api_version is V2 only.                                                                                                    |
+| Rapid7InsightIDR.Investigation.assignee.email         | String | The email of the assigned user Relevant when api_version is V2 only.                                                                                                                                                          |
+| Rapid7InsightIDR.Investigation.assignee_email         | String | The email of the assigned user. Relevant when api_version is V2 only.                                                                                                                                                         |
+| Rapid7InsightIDR.Investigation.assignee_name          | String | The name of the assigned user. Relevant when api_version is V1 only.                                                                                                                                                          |
+| Rapid7InsightIDR.Investigation.alert.type | String | The alert's type. Relevant when api_version is V1 only.                                                                                                                                                                       |
+| Rapid7InsightIDR.Investigation.assignee.name          | String | The name of the assigned user. Relevant when api_version is V2 only.                                                                                                                                                          |
+| Rapid7InsightIDR.Investigation.disposition            | String | The disposition of this investigation. Relevant when api_version is V2 only.                                                                                                                                                  |
+| Rapid7InsightIDR.Investigation.created_time           | String | The time this investigation was created.                                                                                                                                                                                      |
+| Rapid7InsightIDR.Investigation.last_accessed          | String | The time this investigation was last viewed or modified. Relevant when api_version is V2 only.                                                                                                                                |
+| Rapid7InsightIDR.Investigation.priority               | String | The investigations priority. Relevant when api_version is V2 only.                                                                                                                                                            |
+| Rapid7InsightIDR.Investigation.status                 | String | The status of the investigation.                                                                                                                                                                                              |
+| Rapid7InsightIDR.Investigation.source                 | String | How this investigation was generated.                                                                                                                                                                                         |
+| Rapid7InsightIDR.Investigation.title                  | String | The name of the investigation.                                                                                                                                                                                                |
+| Rapid7InsightIDR.Investigation.organization_id        | String | The ID of the organization that owns this investigation. Relevant when api_version is V2 only.                                                                                                                                |
+| Rapid7InsightIDR.Investigation.rrn                    | String | The Rapid7 Resource Names of the investigation. Relevant when api_version is V2 only.                                                                                                                                         |
+| Rapid7InsightIDR.Investigation.id                     | String | The ID of the investigation. Relevant when api_version is V1 only.                                                                                                                                                            |
+| Rapid7InsightIDR.Investigation.alert.type_description | String | The description of this type of alert \(if any\). Relevant when api_version is V1 only.                                                                                                                                       |
+| Rapid7InsightIDR.Investigation.alert.type             | String | The alert's type. Relevant when api_version is V2 only.                                                                                                                                                                       |
+| Rapid7InsightIDR.Investigation.alert_type             | String | The alert's type. Relevant when api_version is V1 only.                                                                                                                                                                       |
+| Rapid7InsightIDR.Investigation.alert.first_event_time | String | The create time of the first alert belonging to this investigation \(if any\). Relevant when api_version is V1 only.                                                                                                          |
 
 #### Command example
 ```!rapid7-insight-idr-set-status status=open investigation_id=3793645a-6484-4a7e-9228-7aeb4ba97472 api_version=V2```
