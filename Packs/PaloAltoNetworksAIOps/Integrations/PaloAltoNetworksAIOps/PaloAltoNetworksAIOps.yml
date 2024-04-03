@@ -86,6 +86,10 @@ script:
       - Use the information retrieved above to generate a BPA report.
       - During this process the API also generates a report_id.
     polling: true
+    outputs:
+    - contextPath: AiOps.BPAReport
+      description: The generated report data, report_id and report_status.
+      type: Array
   - name: aiops-polling-upload-report
     arguments:
     - name: report_id
