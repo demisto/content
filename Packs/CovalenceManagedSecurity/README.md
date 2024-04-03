@@ -8,12 +8,12 @@ This pack collects the alerts that have been triaged to remove false positives, 
 
 - Gathers the triaged security alerts from endpoint, cloud, and network security monitoring
 - Converts the alerts into XSOAR incidents, with the following information:
-   - Type
-   - Severity
-   - Organization
-   - Title
-   - Description of the incident/event
-   - Mitigation steps
+  - Type
+  - Severity
+  - Organization
+  - Title
+  - Description of the incident/event
+  - Mitigation steps
 - Allows you to run ad-hoc queries in Covalence for AROs
 - Allows you to manage the incident through its lifecycle within XSOAR, from its generation through to close
 - Lists monitored organization, of interest for MSPs or equivalent who are managing alerts for multiple organizations
