@@ -21,7 +21,4 @@ The script installs a Python library using pip and archive it.
 ## Outputs
 
 ---
-
-| **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| ExtractedFiles | A list of file names that were extracted from the ZIP file. | Unknown |
+There are no outputs for this script.
