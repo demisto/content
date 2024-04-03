@@ -134,6 +134,7 @@ configuration:
   - identity
   - location
   - vulnerability
+  - x509-certificate
   additionalinfo: 'Choose which STIX object types to fetch from the TAXII server. If left empty, all available object types will be fetched.'
 - display: Certificate File as Text
   name: creds_certificate
@@ -227,7 +228,7 @@ script:
   - deprecated: true
     description: 'WARNING: This command will reset your fetch history.'
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.89439
+  dockerimage: demisto/taxii2:1.0.0.90938
   feed: true
   runonce: false
   script: '-'
