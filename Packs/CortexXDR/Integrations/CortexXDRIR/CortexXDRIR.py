@@ -17,7 +17,7 @@ API_KEY_LENGTH = 128
 INTEGRATION_CONTEXT_BRAND = 'PaloAltoNetworksXDR'
 XDR_INCIDENT_TYPE_NAME = 'Cortex XDR Incident Schema'
 INTEGRATION_NAME = 'Cortex XDR - IR'
-ALERTS_LIMIT_PER_INCIDENTS = -1
+ALERTS_LIMIT_PER_INCIDENTS: int = -1
 FIELDS_TO_EXCLUDE = [
     'network_artifacts',
     'file_artifacts'
@@ -990,7 +990,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
     incidents = []
     if incidents_from_previous_run:
         raw_incidents = incidents_from_previous_run
-        ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1)
+        ALERTS_LIMIT_PER_INCIDENTS = last_run.get('alerts_limit_per_incident', -1) if isinstance(last_run, dict) else -1
     else:
         if statuses:
             raw_incidents = []
@@ -1064,7 +1064,6 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
         next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS
     else:
         next_run['incidents_from_previous_run'] = []
-        next_run['alerts_limit_per_incident'] = -1
 
     next_run['time'] = last_fetch + 1
 
