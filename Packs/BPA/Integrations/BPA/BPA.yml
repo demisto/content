@@ -3,6 +3,7 @@ commonfields:
   id: BPA
   version: -1
 deprecated: true
+hidden: true
 configuration:
 - display: Server URL (either Firewall or Panorama). e.g., https://192.168.0.1
   name: server
@@ -96,6 +97,7 @@ script:
       description: The list of BPA checks.
       type: Unknown
     deprecated: true
+    hidden: true
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
@@ -132,6 +134,7 @@ script:
     description: Returns the results of the BPA job.
     name: pan-os-bpa-get-job-results
     deprecated: true
+    hidden: true
     outputs:
     - contextPath: PAN-OS-BPA.JobResults.JobID
       description: The submitted job ID.
