@@ -50,7 +50,9 @@ Generates a bpa report. Steps -
 
 #### Context Output
 
-There is no context output for this command.
+By default, there is no context output for this command.
+When using show_in_context flag the generated report will be inserted to the context data.
+
 #### Command example
 ```!aiops-bpa-report-generate requester_email=testl@gmail.com requester_name=test```
 #### Human Readable Output
