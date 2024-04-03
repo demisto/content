@@ -1256,7 +1256,8 @@ def test_chromebrowser_move_ou_command(gsuite_client, mocker):
     [
         {"customer_id": "test", "limit": "1"},
         {"customer_id": "test", "limit": "10000"},
-        {"customer_id": "test", "page_size": "1", "limit": "10000"}
+        {"customer_id": "test", "page_size": "1", "limit": "10000"},
+        {"customer_id": "test", "page_token": "1aaa", "limit": "10000"}
     ]
 )
 def test_chromebrowser_list_command_multiple_limits(gsuite_client, mocker, args):
@@ -1363,6 +1364,7 @@ def test_modify_policy_command_with_raw_json(gsuite_client, mocker):
         {"customer_id": "test", "limit": "2"},
         {"customer_id": "test", "limit": "100000"},
         {"customer_id": "test", "page_size": "2", "limit": "1"},
+        {"customer_id": "test", "page_token": "1aaa", "limit": "1"}
     ]
 )
 def test_policy_schemas_command(gsuite_client, mocker, args):
@@ -1419,9 +1421,12 @@ def test_policy_schemas_command_schema_name(gsuite_client, mocker):
 @pytest.mark.parametrize(
     "args",
     [
-        {"customer_id": "test", "limit": "2"},
-        {"customer_id": "test", "limit": "10000"},
-        {"customer_id": "test", "page_size": "2", "limit": "4"},
+        {"customer_id": "test", "limit": "2", "policy_schema_filter": "chrome.users.apps.InstallType",
+         "target_resource": "03ph8a2z1kjba6k", "target_type": "OrgUnit"},
+        {"customer_id": "test", "limit": "10000", "policy_schema_filter": "chrome.users.apps.InstallType",
+         "target_resource": "03ph8a2z1kjba6k", "target_type": "OrgUnit"},
+        {"customer_id": "test", "page_size": "2", "limit": "4", "policy_schema_filter": "chrome.users.apps.InstallType",
+         "target_resource": "03ph8a2z1kjba6k", "target_type": "OrgUnit"},
     ]
 )
 def test_policy_resolve_command(gsuite_client, mocker, args):
@@ -1463,8 +1468,7 @@ def test_group_delete_command(gsuite_client, mocker):
         - Ensure no error returns
     """
     from GSuiteAdmin import group_delete_command
-    args = {"customer_id": "test", "target_type": "Group", "target_resource": "111111",
-            "policy_schema": "chrome.users.apps.InstallType",
+    args = {"customer_id": "test", "target_resource": "111111", "policy_schema": "chrome.users.apps.InstallType",
             "additional_target_keys": "{\"app_id\":\"chrome:11111111\"}"}
     mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value={})
     response = group_delete_command(gsuite_client, args)

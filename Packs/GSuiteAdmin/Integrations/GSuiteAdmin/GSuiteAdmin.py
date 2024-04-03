@@ -1787,6 +1787,7 @@ def policy_resolve_command(client: Client, args: dict[str, str]) -> CommandResul
                           readable_output=readable_output,
                           raw_response=response)
 
+
 def assign_params_policy_schemas(filter, page_size, page_token):
     return GSuiteClient.remove_empty_entities({
         'filter': filter,
