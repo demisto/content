@@ -257,7 +257,7 @@ def get_query_viewer_results(query_viewer_id):
         'alt': 'json'
     }
     res = send_request(query_path, params=params, method='get')
-    demisto.debug(f"XSUP-29725: len(res)={len(res)}")
+    demisto.debug(f"XSUP-29725: {res=}")
     if not res.ok:
         demisto.debug(res.text)
         if 'ResourceNotFoundException' in res.text:
@@ -431,6 +431,7 @@ def fetch():
     demisto.setLastRun({'value': json.dumps(last_run)})
     decode_arcsight_output(incidents)
     demisto.debug(f"XSUP-29725: incidents[-1] after decode_arcsight_output: {incidents[-1]}")
+    demisto.debug(f"XSUP-29725: all incidents fetched this run {incidents=}")
     if demisto.command() == 'as-fetch-incidents':
         contents = {
             'last_run': last_run,
