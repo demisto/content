@@ -523,13 +523,24 @@ def get_last_mirrored_in_time(args):
 
 
 def sort_incident_data(raw_incident):
+    """
+    Sorts and processes the raw incident data into a cleaned incident dict.
+    
+    Parameters:
+    -  raw_incident (dict): The raw incident data as provided by the API.
+
+    Returns:
+    - dict: A dictionary containing the processed incident data with:
+            - organized alerts.
+            - file artifact
+            - network artifacts.
+    """
     incident = raw_incident.get('incident', {})
     raw_alerts = raw_incident.get('alerts', {}).get('data', None)
     file_artifacts = raw_incident.get('file_artifacts', {}).get('data')
     network_artifacts = raw_incident.get('network_artifacts', {}).get('data')
-    context_alerts = []
-    if raw_alerts:
-        context_alerts = clear_trailing_whitespace(raw_alerts)
+    context_alerts = clear_trailing_whitespace(raw_alerts)
+    if context_alerts:
         for alert in context_alerts:
             alert['host_ip_list'] = alert.get('host_ip').split(',') if alert.get('host_ip') else []
     incident.update({
@@ -1032,7 +1043,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             if demisto.params().get('sync_owners') and incident_data.get('assigned_user_mail'):
                 incident['owner'] = demisto.findUser(email=incident_data.get('assigned_user_mail')).get('username')
             # Update last run and add incident if the incident is newer than last fetch
-            if incident_data.get('creation_time', 0) > last_fetch:
+            if incident_data['creation_time'] > last_fetch:
                 last_fetch = incident_data['creation_time']
             incidents.append(incident)
             non_created_incidents.remove(raw_incident)
