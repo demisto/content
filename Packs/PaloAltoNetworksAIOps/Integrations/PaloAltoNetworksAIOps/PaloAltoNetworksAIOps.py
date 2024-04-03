@@ -322,7 +322,7 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     if config_file_from_user:
         config_in_binary = convert_config_to_bytes(config_file_from_user, 'User')
      # Get info configurations and convert to format if user didn't upload a config file
-    elif config_file:=client.get_config_file_request():
+    elif config_file := client.get_config_file_request():
         config_in_binary = convert_config_to_bytes(config_file, 'Download')
     else:
         raise DemistoException("Can not upload a config file since it was not provided.")
