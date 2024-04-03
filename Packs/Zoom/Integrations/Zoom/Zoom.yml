@@ -879,11 +879,11 @@ script:
       In order to send a style message you need to provide is-markdown=true and the message can contain a markdown format.
       If you are using mention markdown in a message, provide the email address in the at_contact argument.
     arguments:
-    - name: user_id
+    - name: user_id_argument
       description: Email or unique identifier of the user.
       type: string
       required: true
-    - name: at_contact
+    - name: at_contact_argument_2
       description: >
         Email address of the mention contact.
       type: string
@@ -936,7 +936,7 @@ script:
     - contextPath: Zoom.ChatMessage.id
       description: Unique identifier of the message.
       type: number
-  - name: zoom-delete-message
+  - name: zoom-delete-message_test
     description: >
       Deletes a chat message previously sent to a contact or a channel. Use the command zoom-list-user-channels  to get the channel ID by the channel name (for to_channel).
       See the existing command zoom-list-users to get the user ID by email (for to_contact).
