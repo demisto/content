@@ -11,6 +11,11 @@
             "SEARCH_FIELD": "alert_name",
             "SEARCH_TYPE": "CONTAINS",
             "SEARCH_VALUE": "Large Upload"
+        },
+        {
+            "SEARCH_FIELD": "alert_source",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "XDR Analytics"
         }
       ]
     }
