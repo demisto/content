@@ -20,6 +20,9 @@ configuration:
   name: tsg_id
   type: 0
   required: true
+  additionalinfo: |-
+    The Tennant Service Group must contain an active “AIOps for NGFW (Free)” application.
+    For more information about the service activation, visit the following !<url> "https://docs.paloaltonetworks.com/ngfw/aiops/about/activate-aiops-for-ngfw#activate-aiops-for-ngfw_section_xjs_p55_fyb"
 - section: Connect
   display: ""
   displaypassword: Client ID
@@ -77,7 +80,7 @@ script:
       - 'true'
       - 'false'
     description: |- 
-      Generates a bpa report. Steps - 
+      Generates a bpa report. Steps:
       - Get information about Pan-OS/Panorama device.
       - Get configuration file of Pan-OS/Panorama. If the user provided an entry_id to a config file this step is skipped.
       - Use the information retrieved above to generate a BPA report.
