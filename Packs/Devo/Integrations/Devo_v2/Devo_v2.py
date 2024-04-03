@@ -159,7 +159,6 @@ def alert_to_incident(alert, user_prefix):
     return incident
 
 
-# Monkey patching for backwards compatibility
 def _to_unix(date, milliseconds=False):
     """
     Convert date to a unix timestamp
