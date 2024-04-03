@@ -1,6 +1,6 @@
 {
     "id": "incident_darktraceasmassetbrand",
-    "version": 1,
+    "version": -1,
     "modified": "2024-01-30T19:57:21.352753259Z",
     "itemVersion": "",
     "fromVersion": "6.6.0",
@@ -25,7 +25,7 @@
     "useAsKpi": false,
     "locked": false,
     "system": false,
-    "content": false,
+    "content": true,
     "group": 0,
     "hidden": false,
     "openEnded": false,

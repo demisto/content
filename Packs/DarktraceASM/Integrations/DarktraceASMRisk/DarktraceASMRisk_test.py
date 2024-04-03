@@ -1,5 +1,15 @@
 import json
-from DarktraceASMRisk import Client, get_asm_risk_command, get_asm_asset_command, mitigate_asm_risk_command, post_asm_comment_command, edit_asm_comment_command, delete_asm_comment_command, create_asm_tag_command, assign_asm_tag_command, unassign_asm_tag_command
+from DarktraceASMRisk import (Client,
+                              fetch_incidents,
+                              get_asm_risk_command,
+                              get_asm_asset_command,
+                              mitigate_asm_risk_command,
+                              post_asm_comment_command,
+                              edit_asm_comment_command,
+                              delete_asm_comment_command,
+                              create_asm_tag_command,
+                              assign_asm_tag_command,
+                              unassign_asm_tag_command)
 
 """*****CONSTANTS****"""
 
@@ -54,8 +64,7 @@ def func_template(requests_mock, command):
 
     # GIVEN an integration is configured to Darktrace
     mock_api_response = util_load_json(f'test_data/{command}.json')
-    requests_mock.post('https://mock.darktrace.com/graph/v1.0/api',
-                       json=mock_api_response)
+    requests_mock.post('https://mock.darktrace.com/graph/v1.0/api', json=mock_api_response)
 
     client = Client(
         base_url='https://mock.darktrace.com',
@@ -76,6 +85,32 @@ def func_template(requests_mock, command):
 
 
 """*****TEST FUNCTIONS****"""
+
+
+def test_fetch_incidents(requests_mock):
+    """
+    Given
+            Integration pulls in incidents from ASM
+    When
+            Regular interval defined by user, default is one minute
+    Then
+            Incident info will be formatted for XSOAR UI and required info for next call will be returned
+    """
+    mock_api_response = util_load_json('test_data/fetch_incidents.json')
+    requests_mock.post('https://mock.darktrace.com/graph/v1.0/api', json=mock_api_response)
+
+    client = Client(
+        base_url='https://mock.darktrace.com',
+        verify=False,
+        headers={"Authorization": "Token example_token"}
+    )
+
+    integration_response = fetch_incidents(client, last_run={}, first_fetch_time=0, max_alerts=50, min_severity=1, alert_types=[
+                                           'gdpr', 'informational', 'misconfiguration', 'reported', 'ssl', 'vulnerable software'])
+    expected_response = util_load_json('test_data/formatted_fetch_incidents.json')
+
+    assert integration_response[0]['last_fetch'] == expected_response['last_fetch']
+    assert integration_response[1] == expected_response['incidents']
 
 
 def test_get_asm_risk(requests_mock):

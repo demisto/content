@@ -1,6 +1,6 @@
-id: 395bd0d7-764f-445b-84f9-b9d94ef0803c
-version: 18
-name: Darktrace ASM Risk Handler
+id: Darktrace ASM Basic Risk Handler
+version: -1
+name: Darktrace ASM Basic Risk Handler
 starttaskid: "0"
 description: Runs a common ASM Risk workflow for fetched ASM Risk alerts.
 fromversion: 6.6.0

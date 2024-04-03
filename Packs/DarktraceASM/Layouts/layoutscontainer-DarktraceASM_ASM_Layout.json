@@ -1,8 +1,8 @@
 {
-	"close": null,
+	"close": {},
 	"definitionId": "",
 	"description": "",
-	"details": null,
+	"details": {},
 	"detailsV2": {
 		"tabs": [
 			{
@@ -555,15 +555,15 @@
 			}
 		]
 	},
-	"edit": null,
+	"edit": {},
 	"fromVersion": "6.6.0",
 	"group": "incident",
-	"id": "9583aa61-522b-48d1-8c17-3e7a1afa79e3",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"mobile": null,
-	"name": "Darktrace ASM Layout",
-	"quickView": null,
+	"id": "Darktrace ASM Risk Layout",
+	"indicatorsDetails": {},
+	"indicatorsQuickView": {},
+	"mobile": {},
+	"name": "Darktrace ASM Risk Layout",
+	"quickView": {},
 	"system": false,
 	"version": -1
 }

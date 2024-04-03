@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import json
 import traceback
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 import dateparser
 import urllib3
 
@@ -120,6 +120,7 @@ SEVERITY_MAP = {"Low": 1,
                 "Critical": 4
                 }
 
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 MIN_SEVERITY_TO_FETCH = 1
 MAX_INCIDENTS_TO_FETCH = 50
 ALERT_TYPES = ['gdpr', 'informational', 'misconfiguration', 'reported', 'ssl', 'vulnerable software']
@@ -143,22 +144,22 @@ class InvalidAssetStateError(Exception):
 
 
 class InvalidAssetID(Exception):
-    def __init__(self, asset_id: str = None):
+    def __init__(self, asset_id: Optional[str] = None):
         super().__init__(f"ASM Asset ID \"{asset_id}\" is not a valid ID.")
 
 
 class AssetNotFound(Exception):
-    def __init__(self, asset_type: str, id: str = None, message: str = None):
+    def __init__(self, asset_type: str, id: Optional[str] = None, message: Optional[str] = None):
         super().__init__(f"ASM {asset_type} Asset with id \"{id}\" not found. {message}")
 
 
 class TagNotFound(Exception):
-    def __init__(self, name: str, message: str = None):
+    def __init__(self, name: str, message: Optional[str] = None):
         super().__init__(f"ASM Tag with name \"{name}\" not found. {message}")
 
 
 class CommentNotFound(Exception):
-    def __init__(self, id: str = None, message: str = None):
+    def __init__(self, id: Optional[str] = None, message: Optional[str] = None):
         if message:
             super().__init__(f"ASM Comment with id \"{id}\" not found. {message}")
         else:
@@ -177,7 +178,7 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def asm_post(self, query_uri: str, json: dict = None):
+    def asm_post(self, query_uri: str, json: Optional[dict] = None):
         headers = self._headers
         return self._asm_api_call(query_uri, method='POST', json=json, headers=headers)
 
@@ -185,10 +186,10 @@ class Client(BaseClient):
         self,
         query_uri: str,
         method: str,
-        params: dict = None,
-        data: dict = None,
-        json: dict = None,
-        headers: dict[str, str] = None,
+        params: Optional[dict] = None,
+        data: Optional[dict] = None,
+        json: Optional[dict] = None,
+        headers: Optional[dict[str, str]] = None,
     ):
         """Handles Darktrace API calls"""
         try:
@@ -459,7 +460,7 @@ class Client(BaseClient):
         response = self.asm_post(ASM_URI, payload)
         return response['data']['unassignTag']
 
-    def get_asm_risks(self, start_time) -> dict[str, Any]:
+    def get_asm_risks(self, start_time) -> List[Dict[str, Any]]:
         """Function to pull all Risks after a given start time.
         :type start_time: ``datetime``
         :param start_time: Date to start pulling Risks from.
@@ -485,7 +486,7 @@ class Client(BaseClient):
 """*****HELPER FUNCTIONS****"""
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> float:
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
     This function is used to quickly validate an argument provided to XSOAR
     via ``demisto.args()`` into an ``int`` containing a timestamp (seconds
@@ -500,16 +501,15 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
     :param required:
         throws exception if ``True`` and argument provided is None
     :return:
-        returns an ``int`` containing a timestamp (seconds from epoch) if conversion works
-        returns ``None`` if arg is ``None`` and required is set to ``False``
+        returns a ``float`` containing a timestamp (seconds from epoch) if conversion works
         otherwise throws an Exception
-    :rtype: ``Optional[int]``
+    :rtype: ``float``
     """
 
     if arg is None:
         if required is True:
             raise ValueError(f'Missing \'{arg_name}\'')
-        return None
+        raise ValueError(f"'{arg_name}' cannot be None.")
 
     if isinstance(arg, str) and arg.isdigit():
         # timestamp is a str containing digits - we just convert it to int
@@ -523,10 +523,10 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
             # if d is None it means dateparser failed to parse it
             raise ValueError(f'Invalid date: {arg_name}')
 
-        return int(date.timestamp())
-    if isinstance(arg, (int, float)):
-        # Convert to int if the input is a float
-        return int(arg)
+        return float(date.timestamp())
+    if isinstance(arg, int):
+        # Convert to float if the input is an int
+        return float(arg)
     raise ValueError(f'Invalid date: \'{arg_name}\'')
 
 
@@ -550,7 +550,7 @@ def format_JSON_for_risk(risk: dict[str, Any]) -> dict[str, Any]:
     :return: Reformatted JSON risk.
     :rtype: ``Dict[str, Any]``
     """
-    new_json = {}
+    new_json: Dict[str, Any] = {}
     for key in risk:
         if key == 'comments':
             if risk[key] is None:
@@ -570,7 +570,7 @@ def format_JSON_for_asset(asset: dict[str, Any]) -> dict[str, Any]:
     :return: Reformatted JSON asset.
     :rtype: ``Dict[str, Any]``
     """
-    new_json = {}
+    new_json: Dict[str, Any] = {}
     for key in asset:
         if key == 'comments':
             if asset[key] is None:
@@ -626,14 +626,14 @@ def _compute_xsoar_severity(security_rating: str) -> int:
 """*****COMMAND FUNCTIONS****"""
 
 
-def test_module(client: Client, first_fetch_time: Optional[int]) -> str:
+def test_module(client: Client, first_fetch_time: float) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
 
     :type client: ``Client``
     :param client:
         Darktrace Client.
-    :type first_fetch_time: ``Optional[int]``
+    :type first_fetch_time: ``float``
     :param first_fetch_time:
         First fetch time.
     :return:
@@ -641,8 +641,8 @@ def test_module(client: Client, first_fetch_time: Optional[int]) -> str:
     :rtype: ``str``
     """
     try:
-        first_fetch_time = datetime.fromtimestamp(first_fetch_time)
-        client.get_asm_risks(start_time=first_fetch_time)
+        first_fetch_datetime = datetime.fromtimestamp(first_fetch_time)
+        client.get_asm_risks(start_time=first_fetch_datetime)
 
     except DemistoException as e:
         if 'Forbidden' in str(e):
@@ -652,35 +652,39 @@ def test_module(client: Client, first_fetch_time: Optional[int]) -> str:
     return 'ok'
 
 
-def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch_time: int, max_alerts: int, min_severity: int, alert_types: list[str]) -> tuple[dict[str, Any], list[dict]]:
+def fetch_incidents(client: Client,
+                    last_run: dict[str, str],
+                    first_fetch_time: float,
+                    max_alerts: int,
+                    min_severity: int,
+                    alert_types: list[str]) -> tuple[dict[str, Any], list[dict]]:
     """Function used to pull incidents into XSOAR every few minutes.  """
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
     last_fetch = last_run.get('last_fetch', None)
-    first_fetch_time = datetime.fromtimestamp(first_fetch_time)
+    first_fetch_datetime = datetime.fromtimestamp(first_fetch_time)
     # Handle first fetch time
     if last_fetch is None:
-        last_fetch = first_fetch_time
+        last_fetch_datetime = first_fetch_datetime
     else:
-        last_fetch = datetime.strptime(last_fetch, "%Y-%m-%dT%H:%M:%S")
+        last_fetch_datetime = datetime.strptime(last_fetch, DATE_FORMAT)
 
-    # for type checking, making sure that latest_created_time is int
-    latest_created_time = last_fetch
+    latest_created_time = last_fetch_datetime
 
     # Each incident is a dict with a string as a key
-    incidents: list[dict[str, Any]] = []
+    incidents: List[Dict[str, Any]] = []
 
-    asm_risks = client.get_asm_risks(start_time=last_fetch)
+    asm_risks: List[Dict[str, Any]] = client.get_asm_risks(start_time=last_fetch_datetime)
 
     for alert in asm_risks:
         # Convert startedAt time to datetime object and add to alert
         incident_created_time = datetime.strptime(alert['node']['startedAt'][:19], "%Y-%m-%dT%H:%M:%S")
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
-        if last_fetch and incident_created_time <= last_fetch:
+        if last_fetch_datetime and incident_created_time <= last_fetch_datetime:
             continue
 
-        brand = alert['node']['asset']['brand']
+        brand = alert.get('node', {}).get('asset', {}).get('brand')
         title = alert['node']['title']
         incident_name = f'Darktrace ASM | Risk Title: {title} | Brand: {brand}'
 
@@ -713,7 +717,7 @@ def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch_time: 
             break
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': latest_created_time.strftime("%Y-%m-%dT%H:%M:%S")}
+    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
     return next_run, incidents
 
 
@@ -969,9 +973,6 @@ def main() -> None:     # pragma: no cover
             # fetch-incidents calls ``demisto.incidents()`` to provide the list
             # of incidents to create
             demisto.incidents(incidents)
-
-        elif demisto.command() == 'test-asm':
-            return_results(test_asm_command(client, demisto.args()))
 
         elif demisto.command() == 'darktrace-asm-get-risk':
             return_results(get_asm_risk_command(client, demisto.args()))

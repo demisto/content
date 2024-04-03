@@ -1,6 +1,6 @@
 {
     "id": "incident_darktraceasmassetismalicious",
-    "version": 1,
+    "version": -1,
     "modified": "2024-02-28T00:44:13.350507021Z",
     "itemVersion": "",
     "toServerVersion": "",
@@ -25,7 +25,7 @@
     "useAsKpi": false,
     "locked": false,
     "system": false,
-    "content": false,
+    "content": true,
     "group": 0,
     "hidden": false,
     "openEnded": false,

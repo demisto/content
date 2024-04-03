@@ -143,7 +143,7 @@ Returns the Asset object associated with the given Asset ID.  The output will de
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-" Darktrace.asset | dict | Darktrace ASM Asset object. |
+| Darktrace.asset | dict | Darktrace ASM Asset object. |
 | Darktrace.asset.brand | string | Brand that the Asset is associated with. |
 | Darktrace.asset.comments | list | List of comments by comment ID. |
 | Darktrace.asset.createdAt | timestamp | Creation time of Asset. |
@@ -233,11 +233,11 @@ Returns the Asset object associated with the given Asset ID.  The output will de
       "ipaddresses": [
         {
           "id": "SVBBZGRyZXNzVHlwZToxNTU3Njc=",
-          "address": "104.16.61.2"
+          "address": "1.1.1.1"
         },
         {
           "id": "SVBBZGRyZXNzVHlwZToxNTU3Njg=",
-          "address": "104.16.60.2"
+          "address": "1.1.1.1"
         }
       ],
       "isMalicious": false,
@@ -291,7 +291,7 @@ Returns the Asset object associated with the given Asset ID.  The output will de
 >| discoverySources | RGlzY292ZXJ5U291cmNlVHlwZTo1NDc0Ng==: Record retrieved from FQDN careers.darktrace.com<br>RGlzY292ZXJ5U291cmNlVHlwZTo1NDc1Nw==: Application from https://careers.darktrace.com/ |
 >| fqdns | RnFkblR5cGU6MjY2Mjc=: careers.darktrace.com |
 >| id | QXBwbGljYXRpb25UeXBlOjI2NjI4 |
->| ipaddresses | SVBBZGRyZXNzVHlwZToxNTU3Njc=: 104.16.61.2<br>SVBBZGRyZXNzVHlwZToxNTU3Njg=: 104.16.60.2 |
+>| ipaddresses | SVBBZGRyZXNzVHlwZToxNTU3Njc=: 1.1.1.1<br>SVBBZGRyZXNzVHlwZToxNTU3Njg=: 1.1.1.1 |
 >| isMalicious | false |
 >| protocol | HTTP |
 >| risks | Umlza1R5cGU6NjYzNjA=: Vulnerable software found - jquery ui/1.13.0 (highest CVE score 4.3)<br>Umlza1R5cGU6MTU1ODQ=: Excessive cookie lifetime (> 1 year)<br>Umlza1R5cGU6MzQ4MzQ=: Excessive cookie lifetime (> 1 year) |

@@ -1,6 +1,6 @@
 {
     "id": "incident_darktraceasmassetstate",
-    "version": 1,
+    "version": -1,
     "fromVersion": "6.6.0",
     "modified": "2024-01-30T20:48:20.201728561Z",
     "name": "Darktrace ASM Asset State",
@@ -23,7 +23,7 @@
     "useAsKpi": false,
     "locked": false,
     "system": false,
-    "content": false,
+    "content": true,
     "group": 0,
     "hidden": false,
     "openEnded": false,
