@@ -500,6 +500,30 @@ script:
       type: textArea
     description: Runs reputation on IPs
     outputs:
+    - contextPath: Censys.IP.ip
+      description: The IP address.
+      type: String
+    - contextPath: Censys.IP.asn
+      description: The autonomous system number (ASN) associated with the IP.
+      type: Number
+    - contextPath: Censys.IP.region
+      description: The region or country associated with the IP.
+      type: String
+    - contextPath: Censys.IP.updated_date
+      description: The date when the information associated with the IP was last updated.
+      type: Date
+    - contextPath: Censys.IP.geo_latitude
+      description: The latitude coordinate of the IP's geographic location.
+      type: Number
+    - contextPath: Censys.IP.geo_longitude
+      description: The longitude coordinate of the IP's geographic location.
+      type: Number
+    - contextPath: Censys.IP.geo_country
+      description: The country associated with the IP's geographic location.
+      type: String
+    - contextPath: Censys.IP.port
+      description: The port numbers associated with the IP.
+      type: String
     - contextPath: DBotScore.Score
       description: The actual score.
       type: string
@@ -519,6 +543,34 @@ script:
       isArray: true
       type: textArea
     description: Runs reputation on Domains
+    outputs:
+    - contextPath: Censys.Domain.domain
+      description: The domain name.
+      type: String
+    - contextPath: Censys.Domain.description
+      description: A description associated with the autonomous system of the domain.
+      type: String
+    - contextPath: Censys.Domain.updated_date
+      description: The date when the information associated with the domain was last updated.
+      type: Date
+    - contextPath: Censys.Domain.geo_country
+      description: The country associated with the domain's geographic location.
+      type: String
+    - contextPath: Censys.Domain.port
+      description: The port numbers associated with the domain.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
   dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
