@@ -1920,7 +1920,7 @@ tasks:
       id: 608bdaf3-5ea5-4ea7-85bc-0343f8535b0d
       version: -1
       name: Is there a PPTX/XSLX file?
-      description: Checks if there is a Word file (DOC, DOCX) in context.
+      description: Checks if there is a PowerPoint or Excel file (PPTX/XSLX) in context.
       type: condition
       iscommand: false
       brand: ""
@@ -2013,7 +2013,7 @@ tasks:
       id: eefbac0c-db14-4ba0-85f7-fbb67a0f40b3
       version: -1
       name: Extract Hyper-Links from Office Files
-      description: 'Extracts hyperlinks from office files. Supported file types are: xlsx, docx, pptx.'
+      description: 'Extracts hyperlinks from Office files. Supported file types are: xlsx, docx, pptx.'
       scriptName: ExtractHyperlinksFromOfficeFiles
       type: regular
       iscommand: false
@@ -2374,13 +2374,13 @@ outputs:
   description: The IPs extracted from the QR code image if they are present.
   type: String
 - contextPath: ExtractedHyperLink
-  description: Extracted Hyperlinks from supported office documents (xlsx,docx,pptx).
+  description: Extracted hyperlinks from supported Office documents (xlsx,docx,pptx).
   type: unknown
 - contextPath: ExtractedHyperLink.URL
   description: The URL of the extracted hyperlink.
   type: String
 - contextPath: ExtractedHyperLink.FileName
-  description: The office file from which the hyperlinks are extracted.
+  description: The Office file from which the hyperlinks are extracted.
   type: String
 tests:
 - Extract Indicators From File - Generic v2 - Test
