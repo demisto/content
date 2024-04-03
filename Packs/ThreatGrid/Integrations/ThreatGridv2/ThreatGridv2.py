@@ -236,7 +236,8 @@ class Client(BaseClient):
             if self._headers:
                 self._headers.pop("Authorization")
             payload = {
-                "api_key": self.api_key
+                "api_key": self.api_key,
+                "classify": True
             }
 
         return self._http_request("POST",
@@ -1003,6 +1004,16 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
 
     if "sample_id" not in args:
         command_results = upload_sample_command(client, args)
+        if not dict_safe_get(command_results.raw_response, ["analyzing"]):
+            return PollResult(
+                response=CommandResults(
+                    readable_output=(
+                        "The file has not been analyzed. Reason:"
+                        " The file type is not supported or the file is low risk "
+                    )
+                ),
+                continue_to_poll=False,
+            )
         sample_id = command_results.raw_response["id"]  # type: ignore[index]
         args["sample_id"] = sample_id
     else:
@@ -1547,8 +1558,9 @@ def parse_file_to_sample(file_id: str) -> dict[str, Any]:
         Dict[str, Any]: Dict with file data.
     """
     file_data = demisto.getFilePath(file_id)
+    file_name = file_data["name"]
     with open(file_data["path"], "rb") as f:
-        file = {"sample": f.read()}
+        file = {"sample": (file_name, f.read())}
     return file
 
 

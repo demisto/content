@@ -1,8 +1,8 @@
 commonfields:
-  id: ThreatGridv2
+  id: ThreatGridv2_test
   version: -1
-name: ThreatGridv2
-display: Cisco Secure Malware Analytics (Threat Grid) v2
+name: ThreatGridv2_test
+display: Cisco Secure Malware Analytics (Threat Grid) v2 - (2.4.24)
 category: Forensics & Malware Analysis
 description: Query and upload samples to Cisco threat grid.
 configuration:
