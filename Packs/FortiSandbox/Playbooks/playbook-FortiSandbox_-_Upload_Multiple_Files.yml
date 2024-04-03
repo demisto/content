@@ -2,8 +2,9 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: Playbook used to upload files to FortiSandbox
+description: Playbook used to upload files to FortiSandbox. Deprecated. Use `fortisandbox-submission-file-upload` instead.
 id: FortiSandbox - Upload Multiple Files
+deprecated: true
 inputs:
 - description: ""
   key: FileEntryID

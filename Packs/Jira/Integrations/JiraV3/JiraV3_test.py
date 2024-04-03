@@ -1,5 +1,6 @@
 import json
 import pytest
+from pytest_mock import MockerFixture
 import demistomock as demisto
 from unittest.mock import patch
 from JiraV3 import (JiraBaseClient, JiraCloudClient, JiraOnPremClient)
@@ -717,6 +718,61 @@ class TestJiraEditIssueCommand:
         edit_issue_command(client=client, args=args)
         assert expected_issue_fields == edit_issue_mocker.call_args[1].get('json_data')
 
+    def test_edit_issue_command_with_issue_json_and_another_arg_error(self):
+        from JiraV3 import edit_issue_command
+        client = jira_base_client_mock()
+        with pytest.raises(
+            DemistoException,
+            match=(
+                "When using the `issue_json` argument, additional arguments cannot be used "
+                "except `issue_id`, `issue_key`, `status`, `transition`, and `action` arguments.ֿֿֿ"
+                "\n see the argument description"
+            )
+        ):
+            edit_issue_command(
+                client=client,
+                args={"summary": "test", "issue_json": '{"fields": {"customfield_10037":"field_value"}}'}
+            )
+
+    @pytest.mark.parametrize(
+        "extra_args",
+        [
+            {"action": "test"},
+            {"status": "test"},
+            {"transition": "test"},
+            {"issue_key": "test"},
+            {"issue_id": "test"},
+        ]
+    )
+    def test_edit_issue_command_with_issue_json_and_another_arg_no_error(
+        self, mocker: MockerFixture, extra_args: dict
+    ):
+        """
+        Given:
+            - The `issue_json` arg and one more arg allowed for use with `issue_json`
+        When:
+            - run edit_issue_command function
+        Then:
+            - Ensure that the validation process,
+              which ensures that no additional arguments are present alongside the 'issue_json' argument,
+              does not result in an error in cases where the additional arguments are one of:
+              `action`, `status`, `transition`.
+
+        """
+        from JiraV3 import edit_issue_command
+
+        client = jira_base_client_mock()
+        mocker.patch("JiraV3.apply_issue_status")
+        mocker.patch("JiraV3.apply_issue_transition")
+        mocker.patch.object(client, "edit_issue")
+        mocker.patch.object(client, "get_issue", return_value={})
+        mocker.patch("JiraV3.create_issue_md_and_outputs_dict", return_value=({}, {}))
+        mocker.patch("JiraV3.create_issue_fields", return_value={})
+        mocker.patch("JiraV3.create_issue_fields_for_appending", return_value={})
+        mocker.patch("JiraV3.get_issue_id_or_key", return_value="test")
+        args = {"issue_json": '{"fields": {"customfield_10037":"field_value"}}'} | extra_args
+        assert edit_issue_command(client=client, args=args)
+
 
 class TestJiraCreateIssueCommand:
     def test_create_issue_command(self, mocker):
@@ -755,6 +811,27 @@ class TestJiraCreateIssueCommand:
         command_result = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'})
         assert command_result.to_context().get('EntryContext') == {'Ticket(val.Id && val.Id == obj.Id)': expected_outputs}
 
+    def test_create_issue_command_with_issue_json_and_another_arg(self):
+        """
+        Given:
+            - A Jira client
+            - issue_json and summary args
+        When
+            - Calling the create issue command.
+        Then
+            - Ensure an error is raised with an expected error message.
+        """
+        from JiraV3 import create_issue_command
+        client = jira_base_client_mock()
+        with pytest.raises(
+            DemistoException,
+            match="When using the argument `issue_json`, additional arguments cannot be used.ֿֿֿ\n see the argument description"
+        ):
+            create_issue_command(
+                client=client,
+                args={"summary": "test", "issue_json": '{"fields": {"customfield_10037":"field_value"}}'}
+            )
+
     def test_create_issue_command_no_summary(self):
         """
         Given:
@@ -787,6 +864,24 @@ class TestJiraDeleteIssueCommand:
         mocker.patch.object(client, 'delete_issue', return_value=requests.Response())
         command_result = delete_issue_command(client=client, args={'issue_key': 'dummy_key'})
         assert 'Issue deleted successfully' in command_result.to_context().get('HumanReadable')
+
+
+class TestJiraDeleteAttachmentFileCommand:
+    def test_delete_attachment_file_command(self, mocker: MockerFixture):
+        """
+        Given:
+            - A Jira client.
+        When
+            - Calling the delete attachment file command.
+        Then
+            - Validate that the correct readable output is outputted to the user.
+        """
+        from JiraV3 import delete_attachment_file_command
+        attachment_id = "dummy_id"
+        client = jira_base_client_mock()
+        mocker.patch.object(client, 'delete_attachment_file', return_value=requests.Response())
+        command_result = delete_attachment_file_command(client=client, args={'attachment_id': attachment_id})
+        assert f'Attachment id {attachment_id} was deleted successfully' in command_result.to_context().get('HumanReadable')
 
 
 class TestJiraGetTransitionsCommand:

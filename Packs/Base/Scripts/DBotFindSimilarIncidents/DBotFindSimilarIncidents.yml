@@ -84,7 +84,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/ml:1.0.0.84027
+dockerimage: demisto/ml:1.0.0.88591
 runas: DBotWeakRole
 runonce: true
 tests:

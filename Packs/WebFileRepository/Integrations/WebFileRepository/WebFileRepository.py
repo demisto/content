@@ -1604,6 +1604,388 @@ dFVwwzDRxgIAAMYCAAAOACQAAAAAAAAAIAAAACBDAQBmaV91bmtub3duLnBuZwoAIAAAAAAA
 AQAYAPbxqWe5/NgB/RpAo7n82AElXftTrfzYAVBLBQYAAAAABgAGAEICAAASRgEAAAA=
 '''
 RESOURCES_ZIP: zipfile.ZipFile | None = None
+RESOURCES_DIC: dict[str, str] = {
+    'main.js': (
+        r'''
+var STORAGE_USAGE = 0;
+var SANDBOX_USAGE = 0;
+var STORAGE_PROTECTION_MODE = 'read/write';
+
+function is_read_only_mode() {
+  return STORAGE_PROTECTION_MODE == 'read-only';
+}
+
+function update_status() {
+  $.ajaxSetup({async: false});
+  $.getJSON('?q=status&_=' + Date.now(), function(resp){
+    STORAGE_USAGE = resp.storage_usage;
+    SANDBOX_USAGE = resp.storage_protection == 'sandbox' ? resp.sandbox_usage : -1;
+    STORAGE_PROTECTION_MODE = resp.storage_protection;
+  })
+  $.ajaxSetup({async: true});
+}
+update_status();
+
+$(document).ready(function () {
+  let table = $("#filelist").DataTable({
+    ajax: {
+      url: location.search ? location.search + '&q=ls' : '?q=ls',
+      type: 'GET',
+    },
+    orderFixed: [1, 'asc'],
+    rowGroup: {
+      dataSrc: ['base'],
+    },
+    deferRender: false,
+    dom: 'Bfrtip',
+    pageLength: 10,
+    lengthMenu: [
+      [10, 25, 50, -1],
+      ['10 rows', '25 rows', '50 rows', 'Show all']
+    ],
+    select: {
+      style: is_read_only_mode() ? 'api': 'multi'
+    },
+    columnDefs: [
+      {
+        targets: 0,
+        className: 'select-checkbox',
+        width: '10px',
+        searchable: false,
+        orderable: false,
+        createdCell: function(td, cell, row, rows, col) {
+          if (row.type == 'P' || is_read_only_mode()) {
+            $(td).removeClass('select-checkbox');
+          }
+        },
+        render: function (data, type, full, meta) {
+          return '';
+        },
+      },
+      {
+        targets: 3,
+        width: '65%'
+      }
+    ],
+    buttons: [
+      'pageLength',
+      is_read_only_mode() ? '': 'selectAll',
+      is_read_only_mode() ? '': 'selectNone',
+      is_read_only_mode() ? '': {
+        text: 'Delete',
+        className: 'delete',
+        enabled: false,
+        action: function(e, dt, node, config) {
+          let data = this.rows({selected: true}).data();
+          let base = data.length != 0 ? data[0].base : '/';
+          let request = {
+              'q': 'delete',
+              'path': data.pluck('path').toArray()
+          };
+
+          $.ajax({
+            type: 'POST',
+            url: '',
+            data: JSON.stringify(request),
+            dataType: 'json',
+            processData: false,
+            contentType: 'application/json',
+            success: function (response) {
+              if (!response['success']) {
+                alert('Failed to delete entries: ' + response['message']);
+              }
+              table.ajax.url('?q=ls&dir=' + encodeURIComponent(base)).load(function() {
+                handle_onload(table);
+              });
+            },
+            error: function (response) {
+              console.log(response);
+              alert('Failed to delete entries.');
+            }
+          });
+        }
+      },
+      {
+        text: 'Archive all',
+        className: 'archive-all',
+        enabled: true,
+        action: function(e, dt, node, config) {
+          e.preventDefault();
+          location.href = '?q=archive-all&_=' + Date.now();
+        }
+      },
+    ],
+    columns: [
+      {
+        data: 'path',
+        visible: is_read_only_mode() ? false : true,
+      },
+      {
+        data: 'type',
+        visible: false,
+        render: function(data, type, row, meta) {
+          return {'P': 0, 'D': 1, 'F': 2}[data];
+        }
+      },
+      {
+        data: 'base',
+        visible: false,
+      },
+      {
+        data: 'name',
+        render: function(data, type, row, meta) {
+          attrs = {
+            P: {
+              dname: 'Parent Directory',
+              iname: 'fi_parent.png'
+            },
+            D: {
+              dname: data,
+              iname: 'fi_folder.png'
+            },
+            F: {
+              dname: data,
+              iname: 'fi_file.png'
+            },
+            0: {
+              dname: data,
+              iname: 'fi_unknown.png'
+            }
+          };
+          let path = row.path;
+          if (location.pathname.endsWith('/')) {
+              path = path.replace(/^\/*/, '');
+          } else {
+              path = location.pathname.substr(location.pathname.lastIndexOf('/') + 1) + path;
+          }
+          let attr = attrs[row.type in attrs ? row.type : 0];
+          let href = ['P', 'D'].includes(row.type) ?
+                     '?dir=' + encodeURIComponent(row.path) :
+                     encodeURIComponent(path);
+          return '<div>' +
+                 '<img src="?q=resource&name=' + encodeURIComponent(attr.iname) +
+                 '" style="float:left;margin-right:8px" alt="' + row.type + '">' +
+                 '<a href="' + href + '" class="file-entry">' + attr.dname + '</a>' +
+                 '</div>';
+        }
+      },
+      {
+        data: 'last-modified',
+        render: function(data, type, row, meta) {
+          if (type != 'display') {
+            return data;
+          }
+          let ts = parseInt(data);
+          if (isNaN(ts)) {
+            return data;
+          }
+          let d = new Date(data * 1000);
+          let tz = d.getTimezoneOffset();
+          let tzstr = ' UTC';
+          if (tz != 0) {
+            tzstr = tz < 0 ? '+' : '-';
+            tz = Math.abs(tz);
+            tzstr += ('00' + Math.floor((tz / 60))).slice(-2) + ('00' + (tz % 60)).slice(-2);
+          }
+          return d.getFullYear() + '-' +
+                 ('00' + (d.getMonth() + 1)).slice(-2) + '-' +
+                 ('00' + d.getDate()).slice(-2) + ' ' +
+                 ('00' + d.getHours()).slice(-2) + ':' +
+                 ('00' + d.getMinutes()).slice(-2) + ':' +
+                 ('00' + d.getSeconds()).slice(-2) + tzstr;
+        }
+      },
+      {
+        data: 'size',
+        type: 'numeric',
+        render: function(data, type, row, meta) {
+          return type != 'display' ? data : pretty_size(data);
+        }
+      },
+    ],
+    footerCallback: function (row, data, start, end, display) {
+      update_status();
+      let footer = 'Storage Usage: ' + pretty_size(STORAGE_USAGE);
+      if (SANDBOX_USAGE >= 0) {
+        footer += ' + ' + pretty_size(SANDBOX_USAGE);
+      }
+      footer += ' (' + to_title_case(STORAGE_PROTECTION_MODE) +' Mode)';
+
+      let api = this.api();
+      $(api.column(1).footer()).html(footer);
+    },
+    order: [
+      [1, 'asc'],
+      [2, 'asc'],
+      [3, 'asc'],
+      [4, 'asc'],
+      [5, 'asc'],
+    ],
+    initComplete: function(settings, json) {
+      handle_onload(table);
+    }
+  });
+
+  table.on('user-select', function (e, dt, type, cell, originalEvent) {
+    let data = table.row(cell.node()).data();
+    if (data.type == 'P') {
+      e.preventDefault();
+    }
+  })
+  .on('select', function (e, dt, type, indexes) {
+    handle_onload(table);
+  })
+  .on('deselect', function (e, dt, type, indexes) {
+    handle_onload(table);
+  });
+
+  $('#filelist tbody').on('click', '.file-entry', function () {
+    let data = table.row($(this).closest('tr')).data();
+    if (data.type == 'P' || data.type == 'D') {
+      table.ajax.url('?q=ls&dir=' + encodeURIComponent(data.path)).load();
+      return false;
+    } else {
+      table.rows().deselect();
+    }
+  });
+
+  $('#select-all').on('click', function() {
+    let rows = table.rows({search: 'applied'});
+    this.checked ? rows.select() : rows.deselect();
+  });
+});
+
+$(function(){
+  $(document).on('dragover', function (event) {
+    event.preventDefault();
+  });
+  $(document).on('dragleave', function (event) {
+    event.preventDefault();
+  });
+  $(document).on('drop', function (event) {
+    event.preventDefault();
+  });
+  $(document).on('dragover', '#file-drop-area', function (event) {
+    event.preventDefault();
+    $('#file-drop-area').css({'background-color': 'rgb(200, 200, 200)'});
+  });
+  $(document).on('dragleave', '#file-drop-area', function (event) {
+    event.preventDefault();
+    $('#file-drop-area').css({'background-color': 'rgba(0, 0, 0, 0)'});
+  });
+  $(document).on('drop', '#file-drop-area', function (event) {
+    let ev = event.originalEvent || event;
+    ev.preventDefault();
+    $('#file-drop-area').css({'background-color': 'rgba(0, 0, 0, 0)'});
+    upload_files(ev.dataTransfer.files);
+  });
+  $(document).on('change', '#file_input', function (event) {
+    event.preventDefault();
+    upload_files(this.files);
+  });
+});
+
+function handle_onload(table) {
+  let select_all = $('#select-all');
+  let delete_btn = table.buttons(['.delete']);
+  let arcall_btn = table.buttons(['.archive-all']);
+  let count = table.rows({selected: true}).indexes().length;
+  let total = table.rows().indexes().length;
+  select_all.prop('checked', count != 0 && count == total);
+  select_all.prop('indeterminate', count != 0 && count != total);
+  count == 0 ? delete_btn.disable() : delete_btn.enable();
+  total == 0 ? arcall_btn.disable() : arcall_btn.enable();
+  if (is_read_only_mode()) {
+     $('#file-upload-form').css({'display': 'none'});
+    select_all.css({'display': 'none'});
+  }
+}
+
+function upload_files(files) {
+  let base = $('#file-upload-dir').val();
+  let table = $('#filelist').DataTable();
+  let data = table.rows().data();
+  let curdir = data.length != 0 ? data[0].base : '/';
+  let form = new FormData();
+  for(let file of files) {
+    form.append('file', file);
+  }
+  form.append('dir', base || curdir);
+  form.append('extract', $('#file-upload-extract').prop('checked'));
+  form.append('q', 'upload');
+
+  $('#file-upload-result').text('');
+  $('#file-upload-progress').val(0);
+
+  $.ajax({
+    type: 'POST',
+    url: '',
+    data: JSON.stringify({q: 'health', permission: 'write'}),
+    dataType: 'json',
+    processData: false,
+    contentType: 'application/json',
+    success: function (response) {
+      $.ajax({
+        type: 'POST',
+        url: '',
+        data: form,
+        processData: false,
+        contentType: false,
+        xhr : function(){
+          $('#file-upload-result').text('Uploading...');
+          let xhr = $.ajaxSettings.xhr();
+          xhr.upload.addEventListener('progress', function(e) {
+            let progre = parseInt(e.loaded/e.total * 100);
+            $('#file-upload-progress').val(progre);
+            $('#file-upload-progress').css({display: ''});
+          });
+          return xhr;
+        },
+        success: function (response) {
+          console.log(response);
+          $('#file-upload-result').text(response['success'] ? 'Done.' : 'Failed:' + response['message']);
+          table.ajax.url('?q=ls&dir=' + encodeURIComponent(curdir)).load(function() {
+            handle_onload(table);
+          });
+        },
+        error: function (response) {
+          console.log(response);
+          $('#file-upload-result').text(response.statusText);
+          table.ajax.url('?q=ls&dir=' + encodeURIComponent(curdir)).load(function() {
+            handle_onload(table);
+          });
+        }
+      });
+    },
+    error: function (response) {
+      console.log(response);
+      $('#file-upload-result').text(response.statusText);
+    }
+  });
+}
+
+function pretty_size(size){
+  let szstr = '';
+  size = parseInt(size);
+  if (!isNaN(size)) {
+    const units = ['bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.min(Math.floor(Math.log2(size ? size : 1) / 10), units.length - 1);
+    szstr = (i == 0 ? size : (size / Math.pow(1024, i)).toFixed(1)) + ' ' + units[i];
+  }
+  return  szstr;
+}
+
+function to_title_case(str) {
+  return str.replace(
+    /([^\W_]+[^\s-/]*) */g,
+    function(txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    }
+  );
+}
+        '''
+    )
+}
 
 DEFAULT_MIME_TYPES = '''
 {
@@ -2461,381 +2843,7 @@ HTML_MAIN = r'''
     <meta charset="UTF-8">
     <link rel="stylesheet" type="text/css" href="?q=resource&name=datatables.min.css"/>
     <script type="text/javascript" src="?q=resource&name=datatables.min.js"></script>
-    <script>
-      var STORAGE_USAGE = 0;
-      var SANDBOX_USAGE = 0;
-      var STORAGE_PROTECTION_MODE = 'read/write';
-
-      function is_read_only_mode() {
-        return STORAGE_PROTECTION_MODE == 'read-only';
-      }
-
-      function update_status() {
-        $.ajaxSetup({async: false});
-        $.getJSON('?q=status&_=' + Date.now(), function(resp){
-          STORAGE_USAGE = resp.storage_usage;
-          SANDBOX_USAGE = resp.storage_protection == 'sandbox' ? resp.sandbox_usage : -1;
-          STORAGE_PROTECTION_MODE = resp.storage_protection;
-        })
-        $.ajaxSetup({async: true});
-      }
-      update_status();
-
-      $(document).ready(function () {
-        let table = $("#filelist").DataTable({
-          ajax: {
-            url: location.search ? location.search + '&q=ls' : '?q=ls',
-            type: 'GET',
-          },
-          orderFixed: [1, 'asc'],
-          rowGroup: {
-            dataSrc: ['base'],
-          },
-          deferRender: false,
-          dom: 'Bfrtip',
-          pageLength: 10,
-          lengthMenu: [
-            [10, 25, 50, -1],
-            ['10 rows', '25 rows', '50 rows', 'Show all']
-          ],
-          select: {
-            style: is_read_only_mode() ? 'api': 'multi'
-          },
-          columnDefs: [
-            {
-              targets: 0,
-              className: 'select-checkbox',
-              width: '10px',
-              searchable: false,
-              orderable: false,
-              createdCell: function(td, cell, row, rows, col) {
-                if (row.type == 'P' || is_read_only_mode()) {
-                  $(td).removeClass('select-checkbox');
-                }
-              },
-              render: function (data, type, full, meta) {
-                return '';
-              },
-            },
-            {
-              targets: 3,
-              width: '65%'
-            }
-          ],
-          buttons: [
-            'pageLength',
-            is_read_only_mode() ? '': 'selectAll',
-            is_read_only_mode() ? '': 'selectNone',
-            is_read_only_mode() ? '': {
-              text: 'Delete',
-              className: 'delete',
-              enabled: false,
-              action: function(e, dt, node, config) {
-                let data = this.rows({selected: true}).data();
-                let base = data.length != 0 ? data[0].base : '/';
-                let request = {
-                    'q': 'delete',
-                    'path': data.pluck('path').toArray()
-                };
-
-                $.ajax({
-                  type: 'POST',
-                  url: '',
-                  data: JSON.stringify(request),
-                  dataType: 'json',
-                  processData: false,
-                  contentType: 'application/json',
-                  success: function (response) {
-                    if (!response['success']) {
-                      alert('Failed to delete entries: ' + response['message']);
-                    }
-                    table.ajax.url('?q=ls&dir=' + encodeURIComponent(base)).load(function() {
-                      handle_onload(table);
-                    });
-                  },
-                  error: function (response) {
-                    console.log(response);
-                    alert('Failed to delete entries.');
-                  }
-                });
-              }
-            },
-            {
-              text: 'Archive all',
-              className: 'archive-all',
-              enabled: true,
-              action: function(e, dt, node, config) {
-                e.preventDefault();
-                location.href = '?q=archive-all&_=' + Date.now();
-              }
-            },
-          ],
-          columns: [
-            {
-              data: 'path',
-              visible: is_read_only_mode() ? false : true,
-            },
-            {
-              data: 'type',
-              visible: false,
-              render: function(data, type, row, meta) {
-                return {'P': 0, 'D': 1, 'F': 2}[data];
-              }
-            },
-            {
-              data: 'base',
-              visible: false,
-            },
-            {
-              data: 'name',
-              render: function(data, type, row, meta) {
-                attrs = {
-                  P: {
-                    dname: 'Parent Directory',
-                    iname: 'fi_parent.png'
-                  },
-                  D: {
-                    dname: data,
-                    iname: 'fi_folder.png'
-                  },
-                  F: {
-                    dname: data,
-                    iname: 'fi_file.png'
-                  },
-                  0: {
-                    dname: data,
-                    iname: 'fi_unknown.png'
-                  }
-                };
-                let path = row.path;
-                if (location.pathname.endsWith('/')) {
-                    path = path.replace(/^\/*/, '');
-                } else {
-                    path = location.pathname.substr(location.pathname.lastIndexOf('/') + 1) + path;
-                }
-                let attr = attrs[row.type in attrs ? row.type : 0];
-                let href = ['P', 'D'].includes(row.type) ?
-                           '?dir=' + encodeURIComponent(row.path) :
-                           encodeURIComponent(path);
-                return '<div>' +
-                       '<img src="?q=resource&name=' + encodeURIComponent(attr.iname) +
-                       '" style="float:left;margin-right:8px" alt="' + row.type + '">' +
-                       '<a href="' + href + '" class="file-entry">' + attr.dname + '</a>' +
-                       '</div>';
-              }
-            },
-            {
-              data: 'last-modified',
-              render: function(data, type, row, meta) {
-                if (type != 'display') {
-                  return data;
-                }
-                let ts = parseInt(data);
-                if (isNaN(ts)) {
-                  return data;
-                }
-                let d = new Date(data * 1000);
-                let tz = d.getTimezoneOffset();
-                let tzstr = ' UTC';
-                if (tz != 0) {
-                  tzstr = tz < 0 ? '+' : '-';
-                  tz = Math.abs(tz);
-                  tzstr += ('00' + Math.floor((tz / 60))).slice(-2) + ('00' + (tz % 60)).slice(-2);
-                }
-                return d.getFullYear() + '-' +
-                       ('00' + (d.getMonth() + 1)).slice(-2) + '-' +
-                       ('00' + d.getDate()).slice(-2) + ' ' +
-                       ('00' + d.getHours()).slice(-2) + ':' +
-                       ('00' + d.getMinutes()).slice(-2) + ':' +
-                       ('00' + d.getSeconds()).slice(-2) + tzstr;
-              }
-            },
-            {
-              data: 'size',
-              type: 'numeric',
-              render: function(data, type, row, meta) {
-                return type != 'display' ? data : pretty_size(data);
-              }
-            },
-          ],
-          footerCallback: function (row, data, start, end, display) {
-            update_status();
-            let footer = 'Storage Usage: ' + pretty_size(STORAGE_USAGE);
-            if (SANDBOX_USAGE >= 0) {
-              footer += ' + ' + pretty_size(SANDBOX_USAGE);
-            }
-            footer += ' (' + to_title_case(STORAGE_PROTECTION_MODE) +' Mode)';
-
-            let api = this.api();
-            $(api.column(1).footer()).html(footer);
-          },
-          order: [
-            [1, 'asc'],
-            [2, 'asc'],
-            [3, 'asc'],
-            [4, 'asc'],
-            [5, 'asc'],
-          ],
-          initComplete: function(settings, json) {
-            handle_onload(table);
-          }
-        });
-
-        table.on('user-select', function (e, dt, type, cell, originalEvent) {
-          let data = table.row(cell.node()).data();
-          if (data.type == 'P') {
-            e.preventDefault();
-          }
-        })
-        .on('select', function (e, dt, type, indexes) {
-          handle_onload(table);
-        })
-        .on('deselect', function (e, dt, type, indexes) {
-          handle_onload(table);
-        });
-
-        $('#filelist tbody').on('click', '.file-entry', function () {
-          let data = table.row($(this).closest('tr')).data();
-          if (data.type == 'P' || data.type == 'D') {
-            table.ajax.url('?q=ls&dir=' + encodeURIComponent(data.path)).load();
-            return false;
-          } else {
-            table.rows().deselect();
-          }
-        });
-
-        $('#select-all').on('click', function() {
-          let rows = table.rows({search: 'applied'});
-          this.checked ? rows.select() : rows.deselect();
-        });
-
-      });
-
-      $(function(){
-        $(document).on('dragover', function (event) {
-          event.preventDefault();
-        });
-        $(document).on('dragleave', function (event) {
-          event.preventDefault();
-        });
-        $(document).on('drop', function (event) {
-          event.preventDefault();
-        });
-        $(document).on('dragover', '#file-drop-area', function (event) {
-          event.preventDefault();
-          $('#file-drop-area').css({'background-color': 'rgb(200, 200, 200)'});
-        });
-        $(document).on('dragleave', '#file-drop-area', function (event) {
-          event.preventDefault();
-          $('#file-drop-area').css({'background-color': 'rgba(0, 0, 0, 0)'});
-        });
-        $(document).on('drop', '#file-drop-area', function (event) {
-          let ev = event.originalEvent || event;
-          ev.preventDefault();
-          $('#file-drop-area').css({'background-color': 'rgba(0, 0, 0, 0)'});
-          upload_files(ev.dataTransfer.files);
-        });
-      });
-
-      function handle_onload(table) {
-        let select_all = $('#select-all');
-        let delete_btn = table.buttons(['.delete']);
-        let arcall_btn = table.buttons(['.archive-all']);
-        let count = table.rows({selected: true}).indexes().length;
-        let total = table.rows().indexes().length;
-        select_all.prop('checked', count != 0 && count == total);
-        select_all.prop('indeterminate', count != 0 && count != total);
-        count == 0 ? delete_btn.disable() : delete_btn.enable();
-        total == 0 ? arcall_btn.disable() : arcall_btn.enable();
-        if (is_read_only_mode()) {
-           $('#file-upload-form').css({'display': 'none'});
-          select_all.css({'display': 'none'});
-        }
-      }
-
-      function upload_files(files) {
-        let base = $('#file-upload-dir').val();
-        let table = $('#filelist').DataTable();
-        let data = table.rows().data();
-        let curdir = data.length != 0 ? data[0].base : '/';
-        let form = new FormData();
-        for(let file of files) {
-          form.append('file', file);
-        }
-        form.append('dir', base || curdir);
-        form.append('extract', $('#file-upload-extract').prop('checked'));
-        form.append('q', 'upload');
-
-        $('#file-upload-result').text('');
-        $('#file-upload-progress').val(0);
-
-        $.ajax({
-          type: 'POST',
-          url: '',
-          data: JSON.stringify({q: 'health', permission: 'write'}),
-          dataType: 'json',
-          processData: false,
-          contentType: 'application/json',
-          success: function (response) {
-            $.ajax({
-              type: 'POST',
-              url: '',
-              data: form,
-              processData: false,
-              contentType: false,
-              xhr : function(){
-                $('#file-upload-result').text('Uploading...');
-                let xhr = $.ajaxSettings.xhr();
-                xhr.upload.addEventListener('progress', function(e) {
-                  let progre = parseInt(e.loaded/e.total * 100);
-                  $('#file-upload-progress').val(progre);
-                  $('#file-upload-progress').css({display: ''});
-                });
-                return xhr;
-              },
-              success: function (response) {
-                console.log(response);
-                $('#file-upload-result').text(response['success'] ? 'Done.' : 'Failed:' + response['message']);
-                table.ajax.url('?q=ls&dir=' + encodeURIComponent(curdir)).load(function() {
-                  handle_onload(table);
-                });
-              },
-              error: function (response) {
-                console.log(response);
-                $('#file-upload-result').text(response.statusText);
-                table.ajax.url('?q=ls&dir=' + encodeURIComponent(curdir)).load(function() {
-                  handle_onload(table);
-                });
-              }
-            });
-          },
-          error: function (response) {
-            console.log(response);
-            $('#file-upload-result').text(response.statusText);
-          }
-        });
-      }
-
-      function pretty_size(size){
-        let szstr = '';
-        size = parseInt(size);
-        if (!isNaN(size)) {
-          const units = ['bytes', 'KB', 'MB', 'GB', 'TB'];
-          const i = Math.min(Math.floor(Math.log2(size ? size : 1) / 10), units.length - 1);
-          szstr = (i == 0 ? size : (size / Math.pow(1024, i)).toFixed(1)) + ' ' + units[i];
-        }
-        return  szstr;
-      }
-
-      function to_title_case(str) {
-        return str.replace(
-          /([^\W_]+[^\s-/]*) */g,
-          function(txt) {
-            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-          }
-        );
-      }
-    </script>
+        <script type="text/javascript" src="?q=resource&name=main.js"></script>
 
     <style>
       #file-uploader label {
@@ -2871,7 +2879,7 @@ HTML_MAIN = r'''
   <table id="filelist" class="display">
     <thead>
       <tr>
-        <th><input type="checkbox" id="select-all"></th>
+        <th><input type="checkbox" id="select-all" /></th>
         <th>Type</th>
         <th>Base</th>
         <th>Name</th>
@@ -2889,15 +2897,14 @@ HTML_MAIN = r'''
     <form action="#" method="POST" enctype="multipart/form-data">
       <div id="file-uploader">
         <label id="file-drop-area">
-          <input id="file_input" type="file" name="files" onchange="upload_files(this.files);" multiple>Drop files to upload
+          <input id="file_input" type="file" name="files" multiple />Drop files to upload
         </label>
       </div>
 
       <div id="file-uploader-tailer">
-        <label>Upload To:<input id="file-upload-dir" type="text" size="64"></label>
+        <label>Upload To:<input id="file-upload-dir" type="text" size="64" /></label>
         <label>
-            <input type="checkbox"
-                   id="file-upload-extract">Extract archives (.zip, .tar, tar.gz, .tar.bz2, .tar.xz)
+          <input type="checkbox" id="file-upload-extract" />Extract archives (.zip, .tar, tar.gz, .tar.bz2, .tar.xz)
         </label><br>
         <progress id="file-upload-progress" value="0" max="100" style="display:none; width:500px;"></progress>
         <span id="file-upload-result"></span>
@@ -3968,23 +3975,28 @@ class ServiceHandler:
         self,
         request: BaseRequest
     ) -> HTTPResponse:
+        global RESOURCES_DIC
         global RESOURCES_ZIP
         if RESOURCES_ZIP is None:
             RESOURCES_ZIP = zipfile.ZipFile(io.BytesIO(base64.b64decode(RESOURCES_ZIP_B64)), 'r')
 
-        if request.query.name not in RESOURCES_ZIP.namelist():
+        body: str | bytes | None = None
+        if request.query.name in RESOURCES_DIC:
+            body = RESOURCES_DIC.get(request.query.name)
+        elif request.query.name in RESOURCES_ZIP.namelist():
+            body = RESOURCES_ZIP.read(request.query.name)
+        else:
             bottle.abort(404, 'go to 404')
 
         _, ext = os.path.splitext(request.query.name)
 
-        response = HTTPResponse()
+        response = HTTPResponse(body)
         response.content_type = {
             '.css': 'text/css',
             '.js': 'text/javascript',
             '.png': 'image/png'
         }.get(ext, 'application/octet-stream')
 
-        response.body = RESOURCES_ZIP.read(request.query.name)
         return response
 
     def __handle_get_status(

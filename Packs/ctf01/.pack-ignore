@@ -5,7 +5,7 @@ ignore=PB105
 ignore=IN136,IN124
 
 [file:CortexXDRIRCTF.yml]
-ignore=IN126
+ignore=IN126,IN136
 
 
 [file:incidentfield-CTF01.json]

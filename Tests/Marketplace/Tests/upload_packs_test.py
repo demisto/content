@@ -6,7 +6,8 @@ import os
 
 import pytest
 from unittest.mock import patch
-from Tests.Marketplace.upload_packs import get_packs_ids_to_upload, get_updated_private_packs, is_private_packs_updated
+from Tests.Marketplace.upload_packs import (get_packs_ids_to_upload, get_updated_private_packs, is_private_packs_updated,
+                                            get_packs_ids_to_upload_and_update)
 
 from Tests.Marketplace.marketplace_services import Pack
 from Tests.Marketplace.marketplace_constants import Metadata
@@ -21,6 +22,17 @@ class TestModifiedPacks:
     ])
     def test_get_packs_names_specific(self, packs_names_input, expected_result):
         modified_packs = get_packs_ids_to_upload(packs_names_input)
+
+        assert modified_packs == expected_result
+
+    @pytest.mark.parametrize("packs_names_input, expected_result", [
+        ('{"packs_to_upload": ["pack1", "pack2"], "packs_to_update_metadata": ["pack3"]}',
+         ({'pack1', 'pack2'}, {'pack3'})),
+        ('{"packs_to_upload": ["pack1", "pack2", "pack2"], "packs_to_update_metadata": ["pack3"]}',
+         ({'pack1', 'pack2'}, {'pack3'}))
+    ])
+    def test_get_packs_ids_to_upload_and_update(self, packs_names_input, expected_result):
+        modified_packs = get_packs_ids_to_upload_and_update(packs_names_input)
 
         assert modified_packs == expected_result
 
@@ -49,13 +61,13 @@ def scan_dir(dirs=None):
     return [FakeDirEntry('mock_path', 'mock_dir'), FakeDirEntry('mock_path2', 'mock_file')]
 
 
-class TestUpdateIndex:
+class TestUpdateIndexAndPack:
 
     statistics_metadata = {
         Metadata.DOWNLOADS: 0,
         Metadata.SEARCH_RANK: None,
         Metadata.TAGS: [],
-        Metadata.INTEGRATIONS: None
+        Metadata.INTEGRATIONS: None,
     }
 
     def test_update_index_folder_new_version(self, mocker):
@@ -166,6 +178,7 @@ class TestUpdateIndex:
         """
         from Tests.Marketplace import upload_packs
 
+        logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.debug")
         json_write_mock = mocker.patch.object(upload_packs, 'json_write', return_value=None)
         mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
@@ -180,7 +193,7 @@ class TestUpdateIndex:
 
         mocker.patch('os.scandir', side_effect=[index_dirs, pack_dirs])
 
-        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False)
+        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False, is_metadata_updated=False)
         dummy_pack.current_version = '2.0.0'
         upload_packs.update_index_folder('Index', dummy_pack)
 
@@ -194,14 +207,22 @@ class TestUpdateIndex:
         for call_arg in copy_call_args:
             assert call_arg[0] in expected_copy_args
 
+        assert any(
+            call_args == ((
+                "Updating metadata only with statistics because self._pack_name='HelloWorld' "
+                "self.is_modified=False self.is_metadata_updated=False"),)
+            for call_args, _ in logging_mock.call_args_list
+        )
+
     def test_update_index_folder_one_version(self, mocker):
         """
-        Scenario: Update the bucket index when a pack is not updated (same version)
+        Scenario: Update the bucket index when a pack is not updated (same version) but metadata_updated.
 
         Given
         - Pack exists in the index folder
         - Pack is not updated
         - Pack has one version
+        - Pack's metadata field was changed
 
         When
         - Updating the bucket index
@@ -212,6 +233,7 @@ class TestUpdateIndex:
         """
         from Tests.Marketplace import upload_packs
 
+        logging_mock = mocker.patch("Tests.Marketplace.marketplace_services.logging.debug")
         json_write_mock = mocker.patch.object(upload_packs, 'json_write', return_value=None)
         mocker.patch('os.path.exists')
         pack_dirs = scan_dir([('HelloWorld/metadata.json', 'metadata.json'),
@@ -223,7 +245,7 @@ class TestUpdateIndex:
                                ('Index/HelloWorld/README.md', 'README.md')])
         mocker.patch('os.scandir', side_effect=[index_dirs, pack_dirs])
 
-        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False)
+        dummy_pack = Pack('HelloWorld', 'HelloWorld', is_modified=False, is_metadata_updated=True)
         dummy_pack.current_version = '1.0.0'
         upload_packs.update_index_folder('Index', dummy_pack)
 
@@ -236,6 +258,13 @@ class TestUpdateIndex:
         assert copy_call_count == 2
         for call_arg in copy_call_args:
             assert call_arg[0] in expected_copy_args
+
+        assert any(
+            call_args == ((
+                "Updating metadata with statistics and metadata changes because self._pack_name='HelloWorld' "
+                "self.is_modified=False self.is_metadata_updated=True"),)
+            for call_args, _ in logging_mock.call_args_list
+        )
 
     def test_update_index_folder_not_versioned(self, mocker):
         """
@@ -277,6 +306,41 @@ class TestUpdateIndex:
         assert copy_call_count == 2
         for call_arg in copy_call_args:
             assert call_arg[0] in expected_copy_args
+
+    def test_download_and_extract_pack(self, mocker):
+        """
+            Given:
+                - A pack version exists in the storage bucket.
+            When:
+                - Downloading and extracting the pack.
+            Then:
+                - Ensure the pack is downloaded and extracted successfully.
+        """
+        from zipfile import ZipFile
+        from Tests.Marketplace.marketplace_constants import GCPConfig
+        from Tests.Marketplace.upload_packs import download_and_extract_pack
+
+        dummy_storage_bucket = mocker.MagicMock()
+        dummy_storage_bucket.name = GCPConfig.PRODUCTION_BUCKET
+
+        pack_version = "2.0.0"
+        storage_base_path = GCPConfig.CONTENT_PACKS_PATH
+        extract_destination_path = "/path/to/save"
+        pack_name = 'HelloWorld'
+        dummy_storage_bucket = mocker.MagicMock()
+
+        pack_path = os.path.join(storage_base_path, pack_name, pack_version, f"{pack_name}.zip")
+        mocker.patch.object(ZipFile, '__init__', return_value=None)
+        mocker.patch.object(ZipFile, 'extractall')
+
+        task_status = download_and_extract_pack(pack_name, pack_version, dummy_storage_bucket, extract_destination_path,
+                                                storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH)
+        assert task_status
+        dummy_storage_bucket.blob.assert_called_once_with(pack_path)
+        dummy_storage_bucket.blob.return_value.exists.assert_called_once()
+        dummy_storage_bucket.blob.return_value.download_to_filename.assert_called_once_with(
+            os.path.join(extract_destination_path, f"{pack_name}.zip"))
+        ZipFile.extractall.assert_called_once_with(os.path.join(extract_destination_path, pack_name))
 
 
 class TestCleanPacks:
@@ -448,143 +512,6 @@ class TestCorepacksFiles:
             corepacks_file_contents = json.load(corepacks_file)
             pack_paths = corepacks_file_contents.get('corePacks')
             assert set(pack_paths) == {'pack_1/1.4.0/pack_1.zip', 'pack_2/2.2.3/pack_2.zip'}
-
-        # Remove the temp artifacts dir that was created for testing:
-        shutil.rmtree(artifacts_dir)
-
-    def test_should_override_locked_corepacks_file(self, mocker):
-        """
-        When:
-            - running the should_override_locked_corepacks_file command
-        Given:
-            1. A server version in the corepacks_override file that does not exist in the versions-metadata file
-            2. A valid server version in the corepacks_override file, but a file version that is not greater than the
-                file version in the versions-metadata file.
-            3. The marketplace to override the corepacks file to, doesn't match the current marketplace.
-            4. A valid server version and a file version greater than the file version in the versions-metadata file.
-        Then:
-            1. Assert that the result returned from the function is False
-            2. Assert that the result returned from the function is False
-            3. Assert that the result returned from the function is False
-            4. Assert that the result returned from the function is True
-        """
-
-        from Tests.Marketplace.upload_packs import should_override_locked_corepacks_file
-        from Tests.Marketplace.marketplace_constants import GCPConfig
-
-        versions_metadata = {
-            "8.2.0": {
-                "core_packs_file": "corepacks-8.2.0.json",
-                "core_packs_file_is_locked": True,
-                "file_version": "1"
-            }
-        }
-        mocker.patch.object(GCPConfig, "core_packs_file_versions", versions_metadata)
-
-        # Case 1
-        corepacks_override = {
-            "server_version": "8.3.0",
-            "file_version": "1",
-            "updated_corepacks_content":
-                {
-                    "corePacks": [],
-                    "upgradeCorePacks": [],
-                    "buildNumber": "123"
-                }
-        }
-        mocker.patch.object(GCPConfig, "corepacks_override_contents", corepacks_override)
-        assert not should_override_locked_corepacks_file()
-
-        # Case 2
-        corepacks_override = {
-            "server_version": "8.2.0",
-            "file_version": "1",
-            "updated_corepacks_content":
-                {
-                    "corePacks": [],
-                    "upgradeCorePacks": [],
-                    "buildNumber": "123"
-                }
-        }
-        mocker.patch.object(GCPConfig, "corepacks_override_contents", corepacks_override)
-        assert not should_override_locked_corepacks_file()
-
-        # Case 3
-        corepacks_override = {
-            "server_version": "8.2.0",
-            "file_version": "1",
-            "marketplaces": [
-                "xsoar"
-            ],
-            "updated_corepacks_content":
-                {
-                    "corePacks": [],
-                    "upgradeCorePacks": [],
-                    "buildNumber": "123"
-            }
-        }
-        mocker.patch.object(GCPConfig, "corepacks_override_contents", corepacks_override)
-        assert not should_override_locked_corepacks_file(marketplace='marketplacev2')
-
-        # Case 4
-        corepacks_override = {
-            "server_version": "8.2.0",
-            "file_version": "2",
-            "updated_corepacks_content":
-                {
-                    "corePacks": [],
-                    "upgradeCorePacks": [],
-                    "buildNumber": "123"
-                }
-        }
-        mocker.patch.object(GCPConfig, "corepacks_override_contents", corepacks_override)
-        assert should_override_locked_corepacks_file()
-
-    def test_override_locked_corepacks_file(self, mocker):
-        """
-        Test the override_locked_corepacks_file function.
-        """
-        from Tests.Marketplace.upload_packs import override_locked_corepacks_file
-        from Tests.Marketplace.marketplace_constants import GCPConfig
-        import shutil
-
-        # Create a temp artifacts dir for the corepacks files:
-        artifacts_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'tmp')
-        os.makedirs(artifacts_dir, exist_ok=True)
-
-        corepacks_override = {
-            "server_version": "8.2.0",
-            "file_version": "2",
-            "updated_corepacks_content":
-                {
-                    "corePacks": ['pack1', 'pack2'],
-                    "upgradeCorePacks": ['pack3'],
-                    "buildNumber": "123"
-                }
-        }
-        mocker.patch.object(GCPConfig, "corepacks_override_contents", corepacks_override)
-
-        versions_metadata_content = {
-            "version_map": {
-                "8.2.0": {
-                    "core_packs_file": "corepacks-8.2.0.json",
-                    "core_packs_file_is_locked": True,
-                    "file_version": "1"
-                }
-            }
-        }
-        mocker.patch.object(GCPConfig, "versions_metadata_contents", versions_metadata_content)
-
-        override_locked_corepacks_file(build_number='456', artifacts_dir=artifacts_dir)
-
-        # Assert that the file was created in the artifacts folder with the build number as expected:
-        with open(os.path.join(artifacts_dir, 'corepacks-8.2.0.json')) as corepacks_file:
-            corepacks_file_contents = json.load(corepacks_file)
-            assert corepacks_file_contents.get('buildNumber') == '456'
-            assert corepacks_file_contents.get('corePacks') == ['pack1', 'pack2']
-
-        # Assert that the versions-metadata file was updated with the required file version:
-        assert GCPConfig.versions_metadata_contents.get('version_map').get('8.2.0').get('file_version') == '2'
 
         # Remove the temp artifacts dir that was created for testing:
         shutil.rmtree(artifacts_dir)
