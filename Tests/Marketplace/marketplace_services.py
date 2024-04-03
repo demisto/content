@@ -29,7 +29,8 @@ import Tests.Marketplace.marketplace_statistics as mp_statistics
 from Tests.Marketplace.marketplace_constants import XSOAR_ON_PREM_MP, XSOAR_SAAS_MP, PackFolders, Metadata, GCPConfig, \
     BucketUploadFlow, PACKS_FOLDER, PackTags, PackIgnored, Changelog, PackStatus, CONTENT_ROOT_PATH, XSOAR_MP, \
     XSIAM_MP, XPANSE_MP, TAGS_BY_MP, RN_HEADER_TO_ID_SET_KEYS
-from demisto_sdk.commands.common.constants import MarketplaceVersions, MarketplaceVersionToMarketplaceName
+from demisto_sdk.commands.common.constants import (MarketplaceVersions, MarketplaceVersionToMarketplaceName,
+                                                   PACK_METADATA_REQUIRE_RN_FIELDS)
 from Utils.release_notes_generator import aggregate_release_notes_for_marketplace, merge_version_blocks, construct_entities_block
 from Tests.scripts.utils import logging_wrapper as logging
 
@@ -67,7 +68,7 @@ class Pack:
     RELEASE_NOTES = "ReleaseNotes"
     INDEX_FILES_TO_UPDATE = [METADATA, CHANGELOG_JSON, README]
 
-    def __init__(self, pack_name, pack_path, is_modified=None):
+    def __init__(self, pack_name, pack_path, is_modified=None, is_metadata_updated=None):
         self._pack_name = pack_name
         self._pack_path = pack_path
         self._zip_path = None  # zip_path will be updated as part of zip_pack
@@ -125,6 +126,7 @@ class Pack:
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_modified = is_modified
+        self._is_metadata_updated = is_metadata_updated
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
         self._is_data_source = False
@@ -381,6 +383,10 @@ class Pack:
         return self._is_modified
 
     @property
+    def is_metadata_updated(self):
+        return self._is_metadata_updated
+
+    @property
     def marketplaces(self):
         return self._marketplaces
 
@@ -389,13 +395,41 @@ class Pack:
         return self._all_levels_dependencies
 
     @property
-    def statistics_metadata(self):
-        return {
-            Metadata.DOWNLOADS: self.downloads_count,
-            Metadata.SEARCH_RANK: self._search_rank,
+    def update_metadata(self):
+        """
+        Returns a dictionary containing updated metadata fields.
+        This function updates the statistics_metadata fields (downloads, searchRank, tags, and integrations).
+        If is_metadata_updated is True, it also updates the fields that are not listed in PACK_METADATA_REQUIRE_RN_FIELDS.
+        Returns:
+            dict: Updated metadata fields.
+        """
+        update_statistics_metadata = {
+            Metadata.DOWNLOADS: self._downloads_count,
             Metadata.TAGS: list(self._tags or []),
-            Metadata.INTEGRATIONS: self._related_integration_images
+            Metadata.SEARCH_RANK: self._search_rank,
+            Metadata.INTEGRATIONS: self._related_integration_images,
         }
+
+        update_metadata_fields = {}
+        if self.is_metadata_updated:
+            update_metadata_fields = {f: self.pack_metadata.get(f) for f in self.pack_metadata
+                                      if f not in PACK_METADATA_REQUIRE_RN_FIELDS}
+            logging.debug(
+                f"Updating metadata with statistics and metadata changes because {self._pack_name=} "
+                f"{self.is_modified=} {self.is_metadata_updated=}")
+        elif self.is_modified:
+            update_metadata_fields = {Metadata.CREATED: self._create_date, Metadata.UPDATED: self._update_date}
+            logging.debug(
+                f"Updating metadata with statistics, created, updated fields because {self._pack_name=} "
+                f"{self.is_modified=} {self.is_metadata_updated=}")
+        else:
+            logging.debug(
+                f"Updating metadata only with statistics because {self._pack_name=} {self.is_modified=} "
+                f"{self.is_metadata_updated=}")
+
+        updated_metadata = update_metadata_fields | update_statistics_metadata
+        logging.debug(f"Updating the following metadata fields: {updated_metadata}")
+        return updated_metadata
 
     @staticmethod
     def organize_integration_images(pack_integration_images: list, pack_dependencies_integration_images_dict: dict,
@@ -485,6 +519,7 @@ class Pack:
         Returns:
             dict: parsed pack metadata.
         """
+
         pack_metadata = self.update_metadata
         if parse_dependencies:
             pack_metadata[Metadata.DEPENDENCIES] = self._dependencies
