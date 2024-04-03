@@ -48,9 +48,11 @@ build-machines-cleanup:
     - exit "${EXIT_CODE}"
   after_script:
     - source .gitlab/helper_functions.sh
+    - echo "branch- ${BRANCH}"
+    - git branch --list
     - !reference [ .unlock-machine ]
     - export GITLAB_REPO_URL=https://GITLAB_PUSH_TOKEN:${GITLAB_PUSH_TOKEN}@${CI_SERVER_HOST}/${CI_PROJECT_NAMESPACE}/content.git  # disable-secrets-detection
-    - git push "$GITLAB_REPO_URL" --delete "$BRANCH" --quiet
+    - git push "${GITLAB_REPO_URL}" --delete "${BRANCH}" --quiet
   timeout: 4 hours
   variables:
     CLOUD_MACHINES_TYPE: $CLOUD_MACHINES_TYPE
@@ -74,6 +76,8 @@ build-machines-cleanup:
     MARKETPLACE_NAME: "marketplacev2"
     NON_REMOVABLE_PACKS: "Base"
     BRANCH: "${BRANCH}"
+    RESET_CORE_PACK_VERSION: "false"
+
 
 fan-in-build-machines-cleanup:
   tags:
