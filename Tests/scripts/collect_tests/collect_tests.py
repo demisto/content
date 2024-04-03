@@ -1,3 +1,4 @@
+import itertools
 import json
 import os
 import sys
@@ -10,6 +11,7 @@ from collections.abc import Iterable, Sequence
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions, CONTENT_ENTITIES_DIRS
 from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
+from demisto_sdk.commands.common.git_util import GitUtil
 
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
@@ -66,6 +68,7 @@ class CollectionReason(str, Enum):
     README_FILE_CHANGED = 'readme file was changed'
     PACK_CHOSEN_TO_UPLOAD = 'pack chosen to upload'
     PACK_TEST_E2E = "pack was chosen to be tested in e2e tests"
+    PACK_MASTER_BUCKET_DISCREPANCY = "pack version on master is ahead of bucket"
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
@@ -809,11 +812,48 @@ class BranchTestCollector(TestCollector):
             else self._get_git_diff()
 
         return CollectionResult.union([
-            self.__collect_from_changed_files(collect_from.changed_files),
-            self.__collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from)
+            self._collect_from_changed_files(collect_from.changed_files),
+            self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from),
+            self._collect_packs_diff_master_bucket()
         ])
 
-    def __collect_from_changed_files(self, changed_files: tuple[str, ...]) -> CollectionResult | None:
+    def _collect_packs_diff_master_bucket(self) -> CollectionResult | None:
+        """
+        For cases where master is ahead of bucket, this method extracts the difference between master and bucket.
+        It is important to upload the diff to prevent failures when there are dependencies in a higher version.
+        Returns:
+                CollectionResult - if the diff to collect and upload.
+        """
+
+        collected_packs: list[CollectionResult | None] = []
+
+        # diff between master and the last upload
+        collect_from = self._get_git_diff(upload_delta_from_last_upload=True)
+
+        for file_path in collect_from.changed_files:
+
+            full_path = PATHS.content_path / file_path
+
+            try:
+                self._validate_path(path=full_path)
+                collected_packs.append(self._collect_pack(
+                    pack_id=find_pack_folder(full_path).name,
+                    reason=CollectionReason.PACK_MASTER_BUCKET_DISCREPANCY,
+                    reason_description=file_path,
+                    only_to_install=False
+                ))
+            except NothingToCollectException as e:
+                logger.info(e.message)
+            except Exception as e:
+                logger.exception(f'Error while collecting pack for {full_path}', exc_info=True, stack_info=True)
+                raise e
+
+        # union with collected_packs since changed_files and since files were removed from master
+        collect_packs_where_files_were_removed =\
+            [self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from)]
+        return CollectionResult.union(tuple(itertools.chain(collected_packs, collect_packs_where_files_were_removed)))
+
+    def _collect_from_changed_files(self, changed_files: tuple[str, ...]) -> CollectionResult | None:
         """NOTE: this should only be used from _collect"""
         collected = []
         for raw_path in changed_files:
@@ -835,7 +875,7 @@ class BranchTestCollector(TestCollector):
                 raise e
         return CollectionResult.union(collected)
 
-    def __collect_packs_from_which_files_were_removed(self, pack_ids: tuple[str, ...]) -> CollectionResult | None:
+    def _collect_packs_from_which_files_were_removed(self, pack_ids: tuple[str, ...]) -> CollectionResult | None:
         """NOTE: this should only be used from _collect"""
         collected: list[CollectionResult] = []
         for pack_id in pack_ids:
@@ -1011,7 +1051,7 @@ class BranchTestCollector(TestCollector):
             content_item = ContentItem(path)
             self._validate_content_item_compatibility(content_item, is_integration='Integrations' in path.parts)
         except IncompatibleMarketplaceException:
-            if file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES):
+            if file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES | {FileType.METADATA}):
                 raise
         except NonDictException:
             content_item = None  # py, md, etc. Anything not dictionary-based. Suitable logic follows, see collect_yml
@@ -1110,7 +1150,17 @@ class BranchTestCollector(TestCollector):
             for test in tests)
         )
 
-    def _get_git_diff(self) -> FilesToCollect:
+    def _get_git_diff(self, upload_delta_from_last_upload: bool = False) -> FilesToCollect:
+        """
+        The method extracts the files based on the diff between the two commits.
+        Args:
+            upload_delta_from_last_upload: For branch collector,
+             it is also necessary to upload the difference between master and bucket, In order to prevent failures caused
+              by higher versions in master compared to versions in bucket.
+
+        Returns:
+
+        """
         repo = PATHS.content_repo
         changed_files: list[str] = []
         packs_files_were_removed_from: set[str] = set()
@@ -1120,7 +1170,12 @@ class BranchTestCollector(TestCollector):
 
         logger.debug(f'Getting changed files for {self.branch_name=}')
 
-        if os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
+        if upload_delta_from_last_upload:
+            logger.info('bucket upload: getting last commit from index')
+            previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
+            current_commit = self.branch_name
+
+        elif os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
             logger.info('bucket upload: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
             if self.branch_name == 'master':
@@ -1435,13 +1490,40 @@ class SDKNightlyTestCollector(TestCollector):
         return self.sanity_tests
 
 
+def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[list, list]:
+    """
+    :param: packs_to_upload: The resultant list of packs to upload
+    :return:
+     Tuple[list, list]:
+        packs_to_upload: list of packs to upload (hard upload - changed files with RN and version bump)
+        packs_to_update_metadata: list of packs to update
+         (soft upload - changed only to packmetadata file without RN and version bump)
+    """
+    packs_to_update_metadata = set()
+    git_util = GitUtil()
+    changed_files = git_util._get_all_changed_files()
+    for pack_id in packs_to_upload:
+        current_version = PACK_MANAGER.get_current_version(pack_id) or ""
+        rn_path = Path(f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
+        pack_metadata_path = Path(f"Packs/{pack_id}/pack_metadata.json")
+
+        if rn_path not in changed_files and pack_metadata_path in changed_files:
+            packs_to_update_metadata.add(pack_id)
+
+    packs_to_upload = packs_to_upload - packs_to_update_metadata
+    packs_to_upload = sorted(packs_to_upload, key=lambda x: x.lower()) if packs_to_upload else []
+    packs_to_update_metadata = sorted(packs_to_update_metadata, key=lambda x: x.lower()) if packs_to_update_metadata else []
+    return packs_to_upload, packs_to_update_metadata
+
+
 def output(result: CollectionResult | None):
     """
     writes to both log and files
     """
     tests = sorted(result.tests, key=lambda x: x.lower()) if result else ()
     packs_to_install = sorted(result.packs_to_install, key=lambda x: x.lower()) if result else ()
-    packs_to_upload = sorted(result.packs_to_upload, key=lambda x: x.lower()) if result else ()
+    packs_to_upload, packs_to_update_metadata = sort_packs_to_upload(result.packs_to_upload) if result else ([], [])
+
     modeling_rules_to_test = sorted(
         result.modeling_rules_to_test, key=lambda x: x.casefold() if isinstance(x, str) else x.as_posix().casefold()
     ) if result else ()
@@ -1452,6 +1534,7 @@ def output(result: CollectionResult | None):
     test_str = '\n'.join(tests)
     packs_to_install_str = '\n'.join(packs_to_install)
     packs_to_upload_str = '\n'.join(packs_to_upload)
+    packs_to_update_metadata_str = '\n'.join(packs_to_update_metadata)
     modeling_rules_to_test_str = '\n'.join(modeling_rules_to_test)
     machine_str = ', '.join(sorted(map(str, machines)))
     packs_to_reinstall_test_str = '\n'.join(packs_to_reinstall_test)
@@ -1459,6 +1542,7 @@ def output(result: CollectionResult | None):
     logger.info(f'collected {len(tests)} test playbooks:\n{test_str}')
     logger.info(f'collected {len(packs_to_install)} packs to install:\n{packs_to_install_str}')
     logger.info(f'collected {len(packs_to_upload)} packs to upload:\n{packs_to_upload_str}')
+    logger.info(f'collected {len(packs_to_update_metadata)} packs to update:\n{packs_to_update_metadata_str}')
     num_of_modeling_rules = len(modeling_rules_to_test_str.split("\n"))
     logger.info(f'collected {num_of_modeling_rules} modeling rules to test:\n{modeling_rules_to_test_str}')
     logger.info(f'collected {len(machines)} machines: {machine_str}')
@@ -1467,6 +1551,8 @@ def output(result: CollectionResult | None):
     PATHS.output_tests_file.write_text(test_str)
     PATHS.output_packs_file.write_text(packs_to_install_str)
     PATHS.output_packs_to_upload_file.write_text(packs_to_upload_str)
+    PATHS.output_packs_to_upload_file.write_text(json.dumps({'packs_to_upload': packs_to_upload,
+                                                             'packs_to_update_metadata': packs_to_update_metadata}))
     PATHS.output_modeling_rules_to_test_file.write_text(modeling_rules_to_test_str)
     PATHS.output_machines_file.write_text(json.dumps({str(machine): (machine in machines) for machine in Machine}))
     PATHS.output_packs_to_reinstall_test_file.write_text(packs_to_reinstall_test_str)

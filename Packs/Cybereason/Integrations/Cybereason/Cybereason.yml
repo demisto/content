@@ -363,6 +363,44 @@ script:
       description: Malop managemant status.
       type: string
   - arguments:
+    - description: malopGuid of the Cybereason Malop.
+      name: malopGuid
+      required: true
+    description: Get Management Malop details.
+    name: cybereason-query-malop-management
+    outputs:
+    - contextPath: Cybereason.Malops.GUID
+      description: The unique globally unique identifier (guid) for the Malop.
+      type: string
+    - contextPath: Cybereason.Malops.CreationTime
+      description: The time reported as when the malicious behavior began on the system. This is not the time that the Malop was first detected by Cybereason.
+      type: string
+    - contextPath: Cybereason.Malops.Link
+      description: Link to the Malop on Cybereason.
+      type: string
+    - contextPath: Cybereason.Malops.LastUpdatedTime
+      description: Last updated time of malop.
+      type: string
+    - contextPath: Cybereason.Malops.InvolvedHash
+      description: List of file hashes involved in this Malop.
+      type: string
+    - contextPath: Cybereason.Malops.Status
+      description: Malop managemant status.
+      type: string
+  - arguments:
+    - description: processGuid of the Cybereason Malop (can accept multiple guids separated by comma).
+      name: processGuid
+      required: true
+    description: Get Process Attack Tree URL.
+    name: cybereason-process-attack-tree
+    outputs:
+    - contextPath: Cybereason.Process.ProcessID
+      description: Cybereason Process ID.
+      type: string
+    - contextPath: Cybereason.Process.URL
+      description: Attack tree url for a given Process.
+      type: string
+  - arguments:
     - description: Array of malop GUIDs separated by comma. (Malop GUID can be retrieved with the command cybereason-query-malops command).
       name: malopGuids
       required: true
@@ -799,7 +837,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.13.89009
 tests:
 - Cybereason Test
 fromversion: 5.0.0

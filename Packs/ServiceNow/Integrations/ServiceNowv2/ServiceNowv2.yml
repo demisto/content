@@ -83,7 +83,7 @@ configuration:
   name: use_display_value
   type: 8
   required: false
-- additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration.'
+- additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format (full form) `HH:mm:ss` with support to `a` notation for AM/PM.'
   defaultvalue: None
   display: Instance Date Format
   name: display_date_format
@@ -94,6 +94,7 @@ configuration:
   - dd-MM-yyyy
   - dd.MM.yyyy
   - yyyy-MM-dd
+  - mmm-dd-yyyy
   type: 15
   required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in ServiceNow.
@@ -841,6 +842,12 @@ script:
     description: Deletes a ticket from ServiceNow.
     name: servicenow-delete-ticket
   - arguments:
+    - description: Attachment File ID.
+      name: file_sys_id
+      required: true
+    description: Delete an attachment from a ticket.
+    name: servicenow-delete-file
+  - arguments:
     - defaultValue: '10'
       description: The maximum number of tickets to retrieve.
       name: limit
@@ -1316,6 +1323,13 @@ script:
       - sc_task
       - sc_req_item
       - sn_si_incident
+    - auto: PREDEFINED
+      defaultValue: false
+      description: Whether to add ticket notes and work notes as notes in the War Room.
+      name: add_as_entry
+      predefined:
+      - 'true'
+      - 'false'
     description: Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting "Read permissions" for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
     name: servicenow-get-ticket-notes
     outputs:
@@ -1329,7 +1343,7 @@ script:
       description: Date/time the ticket note was created.
       type: date
     - contextPath: ServiceNow.Ticket.Note.CreatedBy
-      description: User that created the ticket note.
+      description: User who created the ticket note.
       type: string
     - contextPath: ServiceNow.Ticket.Note.Type
       description: Ticket note type.
@@ -1610,7 +1624,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api.
       type: string
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.14.90585
   isfetch: true
   ismappable: true
   isremotesyncin: true
