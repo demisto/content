@@ -84,7 +84,7 @@ script:
       - Get information about Pan-OS/Panorama device.
       - Get configuration file of Pan-OS/Panorama. If the user provided an entry_id to a config file this step is skipped.
       - Use the information retrieved above to generate a BPA report.
-      - During this process the API also generates a report_id for internal use.
+      - During this process the API also generates a report_id.
     polling: true
   - name: aiops-polling-upload-report
     arguments:
