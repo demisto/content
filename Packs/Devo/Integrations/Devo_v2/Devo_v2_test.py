@@ -2,10 +2,11 @@ import json
 import time
 import copy
 from unittest.mock import MagicMock, patch
-from datetime import datetime
+from datetime import datetime, timezone
 import pytest
 import re
 from freezegun import freeze_time
+import pandas as pd
 
 from Devo_v2 import (
     alert_to_incident,
@@ -17,6 +18,7 @@ from Devo_v2 import (
     write_to_lookup_table_command,
     check_configuration,
     get_time_range,
+    _to_unix
 )
 
 MOCK_READER_ENDPOINT = "https://fake.devo.com/query"
@@ -570,3 +572,60 @@ def fetch_incidents_limit_out_of_range():
         "Fetch incidents limit should be greater than or equal to 10 and smaller than or equal to 100"
         in str(e.value)
     )
+
+
+# Test case for converting current time to Unix timestamp
+def test_to_unix_current_time():
+    unix_timestamp = _to_unix('now')
+    assert isinstance(unix_timestamp, int)
+
+# Test case for converting datetime object to Unix timestamp
+
+
+def test_to_unix_datetime_object():
+    dt = datetime(2024, 3, 23, 12, 0, 0, tzinfo=timezone.utc)  # Ensure timezone is UTC
+    unix_timestamp = _to_unix(dt)
+    assert unix_timestamp == 1711195200
+
+# Test case for converting pandas.Timestamp object to Unix timestamp
+
+
+def test_to_unix_pandas_timestamp():
+    ts = pd.Timestamp('2024-03-23 12:00:00', tz='UTC')  # Ensure timezone is UTC
+    unix_timestamp = _to_unix(ts)
+    assert unix_timestamp == 1711195200
+
+# Test case for converting string to Unix timestamp
+
+
+def test_to_unix_string():
+    unix_timestamp = _to_unix('2024-03-23 12:00:00')
+    assert unix_timestamp == 1711195200
+
+# Test case for converting integer timestamp to Unix timestamp
+
+
+def test_to_unix_integer():
+    unix_timestamp = _to_unix(1740604800)
+    assert unix_timestamp == 1740604800
+
+# Test case for converting float timestamp to Unix timestamp
+
+
+def test_to_unix_float():
+    unix_timestamp = _to_unix(1740604800.0)
+    assert unix_timestamp == 1740604800
+
+# Test case for converting None to Unix timestamp
+
+
+def test_to_unix_none():
+    unix_timestamp = _to_unix(None)
+    assert unix_timestamp is None
+
+# Test case for converting with milliseconds option set to True
+
+
+def test_to_unix_milliseconds():
+    unix_timestamp = _to_unix('2024-03-23 12:00:00', milliseconds=True)
+    assert unix_timestamp == 1711195200000
