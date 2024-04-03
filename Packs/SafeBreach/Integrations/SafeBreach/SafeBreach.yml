@@ -149,13 +149,13 @@ script:
     arguments:
     - name: name
       isArray: false
-      description: "\n                      Name of the API Key to create. This will be the name shown in UI for API key under API keys section\n                      "
+      description: "Name of the API Key to create. This will be the name shown in UI for API key under API keys section."
       required: true
       secret: false
       default: false
     - name: description
       isArray: false
-      description: "\n                      Description of the API Key to create. This is not a required field but it is recommended to store a\n                      description for easier identification if your use case requires using multiple API keys for multiple tasks.\n                      "
+      description: "Description of the API Key to create. This is not a required field but it is recommended to store a\n                      description for easier identification if your use case requires using multiple API keys for multiple tasks."
       required: false
       secret: false
       default: false
@@ -173,7 +173,7 @@ script:
       description: The creation date and time of API key.
       type: String
     - contextPath: SafeBreach.API.key
-      description: The value of API key generated. store this for further use as this will only be shown once
+      description: The value of API key generated. store this for further use as this will only be shown once.
       type: String
   - deprecated: false
     description: This command creates a deployment, grouping the list of simulators provided with a name and optionally a description.
@@ -181,13 +181,13 @@ script:
     arguments:
     - name: name
       isArray: false
-      description: Name of the deployment to create. this will be shown as name in deployments page of safebreach
+      description: Name of the deployment to create. this will be shown as name in deployments page of safebreach.
       required: true
       secret: false
       default: false
     - name: description
       isArray: false
-      description: Description of the deployment to create. This will show as description of the deployment in your safebreach instance. It is generally preferable to give description while creating a deployment for easier identification
+      description: Description of the deployment to create. This will show as description of the deployment in your safebreach instance. It is generally preferable to give description while creating a deployment for easier identification.
       required: false
       secret: false
       default: false
@@ -347,7 +347,7 @@ script:
     arguments:
     - name: deployment_id
       isArray: false
-      description: ID of the deployment to delete. The ID his can be searched with list-deployments command
+      description: ID of the deployment to delete. The ID his can be searched with list-deployments command.
       required: true
       secret: false
       default: false
@@ -393,7 +393,7 @@ script:
     arguments:
     - name: schedule_id
       isArray: false
-      description: schedule ID of scheduled scenario to delete
+      description: schedule ID of scheduled scenario to delete.
       required: true
       secret: false
       default: false
@@ -435,7 +435,7 @@ script:
     arguments:
     - name: simulator_id
       isArray: false
-      description: Id of the simulator we want to delete
+      description: Id of the simulator we want to delete.
       required: true
       secret: false
       default: false
@@ -622,7 +622,7 @@ script:
       description: The email of User deleted.
       type: String
     - contextPath: SafeBreach.User.createdAt
-      description: the time at which the user who has been selected has been created
+      description: the time at which the user who has been selected has been created.
       type: String
     - contextPath: SafeBreach.User.updatedAt
       description: last updated time.
@@ -648,7 +648,7 @@ script:
     arguments:
     - name: error_type
       isArray: false
-      description: 'this will help see issues which are either errors or warnings or both based on the input '
+      description: 'this will help see issues which are either errors or warnings or both based on the input.'
       required: false
       secret: false
       default: false
@@ -659,22 +659,22 @@ script:
       auto: PREDEFINED
     outputs:
     - contextPath: SafeBreach.Integration.integration_id
-      description: The ID of Integration. A general notation that has been followed here is                      as follows, if the  id has _default at the end then its a default connector else its a custom connector
+      description: The ID of Integration. A general notation that has been followed here is                      as follows, if the  id has _default at the end then its a default connector else its a custom connector.
       type: Number
     - contextPath: SafeBreach.Integration.integration_name
-      description: Name of the integration
+      description: Name of the integration.
       type: String
     - contextPath: SafeBreach.Integration.action
-      description: The action of Integration error. This describes where exactly did the error occur,                        if its search,then it implies error/warning happened when connector was trying that process
+      description: The action of Integration error. This describes where exactly did the error occur,                        if its search,then it implies error/warning happened when connector was trying that process.
       type: String
     - contextPath: SafeBreach.Integration.success_state
-      description: status of integration error. This implies whether the connector was able to                       successfully perform the operation or if it failed partway.                       So false implies it failed partway and true implies it was successfully completed
+      description: status of integration error. This implies whether the connector was able to                       successfully perform the operation or if it failed partway.                       So false implies it failed partway and true implies it was successfully completed.
       type: String
     - contextPath: SafeBreach.Integration.error_description
       description: This is the exact error description shown on safebreach integration error/warning page.                        This description can be used for understanding of what exactly happened for the integration to fail.
       type: String
     - contextPath: SafeBreach.Integration.timestamp
-      description: Time at which error/warning occurred. This can be used to pinpoint error which occurred                      across integrations if time of origin was remembered
+      description: Time at which error/warning occurred. This can be used to pinpoint error which occurred                      across integrations if time of origin was remembered.
       type: String
   - deprecated: false
     description: This command gets simulations which are in running or queued state.
@@ -708,10 +708,10 @@ script:
       description: success criterion for the test.
       type: String
     - contextPath: SafeBreach.Test.original_scenario_id
-      description: Original scenario ID of the running test
+      description: Original scenario ID of the running test.
       type: String
     - contextPath: SafeBreach.Test.actions_count
-      description: number of actions
+      description: number of actions.
       type: String
     - contextPath: SafeBreach.Test.edges_count
       description: number of edges.
@@ -720,7 +720,7 @@ script:
       description: details related to when test is created.
       type: String
     - contextPath: SafeBreach.Test.updated_at
-      description: details related to when test is last updated/changed
+      description: details related to when test is last updated/changed.
       type: String
     - contextPath: SafeBreach.Test.steps_count
       description: number of steps in simulator.
@@ -744,25 +744,25 @@ script:
       description: priority of tests.
       type: String
     - contextPath: SafeBreach.Test.retry_simulations
-      description: Should simulations be retried
+      description: Should simulations be retried.
       type: String
     - contextPath: SafeBreach.Test.pause_duration
-      description: is the test paused and if so till when
+      description: is the test paused and if so till when.
       type: String
     - contextPath: SafeBreach.Test.paused_date
-      description: when the test is paused
+      description: when the test is paused.
       type: String
     - contextPath: SafeBreach.Test.expected_simulations_amount
-      description: number of simulations expected
+      description: number of simulations expected.
       type: String
     - contextPath: SafeBreach.Test.dispatched_simulations_amount
-      description: the number of simulations dispatched
+      description: the number of simulations dispatched.
       type: String
     - contextPath: SafeBreach.Test.skipped_simulations_amount
-      description: The number of simulations skipped
+      description: The number of simulations skipped.
       type: String
     - contextPath: SafeBreach.Test.failed_simulations_amount
-      description: The number of simulations failed
+      description: The number of simulations failed.
       type: String
   - deprecated: false
     description: This command to get all available simulators. if details is set to true then it retrieves simulator details like name, hostname, internal and external ips, types of targets and attacker configurations this simulator is associated with etc. if its set to false then it retrieves just name, id, simulation users, proxies etc. if deleted is set to true then it retrieves the data which has been deleted.
@@ -788,7 +788,7 @@ script:
       default: false
     - name: os
       isArray: false
-      description: 'operating system name to filter with, Eg: LINUX,WINDOWS etc, incase nothing is selected then this will be set as empty which means all are retrieved'
+      description: 'operating system name to filter with, Eg: LINUX,WINDOWS etc, incase nothing is selected then this will be set as empty which means all are retrieved.'
       required: false
       secret: false
       default: false
@@ -1074,16 +1074,16 @@ script:
     arguments: []
     outputs:
     - contextPath: SafeBreach.User.id
-      description: The ID of User retrieved. this can be used to further link this user with                      user_id field of safebreach-update-user or safebreach-delete-user commands
+      description: The ID of User retrieved. this can be used to further link this user with                      user_id field of safebreach-update-user or safebreach-delete-user commands.
       type: Number
     - contextPath: SafeBreach.User.name
       description: The name of User retrieved.
       type: String
     - contextPath: SafeBreach.User.email
-      description: 'The email of User retrieved. this can be used for updating user or                      deleting user for input email of commands safebreach-update-user or safebreach-delete-user '
+      description: 'The email of User retrieved. this can be used for updating user or                      deleting user for input email of commands safebreach-update-user or safebreach-delete-user.'
       type: String
   - deprecated: false
-    description: This command  retrieves scenarios which are saved by user as custom scenarios. they generally have configurations and everything set up and will be ready to run as tests
+    description: This command  retrieves scenarios which are saved by user as custom scenarios. they generally have configurations and everything set up and will be ready to run as tests.
     name: safebreach-get-custom-scenarios
     arguments:
     - name: schedule_details
@@ -1134,13 +1134,13 @@ script:
     arguments: []
     outputs:
     - contextPath: SafeBreach.Deployment.id
-      description: The ID of deployment
+      description: The ID of deployment.
       type: Number
     - contextPath: SafeBreach.Deployment.account_id
       description: The accountId of user who created the deployment.
       type: String
     - contextPath: SafeBreach.Deployment.name
-      description: The name of deployment.                        this will be the name shown in deployment name field of table in deployments page in safebreach UI
+      description: The name of deployment.                        this will be the name shown in deployment name field of table in deployments page in safebreach UI.
       type: String
     - contextPath: SafeBreach.Deployment.created_at
       description: The creation date and time of deployment.
@@ -1149,7 +1149,7 @@ script:
       description: The last updated date and time of deployment.
       type: String
     - contextPath: SafeBreach.Deployment.description
-      description: This is description field of deployments table of safebreach UI
+      description: This is description field of deployments table of safebreach UI.
       type: String
     - contextPath: SafeBreach.Deployment.simulators
       description: The simulators that are part of deployment.
@@ -1160,7 +1160,7 @@ script:
     arguments:
     - name: test_id
       isArray: false
-      description: Test ID of the insight
+      description: Test ID of the insight.
       required: true
       secret: false
       default: false
@@ -1172,67 +1172,67 @@ script:
       default: false
     - name: insightCategory
       isArray: true
-      description: Multi-select option for the category of the insights to get remediation data  for:Network Access, Network Inspection, Endpoint, Email, Web, Data Leak
+      description: Multi-select option for the category of the insights to get remediation data  for:Network Access, Network Inspection, Endpoint, Email, Web, Data Leak.
       required: false
       secret: false
       default: false
     - name: insightDataType
       isArray: true
-      description: 'Multi-select option for the remediation data type to get:  Hash, Domain, URI, Command, Port, Protocol, Registry'
+      description: 'Multi-select option for the remediation data type to get:  Hash, Domain, URI, Command, Port, Protocol, Registry.'
       required: false
       secret: false
       default: false
     - name: behavioralReputation
       isArray: false
-      description: Select option for the category of behavioral reputation
+      description: Select option for the category of behavioral reputation.
       required: false
       secret: false
       default: false
     - name: nonBehavioralReputation
       isArray: false
-      description: Select option for the category of non-behavioral reputation
+      description: Select option for the category of non-behavioral reputation.
       required: false
       secret: false
       default: false
     outputs:
     - contextPath: SafeBreach.Indicator.value
-      description: The value of the indicator
+      description: The value of the indicator.
       type: String
     - contextPath: SafeBreach.Indicator.type
-      description: The type of the indicator
+      description: The type of the indicator.
       type: String
     - contextPath: SafeBreach.Indicator.rawJSON.dataType
-      description: The data type of the indicator
+      description: The data type of the indicator.
       type: String
     - contextPath: SafeBreach.Indicator.rawJSON.insightTime
-      description: The time of the insight
+      description: The time of the insight.
       type: String
     - contextPath: SafeBreach.Indicator.rawJSON.value
-      description: The data type value of the indicator
+      description: The data type value of the indicator.
       type: String
     - contextPath: SafeBreach.Indicator.fields.description
-      description: The description of the indicator
+      description: The description of the indicator.
       type: String
     - contextPath: SafeBreach.Indicator.fields.safebreachseverity
-      description: The severity of the indicator
+      description: The severity of the indicator.
       type: String
     - contextPath: SafeBreach.Indicator.fields.safebreachseverityscore
-      description: The severity score of the indicator
+      description: The severity score of the indicator.
       type: String
     - contextPath: SafeBreach.Indicator.fields.safebreachisbehavioral
-      description: The behavioral of the indicator
+      description: The behavioral of the indicator.
       type: Boolean
     - contextPath: SafeBreach.Indicator.fields.safebreachattackids
-      description: The attack ids of the indicator
+      description: The attack ids of the indicator.
       type: Unknown
     - contextPath: SafeBreach.Indicator.fields.port
-      description: The port of the indicator
+      description: The port of the indicator.
       type: String
     - contextPath: SafeBreach.Indicator.fields.tags
-      description: The tags of the indicator
+      description: The tags of the indicator.
       type: String
     - contextPath: SafeBreach.Indicator.score
-      description: The score of the indicator
+      description: The score of the indicator.
       type: Number
   - deprecated: false
     description: This command gets a list of links for download (item per operating system) for the latest available version.
@@ -1240,10 +1240,10 @@ script:
     arguments: []
     outputs:
     - contextPath: SafeBreach.Installation.md5
-      description: The MD5 generated from the contents of the file
+      description: The MD5 generated from the contents of the file.
       type: String
     - contextPath: SafeBreach.Installation.os
-      description: The operating system for which the update is intended
+      description: The operating system for which the update is intended.
       type: String
     - contextPath: SafeBreach.Installation.sha1
       description: The sha1 generated from the contents of the file.
@@ -1302,7 +1302,7 @@ script:
       description: the order of execution related to the scenario.
       type: String
     - contextPath: SafeBreach.Scenario.min_api_ver
-      description: the minimum version of API required for scenario to be executed
+      description: the minimum version of API required for scenario to be executed.
       type: String
   - deprecated: false
     description: This command retrieves schedules from safebreach which user has set and they will display it to user. By default Name is not shown, to retrieve and see it, please run 'safebreach-get-custom-scenarios' command to find name of scenario to which the schedule is associated with.
@@ -1380,7 +1380,7 @@ script:
       description: name of destination of simulation.
       type: String
     - contextPath: SafeBreach.Simulation.attack_name
-      description: name of attack
+      description: name of attack.
       type: String
     - contextPath: SafeBreach.Simulation.attacks_involved
       description: attack types involved in of simulation.
@@ -1427,12 +1427,12 @@ script:
       description: Account expiration date.
       type: String
   - deprecated: false
-    description: This command gives simulator with given id
+    description: This command gives simulator with given id.
     name: safebreach-get-simulator-with-id
     arguments:
     - name: simulator_id
       isArray: false
-      description: simulator id
+      description: simulator id.
       required: true
       secret: false
       default: false
@@ -1537,24 +1537,24 @@ script:
       description: Advanced simulator details.
       type: String
   - deprecated: false
-    description: This command fetches the list of SafeBreach simulators
+    description: This command fetches the list of SafeBreach simulators.
     name: safebreach-get-simulators-versions-list
     arguments: []
     outputs:
     - contextPath: SafeBreach.Simulator.id
-      description: Simulator Id
+      description: Simulator Id.
       type: String
     - contextPath: SafeBreach.Simulator.lastUpdateDate
-      description: Simulator last updated data
+      description: Simulator last updated data.
       type: String
     - contextPath: SafeBreach.Simulator.lastUpdateStatus
-      description: Simulator last updated status
+      description: Simulator last updated status.
       type: String
     - contextPath: SafeBreach.Simulator.currentStatus
-      description: Simulator current status
+      description: Simulator current status.
       type: String
     - contextPath: SafeBreach.Simulator.availableVersions
-      description: Simulator available versions
+      description: Simulator available versions.
       type: Unknown
   - deprecated: false
     description: The command retrieves users based on the provided inputs. If an email is provided, it returns the user associated with that email, as email is a unique identifierIf a name is provided, exact name matching is required to ensure accurate retrieval of a single user;otherwise, multiple users may be returned. It's essential to note that either a name or an email must be populated as input;failure to provide either results in an error.
@@ -1562,25 +1562,25 @@ script:
     arguments:
     - name: name
       isArray: false
-      description: Name of the user. Partial match is supported
+      description: Name of the user. Partial match is supported.
       required: false
       secret: false
       default: false
     - name: email
       isArray: false
-      description: Email of the user. Exact match required
+      description: Email of the user. Exact match required.
       required: false
       secret: false
       default: false
     outputs:
     - contextPath: SafeBreach.User.id
-      description: The ID of User retrieved. this can be used to further link this user with user_id field of                       safebreach-update-user or safebreach-delete-user commands
+      description: The ID of User retrieved. this can be used to further link this user with user_id field of                       safebreach-update-user or safebreach-delete-user commands.
       type: Number
     - contextPath: SafeBreach.User.name
       description: The name of User retrieved.
       type: String
     - contextPath: SafeBreach.User.email
-      description: The email of User retrieved. this can be used for updating user or deleting user                       for input email of commands safebreach-update-user or safebreach-delete-user
+      description: The email of User retrieved. this can be used for updating user or deleting user                       for input email of commands safebreach-update-user or safebreach-delete-user.
       type: String
   - deprecated: false
     description: This command retrieves existing verification token needed for verification of the simulators.
@@ -1614,13 +1614,13 @@ script:
     arguments:
     - name: simulation_ids
       isArray: false
-      description: ids of simulation we want to queue,                          please give ids of simulations as comma separated numbers
+      description: ids of simulation we want to queue,                          please give ids of simulations as comma separated numbers.
       required: true
       secret: false
       default: false
     - name: test_name
       isArray: false
-      description: test name for the given test
+      description: test name for the given test.
       required: true
       secret: false
       default: false
@@ -1658,13 +1658,13 @@ script:
     arguments:
     - name: test_id
       isArray: false
-      description: test id for the given test,             this is be test id field from get-all-tests-summary command
+      description: test id for the given test,             this is be test id field from get-all-tests-summary command.
       required: true
       secret: false
       default: false
     - name: test_name
       isArray: false
-      description: test name for the given test
+      description: test name for the given test.
       required: true
       secret: false
       default: false
@@ -1726,10 +1726,10 @@ script:
     arguments: []
     outputs:
     - contextPath: SafeBreach.Token.new_token
-      description: New token which has been generated due to the API call
+      description: New token which has been generated due to the API call.
       type: String
   - deprecated: false
-    description: "This command updates a deployment with given data. The deployment_id field of this command can be retrieved from 'safebreach-list-deployments' command. If the user wants to search with deployment ID then they can search it "
+    description: "This command updates a deployment with given data. The deployment_id field of this command can be retrieved from 'safebreach-list-deployments' command. If the user wants to search with deployment ID then they can search it."
     name: safebreach-update-deployment
     arguments:
     - name: deployment_id
@@ -1740,13 +1740,13 @@ script:
       default: false
     - name: updated_simulators_for_deployment
       isArray: false
-      description: Comma separated ID of all simulators to be part of the deployment Simulators can be  retrieved by calling get-all-available-simulator-details command
+      description: Comma separated ID of all simulators to be part of the deployment Simulators can be  retrieved by calling get-all-available-simulator-details command.
       required: false
       secret: false
       default: false
     - name: updated_deployment_name
       isArray: false
-      description: Deployment name
+      description: Deployment name.
       required: false
       secret: false
       default: false
@@ -1764,19 +1764,19 @@ script:
       description: The accountId of user who created the deployment.
       type: String
     - contextPath: SafeBreach.Deployment.name
-      description: The name of deployment which has been updated to the name given in updated_deployment_name.                        this will be the name shown in deployment name field of table in deployments page in safebreach UI
+      description: The name of deployment which has been updated to the name given in updated_deployment_name.                        this will be the name shown in deployment name field of table in deployments page in safebreach UI.
       type: String
     - contextPath: SafeBreach.Deployment.created_at
       description: The creation date and time of deployment whose data has been updated.
       type: String
     - contextPath: SafeBreach.Deployment.updated_at
-      description: The last updated date and time of deployment whose data has been updated.                      This will generally be closer to the update deployment command run time for reference
+      description: The last updated date and time of deployment whose data has been updated.                      This will generally be closer to the update deployment command run time for reference.
       type: String
     - contextPath: SafeBreach.Deployment.description
-      description: The updated description of deployment which is provided in updated_deployment_description                      field of input . This will now be the description which is shown in description field of deployments                      table of safebreach UI
+      description: The updated description of deployment which is provided in updated_deployment_description                      field of input . This will now be the description which is shown in description field of deployments                      table of safebreach UI.
       type: String
     - contextPath: SafeBreach.Deployment.simulators
-      description: The simulators that are part of deployment. unless any simulators are given as input this                           field won't be updated this field doesn't reflect changes if simulators given as input are deleted
+      description: The simulators that are part of deployment. unless any simulators are given as input this                           field won't be updated this field doesn't reflect changes if simulators given as input are deleted.
       type: String
   - deprecated: false
     description: This command updates simulator with given id. the given inputs for update fields will be updated to the selected filed values will be updated to given value.
@@ -1930,7 +1930,7 @@ script:
     arguments:
     - name: simulator_id
       isArray: false
-      description: Simulator ID
+      description: Simulator ID.
       required: true
       secret: false
       default: false
@@ -1942,10 +1942,10 @@ script:
       default: false
     outputs:
     - contextPath: SafeBreach.Simulator.nodeId
-      description: Simulator ID
+      description: Simulator ID.
       type: String
     - contextPath: SafeBreach.Simulator.status
-      description: Simulator status
+      description: Simulator status.
       type: String
   - deprecated: false
     description: This command updates a user with given data.
@@ -1959,7 +1959,7 @@ script:
       default: false
     - name: name
       isArray: false
-      description: Update the user name to given value of this field
+      description: Update the user name to given value of this field.
       required: false
       secret: false
       default: false
@@ -2015,13 +2015,13 @@ script:
       description: the email of the user whose data has been updated by the command.
       type: String
     - contextPath: SafeBreach.User.createdAt
-      description: the time at which the user who has been selected has been created
+      description: the time at which the user who has been selected has been created.
       type: String
     - contextPath: SafeBreach.User.updatedAt
       description: The last updated time of User selected for update.                       this will be the execution time for the command or close to it.
       type: String
     - contextPath: SafeBreach.User.deletedAt
-      description: The Deletion time of User selected to update. Generally this is empty unless                      user chosen to update is a deleted user
+      description: The Deletion time of User selected to update. Generally this is empty unless                      user chosen to update is a deleted user.
       type: String
     - contextPath: SafeBreach.User.roles
       description: The roles of User updated. these will change if role has been updated during                      updating user details else they will be same as pre update.
@@ -2033,7 +2033,7 @@ script:
       description: The roles and permissions related to user who has been selected for update.unless this field                      has been given a value , this will not be updated and will stay the same as previous value.
       type: String
     - contextPath: SafeBreach.User.deployments
-      description: The deployments related to user, this will be comma separated values of deployment IDs
+      description: The deployments related to user, this will be comma separated values of deployment IDs.
       type: String
   script: '-'
   type: python
@@ -2044,6 +2044,6 @@ script:
   runonce: false
   longRunning: false
   longRunningPort: false
-fromversion: 6.6.0
+fromversion: 6.10.0
 tests:
 - No tests
