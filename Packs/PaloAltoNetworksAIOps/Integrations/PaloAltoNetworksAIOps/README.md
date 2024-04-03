@@ -1,5 +1,5 @@
 Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
-This integration was integrated and tested with version from March 2024 of PaloAltoNetworksAIOps.
+This integration was integrated and tested with the March 2024 version of PaloAltoNetworksAIOps.
 
 ## Configure Palo Alto Networks AIOps on Cortex XSOAR
 
@@ -36,7 +36,7 @@ Generates a bpa
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | Entry_id from xsoar war-room after uploading a file. | Optional | 
+| entry_id | Entry_id from Cortex XSOAR War Room after uploading a file. | Optional | 
 | requester_email | Enter the requester email. | Required | 
 | requester_name | Enter the requester name. | Required | 
 | interval_in_seconds | Enter the interval for polling mechanism. Default is 30. | Optional | 
