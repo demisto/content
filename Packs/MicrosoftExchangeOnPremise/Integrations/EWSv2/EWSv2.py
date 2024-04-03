@@ -1381,7 +1381,6 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
 
         incident['labels'] = labels
         
-        parsed_items_as_dict = parse_item_as_dict(item, None)
         incident['rawJSON'] = json.dumps(parsed_items_as_dict, ensure_ascii=False)
     except Exception as e:
         if 'Message is not decoded yet' in str(e):
