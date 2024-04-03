@@ -50,7 +50,7 @@ configuration:
   section: Collect
   additionalinfo: You most enable or run mirror-investigation.
 - display: Listen Port
-  name: longRunningP
+  name: longRunningPort
   type: 0
   section: Collect
   required: false
