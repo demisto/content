@@ -1,0 +1,28 @@
+{
+    "successful_creation": {
+        "args": {
+            "name": "acme",
+            "email": "acme@email.com",
+            "is_active": "False",
+            "email_post_creation": false,
+            "password": "ASD@#123qwer",
+            "change_password_on_create": false,
+            "user_role": "operator",
+            "deployments": "1,2,3,4,5"
+        },
+        "command": "safebreach-create-user"
+    },
+    "weak_password": {
+        "args": {
+            "name": "acme",
+            "email": "acme@email.com",
+            "is_active": "False",
+            "email_post_creation": "False",
+            "password": "asdf",
+            "change_password_on_create": "False",
+            "user_role": "operator",
+            "deployments": "1,2,3,4,5"
+        },
+        "command": "safebreach-create-user"
+    }
+}

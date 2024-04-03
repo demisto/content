@@ -1,0 +1,10 @@
+{
+    "success": {
+        "args": {},
+        "command": "safebreach-get-prebuilt-scenarios"
+    },
+    "fail": {
+        "args": {},
+        "command": "safebreach-get-prebuilt-scenarios"
+    }
+}

@@ -1,0 +1,97 @@
+{
+    "success": {
+        "args": {
+            "position": 1,
+            "enable feedback loop": true,
+            "retry simulation": "",
+            "wait for retry": "",
+            "priority": "low",
+            "test data": {
+                "plan": {
+                    "name": "Dummy - Baseline",
+                    "steps": [
+                        {
+                            "id": 199,
+                            "uuid": "1111111-3xcd-2srf-2qws-254fgtr5",
+                            "attacksFilter": {
+                                "tags": {
+                                    "Security Controls": {
+                                        "operator": "is",
+                                        "values": [
+                                            "Endpoint"
+                                        ],
+                                        "name": "security controls"
+                                    }
+                                },
+                                "playbook": {
+                                    "operator": "is",
+                                    "values": [
+                                        1552,
+                                        1558,
+                                        3075,
+                                        3199,
+                                        6180,
+                                        2337,
+                                        4136,
+                                        3680,
+                                        2221,
+                                        2264,
+                                        5307,
+                                        1465,
+                                        6246,
+                                        5388,
+                                        2195,
+                                        2196,
+                                        2389,
+                                        2353,
+                                        795,
+                                        2199,
+                                        2243,
+                                        2608
+                                    ],
+                                    "name": "playbook"
+                                }
+                            },
+                            "attackerFilter": {
+                                "simulators": {
+                                    "operator": "is",
+                                    "values": [
+                                        "1111111-sddf-wads12-12dsdf"
+                                    ]
+                                }
+                            },
+                            "targetFilter": {
+                                "simulators": {
+                                    "operator": "is",
+                                    "values": [
+                                        "1111111-sddf-wads12-12dsdf"
+                                    ]
+                                }
+                            },
+                            "systemFilter": {
+                                "bypassProxy": {
+                                    "operator": "is",
+                                    "values": [
+                                        true
+                                    ],
+                                    "name": "bypassproxy"
+                                },
+                                "proxies": {
+                                    "operator": "is",
+                                    "values": [],
+                                    "name": "proxies"
+                                }
+                            },
+                            "name": "Host actions"
+                        }
+                    ]
+                }
+            }
+        },
+        "command": "safebreach-rerun-scenario"
+    },
+    "fail": {
+        "args": {},
+        "command": "safebreach-rerun-scenario"
+    }
+}

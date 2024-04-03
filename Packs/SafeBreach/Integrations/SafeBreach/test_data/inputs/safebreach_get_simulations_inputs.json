@@ -1,0 +1,8 @@
+{
+    "success": {
+        "args": {
+            "test_id": "1111111111111.1"
+        },
+        "command": "safebreach-get-simulator-with-id"
+    }
+}

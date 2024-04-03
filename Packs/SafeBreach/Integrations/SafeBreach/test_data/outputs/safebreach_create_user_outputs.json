@@ -1,0 +1,36 @@
+{
+    "outputs": {
+        "successful_creation": {
+            "data": {
+                "mustReadTerms": true,
+                "showStudioDisclaimer": true,
+                "showAdvancedAttacksDisclaimer": true,
+                "showSimulationsBulkIgnoreMessage": true,
+                "showCloudAttacksDisclaimer": true,
+                "showCloneCustomizeDisclaimer": true,
+                "isActive": false,
+                "name": "acme",
+                "email": "acme@email.com",
+                "mustChangePassword": true,
+                "role": "viewer",
+                "accountId": 123432,
+                "id": 12343,
+                "roles": {
+                    "read": true
+                },
+                "updatedAt": "2023-09-09T02:19:55.965Z",
+                "createdAt": "2023-09-09T02:19:55.965Z",
+                "extendedData": null,
+                "description": null,
+                "deletedAt": null,
+                "deployments": []
+            }
+        },
+        "weak_password": {
+            "data": {}
+        },
+        "failed_creation": {
+            "data": {}
+        }
+    }
+}

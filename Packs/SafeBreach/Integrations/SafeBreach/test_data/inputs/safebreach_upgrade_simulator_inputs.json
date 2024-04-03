@@ -1,0 +1,13 @@
+{
+    "success": {
+        "args": {
+            "simulator_id": "0000000-0000-0000-0000-00000000",
+            "simulator_version": "latest"
+        },
+        "command": "safebreach-get-simulators-versions-list"
+    },
+    "fail": {
+        "args": {},
+        "command": "safebreach-get-simulators-versions-list"
+    }
+}
