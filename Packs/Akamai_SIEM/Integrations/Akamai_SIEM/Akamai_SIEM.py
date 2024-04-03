@@ -305,11 +305,11 @@ def fetch_incidents_command(
     incidents = []
     if raw_response:
         for event in raw_response:
-            incident_created = event.get('httpMessage', {}).get('start')
+            attack_data = event.get('attackData', {})
+            http_message = event.get('httpMessage', {})
             incidents.append({
-                'name': f"{INTEGRATION_NAME}: {event.get('attackData').get('configId')} - {incident_created}",
-                'occurred': date_format_converter(from_format='epoch',
-                                                  date_before=incident_created),
+                'name': f"{INTEGRATION_NAME}: {attack_data.get('configId')} - {http_message.get('requestId')}",
+                'occurred': date_format_converter(from_format='epoch', date_before=http_message.get('start')),
                 'rawJSON': json.dumps(event)
             })
 
