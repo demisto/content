@@ -51,7 +51,7 @@ class PathManager:
         self.output_tests_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'filter_file.txt'
         self.output_modeling_rules_to_test_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'modeling_rules_to_test.txt'
         self.output_packs_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'content_packs_to_install.txt'
-        self.output_packs_to_upload_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'content_packs_to_upload.txt'
+        self.output_packs_to_upload_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'content_packs_to_upload.json'
         self.output_machines_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'filter_envs.json'
         self.output_packs_to_reinstall_test_file = PathManager.ARTIFACTS_FOLDER_SERVER_TYPE / 'packs_reinstall_to_test.txt'
 
