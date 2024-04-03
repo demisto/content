@@ -57,11 +57,16 @@ class Client(BaseClient):
         return res_json.get('objects')
 
     def test_api(self) -> None:
-        self._login()
-        self._logout()
+        last_run = demisto.getLastRun()
+        params = demisto.params()
+        domain = params.get('domain', "")
+        fetch_time = params.get('first_fetch', '3 days').strip()
+        first_fetch = dateparser.parse(fetch_time, settings={'TIMEZONE': 'UTC'})
+        if not first_fetch:
+            raise Exception(f"Invalid first fetch time value '{fetch_time}', must be '<number> <time unit>', e.g., '24 hours'")
+        fetch_incidents(self, last_run, first_fetch, domain)
 
-    def get_events(self, startTS: int) -> tuple[list[dict[str, Any]], datetime]:
-        incidents = []
+    def get_insights(self, startTS: int) -> tuple[list[dict[str, Any]], datetime]:
         lastTS = startTS
 
         self._login()
@@ -71,38 +76,13 @@ class Client(BaseClient):
         for insight in insights:
             lastTS = max(lastTS, insight['updated'])
             ids = ','.join(map(str, insight['events']))
-            events = self._call_api('events', params={'id': ids})
-            demisto.debug(f"Fetched {len(events)} events of {insight['id']} Insights")
+            insight['events'] = self._call_api('events', params={'id': ids})
+            demisto.debug(f"Fetched {len(insight['events'])} events of Insight {insight['id']}")
 
-            for event in events:
-                if event['created'] < startTS:
-                    continue
-
-                id = f"{insight['id']}_{event['id']}"
-                name = insight['data'].get('name', insight['criteria'])
-                updated = int(event['data'].get('discovery_date', event['updated']))
-                desc_i = insight['data'].get('description', '')
-                desc_e = event['data'].get('description', '')
-                description = desc_i + "\n" + desc_e if desc_e else desc_i
-
-                incidents.append({
-                    'id': id,
-                    'insight_id': insight['id'],
-                    'event_id': event['id'],
-                    'name': name,
-                    'updated': updated,
-                    'from': event['from'],
-                    'to': event['to'],
-                    'detections': event['count'],
-                    'insight_description': desc_i,
-                    'event_description': desc_e,
-                    'description': description,
-                    'probability': event['probability']
-                })
         self._logout()
         last_time = datetime.fromtimestamp(lastTS / 1000)
 
-        return incidents, last_time
+        return insights, last_time
 
 
 def test_module(client: Client):
@@ -112,6 +92,44 @@ def test_module(client: Client):
     except DemistoException as e:
         return e.message
 
+def parse_insights(insights: list[dict[str, Any]], domain: str, startTS: int):
+    incidents: list[dict[str, Any]] = []
+    for insight in insights:
+        for event in insight['events']:
+            if event['created'] <= startTS:
+                continue
+
+            id = f"{insight['id']}_{event['id']}"
+            name = insight['data'].get('name', insight['criteria'])
+            updated = int(event['data'].get('discovery_date', event['updated']))
+            desc_i = insight['data'].get('description', '')
+            desc_e = event['data'].get('description', '')
+            description = desc_i + "\n" + desc_e if desc_e else desc_i
+            link = f"{NDR_URL}/#/insights?id={insight['id']}&domain={domain}&startDate={event['from']}&endDate={event['to']}"
+            severity = 3
+            if event['probability'] < 60:
+                severity = 1
+            elif event['probability'] < 80:
+                severity = 2
+
+            incidents.append({
+                'type': 'Check Point NDR Insight',
+                'dbotMirrorId': id,
+                'name': name,
+                'severity': severity,
+                'occurred': datetime.utcfromtimestamp(updated / 1000).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                'details': description,
+                'CustomFields': {
+                    'externalstarttime': datetime.utcfromtimestamp(event['from'] / 1000).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                    'externalendtime': datetime.utcfromtimestamp(event['to'] / 1000).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                    'externallink': link,
+                    'description': desc_i,
+                    'eventdescriptions': desc_e
+                },
+                'rawJSON': json.dumps(event)
+            })
+    demisto.debug(f"Made {len(incidents)} XSOAR incidents")
+    return incidents
 
 def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch: datetime, domain: str):
     last_fetch = last_run.get('last_fetch', first_fetch.isoformat())
@@ -119,34 +137,9 @@ def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch: datet
     if not last_fetch_time:
         raise Exception(f"Invalid last fetch time value '{last_fetch}'")
 
-    events, last_insight_time = client.get_events(int(last_fetch_time.timestamp() * 1000))
-    demisto.debug(f"Fetched {len(events)} NDR events with insights")
-
-    incidents: list[dict[str, Any]] = []
-    for event in events:
-        link = f"{NDR_URL}/#/insights?id={event['insight_id']}&domain={domain}&startDate={event['from']}&endDate={event['to']}"
-        severity = 3
-        if event['probability'] < 60:
-            severity = 1
-        elif event['probability'] < 80:
-            severity = 2
-
-        incidents.append({
-            'type': 'Check Point NDR Insight',
-            'dbotMirrorId': event['id'],
-            'name': event['name'],
-            'severity': severity,
-            'occurred': datetime.utcfromtimestamp(event['updated'] / 1000).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-            'details': event['description'],
-            'CustomFields': {
-                'externalstarttime': datetime.utcfromtimestamp(event['from'] / 1000).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                'externalendtime': datetime.utcfromtimestamp(event['to'] / 1000).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                'externallink': link,
-                'description': event['insight_description'],
-                'eventdescriptions': event['event_description']
-            },
-            'rawJSON': json.dumps(event)
-        })
+    startTS = int(last_fetch_time.timestamp() * 1000)
+    insights, last_insight_time = client.get_insights(startTS)
+    incidents = parse_insights(insights, domain, startTS)
 
     return {'last_fetch': last_insight_time.isoformat()}, incidents
 
