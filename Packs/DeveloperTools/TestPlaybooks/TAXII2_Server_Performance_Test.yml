@@ -260,7 +260,7 @@ tasks:
     task:
       id: 4cb3dee5-788a-42dd-8299-1128ab1a079d
       version: -1
-      name: 100,000 Indicators
+      name: 90,000 Indicators
       type: title
       iscommand: false
       brand: ""
@@ -321,7 +321,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: /objects/?limit=100000
+                  simple: /objects/?limit=90000
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -1956,7 +1956,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: /objects/?limit=100000&match[type]=url
+                  simple: /objects/?limit=90000&match[type]=url
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2099,7 +2099,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: /objects/?limit=100000&match[type]=ip
+                  simple: /objects/?limit=90000&match[type]=ip
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2242,7 +2242,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: /objects/?limit=100000&match[type]=domain-name
+                  simple: /objects/?limit=90000&match[type]=domain-name
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2546,7 +2546,7 @@ inputs:
   playbookInputQuery: null
 - key: iocs_in_xsoar
   value:
-    simple: "100000"
+    simple: "90000"
   required: false
   description: Expected number of indicators in the system.
   playbookInputQuery: null
