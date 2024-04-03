@@ -8,6 +8,7 @@ args:
   predefined:
   - 'True'
   - 'False'
+  required: true
 - description: 'A list of key-values to replace key for value in the following format: {"old_key1":"new_key1", "old_key2":"new_key2"}.'
   name: replace_dict
 - auto: PREDEFINED
