@@ -376,9 +376,11 @@ def polling_until_upload_report_command(args: dict[str, Any], client: Client) ->
                                    'hide_polling_output': True},
             )
     elif upload_status == 'COMPLETED_WITH_ERROR':
-        fail_output = {"report_id": report_id, "report_status": upload_status}
+        fail_output = [{"report_id": report_id, "report_status": upload_status}]
         return PollResult(
             response=CommandResults(
+                outputs_prefix='AiOps.BPAReport',
+                outputs_key_field='report_id',
                 outputs=fail_output,
                 raw_response=fail_output,
                 readable_output=f'The report with id {report_id} could not be generated- finished with an error.'

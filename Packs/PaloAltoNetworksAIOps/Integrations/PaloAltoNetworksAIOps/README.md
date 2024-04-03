@@ -1,5 +1,5 @@
 Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
-This integration was integrated and tested with the March 2024 version of PaloAltoNetworksAIOps.
+This integration was integrated and tested with version xx of PaloAltoNetworksAIOps.
 
 ## Configure Palo Alto Networks AIOps on Cortex XSOAR
 
@@ -10,11 +10,11 @@ This integration was integrated and tested with the March 2024 version of PaloAl
     | **Parameter** | **Required** |
     | --- | --- |
     | Pan-OS/Panorama Server URL | True |
-    | Trust any certificate (not secure) | False |
     | Pan-OS/Panorama API Key | True |
     | TSG ID | True |
     | Client ID | True |
     | Client Secret | True |
+    | Trust any certificate (not secure) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -23,31 +23,51 @@ This integration was integrated and tested with the March 2024 version of PaloAl
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### pan-aiops-bpa-report-generate
+### aiops-bpa-report-generate
 
 ***
-Generates a bpa
+Generates a bpa report. Steps - 
+- Get information about Pan-OS/Panorama device.
+- Get configuration file of Pan-OS/Panorama. If the user provided an entry_id to a config file this step is skipped.
+- Use the information retrieved above to generate a BPA report.
+- During this process the API also generates a report_id for internal use.
 
 #### Base Command
 
-`pan-aiops-bpa-report-generate`
+`aiops-bpa-report-generate`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | Entry_id from Cortex XSOAR War Room after uploading a file. | Optional | 
-| requester_email | Enter the requester email. | Required | 
-| requester_name | Enter the requester name. | Required | 
-| interval_in_seconds | Enter the interval for polling mechanism. Default is 30. | Optional | 
-| timeout | Enter the timeout for downloading the file. Default is 600. | Optional | 
+| entry_id | - Entry_id from Cortex XSOAR War Room after uploading a file - should be a config file in xml format.<br/>- If you used this argument and the process failed or reached a timeout, make sure the config file is in xml format. | Optional | 
+| requester_email | Requester email. | Required | 
+| requester_name | Requester name. | Required | 
+| interval_in_seconds | Interval for polling mechanism. Default is 30. | Optional | 
+| timeout | Timeout for downloading the file. Default is 600. | Optional | 
+| export_as_file | Whether to export the generated report as a file. Possible values are: true, false. Default is True. | Optional | 
+| show_in_context | Whether to show the report data inside the context. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
 #### Command example
-```!pan-aiops-bpa-report-generate requester_email=tal@gmail.com requester_name=tall```
+```!aiops-bpa-report-generate requester_email=testl@gmail.com requester_name=test```
 #### Human Readable Output
 
->None
+#### - Initiated
 
+>The report with id 7fec3669-c7bc-4113-b8b9-cae6a2aeb066 was sent successfully. Download in progress...
+
+#### - If generation was successful
+
+> Generated a file with the relevant data and insert into context data if requested.
+
+#### - If generation was unsuccessful
+
+>The report with id 7fec3669-c7bc-4113-b8b9-cae6a2aeb066 could not be generated- finished with an error.
+
+#### - If timed out
+
+> Scheduled entry timed out.
+#####  This indicates that the configuration file is not in the correct format or that the timeout period is insufficient for generating the report.
