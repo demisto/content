@@ -73,15 +73,27 @@ echo "Copying master files at: gs://$GCS_MARKET_BUCKET/$SOURCE_PATH to build buc
 gsutil -m cp -r "gs://$GCS_MARKET_BUCKET/$SOURCE_PATH" "gs://$BUILD_BUCKET_CONTENT_DIR_FULL_PATH" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/Prepare_Content_Packs_For_Testing_gsutil.log" 2>&1
 echo "Finished copying successfully."
 
-CONTENT_PACKS_TO_UPLOAD_FILE="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_upload.txt"
-CONTENT_PACKS_TO_UPLOAD=$(paste -sd, "${CONTENT_PACKS_TO_UPLOAD_FILE}")
+CONTENT_PACKS_TO_UPLOAD_FILE="${ARTIFACTS_FOLDER_SERVER_TYPE}/content_packs_to_upload.json"
+
+CONTENT_PACKS_TO_UPLOAD_JSON=$(cat "${CONTENT_PACKS_TO_UPLOAD_FILE}")
+CONTENT_PACKS_TO_UPDATE_METADATA=$(echo "$CONTENT_PACKS_TO_UPLOAD_JSON" | jq -r '.packs_to_update_metadata | @csv')
+if [ -z "${CONTENT_PACKS_TO_UPDATE_METADATA}" ]; then
+  echo "Did not get content packs to update metadata in the bucket."
+fi
+
+CONTENT_PACKS_TO_UPLOAD=$(echo "$CONTENT_PACKS_TO_UPLOAD_JSON" | jq -r '.packs_to_upload | @csv')
 if [[ -z "${CONTENT_PACKS_TO_UPLOAD}" ]]; then
-  echo "Did not get content packs to update in the bucket. Skipping upload step."
+  echo "Did not get content packs to update in the bucket."
+fi
+
+if [[ -z "${CONTENT_PACKS_TO_UPLOAD}" &&  -z "${CONTENT_PACKS_TO_UPDATE_METADATA}" ]]; then
+  echo "Skipping upload step."
   exit 0
 fi
 
 echo "BUCKET_UPLOAD = $BUCKET_UPLOAD, FORCE_BUCKET_UPLOAD = $FORCE_BUCKET_UPLOAD, PACKS_TO_UPLOAD = $PACKS_TO_UPLOAD"
 echo "Uploading the following content packs: ${CONTENT_PACKS_TO_UPLOAD}"
+echo "Updating the following content packs (metadata changes): ${CONTENT_PACKS_TO_UPDATE_METADATA}"
 
 # Workaround for the SDK hard-coded path.
 mv "${ARTIFACTS_FOLDER}/markdown_images.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/markdown_images.json"
@@ -89,7 +101,7 @@ mv "${ARTIFACTS_FOLDER}/markdown_images.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/m
 UPLOAD_SPECIFIC_PACKS=false
 if [ -z "${BUCKET_UPLOAD}" ] && [ -z "${FORCE_BUCKET_UPLOAD}" ]; then
   # PR / nightly build
-  python3 ./Tests/Marketplace/upload_packs.py -pa "${PACK_ARTIFACTS}" -d "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --artifacts-folder-server-type "${ARTIFACTS_FOLDER_SERVER_TYPE}" -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n "$CI_PIPELINE_ID" -pn "${CONTENT_PACKS_TO_UPLOAD}" -p $UPLOAD_SPECIFIC_PACKS -o false -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt false -bu false -c $CI_COMMIT_BRANCH -f false -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
+  python3 ./Tests/Marketplace/upload_packs.py -pa "${PACK_ARTIFACTS}" -d "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --artifacts-folder-server-type "${ARTIFACTS_FOLDER_SERVER_TYPE}" -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n "$CI_PIPELINE_ID" -pn "${CONTENT_PACKS_TO_UPLOAD_JSON}" -p $UPLOAD_SPECIFIC_PACKS -o false -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt false -bu false -c $CI_COMMIT_BRANCH -f false -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
   echo "Finished updating content packs successfully."
 else
   # upload-flow build - production / force / specific packs
@@ -99,7 +111,7 @@ else
     echo "Upload the following specific packs: ${PACKS_TO_UPLOAD}"
     UPLOAD_SPECIFIC_PACKS=true
   fi
-  python3 ./Tests/Marketplace/upload_packs.py -pa "${PACK_ARTIFACTS}" -d "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --artifacts-folder-server-type "${ARTIFACTS_FOLDER_SERVER_TYPE}" -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -pn "${CONTENT_PACKS_TO_UPLOAD}" -p $UPLOAD_SPECIFIC_PACKS -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt true -bu $BUCKET_UPLOAD -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $FORCE_BUCKET_UPLOAD -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
+  python3 ./Tests/Marketplace/upload_packs.py -pa "${PACK_ARTIFACTS}" -d "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_dependencies.json" --artifacts-folder-server-type "${ARTIFACTS_FOLDER_SERVER_TYPE}" -e $EXTRACT_FOLDER -b $GCS_BUILD_BUCKET -s "$GCS_MARKET_KEY" -n $CI_PIPELINE_ID -pn "${CONTENT_PACKS_TO_UPLOAD_JSON}" -p $UPLOAD_SPECIFIC_PACKS -o $OVERRIDE_ALL_PACKS -sb $BUILD_BUCKET_PACKS_DIR_PATH -k $PACK_SIGNING_KEY -rt true -bu $BUCKET_UPLOAD -pb "$GCS_PRIVATE_BUCKET" -c $CI_COMMIT_BRANCH -f $FORCE_BUCKET_UPLOAD -dz "$CREATE_DEPENDENCIES_ZIP" -mp "$MARKETPLACE_TYPE"
 
   if [ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/index.json" ]; then
     gsutil cp -z json "${ARTIFACTS_FOLDER_SERVER_TYPE}/index.json" "gs://$BUILD_BUCKET_PACKS_DIR_FULL_PATH"
