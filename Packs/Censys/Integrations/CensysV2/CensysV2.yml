@@ -25,6 +25,12 @@ configuration:
   type: 8
   required: false
   section: Connect
+- display: I have access to Censys premium features.
+  name: premium_access
+  type: 8
+  required: false
+  section: Connect
+  description: Censys API provides reputation data exclusively to paying customers.
 - display: IP and Domain Malicious labels
   name: malicious_labels
   type: 16

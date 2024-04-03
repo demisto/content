@@ -1,3 +1,4 @@
+from requests import RequestException
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -71,7 +72,9 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, params: dict[str, Any]) -> str:
+    if not params.get('premium_access') and (params.get('malicious_labels') or params.get('suspicious_labels')):
+        raise DemistoException("The reputation labels feature only works with Censys premium access.")
     client.censys_view_request('ipv4', '8.8.8.8')
     return 'ok'
 
@@ -86,13 +89,12 @@ def censys_view_command(client: Client, args: dict[str, Any]) -> CommandResults:
     result = res.get('result', {})
     if index == 'ipv4':
         content = {
-            'Name': result.get('autonomous_system', {}).get('name'),
-            'Bgp Prefix': result.get('autonomous_system', {}).get('bgp_prefix'),
+            'Network': result.get('autonomous_system', {}).get('name'),
+            'Routing': result.get('autonomous_system', {}).get('bgp_prefix'),
             'ASN': result.get('autonomous_system', {}).get('asn'),
-            'Service': [{
-                'Port': service.get('port'),
-                'Service Name': service.get('service_name')
-            } for service in result.get('services', [])],
+            'Protocols': ', '.join([
+                f"{service.get('port')}/{service.get('service_name')}"
+                for service in result.get('services', [])]),
             'Last Updated': result.get('last_updated_at')
         }
 
@@ -129,12 +131,14 @@ def censys_view_command(client: Client, args: dict[str, Any]) -> CommandResults:
         )
     else:
         content = {
+            'Added At': result.get('added_at'),
+            'Modified At': result.get('modified_at'),
+            'Browser Trust': [
+                f"{name}: {'Valid' if val.get('is_valid') else 'Invalid'}"
+                for name, val in result.get('validation', {}).items()],
             'SHA 256': result.get('fingerprint_sha256'),
-            'Added': result.get('added_at'),
-            'Updated': result.get('modified_at'),
-            # 'Browser Trust': metadata.get('validation', {}).get(name)
-            # 'Tags': res.get('tags'),
-            # 'Source': metadata.get('source'),
+            'Tags': result.get('tags'),
+            'Source': result.get('source'),
         }
         human_readable = tableToMarkdown('Information for certificate', content)
         return CommandResults(
@@ -165,12 +169,14 @@ def censys_search_command(client: Client, args: dict[str, Any]) -> CommandResult
         for hit in hits:
             contents.append({
                 'IP': hit.get('ip'),
-                'Services': ', '.join([f"{service['port']}/{service['service_name']}" for service in hit.get('services', [])]),
+                'Services': ', '.join([
+                    f"{service.get('port')}/{service.get('service_name')}"
+                    for service in hit.get('services', [])]),
                 'Location Country code': hit.get('location', {}).get('country_code'),
                 'ASN': hit.get('autonomous_system', {}).get('asn'),
                 'Description': hit.get('autonomous_system', {}).get('description'),
                 'Name': hit.get('autonomous_system', {}).get('name'),
-                # 'Registered Country Code': hit.get('location', {}).get('registered_country_code'),
+                'Registered Country Code': hit.get('location', {}).get('registered_country_code'),
             })
         headers = ['IP', 'Name', 'Description', 'ASN', 'Location Country code', 'Registered Country Code', 'Services']
         human_readable = tableToMarkdown(f'Search results for query "{query}"', contents, headers)
@@ -187,29 +193,33 @@ def censys_search_command(client: Client, args: dict[str, Any]) -> CommandResult
 
 
 def search_certs_command(client: Client, args: dict[str, Any], query: str, limit: Optional[int]):
-    # fields = ['parsed.fingerprint_sha256', 'parsed.subject_dn', 'parsed.issuer_dn', 'parsed.issuer.organization',
-    #           'parsed.validity.start', 'parsed.validity.end', 'parsed.names']
-    # search_fields = argToList(args.get('fields'))
-    # if search_fields:
-    #     fields.extend(search_fields)
+    fields = ['parsed.fingerprint_sha256', 'parsed.subject_dn', 'parsed.issuer_dn', 'parsed.issuer.organization',
+              'parsed.validity.start', 'parsed.validity.end', 'parsed.names']
+    search_fields = argToList(args.get('fields'))
+    if search_fields:
+        fields.extend(search_fields)
     contents = []
     data = {
         'query': query,
         'page': int(args.get('page', 1)),
-        # 'fields': fields,
+        'fields': fields,
         'flatten': False
     }
 
-    res = client.censys_search_certs_request(data)
-    results = res.get('result', {}).get('hits', [])[:limit]
+    raw_response = client.censys_search_certs_request(data).get('result', {}).get('hits')
+    if not raw_response or not isinstance(raw_response, list):
+        error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {raw_response}"
+        raise DemistoException(error_msg)
+    results = raw_response[:limit]
     for result in results:
         contents.append({
+            'Issuer DN': result.get('parsed', {}).get('issuer_dn'),
+            'Subject DN': result.get('parsed', {}).get('subject_dn'),
+            'Validity not before': result.get('parsed', {}).get('validity_period', {}).get('not_before'),
+            'Validity not after': result.get('parsed', {}).get('validity_period', {}).get('not_after'),
             'SHA256': result.get('fingerprint_sha256'),
-            'Issuer dn': result.get('parsed').get('issuer_dn'),
-            'Subject dn': result.get('parsed').get('subject_dn'),
             'Names': result.get('names'),
-            'Validity': result.get('parsed').get('validity_period'),
-            # 'Issuer': result.get('parsed').get('issuer'),
+            'Issuer': result.get('parsed').get('issuer'),
         })
 
     human_readable = tableToMarkdown(f'Search results for query "{query}"', contents)
@@ -218,7 +228,7 @@ def search_certs_command(client: Client, args: dict[str, Any], query: str, limit
         outputs_prefix='Censys.Search',
         outputs_key_field='fingerprint_sha256',
         outputs=results,
-        raw_response=res
+        raw_response=raw_response
     )
 
 
@@ -236,9 +246,7 @@ def censys_host_history_command(client: Client, args: dict[str, Any]) -> Command
     at_time_b = args.get("at_time_b", '')
 
     res = client.censys_host_history_request(ip, ip_b, at_time, at_time_b).get("result", {})
-    human_readable = tableToMarkdown(f'Host Diff for IP {ip}', res)
     return CommandResults(
-        readable_output=human_readable,
         outputs_prefix='Censys.HostHistory',
         outputs_key_field='ip',
         outputs=res,
@@ -249,72 +257,122 @@ def censys_host_history_command(client: Client, args: dict[str, Any]) -> Command
 def ip_command(client: Client, args: dict):
     ips: list = argToList(args.get('ip'))
     results: List[CommandResults] = []
+    execution_metrics = ExecutionMetrics()
+
     for ip in ips:
-        res = client.ip_reputation_request(ip).get('result', {}).get('hits')[0]
-        dbot_score = Common.DBotScore(
-            indicator=ip,
-            indicator_type=DBotScoreType.IP,
-            integration_name="Censys",
-            score=get_dbot_score(args, res),
-            reliability=args.get('reliability')
-        )
-        content = {
-            'ip': ip,
-            'asn': res.get("autonomous_system", {}).get('asn'),
-            'region': res.get('location', {}).get('country'),
-            'updated_date': res.get('last_updated_at'),
-            'geo_latitude': res.get('location', {}).get('coordinates', {}).get('latitude'),
-            'geo_longitude': res.get('location', {}).get('coordinates', {}).get('longitude'),
-            'geo_country': res.get('location', {}).get('country'),
-            # 'whois_records':res.get('whois'),
-            # 'registrar_abuse_email':res.get('whois', {}).get('organization', {}).get('abuse_contacts', {}).get('email'),
-            # 'registrar_abuse_name':res.get('whois', {}).get('organization', {}).get('abuse_contacts', {}).get('name'),
-            # # 'port': res.get('services', {}).get('port'),
-            # "organization_name":res.get('services', {}).get('tls', {}).get('issuer', {}).get('organization'),
-        }
-        indicator = Common.IP(dbot_score=dbot_score, **content)
-        results.append(CommandResults(
-            outputs_prefix='Censys.IP',
-            outputs_key_field='IP',
-            readable_output=tableToMarkdown(f'censys results for IP: {ip}', content),
-            outputs=res,
-            raw_response=res,
-            indicator=indicator,
-        ))
+        try:
+            raw_response = client.ip_reputation_request(ip).get('result', {}).get('hits')
+            if not raw_response or not isinstance(raw_response, list):
+                error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {raw_response}"
+                raise DemistoException(error_msg)
+            res = raw_response[0]
+            dbot_score = Common.DBotScore(
+                indicator=ip,
+                indicator_type=DBotScoreType.IP,
+                integration_name="Censys",
+                score=get_dbot_score(args, res),
+                reliability=args.get('reliability')
+            )
+            content = {
+                'ip': ip,
+                'asn': res.get("autonomous_system", {}).get('asn'),
+                'region': res.get('location', {}).get('country'),
+                'updated_date': res.get('last_updated_at'),
+                'geo_latitude': res.get('location', {}).get('coordinates', {}).get('latitude'),
+                'geo_longitude': res.get('location', {}).get('coordinates', {}).get('longitude'),
+                'geo_country': res.get('location', {}).get('country'),
+                'port': ', '.join([f"{service.get('port')}" for service in res.get('services', [])]),
+            }
+            indicator = Common.IP(dbot_score=dbot_score, **content)
+            results.append(CommandResults(
+                outputs_prefix='Censys.IP',
+                outputs_key_field='IP',
+                readable_output=tableToMarkdown(f'censys results for IP: {ip}', content, headerTransform=string_to_table_header),
+                outputs=res,
+                raw_response=res,
+                indicator=indicator,
+            ))
+
+            execution_metrics.success += 1
+        except RequestException as e:
+            should_break = handle_exceptions(e, results, execution_metrics, ip)
+            if should_break:
+                break
+
+    if execution_metrics.metrics:
+        results.append(execution_metrics.metrics)
+        
     return results
 
 
 def domain_command(client: Client, args: dict):
     domains: list = argToList(args.get('domain'))
     results: List[CommandResults] = []
+    execution_metrics = ExecutionMetrics()
+
     for domain in domains:
-        res = client.domain_reputation_request(domain).get('result').get('hits')[0]
-        dbot_score = Common.DBotScore(
-            indicator=domain,
-            indicator_type=DBotScoreType.DOMAIN,
-            integration_name="Censys",
-            score=get_dbot_score(args, res),
-            reliability=args.get('reliability')
-        )
-        content = {
-            "domain": domain,
-            'description': res.get('autonomous_system', {}).get('description'),
-            'updated_date': res.get('last_updated_at'),
-            'geo_country': res.get('location', {}).get('country'),
-            # 'dns_records':res.get('dns', {}).get('reverse_dns', {}).get('names'),
-            # 'port':res.get('services', {}).get('port'),
-            # 'certificates':res.get('services', {}).get('certificate'),
-        }
-        indicator = Common.Domain(dbot_score=dbot_score, **content)
-        results.append(CommandResults(
-            outputs_prefix='Censys.Domain',
-            outputs_key_field='Domain',
-            readable_output=tableToMarkdown(f'Censys results for Domain: {domain}', content),
-            outputs=res,
-            raw_response=res,
-            indicator=indicator,
-        ))
+        try:
+            raw_response = client.domain_reputation_request(domain).get('result', {}).get('hits')
+            if not raw_response or not isinstance(raw_response, list):
+                error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {raw_response}"
+                raise DemistoException(error_msg)
+            res = raw_response[0]
+
+            dbot_score = Common.DBotScore(
+                indicator=domain,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name="Censys",
+                score=get_dbot_score(args, res),
+                reliability=args.get('reliability')
+            )
+            content = {
+                'domain': domain,
+                'description': res.get('autonomous_system', {}).get('description'),
+                'updated_date': res.get('last_updated_at'),
+                'geo_country': res.get('location', {}).get('country'),
+                'port': ', '.join([f"{service.get('port')}" for service in res.get('services', [])]),
+            }
+            indicator = Common.Domain(dbot_score=dbot_score, **content)
+            results.append(CommandResults(
+                outputs_prefix='Censys.Domain',
+                outputs_key_field='Domain',
+                readable_output=tableToMarkdown(
+                    f'Censys results for Domain: {domain}',
+                    content, headerTransform=string_to_table_header),
+                outputs=res,
+                raw_response=res,
+                indicator=indicator,
+            ))
+
+            execution_metrics.success += 1
+        except RequestException as e:
+            should_break = handle_exceptions(e, results, execution_metrics, domain)
+            if should_break:
+                break
+
+    if execution_metrics.metrics:
+        results.append(execution_metrics.metrics)
+
     return results
+
+
+''' HELPER FUNCTIONS '''
+
+
+def handle_exceptions(e: RequestException, results, execution_metrics, item):
+    if e.response.status_code == 403 and 'quota' in e.response.json().get('error'):
+        # Handle quota exceeded error
+        execution_metrics.quota_error += 1
+        results.append(CommandResults(readable_output=f"Quota exceeded. {e.response.json()}"))
+        return True
+    if e.response.status_code == 401:
+        # Raise unauthorized access error
+        raise e
+    # Handle general error
+    execution_metrics.general_error += 1
+    error_msg = f"An error occurred for item: {item}. Error: {e.response.json()}"
+    results.append(CommandResults(readable_output=error_msg))
+    return False
 
 
 def get_dbot_score(args, result_labels):
@@ -324,14 +382,14 @@ def get_dbot_score(args, result_labels):
     suspicious_threshold = args.get("suspicious_labels_threshold", 0)
 
     num_malicious = len(malicious_labels.intersection(result_labels))
-    if num_malicious >= malicious_threshold:
+    if num_malicious >= malicious_threshold and num_malicious > 0:
         return Common.DBotScore.BAD
 
     num_suspicious = len(suspicious_labels.intersection(result_labels))
-    if num_suspicious >= suspicious_threshold:
+    if num_suspicious >= suspicious_threshold and num_suspicious > 0:
         return Common.DBotScore.SUSPICIOUS
 
-    return Common.DBotScore.GOOD
+    return Common.DBotScore.NONE
 
 
 ''' MAIN FUNCTION '''
@@ -356,7 +414,7 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            return_results(test_module(client))
+            return_results(test_module(client, params))
 
         elif command == 'cen-view':
             return_results(censys_view_command(client, demisto.args()))
