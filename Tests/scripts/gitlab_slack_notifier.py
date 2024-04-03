@@ -53,7 +53,7 @@ CI_COMMIT_SHA = os.getenv('CI_COMMIT_SHA', '')
 CI_SERVER_HOST = os.getenv('CI_SERVER_HOST', '')
 DEFAULT_BRANCH = 'master'
 ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS = ' (All failures were converted to Jira tickets)'
-LOOK_BACK_HOURS = 48
+LOOK_BACK_HOURS = 72
 UPLOAD_BUCKETS = [
     (ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE, "XSOAR", True),
     (ARTIFACTS_FOLDER_XSOAR_SAAS_SERVER_TYPE, "XSOAR SAAS", True),
@@ -643,7 +643,7 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
-    if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
+    if True:
         computed_slack_channel = "dmst-build-test"
         # Check if the current commit's pipeline differs from the previous one. If the previous pipeline is still running,
         # compare the next build. For commits without pipelines, compare the current one to the nearest commit with a
@@ -657,30 +657,30 @@ def main():
             # If the current commit is the last commit in the list, there is no previous commit,
             # since commits are in ascending order
             # or if we already sent a shame message for newer commits, we don't want to send another one for older commits.
-            if (current_commit_index != len(list_of_commits) - 1
-                    and not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)):
+            if (current_commit_index != len(list_of_commits) - 1):
+                    #and not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)):
                 current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
 
                 # looking backwards until we find a commit with a pipeline to compare with
                 previous_pipeline, suspicious_commits = get_nearest_older_commit_with_pipeline(
                     list_of_pipelines, list_of_commits, current_commit_index)
                 if previous_pipeline and suspicious_commits and current_pipeline:
+                    logging.info(
+                        "comparing current pipeline status with nearest older pipeline status")
                     pipeline_changed_status = is_pivot(current_pipeline=current_pipeline,
                                                        pipeline_to_compare=previous_pipeline)
 
-                    logging.info(
-                        "comparing current pipeline status with nearest older pipeline status")
-
+                    pipeline_changed_status = True
                     if pipeline_changed_status is None and current_commit_index > 0:
                         # looking_forward until we find a commit with a pipeline to compare with
                         next_pipeline, suspicious_commits = get_nearest_newer_commit_with_pipeline(
                             list_of_pipelines, list_of_commits, current_commit_index)
 
                         if next_pipeline and suspicious_commits:
-                            pipeline_changed_status = is_pivot(current_pipeline=next_pipeline,
-                                                               pipeline_to_compare=current_pipeline)
                             logging.info(
                                 "comparing current pipeline status with nearest newer pipeline status")
+                            pipeline_changed_status = is_pivot(current_pipeline=next_pipeline,
+                                                               pipeline_to_compare=current_pipeline)
 
                     if pipeline_changed_status is not None:
                         shame_message = create_shame_message(suspicious_commits, pipeline_changed_status,  # type: ignore
