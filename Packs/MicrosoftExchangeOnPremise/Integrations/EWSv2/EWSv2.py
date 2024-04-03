@@ -1122,14 +1122,6 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
                 raw_dict[field.name] = field_val
         return raw_dict
 
-    def parse_attachment_as_raw_json(attachment):
-        raw_dict = parse_object_as_dict(attachment)
-        if raw_dict['attachment_id']:
-            raw_dict['attachment_id'] = parse_object_as_dict(raw_dict['attachment_id'])
-        if raw_dict['last_modified_time']:
-            raw_dict['last_modified_time'] = raw_dict['last_modified_time'].ewsformat()
-        return raw_dict
-
     def parse_folder_as_json(folder):  # pragma: no cover
         raw_dict = parse_object_as_dict(folder)
         if 'parent_folder_id' in raw_dict:
@@ -1380,8 +1372,8 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                     raise e
 
         incident['labels'] = labels
-        
-        incident['rawJSON'] = json.dumps(parsed_items_as_dict, ensure_ascii=False)
+        incident['rawJSON'] = json.dumps(parse_item_as_dict(item, None), ensure_ascii=False)
+
     except Exception as e:
         if 'Message is not decoded yet' in str(e):
             demisto.debug('EWS v2 - Skipped a protected message')

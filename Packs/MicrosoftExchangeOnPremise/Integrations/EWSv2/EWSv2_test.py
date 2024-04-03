@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from exchangelib.indexed_properties import PhoneNumber, PhysicalAddress
 
@@ -8,11 +9,12 @@ import logging
 import dateparser
 import pytest
 from exchangelib import Message, Mailbox, Contact, HTMLBody, Body
-from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_physical_address
+from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_item_as_dict, parse_physical_address
 from exchangelib.errors import UnauthorizedError, ErrorNameResolutionNoResults
 from exchangelib import EWSDateTime, EWSTimeZone
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
 import demistomock as demisto
+from exchangelib.properties import ItemId
 
 
 class TestNormalCommands:
@@ -826,3 +828,17 @@ def test_parse_physical_address():
                                                                       'state': 'NY',
                                                                       'street': 'Broadway Ave.',
                                                                       'zipcode': 10001}
+
+
+def test_parse_item_as_dict_return_json_serializable():
+    class NestedObject:
+        name: str
+        item_id: ItemId
+        
+    class Object:
+        cc_recipients: list[NestedObject]
+
+    item = Object()
+    item.cc_recipients = [NestedObject(name="my_test_nested_object", item_id=ItemId(id='id123', changekey='change'))]
+    item_as_dict = parse_item_as_dict(item, None)
+    item_as_json = json.dumps(item_as_json, ensure_ascii=False)
