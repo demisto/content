@@ -8501,7 +8501,11 @@ def get_whois_ip(ip: str,
         ip_obj = ipwhois.IPWhois(ip)
 
     try:
-        return ip_obj.lookup_rdap(depth=1, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout)
+        rate_limit_timeout_actual = rate_limit_timeout
+        if retry_count > 0:
+            rate_limit_timeout_actual = 0
+        demisto.debug(f'calling lookup_rdap, {retry_count=}, {rate_limit_timeout=}, {rate_limit_timeout_actual=}')
+        return ip_obj.lookup_rdap(depth=1, retry_count=retry_count, rate_limit_timeout=rate_limit_timeout_actual)
     except urllib.error.HTTPError as e:
         if rate_limit_errors_suppressed:
             demisto.debug(f'Suppressed HTTPError when trying to lookup rdap info. Error: {e}')
