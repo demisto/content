@@ -195,7 +195,7 @@ def _to_unix(date, milliseconds=False):
 def get_types(self, linq_query, start):
     # Calculate stop time
     stop = _to_unix(start)
-    start = stop - 100
+    start = stop - 10000
 
     # Query the data
     response = self.query(
