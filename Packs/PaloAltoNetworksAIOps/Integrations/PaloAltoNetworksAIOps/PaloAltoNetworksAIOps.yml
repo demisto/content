@@ -22,7 +22,7 @@ configuration:
   required: true
   additionalinfo: |-
     The Tennant Service Group must contain an active “AIOps for NGFW (Free)” application.
-    For more information about the service activation, visit the following link: https://docs.paloaltonetworks.com/ngfw/aiops/about/activate-aiops-for-ngfw#activate-aiops-for-ngfw_section_xjs_p55_fyb)
+    For more information about the service activation, visit the following link: https://docs.paloaltonetworks.com/ngfw/aiops/about/activate-aiops-for-ngfw#activate-aiops-for-ngfw_section_xjs_p55_fyb
 - section: Connect
   display: ""
   displaypassword: Client ID
