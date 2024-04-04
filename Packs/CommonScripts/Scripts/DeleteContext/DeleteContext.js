@@ -1,3 +1,7 @@
+// pack version: 1.14.17
+
+LINE_SEPARATOR = '\n';
+
 function errorEntry(text) {
     return  {
         ContentsFormat: formats.text,
@@ -17,29 +21,27 @@ function hasDuplicates(arr) {
  * @param {Array<string>} keys - An array of keys to delete.
  * @returns {string} A message summarizing the outcome of the delete operation.
  */
-function deleteKeys(keysToDelete) {
+function deleteKeys(keysToDelete, keysToKeep) {
     var deletedKeys = []
     var errors = []
     var message = "";
     for (var key of keysToDelete) {
         const originalKey = typeof key === "string" ? key.trim() : key;
-        if (!dq(invContext, originalKey)) {
-            errors.push(`key does not exist: ${originalKey}`);
-            continue;
-        }
+        
         const keyToDelete = isSubPlaybookKey ? 'subplaybook-${currentPlaybookID}.' + originalKey: originalKey;
         const result = executeCommand('delContext', { key: keyToDelete });
-    
+
         if (!result || result.type === entryTypes.error) {
             errors.push(result.Contents);
-        } else {
+        } else if (!keysToKeep.includes(key)) {
             deletedKeys.push(key);
         }
     }
     if (deletedKeys.length > 0) {
-        message += `\nSuccessfully deleted keys '${deletedKeys.join("', '")}' from context.`;
+        message += LINE_SEPARATOR + `Successfully deleted keys '${deletedKeys.join("', '")}' from context.`;
     }
-    return message;
+    
+    return errors.join(LINE_SEPARATOR) + LINE_SEPARATOR + message;
 }
 
 var shouldDeleteAll = (args.all === 'yes');
@@ -94,7 +96,7 @@ if (shouldDeleteAll) {
     }
     var keysToDelete = Object.keys(invContext);
 
-    var message = deleteKeys(keysToDelete, isSubPlaybookKey)
+    var message = deleteKeys(keysToDelete, keysToKeep)
 
     return {
         Type: entryTypes.note,
@@ -147,7 +149,7 @@ if (shouldDeleteAll) {
     // Supporting comma separated list of keys to be deleted.
     var keysToDelete = (typeof args.key === "string") ? args.key.split(',') : [args.key]
 
-    var message = deleteKeys(keysToDelete, isSubPlaybookKey)
+    var message = deleteKeys(keysToDelete, keysToKeep)
     return {
         Type: entryTypes.note,
         Contents: message,
