@@ -3,10 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Block File - Generic v2
-description: "This playbook is used to block files from running on endpoints. \nThis
-  playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Palo
-  Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance
-  Protect v2\n"
+description: "This playbook is used to block files from running on endpoints. \nThis playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Palo Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect v2\n- Crowdstrike Falcon\n- Microsoft Defender for Endpoint."
 starttaskid: "0"
 tasks:
   "0":
@@ -26,6 +23,8 @@ tasks:
       - "10"
       - "11"
       - "12"
+      - "17"
+      - "18"
     separatecontext: false
     view: |-
       {
@@ -39,6 +38,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: 5a2f437e-234a-43ef-858d-28d07fd1c7c2
@@ -97,6 +99,9 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
     taskid: c8476a84-8d87-4ff2-8d6c-1dd1cccc503a
@@ -122,6 +127,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 2efe2a1a-1d31-438c-828f-b6ae50f3899d
@@ -130,8 +138,7 @@ tasks:
       id: 2efe2a1a-1d31-438c-828f-b6ae50f3899d
       version: -1
       name: Block File - Cybereason
-      description: This playbook accepts an MD5 hash and blocks the file using the
-        Cybereason integration.
+      description: This playbook accepts an MD5 hash and blocks the file using the Cybereason integration.
       playbookName: Block File - Cybereason
       type: playbook
       iscommand: false
@@ -178,6 +185,9 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: a887370c-f94a-42f9-866f-2d80b7707f41
@@ -186,8 +196,7 @@ tasks:
       id: a887370c-f94a-42f9-866f-2d80b7707f41
       version: -1
       name: Block File - Cylance Protect v2
-      description: This playbook accepts a SHA256 hash and adds the hash to the Global
-        Quarantine list using the Cylance Protect v2 integration.
+      description: This playbook accepts a SHA256 hash and adds the hash to the Global Quarantine list using the Cylance Protect v2 integration.
       playbookName: Block File - Cylance Protect v2
       type: playbook
       iscommand: false
@@ -234,6 +243,9 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
     taskid: 32d4b47a-e972-4e30-875b-b563130cc4ca
@@ -262,6 +274,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
     taskid: 0c07d0e1-59b1-436c-8e90-f2d0410df813
@@ -290,6 +305,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
     taskid: dcc8e191-213c-4ffd-8bc7-a8e1bc8894d7
@@ -318,6 +336,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
     taskid: b42b03dd-99c1-4149-8c32-336d23b88cf0
@@ -346,6 +367,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: cfefcb2a-3dcf-44a5-8aed-ef231d7fe00b
@@ -354,8 +378,7 @@ tasks:
       id: cfefcb2a-3dcf-44a5-8aed-ef231d7fe00b
       version: -1
       name: Cortex XDR - Block File
-      description: Use this playbook to add files to Cortex XDR block list with a
-        given file SHA256 playbook input.
+      description: Use this playbook to add files to Cortex XDR block list with a given file SHA256 playbook input.
       playbookName: Cortex XDR - Block File
       type: playbook
       iscommand: false
@@ -394,6 +417,187 @@ tasks:
       {
         "position": {
           "x": 1340,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b6a4a1eb-e837-400c-890a-aa72fdd866d2
+    type: title
+    task:
+      id: b6a4a1eb-e837-400c-890a-aa72fdd866d2
+      version: -1
+      name: CrowdStrike Falcon
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c463f54e-7a18-4dba-804f-acf83e449259
+    type: title
+    task:
+      id: c463f54e-7a18-4dba-804f-acf83e449259
+      version: -1
+      name: Microsoft Defender For Endpoint
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -380,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 07c049da-5bbf-4804-8b51-3b58463ce5be
+    type: playbook
+    task:
+      id: 07c049da-5bbf-4804-8b51-3b58463ce5be
+      version: -1
+      name: CrowdStrike Falcon - Block File
+      description: "This playbook receives an MD5 or a SHA256 hash and adds it to the block list in CrowdStrike Falcon. \nThe playbook uses the integration \"CrowdStrike Falcon\"."
+      playbookName: CrowdStrike Falcon - Block File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      Hash:
+        complex:
+          root: inputs.Hash
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.MD5
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.SHA256
+                iscontext: true
+          - operator: uniq
+      'Severity ':
+        simple: medium
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1760,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 56668cf3-d5c5-424d-85ff-43b568a0d538
+    type: playbook
+    task:
+      id: 56668cf3-d5c5-424d-85ff-43b568a0d538
+      version: -1
+      name: MDE - Block File
+      description: "This playbook receives an MD5 or a SHA256 hash and adds it to the block list in Microsoft Defender for Endpoint. \nThe playbook uses the integration \"Microsoft Defender for Endpoint\"."
+      playbookName: MDE - Block File
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      GenerateAlert:
+        simple: "true"
+      Hash:
+        complex:
+          root: inputs.Hash
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.MD5
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.SHA256
+                iscontext: true
+          - operator: uniq
+      IndicatorDescription:
+        simple: Added by Cortex XSOAR
+      IndicatorTitle:
+        simple: Added by Cortex XSOAR
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -380,
           "y": 340
         }
       }
@@ -409,8 +613,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 530,
-        "width": 1670,
-        "x": 50,
+        "width": 2520,
+        "x": -380,
         "y": 50
       }
     }
@@ -423,7 +627,7 @@ inputs:
       accessor: MD5
   required: false
   description: The MD5 hash of the file you want to block.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SHA256
   value:
     complex:
@@ -439,11 +643,11 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: CbResponse.BlockedHashes.LastBlock.Time
-  description: Last block time
+  description: Last block time.
 - contextPath: CbResponse.BlockedHashes.LastBlock.Hostname
-  description: Last block hostname
+  description: Last block hostname.
 - contextPath: CbResponse.BlockedHashes.LastBlock.CbSensorID
-  description: Last block sensor ID
+  description: Last block sensor ID.
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

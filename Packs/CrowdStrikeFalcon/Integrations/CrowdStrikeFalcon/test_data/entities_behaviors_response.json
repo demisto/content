@@ -1,0 +1,59 @@
+{
+ "meta": {
+  "query_time": 0.008628082,
+  "powered_by": "incident-api",
+  "trace_id": "329223f1-af55-4055-9da6-ca7c52c35e86"
+ },
+ "resources": [
+  {
+   "behavior_id": "ind:XX:XX",
+   "cid": "CID",
+   "aid": "AID",
+   "incident_id": "inc:XX:XX",
+   "incident_ids": [
+    "inc:XX:XX"
+   ],
+   "pattern_id": 364,
+   "template_instance_id": 0,
+   "timestamp": "2023-12-06T14:44:40.668Z",
+   "cmdline": "\"C:\\Windows\\system32\\ServerManagerLauncher.exe\"",
+   "filepath": "\\Device\\HarddiskVolume\\Windows\\System32\\ServerManagerLauncher.exe",
+   "domain": "DOMAIN",
+   "pattern_disposition": 0,
+   "pattern_disposition_details": {
+    "indicator": false,
+    "detect": false,
+    "inddet_mask": false,
+    "sensor_only": false,
+    "rooting": false,
+    "kill_process": false,
+    "kill_subprocess": false,
+    "quarantine_machine": false,
+    "quarantine_file": false,
+    "policy_disabled": false,
+    "kill_parent": false,
+    "operation_blocked": false,
+    "process_blocked": false,
+    "registry_operation_blocked": false,
+    "critical_process_disabled": false,
+    "bootup_safeguard_enabled": false,
+    "fs_operation_blocked": false,
+    "handle_operation_downgraded": false,
+    "kill_action_failed": false,
+    "blocking_unsupported_or_disabled": false,
+    "suspend_process": false,
+    "suspend_parent": false
+   },
+   "sha256": "SHA256",
+   "user_name": "admin",
+   "tactic": "Privilege Escalation",
+   "tactic_id": "TA0004",
+   "technique": "Access Token Manipulation",
+   "technique_id": "T1134",
+   "display_name": "UserTokenImpersonation",
+   "objective": "Gain Access",
+   "compound_tto": "GainAccess__PrivilegeEscalation__AccessTokenManipulation__0__0__0__0"
+  }
+ ],
+ "errors": []
+}

@@ -2,7 +2,15 @@ import json
 from dateparser import parse as parse_date
 from datetime import timedelta
 from ZeroFox import (
+    # Constants
+    DATE_FORMAT,
+
+    demisto,
+
+    # Client
     ZFClient,
+
+    # Commands
     fetch_incidents,
     get_modified_remote_data_command,
     get_remote_data_command,
@@ -20,6 +28,8 @@ from ZeroFox import (
     get_policy_types_command,
     modify_alert_notes_command,
     submit_threat_command,
+    send_alert_attachment_command,
+    get_alert_attachments_command,
     compromised_domain_command,
     compromised_email_command,
     malicious_ip_command,
@@ -30,7 +40,6 @@ from ZeroFox import (
 BASE_URL = "https://api.zerofox.com"
 OK_CODES = (200, 201)
 FETCH_LIMIT = 10
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 
 def load_json(file: str):
@@ -60,7 +69,8 @@ def get_delayed_formatted_date(str_date: str, delay=timedelta(milliseconds=1)):
 def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
     """
     Given
-        There is 0 alerts
+        There is 0 new alerts
+        And 0 modified alerts
         And last_run is empty
     When
         Calling fetch_incidents
@@ -69,18 +79,20 @@ def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
         And offset equals to 0
         And return last_fetch equals to first_fetch_time
         And last last_offset equals to 0
+        And last first_run_at equals to first_fetch_time
+        And last last_modified_fetched equals to first_fetch_time
+        And last last_modified_offset equals to 0
         And 0 incidents
     """
-    alerts_response = load_json("test_data/alerts/list_no_records.json")
+    alerts_empty_response = load_json("test_data/alerts/list_no_records.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
-    requests_mock.get("/1.0/alerts/", json=alerts_response)
+    requests_mock.get("/1.0/alerts/", response_list=[
+        {"json": alerts_empty_response},
+        {"json": alerts_empty_response},
+    ])
     client = build_zf_client()
     last_run: dict = {}
     first_fetch_time = "2023-06-01T00:00:00.000000"
-    first_fetch_time_parsed = parse_date(
-        first_fetch_time,
-        date_formats=(DATE_FORMAT,),
-    )
     expected_offset = 0
     spy = mocker.spy(client, "list_alerts")
 
@@ -90,20 +102,28 @@ def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
         first_fetch_time,
     )
 
-    spy.assert_called_once()
-    list_alert_params = spy.call_args[0][0]
-    assert list_alert_params.get("min_timestamp") == first_fetch_time_parsed
+    # One call for new alerts, and another call to modified alerts
+    assert spy.call_count == 2
+    list_alert_params = spy.call_args_list[0].args[0]
+    assert list_alert_params.get("min_timestamp") == first_fetch_time
     assert list_alert_params.get("sort_direction") == "asc"
     assert list_alert_params.get("offset") == expected_offset
+    list_modified_alert_params = spy.call_args_list[1].args[0]
+    assert list_modified_alert_params.get("sort_direction") == "asc"
+    assert list_modified_alert_params.get("offset") == expected_offset
+    assert list_modified_alert_params.get("last_modified_min_date") == first_fetch_time
     assert next_run["last_fetched"] == first_fetch_time
     assert next_run["last_offset"] == str(expected_offset)
+    assert next_run["first_run_at"] == first_fetch_time
+    assert next_run["last_modified_fetched"] == first_fetch_time
+    assert next_run["last_modified_offset"] == str(expected_offset)
     assert len(incidents) == 0
 
 
 def test_fetch_incidents_first_time(requests_mock, mocker):
     """
     Given
-        There are alerts (less than the fetch limit)
+        There are new alerts (less than the fetch limit)
         And there is no last_fetched in last_run
     When
         Calling fetch_incidents
@@ -121,10 +141,6 @@ def test_fetch_incidents_first_time(requests_mock, mocker):
     client = build_zf_client()
     last_run: dict = {}
     first_fetch_time = "2023-06-01T00:00:00.000000"
-    first_fetch_time_parsed = parse_date(
-        first_fetch_time,
-        date_formats=(DATE_FORMAT,),
-    )
     last_alert_timestamp_formatted = get_delayed_formatted_date(
         last_alert_timestamp,
     )
@@ -139,7 +155,7 @@ def test_fetch_incidents_first_time(requests_mock, mocker):
 
     spy.assert_called_once()
     list_alert_params = spy.call_args[0][0]
-    assert list_alert_params.get("min_timestamp") == first_fetch_time_parsed
+    assert list_alert_params.get("min_timestamp") == first_fetch_time
     assert list_alert_params.get("sort_direction") == "asc"
     assert list_alert_params.get("offset") == expected_offset
     assert next_run["last_fetched"] == last_alert_timestamp_formatted
@@ -153,7 +169,7 @@ def test_fetch_incidents_first_time(requests_mock, mocker):
 def test_fetch_incidents_no_first_time(requests_mock, mocker):
     """
     Given
-        There are alerts
+        There are new alerts
         And there are more in the next page
         And last_fetched is set in last_run
         And last_offset is set in last_run
@@ -188,9 +204,7 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
 
     spy.assert_called_once()
     list_alert_params = spy.call_args[0][0]
-    min_timestamp_called = list_alert_params.get(
-        "min_timestamp"
-    ).strftime(DATE_FORMAT)
+    min_timestamp_called = list_alert_params.get("min_timestamp")
     assert min_timestamp_called == last_run["last_fetched"]
     assert list_alert_params.get("sort_direction") == "asc"
     assert list_alert_params.get("offset") == last_offset_saved
@@ -200,6 +214,121 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
     for incident in incidents:
         assert "mirror_instance" in incident["rawJSON"]
         assert "mirror_direction" in incident["rawJSON"]
+
+
+def test_fetch_incidents_with_modified_alerts_first_call(requests_mock, mocker):
+    """
+    Given
+        There are no new alerts
+        And there are modified alerts
+        And there are more in the next page
+        And last_modified_fetched is not set in last_run
+    When
+        Calling fetch_incidents
+    Then
+        It should list alerts with the last_fetched set in last_run
+        And with the last_offset set in last_run
+        And return last_fetch equals to last_fetched set
+        And last_offset equals to the offset set in the "next" link of the response
+        And 2 incidents correctly formatted
+    """
+    alerts_empty_response = load_json("test_data/alerts/list_no_records.json")
+    modified_alerts_response = load_json("test_data/alerts/list_10_records_with_modified_and_more.json")
+    requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
+    requests_mock.get("/1.0/alerts/", response_list=[
+        {"json": alerts_empty_response},
+        {"json": modified_alerts_response},
+    ])
+    client = build_zf_client()
+    last_run: dict = {
+        "zf-ids": [alert["id"] for alert in modified_alerts_response["alerts"]][2:],
+    }
+    first_fetch_time = "2023-06-01T00:00:00.000000"
+    expected_offset = 0
+    expected_modified_offset = 20
+    spy = mocker.spy(client, "list_alerts")
+
+    next_run, incidents = fetch_incidents(
+        client,
+        last_run,
+        first_fetch_time,
+    )
+
+    assert spy.call_count == 2
+    list_alert_params = spy.call_args_list[0].args[0]
+    assert list_alert_params.get("min_timestamp") == first_fetch_time
+    assert list_alert_params.get("sort_direction") == "asc"
+    assert list_alert_params.get("offset") == expected_offset
+    list_modified_alert_params = spy.call_args_list[1].args[0]
+    assert list_modified_alert_params.get("sort_direction") == "asc"
+    assert list_modified_alert_params.get("offset") == expected_offset
+    assert list_modified_alert_params.get("last_modified_min_date") == first_fetch_time
+    assert next_run["last_fetched"] == first_fetch_time
+    assert next_run["last_offset"] == str(expected_offset)
+    assert next_run["first_run_at"] == first_fetch_time
+    assert next_run["last_modified_fetched"] == first_fetch_time
+    assert next_run["last_modified_offset"] == str(expected_modified_offset)
+    assert len(incidents) == 2
+
+
+def test_fetch_incidents_with_modified_alerts_and_not_first_call(requests_mock, mocker):
+    """
+    Given
+        There are no new alerts
+        And there are modified alerts
+        And there are no more in the next page
+        And last_modified_fetched is set in last_run
+    When
+        Calling fetch_incidents
+    Then
+        It should list alerts with the last_modified_fetched set in last_run
+        And with the last_modified_offset set in last_run
+        And return last_modified_fetch equals to last modified alert timestamp + 1 millisecond
+        And last_modified_offset equals to 0
+        And 2 incidents correctly formatted
+    """
+    alerts_empty_response = load_json("test_data/alerts/list_no_records.json")
+    modified_alerts_response = load_json("test_data/alerts/list_10_records_with_modified.json")
+    requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
+    requests_mock.get("/1.0/alerts/", response_list=[
+        {"json": alerts_empty_response},
+        {"json": modified_alerts_response},
+    ])
+    client = build_zf_client()
+    last_modified_fetched = "2023-06-05T12:34:56.678900"
+    last_run: dict = {
+        "last_modified_fetched": last_modified_fetched,
+        "last_modified_offset": "20",
+        "zf-ids": [alert["id"] for alert in modified_alerts_response["alerts"]][2:],
+    }
+    first_fetch_time = "2023-05-31T00:00:00.000000"
+    expected_offset = 0
+    expected_modified_offset = int(last_run["last_modified_offset"])
+    spy = mocker.spy(client, "list_alerts")
+    # The first alert in the modified alerts response is the last modified alert
+    expected_next_modified_fetched = get_delayed_formatted_date(modified_alerts_response["alerts"][0]["last_modified"])
+
+    next_run, incidents = fetch_incidents(
+        client,
+        last_run,
+        first_fetch_time,
+    )
+
+    assert spy.call_count == 2
+    list_alert_params = spy.call_args_list[0].args[0]
+    assert list_alert_params.get("min_timestamp") == first_fetch_time
+    assert list_alert_params.get("sort_direction") == "asc"
+    assert list_alert_params.get("offset") == expected_offset
+    list_modified_alert_params = spy.call_args_list[1].args[0]
+    assert list_modified_alert_params.get("sort_direction") == "asc"
+    assert list_modified_alert_params.get("offset") == expected_modified_offset
+    assert list_modified_alert_params.get("last_modified_min_date") == last_modified_fetched
+    assert next_run["last_fetched"] == first_fetch_time
+    assert next_run["last_offset"] == str(expected_offset)
+    assert next_run["first_run_at"] == first_fetch_time
+    assert next_run["last_modified_fetched"] == expected_next_modified_fetched
+    assert next_run["last_modified_offset"] == str(expected_offset)
+    assert len(incidents) == 2
 
 
 def test_get_modified_remote_data_command_with_no_data(requests_mock, mocker):
@@ -1171,3 +1300,82 @@ def test_search_exploits_command(requests_mock, mocker):
     assert since_called_arg == since
     assert len(results.outputs) == 10
     assert results.outputs_prefix == "ZeroFox.Exploits"
+
+
+def test_send_alert_attachment_command(requests_mock, mocker):
+    """
+    Given
+        There is an alert id
+        And an attachment
+    When
+        Calling send_alert_attachment_command
+    Then
+        It should call the send alert attachment with the alert id
+        And the attachment
+        And return the alert as output
+        And with the correct output prefix
+    """
+    alert_id = "123"
+    entry_id = "ab@123"
+    attachment_type = "evidence"
+    alert_response = load_json("test_data/alerts/opened_alert.json")
+    requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
+    requests_mock.post(f"/1.0/alerts/{alert_id}/attachments/", json={})
+    requests_mock.get(f"/1.0/alerts/{alert_id}/", json=alert_response)
+    client = build_zf_client()
+    spy_send_attachment = mocker.spy(client, "send_alert_attachment")
+    mocker.patch('builtins.open', mocker.mock_open(read_data=b"data"))
+    mocker.patch.object(
+        demisto, 'getFilePath', return_value={
+            'id': entry_id,
+            'name': entry_id,
+            'path': './test_data/attachments/attachment.txt',
+        },
+    )
+    spy_fetch = mocker.spy(client, "get_alert")
+    args = {
+        "alert_id": alert_id,
+        "entry_id": entry_id,
+        "attachment_type": attachment_type,
+    }
+
+    results = send_alert_attachment_command(client, args)
+
+    spy_send_attachment.assert_called_once()
+    alert_id_called, file_name, _, attachment_type_called = spy_send_attachment.call_args[0]
+    assert alert_id == alert_id_called
+    assert file_name == entry_id
+    assert attachment_type == attachment_type_called
+    spy_fetch.assert_called_once()
+    alert_id_called_in_fetch, = spy_fetch.call_args[0]
+    assert alert_id == alert_id_called_in_fetch
+    assert isinstance(results.outputs, dict)
+    assert results.outputs_prefix == "ZeroFox.Alert"
+
+
+def test_get_alert_attachments_command(requests_mock, mocker):
+    """
+    Given
+        There is an alert id
+    When
+        Calling get_alert_attachments_command
+    Then
+        It should call the get alert attachments with the alert id
+        And return the alert as output
+        And with the correct output prefix
+    """
+    alert_id = "123"
+    attachments_response = load_json("test_data/alerts/attachments.json")
+    requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
+    requests_mock.get(f"/1.0/alerts/{alert_id}/attachments/", json=attachments_response)
+    client = build_zf_client()
+    spy_get_attachments = mocker.spy(client, "get_alert_attachments")
+    args = {"alert_id": alert_id}
+
+    results = get_alert_attachments_command(client, args)
+
+    spy_get_attachments.assert_called_once()
+    alert_id_called, = spy_get_attachments.call_args[0]
+    assert alert_id == alert_id_called
+    assert isinstance(results.outputs, list)
+    assert results.outputs_prefix == "ZeroFox.AlertAttachments"

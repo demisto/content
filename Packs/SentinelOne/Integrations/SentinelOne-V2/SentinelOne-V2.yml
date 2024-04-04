@@ -130,7 +130,7 @@ name: SentinelOne V2
 script:
   commands:
   - arguments:
-    - description: The computer name by which to filter the results.
+    - description: The computer name by which to filter the results. It can match a partial computer name value (substring).
       name: computer_name
     - auto: PREDEFINED
       description: 'A comma-separated list of scan statuses by which to filter the results, for example: "started,aborted".'
@@ -337,6 +337,9 @@ script:
     - contextPath: SentinelOne.Hash.Rank
       description: The hash reputation (1-10).
       type: Number
+    - contextPath: SentinelOne.Hash.Verdict
+      description: The verdict of a hash.
+      type: String
     - contextPath: SentinelOne.Hash.Hash
       description: The content hash.
       type: String
@@ -2385,7 +2388,7 @@ script:
     - contextPath: SentinelOne.Notes.UpdatedAt
       description: The note updated time.
       type: string
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.89009
   isfetch: true
   ismappable: true
   isremotesyncin: true

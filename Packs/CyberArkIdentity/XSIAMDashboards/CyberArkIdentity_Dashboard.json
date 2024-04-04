@@ -15,7 +15,7 @@
                                 "width": 50,
                                 "height": 466,
                                 "params": [],
-                                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n|filter xdm.source.ipv4 != null \r\n|comp count(xdm.source.ipv4) as Count by xdm.source.ipv4 \r\n|iploc xdm.source.ipv4 loc_country as country\r\n| view graph type = map header = \"IP Locations\" xaxis = country yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
+                                "phrase": "datamodel dataset = cyberark_identity_raw \r\n|filter xdm.source.ipv4 != null \r\n|comp count(xdm.source.ipv4) as Count by xdm.source.ipv4 \r\n|iploc xdm.source.ipv4 loc_country as country\r\n| view graph type = map header = \"IP Locations\" xaxis = country yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
                                 "time_frame": {
                                     "relativeTime": 2592000000
                                 },
@@ -75,7 +75,7 @@
                                 "width": 50,
                                 "height": 466,
                                 "params": [],
-                                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n| filter xdm.target.resource.name  !=\"\"\r\n|filter xdm.event.type=\"Cloud.Saas.Application.App*\"\r\n|comp count(xdm.target.resource.name) as `Count` by xdm.target.resource.name\r\n|fields xdm.target.resource.name, Count\r\n|filter count!=0\r\n| view graph type = pie xaxis = xdm.target.resource.name yaxis = Count ",
+                                "phrase": "datamodel dataset = cyberark_identity_raw \r\n| filter xdm.target.resource.name  !=\"\"\r\n|filter xdm.event.type=\"Cloud.Saas.Application.App*\"\r\n|comp count(xdm.target.resource.name) as `Count` by xdm.target.resource.name\r\n|fields xdm.target.resource.name, Count\r\n|filter count!=0\r\n| view graph type = pie xaxis = xdm.target.resource.name yaxis = Count ",
                                 "time_frame": {
                                     "relativeTime": 2592000000
                                 },
@@ -112,7 +112,7 @@
                                 "width": 33.333333333333336,
                                 "height": 466,
                                 "params": [],
-                                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n|filter xdm.auth.auth_method!=\"\"\r\n|filter xdm.auth.auth_method!=\"None\"\r\n|comp count(xdm.auth.auth_method) as `Count` by xdm.auth.auth_method\r\n|fields xdm.auth.auth_method, Count\r\n| view graph type = column subtype = grouped xaxis = xdm.auth.auth_method yaxis = Count ",
+                                "phrase": "datamodel dataset = cyberark_identity_raw \r\n|filter xdm.auth.auth_method!=\"\"\r\n|filter xdm.auth.auth_method!=\"None\"\r\n|comp count(xdm.auth.auth_method) as `Count` by xdm.auth.auth_method\r\n|fields xdm.auth.auth_method, Count\r\n| view graph type = column subtype = grouped xaxis = xdm.auth.auth_method yaxis = Count ",
                                 "time_frame": {
                                     "relativeTime": 2592000000
                                 },
@@ -151,7 +151,7 @@
                                 "width": 33.333333333333336,
                                 "height": 466,
                                 "params": [],
-                                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n| filter xdm.event.outcome!=null\r\n|comp count(xdm.event.outcome) as `Count` by xdm.event.outcome\r\n|fields xdm.event.outcome, Count\r\n| view graph type = pie xaxis = xdm.event.outcome yaxis = Count valuecolor(\"Success\",\"#51c062\") valuecolor(\"Failed\",\"#b67678\") ",
+                                "phrase": "datamodel dataset = cyberark_identity_raw \r\n| filter xdm.event.outcome!=null\r\n|comp count(xdm.event.outcome) as `Count` by xdm.event.outcome\r\n|fields xdm.event.outcome, Count\r\n| view graph type = pie xaxis = xdm.event.outcome yaxis = Count valuecolor(\"Success\",\"#51c062\") valuecolor(\"Failed\",\"#b67678\") ",
                                 "time_frame": {
                                     "relativeTime": 2592000000
                                 },
@@ -201,7 +201,7 @@
                                 "width": 33.333333333333336,
                                 "height": 466,
                                 "params": [],
-                                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n| filter xdm.target.user.username!=null and xdm.target.user.username!=\"Portal\"\r\n|comp count_distinct(xdm.target.user.username) by xdm.target.user.username\r\n|alter Users=regextract(xdm.target.user.username,\"(\\w+)@\")\r\n|filter Users!=\"\"\r\n|fields Users",
+                                "phrase": "datamodel dataset = cyberark_identity_raw \r\n| filter xdm.target.user.username!=null and xdm.target.user.username!=\"Portal\"\r\n|comp count_distinct(xdm.target.user.username) by xdm.target.user.username\r\n|alter Users=regextract(xdm.target.user.username,\"(\\w+)@\")\r\n|filter Users!=\"\"\r\n|fields Users",
                                 "entityType": "xql-widget-table-6a4cd14e-ba02-410c-82aa-863637b4c733",
                                 "time_frame": {
                                     "relativeTime": 2592000000
@@ -233,7 +233,7 @@
             "description": "This widget displays the MFA authentication status for users in the CyberArk account",
             "data": {
                 "params": [],
-                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n| filter xdm.event.outcome!=null\r\n|comp count(xdm.event.outcome) as `Count` by xdm.event.outcome\r\n|fields xdm.event.outcome, Count\r\n| view graph type = pie xaxis = xdm.event.outcome yaxis = Count valuecolor(\"Success\",\"#51c062\") valuecolor(\"Failed\",\"#b67678\") ",
+                "phrase": "datamodel dataset = cyberark_identity_raw \r\n| filter xdm.event.outcome!=null\r\n|comp count(xdm.event.outcome) as `Count` by xdm.event.outcome\r\n|fields xdm.event.outcome, Count\r\n| view graph type = pie xaxis = xdm.event.outcome yaxis = Count valuecolor(\"Success\",\"#51c062\") valuecolor(\"Failed\",\"#b67678\") ",
                 "time_frame": {
                     "relativeTime": 2592000000
                 },
@@ -288,7 +288,7 @@
             "description": "This Widget displays the app usage within the CyberArk account",
             "data": {
                 "params": [],
-                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n| filter xdm.target.resource.name  !=\"\"\r\n|filter xdm.event.type=\"Cloud.Saas.Application.App*\"\r\n|comp count(xdm.target.resource.name) as `Count` by xdm.target.resource.name\r\n|fields xdm.target.resource.name, Count\r\n|filter count!=0\r\n| view graph type = pie xaxis = xdm.target.resource.name yaxis = Count ",
+                "phrase": "datamodel dataset = cyberark_identity_raw \r\n| filter xdm.target.resource.name  !=\"\"\r\n|filter xdm.event.type=\"Cloud.Saas.Application.App*\"\r\n|comp count(xdm.target.resource.name) as `Count` by xdm.target.resource.name\r\n|fields xdm.target.resource.name, Count\r\n|filter count!=0\r\n| view graph type = pie xaxis = xdm.target.resource.name yaxis = Count ",
                 "time_frame": {
                     "relativeTime": 2592000000
                 },
@@ -325,7 +325,7 @@
             "description": "This widget displays the authentication methods used in the CyberArk account",
             "data": {
                 "params": [],
-                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n|filter xdm.auth.auth_method!=\"\"\r\n|filter xdm.auth.auth_method!=\"None\"\r\n|comp count(xdm.auth.auth_method) as `Count` by xdm.auth.auth_method\r\n|fields xdm.auth.auth_method, Count\r\n| view graph type = column subtype = grouped xaxis = xdm.auth.auth_method yaxis = Count ",
+                "phrase": "datamodel dataset = cyberark_identity_raw \r\n|filter xdm.auth.auth_method!=\"\"\r\n|filter xdm.auth.auth_method!=\"None\"\r\n|comp count(xdm.auth.auth_method) as `Count` by xdm.auth.auth_method\r\n|fields xdm.auth.auth_method, Count\r\n| view graph type = column subtype = grouped xaxis = xdm.auth.auth_method yaxis = Count ",
                 "time_frame": {
                     "relativeTime": 2592000000
                 },
@@ -369,7 +369,7 @@
             "description": "This widget displays the IP's locations used to access the account",
             "data": {
                 "params": [],
-                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n|filter xdm.source.ipv4 != null \r\n|comp count(xdm.source.ipv4) as Count by xdm.source.ipv4 \r\n|iploc xdm.source.ipv4 loc_country as country\r\n| view graph type = map header = \"IP Locations\" xaxis = country yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
+                "phrase": "datamodel dataset = cyberark_identity_raw \r\n|filter xdm.source.ipv4 != null \r\n|comp count(xdm.source.ipv4) as Count by xdm.source.ipv4 \r\n|iploc xdm.source.ipv4 loc_country as country\r\n| view graph type = map header = \"IP Locations\" xaxis = country yaxis = Count headerfontsize = 15 legendfontsize = 10 legend = `false` ",
                 "time_frame": {
                     "relativeTime": 2592000000
                 },
@@ -434,7 +434,7 @@
             "description": "This widget displays the users who are making actions in the CyberArk account",
             "data": {
                 "params": [],
-                "phrase": "datamodel \r\n|filter xdm.observer.vendor=\"cyberark\" and  xdm.observer.product=\"identity\"\r\n| filter xdm.target.user.username!=null and xdm.target.user.username!=\"Portal\"\r\n|comp count_distinct(xdm.target.user.username) by xdm.target.user.username\r\n|alter Users=regextract(xdm.target.user.username,\"(\\w+)@\")\r\n|filter Users!=\"\"\r\n|fields Users",
+                "phrase": "datamodel dataset = cyberark_identity_raw \r\n| filter xdm.target.user.username!=null and xdm.target.user.username!=\"Portal\"\r\n|comp count_distinct(xdm.target.user.username) by xdm.target.user.username\r\n|alter Users=regextract(xdm.target.user.username,\"(\\w+)@\")\r\n|filter Users!=\"\"\r\n|fields Users",
                 "time_frame": {
                     "relativeTime": 2592000000
                 },

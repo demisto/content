@@ -1,2 +1,8 @@
 [file:README.md]
 ignore=RM104
+
+[file:PAN-OStoCDLMonitoring-Action_Required.yml]
+ignore=BA101
+
+[file:PANOStoCDLMonitoring-cron_job.yml]
+ignore=BA101

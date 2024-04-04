@@ -122,8 +122,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 1330
+          "x": 680,
+          "y": 1520
         }
       }
     note: false
@@ -246,7 +246,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 1160
+          "y": 1350
         }
       }
     note: false
@@ -482,7 +482,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "11"
+      - "30"
     scriptarguments:
       AutoBlockIndicators:
         complex:
@@ -661,19 +661,62 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 0a63acdb-6497-4f96-8318-5231aefde427
+    type: condition
+    task:
+      id: 0a63acdb-6497-4f96-8318-5231aefde427
+      version: -1
+      name: Are there any indicators that are blocked?
+      description: Check if there are any indicators that are blocked.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IndicatorsToBlock
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "24_1_yes": 0.44,
       "24_28_#default#": 0.24,
       "26_28_#default#": 0.29,
+      "30_11_yes": 0.52,
+      "30_2_#default#": 0.38,
       "3_25_yes": 0.43,
       "3_2_#default#": 0.12
     },
     "paper": {
       "dimensions": {
-        "height": 1585,
-        "width": 1190,
+        "height": 1775,
+        "width": 1070,
         "x": -10,
         "y": -190
       }

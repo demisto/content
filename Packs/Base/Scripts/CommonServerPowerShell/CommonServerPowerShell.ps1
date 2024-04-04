@@ -35,6 +35,129 @@ enum EntryFormats {
     markdown
 }
 
+<#
+.DESCRIPTION
+Analyze a PS dict-like object recursively and return any paths that reference to a parent object.
+
+This function employs recursion to traverse through the object hierarchy, keeping track of visited objects to detect
+circular references. The function stops recursion when a specified maximum depth or the end of the hierarchy is reached.
+If a circular reference is found, it returns the path leading to it.
+
+.PARAMETER obj
+The object to analyze.
+
+.PARAMETER visited
+A dict containing the parent objects to check against. Should be left empty outside the recursion.
+
+.PARAMETER path
+The path to the object being analyzed. Should be left empty outside the recursion.
+
+.PARAMETER depth
+The amount of recursive calls to the function up to the current call. Should be 1 outside the recursion.
+
+.PARAMETER maxDepth
+The maximum amount of recursive function calls, defaults to 20.
+
+.OUTPUTS
+A list of strings of the self referencing paths inside the provided object.
+#>
+function Get-SelfReferencingPaths($obj, $visited = @{}, $path = @(), $depth = 1, $maxDepth = 20) {
+    if ($depth -gt $maxDepth) {
+        # Stop recursion when max depth is reached
+        return @()
+    }
+
+    $selfReferencingPaths = @()
+    # If the object has properties (has children that can point back to it), and is not null.
+    # Get-Member function will return an error if the member type doesn't exist but here we are setting
+    # SilentlyContinue instead.
+    if (($obj | Get-Member -MemberType Properties -ErrorAction SilentlyContinue)) {
+        if ($visited.ContainsKey($obj)) {
+            # Circular reference detected
+            if (-not ($path -like "*SyncRoot*")) {
+                # SyncRoot is allowed to be self-referencing
+                return $path
+            }
+            return @()
+        }
+
+        # Mark the object as visited
+        $visited[$obj] = $true
+
+        foreach ($property in $obj.PSObject.Properties) {
+            $propertyValue = $property.Value
+            $propertyPath = "$($path).$($property.Name)"
+            if (-not $path) {
+                $propertyPath = "$($property.Name)"
+            }
+
+            # Recursively process complex object
+            $nestedPaths = Get-SelfReferencingPaths -obj $propertyValue -visited $visited -path $propertyPath -depth ($depth + 1) -maxDepth $maxDepth
+            $selfReferencingPaths += $nestedPaths
+        }
+
+        # Remove the object from visited list after getting all its children
+        $visited.Remove($obj)
+    }
+
+    return $selfReferencingPaths
+}
+
+<#
+.DESCRIPTION
+Remove any circular references from a PS dict-like object.
+
+This function gets the circular referencing paths  of the object using Get-SelfReferencingPaths,
+It then transverses through the object properties until the circular referencing parent node is reached.
+It removes the circular referencing node from the parent node and transverses back to update each parent node with the
+change.
+
+.PARAMETER obj
+The object to remove self references from.
+
+.OUTPUTS
+The updated object, containing no self references.
+#>
+function Remove-SelfReferences($obj) {
+
+    try {
+        # Get self referencing paths
+        $selfReferencingPaths = Get-SelfReferencingPaths -obj $obj
+
+        foreach ($path in $selfReferencingPaths) {
+            $properties = $path -split '\.'
+            $propertyName = $properties[-1]
+            $parentPath = $properties[0..($properties.Count - 2)]
+
+            $parentObject = $obj
+            $parentObjects = @()
+            # Get object at the end of path
+            foreach ($prop in $parentPath) {
+                $parentObjects += $parentObject
+                $parentObject = $parentObject.($prop)
+            }
+
+            # Update the object
+            $currentObject = $parentObject | Select-Object -ExcludeProperty $propertyName
+
+            # Update back all its parents
+            for ($i = $parentObjects.Count - 1; $i -ge 0; $i--) {
+                $parentObject = $parentObjects[$i]
+                $propName = $properties[$i]
+                $parentObject.$propName = $currentObject
+                $currentObject = $parentObject
+            }
+
+        }
+
+        return $obj
+
+    } catch {
+        # Return to default behaviour if errors were encountered.
+        return $obj
+    }
+}
+
 # Demist Object Class for communicating with the Demisto Server
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidGlobalVars', '', Justification = 'use of global:DemistoServerRequest')]
 class DemistoObject {
@@ -393,10 +516,22 @@ The outputs that will be returned to playbook/investigation context (optional)
 If not provided then will be equal to outputs. usually is the original
 raw response from the 3rd party service (optional)
 
+.PARAMETER RemoveSelfRefs
+If true, will remove self references in RawResponse and Outputs objects before conversion to json.
+
 .OUTPUTS
 The entry object returned to the server
 #>
-function ReturnOutputs([string]$ReadableOutput, [object]$Outputs, [object]$RawResponse) {
+function ReturnOutputs([string]$ReadableOutput, [object]$Outputs, [object]$RawResponse,
+                        [Parameter(Mandatory=$false)]
+                        [bool]$RemoveSelfRefs = $true) {
+
+    if ($RemoveSelfRefs) {
+        # Remove circular references before converting to json.
+        $RawResponse = Remove-SelfReferences $RawResponse
+        $Outputs = Remove-SelfReferences $Outputs
+    }
+
     $entry = @{
         Type           = [EntryTypes]::note;
         ContentsFormat = [EntryFormats]::json.ToString();

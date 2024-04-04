@@ -17,14 +17,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - "9"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -130
+          "y": -340
         }
       }
     note: false
@@ -88,13 +88,13 @@ tasks:
       version: -1
       name: Set default guidance
       description: Set default value for remediation guidance to be passed back to the parent playbook.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
-      - "8"
+      - "5"
     scriptarguments:
       key:
         simple: RemediationGuidance
@@ -125,10 +125,10 @@ tasks:
       version: -1
       name: Update guidance
       description: Append information to remediation guidance to be passed back to the parent playbook.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "8"
@@ -240,7 +240,7 @@ tasks:
       version: -1
       name: Set attack surface rule fields
       description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
+      script: Builtin|||setAlert
       type: regular
       iscommand: true
       brand: Builtin
@@ -272,15 +272,85 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Cortex Attack Surface Management
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: asmserviceid
+                root: alert
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the "Cortex Attack Surface Management" integration instance is configured.
+      id: fd4026e1-3931-4ef4-88fb-057c7078953d
+      iscommand: false
+      name: Is Cortex ASM enabled?
+      type: condition
+      version: -1
+    taskid: fd4026e1-3931-4ef4-88fb-057c7078953d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -170
+        }
+      }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "9_7_yes": 0.47
+    },
     "paper": {
       "dimensions": {
-        "height": 1065,
+        "height": 1275,
         "width": 800,
         "x": 450,
-        "y": -130
+        "y": -340
       }
     }
   }

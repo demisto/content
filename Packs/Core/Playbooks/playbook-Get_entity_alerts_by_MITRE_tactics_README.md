@@ -1,4 +1,4 @@
-This playbook searches XDR alerts related to specific entities , on a given timeframe, based on MITRE tactics.
+This playbook searches XDR alerts related to specific entities, on a given timeframe, based on MITRE tactics.
 Note: The playbook's inputs enable manipulating the execution flow. Read the input descriptions for details.
 
 ## Dependencies

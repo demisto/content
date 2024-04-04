@@ -1,7 +1,14 @@
 import json
 from typing import Any
+
 import pytest
-from F5Silverline import get_ip_objects_list_command, add_ip_objects_command, delete_ip_objects_command, Client
+from F5Silverline import (
+    Client,
+    add_ip_objects_command,
+    delete_ip_objects_command,
+    get_ip_objects_list_command,
+    get_object_id_by_ip,
+)
 
 
 def create_client(base_url: str, verify: bool, headers: dict, proxy: bool):
@@ -38,6 +45,93 @@ IP_OBJECT_GET_LIST = [({'list_type': 'denylist', 'object_id': ['id1']}, 'ip_obje
                       ({'list_type': 'denylist', 'page_number': '1', 'page_size': '1'}, 'ip_object_list_no_id.json'),
                       ({'list_type': 'denylist', 'page_number': '1', 'page_size': '1',
                         'object_id': ['id1']}, 'ip_object_list_by_id.json')]
+
+GET_OBJECT_ID_PARAMETERS = [
+    # one matching IP, no pagination
+    (
+        [
+            {
+                "data": [
+                    {"attributes": {"ip": "0"}, "id": "0"},
+                    {"attributes": {"ip": "1"}, "id": "1"},
+                    {"attributes": {"ip": "2"}, "id": "2"},
+                ],
+                "links": {"links": {"next": ""}},
+            }
+        ],
+        "0",
+        ["0"],
+    ),
+    # two matching IPs, no pagination
+    (
+        [
+            {
+                "data": [
+                    {"attributes": {"ip": "0"}, "id": "0"},
+                    {"attributes": {"ip": "1"}, "id": "1"},
+                    {"attributes": {"ip": "0"}, "id": "2"},
+                ],
+                "links": {"links": {"next": ""}},
+            }
+        ],
+        "0",
+        ["0", "2"],
+    ),
+    # 1 matching IP, with one pagination
+    (
+        [
+            {
+                "data": [
+                    {"attributes": {"ip": "0"}, "id": "0"},
+                    {"attributes": {"ip": "1"}, "id": "1"},
+                    {"attributes": {"ip": "0"}, "id": "2"},
+                ],
+                "links": {"links": {"next": "next_token"}},
+            },
+            {
+                "data": [
+                    {"attributes": {"ip": "3"}, "id": "3"},
+                    {"attributes": {"ip": "4"}, "id": "4"},
+                    {"attributes": {"ip": "5"}, "id": "5"},
+                ],
+                "links": {"links": {"next": ""}},
+            },
+        ],
+        "5",
+        ["5"],
+    ),
+    # 3 matching IPs, with two pagination
+    (
+        [
+            {
+                "data": [
+                    {"attributes": {"ip": "0"}, "id": "0"},
+                    {"attributes": {"ip": "1"}, "id": "1"},
+                    {"attributes": {"ip": "0"}, "id": "2"},
+                ],
+                "links": {"links": {"next": "next_token"}},
+            },
+            {
+                "data": [
+                    {"attributes": {"ip": "3"}, "id": "3"},
+                    {"attributes": {"ip": "4"}, "id": "4"},
+                    {"attributes": {"ip": "5"}, "id": "5"},
+                ],
+                "links": {"links": {"next": "next_token"}},
+            },
+            {
+                "data": [
+                    {"attributes": {"ip": "6"}, "id": "6"},
+                    {"attributes": {"ip": "0"}, "id": "7"},
+                    {"attributes": {"ip": "8"}, "id": "8"},
+                ],
+                "links": {"links": {"next": ""}},
+            },
+        ],
+        "0",
+        ["0", "2", "7"],
+    ),
+]
 
 
 @pytest.mark.parametrize('args,expected_output', IP_ADDRESSES_TO_ADD)
@@ -122,3 +216,25 @@ def test_get_ip_objects_list_command(mocker, args, response_json):
                                                                     'list_target': 'proxy'}
     assert results.outputs['IPObjectList'][0].get('links') == {
         'self': 'https://portal.f5silverline.com/api/v1/ip_lists/denylist/ip_objects/id1?list_target=proxy'}
+
+
+@pytest.mark.parametrize('response, object_ip, expected_all_match_ids', GET_OBJECT_ID_PARAMETERS)
+def test_get_object_id_by_ip(mocker, response, object_ip, expected_all_match_ids):
+    """
+    Given:
+        - case 1: one matching id exists for given object_ip argument, with no pagination
+        - case 2: two matching ids exists for given object_ip argument, with no pagination
+        - case 3: one matching id exists for given object_ip argument, within one pagination
+        - case 4: three matching ids exists for given object_ip argument, within two pagination
+
+    When:
+        - Only object_ip argument was given when running f5-silverline-ip-object-delete
+
+    Then:
+        - Extract the object IDs of the objects with matching IPs while paginating if next token exist.
+    """
+    client = create_client(base_url='https://portal.f5silverline.com/api/v1/ip_lists', verify=False, headers={},
+                           proxy=False)
+
+    mocker.patch.object(Client, 'request_ip_objects', side_effect=response)
+    assert get_object_id_by_ip(client, 'denylist', object_ip) == expected_all_match_ids

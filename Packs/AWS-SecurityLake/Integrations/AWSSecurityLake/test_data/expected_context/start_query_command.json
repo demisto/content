@@ -1,0 +1,4 @@
+{
+    "AWS.SecurityLake.Query": "SELECT * FROM test_db.test_table",
+    "AWS.SecurityLake.QueryExecutionId": "b3c194e7-6580-421c-81fa-4b409e1ba04f"
+}

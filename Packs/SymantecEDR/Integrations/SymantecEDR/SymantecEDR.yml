@@ -20,6 +20,14 @@ configuration:
   name: isFetch
   type: 8
   required: false
+- display: Incident data source
+  name: fetch_incidents_events_type
+  type: 15
+  required: false
+  defaultvalue: incidents
+  options:
+  - incidents
+  - events
 - additionalinfo: Retrieve incident related events from EDR database. An additional API call will be made for each fetched incident.
   display: Fetch incidents alerts
   name: isIncidentsEvent
@@ -32,7 +40,7 @@ configuration:
   required: false
 - additionalinfo: If not selected, will fetch Open Incidents.
   defaultvalue: Open
-  display: Status to filter out fetching as incidents. Comma-separated lists are supported, e.g., Open, In-Progress
+  display: Incidents "Status" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Open, In-Progress
   name: fetch_status
   options:
   - Open
@@ -42,21 +50,48 @@ configuration:
   type: 16
   required: false
 - additionalinfo: If not selected, will fetch High and Medium incidents.
-  defaultvalue: High,Medium
-  display: Priority to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.
+  defaultvalue: 'High,Medium'
+  display: Incidents "Priority" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Medium,High.
   name: fetch_priority
+  type: 16
+  required: false
   options:
   - Low
   - Medium
   - High
+- additionalinfo: If not selected, will fetch Success Events.
+  defaultvalue: 'Success'
+  display: Events "Status" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Unknown, Success
+  name: fetch_event_status
   type: 16
   required: false
-- additionalinfo: First Fetch timestamp, Default is 3 days. The maximum time range is 30 days. For example, if configured as 60 days based on the current datetime, then data will be fetched according to the time range using start_time=60 days and end_time=30 days.
-  defaultvalue: '3 days'
-  display: First fetch timestamp (<number> <time unit>, e.g., 10 minutes, 12 hours, 7 days)
+  options:
+  - Unknown
+  - Success
+  - Failure
+- display: Events "Severity" to filter out fetching as incidents. Comma-separated lists are supported, e.g., Info, Warning
+  name: fetch_severity
+  type: 16
+  required: false
+  additionalinfo: If not selected, will fetch Info events.
+  defaultvalue: Info
+  options:
+  - Info
+  - Warning
+  - Minor
+  - Major
+  - Critical
+  - Fatal
+- display: Query string to fetch incidents/events. For example - "updated:[2017-01-01T00:00:00.000Z TO 2017-01-08T00:00:00.000Z]"
+  name: fetch_incidents_query
+  type: 0
+  required: false
+- display: First fetch timestamp (<number> <time unit>, e.g., 10 minutes, 12 hours, 7 days)
   name: first_fetch
   type: 0
   required: false
+  additionalinfo: First Fetch timestamp, Default is 3 days. The maximum time range is 30 days. For example, if configured as 60 days based on the current datetime, then data will be fetched according to the time range using start_time=60 days and end_time=30 days.
+  defaultvalue: '3 days'
 - additionalinfo: Maximum Number of Incidents fetch limit. Maximum Default limit is 50.
   defaultvalue: '50'
   display: Maximum number of incidents to fetch
@@ -100,11 +135,11 @@ script:
       name: device_id
       required: true
     description: |-
-      Isolates endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint device IDs.
+      Isolates or quarantines endpoints by cutting connections that the endpoint(s) has to internal networks and external networks, based on the endpoint device IDs.
     name: symantec-edr-endpoint-isolate
     outputs:
     - contextPath: SymantecEDR.Command.isolate_endpoint.command_id
-      description: Command ID
+      description: Command ID.
       type: String
     - contextPath: SymantecEDR.Command.isolate_endpoint.error_code
       description: |-
@@ -270,7 +305,7 @@ script:
       description: 'Unique ID of the endpoint that has this file. Example: 04cfc04b-5c7a-4aa8-b95b-79be23f768f4.'
       type: String
     - contextPath: SymantecEDR.EndpointFileAssociation.first_seen
-      description: 'The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association. Example: 2018-02-04T09:00:00.577Z'
+      description: 'The timestamp (in ISO 8601 format) that specifies the creation time of the event that resulted into the creation of this association. Example: 2018-02-04T09:00:00.577Z.'
       type: String
     - contextPath: SymantecEDR.EndpointFileAssociation.folder
       description: 'The folder where the file resides. This attribute does not include the name of the file. Example:c:\windows\system32\.'
@@ -297,7 +332,7 @@ script:
       name: page_size
     - description: |-
         Specify a search query as a Lucene query string.
-        Example: query="external_ip: 8.8.8.8"
+        Example: query="external_ip: 8.8.8.8".
       name: query
     description: Get domain instances.
     name: symantec-edr-domain-instance-list
@@ -371,7 +406,7 @@ script:
         Specify a search query as a Lucene query string.
         Example: query="name: svchost.exe".
       name: query
-    description: Get File Instances
+    description: Get File Instances.
     name: symantec-edr-file-instance-list
     outputs:
     - contextPath: SymantecEDR.FileInstance.first_seen
@@ -427,14 +462,14 @@ script:
       - Unknown
       - Success
       - Failure
-    description: Get system activities.
+    description: Get system activities or logs.
     name: symantec-edr-system-activity-list
     outputs:
     - contextPath: SymantecEDR.SystemActivity.device_time
       description: The timestamp (in ISO 8601 format) that specifies the time at which the event occurred.
       type: String
     - contextPath: SymantecEDR.SystemActivity.type_id
-      description: 'The unique identifier for an event. Following is this events link and summary type IDs: https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.htmlSystem Activity Log Event Type: Viewing Symantec EDR appliance activities in the System Activity log (broadcom.com)'
+      description: 'The unique identifier for an event. Following is this events link and summary type IDs: https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.htmlSystem Activity Log Event Type: Viewing Symantec EDR appliance activities in the System Activity log (broadcom.com).'
       type: Number
     - contextPath: SymantecEDR.SystemActivity.severity_id
       description: 'Event severity that specifies the importance of the event. Possible values are: 1 = info (default), 2 = warning, 3 = minor, 4 = major, 5 = critical, 6 = fatal.'
@@ -461,7 +496,7 @@ script:
       description: 'The name of the feature that originated the event. Applicable events: 1, 20, 21, 1000 Example: Search.'
       type: String
     - contextPath: SymantecEDR.SystemActivity.id
-      description: 'The event identifier for applicable events: 8080, 8081, 8082, 8083, 8084, 8085, 8086, 8089, 8090 1 = Exists 2 = Partial. The outcome of the Session Audit event for applicable events: 20 0 = Unknown, 1 = Logon, 2 = Logoff. The outcome of the Entity Audit event for applicable events: 21  0 = Unknown, 1 = Create, 2 = Update, 3 = Delete'
+      description: 'The event identifier for applicable events: 8080, 8081, 8082, 8083, 8084, 8085, 8086, 8089, 8090 1 = Exists 2 = Partial. The outcome of the Session Audit event for applicable events: 20 0 = Unknown, 1 = Logon, 2 = Logoff. The outcome of the Entity Audit event for applicable events: 21  0 = Unknown, 1 = Create, 2 = Update, 3 = Delete.'
       type: String
     - contextPath: SymantecEDR.SystemActivity.log_name
       description: 'The index of the event. Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for events. Example: epmp_events-2015-11-05.'
@@ -530,17 +565,17 @@ script:
       name: query
     - description: 'The type ID. Refer to the event summary type IDs link: https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html.'
       name: type_id
-    description: Get Audit Events
+    description: Get audit events.
     name: symantec-edr-audit-event-list
     outputs:
     - contextPath: SymantecEDR.AuditEvent.user_agent_ip
       description: IP address of the endpoint that originated or caused the event.
       type: String
     - contextPath: SymantecEDR.AuditEvent.entity_result.data.incident_management.uuid
-      description: 'The GUID assigned for this incident'
+      description: 'The GUID assigned for this incident.'
       type: String
     - contextPath: SymantecEDR.AuditEvent.entity_result.type
-      description: 'The type of the managed entity.Depending on this entity type, data would contain the corresponding entity content. Refer to this link  https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf section 3.74 Entity for all the Possible values for managed entity types'
+      description: 'The type of the managed entity. Depending on this entity type, data would contain the corresponding entity content. Refer to this link  https://techdocs.broadcom.com/content/dam/broadcom/techdocs/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/generated-pdfs/EDR_API_Legacy.pdf section 3.74 Entity for all the possible values for managed entity types.'
       type: String
     - contextPath: SymantecEDR.AuditEvent.entity_result.uid
       description: Unique identifier associated with the managed entity.
@@ -651,7 +686,7 @@ script:
       - major
       - critical
       - fatal
-    description: Get events from EDR on-premise.
+    description: Get events or system alerts from EDR on-premise.
     name: symantec-edr-event-list
     outputs:
     - contextPath: SymantecEDR.Event.type_id
@@ -796,7 +831,7 @@ script:
       description: The name of the IntelliFilter rule that observes all of the endpoint data recorded events on the client.
       type: String
     - contextPath: SymantecEDR.Event.enriched_data.category_name
-      description: 'The IntelliFilter rules fall into the following categories:  System File Launched Or Loaded From Unexpected Location = 8001, 8002. Suspicious PowerShell Script Executed = 8001 Suspicious N-gram = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009. Process Termination = 8001, Process Launch = 8001, Load Point Modification = 8005, 8006, File with Double Exe Extension (.jpg.exe) = 8003, Attempt to Change to Windows Event Logs or Registry Settings = 8005, 8006, Suspicious Protocol-Port Usage By System Processes = 8007, All events = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009, Applicable events: 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009'
+      description: 'The IntelliFilter rules fall into the following categories:  System File Launched Or Loaded From Unexpected Location = 8001, 8002. Suspicious PowerShell Script Executed = 8001 Suspicious N-gram = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009. Process Termination = 8001, Process Launch = 8001, Load Point Modification = 8005, 8006, File with Double Exe Extension (.jpg.exe) = 8003, Attempt to Change to Windows Event Logs or Registry Settings = 8005, 8006, Suspicious Protocol-Port Usage By System Processes = 8007, All events = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009, Applicable events: 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009.'
       type: String
     - contextPath: SymantecEDR.Event.enriched_data.category_id
       description: The possible values of supported category_id. 0 = All Events, 1 = Suspicious N-Gram, 2 = Process Launch , 3 = Process Termination , 100 = Suspicious Protocol-Port Usage By System Processes, 102 = Suspicious PowerShell commands.
@@ -839,7 +874,7 @@ script:
          https://origin-techdocs.broadcom.com/us/en/symantec-security-software/endpoint-security-and-management/endpoint-detection-and-response/4-7/search-fields-and-descriptions-v126755396-d38e59231/event-summary-type-ids-v121987556-d38e58861.html
       name: type_id
     - auto: PREDEFINED
-      description: "The severity. Default: All severity types"
+      description: "The severity. Default: All severity types."
       name: severity
       predefined:
       - info
@@ -855,7 +890,7 @@ script:
       description: The unique identifier for an event type.
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.severity_id
-      description: 'Event severity that specifies the importance of the event. Possible values are: 1 = info (default) 2 = warning 3 = minor 4 = major 5 = critical 6 = fatal'
+      description: 'Event severity that specifies the importance of the event. Possible values are: 1 = info (default) 2 = warning 3 = minor 4 = major 5 = critical 6 = fatal.'
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.device_time
       description: The timestamp (in ISO 8601 format) that specifies the time at which the event occurred.
@@ -879,7 +914,7 @@ script:
       description: The username or ID that originated or caused the event.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.user_domain
-      description: Event User associated with Domain
+      description: Event user associated with domain.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.user_sid
       description: Unique ID of the user that originated the event or the user on whose behalf the event occurred.
@@ -906,10 +941,10 @@ script:
       description: 'Start_time for the originating event.'
       type: Date
     - contextPath: SymantecEDR.IncidentEvent.event_actor.signature_level_id
-      description: 'A numeric representation of the signature level. Possible values are: 0 = Unknown, 10 = Unsigned, 20 = Signed But Untrusted, 30 = Signed, 40 = Class 3 Signed, 50 = SYMC Signed, 60 = Microsoft Signed, 70 = Microsoft OS Component'
+      description: 'A numeric representation of the signature level. Possible values are: 0 = Unknown, 10 = Unsigned, 20 = Signed But Untrusted, 30 = Signed, 40 = Class 3 Signed, 50 = SYMC Signed, 60 = Microsoft Signed, 70 = Microsoft OS Component.'
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.event_actor.integrity_id
-      description: 'The process integrity level (Windows only). Possible values are: 0 = Unknown, 1 = Untrusted, 2 = Low, 3 = Medium, 4 = Medium Plus, 5 = High, 6 = System, 7 = Protected'
+      description: 'The process integrity level (Windows only). Possible values are: 0 = Unknown, 1 = Untrusted, 2 = Low, 3 = Medium, 4 = Medium Plus, 5 = High, 6 = System, 7 = Protected.'
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.event_actor.user.name
       description: The username or ID that originated or caused the event.
@@ -954,16 +989,16 @@ script:
       description: The command line that was used to launch the process.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.process.signature_level_id
-      description: 'A numeric representation of the signature level. Possible values are: 0 = UNKNOWN, 10 = UNSIGNED, 20 = SIGNED_BUT_UNTRUSTED, 30 = SIGNED, 40 = CLASS3_SIGNED, 50 = SYMC_SIGNED, 60 = MICROSOFT_SIGNED, 70 = MICROSOFT_OS_COMPONENT'
+      description: 'A numeric representation of the signature level. Possible values are: 0 = UNKNOWN, 10 = UNSIGNED, 20 = SIGNED_BUT_UNTRUSTED, 30 = SIGNED, 40 = CLASS3_SIGNED, 50 = SYMC_SIGNED, 60 = MICROSOFT_SIGNED, 70 = MICROSOFT_OS_COMPONENT.'
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.process.integrity_id
       description: 'The process integrity level (Windows only). Possible values are:  0 = Unknown, 1 = Untrusted,  2 = Low,  3 = Medium,  4 = Medium Plus,  5 = High, 6 = System,  7 = Protected.'
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.process.user.name
-      description: Process User Name
+      description: Process user name.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.process.user.sid
-      description: Process Unique SID
+      description: Process unique SID.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.process.file.normalized_path
       description: The CSIDL normalized path name;Windows Only.
@@ -972,7 +1007,7 @@ script:
       description: The name of the file.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.process.file.md5
-      description: The MD5 Checksum of the file
+      description: The MD5 checksum of the file.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.process.file.modified
       description: The process identifier as reported by the operating system.
@@ -984,7 +1019,7 @@ script:
       description: The name of the company on the certificate.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.process.file.signature_value_ids
-      description: 'The issuer of the signature. Applicable events: 4096, 4099 '
+      description: 'The issuer of the signature. Applicable events: 4096, 4099.'
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.enriched_data.rule_name
       description: 'The name of the IntelliFilter rule that observes all of the endpoint data recorded events on the client.'
@@ -993,16 +1028,16 @@ script:
       description: 'Score that determines the suspiciousness of the action captured in the event. 1. Very Low: 1-25 (Informational) , 2. Low: 26-50 (Suspicious) , 3. Moderate: 51-75 (Suspicious) , 4. Severe: 76-87 (Malicious), 5. Very Severe: 88-100 (Malicious).'
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.enriched_data.category_name
-      description: 'The IntelliFilter rules fall into the following categories:  System File Launched Or Loaded From Unexpected Location = 8001, 8002. Suspicious PowerShell Script Executed = 8001 Suspicious N-gram = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009. Process Termination = 8001, Process Launch = 8001, Load Point Modification = 8005, 8006, File with Double Exe Extension (.jpg.exe) = 8003, Attempt to Change to Windows Event Logs or Registry Settings = 8005, 8006, Suspicious Protocol-Port Usage By System Processes = 8007, All events = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009, Applicable events: 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009'
+      description: 'The IntelliFilter rules fall into the following categories:  System File Launched Or Loaded From Unexpected Location = 8001, 8002. Suspicious PowerShell Script Executed = 8001 Suspicious N-gram = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009. Process Termination = 8001, Process Launch = 8001, Load Point Modification = 8005, 8006, File with Double Exe Extension (.jpg.exe) = 8003, Attempt to Change to Windows Event Logs or Registry Settings = 8005, 8006, Suspicious Protocol-Port Usage By System Processes = 8007, All events = 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009, Applicable events: 8000, 8001, 8002, 8003, 8004, 8005, 8006, 8007, 8009.'
       type: String
     - contextPath: SymantecEDR.IncidentEvent.enriched_data.category_id
-      description: The possible values of supported category_id. 0 = All Events, 1 = Suspicious N-Gram, 2 = Process Launch , 3 = Process Termination , 100 = Suspicious Protocol-Port Usage By System Processes, 102 = Suspicious PowerShell commands
+      description: The possible values of supported category_id. 0 = All Events, 1 = Suspicious N-Gram, 2 = Process Launch , 3 = Process Termination , 100 = Suspicious Protocol-Port Usage By System Processes, 102 = Suspicious PowerShell commands.
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.enriched_data.rule_description
-      description: Enriched Rule Description
+      description: Enriched rule description.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.event_uuid
-      description: The Unique event UUID
+      description: The unique event UUID.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.attacks.technique_uid
       description: The MITRE technique ID for the attack. Possible values are listed in https://attack.mitre.org/techniques/enterprise.
@@ -1011,16 +1046,16 @@ script:
       description: The MITRE technique name for the attack.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.attacks.tactic_ids
-      description: 'The MITRE tactic ID(s) for the attack. Tactic ID values are: 1 = Initial Access , 2 = Execution , 3 = Persistence , 4 = Privilege Escalation , 5 = Defense Evasion , 6 = Credential Access , 7 = Discovery , 8 = Lateral Movement , 9 = Collection , 10 = Exfltration , 11 = Command and Control'
+      description: 'The MITRE tactic ID(s) for the attack. Tactic ID values are: 1 = Initial Access , 2 = Execution , 3 = Persistence , 4 = Privilege Escalation , 5 = Defense Evasion , 6 = Credential Access , 7 = Discovery , 8 = Lateral Movement , 9 = Collection , 10 = Exfltration , 11 = Command and Control.'
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.attacks.tactic_uids
       description: THe tactic Unique IDs.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.event_source
-      description: 'Indicates the reason of event being related to an incident. Possible values are: 1 - Event triggered the incident , 2 - Event is part of process lineage tracking, 3 - Event is likely related to the incident'
+      description: 'Indicates the reason of event being related to an incident. Possible values are: 1 - Event triggered the incident , 2 - Event is part of process lineage tracking, 3 - Event is likely related to the incident.'
       type: Number
     - contextPath: SymantecEDR.IncidentEvent.ref_uid
-      description: The Event Reference UID
+      description: The event reference UID.
       type: String
     - contextPath: SymantecEDR.IncidentEvent.correlation_uid
       description: Event Correlation UID.
@@ -1079,13 +1114,13 @@ script:
       description: A unique identifier for this incident.
       type: Number
     - contextPath: SymantecEDR.Incident.log_name
-      description: 'The index of the incident. Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for incidents. Example: epmp_incident-2018-03-01'
+      description: 'The index of the incident. Note: This is for informational purpose and cannot be used as a filter. Use time as start_time to query for incidents. Example: epmp_incident-2018-03-01.'
       type: String
     - contextPath: SymantecEDR.Incident.summary
       description: Summary information about the incident.
       type: String
     - contextPath: SymantecEDR.Incident.priority_level
-      description: 'Priority level of the incident. Possible values are: Low, Medium, High'
+      description: 'Priority level of the incident. Possible values are: Low, Medium, High.'
       type: Number
     - contextPath: SymantecEDR.Incident.last_event_seen
       description: The creation time (in ISO 8601 format) when the last event associated with the incident was created. Matches the last event’s time field.
@@ -1100,7 +1135,7 @@ script:
       description: The creation time (in ISO 8601 format) when the first event associated with the incident was created. Matches the first event’s time field. This is likely before the incident’s creation time field given incidents are created after their first event is seen.
       type: Date
     - contextPath: SymantecEDR.Incident.state
-      description: 'The current state of the incident. Possible values are: Open, Waiting, In-progress, Closed'
+      description: 'The current state of the incident. Possible values are: Open, Waiting, In-progress, Closed.'
       type: Number
     - contextPath: SymantecEDR.Incident.detection_type
       description: Incident detection type.
@@ -1215,7 +1250,7 @@ script:
       description: 'The comment for this allow list policy. If not specified, then defaults to empty string. Example: No monitoring required for control traffic from this IP.'
       type: String
     - contextPath: SymantecEDR.AllowListPolicy.id
-      description: 'The unique ID of this allow list policy. This ID can be used in patch or delete request. Note: This is ignored if present in create request'
+      description: 'The unique ID of this allow list policy. This ID can be used in a patch or delete request. Note: This is ignored if present in a create request.'
       type: String
     - contextPath: SymantecEDR.AllowListPolicy.target_type
       description: 'The type of this whitelist policy. enum (ip, domain, url, sha256, incident_trigger_sig_id). Example: ip.'
@@ -1276,7 +1311,7 @@ script:
       description: 'The error codes for a specific target. Possible values:-1 = Error, 1 = In-progress, 9000 = File Is Clean, 9001 = File Is Malware, 9003 = File Size Over Limit (File Size Should Not Exceed 10MB For Sandbox Submission), 9005 = Query To Sandbox Failed (Check Network Connectivity), 9006 = File Type Not Supported (Check With Symantec Support For Sandbox Supported File List), 9007 = File Not Found In FileStore (Use get_endpoint_fle Command To Copy File Into FileStore).'
       type: String
     - contextPath: SymantecEDR.CommandStatus.status.message
-      description: 'Message explaining error code. Possible values: Error (-1), In progress (1), File Is Clean (9000), File Is Malware (9001), File Size Over Limit (9003), Query To Sandbox Failed (9005), File Type Not Supported (9006), File Not Found In FileStore (9007),'
+      description: 'Message explaining error code. Possible values: Error (-1), In progress (1), File Is Clean (9000), File Is Malware (9001), File Size Over Limit (9003), Query To Sandbox Failed (9005), File Type Not Supported (9006), File Not Found In FileStore (9007),.'
       type: String
     - contextPath: SymantecEDR.CommandStatus.status.state
       description: 'The command status for a specific target. Values:  0 = Completed 1 = In progress 2 = Error 3 = Cancelled 4 = Cancel requested.'
@@ -1295,16 +1330,16 @@ script:
       description: Command ID.
       type: String
     - contextPath: SymantecEDR.Command.rejoin_endpoint.error_code
-      description: 'The status of the command action. Values:-1 = Error 0 = Command rejoin_endpoint successfully requested 1 = Command rejoin_endpoint not supported for target command type 2 = Command rejoin_endpoint failed because the target command is already in terminal state (i.e., completed, error, or cancelled) 3 = Command rejoin_endpoint is already in progress for the target command'
+      description: 'The status of the command action. Values:-1 = Error 0 = Command rejoin_endpoint successfully requested 1 = Command rejoin_endpoint not supported for target command type 2 = Command rejoin_endpoint failed because the target command is already in terminal state (i.e., completed, error, or cancelled) 3 = Command rejoin_endpoint is already in progress for the target command.'
       type: Number
     - contextPath: SymantecEDR.Command.rejoin_endpoint.message
-      description: 'Message explaining error code. Values: -1 = Error  0 = Command rejoin_endpoint successfully requested  1 = Command rejoin_endpoint not supported for target command type  2 = Command rejoin_endpoint failed because the target command is already in terminal state  3 = Command rejoin_endpoint is already in progress for the target command'
+      description: 'Message explaining error code. Values: -1 = Error  0 = Command rejoin_endpoint successfully requested  1 = Command rejoin_endpoint not supported for target command type  2 = Command rejoin_endpoint failed because the target command is already in terminal state  3 = Command rejoin_endpoint is already in progress for the target command.'
       type: String
   - arguments:
-    - description: Device ID of the target computer/endpoint,
+    - description: Device ID of the target computer/endpoint,.
       name: device_id
       required: true
-    - description: The SHA256 value of the target file,
+    - description: The SHA256 value of the target file.
       name: sha2
       required: true
     description: Deletes a file, i.e., deletes all instances of the file, based on the file hash that you have specified from the endpoint using the device ID.
@@ -1383,7 +1418,7 @@ script:
       description: SHA256 hash of the file submitted for analysis.
       type: String
     polling: true
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   runonce: false
   script: '-'

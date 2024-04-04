@@ -1,8 +1,8 @@
 {
-    "name": "Prisma SASE by Palo Alto Networks",
+    "name": "Palo Alto Networks - Strata Cloud Manager",
     "description": "Integrate with Palo Alto Networks Prisma SASE to query activity and take actions.",
     "support": "xsoar",
-    "currentVersion": "2.1.3",
+    "currentVersion": "2.1.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -20,7 +20,9 @@
         "PAN_OS",
         "PAN-OS",
         "pan-os",
-        "Panorama"
+        "Panorama",
+        "Prisma",
+        "SASE"
     ],
     "marketplaces": [
         "xsoar",

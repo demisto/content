@@ -1,4 +1,0 @@
-{ "packs": ["HelloWorldPremium",
-            "IAM",
-            "IdentityLifecycleManagement-Enterprise",
-            "IdentityLifecycleManagement-LargeEnterprise"] }

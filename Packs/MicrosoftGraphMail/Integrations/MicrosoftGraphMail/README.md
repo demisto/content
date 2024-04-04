@@ -514,7 +514,7 @@ Creates a draft message in the specified user's mailbox.
 
 ***
 Sends an email using Microsoft Graph.
-
+Note: The *from* argument needs to be specified when the *Email address from which to fetch incidents* parameter is missing.
 
 #### Base Command
 

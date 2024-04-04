@@ -820,6 +820,7 @@ Creates a new file.
 | file_name | The name of the file to upload. | Optional | 
 | entry_id | The file's Entry ID. | Optional | 
 | parent | The ID of the parent folder which contains the file. If not specified as part of a create request, the file will be placed directly in the user's My Drive folder. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values: "true" and "false". Default is "false". | Optional | 
 
 #### Context Output
 
@@ -1357,3 +1358,26 @@ Make a copy of a Google Drive file.
 >|---|---|---|---|
 >| 1JBZfuJcRpnpv5wS5-RBxT5OGjfKMP1cCmqOBHCe7GPw | drive#file | application/vnd.google-apps.spreadsheet | New Copy |
 
+### google-drive-file-get-parents
+
+***
+Get parents of a Google Drive file.
+
+#### Base Command
+
+`google-drive-file-get-parents`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_id | ID of the requested file. Can be retrieved using the `google-drive-files-list` command. | Required | 
+| user_id | The user's primary email address. | Required | 
+| include_items_from_all_drives | Whether both My Drive and shared drive items should be included in the results. Possible values are: true, false. Default is false. | Optional | 
+| supports_all_drives | Whether the requesting application supports both My Drives and shared drives. Possible values are: True, False. Default is False. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleDrive.File.Parents | String | The IDs of the parent folders which contain the file. | 

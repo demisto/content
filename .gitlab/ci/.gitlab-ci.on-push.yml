@@ -56,9 +56,6 @@ merge-dev-secrets:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
     - section_start "Merging and deleting dev secrets"
-    - echo "==== Testing ====="
-    - echo "The commit title is - ${CI_COMMIT_TITLE}"
-    - echo $CI_COMMIT_TITLE
     - python3 ./Tests/scripts/merge_and_delete_dev_secrets.py -sa "$GSM_SERVICE_ACCOUNT" --gsm_project_id_dev "$GSM_PROJECT_ID_DEV" --gsm_project_id_prod "$GSM_PROJECT_ID" >> "${ARTIFACTS_FOLDER}/logs/merge_secrets.log" 2>&1 || EXIT_CODE=$?
     - job-done
     - exit $EXIT_CODE
@@ -91,12 +88,39 @@ run-unittests-and-lint:
       when: never
     - if: '$SECURITY_SCANS == "true"'
       when: never
+    - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
+      when: never
+    - if: '$BUILD_MACHINES_CLEANUP == "true"'
+      when: never
+    - if: '$SDK_RELEASE == "true"'
+      when: never
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
+      when: never
+    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
+      when: never
+    - if: '$DEMISTO_SDK_NIGHTLY != "true"'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
+run-pre-commit:
+  allow_failure: true
+  extends:
+    - .run-pre-commit
+  cache:
+    policy: pull-push
+  rules:
+    - if: '$BUCKET_UPLOAD == "true"'
+      when: never
+    - if: '$SECURITY_SCANS == "true"'
+      when: never
     - if: '$BUILD_MACHINES_CLEANUP == "true"'
       when: never
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
       when: never
     - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
       when: never
+    - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
+      when: never
+    # In sdk nighly we run this separately 
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
@@ -107,6 +131,16 @@ run-validations:
   rules:
     - if: '$NIGHTLY'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
+# runs in gitlab for the on-push flow (except for contributors)
+run-validations-new-validate-flow:
+  extends:
+    - .run-validations-new-validate-flow
+  rules:
+    - if: '$NIGHTLY'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  allow_failure: true
+
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
@@ -133,7 +167,6 @@ validate-content-conf:
   cache:
     policy: pull-push
   variables:
-    KUBERNETES_CPU_REQUEST: 2000m
     EXTRACT_PRIVATE_TESTDATA: "true"
   stage: prepare-testing-bucket
   script:
@@ -141,7 +174,13 @@ validate-content-conf:
     - !reference [.create-release-notes-and-common-docs]
     - !reference [.secrets-fetch]
     - section_start "Create or update content graph" --collapsed
-
+    - |
+        echo "set DEMISTO_SDK_GRAPH_FORCE_CREATE to true to create graph from scratch"
+        export DEMISTO_SDK_GRAPH_FORCE_CREATE=true
+        echo "DEMISTO_SDK_GRAPH_FORCE_CREATE was set to true to create graph from scratch"
+        echo $DEMISTO_SDK_GRAPH_FORCE_CREATE
+    - echo "Staging the repo to include the private packs in the graph"
+    - git add Packs
     - echo "Updating the content graph"
     - mkdir "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph"
     - demisto-sdk update-content-graph -g --marketplace "${MARKETPLACE_VERSION}" -o "${ARTIFACTS_FOLDER_SERVER_TYPE}/content_graph"
@@ -167,6 +206,21 @@ validate-content-conf:
     - section_start "Copy conf.json To Server Type Artifacts Folder"
     - cp "./Tests/conf.json" "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json"
     - section_end "Copy conf.json To Server Type Artifacts Folder"
+
+    - section_start "Find dependencies changes" --collapsed
+    - |
+      if [[ -z $BUCKET_UPLOAD || $TEST_UPLOAD == "false" ]]; then
+        source ./Tests/scripts/get_previous_master_sha.sh
+        if [[ -z $PREVIOUS_MASTER_SHA ]]; then
+          echo "WARNING: failed to detect previous master SHA, skipping find dependencies changes"
+        else
+          echo "Finding pack dependencies diff against $PREVIOUS_MASTER_SHA"
+          python Tests/scripts/find_pack_dependencies_changes.py --gitlab-token $GITLAB_API_TOKEN --master-sha $PREVIOUS_MASTER_SHA --job-name $CI_JOB_NAME --artifacts-folder "$ARTIFACTS_FOLDER_SERVER_TYPE"
+        fi
+      else
+        echo "Test upload flow - skipping find dependencies changes"
+      fi
+    - section_end "Find dependencies changes"
 
     - section_start "Replace Cortex XSOAR" --collapsed
     - |
@@ -194,6 +248,10 @@ validate-content-conf:
     - section_start "Prepare Content Packs for Testing"
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
     - section_end "Prepare Content Packs for Testing"
+
+    - section_start "Override and upload core packs versions"
+    - ./Tests/Marketplace/upload_versions_core_files.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION" "$LAST_UPLOAD_COMMIT"
+    - section_end "Override and upload core packs versions"
 
     - section_start "Create Instances for XSOAR"
     - |
@@ -264,15 +322,11 @@ xpanse-prepare-testing-bucket:
   - |
     if [[ -n "${NIGHTLY}" && $SERVER_TYPE == "XSOAR SAAS" ]]; then
       ./Tests/scripts/run_tests.sh --generate-empty-result-file
-      if [[ "${CI_SERVER_HOST}" != "code.pan.run" ]]; then # disable-secrets-detection
-        cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-      else
-        echo "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-      fi
+      cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
       ./Tests/scripts/run_e2e_tests.sh || EXIT_CODE=$?
     else
       ./Tests/scripts/run_e2e_tests.sh --generate-empty-result-file
-      if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then	
+      if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then
         cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
       fi
       ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
@@ -333,6 +387,11 @@ xpanse-prepare-testing-bucket:
     - echo "Done sleeping!"
     - section_end "Wait Until Server Ready"
     - !reference [.run_tests]
+    - section_start "Get instance ssh-command"
+    - echo "INSTANCE_ROLE -> ${INSTANCE_ROLE}"
+    - INSTANCE_NAME=$(jq -r --arg role "$INSTANCE_ROLE" '.[] | select(.Role == $role) | .InstanceName' ./artifacts/env_results.json)
+    - echo -e "\e[1m gcloud compute ssh --zone \"us-central1-a\" \"${INSTANCE_NAME}\"  --tunnel-through-iap --project "xsoar-content-build" \e[0m"
+    - section_end "Get instance ssh-command"
     - section_start "Cleanup env results from artifacts folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk
@@ -365,9 +424,6 @@ tests_xsoar_server:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
-      when: always
-      variables:
-        KUBERNETES_CPU_REQUEST: 2000m
   parallel:
     matrix:
       - INSTANCE_ROLE:
@@ -400,12 +456,12 @@ jobs-done-check-nightly:
     - xsoar-prepare-testing-bucket
     - xsoar-saas-prepare-testing-bucket
     - xsiam_server_ga
-    - xsoar_ng_server_ga
+    # - xsoar_ng_server_ga
     - tests_xsoar_server
     - xsoar-test_playbooks_results
     - xsiam-test_playbooks_results
     - xsiam-test_modeling_rule_results
-    - xsoar-saas_test_e2e_results
+    # - xsoar-saas_test_e2e_results
   tags:
     - gke
   rules:
@@ -628,11 +684,6 @@ xsiam_server_ga:
     - .test_content_on_cloud_server_instances_base
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: $TEST_XDR_ENV && ($CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ || $NIGHTLY)
-      when: always
-      variables:
-        CLOUD_MACHINES_TYPE: "testing"
-        GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga-testing"
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
       when: always
@@ -658,7 +709,7 @@ xsiam_server_ga:
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     GCS_MARKET_BUCKET: "${GCS_MARKET_V2_BUCKET}"
     GCS_SOURCE_BUCKET: "$GCS_PRODUCTION_V2_BUCKET"
-    GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-v2-dist-dev/upload-flow/builds-xsiam"
+    GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     MARKETPLACE_NAME: "marketplacev2"
     NON_REMOVABLE_PACKS: "Base"
   needs:
@@ -682,14 +733,9 @@ xsoar_ng_server_ga:
     - .test_content_on_cloud_server_instances_base
   rules:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: $TEST_XDR_ENV && ($CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ || $NIGHTLY)
-      when: always
-      variables:
-        CLOUD_MACHINES_TYPE: "testing"
-        GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng-testing"
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
-      when: always
+      when: never
   variables:
     CLOUD_MACHINES_TYPE: "build"
     CLOUD_MACHINES_COUNT: 1
@@ -706,7 +752,7 @@ xsoar_ng_server_ga:
     ARTIFACTS_FOLDER_SERVER_TYPE: "${ARTIFACTS_FOLDER_XSOAR}/server_type_${SERVER_TYPE}"
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_SERVER_TYPE}/env_results.json"
     GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_XSOAR_SAAS_BUCKET}"
-    GCS_MACHINES_BUCKET: "${TEST_XDR_PREFIX}marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
+    GCS_MACHINES_BUCKET: "marketplace-saas-dist-dev/upload-flow/builds-xsoar-ng"
     MARKETPLACE_NAME: "xsoar_saas"
     NON_REMOVABLE_PACKS: "Base"
   needs:
@@ -733,7 +779,7 @@ test-upload-flow:
     - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
-    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
+    ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV,$GCS_MARKET_XSOAR_SAAS_BUCKET_DEV"
   stage: unittests-and-validations
   script:
     - section_start "Checks Whether to Trigger a Test Upload"
@@ -748,7 +794,9 @@ test-upload-flow:
 
     - section_start "Create Testing Branch"
     - export BRANCH="${CI_COMMIT_BRANCH}-upload_test_branch-${CI_PIPELINE_ID}"
-    - python3 ./Utils/test_upload_flow/create_test_branch.py -tb $BRANCH -a "${ARTIFACTS_FOLDER}" -g $GITLAB_PUSH_TOKEN
+    - echo "${BRANCH}" > "${ARTIFACTS_FOLDER}/test_upload_flow_branch.txt"
+    - python3 ./Utils/test_upload_flow/create_test_branch.py -tb "${BRANCH}" -a "${ARTIFACTS_FOLDER}" -g "${GITLAB_PUSH_TOKEN}"
+
     - echo "Created test branch:${BRANCH}"
     - section_end "Create Testing Branch"
 
@@ -774,6 +822,15 @@ test-upload-flow:
     - python3 ./Utils/test_upload_flow/verify_bucket.py -a "${ARTIFACTS_FOLDER}" -s $GCS_MARKET_KEY -sb $current_storage_base_path -b $ALL_BUCKETS
     - section_end "Verify Created Testing Bucket"
     - job-done
+  after_script:
+    - !reference [.default-after-script]
+    - section_start "Delete Testing Branch"
+    - |
+      if [ -f "${ARTIFACTS_FOLDER}/test_upload_flow_branch.txt" ]; then
+        BRANCH=$(cat "${ARTIFACTS_FOLDER}/test_upload_flow_branch.txt")
+        python3 ./Utils/test_upload_flow/delete_test_branch.py -tb "${BRANCH}" -g "${GITLAB_PUSH_TOKEN}"
+      fi
+    - section_end "Delete Testing Branch"
 
 .server_test_playbooks_results:
   stage: results
@@ -804,7 +861,7 @@ test-upload-flow:
   rules:
     - !reference [ .filter-non-nightly-docker-updates-rule, rules ]
     - if: '$NIGHTLY'
-      when: always
+      when: never
   extends:
     - .default-job-settings
   needs:

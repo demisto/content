@@ -5,19 +5,25 @@ on:
     branches:
       - contrib/**
 
+permissions:
+  pull-requests: write
+
 jobs:
   create_internal_pr:
     runs-on: ubuntu-latest
     if: github.repository == 'demisto/content' && github.event.action == 'closed' && github.event.pull_request.merged == true && github.event.pull_request.head.repo.fork == true
     steps:
+      - name: set pythonpath
+        run: |
+          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
       - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v8
+        uses: Gr1N/setup-poetry@v9
       - name: Print Context
         run: |
           echo "$GITHUB_CONTEXT"
@@ -36,3 +42,11 @@ jobs:
           cd Utils/github_workflow_scripts
           poetry run ./create_internal_pr.py
           echo "Finished Creating Internal PR"
+      
+      - name: Notify External PR Merge
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: |
+          echo "Add a comment"
+          gh pr comment "$PR_URL" --body "Thank you for your contribution. Your external PR has been merged and the changes are now included in an internal PR for further review. The internal PR will be merged to the master branch within 3 business days."

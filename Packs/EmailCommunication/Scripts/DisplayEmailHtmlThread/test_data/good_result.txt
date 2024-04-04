@@ -13,10 +13,10 @@ ________________________________
 From: SOC <soc_sender@company.com>
 Sent: Friday, February 4, 2022 3:56 PM
 To: End User <end_user@company.com>
-Subject: <87692312> Test Email 4
+Subject: &lt;87692312&gt; Test Email 4
 
 Outbound test message from XSOAR to User.
-
+</end_user@company.com></soc_sender@company.com>
 <hr style="width:98%;text-align:center;height:3px;border-width:0;background-color:#cccccc">
 
 <b>From:</b> soc_sender@company.com<br><b>To:</b> end_user@company.com<br><b>CC:</b> <br><b>Subject:</b> <87692312> Test Email 4<br><b>Email Time:</b> 2022-02-04T20:56:53UTC<br><b>Attachments:</b> None

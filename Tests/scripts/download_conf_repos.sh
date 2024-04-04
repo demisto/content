@@ -117,9 +117,9 @@ CI_SERVER_HOST=${CI_SERVER_HOST:-gitlab.xdr.pan.local} # disable-secrets-detecti
 
 clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${CI_JOB_TOKEN}" "${CI_PROJECT_NAMESPACE}/content-test-conf" "${SEARCHED_BRANCH_NAME}" 3 10 "master"
 
-cp ./content-test-conf/secrets_build_scripts/google_secret_manager_handler.py ./Tests/scripts
-cp ./content-test-conf/secrets_build_scripts/add_secrets_file_to_build.py ./Tests/scripts
-cp ./content-test-conf/secrets_build_scripts/merge_and_delete_dev_secrets.py ./Tests/scripts
+cp ./content-test-conf/SecretActions/google_secret_manager_handler.py ./Tests/scripts
+cp ./content-test-conf/SecretActions/SecretsBuild/add_secrets_file_to_build.py ./Tests/scripts
+cp ./content-test-conf/SecretActions/SecretsBuild/merge_and_delete_dev_secrets.py ./Tests/scripts
 cp -r ./content-test-conf/demisto.lic ${DEMISTO_LIC_PATH}
 cp -r ./content-test-conf/signDirectory ${DEMISTO_PACK_SIGNATURE_UTIL_PATH}
 
@@ -136,6 +136,7 @@ clone_repository_with_fallback_branch "${CI_SERVER_HOST}" "gitlab-ci-token" "${C
 
 cp -r ./infra/xsiam_servers.json $XSIAM_SERVERS_PATH
 cp -r ./infra/xsoar_ng_servers.json $XSOAR_NG_SERVERS_PATH
+cp -r ./infra/.gitlab/ci/name_mapping.json "${CI_PROJECT_DIR}/name_mapping.json"
 
 mv ./infra/gcp ./gcp
 rm -rf ./infra

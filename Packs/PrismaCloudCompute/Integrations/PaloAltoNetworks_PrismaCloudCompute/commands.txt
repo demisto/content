@@ -22,3 +22,6 @@
 !prisma-cloud-compute-container-scan-results-list limit=2
 !prisma-cloud-compute-hosts-list limit=2
 !prisma-cloud-compute-runtime-container-audit-events-list limit=2
+!prisma-cloud-compute-archive-audit-incident incident_id="6572f4cdcc00fcd825bb2538"
+!prisma-cloud-compute-runtime-host-audit-events-list limit=1
+!prisma-cloud-compute-runtime-container-policy-list limit=1

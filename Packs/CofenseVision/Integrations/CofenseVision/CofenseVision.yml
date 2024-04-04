@@ -360,19 +360,19 @@ script:
         Unique MD5 hash identifier of one or more IOCs. Comma separated values are supported.
 
         Example: 
-        07fa1e91f99050521a87edc784e83fd5,07123459050525189160784e83fd5
+        07fa1e91f99050521a87edc784e83fd5,07123459050525189160784e83fd5.
       isArray: true
       name: iocs
     - description: |-
         Emails modified after this date and time. The date and time must be in UTC.
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        For example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: modified_date_after
     - description: |-
         One or more configured IOC sources. Comma separated values are supported.
 
-        Example: Intelligence, Triage-1
+        Example: Intelligence, Triage-1.
       isArray: true
       name: sources
     description: Filters and returns a paginated list of matching quarantine jobs.
@@ -1204,7 +1204,7 @@ script:
     - description: |-
         A single IOC source value, to fetch the IOCs added or modified by that particular source. The value for source can contain uppercase letters, lowercase letters, numbers, and certain special characters ("." , "-" , "_" , "~").
 
-        Example: "Traige-1" or "IOC_Source-2"
+        Example: "Traige-1" or "IOC_Source-2".
       name: source
       required: true
     - description: |-
@@ -1556,7 +1556,7 @@ script:
     - description: |-
         The unique identifier of the email, enclosed in angle brackets. This argument is case-sensitive.
 
-        Example:  <513C8CD8-E593-4DC4-82BF6202E8AC95CB@example.com>
+        Example:  <513C8CD8-E593-4DC4-82BF6202E8AC95CB@example.com>.
       name: internet_message_id
     - auto: PREDEFINED
       defaultValue: 'False'
@@ -1572,7 +1572,7 @@ script:
 
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: received_after_date
     - description: |-
         Date and time to create a search for emails to specify the received
@@ -1580,7 +1580,7 @@ script:
 
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: received_before_date
     - description: |-
         Create a search with the specified recipient. Supports one or more 
@@ -1837,19 +1837,19 @@ script:
     - description: |-
         The severity of the IOC.  
 
-        Example: "Malicious"
+        Example: "Malicious".
       name: threat_level
     - description: |-
         The unique identifier assigned by the IOC source. 
 
-        Example: source1_id_00001
+        Example: source1_id_00001.
       name: source_id
     - description: |-
         The UTC date and time, the IOC source included the IOC for the first time.
 
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: created_at
     - description: |
         The UTC date and time, the IOC source last updated the IOC.
@@ -1867,7 +1867,7 @@ script:
 
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: requested_expiration
     description: |-
       Updates one or more IOCs stored in the local IOC repository. 
@@ -1995,7 +1995,7 @@ script:
 
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: expires_at
       required: true
     description: Updates the IOC identified by its unique MD5 ID.
@@ -2120,7 +2120,7 @@ script:
       description: |-
         The number of results to retrieve.
 
-        Maximum value is '2000'
+        Maximum value is '2000'.
       name: size
     - description: |-
         The name-value pair defining the order of the response.
@@ -2143,7 +2143,7 @@ script:
 
         Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
 
-        Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z
+        Example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z.
       name: since
     description: Lists the IOCs stored in the local IOC Repository.
     name: cofense-iocs-list
@@ -2382,7 +2382,7 @@ script:
     - contextPath: Cofense.Config.value
       description: List of headers that are available to create a message search.
       type: Unknown
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
   subtype: python3

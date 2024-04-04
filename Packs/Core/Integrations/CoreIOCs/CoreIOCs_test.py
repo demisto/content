@@ -177,7 +177,7 @@ class TestCreateFile:
             Then:
                 - Verify sync file data.
         """
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         create_file_sync(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
         expected_data = ''
@@ -252,7 +252,7 @@ class TestCreateFile:
                 - Verify iocs to keep file data.
         """
 
-        mocker.patch.object(demisto, 'searchIndicators', return_value={})
+        mocker.patch.object(demisto, 'searchIndicators', return_value={"total": 0})
         create_file_iocs_to_keep(TestCreateFile.path)
         data = self.get_file(TestCreateFile.path)
         expected_data = ''

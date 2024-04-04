@@ -1949,7 +1949,11 @@
 						"accessor": "lastModifiedOn",
 						"filters": [],
 						"root": "policy",
-						"transformers": []
+						"transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
 					}
 				},
 				"Last Seen": {
@@ -2073,7 +2077,11 @@
 					"complex": {
 						"filters": [],
 						"root": "alertTime",
-						"transformers": []
+						"transformers": [
+                            {
+                                "operator": "TimeStampToDate"
+                            }
+                        ]
 					}
 				},
 				"RRN": {
@@ -2159,6 +2167,13 @@
 						"transformers": []
 					}
 				},
+"Status Reason": {
+                    "complex": {
+                        "filters": [],
+                        "root": "reason",
+                        "transformers": []
+                    }
+                },
 				"Subscription Assigned By": {
 					"complex": {
 						"accessor": "data.properties.metadata.assignedBy",

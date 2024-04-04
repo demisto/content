@@ -92,7 +92,7 @@ def return_outputs_custom(readable_output, outputs=None, tag=None):
         "EntryContext": outputs,
     }
     if tag is not None:
-        return_entry["Tags"] = ['campaign_{}'.format(tag)]
+        return_entry["Tags"] = [f'campaign_{tag}']
     demisto.results(return_entry)
 
 
@@ -114,7 +114,7 @@ def extract_domain(address):
         return ''
     email_address = parseaddr(address)[1]
     ext = no_fetch_extract(email_address)
-    return '{}.{}'.format(ext.domain, ext.suffix)
+    return f'{ext.domain}.{ext.suffix}'
 
 
 def extract_domain_from_recipients(row):
@@ -155,7 +155,7 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
         if not SELF_IN_CONTEXT:
             incident_df = incident_df[incident_df['id'] != incident_id]
 
-        incident_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1, inplace=True)
+        incident_df = incident_df.rename({FROM_DOMAIN_FIELD: 'emailfromdomain'}, axis=1)
         incidents_context = incident_df.fillna(1).to_dict(orient='records')
         datetimes: pd.DataFrame = incidents_context_df['created_dt'].dropna()
         min_datetime = min(datetimes).isoformat()
@@ -172,7 +172,7 @@ def create_context_for_indicators(indicators_df=None):
     if indicators_df is None:
         indicators_context = []
     else:
-        indicators_df.rename({'Value': 'value'}, axis=1, inplace=True)
+        indicators_df = indicators_df.rename({'Value': 'value'}, axis=1)
         indicators_df = indicators_df[['id', 'value']]
         indicators_context = indicators_df.to_dict(orient='records')
     return {'indicators': indicators_context}
@@ -205,8 +205,8 @@ def is_number_of_unique_recipients_is_too_low(incidents):
         msg += 'If you wish to consider similar emails as campaign even with low number of unique recipients, ' \
                'please change *minUniqueRecipients* argument\'s value.\n'
         msg += 'Details:\n'
-        msg += '* Found {} similar incidents.\n'.format(len(incidents))
-        msg += '* Those incidents have {} unique recipients'.format(len(unique_recipients))
+        msg += f'* Found {len(incidents)} similar incidents.\n'
+        msg += f'* Those incidents have {len(unique_recipients)} unique recipients'
         msg += ' ({}).\n'.format(', '.join(unique_recipients))
         msg += '* The minimum number of unique recipients for similar emails as campaign: ' \
                '{}\n'.format(MIN_UNIQUE_RECIPIENTS)
@@ -223,7 +223,7 @@ def get_str_representation_top_n_values(values_list, counter_tuples_list, top_n)
     domains_counter_top = counter_tuples_list[:top_n]
     if len(counter_tuples_list) > top_n:
         domains_counter_top += [('Other', len(values_list) - sum(x[1] for x in domains_counter_top))]
-    return ', '.join('{} ({})'.format(domain, count) for domain, count in domains_counter_top)
+    return ', '.join(f'{domain} ({count})' for domain, count in domains_counter_top)
 
 
 def standardize_recipients_column(df, column):
@@ -245,7 +245,7 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
     headers = []
     contents = []
     headers.append('Details')
-    contents.append('Found possible campaign of {} similar emails'.format(n_incidents))
+    contents.append(f'Found possible campaign of {n_incidents} similar emails')
     if max_similarity > min_similarity + 10 ** -3:
         headers.append('Similarity range')
         contents.append("{:.1f}%-{:.1f}%".format(min_similarity * 100, max_similarity * 100))
@@ -301,7 +301,7 @@ def calculate_campaign_details_table(incidents_df, fields_to_display):
                 field_value_str = get_str_representation_top_n_values(field_values, field_values_counter, top_n)
                 headers.append(field)
                 contents.append(field_value_str)
-    hr = tableToMarkdown('Possible Campaign Detected', {header: value for header, value in zip(headers, contents)},
+    hr = tableToMarkdown('Possible Campaign Detected', dict(zip(headers, contents)),
                          headers=headers)
     return hr
 
@@ -331,7 +331,7 @@ def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keyw
     val = sorted(word_frequency.values())
 
     max_frequency = val[-1]
-    for word in word_frequency.keys():
+    for word in word_frequency:
         word_frequency[word] = (word_frequency[word] / max_frequency)
     for word in KEYWORDS:
         if word in word_frequency:
@@ -342,7 +342,7 @@ def summarize_email_body(body, subject, nb_sentences=3, subject_weight=1.5, keyw
         if i in duplicate_sentences:
             continue
         for word in word_tokenize(sent):
-            if word.lower() in word_frequency.keys():
+            if word.lower() in word_frequency:
                 sentence_rank[i] += word_frequency[word.lower()]
         sentence_rank[i] = sentence_rank[i] / len(word_tokenize(sent))  # type: ignore
     top_sentences_indices = np.argsort(sentence_rank)[::-1][:nb_sentences].tolist()
@@ -366,7 +366,7 @@ def create_email_summary_hr(incidents_df, fields_to_display):
     email_summary += '\n*Body*: \n' + summarize_email_body(clean_email_body, clean_email_subject) + ' |'
     for word in KEYWORDS:
         for cased_word in [word.lower(), word.title(), word.upper()]:
-            email_summary = re.sub(r'(?<!\w)({})(?!\w)'.format(cased_word), '**{}**'.format(cased_word), email_summary)
+            email_summary = re.sub(fr'(?<!\w)({cased_word})(?!\w)', f'**{cased_word}**', email_summary)
     hr_email_summary = '\n' + email_summary
     context = add_context_key(
         create_context_for_campaign_details(
@@ -418,13 +418,18 @@ def return_no_mututal_indicators_found_entry():
 
 
 def return_indicator_entry(incidents_df):
-    indicators_query = 'investigationIDs:({})'.format(' '.join('"{}"'.format(id_) for id_ in incidents_df['id']))
-    fields = ['id', 'indicator_type', 'investigationIDs', 'relatedIncCount', 'score', 'value']
-    indicators_args = {'query': indicators_query, 'limit': '150', 'populateFields': ','.join(fields)}
-    res = demisto.executeCommand('GetIndicatorsByQuery', args=indicators_args)
-    if is_error(res):
-        return_error(res)
-    indicators = res[0]['Contents']
+    indicators_query = 'investigationIDs:({})'.format(' '.join(f'"{id_}"' for id_ in incidents_df['id']))
+    fields = ['id', 'indicator_type', 'investigationIDs', 'investigationsCount', 'score', 'value']
+    search_indicators = IndicatorsSearcher(
+        query=indicators_query,
+        limit=150,
+        size=500,
+        filter_fields=','.join(fields)
+    )
+    indicators = []
+    for res in search_indicators:
+        indicators.extend(res.get('iocs', []))
+
     indicators_df = pd.DataFrame(data=indicators)
     if len(indicators_df) == 0:
         return_no_mututal_indicators_found_entry()
@@ -436,10 +441,10 @@ def return_indicator_entry(incidents_df):
     if len(indicators_df) == 0:
         return_no_mututal_indicators_found_entry()
         return indicators_df
-    indicators_df['Id'] = indicators_df['id'].apply(lambda x: "[%s](#/indicator/%s)" % (x, x))
+    indicators_df['Id'] = indicators_df['id'].apply(lambda x: f"[{x}](#/indicator/{x})")
     indicators_df = indicators_df.sort_values(['score', 'Involved Incidents Count'], ascending=False)
     indicators_df['Reputation'] = indicators_df['score'].apply(scoreToReputation)
-    indicators_df.rename({'value': 'Value', 'indicator_type': 'Type'}, axis=1, inplace=True)
+    indicators_df = indicators_df.rename({'value': 'Value', 'indicator_type': 'Type'}, axis=1)
     indicators_headers = ['Id', 'Value', 'Type', 'Reputation', 'Involved Incidents Count']
 
     hr = tableToMarkdown('Mutual Indicators', indicators_df.to_dict(orient='records'),
@@ -469,7 +474,7 @@ def get_reputation(id_, indicators_df):
 
 
 def return_involved_incidents_entry(incidents_df, indicators_df, fields_to_display):
-    incidents_df['Id'] = incidents_df['id'].apply(lambda x: "[%s](#/Details/%s)" % (x, x))
+    incidents_df['Id'] = incidents_df['id'].apply(lambda x: f"[{x}](#/Details/{x})")
     incidents_df = incidents_df.sort_values('created', ascending=False).reset_index(drop=True)
     incidents_df['created_dt'] = incidents_df['created'].apply(lambda x: dateutil.parser.parse(x))  # type: ignore
     incidents_df['Created'] = incidents_df['created_dt'].apply(lambda x: x.strftime("%B %d, %Y"))
@@ -481,12 +486,12 @@ def return_involved_incidents_entry(incidents_df, indicators_df, fields_to_displ
     incidents_df['similarity'] = incidents_df.apply(
         lambda x: '{} (current)'.format(x['similarity']) if x['id'] == current_incident_id else x['similarity'], axis=1)
     incidents_df['status'] = incidents_df['status'].apply(lambda x: STATUS_DICT[x] if x in STATUS_DICT else '')
-    incidents_df.rename({
+    incidents_df = incidents_df.rename({
         'name': 'Name',
         FROM_FIELD: 'Email From',
         'similarity': 'Similarity to Current Incident',
         'status': 'Status'},
-        axis=1, inplace=True)
+        axis=1)
     incidents_headers = ['Id', 'Created', 'Name', 'Status', 'Email From', 'DBot Score',
                          'Similarity to Current Incident']
     if fields_to_display is not None:
@@ -500,7 +505,7 @@ def return_involved_incidents_entry(incidents_df, indicators_df, fields_to_displ
 
 
 def draw_canvas(incidents, indicators):
-    incident_ids = set(map(lambda x: x['id'], incidents))
+    incident_ids = {x['id'] for x in incidents}
     filtered_indicators = []
     for indicator in indicators:
         investigations = indicator.get('investigationIDs', [])

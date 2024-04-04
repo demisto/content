@@ -29,7 +29,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "13"
+      - "71"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -69,7 +69,7 @@ tasks:
       {
         "position": {
           "x": 452.5,
-          "y": 3360
+          "y": 3640
         }
       }
     note: false
@@ -108,7 +108,7 @@ tasks:
       {
         "position": {
           "x": 452.5,
-          "y": 4355
+          "y": 4615
         }
       }
     note: false
@@ -138,7 +138,7 @@ tasks:
       {
         "position": {
           "x": 452.5,
-          "y": 4515
+          "y": 4785
         }
       }
     note: false
@@ -150,13 +150,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: b3b54419-b6ae-4a40-8f3a-795efebcbf4a
+    taskid: fb0915f8-f8f9-4601-84d0-2be77350b333
     type: playbook
     task:
-      id: b3b54419-b6ae-4a40-8f3a-795efebcbf4a
+      id: fb0915f8-f8f9-4601-84d0-2be77350b333
       version: -1
       name: Dedup - Generic v4
-      description: "This playbook identifies duplicate incidents using the Cortex XSOAR machine learning method (script).\nIn this playbook, you can choose fields and/or indicators to be compared against other incidents in the Cortex XSOAR database. \n\nNote: To identify similar incidents you must *must* properly define the playbook inputs. "
+      description: "This playbook identifies duplicate incidents using the Cortex XSOAR machine learning method (script).\nIn this playbook, you can choose fields and/or indicators to be compared against other incidents in the Cortex XSOAR database. \n\nNote: To identify similar incidents you *must* properly define the playbook inputs. "
       playbookName: Dedup - Generic v4
       type: playbook
       iscommand: false
@@ -174,7 +174,7 @@ tasks:
       handleSimilar:
         simple: Link and Close
       limit:
-        simple: "200"
+        simple: "50"
       method:
         simple: Fields and Indicators
       minimunIncidentSimilarity:
@@ -195,8 +195,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 52.5,
-          "y": 240
+          "x": -250,
+          "y": 480
         }
       }
     note: false
@@ -205,15 +205,15 @@ tasks:
       action: start
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 1
     isoversize: false
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 83d9fa5d-80d2-499e-8004-39d00bf76cdd
+    taskid: 004fc4d0-b539-4e59-8d54-9e6968178db3
     type: playbook
     task:
-      id: 83d9fa5d-80d2-499e-8004-39d00bf76cdd
+      id: 004fc4d0-b539-4e59-8d54-9e6968178db3
       version: -1
       name: Extract Indicators From File - Generic v2
       description: |-
@@ -230,20 +230,27 @@ tasks:
         - XLS
         - XLSX
         - XML
+        - XLSM
+        - DOCM
+        - PPTM
+        - DOTM
+        - XLSB
+        - DOT
+        - PPSM.
       playbookName: Extract Indicators From File - Generic v2
       type: playbook
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - "77"
     separatecontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 52.5,
-          "y": 1935
+          "y": 1915
         }
       }
     note: false
@@ -253,6 +260,21 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      Decode:
+        simple: "False"
+      File:
+        complex:
+          root: File
+          transformers:
+          - operator: uniq
+      MaxImagesFromPDF:
+        simple: "2"
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
   "16":
     id: "16"
     taskid: d7967e5e-66a3-4b30-8c66-a3102e16f733
@@ -273,8 +295,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 52.5,
-          "y": 800
+          "x": 882.5,
+          "y": 1100
         }
       }
     note: false
@@ -298,14 +320,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "38"
+      - "30"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 52.5,
-          "y": 1125
+          "y": 1625
         }
       }
     note: false
@@ -317,13 +339,29 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 0d98b90c-a980-4664-81fd-6771e1475389
+    taskid: 06b8582f-0e6d-4a94-812a-812cf8e2be15
     type: playbook
     task:
-      id: 0d98b90c-a980-4664-81fd-6771e1475389
+      id: 06b8582f-0e6d-4a94-812a-812cf8e2be15
       version: -1
       name: Detonate File - Generic
-      description: Detonate file through active integrations that support file detonation
+      description: |-
+        Detonate files through one or more active integrations that support file detonation.
+        Supported integrations:
+        - SecneurX Analysis
+        - ANY.RUN
+        - McAfee Advanced Threat Defense
+        - WildFire
+        - Lastline
+        - Cuckoo Sandbox
+        - Cisco Secure Malware Analytics (ThreatGrid)
+        - JoeSecurity
+        - CrowdStrike Falcon Sandbox
+        - FireEye AX
+        - VMRay Analyzer
+        - Polygon
+        - CrowdStrike Falcon Intelligence Sandbox
+        - OPSWAT Filescan.
       playbookName: Detonate File - Generic
       type: playbook
       iscommand: false
@@ -336,9 +374,13 @@ tasks:
         complex:
           root: File
           accessor: EntryID
+          transformers:
+          - operator: uniq
       File:
         complex:
           root: File
+          transformers:
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -349,8 +391,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -190,
-          "y": 2270
+          "x": 300,
+          "y": 2480
         }
       }
     note: false
@@ -381,8 +423,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 52.5,
-          "y": 2110
+          "x": 542.5,
+          "y": 2290
         }
       }
     note: false
@@ -413,7 +455,7 @@ tasks:
       {
         "position": {
           "x": 52.5,
-          "y": 1785
+          "y": 1765
         }
       }
     note: false
@@ -425,13 +467,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: d1e33868-bfd2-4818-821a-6d0c9cd7485a
+    taskid: 99ce7114-4916-4107-8d26-1b993a6f2052
     type: playbook
     task:
-      id: d1e33868-bfd2-4818-821a-6d0c9cd7485a
+      id: 99ce7114-4916-4107-8d26-1b993a6f2052
       version: -1
       name: Search Endpoints By Hash - Generic V2
-      description: Hunt using available tools.
+      description: Hunt using available tools
       playbookName: Search Endpoints By Hash - Generic V2
       type: playbook
       iscommand: false
@@ -444,8 +486,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 52.5,
-          "y": 1410
+          "x": 470,
+          "y": 1230
         }
       }
     note: false
@@ -455,6 +497,30 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      MD5Hash:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      SHA1Hash:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256Hash:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
   "35":
     id: "35"
     taskid: cde89024-e2ad-4fb4-8a08-5277d3fa43c4
@@ -476,7 +542,7 @@ tasks:
       {
         "position": {
           "x": 770,
-          "y": 3550
+          "y": 3830
         }
       }
     note: false
@@ -508,38 +574,7 @@ tasks:
       {
         "position": {
           "x": 770,
-          "y": 3700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "38":
-    id: "38"
-    taskid: 71ca3a3b-de2c-4806-807d-3e9e3207c5d0
-    type: title
-    task:
-      id: 71ca3a3b-de2c-4806-807d-3e9e3207c5d0
-      version: -1
-      name: Find affected endpoints
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "34"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 52.5,
-          "y": 1260
+          "y": 3980
         }
       }
     note: false
@@ -551,24 +586,46 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: bce158dc-0a33-4254-8509-277115b34463
+    taskid: 9fbadd29-5601-4d76-8c56-f0459ede8a38
     type: condition
     task:
-      id: bce158dc-0a33-4254-8509-277115b34463
+      id: 9fbadd29-5601-4d76-8c56-f0459ede8a38
       version: -1
-      name: Should extract indicators manually (Auto-extract is off)?
-      description: Checks whether indicators in this incident should be extracted and enriched manually. This should be done if Auto-extract is switched off for the current incident type. When Auto-extract is turned off for the incident type, it means that indicators will not be extracted from the data mapped to the various incident fields upon the creation of the incident. In that case, in order for the playbook to perform optimally, the indicators have to be extracted explicitly using the extractIndicators command.
+      name: Run advanced investigation?
+      description: Checks whether indicators in this incident should be extracted and enriched manually. This should be done if Auto-extract is switched off for the current incident type (by default, that type is the Unclassified type). When Auto-extract is turned off for the incident type, it means that indicators will not be extracted from the data mapped to the various incident fields upon the creation of the incident. In that case, in order for the playbook to perform correctly when enabling the AdvancedInvestigation input, the indicators have to be extracted explicitly using the extractIndicators command with auto-extract set to Inline.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "16"
-      "yes":
+      - "76"
+      "No":
+      - "75"
+      "Yes":
       - "40"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ExtractIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AdvancedInvestigation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: "No"
       condition:
       - - operator: isEqualString
           left:
@@ -584,7 +641,7 @@ tasks:
       {
         "position": {
           "x": 52.5,
-          "y": 430
+          "y": 710
         }
       }
     note: false
@@ -596,12 +653,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 9890b9a5-b612-4d30-8f95-d763d3d6bae7
+    taskid: 1c3cf375-5438-49c3-8ff8-b02f1c4a8c76
     type: regular
     task:
-      id: 9890b9a5-b612-4d30-8f95-d763d3d6bae7
+      id: 1c3cf375-5438-49c3-8ff8-b02f1c4a8c76
       version: -1
-      name: Extract indicators from incident
+      name: Extract indicators - inline
       description: Extracts all indicators from the incident and enriches the indicators by using the reputation command defined for each indicator type.
       script: Builtin|||extractIndicators
       type: regular
@@ -610,6 +667,7 @@ tasks:
     nexttasks:
       '#none#':
       - "16"
+      - "72"
     scriptarguments:
       text:
         complex:
@@ -620,8 +678,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 620
+          "x": 680,
+          "y": 920
         }
       }
     note: false
@@ -652,7 +710,7 @@ tasks:
       {
         "position": {
           "x": 452.5,
-          "y": 4035
+          "y": 4315
         }
       }
     note: false
@@ -708,7 +766,7 @@ tasks:
       {
         "position": {
           "x": 52.5,
-          "y": 2810
+          "y": 3090
         }
       }
     note: false
@@ -743,7 +801,7 @@ tasks:
       {
         "position": {
           "x": 452.5,
-          "y": 4170
+          "y": 4450
         }
       }
     note: false
@@ -776,7 +834,7 @@ tasks:
       {
         "position": {
           "x": 52.5,
-          "y": 3015
+          "y": 3295
         }
       }
     note: false
@@ -814,7 +872,7 @@ tasks:
       {
         "position": {
           "x": 452.5,
-          "y": 3200
+          "y": 3480
         }
       }
     note: false
@@ -852,7 +910,7 @@ tasks:
       {
         "position": {
           "x": -470,
-          "y": 3210
+          "y": 3490
         }
       }
     note: false
@@ -891,7 +949,7 @@ tasks:
       {
         "position": {
           "x": 52.5,
-          "y": 2620
+          "y": 2900
         }
       }
     note: false
@@ -903,10 +961,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: bc18e52d-e000-42bc-8a4d-cd0667fc957e
+    taskid: 7114019d-060d-4747-8449-60f663ceff44
     type: regular
     task:
-      id: bc18e52d-e000-42bc-8a4d-cd0667fc957e
+      id: 7114019d-060d-4747-8449-60f663ceff44
       version: -1
       name: Save found endpoints in layout
       description: commands.local.cmd.set.incident
@@ -916,7 +974,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "30"
+      - "19"
     scriptarguments:
       detectedendpoints:
         complex:
@@ -928,16 +986,14 @@ tasks:
               separator:
                 value:
                   simple: ', '
-      selectedindicators:
-        simple: Select indicators
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 52.5,
-          "y": 1580
+          "x": 470,
+          "y": 1400
         }
       }
     note: false
@@ -947,12 +1003,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    reputationcalc: 1
   "65":
     id: "65"
-    taskid: 71c5646b-afb0-461f-86b7-c811bd2d5a3f
+    taskid: c8c2df88-1b9f-4151-8a82-cfcde86d3436
     type: playbook
     task:
-      id: 71c5646b-afb0-461f-86b7-c811bd2d5a3f
+      id: c8c2df88-1b9f-4151-8a82-cfcde86d3436
       version: -1
       name: Entity Enrichment - Generic v3
       description: Enrich entities using one or more integrations.
@@ -963,13 +1020,14 @@ tasks:
     nexttasks:
       '#none#':
       - "62"
+      - "78"
     separatecontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 52.5,
-          "y": 2440
+          "y": 2720
         }
       }
     note: false
@@ -979,6 +1037,76 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+          transformers:
+          - operator: uniq
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      URLSSLVerification:
+        simple: "False"
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
   "68":
     id: "68"
     taskid: b75662a2-5440-4d64-8635-47c4f552b02d
@@ -1000,7 +1128,7 @@ tasks:
       {
         "position": {
           "x": 452.5,
-          "y": 3870
+          "y": 4150
         }
       }
     note: false
@@ -1012,13 +1140,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 153f8c88-6fc3-446c-8fb8-822e1cdcf129
+    taskid: f6f727e4-67ea-4fad-8c40-04acf5999484
     type: playbook
     task:
-      id: 153f8c88-6fc3-446c-8fb8-822e1cdcf129
+      id: f6f727e4-67ea-4fad-8c40-04acf5999484
       version: -1
       name: Get File Sample - Generic
-      description: Retrieve files from endpoints by the file hash or the file path.
+      description: Retrieves files from endpoints by the file hash or the file path.
       playbookName: Get File Sample - Generic
       type: playbook
       iscommand: false
@@ -1031,22 +1159,32 @@ tasks:
         complex:
           root: incident
           accessor: agentid
+          transformers:
+          - operator: uniq
       FilePath:
         complex:
           root: incident
           accessor: filepath
+          transformers:
+          - operator: uniq
       Hostname:
         complex:
           root: incident
           accessor: sourcehostname
+          transformers:
+          - operator: uniq
       MD5:
         complex:
           root: File
           accessor: MD5
+          transformers:
+          - operator: uniq
       SHA256:
         complex:
           root: File
           accessor: SHA256
+          transformers:
+          - operator: uniq
       UnzipFile:
         simple: "True"
     separatecontext: true
@@ -1059,8 +1197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 52.5,
-          "y": 950
+          "x": 882.5,
+          "y": 1230
         }
       }
     note: false
@@ -1072,10 +1210,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: f2dc11c0-1587-4d62-8c8a-6616dc910ac0
+    taskid: 8074a2c5-6a6c-401f-839a-5d9bf600addf
     type: playbook
     task:
-      id: f2dc11c0-1587-4d62-8c8a-6616dc910ac0
+      id: 8074a2c5-6a6c-401f-839a-5d9bf600addf
       version: -1
       name: Detonate URL - Generic v1.5
       playbookName: Detonate URL - Generic v1.5
@@ -1091,8 +1229,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 280,
-          "y": 2270
+          "x": 802.5,
+          "y": 2480
         }
       }
     note: false
@@ -1102,11 +1240,237 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+  "71":
+    id: "71"
+    taskid: 4aaf78e5-6877-4503-82f9-52a25ea07d51
+    type: condition
+    task:
+      id: 4aaf78e5-6877-4503-82f9-52a25ea07d51
+      version: -1
+      name: Search, link and close similar incidents?
+      description: Whether to search for incidents similar to the current incident, link them to this incident and close them.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "39"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.DedupSimilarIncidents
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 52.5,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 32f0f7bd-2c1d-48fb-8c5b-15a9497e9b91
+    type: title
+    task:
+      id: 32f0f7bd-2c1d-48fb-8c5b-15a9497e9b91
+      version: -1
+      name: Search hash in endpoints
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: b37d9848-369d-4f84-8efd-804b4e0c47c3
+    type: regular
+    task:
+      id: b37d9848-369d-4f84-8efd-804b4e0c47c3
+      version: -1
+      name: Extract indicators in the background
+      description: Extracts all indicators from the incident and enriches the indicators by using the reputation command defined for each indicator type.
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      text:
+        complex:
+          root: incident
+    reputationcalc: 3
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 3a4fd30f-3c7e-4ad6-86a3-cab20bd773dd
+    type: title
+    task:
+      id: 3a4fd30f-3c7e-4ad6-86a3-cab20bd773dd
+      version: -1
+      name: Skip initial indicator extraction
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 52.5,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 0e44bc2a-a92f-4ea5-8d29-34f979a70e51
+    type: condition
+    task:
+      id: 0e44bc2a-a92f-4ea5-8d29-34f979a70e51
+      version: -1
+      name: Continue with advanced investigation?
+      description: Checks whether indicators in this incident should be extracted and enriched manually. This should be done if Auto-extract is switched off for the current incident type (by default, that type is the Unclassified type). When Auto-extract is turned off for the incident type, it means that indicators will not be extracted from the data mapped to the various incident fields upon the creation of the incident. In that case, in order for the playbook to perform correctly when enabling the AdvancedInvestigation input, the indicators have to be extracted explicitly using the extractIndicators command with auto-extract set to Inline.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      "Yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.AdvancedInvestigation
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 52.5,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 6b40af08-a740-419d-89d1-077812b77019
+    type: regular
+    task:
+      id: 6b40af08-a740-419d-89d1-077812b77019
+      version: -1
+      name: Update field for layout actions
+      description: Initiates the Selected Indicators field with a value so that user can select indicators to tag from the Investigation tab in the layout.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      selectedindicators:
+        simple: Select an indicator
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "39_16_#default#": 0.23,
+      "39_40_Yes": 0.41,
+      "39_75_No": 0.56,
+      "39_76_#default#": 0.63,
       "42_45_#default#": 0.58,
       "42_58_false positive": 0.42,
       "45_58_False Positive": 0.48,
@@ -1114,9 +1478,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4480,
-        "width": 1620,
-        "x": -470,
+        "height": 4750,
+        "width": 1742.5,
+        "x": -480,
         "y": 100
       }
     }
@@ -1126,11 +1490,35 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Determines whether indicators in this incident should be extracted manually. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise, indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook.
+  description: Determines whether indicators in this incident should be extracted by the playbook. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise, indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook.
   playbookInputQuery:
+- key: AdvancedInvestigation
+  value:
+    simple: "False"
+  required: false
+  description: "Whether to perform advanced actions in the incident. \n\nWhen both this input and the ExtractIndicators input are set to True, indicator extraction will be performed Inline to ensure the indicators are extracted for the advanced investigation steps.\nAdvanced steps include:\n- Getting file samples from endpoints.\n- Searching more endpoints by the extracted file hash.\n- Detonating files and URLs in sandbox integrations.\n\nIf this input is set to False, indicators will be extracted by the playbook in Out-of-band mode, or not extracted at all, depending on the ExtractIndicators input.\n\nPossible values are: True, False.\n\n\n\n\n\n"
+  playbookInputQuery:
+- key: DedupSimilarIncidents
+  value:
+    simple: "False"
+  required: false
+  description: Whether to deduplicate incidents that are similar to the current incident. Can be True or False.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - ExtractIndicators
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+- inputs:
+  - AdvancedInvestigation
+  - DedupSimilarIncidents
+  name: Execution Options
+  description: Choose whether to execute
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
-marketplaces:
-- xsoar
 tests:
 - No tests (auto formatted)
 fromversion: 8.2.0

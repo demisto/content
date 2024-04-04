@@ -14,6 +14,7 @@ def get_slack_block_builder_entry(entries: list[dict[str, Any]]) -> Optional[dic
     Returns:
     Dict[str, Any]: The last entry that matches the criteria or None if not found.
     """
+    entries.reverse()
     for entry in entries:
         contents = entry.get('Contents', '')
         if 'xsoar-button-submit' in contents:

@@ -95,12 +95,12 @@ script:
       description: The maximum number of results to return.
     - name: job_id
       defaultValue: ""
-      description: VT Retrohunt job's ID
+      description: VT Retrohunt job's ID.
     description: Gets the matches from a given retrohunt job's id or the latest by default.
     name: vt-retrohunt-get-indicators
   - description: "This command will reset your fetch history."
     name: vt-retrohunt-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.12.66339
+  dockerimage: demisto/python3:3.10.13.84405
   feed: true
   runonce: false
   script: "-"

@@ -13,4 +13,11 @@
 2. Click the **Copy URL** button in the top right corner.
 
 ---
+
+### Mirroring
+
+**Close-reason default mapping XSOAR -> XDR**: _Other=Other, Duplicate=Duplicate Incident, False Positive=False Positive, Resolved=True Positive_
+
+**Close-reason default mapping XDR -> XSOAR**: _Known Issue=Other, Duplicate Incident=Duplicate, False Positive=False Positive, True Positive=Resolved, Other=Other, Auto=Resolved_
+
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/cortex-xdr---ir)

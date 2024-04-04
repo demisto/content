@@ -98,8 +98,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -920,
-          "y": 3025
+          "x": -590,
+          "y": 3200
         }
       }
     note: false
@@ -254,7 +254,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 2705
+          "y": 2685
         }
       }
     note: false
@@ -304,7 +304,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3745
+          "y": 3945
         }
       }
     note: false
@@ -681,7 +681,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "7"
+      - "228"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -720,8 +720,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -920,
-          "y": 3210
+          "x": -590,
+          "y": 3370
         }
       }
     note: false
@@ -1133,10 +1133,10 @@ tasks:
       version: -1
       name: Authenticate email
       description: Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM.
-      script: CheckEmailAuthenticity
       type: regular
       iscommand: false
       brand: ""
+      scriptName: CheckEmailAuthenticity
     nexttasks:
       '#none#':
       - "83"
@@ -1244,17 +1244,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: 987110a5-1108-468d-85bb-7dcbd9baad15
+    taskid: 5bb34c10-a58e-480a-8c9a-af220dac1b71
     type: playbook
     task:
-      id: 987110a5-1108-468d-85bb-7dcbd9baad15
+      id: 5bb34c10-a58e-480a-8c9a-af220dac1b71
       version: -1
       name: Calculate Severity - Generic v2
       playbookName: Calculate Severity - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: |-
+        Calculate and assign the incident severity based on the highest returned severity level from the following calculations:
+
+        - DBotScores of indicators
+        - Critical assets
+        - Email authenticity
+        - Current incident severity
+        - Microsoft Headers
+        - Risky users (XDR)
+        - Risky hosts (XDR)
     nexttasks:
       '#none#':
       - "2"
@@ -1274,6 +1283,62 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      Account:
+        complex:
+          root: Account
+          transformers:
+          - operator: uniq
+      DBotScoreIndicators:
+        complex:
+          root: DBotScore
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      DBotScoreMaxScore:
+        complex:
+          root: DBotScore
+          accessor: Score
+          transformers:
+          - operator: sort
+            args:
+              descending:
+                value:
+                  simple: "true"
+          - operator: uniq
+          - operator: FirstArrayElement
+      EmailAuthenticityCheck:
+        complex:
+          root: Email
+          accessor: AuthenticityCheck
+          transformers:
+          - operator: uniq
+      Endpoint:
+        complex:
+          root: Endpoint
+          transformers:
+          - operator: uniq
+      MicrosoftHeadersSeverityCheck:
+        complex:
+          root: Email
+          accessor: MicrosoftHeadersSeverityCheck
+      XDRRiskyHosts:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: RiskyHost
+          transformers:
+          - operator: uniq
+      XDRRiskyUsers:
+        complex:
+          root: PaloAltoNetworksXDR
+          accessor: RiskyUser
+          transformers:
+          - operator: uniq
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
   "85":
     id: "85"
     taskid: 2eecb8e9-8b1d-4ba5-87d3-dbfbb10baf6e
@@ -1561,7 +1626,7 @@ tasks:
       version: -1
       name: Detect & Manage Phishing Campaigns
       description: |-
-        This playbook is part of the Phishing Campaign content pack.
+        This playbook is part of the Phishing Campaign content pack, available only on Cortex XSOAR.
         It is used to find, create, and manage phishing campaigns. When a number of similar phishing incidents exist in the system, the playbook can be used to do the following:
         1. Find and link related incidents to the same phishing attack (a phishing campaign).
         2. Search for an existing Phishing Campaign incident, or create a new incident for the linked Phishing incidents.
@@ -1973,7 +2038,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3560
+          "y": 3750
         }
       }
     note: false
@@ -2097,11 +2162,11 @@ tasks:
       id: 9ff4d990-f0b2-4085-8352-137c92a77882
       version: -1
       name: Phishing - Machine Learning Analysis
+      description: Predicts phishing emails and URLs using machine-learning, available on Cortex XSOAR.
       playbookName: Phishing - Machine Learning Analysis
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "84"
@@ -2146,7 +2211,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2930,17 +2995,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "217":
     id: "217"
-    taskid: 2339bed3-a001-409f-8a65-a2b59923fa51
+    taskid: f36a1fb4-aab4-4a3d-8203-138e42b0c453
     type: playbook
     task:
-      id: 2339bed3-a001-409f-8a65-a2b59923fa51
+      id: f36a1fb4-aab4-4a3d-8203-138e42b0c453
       version: -1
       name: TIM - Indicator Relationships Analysis
       playbookName: TIM - Indicator Relationships Analysis
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: |-
+        This playbook is designed to assist with a security investigation by providing an analysis of indicator relationships. The following information is included:
+        - Indicators of compromise (IOCs) related to the investigation.
+        - Attack patterns related to the investigation.
+        - Campaigns related to the investigation.
+        - IOCs associated with the identified campaigns.
+        - Reports containing details on the identified campaigns.
     nexttasks:
       '#none#':
       - "218"
@@ -2962,8 +3033,9 @@ tasks:
                 value:
                   simple: Domain.Name
                 iscontext: true
+          - operator: uniq
       LimitResults:
-        simple: "300"
+        simple: "150"
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -3417,7 +3489,7 @@ tasks:
       {
         "position": {
           "x": -920,
-          "y": 3390
+          "y": 3580
         }
       }
     note: false
@@ -3431,27 +3503,104 @@ tasks:
     isautoswitchedtoquietmode: false
   "227":
     id: "227"
-    taskid: 109a066f-22b3-479e-8779-5e8f6fe4a080
+    taskid: b7d56405-d0e0-4421-8d2a-54bdb5104285
     type: playbook
     task:
-      id: 109a066f-22b3-479e-8779-5e8f6fe4a080
+      id: b7d56405-d0e0-4421-8d2a-54bdb5104285
       version: -1
       name: Detonate URL - Generic v1.5
       playbookName: Detonate URL - Generic v1.5
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: |-
+        Detonate a URL through one or more active integrations that support URL detonation.
+        Supported integrations:
+        - SecneurX Analysis
+        - ANY.RUN
+        - McAfee Advanced Threat Defense
+        - WildFire
+        - Lastline
+        - Cuckoo Sandbox
+        - Cisco Secure Malware Analytics (ThreatGrid)
+        - JoeSecurity
+        - CrowdStrike Falcon Sandbox
+        - FireEye AX
+        - VMRay Analyzer
+        - Polygon
+        - CrowdStrike Falcon Intelligence Sandbox
+        - OPSWAT Filescan
+        - ANYRUN
+        -  VirusTotal
+        - Anomali ThreatStream
+        - Hatching Triage
     nexttasks:
       '#none#':
       - "52"
+    scriptarguments:
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
     separatecontext: true
     continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
     view: |-
       {
         "position": {
           "x": -260,
           "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "228":
+    id: "228"
+    taskid: 95ec8c6f-527e-49dc-83fc-03fe573e46ab
+    type: condition
+    task:
+      id: 95ec8c6f-527e-49dc-83fc-03fe573e46ab
+      version: -1
+      name: Should be reviewed by analyst?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: "Should be reviewed by analyst?"
+    nexttasks:
+      '#default#':
+      - "226"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.NonMaliciousEmailReview
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -920,
+          "y": 3010
         }
       }
     note: false
@@ -3484,7 +3633,9 @@ view: |-
       "222_53_yes": 0.42,
       "222_56_#default#": 0.17,
       "223_224_yes": 0.47,
-      "33_30_yes": 0.1,
+      "228_7_yes": 0.65,
+      "33_226_No": 0.55,
+      "33_30_yes": 0.34,
       "36_152_Yes": 0.49,
       "79_82_yes": 0.46,
       "79_84_#default#": 0.17
@@ -3585,11 +3736,30 @@ inputs:
   description: Determines whether to use the "URL Detonation" playbook. Detonating a URL may take a few minutes.
   playbookInputQuery:
 - key: InternalRange
-  value: {}
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexExtractAll
+        args:
+          error_if_no_match: {}
+          ignore_case: {}
+          multi_line: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+          unpack_matches: {}
+      - operator: join
+        args:
+          separator:
+            value:
+              simple: ','
   required: false
   description: |-
     This input is used in the "Entity Enrichment - Phishing v2" playbook.
-    A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, uses the default list provided in the IsIPInRanges script (the known IPv4 private address ranges).
+    A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges is: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).
   playbookInputQuery:
 - key: PhishingModelName
   value: {}
@@ -3696,48 +3866,54 @@ inputs:
     For example: name of the organization finance app that the attacker might impersonate.
     This input is used in the "Spear Phishing Investigation" sub-playbook.
   playbookInputQuery:
+- key: NonMaliciousEmailReview
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    In case of an incident with a non-malicious email, it is possible either to close the incident or to review and approve it by an analyst.
+    Set the value "True" for a review of the incident by an analyst. Set the value "False" to close the incident.
+  playbookInputQuery:
 inputSections:
-- name: Role and Assignment
-  description:  Parameters defining user responsibilities and task allocations.
-  inputs: 
+- inputs:
   - Role
   - OnCall
-- name: Search and Delete Functionality
-  description: Input criteria to locate specific entries and actions to remove them.
-  inputs:
+  - EmailHuntingCreateNewIncidents
+  - ListenerMailbox
+  - SendMailInstance
+  - UserEngagement
+  - TakeManualActions
+  - NonMaliciousEmailReview
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, and user engagements.
+- inputs:
+  - DetonateURL
+  - InternalRange
+  - InternalDomains
+  name: Enrichment
+  description: Enrichment settings and data, including assets and indicators enrichment using third-party enrichers.
+- inputs:
+  - AuthenticateEmail
+  - CheckMicrosoftHeaders
+  - GetOriginalEmail
+  - OriginalAuthenticationHeader
+  - PhishingModelName
+  - DBotPredictURLPhishingURLsNumber
+  - EmailFileToExtract
+  - HuntEmailIndicators
+  - KeyWordsToSearch
+  name: Investigation
+  description: Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - BlockIndicators
   - SearchAndDelete
   - SearchAndDeleteIntegration
   - O365DeleteType
   - O365ExchangeLocation
   - O365AllowNotFoundSearchLocations
   - O365ExchangeLocationExclusion
-- name: Email Verification and Classification
-  description: Criteria and actions for authenticating email sources and categorizing by content.
-  inputs:
-  - AuthenticateEmail
-  - CheckMicrosoftHeaders
-  - InternalDomains
-  - GetOriginalEmail
-  - OriginalAuthenticationHeader
-- name: Analysis and Threat Detection
-  description: Parameters for examining data, identifying, and assessing security threats.
-  inputs:
-  - BlockIndicators
-  - DetonateURL
-  - InternalRange
-  - PhishingModelName
-  - DBotPredictURLPhishingURLsNumber
-  - EmailFileToExtract
-  - HuntEmailIndicators
-- name: Incident Management and User Engagement
-  description: Input settings for handling security events and involving end-users in the resolution process.
-  inputs:
-  - EmailHuntingCreateNewIncidents
-  - ListenerMailbox
-  - SendMailInstance
-  - UserEngagement
-  - TakeManualActions
-  - KeyWordsToSearch
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
 outputs: []
 tests:
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test

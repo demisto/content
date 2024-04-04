@@ -2,9 +2,9 @@ import json
 import pytest
 import requests
 import requests_mock
-import sys
-import io
 import demistomock as demisto
+from pytest_mock import MockerFixture
+from CommonServerPython import *
 
 IP_ADDRESS = '127.0.0.1'
 
@@ -202,14 +202,12 @@ TAGS_FOR_GENERIC_CONTEXT_OUTPUT = [
 
 @pytest.fixture(autouse=True)
 def init_tests(mocker):
-    params = {
-        'api_key': '1234'
-    }
+    params = {'api_key': '1234'}
     mocker.patch.object(demisto, 'params', return_value=params)
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path) as f:
         return json.loads(f.read())
 
 
@@ -238,18 +236,17 @@ def test_calculate_dbot_score_file():
 def test_connection_error(mocker):
     import AutofocusV2
 
-    RETURN_ERROR_TARGET = 'AutofocusV2.return_error'
-    BASE_URL = 'https://autofocus.paloaltonetworks.com/api/v1.0'
+    def raise_connection_error(url, **_):
+        assert url == 'https://autofocus.paloaltonetworks.com/api/v1.0/tic'
+        raise requests.exceptions.ConnectionError
 
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET, side_effect=sys.exit)
+    mocker.patch.object(requests, 'request', side_effect=raise_connection_error)
 
-    with requests_mock.Mocker() as m:
-        m.get(f'{BASE_URL}/tic', exc=requests.exceptions.ConnectionError)
-
-        with pytest.raises(SystemExit):
-            AutofocusV2.search_indicator('ip', '8.8.8.8')
-        assert 'Error connecting to server. Check your URL/Proxy/Certificate settings' \
-               in return_error_mock.call_args[0][0]
+    with pytest.raises(
+        AutofocusV2.DemistoException,
+        match='Error connecting to server. Check your URL/Proxy/Certificate settings'
+    ):
+        AutofocusV2.search_indicator('ip', '8.8.8.8')
 
 
 def test_tag_details(mocker):
@@ -393,7 +390,7 @@ def test_create_relationships_list():
                                               tags=RAW_TAGS, reliability='B - Usually reliable')
     relation_entry = [relation.to_entry() for relation in relationships]
 
-    for relation, i in zip(relation_entry, range(len(relation_entry))):
+    for i, relation in enumerate(relation_entry):
         assert relation.get('name') == expected_name
         assert relation.get('entityA') == 'Test'
         assert relation.get('entityB') == expected_name_entity_b[i]
@@ -600,3 +597,52 @@ def test_search_samples(requests_mock, range_num, res_count):
     assert len(res) == res_count
     for r in res:
         assert r.get('AFCookie') == 'auto-focus-cookie'
+
+
+def test_metrics(mocker: MockerFixture):
+    import AutofocusV2
+
+    bucket_info = {
+        'bucket_info': {
+            "minute_points": 200,
+            "daily_points": 30000,
+            "minute_points_remaining": 0,
+            "daily_points_remaining": 4578,
+            "minute_bucket_start": "2015-09-02 10:55:33",
+            "daily_bucket_start": "2015-09-01 17:08:40",
+            "wait_in_seconds": 20.5,
+        }
+    }
+
+    mocker.patch.object(demisto, 'command', return_value='autofocus-top-tags-search')
+    mocker.patch.object(demisto, 'args', return_value={'unit42': 'True', 'class': 'Actor', 'retry_on_rate_limit': 'true'})
+    mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.9.0', 'buildNumber': '12345'})
+    mock_request = mocker.patch.object(requests, 'request', return_value=type(
+        'MockResponse', (), {'json': lambda: bucket_info, 'status_code': 503}
+    ))
+    return_results_mock = mocker.patch('AutofocusV2.return_results')
+    AutofocusV2.EXECUTION_METRICS = ExecutionMetrics()
+
+    AutofocusV2.main()
+
+    mock_request.assert_called_with(
+        method='POST',
+        url='https://autofocus.paloaltonetworks.com/api/v1.0/top-tags/search/',
+        headers={'Content-Type': 'application/json'},
+        data=json.dumps({
+            "query": {"operator": "all", "children": [{"field": "sample.tag_class", "operator": "is", "value": "actor"}]},
+            "scope": None, "tagScopes": ["unit42"], "apiKey": "1234"
+        }),
+        verify=True
+    )
+    assert return_results_mock.call_args_list[0][0][0].readable_output == 'API Rate limit exceeded, rerunning command.'
+    assert return_results_mock.call_args_list[0][0][0].scheduled_command._args == {
+        'unit42': 'True', 'class': 'Actor', 'retry_on_rate_limit': 'false',
+    }
+    assert return_results_mock.call_args_list[0][0][0].scheduled_command._next_run == '40'
+    assert return_results_mock.call_args_list[1][0][0].execution_metrics == [{'APICallsCount': 1, 'Type': 'QuotaError'}]
+    assert return_results_mock.call_args_list[2][0][0].readable_output == '''### Autofocus API Points
+|Daily allotment started|Daily points used|Minute allotment started|Minute points used|
+|---|---|---|---|
+| 2015-09-01 17:08:40 | 4578/30000 | 2015-09-02 10:55:33 | 0/200 |
+'''

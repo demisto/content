@@ -1,7 +1,6 @@
 args:
 - description: The object value to check, if empty.
   name: value
-  isArray: true
 - description: The new value to return if the original value was empty.
   name: defaultValue
 - auto: PREDEFINED

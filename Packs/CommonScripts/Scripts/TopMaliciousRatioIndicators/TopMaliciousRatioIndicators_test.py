@@ -1,11 +1,10 @@
 import demistomock as demisto
 from TopMaliciousRatioIndicators import main, find_indicators_with_mal_ratio
-import io
 import json
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -27,10 +26,10 @@ def test_find_indicators_with_mal_ratio(mocker):
     widget_table, sorted_indicators = find_indicators_with_mal_ratio(max_indicators=1000, min_number_of_invs=4,
                                                                      max_results=1000,
                                                                      from_date="30 days ago")
-    assert '{"total": 2, "data": [{"ID": "7570", "Type": "URL", "Malicious Ratio": "0.11", "Value":' \
-           ' "http://8.16.1.2/8.16.1.2", "Last Seen": "2021-11-22T15:15:54.958327+02:00"},' \
-           ' {"ID": "7569", "Type": "Domain", "Malicious Ratio": "0.08", "Value": "gmail.com",' \
-           ' "Last Seen": "2021-11-22T15:15:54.958278+02:00"}]}' == widget_table
+    assert widget_table == '{"total": 2, "data": [{"ID": "7570", "Type": "URL", "Malicious Ratio": "0.11", "Value":' \
+        ' "http://8.16.1.2/8.16.1.2", "Last Seen": "2021-11-22T15:15:54.958327+02:00"},' \
+        ' {"ID": "7569", "Type": "Domain", "Malicious Ratio": "0.08", "Value": "gmail.com",' \
+        ' "Last Seen": "2021-11-22T15:15:54.958278+02:00"}]}'
     assert len(sorted_indicators) == 2
 
 
@@ -49,7 +48,7 @@ def test_find_indicators_with_mal_ratio__no_indicators(mocker):
     widget_table, sorted_indicators = find_indicators_with_mal_ratio(max_indicators=1000, min_number_of_invs=5,
                                                                      max_results=1000,
                                                                      from_date="30 days ago")
-    assert '{"total": 0, "data": []}' == widget_table
+    assert widget_table == '{"total": 0, "data": []}'
     assert not sorted_indicators
 
 
@@ -82,4 +81,4 @@ def test_main(mocker):
 
     mocker.patch.object(demisto, 'results')
     main()
-    assert EXPECTED_HR == demisto.results.call_args[0][0]['HumanReadable']
+    assert demisto.results.call_args[0][0]['HumanReadable'] == EXPECTED_HR

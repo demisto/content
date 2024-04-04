@@ -14,7 +14,7 @@ from Tests.scripts.common import get_properties_for_test_suite, FAILED_TO_COLOR_
 from Tests.scripts.jira_issues import generate_ticket_summary, generate_query_with_summary, \
     find_existing_jira_ticket, JIRA_PROJECT_ID, JIRA_ISSUE_TYPE, JIRA_COMPONENT, JIRA_LABELS, JIRA_ADDITIONAL_FIELDS, \
     generate_build_markdown_link, convert_jira_time_to_datetime, jira_ticket_to_json_data, jira_file_link, \
-    jira_sanitize_file_name, jira_color_text
+    jira_sanitize_file_name, jira_color_text, transition_jira_ticket_to_unresolved
 from Tests.scripts.utils import logging_wrapper as logging
 
 TEST_MODELING_RULES_BASE_HEADERS = ["Test Modeling Rule"]
@@ -42,14 +42,16 @@ def create_jira_issue_for_test_modeling_rule(jira_server: JIRA,
     summary = generate_ticket_summary(get_summary_for_test_modeling_rule(properties))  # type: ignore[arg-type]
     jql_query = generate_query_with_summary(summary)
     search_issues: ResultList[Issue] = jira_server.search_issues(jql_query, maxResults=1)  # type: ignore[assignment]
-    jira_issue, link_to_issue, use_existing_issue = find_existing_jira_ticket(jira_server, now, max_days_to_reopen,
-                                                                              search_issues[0] if search_issues else None)
+    jira_issue, link_to_issue, use_existing_issue, \
+        unresolved_transition_id = find_existing_jira_ticket(jira_server, now, max_days_to_reopen,
+                                                             search_issues[0] if search_issues else None)
 
     if jira_issue is not None:
         if test_suite.failures == 0 and test_suite.errors == 0 and (resolution := jira_issue.get_field("resolution")) is not None:
             logging.info(f"Skipping updating Jira issue {jira_issue.key} as it has no failures or errors "
                          f"and the Jira ticket is resolved with resolution:{resolution}")
             return None
+        transition_jira_ticket_to_unresolved(jira_server, jira_issue, unresolved_transition_id)
         jira_server.add_comment(issue=jira_issue, body=description)
     else:
         if test_suite.failures == 0 and test_suite.errors == 0:

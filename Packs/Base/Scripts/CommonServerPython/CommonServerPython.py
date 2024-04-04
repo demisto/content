@@ -27,6 +27,7 @@ from datetime import datetime, timedelta
 from abc import abstractmethod
 from distutils.version import LooseVersion
 from threading import Lock
+from functools import wraps
 from inspect import currentframe
 
 import demistomock as demisto
@@ -40,7 +41,7 @@ def __line__():
 
 # 43 - The line offset from the beginning of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 44, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -48,6 +49,8 @@ XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
+MASK = '<XX_REPLACED>'
+SEND_PREFIX = "send: b'"
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -196,7 +199,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union, Set
+    from typing import Optional, Dict, List, Any, Union, Set, cast
 
     from urllib3 import disable_warnings
     disable_warnings()
@@ -245,6 +248,7 @@ entryTypes = {
     'entryInfoFile': 9,
     'warning': 11,
     'map': 15,
+    'debug': 16,
     'widget': 17
 }
 
@@ -508,6 +512,7 @@ class ErrorTypes(object):
     PROXY_ERROR = 'ProxyError'
     SSL_ERROR = 'SSLError'
     TIMEOUT_ERROR = 'TimeoutError'
+    RETRY_ERROR = "RetryError"
 
 
 class FeedIndicatorType(object):
@@ -533,6 +538,7 @@ class FeedIndicatorType(object):
     Identity = "Identity"
     Location = "Location"
     Software = "Software"
+    X509 = "X509 Certificate"
 
     @staticmethod
     def is_valid_type(_type):
@@ -556,7 +562,8 @@ class FeedIndicatorType(object):
             FeedIndicatorType.Malware,
             FeedIndicatorType.Identity,
             FeedIndicatorType.Location,
-            FeedIndicatorType.Software
+            FeedIndicatorType.Software,
+            FeedIndicatorType.X509,
         )
 
     @staticmethod
@@ -822,6 +829,42 @@ def add_http_prefix_if_missing(address=''):
     return 'http://' + address
 
 
+def handle_proxy_for_long_running(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
+                                  insecure_param_name=None):
+    """
+        Handle logic for long running integration routing traffic through the system proxy.
+        Should usually be called at the beginning of the integration, depending on proxy checkbox state.
+        Long running integrations on hosted tenants XSOAR8 and XSIAM has a dedicated env. var.: CRTX_HTTP_PROXY.
+        Fallback call to handle_proxy in cases long running integration on engine or XSOAR6
+
+        :type proxy_param_name: ``string``
+        :param proxy_param_name: name of the "use system proxy" integration parameter
+
+        :type checkbox_default_value: ``bool``
+        :param checkbox_default_value: Default value of the proxy param checkbox
+
+        :type handle_insecure: ``bool``
+        :param handle_insecure: Whether to check the insecure param and unset env variables
+
+        :type insecure_param_name: ``string``
+        :param insecure_param_name: Name of insecure param. If None will search insecure and unsecure
+
+        :return: proxies dict for the 'proxies' parameter of 'requests' functions and use_ssl boolean
+        :rtype: ``Tuple[dict, boolean]``
+    """
+    proxies = {}
+    crtx_http_proxy = os.environ.get('CRTX_HTTP_PROXY', None)
+    if crtx_http_proxy:
+        demisto.error('Setting proxies according to CRTX_HTTP_PROXY: {}'.format(crtx_http_proxy))
+        proxies = {
+            'http': crtx_http_proxy,
+            'https': crtx_http_proxy
+        }
+        handle_insecure = True
+        return proxies, handle_insecure
+    return handle_proxy(proxy_param_name, checkbox_default_value, handle_insecure, insecure_param_name), handle_insecure
+
+
 def handle_proxy(proxy_param_name='proxy', checkbox_default_value=False, handle_insecure=True,
                  insecure_param_name=None):
     """
@@ -938,7 +981,7 @@ def urljoin(url, suffix=""):
     return url + suffix
 
 
-def positiveUrl(entry): 
+def positiveUrl(entry):
     """
        Checks if the given entry from a URL reputation query is positive (known bad) (deprecated)
 
@@ -1591,7 +1634,7 @@ class IntegrationLogger(object):
             else:
                 res = "Failed encoding message with error: {}".format(exception)
         for s in self.replace_strs:
-            res = res.replace(s, '<XX_REPLACED>')
+            res = res.replace(s, MASK)
         return res
 
     def __call__(self, message):
@@ -1660,7 +1703,7 @@ class IntegrationLogger(object):
         :rtype: ``None``
         """
         http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
-        data = text.split("send: b'")[1]
+        data = text.split(SEND_PREFIX)[1]
         if data and data[0] in {'{', '<'}:
             # it is the request url query params/post body - will always come after we already have the url and headers
             # `<` is for xml body
@@ -1712,12 +1755,18 @@ class IntegrationLogger(object):
             if self.buffering:
                 self.messages.append(text)
             else:
+                if is_debug_mode():
+                    if text.startswith(('send:', 'header:')):
+                        try:
+                            text = censor_request_logs(text)
+                        except Exception as e:  # should fail silently
+                            demisto.debug('Failed censoring request logs - {}'.format(str(e)))
+                    if text.startswith('send:'):
+                        try:
+                            self.build_curl(text)
+                        except Exception as e:  # should fail silently
+                            demisto.debug('Failed generating curl - {}'.format(str(e)))
                 demisto.info(text)
-                if is_debug_mode() and text.startswith('send:'):
-                    try:
-                        self.build_curl(text)
-                    except Exception as e:  # should fail silently
-                        demisto.debug('Failed generating curl - {}'.format(str(e)))
             self.write_buf = []
 
     def print_override(self, *args, **kwargs):
@@ -2011,22 +2060,28 @@ def url_to_clickable_markdown(data, url_keys):
     return data
 
 
-def create_clickable_url(url):
+def create_clickable_url(url, text=None):
     """
     Make the given url clickable when in markdown format by concatenating itself, with the proper brackets
 
     :type url: ``Union[List[str], str]``
     :param url: the url of interest or a list of urls
 
-    :return: markdown format for clickable url
-    :rtype: ``str``
+    :type text: ``Union[List[str], str, None]``
+    :param text: the text of the url or a list of texts of urls.
+
+    :return: Markdown format for clickable url
+    :rtype: ``Union[List[str], str]``
 
     """
     if not url:
         return None
     elif isinstance(url, list):
+        if isinstance(text, list):
+            assert len(url) == len(text), 'The URL list and the text list must be the same length.'
+            return ['[{}]({})'.format(text, item) for text, item in zip(text, url)]
         return ['[{}]({})'.format(item, item) for item in url]
-    return '[{}]({})'.format(url, url)
+    return '[{}]({})'.format(text or url, url)
 
 
 class JsonTransformer:
@@ -2806,6 +2861,15 @@ def get_integration_name():
     :rtype: ``str``
     """
     return demisto.callingContext.get('context', {}).get('IntegrationBrand', '')
+
+
+def get_integration_instance_name():
+    """
+    Getting calling integration instance name
+    :return: Calling integration instance name
+    :rtype: ``str``
+    """
+    return demisto.callingContext.get('context', {}).get('IntegrationInstance', '')
 
 
 def get_script_name():
@@ -3661,7 +3725,6 @@ class Common(object):
                 'data': self.dns_record_data
             }
 
-
     class CPE:
         """
         Represents one Common Platform Enumeration (CPE) object, see https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf
@@ -3673,6 +3736,7 @@ class Common(object):
         :rtype: ``None``
 
         """
+
         def __init__(self, cpe=None):
             self.cpe = cpe
 
@@ -3680,7 +3744,6 @@ class Common(object):
             return {
                 'CPE': self.cpe,
             }
-
 
     class File(Indicator):
         """
@@ -6024,7 +6087,7 @@ class Common(object):
                         })
                     elif isinstance(san, dict):
                         san_list.append(san)
-                    elif(isinstance(san, Common.CertificateExtension.SubjectAlternativeName)):
+                    elif (isinstance(san, Common.CertificateExtension.SubjectAlternativeName)):
                         san_list.append(san.to_context())
 
             elif self.extensions:  # autogenerate it from extensions
@@ -6879,7 +6942,7 @@ class CommandResults:
                  content_format=None,
                  execution_metrics=None,
                  replace_existing=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, bool, ScheduledCommand, list, int, str, List[Any], bool) -> None  # noqa: E501
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, List[Any], bool) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None:
@@ -7061,7 +7124,7 @@ def return_results(results):
         return
 
     elif results and isinstance(results, list):
-        result_list = [] # type: list
+        result_list = []  # type: list
         for result in results:
             # Results of type dict or str are of the old results format and work with demisto.results()
             if isinstance(result, dict):
@@ -7264,7 +7327,7 @@ class ExecutionMetrics(object):
     """
 
     def __init__(self, success=0, quota_error=0, general_error=0, auth_error=0, service_error=0, connection_error=0,
-                 proxy_error=0, ssl_error=0, timeout_error=0):
+                 proxy_error=0, ssl_error=0, timeout_error=0, retry_error=0):
         self._metrics = []
         self.metrics = None
         self.success = success
@@ -7276,6 +7339,7 @@ class ExecutionMetrics(object):
         self.proxy_error = proxy_error
         self.ssl_error = ssl_error
         self.timeout_error = timeout_error
+        self.retry_error = retry_error
         """
             Initializes an ExecutionMetrics object. Once initialized, you may increment each metric type according to the
             metric you'd like to report. Afterwards, pass the `metrics` value to CommandResults.
@@ -7306,6 +7370,9 @@ class ExecutionMetrics(object):
 
             :type timeout_error: ``int``
             :param timeout_error: Quantity of Timeout Error metrics
+
+            :type retry_error: ``int``
+            :param retry_error: Quantity of Retry Error metrics
 
             :type metrics: ``CommandResults``
             :param metrics: Append this value to your CommandResults list to report the metrics to your server.
@@ -7397,6 +7464,15 @@ class ExecutionMetrics(object):
     def timeout_error(self, value):
         self._timeout_error = value
         self.update_metrics(ErrorTypes.TIMEOUT_ERROR, self._timeout_error)
+
+    @property
+    def retry_error(self):
+        return self._retry_error
+
+    @retry_error.setter
+    def retry_error(self, value):
+        self._retry_error = value
+        self.update_metrics(ErrorTypes.RETRY_ERROR, self._retry_error)
 
     def get_metric_list(self):
         return self._metrics
@@ -7697,8 +7773,7 @@ def execute_command(command, args, extract_contents=True, fail_on_error=True):
             return res
         else:
             return True, res
-
-    contents = [entry.get('Contents', {}) for entry in res]
+    contents = [entry.get('Contents', {}) for entry in res if entry['Type'] != entryTypes['debug']]
     contents = contents[0] if len(contents) == 1 else contents
 
     if fail_on_error:
@@ -7788,12 +7863,12 @@ regexFlags = re.M  # Multi line matching
 # for the global(/g) flag use re.findall({regex_format},str)
 # else, use re.match({regex_format},str)
 
-ipv4Regex = r'^(?P<ipv4>(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))$'  # noqa: E501
+ipv4Regex = r'^(?P<ipv4>(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))[:]?(?P<port>\d+)?$'  # noqa: E501
 ipv4cidrRegex = r'^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))$'
 ipv6Regex = r'^(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))$'  # noqa: E501
 ipv6cidrRegex = r'^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))$'  # noqa: E501
 emailRegex = r'''(?i)(?:[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'''  # noqa: E501
-urlRegex = r'(?i)(?:(?P<url_with_path>(?P<scheme>(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))?(?P<userinfo>[\w]+@)?(?P<host>(?P<simple_domain>(?:(?:[^\W_]|-)+\[?\.\]?)+[^\W\d_-]{2,})|(?P<ipv4>(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?P<HEXIPv4>0\[?x]?[\da-f]{8})|(?P<ipv6>\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?P<port>:(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3}))?/(?P<path>(?:[\w\/%]+)(?P<extension>\[?[.]]?[^\W\d_-]+)?)?(?P<query>\?[^\s#]*)?(?P<fragment>#[\w\d]*)?)|(?P<no_path_url>(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))(?:[\w]+@)?(?:(?:(?:[^\W_]+\[?\.\]?)+[^\W\d_-]{2,})[\/.]?)|(?:(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))(?:(?:(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?:0\[?x]?[\da-f]{8})|(?:\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))))$|(?P<ip_port>(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))?(?:(?:(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?:0\[?x]?[\da-f]{8})|(?:\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?::(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3})))$)'  # noqa: E501
+urlRegex = r'(?i)(?:(?P<url_with_path>(?P<scheme>(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))?(?P<userinfo>[\w]+@)?(?P<host>(?P<simple_domain>(?:(?:[^\W_]|-)+\[?\.\]?)+[^\W\d_-]{2,})|(?P<ipv4>(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?P<HEXIPv4>0\[?x]?[\da-f]{8})|(?P<ipv6>\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?P<port>:(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3}))?/(?P<path>(?:[\w\/%-]+)(?P<extension>\[?[.]]?[^\W\d_-]+)?)?(?P<query>\?[^\s#]*)?(?P<fragment>#[\w\d]*)?)|(?P<no_path_url>(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))(?:[\w]+@)?(?:(?:(?:[^\W_]+\[?\.\]?)+[^\W\d_-]{2,})[\/.]?)|(?:(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))(?:(?:(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?:0\[?x]?[\da-f]{8})|(?:\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))))$|(?P<ip_port>(?:(?:https?|hxxps?|s?ftps?|meows?)\[?[:-]]?(?:\/\/|\\\\|3A__))?(?:(?:(?:(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?)\[?[.]]?){3}(?:25[0-5]|2[0-4][\d]|[01]?[\d][\d]?))|(?:0\[?x]?[\da-f]{8})|(?:\[?(?:(?:[\da-fA-F]{1,4}:){7,7}[\da-fA-F]{1,4}|(?:[\da-fA-F]{1,4}:){1,7}:|([\da-fA-F]{1,4}:){1,6}:[\da-fA-F]{1,4}|([\da-fA-F]{1,4}:){1,5}(:[\da-fA-F]{1,4}){1,2}|([\da-fA-F]{1,4}:){1,4}(:[\da-fA-F]{1,4}){1,3}|([\da-fA-F]{1,4}:){1,3}(:[\da-fA-F]{1,4}){1,4}|([\da-fA-F]{1,4}:){1,2}(:[\da-fA-F]{1,4}){1,5}|[\da-fA-F]{1,4}:(?:(:[\da-fA-F]{1,4}){1,6})|:(?:(:[\da-fA-F]{1,4}){1,7}|:)|fe80:(?::[\da-fA-F]{0,4}){0,4}%[\da-zA-Z]{1,}|::(?:ffff(?::0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])|([\da-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[\d]){0,1}[\d]))\]?))(?::(?:6[0-5][\d]{3}|[1-5][\d]{4}|[1-9][\d]{,3})))$)'  # noqa: E501
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
 domainRegex = r'(?i)(?P<scheme>(?:http|hxxp|s?ftp)s?(?::|%3A)(?:%2F%2F|//))?(?P<fqdn>(?:(?P<domain>(?:[^\W_]|-)+)\[?\.\]?)+(?P<tld>[^\W\d_-]{2,}))'
 hashRegex = r'\b[0-9a-fA-F]+\b'
@@ -8316,6 +8391,41 @@ class DemistoHandler(logging.Handler):
             pass
 
 
+def censor_request_logs(request_log):
+    """
+    Censors the request logs generated from the urllib library directly by replacing sensitive information such as tokens and cookies with a mask. 
+    In most cases, the sensitive value is the first word after the keyword, but in some cases, it is the second one.
+    :param request_log: The request log to censor
+    :type request_log: ``str``
+
+    :return: The censored request log
+    :rtype: ``str``
+    """
+    keywords_to_censor = ['Authorization:', 'Cookie', "Token"]
+    lower_keywords_to_censor = [word.lower() for word in keywords_to_censor]
+
+    trimed_request_log = request_log.lstrip(SEND_PREFIX)
+    request_log_with_spaces = trimed_request_log.replace("\\r\\n", " \\r\\n")
+    request_log_lst = request_log_with_spaces.split()
+
+    for i, word in enumerate(request_log_lst):
+        # Check if the word is a keyword or contains a keyword (e.g "Cookies" containes "Cookie")
+        if any(keyword in word.lower() for keyword in lower_keywords_to_censor):
+            next_word = request_log_lst[i + 1] if i + 1 < len(request_log_lst) else None
+            if next_word:
+                # If the next word is "Bearer" or "Basic" then we replace the word after it since thats the token
+                if next_word.lower() in ["bearer", "basic"] and i + 2 < len(request_log_lst):
+                    request_log_lst[i + 2] = MASK
+                else:
+                    request_log_lst[i + 1] = MASK
+
+    # Rebuild the request log so that the only change is the masked information.
+    censored_string = SEND_PREFIX + \
+        ' '.join(request_log_lst) if request_log.startswith(SEND_PREFIX) else ' '.join(request_log_lst)
+    censored_string = censored_string.replace(" \\r\\n", "\\r\\n")
+    return censored_string
+
+
 class DebugLogger(object):
     """
         Wrapper to initiate logging at logging.DEBUG level.
@@ -8715,7 +8825,10 @@ if 'requests' in sys.modules:
             system_timeout = os.getenv('REQUESTS_TIMEOUT', '')
             self.timeout = float(entity_timeout or system_timeout or timeout)
 
+            self.execution_metrics = ExecutionMetrics()
+
         def __del__(self):
+            self._return_execution_metrics_results()
             try:
                 self._session.close()
             except AttributeError:
@@ -8767,7 +8880,8 @@ if 'requests' in sys.modules:
                 been exhausted.
             """
             try:
-                method_whitelist = "allowed_methods" if hasattr(Retry.DEFAULT, "allowed_methods") else "method_whitelist"  # type: ignore[attr-defined]
+                method_whitelist = "allowed_methods" if hasattr(
+                    Retry.DEFAULT, "allowed_methods") else "method_whitelist"  # type: ignore[attr-defined]
                 whitelist_kawargs = {
                     method_whitelist: frozenset(['GET', 'POST', 'PUT'])
                 }
@@ -8804,7 +8918,8 @@ if 'requests' in sys.modules:
                           params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
                           return_empty_response=False, retries=0, status_list_to_retry=None,
                           backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
-                          error_handler=None, empty_valid_codes=None, params_parser=None, **kwargs):
+                          error_handler=None, empty_valid_codes=None, params_parser=None, with_metrics=False,
+                          **kwargs):
             """A wrapper for requests lib to send our requests and handle requests and responses better.
 
             :type method: ``str``
@@ -8902,6 +9017,9 @@ if 'requests' in sys.modules:
             see here for more info: https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
             Note! supported only in python3.
 
+            :type with_metrics ``bool``
+            :param with_metrics: Whether or not to calculate execution metrics from the response
+
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
             """
@@ -8931,40 +9049,20 @@ if 'requests' in sys.modules:
                     timeout=timeout,
                     **kwargs
                 )
-                # Handle error responses gracefully
                 if not self._is_status_code_valid(res, ok_codes):
-                    if error_handler:
-                        error_handler(res)
-                    else:
-                        self.client_error_handler(res)
+                    self._handle_error(error_handler, res, with_metrics)
 
-                if not empty_valid_codes:
-                    empty_valid_codes = [204]
-                is_response_empty_and_successful = (res.status_code in empty_valid_codes)
-                if is_response_empty_and_successful and return_empty_response:
-                    return res
+                return self._handle_success(res, resp_type, empty_valid_codes, return_empty_response, with_metrics)
 
-                resp_type = resp_type.lower()
-                try:
-                    if resp_type == 'json':
-                        return res.json()
-                    if resp_type == 'text':
-                        return res.text
-                    if resp_type == 'content':
-                        return res.content
-                    if resp_type == 'xml':
-                        ET.fromstring(res.text)
-                    if resp_type == 'response':
-                        return res
-                    return res
-                except ValueError as exception:
-                    raise DemistoException('Failed to parse {} object from response: {}'  # type: ignore[str-bytes-safe]
-                                           .format(resp_type, res.content), exception, res)
             except requests.exceptions.ConnectTimeout as exception:
+                if with_metrics:
+                    self.execution_metrics.timeout_error += 1
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.SSLError as exception:
+                if with_metrics:
+                    self.execution_metrics.ssl_error += 1
                 # in case the "Trust any certificate" is already checked
                 if not self._verify:
                     raise
@@ -8972,25 +9070,166 @@ if 'requests' in sys.modules:
                           ' the integration configuration.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.ProxyError as exception:
+                if with_metrics:
+                    self.execution_metrics.proxy_error += 1
                 err_msg = 'Proxy Error - if the \'Use system proxy\' checkbox in the integration configuration is' \
                           ' selected, try clearing the checkbox.'
                 raise DemistoException(err_msg, exception)
             except requests.exceptions.ConnectionError as exception:
+                if with_metrics:
+                    self.execution_metrics.connection_error += 1
                 # Get originating Exception in Exception chain
                 error_class = str(exception.__class__)
                 err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+
                 err_msg = 'Verify that the server URL parameter' \
-                          ' is correct and that you have access to the server from your host.' \
-                          '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                    .format(err_type, exception.errno, exception.strerror)
+                    ' is correct and that you have access to the server from your host.' \
+                    '\nError Type: {}'.format(err_type)
+                if exception.errno and exception.strerror:
+                    err_msg += '\nError Number: [{}]\nMessage: {}\n'.format(exception.errno, exception.strerror)
+                else:
+                    err_msg += '\n{}'.format(str(exception))
                 raise DemistoException(err_msg, exception)
+
             except requests.exceptions.RetryError as exception:
+                if with_metrics:
+                    self.execution_metrics.retry_error += 1
                 try:
                     reason = 'Reason: {}'.format(exception.args[0].reason.args[0])
                 except Exception:  # noqa: disable=broad-except
                     reason = ''
                 err_msg = 'Max Retries Error- Request attempts with {} retries failed. \n{}'.format(retries, reason)
                 raise DemistoException(err_msg, exception)
+
+        def _handle_error(self, error_handler, res, should_update_metrics):
+            """ Handles error response by calling error handler or default handler.
+            If an exception is raised, update metrics with failure. Otherwise, proceeds.
+
+            :type res: ``requests.Response``
+            :param res: Response from API after the request for which to check error type
+
+            :type error_handler ``callable``
+            :param error_handler: Given an error entry, the error handler outputs the
+                new formatted error message.
+
+            :type should_update_metrics ``bool``
+            :param should_update_metrics: Whether or not to update execution metrics according to response
+            """
+            try:
+                if error_handler:
+                    error_handler(res)
+                else:
+                    self.client_error_handler(res)
+            except Exception:
+                if should_update_metrics:
+                    self._update_metrics(res, success=False)
+                raise
+
+        def _handle_success(self, res, resp_type, empty_valid_codes, return_empty_response, should_update_metrics):
+            """ Handles successful response
+
+            :type res: ``requests.Response``
+            :param res: Response from API after the request for which to check error type
+
+            :type resp_type: ``str``
+            :param resp_type:
+                Determines which data format to return from the HTTP request. The default
+                is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
+                 to return the full response object.
+
+            :type empty_valid_codes: ``list``
+            :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
+                can vary)
+
+            :type return_empty_response: ``bool``
+            :param response: Whether to return an empty response body if the response code is in empty_valid_codes
+
+            :type should_update_metrics ``bool``
+            :param should_update_metrics: Whether or not to update execution metrics according to response
+            """
+            if should_update_metrics:
+                self._update_metrics(res, success=True)
+
+            if not empty_valid_codes:
+                empty_valid_codes = [204]
+            is_response_empty_and_successful = (res.status_code in empty_valid_codes)
+            if is_response_empty_and_successful and return_empty_response:
+                return res
+
+            return self.cast_response(res, resp_type)
+
+        def cast_response(self, res, resp_type, raise_on_error=True):
+            resp_type = resp_type.lower()
+            try:
+                if resp_type == 'json':
+                    return res.json()
+                if resp_type == 'text':
+                    return res.text
+                if resp_type == 'content':
+                    return res.content
+                if resp_type == 'xml':
+                    ET.fromstring(res.text)
+                if resp_type == 'response':
+                    return res
+                return res
+            except ValueError as exception:
+                if raise_on_error:
+                    raise DemistoException('Failed to parse {} object from response: {}'  # type: ignore[str-bytes-safe]
+                                           .format(resp_type, res.content), exception, res)
+
+        def _update_metrics(self, res, success):
+            """ Updates execution metrics based on response and success flag.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check error type
+
+            :type success: ``bool``
+            :param success: Wheter the request succeeded or failed
+            """
+            if success:
+                if not self.is_polling_in_progress(res):
+                    self.execution_metrics.success += 1
+            else:
+                error_type = self.determine_error_type(res)
+                if error_type == ErrorTypes.QUOTA_ERROR:
+                    self.execution_metrics.quota_error += 1
+                elif error_type == ErrorTypes.AUTH_ERROR:
+                    self.execution_metrics.auth_error += 1
+                elif error_type == ErrorTypes.SERVICE_ERROR:
+                    self.execution_metrics.service_error += 1
+                elif error_type == ErrorTypes.GENERAL_ERROR:
+                    self.execution_metrics.general_error += 1
+
+        def determine_error_type(self, response):
+            """ Determines the type of error based on response status code and content.
+            Note: this method can be overriden by subclass when implementing execution metrics.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check error type
+
+            :return: The error type if found, otherwise None
+            :rtype: ``ErrorTypes``
+            """
+            if response.status_code == 401:
+                return ErrorTypes.AUTH_ERROR
+            elif response.status_code == 429:
+                return ErrorTypes.QUOTA_ERROR
+            elif response.status_code == 500:
+                return ErrorTypes.SERVICE_ERROR
+            return ErrorTypes.GENERAL_ERROR
+
+        def is_polling_in_progress(self, response):
+            """If thie response indicates polling operation in progress, return True.
+            Note: this method should be overriden by subclass when implementing polling reputation commands
+            with execution metrics.
+
+            :type response: ``requests.Response``
+            :param response: Response from API after the request for which to check the polling status
+
+            :return: Whether the response indicates polling in progress
+            :rtype: ``bool``
+            """
+            return False
 
         def _is_status_code_valid(self, response, ok_codes=None):
             """If the status code is OK, return 'True'.
@@ -9028,6 +9267,16 @@ if 'requests' in sys.modules:
             except ValueError:
                 err_msg += '\n{}'.format(res.text)
                 raise DemistoException(err_msg, res=res)
+
+        def _return_execution_metrics_results(self):
+            """ Returns execution metrics results.
+            Might raise an AttributeError exception if execution_metrics is not initialized.
+            """
+            try:
+                if self.execution_metrics.metrics:
+                    return_results(cast(CommandResults, self.execution_metrics.metrics))
+            except AttributeError:
+                pass
 
 
 def batch(iterable, batch_size=1):
@@ -9243,7 +9492,7 @@ def set_to_integration_context_with_retries(context, object_keys=None, sync=True
                           ''.format(version, str(ve), CONTEXT_UPDATE_RETRY_TIMES - attempt))
             # Sleep for a random time
             time_to_sleep = randint(1, 100) / 1000
-            time.sleep(time_to_sleep)
+            time.sleep(time_to_sleep)  # pylint: disable=E9003
 
 
 def get_integration_context_with_version(sync=True):
@@ -9860,12 +10109,19 @@ class IndicatorsSearcher:
             searchAfter=self._search_after_param,
             populateFields=self._filter_fields,
         )
-        demisto.debug('IndicatorsSearcher: page {}, search_args: {}'.format(self._page, search_args))
         if is_demisto_version_ge('6.6.0'):
             search_args['sort'] = self._sort
+        demisto.debug('IndicatorsSearcher: page {}, search_args: {}'.format(self._page, search_args))
         res = demisto.searchIndicators(**search_args)
         self._total = res.get('total')
         demisto.debug('IndicatorsSearcher: page {}, result size: {}'.format(self._page, self._total))
+        # when total is None, there is a problem with the server for returning indicators, hence need to restart the container,
+        # see XSUP-26699
+        if self._total is None:
+            raise SystemExit(
+                "Encountered issue when trying to fetch indicators for integration in instance {integration}. "
+                "Restarting container and trying again.".format(integration=get_integration_instance_name())
+            )
         if isinstance(self._page, int):
             self._page += 1  # advance pages
         self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
@@ -9936,7 +10192,8 @@ def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
             # see XSUP-24343
             if not isinstance(last_mirror_run, dict):
                 raise TypeError("non-dictionary passed to set_last_mirror_run")
-            demisto.debug("encountered JSONDecodeError from server during setLastMirrorRun. As long as the value passed can be converted to json, this error can be ignored.")
+            demisto.debug(
+                "encountered JSONDecodeError from server during setLastMirrorRun. As long as the value passed can be converted to json, this error can be ignored.")
             demisto.debug(e)
     else:
         raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
@@ -10693,7 +10950,8 @@ def get_fetch_run_time_range(last_run, first_fetch, look_back=0, timezone=0, dat
         if now - last_run_time < timedelta(minutes=look_back):
             last_run_time = now - timedelta(minutes=look_back)
 
-    demisto.debug("lb: fetch start time: {}, fetch end time: {}".format(last_run_time.strftime(date_format), now.strftime(date_format)))
+    demisto.debug("lb: fetch start time: {}, fetch end time: {}".format(
+        last_run_time.strftime(date_format), now.strftime(date_format)))
     return last_run_time.strftime(date_format), now.strftime(date_format)
 
 
@@ -10715,6 +10973,7 @@ def get_current_time(time_zone=0):
         demisto.debug('pytz is missing, will not return timeaware object.')
         return now
 
+
 def calculate_new_offset(old_offset, num_incidents, total_incidents):
     """ This calculates the new offset based on the response
 
@@ -10735,6 +10994,7 @@ def calculate_new_offset(old_offset, num_incidents, total_incidents):
     if total_incidents and num_incidents + old_offset >= total_incidents:
         return 0
     return old_offset + num_incidents
+
 
 def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limit, id_field):
     """
@@ -10834,10 +11094,13 @@ def remove_old_incidents_ids(found_incidents_ids, current_time, look_back):
 
         if current_time - addition_time <= deletion_threshold_in_seconds:
             new_found_incidents_ids[inc_id] = addition_time
-            demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
+            demisto.debug('lb: Adding incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(
+                inc_id, addition_time, deletion_threshold_in_seconds))
         else:
-            demisto.debug('lb: Removing incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(inc_id, addition_time, deletion_threshold_in_seconds))
-    demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(len(new_found_incidents_ids), new_found_incidents_ids.keys()))
+            demisto.debug('lb: Removing incident id: {}, its addition time: {}, deletion_threshold_in_seconds: {}'.format(
+                inc_id, addition_time, deletion_threshold_in_seconds))
+    demisto.debug('lb: Number of new found ids: {}, their ids: {}'.format(
+        len(new_found_incidents_ids), new_found_incidents_ids.keys()))
     return new_found_incidents_ids
 
 
@@ -10912,7 +11175,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :return: The new LastRun object
     :rtype: ``Dict``
     """
-    demisto.debug("lb: Create updated last run object, len(incidents) is {}," \
+    demisto.debug("lb: Create updated last run object, len(incidents) is {},"
                   "look_back is {}, fetch_limit is {}, new_offset is {}".format(len(incidents), look_back, fetch_limit, new_offset))
     remove_incident_ids = True
     new_limit = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
@@ -11190,7 +11453,8 @@ def xsiam_api_call_with_retries(
     response = None
 
     while status_code != 200 and attempt_num < num_of_attempts + 1:
-        demisto.debug('Sending {data_type} into xsiam, attempt number {attempt_num}'.format(data_type=data_type, attempt_num=attempt_num))
+        demisto.debug('Sending {data_type} into xsiam, attempt number {attempt_num}'.format(
+            data_type=data_type, attempt_num=attempt_num))
         # in the last try we should raise an exception if any error occurred, including 429
         ok_codes = (200, 429) if attempt_num < num_of_attempts else None
         response = client._http_request(
@@ -11227,7 +11491,7 @@ def split_data_to_chunks(data, target_chunk_size):
     :return: An iterable of lists where each list contains events with approx size of chunk size.
     :rtype: ``collections.Iterable[list]``
     """
-    target_chunk_size = min(target_chunk_size,  XSIAM_EVENT_CHUNK_SIZE_LIMIT)
+    target_chunk_size = min(target_chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
     chunk = []  # type: ignore[var-annotated]
     chunk_size = 0
     if isinstance(data, str):
@@ -11244,7 +11508,8 @@ def split_data_to_chunks(data, target_chunk_size):
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE):
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
+                         add_proxy_to_request=False):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -11272,10 +11537,27 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type chunk_size: ``int``
     :param chunk_size: Advanced - The maximal size of each chunk size we send to API. Limit of 9 MB will be inforced.
 
+    :type should_update_health_module: ``bool``
+    :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
+
+    :type add_proxy_to_request :``bool``
+    :param add_proxy_to_request: whether to add proxy to the send evnets request.
+
     :return: None
     :rtype: ``None``
     """
-    send_data_to_xsiam(events, vendor, product, data_format, url_key, num_of_attempts, chunk_size, data_type="events")
+    send_data_to_xsiam(
+        events,
+        vendor,
+        product,
+        data_format,
+        url_key,
+        num_of_attempts,
+        chunk_size,
+        data_type="events",
+        should_update_health_module=should_update_health_module,
+        add_proxy_to_request=add_proxy_to_request,
+    )
 
 
 def is_scheduled_command_retry():
@@ -11290,6 +11572,51 @@ def is_scheduled_command_retry():
     calling_context = demisto.callingContext.get('context', {})
     sm = get_schedule_metadata(context=calling_context)
     return True if sm.get('is_polling', False) else False
+
+
+def retry(
+    times=3,
+    delay=1,
+    exceptions=Exception,
+):
+    """
+    retries to execute a function until an exception isn't raised anymore.
+
+    :type times: ``int``
+    :param times: The number of times to trigger the retry mechanism.
+
+    :type delay: ``int``
+    :param delay: The time in seconds to sleep between each time
+
+    :type exceptions: ``Exception``
+    :param exceptions: The exceptions that should be caught when executing
+        the function (Union[tuple[type[Exception], ...], type[Exception]])
+
+    :return: Any
+    :rtype: ``Any``
+    """
+    def _retry(func):
+        func_name = func.__name__
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for i in range(1, times + 1):
+                demisto.debug("Running func {func_name} for the {time} time".format(func_name=func_name, time=i))
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as error:
+                    demisto.debug(
+                        "Error when executing func {func_name}, error: {error}, time {time}".format(
+                            func_name=func_name, error=error, time=i
+                        )
+                    )
+                    if i == times:
+                        raise
+                    time.sleep(delay)  # pylint: disable=sleep-exists
+
+        return wrapper
+
+    return _retry
 
 
 def replace_spaces_in_credential(credential):
@@ -11315,21 +11642,22 @@ def replace_spaces_in_credential(credential):
                       lambda match: match.group(0).replace(' ', '\n'), credential)
     return credential
 
+
 def has_passed_time_threshold(timestamp_str, seconds_threshold):
     """
     Checks if the time difference between the current time and the timestamp is greater than the threshold.
-    
+
     :type timestamp_str: ``str``
     :param timestamp_str: The timestamp to compare the current time to.
     :type seconds_threshold: ``int``
     :param seconds_threshold: The threshold in seconds.
-    
+
     :return: True if the time difference is greater than the threshold, otherwise False.
     :rtype: ``bool``
     """
     import pytz
     to_utc_timestamp = dateparser.parse(timestamp_str, settings={'TIMEZONE': 'UTC'})
-    # using astimezone since utcnow() returns a naive datetime object when unitesting  
+    # using astimezone since utcnow() returns a naive datetime object when unitesting
     current_time = datetime.now().astimezone(pytz.utc)
     if to_utc_timestamp:
         time_difference = current_time - to_utc_timestamp
@@ -11337,8 +11665,10 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
     else:
         raise ValueError("Failed to parse timestamp: {timestamp_str}".format(timestamp_str=timestamp_str))
 
+
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS):
+                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
+                       add_proxy_to_request=False):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -11368,6 +11698,13 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
 
     :type data_type: ``str``
     :param data_type: Type of data to send to Xsiam, events or assets.
+
+    :type should_update_health_module: ``bool``
+    :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
+        This can be useful when using send_data_to_xsiam in batches for the same fetch.
+
+    :type add_proxy_to_request: ``bool``
+    :param add_proxy_to_request: whether to add proxy to the send evnets request.
 
     :return: None
     :rtype: ``None``
@@ -11422,7 +11759,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         headers['snapshot-id'] = str(round(time.time() * 1000))
         headers['total-items-count'] = str(items_count)
 
-    header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type = data_type)
+    header_msg = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
 
     def data_error_handler(res):
         """
@@ -11452,7 +11789,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
 
-    client = BaseClient(base_url=xsiam_url)
+    client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
     for data_chunk in data_chunks:
         data_size += len(data_chunk)
@@ -11463,7 +11800,50 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True)
 
-    demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+    if should_update_health_module:
+        demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
+
+
+def comma_separated_mapping_to_dict(raw_text):
+    """
+     Transforming a textual comma-separated mapping into a dictionary object.
+
+    :type raw_text: ``str``
+    :param raw_text: Comma-separated mapping e.g ('key1=value1', 'key2=value2', ...)
+
+    :rtype: ``dict``
+    :return: Validated dictionary of the raw mapping e.g {'key1': 'value1', 'key2': 'value2', ...}
+    """
+    demisto.debug("comma_separated_mapping_to_dict "
+                  ">> Resolving comma-separated input mapping: {raw_text}".format(raw_text=raw_text))
+
+    mapping_dict = {}  # type: Dict[str, str]
+    # If a proper mapping was not provided, return an empty dict.
+    if not raw_text:
+        return mapping_dict
+
+    key_value_pairs = raw_text.split(',')
+
+    for pair in key_value_pairs:
+        # Trimming trailing whitespace
+        pair = pair.strip()
+
+        try:
+            key, value = pair.split('=')
+        except ValueError:
+            demisto.error("Error: Invalid mapping was provided. "
+                          "Expected comma-separated mapping of format `key1=value1, key2=value2, ...`")
+            key = value = ''
+
+        if key in mapping_dict:
+            demisto.debug(
+                "comma_separated_mapping_to_dict "
+                "Warning: duplicate key provided for {key}: using latter value: {value}".format(key=key, value=value)
+            )
+        mapping_dict[key] = value
+    demisto.debug("comma_separated_mapping_to_dict << Resolved mapping: {mapping_dict}".format(mapping_dict=mapping_dict))
+    return mapping_dict
+
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #

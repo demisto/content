@@ -120,6 +120,14 @@
 <td style="width: 589px;">Final priority of ticket</td>
 </tr>
 <tr>
+<td style="width: 132px;">member-of</td>
+<td style="width: 589px;">Ticket MembersOF links</td>
+</tr>
+<tr>
+<td style="width: 132px;">members</td>
+<td style="width: 589px;">Ticket Members links</td>
+</tr>
+<tr>
 <td style="width: 132px;">attachment</td>
 <td style="width: 589px;">
 <p>Comma separated list of entry IDs of attachment to add to the ticket (for example: entryID1,entryID2).</p>
@@ -462,6 +470,30 @@
 <tr>
 <td>status</td>
 <td>Modified ticket status.</td>
+</tr>
+<tr>
+<td style="width: 132px;">member-of</td>
+<td style="width: 589px;">Modified ticket MembersOF ID</td>
+</tr>
+<tr>
+<td style="width: 132px;">members</td>
+<td style="width: 589px;">Modified ticket Members ID</td>
+</tr>
+<tr>
+<td style="width: 132px;">depends-on</td>
+<td style="width: 589px;">Modified ticket DependedOn ID</td>
+</tr>
+<tr>
+<td style="width: 132px;">depended-on-by</td>
+<td style="width: 589px;">Modified ticket DependedOnBy ID</td>
+</tr>
+<tr>
+<td style="width: 132px;">refers-to</td>
+<td style="width: 589px;">Modified ticket RefersTo ID</td>
+</tr>
+<tr>
+<td style="width: 132px;">referred-to-by</td>
+<td style="width: 589px;">Modified ticket ReferredToBy ID</td>
 </tr>
 <tr>
 <td>due</td>

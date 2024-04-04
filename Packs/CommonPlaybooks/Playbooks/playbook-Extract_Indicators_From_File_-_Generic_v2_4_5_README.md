@@ -17,7 +17,7 @@ Supported file types:
 - DOTM
 - XLSB
 - DOT
-- PPSM
+- PPSM.
 
 ## Dependencies
 
@@ -33,12 +33,11 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* ExtractIndicatorsFromTextFile
 * ReadPDFFileV2
-* ConvertFile
 * ExtractIndicatorsFromWordFile
+* ExtractIndicatorsFromTextFile
 * SetAndHandleEmpty
-* Set
+* ConvertFile
 
 ### Commands
 
@@ -53,6 +52,7 @@ This playbook does not use any integrations.
 | File | The file to extract indicators from. | File | Optional |
 | Indicator Query | Indicators matching the indicator query will be used as playbook input |  | Optional |
 | Decode | Available values: "True" or "False". Default is "False"<br/>When this is set to "True", in case a macro was found within the file \(using oletools\), it will output all the obfuscated strings with their decoded content \(Hex, Base64, StrReverse, Dridex, VBA\). | False | Optional |
+| MaxImagesFromPDF | The maximum number of images that can be extracted from a PDF file.<br/>We recommend setting a low number if you don't need all images extracted from PDF files.<br/>If no value is specified, a default of 20 will be used. | 10 | Optional |
 
 ## Playbook Outputs
 

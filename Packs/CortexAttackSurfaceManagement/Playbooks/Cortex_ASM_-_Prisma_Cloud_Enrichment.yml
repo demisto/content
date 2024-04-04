@@ -44,14 +44,14 @@ tasks:
       id: 91810d09-5547-4519-8860-5d5821854b80
       version: -1
       name: Prisma Cloud - Find Public Cloud Resource by Public IP v2
-      playbookName: Prisma Cloud - Find Public Cloud Resource by Public IP v2
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Prisma Cloud - Find Public Cloud Resource by Public IP v2
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "19"
     scriptarguments:
       CloudProvider:
         complex:
@@ -96,13 +96,14 @@ tasks:
       '#none#':
       - "3"
       - "7"
+      - "23"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 470
+          "x": 340,
+          "y": 1400
         }
       }
     note: false
@@ -144,8 +145,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -30,
-          "y": 650
+          "x": -70,
+          "y": 1620
         }
       }
     note: false
@@ -175,8 +176,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 850
+          "x": 160,
+          "y": 1820
         }
       }
     note: false
@@ -197,10 +198,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "10"
@@ -222,8 +223,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 200,
-          "y": 990
+          "x": 160,
+          "y": 1960
         }
       }
     note: false
@@ -265,8 +266,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
-          "y": 650
+          "x": 820,
+          "y": 1620
         }
       }
     note: false
@@ -296,8 +297,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 870
+          "x": 1200,
+          "y": 1840
         }
       }
     note: false
@@ -318,10 +319,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "10"
@@ -357,8 +358,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 970,
-          "y": 1390
+          "x": 910,
+          "y": 2290
         }
       }
     note: false
@@ -377,10 +378,10 @@ tasks:
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
-      scriptName: Set
       type: regular
       iscommand: false
       brand: ""
+      script: Set
     nexttasks:
       '#none#':
       - "13"
@@ -396,8 +397,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1530
+          "x": 440,
+          "y": 2430
         }
       }
     note: false
@@ -424,8 +425,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 2200
+          "x": 440,
+          "y": 3100
         }
       }
     note: false
@@ -446,10 +447,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "11"
@@ -469,8 +470,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 290,
-          "y": 2000
+          "x": 230,
+          "y": 2900
         }
       }
     note: false
@@ -512,8 +513,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 1780
+          "x": 440,
+          "y": 2680
         }
       }
     note: false
@@ -534,10 +535,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "11"
@@ -557,8 +558,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 2000
+          "x": 650,
+          "y": 2900
         }
       }
     note: false
@@ -628,8 +629,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 1000
+          "x": 1200,
+          "y": 1970
         }
       }
     note: false
@@ -650,10 +651,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "10"
@@ -677,8 +678,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1380,
-          "y": 1390
+          "x": 1320,
+          "y": 2290
         }
       }
     note: false
@@ -699,10 +700,10 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "10"
@@ -724,8 +725,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 1400
+          "x": 1750,
+          "y": 2300
         }
       }
     note: false
@@ -769,8 +770,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1810,
-          "y": 1250
+          "x": 1750,
+          "y": 2150
         }
       }
     note: false
@@ -780,6 +781,458 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "19":
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: df44266c-def7-40d4-88df-b6c4b716314b
+      iscommand: false
+      name: Event search in Prisma Cloud
+      type: title
+      version: -1
+      description: ''
+    taskid: df44266c-def7-40d4-88df-b6c4b716314b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 500
+        }
+      }
+  "21":
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      execution-timeout:
+        simple: "1000"
+      limit:
+        simple: "1000"
+      query:
+        complex:
+          accessor: id
+          root: PrismaCloud.Attribution
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: event from cloud.audit_logs where operation in ( 'RunInstances') and json.rule = $.responseElements.instancesSet.items[0].instanceId contains '
+              suffix:
+                value:
+                  simple: ''''
+            operator: concat
+          - operator: uniq
+      time_range_unit:
+        simple: day
+      time_range_value:
+        simple: "30"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PrismaCloud v2
+      description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times.
+      id: df11dabe-f564-4489-8851-386518d6222a
+      iscommand: true
+      name: AWS Prisma Cloud Event Search
+      script: PrismaCloud v2|||prisma-cloud-event-search
+      type: regular
+      version: -1
+    taskid: df11dabe-f564-4489-8851-386518d6222a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 1120
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloud.Event.subject
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if there are any ownership information.
+      id: 732b724a-9bc8-45ba-8b73-81376381f8e8
+      iscommand: false
+      name: Are there an ownership related information from event search?
+      type: condition
+      version: -1
+    taskid: 732b724a-9bc8-45ba-8b73-81376381f8e8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": 1620
+        }
+      }
+  "25":
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmserviceownerunrankedraw
+      keys:
+        simple: name,email,source,timestamp
+      val1:
+        complex:
+          accessor: subject
+          root: PrismaCloud.Event
+          transformers:
+          - operator: uniq
+      val2:
+        simple: n/a
+      val3:
+        simple: PrismaCloud-Event
+      val4:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set asmserviceownerunrankedraw with ServiceNow user ID information.
+      id: e1f6a0d2-75cb-4dea-80bf-93b9afb833d8
+      iscommand: false
+      name: Set asmserviceownerunrankedraw (from event search)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: e1f6a0d2-75cb-4dea-80bf-93b9afb833d8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -700,
+          "y": 1960
+        }
+      }
+  "30":
+    continueonerrortype: ""
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      execution-timeout:
+        simple: "1000"
+      limit:
+        simple: "1000"
+      query:
+        complex:
+          accessor: id
+          root: PrismaCloud.Attribution
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: event from cloud.audit_logs where cloud.type = 'gcp' AND operation IN ( 'beta.compute.instances.insert' ) and json.rule = $.resource.labels.instance_id contains '
+              suffix:
+                value:
+                  simple: ''''
+            operator: concat
+          - operator: uniq
+      time_range_unit:
+        simple: day
+      time_range_value:
+        simple: "30"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PrismaCloud v2
+      description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times.
+      id: a9a9e693-d2e6-4420-8975-1897c3a7f323
+      iscommand: true
+      name: GCP Prisma Cloud Event Search
+      script: PrismaCloud v2|||prisma-cloud-event-search
+      type: regular
+      version: -1
+    taskid: a9a9e693-d2e6-4420-8975-1897c3a7f323
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1120
+        }
+      }
+  "31":
+    continueonerrortype: ""
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      execution-timeout:
+        simple: "1000"
+      limit:
+        simple: "1000"
+      query:
+        complex:
+          accessor: resourceName
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: PrismaCloud.Attribution.resourceType
+              operator: isEqualString
+              right:
+                value:
+                  simple: Instance
+          root: PrismaCloud.Attribution
+          transformers:
+          - args:
+              prefix:
+                value:
+                  simple: event from cloud.audit_logs where cloud.type = 'azure' AND operation = 'Create or Update Virtual Machine (EndRequest)' and json.rule = $.resourceId contains '
+              suffix:
+                value:
+                  simple: ''''
+            operator: concat
+          - operator: uniq
+      time_range_unit:
+        simple: day
+      time_range_value:
+        simple: "30"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: PrismaCloud v2
+      description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times.
+      id: 4d0cb4cb-ad3d-4dac-8a77-9b7c7c068c59
+      iscommand: true
+      name: Azure Prisma Cloud Event Search
+      script: PrismaCloud v2|||prisma-cloud-event-search
+      type: regular
+      version: -1
+    taskid: 4d0cb4cb-ad3d-4dac-8a77-9b7c7c068c59
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 1120
+        }
+      }
+  "34":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.cloudProvider
+          operator: inList
+          right:
+            value:
+              simple: AWS,Amazon Web Services,Amazon
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloud.Attribution.id
+          operator: isNotEmpty
+      label: AWS
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.cloudProvider
+          operator: inList
+          right:
+            value:
+              simple: Azure,Microsoft Azure
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: resourceName
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PrismaCloud.Attribution.resourceType
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Instance
+                root: PrismaCloud.Attribution
+          operator: isNotEmpty
+      label: Azure
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.cloudProvider
+          operator: inList
+          right:
+            value:
+              simple: GCP,Google Cloud Platform,Google
+      - - left:
+            iscontext: true
+            value:
+              simple: PrismaCloud.Attribution.id
+          operator: isNotEmpty
+      label: GCP
+    continueonerrortype: ""
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      AWS:
+      - "21"
+      Azure:
+      - "31"
+      GCP:
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Are there valid inputs and what is the Cloud service provider.
+      id: b1b34806-df04-4c23-80e5-dc67a50bdcd0
+      iscommand: false
+      name: Are there valid inputs and what is the Cloud service provider?
+      type: condition
+      version: -1
+    taskid: b1b34806-df04-4c23-80e5-dc67a50bdcd0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 845
+        }
+      }
+  "35":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: PrismaCloud v2
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if Prisma Cloud V2 is enabled.
+      id: 86e8a5b5-55d2-44d5-8983-904e9cf8a152
+      iscommand: false
+      name: Is Prisma Cloud V2 enabled?
+      type: condition
+      version: -1
+    taskid: 86e8a5b5-55d2-44d5-8983-904e9cf8a152
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 650
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
@@ -789,9 +1242,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2105,
-        "width": 2220,
-        "x": -30,
+        "height": 3005,
+        "width": 2830,
+        "x": -700,
         "y": 160
       }
     }
@@ -799,15 +1252,12 @@ view: |-
 inputs:
 - key: remoteIP
   value:
-    complex:
-      root: alert
-      accessor: remoteip
+    simple: ${alert.remoteip}
   required: true
   description: IP address of service.
   playbookInputQuery:
 - key: cloudProvider
-  value:
-    simple: GCP
+  value: {}
   required: false
   description: Cloud service provider.
   playbookInputQuery:

@@ -159,7 +159,7 @@ script:
     - contextPath: DHS.tlp
       description: The traffic light protocol.
       type: string
-  dockerimage: demisto/xml-feed:1.0.0.63829
+  dockerimage: demisto/xml-feed:1.0.0.87471
   feed: true
   runonce: false
   script: '-'

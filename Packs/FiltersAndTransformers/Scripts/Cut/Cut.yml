@@ -3,12 +3,11 @@ commonfields:
   version: -1
 name: Cut
 script: ''
-type: python
-subtype: python3
+type: javascript
 tags:
 - transformer
 - string
-comment: |
+comment: |-
   Cut a string by delimiter and return specific fields.
   Example
   =================
@@ -16,22 +15,21 @@ comment: |
   delimiter: "-"
   fields: "1,5"
 
-  return: "A-E"
+  return: "A-E".
 enabled: true
 args:
 - name: value
   required: true
-  description: Value to split
+  description: Value to split.
 - name: delimiter
   required: true
-  description: Delimiter to cut the string by. Pass '' to set delimiter to be empty string
+  description: Delimiter to cut the string by. Pass '' to set delimiter to be empty string.
 - name: fields
   required: true
-  description: 'Comma separated field numbers (e.g.: 1,5,7)'
+  description: 'Comma separated field numbers (e.g.: 1,5,7).'
   isArray: true
 scripttarget: 0
 runas: DBotWeakRole
 tests:
 - CutTransformerTest
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474

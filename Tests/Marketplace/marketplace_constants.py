@@ -35,6 +35,7 @@ XSOAR_SAAS_START_TAG = "<~XSOAR_SAAS>"
 XSOAR_SAAS_END_TAG = "</~XSOAR_SAAS>"
 XSOAR_ON_PREM_TAG = "<~XSOAR_ON_PREM>"
 XSOAR_ON_PREM_END_TAG = "</~XSOAR_ON_PREM>"
+COREPACKS_OVERRIDE_FILE_PATH = "Tests/Marketplace/corepacks_override.json"
 
 TAGS_BY_MP = {
     XSIAM_MP: (XSIAM_START_TAG, XSIAM_END_TAG),
@@ -95,12 +96,11 @@ class GCPConfig:
     STORAGE_CONTENT_PATH = "content"  # base path for content in gcs
     USE_GCS_RELATIVE_PATH = True  # whether to use relative path in uploaded to gcs images
     GCS_PUBLIC_URL = "https://storage.googleapis.com"  # disable-secrets-detection
-    TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
-    PRODUCTION_BUCKET = f"{TEST_XDR_PREFIX}marketplace-dist"
-    PRODUCTION_BUCKET_V2 = f"{TEST_XDR_PREFIX}marketplace-v2-dist"
-    CI_BUILD_BUCKET = f"{TEST_XDR_PREFIX}marketplace-ci-build"
-    PRODUCTION_PRIVATE_BUCKET = f"{TEST_XDR_PREFIX}marketplace-dist-private"
-    CI_PRIVATE_BUCKET = f"{TEST_XDR_PREFIX}marketplace-ci-build-private"
+    PRODUCTION_BUCKET = "marketplace-dist"
+    PRODUCTION_BUCKET_V2 = "marketplace-v2-dist"
+    CI_BUILD_BUCKET = "marketplace-ci-build"
+    PRODUCTION_PRIVATE_BUCKET = "marketplace-dist-private"
+    CI_PRIVATE_BUCKET = "marketplace-ci-build-private"
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
@@ -378,6 +378,8 @@ class PackStatus(enum.Enum):
     FAILED_PREPARING_INDEX_FOLDER = "Failed in preparing and cleaning necessary index files"
     FAILED_UPDATING_INDEX_FOLDER = "Failed updating index folder"
     FAILED_UPLOADING_PACK = "Failed in uploading pack zip to gcs"
+    FAILED_DOWNLOADING_PACK_FOLDER = "Failed in downloading the pack zip from gcs"
+    FAILED_UPDATING_PACK_FOLDER_METADATA = "Failed updating pack folder metadata"
     PACK_ALREADY_EXISTS = "Specified pack already exists in gcs under latest version"
     PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD = "Specific pack is not updated in current build"
     FAILED_REMOVING_PACK_SKIPPED_FOLDERS = "Failed to remove pack hidden and skipped folders"

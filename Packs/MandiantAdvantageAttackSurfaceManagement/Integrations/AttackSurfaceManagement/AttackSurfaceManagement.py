@@ -349,7 +349,9 @@ def get_remote_data_command(client: Client, args: dict):
     try:
         masm_id = parsed_args.remote_incident_id
 
-        new_incident_data = helper_create_incident(client.get_issue_details(masm_id), client.project_id)
+        issue_details = client.get_issue_details(masm_id)
+
+        new_incident_data = helper_create_incident(issue_details, client.project_id)
 
         notes = client.get_notes('issue', masm_id)
         notes_entries = []
@@ -365,6 +367,17 @@ def get_remote_data_command(client: Client, args: dict):
                     'Tags': ['note_from_ma_asm']
                 }
                 notes_entries.append(new_note)
+
+        if issue_details.get("status", "").lower().startswith("closed"):
+            notes_entries.append({
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeNotes': "Closed in Mandiant Advantage ASM",
+                    'closeReason': "Closed in Mandiant Advantage ASM"
+                },
+                'ContentsFormat': EntryFormat.JSON
+            })
 
         new_incident_data['id'] = masm_id
 

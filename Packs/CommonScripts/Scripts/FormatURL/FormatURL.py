@@ -89,15 +89,18 @@ class URLCheck:
             # The URL seems to have a scheme indicated by presence of "//" or "%3A"
             self.scheme_check()
 
-        try:
-            # First slash after the scheme (if exists)
-            first_slash = self.modified_url[self.base:].index("/")
+        host_end_position = -1
+        special_chars = ("/", "?", "#")  # Any one of these states the end of the host / authority part in a URL
 
-        except ValueError:
-            first_slash = -1
+        for char in special_chars:
+            try:
+                host_end_position = self.modified_url[self.base:].index(char)
+                break  # index for the end of the part found, breaking loop
+            except ValueError:
+                continue  # no reserved char found, URL has no path, query or fragment parts.
 
         try:
-            if "@" in self.modified_url[:first_slash]:
+            if "@" in self.modified_url[:host_end_position]:
                 # Checks if url has '@' sign in its authority part
 
                 self.user_info_check()
@@ -120,8 +123,12 @@ class URLCheck:
         if not self.done and self.fragment:
             self.fragment_check()
 
-        if self.quoted:
-            self.output = urllib.parse.unquote(self.output)
+        while '%' in self.output:
+            unquoted = urllib.parse.unquote(self.output)
+            if unquoted != self.output:
+                self.output = unquoted
+            else:
+                break
 
     def __str__(self):
         return f"{self.output}"
@@ -728,6 +735,9 @@ def _is_valid_cidr(cidr: str) -> bool:
         True if inout is a valid CIDR
 
     """
+    if not cidr[-1].isdigit():  # precaution incase the regex caught an extra char by mistake
+        cidr = cidr[:-1]
+
     try:
         ipaddress.ip_network(cidr)
         return True

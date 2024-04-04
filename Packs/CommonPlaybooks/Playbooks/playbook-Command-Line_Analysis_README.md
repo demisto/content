@@ -11,7 +11,7 @@ At the end of the playbook, it sets a possible verdict for the command line, bas
 5. Indication of network activity
 6. Indication of suspicious LOLBIN execution
 
-Note: In case you are wishing to run this playbook with a list of command lines, set this playbook to be running in a loop. To do so, navigate to the 'Loop'  and check "For Each Input".
+Note: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check "For Each Input".
 
 ## Dependencies
 
@@ -27,10 +27,10 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* DeleteContext
 * Set
-* Base64Decode
 * MatchRegexV2
+* DeleteContext
+* Base64Decode
 
 ### Commands
 
@@ -51,15 +51,21 @@ This playbook does not use any integrations.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| MatchRegex | The regex found in the command line | unknown |
-| Indicators | Indicators extracted from the command line | unknown |
-| commandline.original | The original command line | unknown |
-| commandline.decoded | The decoded command line | unknown |
-| CommandlineVerdict | The command line verdict | unknown |
+| MatchRegex | The regex found in the command line. | unknown |
+| Indicators | Indicators extracted from the command line. | unknown |
+| commandline.original | The original command line. | unknown |
+| commandline.decoded | The decoded command line. | unknown |
 | IP | The IP object. | unknown |
 | URL | The URL object. | uknown |
 | File | The file object. | unknown |
 | Domain | The domain object. | unknown |
+| CommandlineVerdict.base64 | Command line verdict base64 was found. True/False | unknown |
+| CommandlineVerdict.suspiciousParameters | Command line verdict suspicious parameters found. True/False | unknown |
+| CommandlineVerdict.AMSI | Command line verdict AMSI found. True/False | unknown |
+| CommandlineVerdict.foundIndicators | Command line verdict foundIndicators found. True/False | unknown |
+| CommandlineVerdict.maliciousTools | Command line verdict maliciousTools found. True/False | unknown |
+| CommandlineVerdict.networkActivity | Command line verdict networkActivity found. True/False | unknown |
+| CommandlineVerdict.SuspiciousLolbinExecution | Command line verdict SuspiciousLolbinExecution found. True/False | unknown |
 
 ## Playbook Image
 

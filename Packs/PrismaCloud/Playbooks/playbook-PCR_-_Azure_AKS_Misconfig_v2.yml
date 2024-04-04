@@ -524,12 +524,6 @@ view: |-
     }
   }
 inputs:
-- key: AutoRemediateAzureAKS
-  value:
-    simple: "no"
-  required: false
-  description: Execute Azure AKS remediation automatically?
-  playbookInputQuery:
 - key: policyId
   value:
     complex:
@@ -544,7 +538,28 @@ inputs:
               simple: policyId
   required: false
   description: Grab the Prisma Cloud policy ID.
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: AutoRemediateAzureAKS
+  value:
+    simple: "no"
+  required: false
+  description: Execute Azure AKS remediation automatically?
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - policyId
+  name: Incident Data
+  description: Relevant data regarding the incident.
+- inputs:
+  - AutoRemediateAzureAKS
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication,
+    and recovery.
+outputSections:
+- outputs:
+  - incident.labels.resource.name
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs:
 - contextPath: incident.labels.resource.name
   description: AKS cluster name.

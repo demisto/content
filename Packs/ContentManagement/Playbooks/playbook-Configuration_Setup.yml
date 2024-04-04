@@ -71,7 +71,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 545
+          "y": 555
         }
       }
     note: false
@@ -628,6 +628,8 @@ tasks:
       - '35'
       AzureDevOps:
       - "37"
+      GOOGLE CLOUD STORAGE:
+      - "39"
     separatecontext: false
     conditions:
     - label: Attachment
@@ -670,6 +672,16 @@ tasks:
           right:
             value:
               simple: AzureDevOps
+    - label: GOOGLE CLOUD STORAGE
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.configurationfilesource
+            iscontext: true
+          right:
+            value:
+              simple: GoogleCloudStorage
     view: |-
       {
         "position": {
@@ -1075,7 +1087,8 @@ tasks:
       ref:
         simple: ${incident.branchname}
       using:
-        simple: Gitlab Gold
+        complex:
+          root: inputs.GitlabInstanceName
     separatecontext: false
     view: |-
       {
@@ -1215,6 +1228,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 06f49ef0-a41e-4dc4-8b97-1cc696df593f
+    type: regular
+    task:
+      id: 06f49ef0-a41e-4dc4-8b97-1cc696df593f
+      version: -1
+      name: Get Configuration File from Google cloud storage
+      description: Retrieves object data into a file.
+      script: Google Cloud Storage|||gcs-download-file
+      type: regular
+      iscommand: true
+      brand: Google Cloud Storage
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      bucket_name:
+        simple: ${incident.cicds3bucketname}
+      object_name:
+        simple: ${incident.configfilepath}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -1232,6 +1282,11 @@ inputs:
   value: {}
   required: false
   description: Core REST API instance name to use.
+  playbookInputQuery:
+- key: GitlabInstanceName
+  value: {}
+  required: false
+  description: Gitlab instance name to use.
   playbookInputQuery:
 outputs: []
 tests:

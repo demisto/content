@@ -16,6 +16,12 @@ This integration was integrated and tested with version 1.0.1 of PhishTank.
 
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Best Practice
+When using the PhishTank V2 integration, we recommend that you use an engine to run the integration instance,
+and to use different engines for different tenants.
+You should open a platform feature request (FR) to request separate egress IPs for the different tenants.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.

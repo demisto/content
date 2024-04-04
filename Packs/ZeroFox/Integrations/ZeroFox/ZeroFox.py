@@ -4,7 +4,8 @@ from CommonServerPython import *
 
 """ IMPORTS  """
 from dateparser import parse as parse_date
-from typing import Any
+from datetime import datetime
+from typing import Any, TypedDict, BinaryIO
 from collections.abc import Callable
 from requests import Response
 from copy import deepcopy
@@ -14,6 +15,18 @@ import json
 """ GLOBALS / PARAMS  """
 FETCH_TIME_DEFAULT = "3 days"
 CLOSED_ALERT_STATUS = ["Closed", "Deleted"]
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
+MAX_ALERT_IDS_STORED = 200
+
+""" Types """
+FetchIncidentsStorage = TypedDict("FetchIncidentsStorage", {
+    "last_fetched": str,
+    "last_offset": str,
+    "first_run_at": str,
+    "last_modified_fetched": str,
+    "last_modified_offset": str,
+    "zf-ids": list[int],
+})
 
 
 """ CLIENT """
@@ -30,6 +43,7 @@ class ZFClient(BaseClient):
         }
         self.fetch_limit = fetch_limit
         self.only_escalated = only_escalated
+        self.auth_token = ""
 
     def api_request(
         self,
@@ -38,6 +52,7 @@ class ZFClient(BaseClient):
         headers_builder_type: str | None = 'api',
         params: dict[str, str] | None = None,
         data: dict[str, Any] | None = None,
+        files: dict[str, Any] | None = None,
         prefix: str | None = "1.0",
         empty_response: bool = False,
         error_handler: Callable[[Any], Any] | None = None,
@@ -50,6 +65,7 @@ class ZFClient(BaseClient):
         for each case
         :param params: The request's query parameters
         :param data: The request's body parameters
+        :param files: The request's files
         :param version: api prefix to consider, default is to use version '1.0'
         :param res_type: Selects the decoder of the response. It can be
         `json` (default), `xml`, `text`, `content`, `response`
@@ -76,6 +92,9 @@ class ZFClient(BaseClient):
                 )
             headers = header_builder()
 
+            if files:
+                headers.pop("Content-Type", None)
+
         return self._http_request(
             method=method,
             url_suffix=urljoin(pref_string, url_suffix),
@@ -85,6 +104,7 @@ class ZFClient(BaseClient):
             empty_valid_codes=(200, 201),
             return_empty_response=empty_response,
             error_handler=error_handler,
+            files=files,
         )
 
     def handle_auth_error(self, raw_response: Response):
@@ -101,6 +121,8 @@ class ZFClient(BaseClient):
         """
         :return: Returns the authorization token
         """
+        if self.auth_token:
+            return self.auth_token
         url_suffix: str = "/1.0/api-token-auth/"
         response_content = self.api_request(
             "POST",
@@ -110,8 +132,8 @@ class ZFClient(BaseClient):
             headers_builder_type=None,
             prefix=None,
         )
-        token = response_content.get("token", "")
-        return token
+        self.auth_token = response_content.get("token", "")
+        return self.auth_token
 
     def _get_new_access_token(self) -> str:
         url_suffix: str = "/auth/token/"
@@ -139,6 +161,7 @@ class ZFClient(BaseClient):
             "Authorization": f"Token {token}",
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "zf-source": "XSOAR",
         }
 
     def get_cti_request_header(self) -> dict[str, str]:
@@ -147,6 +170,7 @@ class ZFClient(BaseClient):
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
             "Accept": "application/json",
+            "zf-source": "XSOAR",
         }
 
     def get_policy_types(self) -> dict[str, Any]:
@@ -383,6 +407,46 @@ class ZFClient(BaseClient):
         )
         return response_content
 
+    def send_alert_attachment(
+        self,
+        alert_id: int,
+        file_name: str,
+        file_content: BinaryIO,
+        attachment_type: str
+    ) -> dict[str, Any]:
+        """
+        :param alert_id: The ID of the alert.
+        :param file_name: The name of the file.
+        :param file_content: The content of the file.
+        :param attachment_type: The type of the attachment.
+        :return: HTTP request content.
+        """
+        url_suffix = f"/alerts/{alert_id}/attachments/"
+        files = {
+            "file": (file_name, file_content),
+            "attachment_type": (None, attachment_type),
+        }
+        # request_body = {"attachment_type": attachment_type}
+
+        response_content = self.api_request(
+            'POST',
+            url_suffix,
+            files=files,
+        )
+        return response_content
+
+    def get_alert_attachments(self, alert_id: int) -> dict[str, Any]:
+        """
+        :param alert_id: The ID of the alert.
+        :return: HTTP request content.
+        """
+        url_suffix = f"/alerts/{alert_id}/attachments/"
+        response_content = self.api_request(
+            "GET",
+            url_suffix,
+        )
+        return response_content
+
     def get_cti_c2_domains(self, domain: str) -> dict[str, Any]:
         """
         :param domain: The domain to lookup in c2-domains CTI Feed
@@ -535,6 +599,7 @@ def alert_to_incident(alert: dict[str, Any]) -> dict[str, str]:
     incident = {
         "rawJSON": json.dumps(alert),
         "name": f"ZeroFox Alert {alert_id}",
+        "dbotMirrorId": str(alert_id),
         "occurred": alert.get("timestamp", ""),
     }
     return incident
@@ -609,9 +674,19 @@ def get_alert_contents(alert: dict[str, Any]) -> dict[str, Any]:
         "AlertType": alert.get("alert_type"),
         "OffendingContentURL": alert.get("offending_content_url"),
         "Assignee": alert.get("assignee"),
+        "Entity": {
+            "ID": get_nested_key(alert, ["entity", "id"]),
+            "Name": get_nested_key(alert, ["entity", "name"]),
+            "Image": get_nested_key(alert, ["entity", "image"]),
+        },
         "EntityID": get_nested_key(alert, ["entity", "id"]),
         "EntityName": get_nested_key(alert, ["entity", "name"]),
         "EntityImage": get_nested_key(alert, ["entity", "image"]),
+        "EntityTerm": {
+            "ID": get_nested_key(alert, ["entity_term", "id"]),
+            "Name": get_nested_key(alert, ["entity_term", "name"]),
+            "Deleted": get_nested_key(alert, ["entity_term", "deleted"]),
+        },
         "EntityTermID": get_nested_key(alert, ["entity_term", "id"]),
         "EntityTermName": get_nested_key(alert, ["entity_term", "name"]),
         "EntityTermDeleted": get_nested_key(alert, ["entity_term", "deleted"]),
@@ -619,6 +694,14 @@ def get_alert_contents(alert: dict[str, Any]) -> dict[str, Any]:
         "ID": alert.get("id"),
         "ProtectedAccount": alert.get("protected_account"),
         "RiskRating": severity_num_to_string(int(alert.get("severity", ""))),
+        "Perpetrator": {
+            "Name": get_nested_key(alert, ["perpetrator", "name"]),
+            "Url": get_nested_key(alert, ["perpetrator", "url"]),
+            "TimeStamp": get_nested_key(alert, ["perpetrator", "timestamp"]),
+            "Type": get_nested_key(alert, ["perpetrator", "type"]),
+            "ID": get_nested_key(alert, ["perpetrator", "id"]),
+            "Network": get_nested_key(alert, ["perpetrator", "network"]),
+        },
         "PerpetratorName": get_nested_key(alert, ["perpetrator", "name"]),
         "PerpetratorUrl": get_nested_key(alert, ["perpetrator", "url"]),
         "PerpetratorTimeStamp": get_nested_key(
@@ -1017,6 +1100,89 @@ def get_exploits_content(
     return exploits_content
 
 
+def get_incidents_data(
+    client: ZFClient,
+    params: dict[str, Any],
+    is_valid_alert: Callable[[dict[str, Any]], bool] | None = None,
+    timestamp_field: str = "timestamp"
+) -> tuple[list[dict[str, Any]], str, str | None, list[int]]:
+    incidents: list[dict[str, Any]] = []
+    next_offset = "0"
+
+    response_content = client.list_alerts(params)
+    alerts: list[dict[str, Any]] = response_content.get("alerts", [])
+
+    if not alerts:
+        return incidents, next_offset, None, []
+
+    integration_instance = demisto.integrationInstance()
+    processed_alerts: list[dict[str, Any]] = []
+    for alert in alerts:
+        if is_valid_alert and not is_valid_alert(alert):
+            continue
+        # Fields for mirroring alert
+        alert["mirror_direction"] = "In"
+        alert["mirror_instance"] = integration_instance
+
+        processed_alerts.append(alert)
+        incident = alert_to_incident(alert)
+        incidents.append(incident)
+
+    next_page: str = response_content.get("next", "")
+    if next_page:
+        parsed_next_page = urlparse.urlparse(next_page)
+        parsed_query = urlparse.parse_qs(parsed_next_page.query)
+        next_offset = parsed_query.get("offset", ["0"])[0]
+
+    # last_alert_timestamp is the oldest timestamp in alerts
+    parsed_last_alert: str = params.get('min_timestamp') or params.get('last_modified_min_date') or ""
+    parsed_last_alert_timestamp = parse_date(
+        parsed_last_alert,
+        date_formats=(DATE_FORMAT,),
+    )
+    if parsed_last_alert_timestamp is None:
+        raise ValueError("Incorrect timestamp in params of fetch-incidents")
+    for alert in processed_alerts:
+        alert_timestamp_str: str = alert.get(timestamp_field, "")
+        alert_timestamp = parse_date(
+            alert_timestamp_str,
+            date_formats=(DATE_FORMAT,),
+        )
+        if alert_timestamp is None:
+            raise ValueError("Incorrect timestamp in alert of fetch-incidents")
+        alert_timestamp = alert_timestamp.replace(tzinfo=None)
+        if alert_timestamp > parsed_last_alert_timestamp:
+            parsed_last_alert_timestamp = alert_timestamp
+
+    # add 1 millisecond to last alert timestamp,
+    # in order to prevent duplicated alerts
+    if parsed_last_alert_timestamp is None:
+        raise ValueError("Incorrect timestamp in last alert of fetch-incidents")
+    max_update_time = (
+        parsed_last_alert_timestamp + timedelta(milliseconds=1)
+    ).strftime(DATE_FORMAT)
+
+    def get_alert_ids(alert: dict[str, Any]) -> int:
+        return alert.get("id") or 0
+    processed_alerts_ids: list[int] = list(map(get_alert_ids, processed_alerts))
+
+    return incidents, next_offset, max_update_time, processed_alerts_ids
+
+
+def parse_last_fetched_date(
+    last_fetched_str: str | None,
+    first_fetch_time: str
+) -> datetime:
+    # If no last_fetched present, use default value
+    if not last_fetched_str:
+        last_fetched_str = first_fetch_time
+    last_fetched = parse_date(last_fetched_str, date_formats=(DATE_FORMAT,))
+    # If last_fetched is invalid, raise ValueError
+    if last_fetched is None:
+        raise ValueError("last_fetched param is invalid")
+    return last_fetched
+
+
 """ COMMANDS """
 
 
@@ -1030,73 +1196,85 @@ def test_module(client: ZFClient) -> str:
 
 def fetch_incidents(
     client: ZFClient,
-    last_run: dict[str, str],
+    last_run: FetchIncidentsStorage,
     first_fetch_time: str
-) -> tuple[dict[str, str], list[dict[str, Any]]]:
-    date_format = "%Y-%m-%dT%H:%M:%S.%f"
-    last_fetched = last_run.get("last_fetched")
-    last_offset_str: str = last_run.get("last_offset", "")
-    if last_fetched is None:
-        last_fetched = first_fetch_time
-    last_fetched = parse_date(last_fetched, date_formats=(date_format,))
-    last_offset = int(last_offset_str) if last_offset_str else 0
-    if last_fetched is None:
-        raise ValueError("last_fetched param is invalid")
+) -> tuple[FetchIncidentsStorage, list[dict[str, Any]]]:
+    # Last fetched date
+    last_fetched_str = last_run.get("last_fetched", "")
+    last_fetched = parse_last_fetched_date(last_fetched_str, first_fetch_time)
+    last_fetched_str = last_fetched.strftime(DATE_FORMAT)
 
-    response_content = client.list_alerts(
-        {
-            "sort_direction": "asc",
-            "min_timestamp": last_fetched,
-            "offset": last_offset,
-        }
-    )
-    alerts: list[dict[str, Any]] = response_content.get("alerts", [])
+    # Saved offset of last run
+    last_offset_str: str = last_run.get("last_offset", "0")
+    last_offset = int(last_offset_str)
 
-    next_run = {
-        "last_fetched": last_fetched.strftime(date_format),
-        "last_offset": str(last_offset),
+    # Date of first run
+    first_run_at_str = last_run.get("first_run_at", "")
+    first_run_at = parse_last_fetched_date(first_run_at_str, first_fetch_time)
+
+    # Last modified fetch date
+    last_modified_fetched_str = last_run.get("last_modified_fetched", "")
+    last_modified_fetched = parse_last_fetched_date(last_modified_fetched_str, first_fetch_time)
+    last_modified_fetched_str = last_modified_fetched.strftime(DATE_FORMAT)
+
+    # Saved modified alerts offset of last run
+    last_modified_offset_str: str = last_run.get("last_modified_offset", "0")
+    last_modified_offset = int(last_modified_offset_str)
+
+    # ZeroFox Alert IDs previously created
+    zf_ids: list[int] = last_run.get("zf-ids", [])
+
+    next_run: FetchIncidentsStorage = {
+        "last_fetched": last_fetched_str,
+        "last_offset": last_offset_str,
+        "first_run_at": first_run_at.strftime(DATE_FORMAT),
+        "last_modified_fetched": last_modified_fetched_str,
+        "last_modified_offset": last_modified_offset_str,
+        "zf-ids": zf_ids,
     }
-    incidents: list[dict[str, Any]] = []
 
-    if not alerts:
-        return next_run, incidents
-
-    integration_instance = demisto.integrationInstance()
-    for alert in alerts:
-        # Fields for mirroring alert
-        alert["mirror_direction"] = "In"
-        alert["mirror_instance"] = integration_instance
-
-        incident = alert_to_incident(alert)
-        incidents.append(incident)
-
-    next_page: str = response_content.get("next", "")
-    if next_page:
-        parsed_next_page = urlparse.urlparse(next_page)
-        parsed_query = urlparse.parse_qs(parsed_next_page.query)
-        next_run["last_offset"] = parsed_query.get("offset", ["0"])[0]
-        return next_run, incidents
-
-    # max_update_time is the timestamp of the last alert in alerts
-    # (alerts is a sorted list by timestamp)
-    last_alert_timestamp = alerts[-1].get("timestamp", "")
-
-    # add 1 millisecond to last alert timestamp,
-    # in order to prevent duplicated alerts
-    parsed_last_alert_timestamp = parse_date(
-        last_alert_timestamp,
-        date_formats=(date_format,),
+    # Fetch new alerts
+    params = {
+        "min_timestamp": last_fetched.strftime(DATE_FORMAT),
+        "sort_direction": "asc",
+        "offset": last_offset,
+    }
+    incidents, next_offset, oldest_timestamp, alert_ids = get_incidents_data(
+        client=client,
+        params=params,
     )
-    if parsed_last_alert_timestamp is None:
-        raise ValueError("Incorrect timestamp in last alert "
-                         "of fetch-incidents")
-    max_update_time = (
-        parsed_last_alert_timestamp + timedelta(milliseconds=1)
-    ).strftime(date_format)
-    next_run["last_fetched"] = max_update_time
-    next_run["last_offset"] = "0"
+    if len(incidents) > 0:
+        ingested_alert_ids = alert_ids + zf_ids
+        next_run["zf-ids"] = ingested_alert_ids[:MAX_ALERT_IDS_STORED]
+        next_run["last_offset"] = next_offset
+        if next_offset == "0" and oldest_timestamp:
+            next_run["last_fetched"] = oldest_timestamp
+        return next_run, incidents
 
-    return next_run, incidents
+    # If no new alerts, fetch modified alerts
+    params = {
+        "last_modified_min_date": last_modified_fetched.strftime(DATE_FORMAT),
+        "sort_direction": "asc",
+        "offset": last_modified_offset,
+    }
+
+    def is_not_a_new_alert(alert):
+        return alert.get("id") not in zf_ids
+    incidents, next_offset, oldest_timestamp, alert_ids = get_incidents_data(
+        client=client,
+        params=params,
+        is_valid_alert=is_not_a_new_alert,
+        timestamp_field="last_modified",
+    )
+    if len(incidents) > 0:
+        ingested_alert_ids = alert_ids + zf_ids
+        next_run["zf-ids"] = ingested_alert_ids[:MAX_ALERT_IDS_STORED]
+        next_run["last_modified_offset"] = next_offset
+        if next_offset == "0" and oldest_timestamp:
+            next_run["last_modified_fetched"] = oldest_timestamp
+        return next_run, incidents
+
+    return next_run, []
 
 
 def get_modified_remote_data_command(
@@ -1531,6 +1709,64 @@ def submit_threat_command(
     )
 
 
+def send_alert_attachment_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    alert_id: int = args.get("alert_id", "")
+    entry_id: str = args.get("entry_id", "")
+    attachment_type: str = args.get("attachment_type", "")
+
+    if not alert_id or not entry_id or not attachment_type:
+        raise ValueError("alert_id, entry_id and attachment_type are required")
+
+    entry = demisto.getFilePath(entry_id)
+
+    with open(entry["path"], "rb") as file:
+        client.send_alert_attachment(
+            alert_id, entry["name"], file, attachment_type,
+        )
+
+    response_content = client.get_alert(alert_id)
+    alert: dict[str, Any] = response_content.get("alert", {})
+    contents = get_alert_contents(alert)
+
+    return CommandResults(
+        readable_output="Attachment sent successfully",
+        outputs=contents,
+        outputs_prefix="ZeroFox.Alert",
+        outputs_key_field="ID",
+    )
+
+
+def get_alert_attachments_command(
+    client: ZFClient,
+    args: dict[str, Any]
+) -> CommandResults:
+    alert_id: int = args.get("alert_id", "")
+    response_content = client.get_alert_attachments(alert_id)
+    attachments: list[dict[str, Any]] = response_content.get("attachments", [])
+    human_readable = []
+    for attachment in attachments:
+        attachment_id: int = attachment.get("id", "")
+        attachment_name: str = attachment.get("name", "")
+        human_readable.append({
+            "ID": attachment_id,
+            "Name": attachment_name,
+        })
+    headers = ["ID", "Name"]
+    return CommandResults(
+        outputs=attachments,
+        readable_output=tableToMarkdown(
+            "ZeroFox Alert Attachments",
+            human_readable,
+            headers=headers,
+            removeNull=True,
+        ),
+        outputs_prefix="ZeroFox.AlertAttachments",
+    )
+
+
 def compromised_domain_command(
     client: ZFClient,
     args: dict[str, Any]
@@ -1687,6 +1923,8 @@ def main():
     commands: dict[str, Callable[[ZFClient, dict[str, Any]], Any]] = {
         "get-modified-remote-data": get_modified_remote_data_command,
         "get-remote-data": get_remote_data_command,
+
+        # ZeroFox Alerts
         "zerofox-get-alert": get_alert_command,
         "zerofox-alert-user-assignment": alert_user_assignment_command,
         "zerofox-close-alert": close_alert_command,
@@ -1701,6 +1939,10 @@ def main():
         "zerofox-get-policy-types": get_policy_types_command,
         "zerofox-modify-alert-notes": modify_alert_notes_command,
         "zerofox-submit-threat": submit_threat_command,
+        "zerofox-send-alert-attachment": send_alert_attachment_command,
+        "zerofox-get-alert-attachments": get_alert_attachments_command,
+
+        # ZeroFox CTI Feed
         "zerofox-search-compromised-domain": compromised_domain_command,
         "zerofox-search-compromised-email": compromised_email_command,
         "zerofox-search-malicious-ip": malicious_ip_command,

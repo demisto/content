@@ -15,7 +15,7 @@ filter _raw_log ~= "^\<\d+\>\w+\s+\d+\s+\d+\:\d+\:\d+"
 | alter tmp_current_year_timestamp_datetime = parse_timestamp("%Y %b %e %H:%M:%S", tmp_current_year_timestamp_string)
 
 // check if the calculated date is in the future (due to year transitioning during log ingestion )
-| alter tmp_time_difference = timestamp_diff(tmp_current_year_timestamp_datetime, current_time(), "DAY")
+| alter tmp_time_difference = timestamp_diff(tmp_current_year_timestamp_datetime, current_time(), "MILLISECOND")
 
 // calculate previous year
 | alter tmp_previous_year = if(tmp_time_difference > 0, to_string(subtract(to_integer(tmp_current_year), 1)), null)

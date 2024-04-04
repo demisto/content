@@ -74,7 +74,7 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.86272
   isfetch: true
   runonce: false
   script: "-"
@@ -2392,6 +2392,13 @@ script:
     - name: offset
       description: The offset by which to begin listing container scan reports.
       defaultValue: "0"
+    - auto: PREDEFINED
+      name: all_results
+      description: Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often.
+      defaultValue: "false"
+      predefined:
+        - "true"
+        - "false"
     outputs:
     - contextPath: PrismaCloudCompute.ContainersScanResults._id
       description: The container scan ID.
@@ -2722,6 +2729,181 @@ script:
     - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.provider
       description: The provider of the container.
       type: String
+  - name: prisma-cloud-compute-archive-audit-incident
+    description: Acknowledges an incident and moves it to an archived state.
+    arguments:
+      - name: incident_id
+        description: Incident ID.
+        isArray: false
+        required: true
+      - auto: PREDEFINED
+        name: action
+        description: Action for the command. archive - incident will be archived, unarchive - incident will be unarchived.
+        predefined:
+          - "archive"
+          - "unarchive"
+        defaultValue: "archive"
+  - name: prisma-cloud-compute-runtime-host-audit-events-list
+    description: Retrieves the runtime host audit events.
+    arguments:
+      - name: clusters
+        description: A comma-separated list of cluster names.
+        isArray: true
+      - name: namespaces
+        description: A comma-separated list of namespace names.
+        isArray: true
+      - name: audit_id
+        description: A comma-separated list of audit event IDs.
+        isArray: true
+      - name: profile_id
+        description: A comma-separated list of runtime profile IDs.
+        isArray: true
+      - name: image_name
+        description: A comma-separated list of image names.
+        isArray: true
+      - name: container
+        description: A comma-separated list of container names.
+        isArray: true
+      - name: container_id
+        description: A comma-separated list of container IDs.
+        isArray: true
+      - name: type
+        description: A comma-separated list of audit event types.
+        isArray: true
+      - name: effect
+        description: A comma-separated list of audit event effects.
+        isArray: true
+      - name: user
+        description: A comma-separated list of users.
+        isArray: true
+      - name: os
+        description: A comma-separated list of operating systems.
+        isArray: true
+      - name: app
+        description: A comma-separated list of applications.
+        isArray: true
+      - name: hostname
+        description: A comma-separated list of hostnames.
+        isArray: true
+      - name: time
+        description: Time is used to filter by audit time, format '%Y-%m-%dT%H:%M:%S.%SZ'.
+      - name: attack_type
+        description: AttackTypes is used to filter by runtime audit attack type.
+      - name: limit
+        description: The maximum number of container scan reports to return. Must be between 1-50.
+        defaultValue: "50"
+      - name: offset
+        description: The offset by which to begin listing container scan reports.
+        defaultValue: "0"
+      - auto: PREDEFINED
+        name: all_results
+        description: Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often.
+        defaultValue: "false"
+        predefined:
+          - "true"
+          - "false"
+    outputs:
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents._id
+        description: The audit event ID.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.accountID
+        description: The account ID of the container.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.app
+        description: The app.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.attackType
+        description: The attack type.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.attackTechniques
+        description: Attack technique of the event.
+        type: Unknown
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.collections
+        description: The collections.
+        type: Unknown
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.command
+        description: The command of the audit event.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.count
+        description: The count of audit events.
+        type: Number
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.effect
+        description: The audit event effect.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.filepath
+        description: The file path of the audit event.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.fqdn
+        description: The fully qualified domain name used in the audit event.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.events.hostname
+        description: The hostname on which the command was invoked.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.md5
+        description: The MD5 hash of the file.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.msg
+        description: The audit event message.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.pid
+        description: The process ID.
+        type: Number
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.processPath
+        description: The process path.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.profileId
+        description: The profile ID.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.provider
+        description: The provider of the container.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.region
+        description: The region of the container.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.resourceID
+        description: The resource ID of the event.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.ruleName
+        description: The rule name.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.severity
+        description: The severity of the audit event.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.time
+        description: The audit event time.
+        type: Date
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.type
+        description: The audit event type.
+        type: String
+      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.user
+        description: The audited event user.
+        type: String
+  - name: prisma-cloud-compute-runtime-container-policy-list
+    description: Retrieves the runtime policy for containers protected by Defender. A policy consists of ordered rules.
+    arguments:
+      - auto: PREDEFINED
+        name: all_results
+        description: Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often.
+        defaultValue: "false"
+        predefined:
+          - "true"
+          - "false"
+      - name: limit
+        description: The maximum number of container scan reports to return. Must be between 1-50.
+        defaultValue: "50"
+      - name: offset
+        description: The offset by which to begin listing container scan reports.
+        defaultValue: "0"
+    outputs:
+      - contextPath: PrismaCloudCompute.Policies.RuntimeContainerPolicy.name
+        description: The audit event time.
+        type: Date
+      - contextPath: PrismaCloudCompute.Policies.RuntimeContainerPolicy.owner
+        description: The audit event type.
+        type: String
+      - contextPath: PrismaCloudCompute.Policies.RuntimeContainerPolicy.modified
+        description: The audited event modified time.
+        type: Date
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0

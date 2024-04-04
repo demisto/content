@@ -489,6 +489,11 @@ inputs:
   required: false
   description: The username to investigate.
   playbookInputQuery:
+- key: cloudProvider
+  value: {}
+  required: false
+  description: The cloud service provider involved.
+  playbookInputQuery:
 - key: AzureSearchTime
   value:
     simple: ago(1d)
@@ -513,22 +518,78 @@ inputs:
   required: false
   description: "The Search Time for the `GetTime` task used by the Aws Cloud Trail search query. \nThis value represents the number of days to include in the search.\nDefault value: 1.  (1 Day)"
   playbookInputQuery:
-- key: GcpProjectName
-  value: {}
-  required: false
-  description: The GCP project name. This is a mandatory field for GCP queries.
-  playbookInputQuery:
 - key: GcpTimeSearchFrom
   value:
     simple: "1"
   required: false
   description: "The Search Time for the `GetTime` task used by the GCP Logging search query. \nThis value represents the number of days to include in the search.\nDefault value: 1.  (1 Day)"
   playbookInputQuery:
-- key: cloudProvider
+- key: GcpProjectName
   value: {}
   required: false
-  description: The cloud service provider involved.
+  description: The GCP project name. This is a mandatory field for GCP queries.
   playbookInputQuery:
+inputSections:
+- inputs:
+  - Username
+  - cloudProvider
+  name: Incident Management
+  description: Incident management settings and data, including escalation processes, user engagements, and ticketing methods.
+- inputs:
+  - AzureSearchTime
+  - failedLogonThreshold
+  - MfaAttemptThreshold
+  name: Azure Investigation
+  description: Azure Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - AwsTimeSearchFrom
+  name: AWS Investigation
+  description: AWS Investigation settings and data, including any deep dive incident investigation and verdict determination.
+- inputs:
+  - GcpTimeSearchFrom
+  - GcpProjectName
+  name: GCP Investigation
+  description: GCP Investigation settings and data, including any deep dive incident investigation and verdict determination.
+outputSections:
+- outputs:
+  - AwsMFAConfigCount
+  - AwsUserRoleChangesCount
+  - AwsSuspiciousActivitiesCount
+  - AwsScriptBasedUserAgentCount
+  - AwsAccessKeyActivitiesCount
+  - AwsSecurityChangesCount
+  - AwsAdminActivitiesCount
+  - AwsApiAccessDeniedCount
+  - AwsFailedLogonCount
+  - GcpAnomalousNetworkTraffic
+  - GcpSuspiciousApiUsage
+  - GcpFailLogonCount
+  - GsuiteFailLogonCount
+  - GsuiteUnusualLoginAllowedCount
+  - GsuiteUnusualLoginBlockedCount
+  - GsuiteSuspiciousLoginCount
+  - GsuiteUserPasswordLeaked
+  - AzureScriptBasedUserAgentEvents
+  - AzureAdminActivitiesEvents
+  - AzureSecurityRulesChangeEvents
+  - AzureUnsuccessSecurityRulesChangeEvents
+  - AzureFailLoginCount
+  - AzureFailLoginMFACount
+  - AzureAnomaliesEvents
+  - AzureRiskyUserCount
+  - AzureUncommonCountryLogonEvents
+  - AzureUncommonVolumeEvents
+  - AzureUncommonActivitiesEvents
+  - CountAzureEvents.AzureScriptBasedUserAgentCount
+  - CountAzureEvents.AzureAdminActivitiesCount
+  - CountAzureEvents.AzureSecurityRulesChangeCount
+  - CountAzureEvents.AzureUnsuccessSecurityRulesChangeCount
+  - CountAzureEvents.AzureAnomaliesCount
+  - CountAzureEvents.AzureUncommonCountryLogonCount
+  - CountAzureEvents.AzureUncommonVolumeCount
+  - CountAzureEvents.AzureUncommonActivitiesCount
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs:
 - contextPath: AwsMFAConfigCount
   description: The number of MFA configurations performed by the user in the AWS environment.

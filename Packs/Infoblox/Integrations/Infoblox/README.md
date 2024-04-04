@@ -1,180 +1,100 @@
-<p>
-Infoblox enables you to receive metadata about IPs in your network and manages the DNS Firewall by configuring RPZs. It defines RPZ rules to block DNS resolution for malicious or unauthorized hostnames, or redirect clients to a walled garden by substituting responses.
+Infoblox enables you to receive metadata about IPs in your network and manages the DNS Firewall by configuring RPZs. It defines RPZ rules to block DNS resolution for malicious or unauthorized hostnames, or redirect clients to a walled garden by substituting responses. This integration was integrated and tested with version V2 of Infoblox
 
-This integration was integrated and tested with version V2 of Infoblox
-</p>
-<h2>Configure Infoblox on XSOAR</h2>
-<h5>Required Permissions</h5>
-<p>The API supports only HTTP Basic Authentication. Every user must have permissions that grants them access to the API.</p>
+Configure Infoblox on XSOAR
+---------------------------
 
-<ol>
-  <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
-  &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for Infoblox.</li>
-  <li>
-    Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
-    <ul>
-      <li><strong>Name</strong>: a textual name for the integration instance.</li>
-   <li><strong>Server URL (e.g. https://example.net)</strong></li>
-   <li><strong>User Name</strong></li>
-   <li><strong>Password</strong></li>
-   <li><strong>Trust any certificate (not secure)</strong></li>
-   <li><strong>Use system proxy settings</strong></li>
-    </ul>
-  </li>
-  <li>
-    Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
-  </li>
-</ol>
-<h2>Commands</h2>
-<p>
-  You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook.
-  After you successfully execute a command, a DBot message appears in the War Room with the command details.
-</p>
-<ol>
-  <li><a href="#infoblox-get-ip" target="_self">Get IP info: infoblox-get-ip</a></li>
-  <li><a href="#infoblox-search-related-objects-by-ip" target="_self">Searches IP related objects by a given IP: infoblox-search-related-objects-by-ip</a></li>
-  <li><a href="#infoblox-list-response-policy-zone-rules" target="_self">Lists all response policy rules that belong to the given response policy zone: infoblox-list-response-policy-zone-rules</a></li>
-  <li><a href="#infoblox-list-response-policy-zones" target="_self">List all response policy zones: infoblox-list-response-policy-zones</a></li>
-  <li><a href="#infoblox-create-response-policy-zone" target="_self">Creates a response policy zone: infoblox-create-response-policy-zone</a></li>
-  <li><a href="#infoblox-create-rpz-rule" target="_self">Creates a response policy rule: infoblox-create-rpz-rule</a></li>
-  <li><a href="#infoblox-create-a-substitute-record-rule" target="_self">Creates a substitute record rule: infoblox-create-a-substitute-record-rule</a></li>
-  <li><a href="#infoblox-create-aaaa-substitute-record-rule" target="_self">Creates a substitute rule for an AAAA record: infoblox-create-aaaa-substitute-record-rule</a></li>
-  <li><a href="#infoblox-create-mx-substitute-record-rule" target="_self">Creates a substitute rule for the MX record: infoblox-create-mx-substitute-record-rule</a></li>
-  <li><a href="#infoblox-create-naptr-substitute-record-rule" target="_self">Creates a substitute rule for a NAPTR record: infoblox-create-naptr-substitute-record-rule</a></li>
-  <li><a href="#infoblox-create-ptr-substitute-record-rule" target="_self">Creates a substitute rule of the PTR record: infoblox-create-ptr-substitute-record-rule</a></li>
-  <li><a href="#infoblox-create-srv-substitute-record-rule" target="_self">Creates a substitute rule of a SRV record: infoblox-create-srv-substitute-record-rule</a></li>
-  <li><a href="#infoblox-create-txt-substitute-record-rule" target="_self">Create a substitute rule for a txt record: infoblox-create-txt-substitute-record-rule</a></li>
-  <li><a href="#infoblox-create-ipv4-substitute-record-rule" target="_self">Create a substitute rule for an IPv4 rule: infoblox-create-ipv4-substitute-record-rule</a></li>
-  <li><a href="#infoblox-create-ipv6-substitute-record-rule" target="_self">Creates a substitute of the IPv6 record rule: infoblox-create-ipv6-substitute-record-rule</a></li>
-  <li><a href="#infoblox-enable-rule" target="_self">Disables a rule by its reference ID (reference ID could be extracted by running the searah rules command): infoblox-enable-rule</a></li>
-  <li><a href="#infoblox-disable-rule" target="_self">Disable a rule by its reference ID (reference ID could be extracted by running the 'infoblox-search-rule' command): infoblox-disable-rule</a></li>
-  <li><a href="#infoblox-get-object-fields" target="_self">Returns the object fields names which can be used in the search rules command: infoblox-get-object-fields</a></li>
-  <li><a href="#infoblox-search-rule" target="_self">Searches a specific rule by its name: infoblox-search-rule</a></li>
-  <li><a href="#infoblox-delete-rpz-rule" target="_self">Deletes a rule: infoblox-delete-rpz-rule</a></li>
-  <li><a href="#infoblox-delete-response-policy-zone" target="_self">Deletes a given response policy zone: infoblox-delete-response-policy-zone</a></li>
-</ol>
-<h3 id="infoblox-get-ip">1. infoblox-get-ip</h3>
-<hr>
-<p>Get IP info</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-get-ip</code>
-</p>
+##### Required Permissions
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>ip</td>
-      <td>The IP address for which to retrieve information.</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+The API supports only HTTP Basic Authentication. Every user must have permissions that grants them access to the API.
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.IP.ReferenceID</td>
-      <td>number</td>
-      <td>Reference ID of the object.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.IP.MacAddress</td>
-      <td>string</td>
-      <td>The Mac address of the IP.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.IP.Network</td>
-      <td>string</td>
-      <td>The network that the IP belongs, in FQDN/CIDR format.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.IP.NetworkView</td>
-      <td>string</td>
-      <td>The name of the network view.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.IP.Status</td>
-      <td>string</td>
-      <td>The current status of the address.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.IP.IsConflict</td>
-      <td>string</td>
-      <td>Whether the IP address has either a MAC address conflict or a DHCP lease conflict detected through a network discovery (if set to true).</td>
-    </tr>
-    <tr>
-      <td>Infoblox.IP. Objects</td>
-      <td>string</td>
-      <td>The objects associated with the IP address.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.IP.Types</td>
-      <td>string</td>
-      <td>The current status of the address.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.IP. Names</td>
-      <td>string</td>
-      <td>The DNS names. For example, if the IP address belongs to a host record, this field contains the hostname.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.IP. Extattrs</td>
-      <td>string</td>
-      <td>Extra attributes relevant for this object.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.IP.IpAddress</td>
-      <td>string</td>
-      <td>The IP address.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.IP.Usage</td>
-      <td>string</td>
-      <td>Indicates whether the IP address is configured for DNS or DHCP.</td>
-    </tr>
-  </tbody>
-</table>
+1.  Navigate to **Settings** > **Integrations**  > **Servers & Services**.
+2.  Search for Infoblox.
+3.  Click **Add instance** to create and configure a new integration instance.
+    * **Name**: a textual name for the integration instance.
+    * **Server URL (e.g.,, https://example.net)**
+    * **User Name**
+    * **Password**
+    * **Trust any certificate (not secure)**
+    * **Use system proxy settings**
+4.  Click **Test** to validate the new instance.
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-get-ip ip="172.0.0.0"</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+Commands
+--------
+
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+1.  [Get IP info: infoblox-get-ip](#infoblox-get-ip).
+2.  [Searches IP related objects by a given IP: infoblox-search-related-objects-by-ip](#infoblox-search-related-objects-by-ip).
+3.  [Lists all response policy rules that belong to the.g.,ven response policy zone: infoblox-list-response-policy-zone-rules](#infoblox-list-response-policy-zone-rules).
+4.  [List all response policy zones: infoblox-list-response-policy-zones](#infoblox-list-response-policy-zones).
+5.  [Creates a response policy zone: infoblox-create-response-policy-zone](#infoblox-create-response-policy-zone).
+6.  [Creates a response policy rule: infoblox-create-rpz-rule](#infoblox-create-rpz-rule).
+7.  [Creates a substitute record rule: infoblox-create-a-substitute-record-rule](#infoblox-create-a-substitute-record-rule).
+8.  [Creates a substitute rule for an AAAA record: infoblox-create-aaaa-substitute-record-rule](#infoblox-create-aaaa-substitute-record-rule).
+9.  [Creates a substitute rule for the MX record: infoblox-create-mx-substitute-record-rule](#infoblox-create-mx-substitute-record-rule).
+10. [Creates a substitute rule for a NAPTR record: infoblox-create-naptr-substitute-record-rule](#infoblox-create-naptr-substitute-record-rule).
+11. [Creates a substitute rule of the PTR record: infoblox-create-ptr-substitute-record-rule](#infoblox-create-ptr-substitute-record-rule).
+12. [Creates a substitute rule of a SRV record: infoblox-create-srv-substitute-record-rule](#infoblox-create-srv-substitute-record-rule).
+13. [Create a substitute rule for a txt record: infoblox-create-txt-substitute-record-rule](#infoblox-create-txt-substitute-record-rule).
+14. [Create a substitute rule for an IPv4 rule: infoblox-create-ipv4-substitute-record-rule](#infoblox-create-ipv4-substitute-record-rule).
+15. [Creates a substitute of the IPv6 record rule: infoblox-create-ipv6-substitute-record-rule](#infoblox-create-ipv6-substitute-record-rule).
+16. [Disables a rule by its reference ID (reference ID can be extracted by running the search rules command): infoblox-enable-rule](#infoblox-enable-rule).
+17. [Disable a rule by its reference ID (reference ID can be extracted by running the 'infoblox-search-rule' command): infoblox-disable-rule](#infoblox-disable-rule).
+18. [Returns the object fields names which can be used in the search rules command: infoblox-get-object-fields](#infoblox-get-object-fields).
+19. [Searches a specific rule by its name: infoblox-search-rule](#infoblox-search-rule).
+20. [Deletes a rule: infoblox-delete-rpz-rule](#infoblox-delete-rpz-rule).
+21. [Deletes a given response policy zone: infoblox-delete-response-policy-zone](#infoblox-delete-response-policy-zone).
+22. [List host information: infoblox-list-host-info](#infoblox-list-host-info).
+23. [List network information: infoblox-list-network-info](#infoblox-list-network-info).
+
+### infoblox-get-ip
+
+* * *
+
+Get IP information.
+
+##### Base Command
+
+`infoblox-get-ip`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip  | The IP address for which to retrieve information, e.g.,, "192.168.1.1". Cannot be used in conjunction with `network` or `from/to_ip` arguments. | Optional |
+| network  | The network that the IP belongs in FQDN/CIDR format, e.g.,, "192.168.1.0/24". Cannot be used in conjunction with `ip` or `from/to_ip` arguments. | Optional |
+| from_ip  | The beginning of the IP range, e.g.,, "192.168.1.0". Must be used in conjunction with `to_ip`. | Optional |
+| to_ip  | The end of the IP range, e.g.,, "192.168.1.254". Must be used in conjunction with `from_ip`. | Optional |
+| status  | The status of the IP device. Used in conjunction with the `network` or `ip` argument. Possible values are `ACTIVE`, `UNUSED` and `USED`. | Optional |
+| extended_attrs  | Comma-separated key/value formatted filter for extended attributes, e.g.,, "Site=New York,OtherProp=MyValue". | Optional |
+| max_results  | The maximum results to return. Maximum is 1000. Default is 50. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.IP.ReferenceID | number | Reference ID of the object. |
+| Infoblox.IP.MacAddress | string | The Mac address of the IP. |
+| Infoblox.IP.Network | string | The network that the IP belongs (in FQDN/CIDR format.) |
+| Infoblox.IP.NetworkView | string | The name of the network view. |
+| Infoblox.IP.Status | string | The current status of the address. |
+| Infoblox.IP.IsConflict | string | Whether the IP address has either a MAC address conflict or a DHCP lease conflict detected through a network discovery (if set to true). |
+| Infoblox.IP.Objects | string | The objects associated with the IP address. |
+| Infoblox.IP.Types | string | The current status of the address. |
+| Infoblox.IP.Names | string | The DNS names. For example, if the IP address belongs to a host record, this field contains the hostname. |
+| Infoblox.IP.Extattrs | string | Extra attributes relevant for this object. |
+| Infoblox.IP.IpAddress | string | The IP address. |
+| Infoblox.IP.Usage | string | Indicates whether the IP address is configured for DNS or DHCP. |
+
+##### Command Example
+
+`!infoblox-get-ip ip="172.0.0.0"`
+
+##### Context Example
+
+```json
 {
-    "Infoblox.IP": {
+    "Infoblox.IP": [
         "Extattrs": {},
         "IpAddress": "172.0.0.0",
         "IsConflict": false,
@@ -189,117 +109,48 @@ This integration was integrated and tested with version V2 of Infoblox
             "NETWORK"
         ],
         "Usage": []
-    }
+    ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - IP: 172.0.0.0 info.</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Extattrs</strong></th>
-      <th><strong>Ip Address</strong></th>
-      <th><strong>Is Conflict</strong></th>
-      <th><strong>Mac Address</strong></th>
-      <th><strong>Names</strong></th>
-      <th><strong>Network</strong></th>
-      <th><strong>Network View</strong></th>
-      <th><strong>Objects</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>Status</strong></th>
-      <th><strong>Types</strong></th>
-      <th><strong>Usage</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>  </td>
-      <td> 172.0.0.0 </td>
-      <td> false </td>
-      <td>  </td>
-      <td>  </td>
-      <td> 172.0.0.0/24 </td>
-      <td> default </td>
-      <td>  </td>
-      <td> ipv4address/Li5pcHY0X2FkZHJlc3MkMTcyLjAuMC4wLzA:172.0.0.0 </td>
-      <td> USED </td>
-      <td> NETWORK </td>
-      <td>  </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-search-related-objects-by-ip">2. infoblox-search-related-objects-by-ip</h3>
-<hr>
-<p>Searches IP related objects by a given IP.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-search-related-objects-by-ip</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>ip</td>
-      <td>The IP address for which to search.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>max_results</td>
-      <td>The maximum results to return.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.IPRelatedObjects.ReferenceID</td>
-      <td>Unknown</td>
-      <td>The reference ID of the related object.</td>
-    </tr>
-  </tbody>
-</table>
+| **Extattrs** | **Ip Address** | **Is Conflict** | **Mac Address** | **Names** | **Network** | **Network View** | **Objects** | **Reference ID** | **Status** | **Types** | **Usage** |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+|     | 172.0.0.0 | false |     |     | 172.0.0.0/24 | default |     | ipv4address/Li5pcHY0X2FkZHJlc3MkMTcyLjAuMC4wLzA:172.0.0.0 | USED | NETWORK |     |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-search-related-objects-by-ip ip="172.0.0.0"</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-search-related-objects-by-ip
+
+* * *
+
+Searches IP related objects by a given IP.
+
+##### Base Command
+
+`infoblox-search-related-objects-by-ip`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip  | The IP address for which to search. | Required |
+| max_results | The maximum results to return. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.IPRelatedObjects.ReferenceID | Unknown | The reference ID of the related object. |
+
+##### Command Example
+
+`!infoblox-search-related-objects-by-ip ip="172.0.0.0"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.IPRelatedObjects": [
         {
@@ -309,137 +160,54 @@ This integration was integrated and tested with version V2 of Infoblox
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - IP: 172.0.0.0 search results.</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Network</strong></th>
-      <th><strong>Network View</strong></th>
-      <th><strong>Reference ID</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> 172.0.0.0/24 </td>
-      <td> default </td>
-      <td> network/ZG5zLm5ldHdvcmskMTcyLjAuMC4wLzI0LzA:172.0.0.0/24/default </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-list-response-policy-zone-rules">3. infoblox-list-response-policy-zone-rules</h3>
-<hr>
-<p>Lists all response policy rules that belong to the given response policy zone.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-list-response-policy-zone-rules</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>response_policy_zone_name</td>
-      <td>The response policy zone name to list the rules (FQDN).</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>page_size</td>
-      <td>The number of results in each page.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>next_page_id</td>
-      <td>The next page ID that was returned when last running this command.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>view</td>
-      <td>The DNS view in which the records are located. By default, the 'default' DNS view is searched.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - IP: 172.0.0.0 search results.
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ResponsePolicyZoneRulesList.Name</td>
-      <td>string</td>
-      <td>Rule name.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZoneRulesList.Disable</td>
-      <td>boolean</td>
-      <td>Whether the rule is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZoneRulesList.Comment</td>
-      <td>string</td>
-      <td>The comment for this rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZoneRulesList.Type</td>
-      <td>string</td>
-      <td>The object type as used in Infoblox.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZoneRulesList.View</td>
-      <td>string</td>
-      <td>View of the definition.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZoneRulesList.Zone</td>
-      <td>string</td>
-      <td>The zone to which this rule belongs.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.RulesNextPage.NextPageID</td>
-      <td>string</td>
-      <td>Retrieves the next page of the search. The last NextpageID corresponds to the last search performed.</td>
-    </tr>
-  </tbody>
-</table>
+| **Network** | **Network View** | **Reference ID** |
+| --- | --- | --- |
+| 172.0.0.0/24 | default | network/ZG5zLm5ldHdvcmskMTcyLjAuMC4wLzI0LzA:172.0.0.0/24/default |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-list-response-policy-zone-rules response_policy_zone_name=infoblow.com page_size="8"</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-list-response-policy-zone-rules
+
+* * *
+
+Lists all response policy rules that belong to the.g.,ven response policy zone.
+
+##### Base Command
+
+`infoblox-list-response-policy-zone-rules`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| response\_policy\_zone_name | The response policy zone name to list the rules (FQDN). | Optional |
+| page_size | The number of results in each page. | Optional |
+| next\_page\_id | The next page ID that was returned when last running this command. | Optional |
+| view | The DNS view in which the records are located. By default, the 'default' DNS view is searched. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ResponsePolicyZoneRulesList.Name | string | Rule name. |
+| Infoblox.ResponsePolicyZoneRulesList.Disable | boolean | Whether the rule is disabled. |
+| Infoblox.ResponsePolicyZoneRulesList.Comment | string | The comment for this rule. |
+| Infoblox.ResponsePolicyZoneRulesList.Type | string | The object type as used in Infoblox. |
+| Infoblox.ResponsePolicyZoneRulesList.View | string | View of the definition. |
+| Infoblox.ResponsePolicyZoneRulesList.Zone | string | The zone to which this rule belongs. |
+| Infoblox.RulesNextPage.NextPageID | string | Retrieves the next page of the search. The last NextpageID corresponds to the last search performed. |
+
+##### Command Example
+
+`!infoblox-list-response-policy-zone-rules response_policy_zone_name=infoblow.com page_size="8"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ResponsePolicyZoneRulesList": [
         {
@@ -503,176 +271,57 @@ This integration was integrated and tested with version V2 of Infoblox
         "NextPageID": "789c9d525b4ec33010fcf739905a89cacaa3a5ed11fa83101cc0726c2735385ecb7668cbe9d935a1503e51a4489edd9d997d2c75a8d9cb02a2c953f4a2b7c6e92446d069c1428391fb054b2f8b111344908321b86587aa2654c681de6bb6d46183b91fe00dbe1fd8d2852dbeadefa17370e20a46c4774c26e29267110bd19e1d76c443c4829211ab2ba614840ba60c0c7f0a7cca71521922066bb65433eb99a31aef6432ec09eb0f886242c39410dd645db65e0806ddab5119f1963de6e75017ab3579ed219e64d4a4f8f0dd4fca326642b68810e0ec680bb09b9d0e90410448365bf002fa3e9912dfcf055a664983ab48a7a1c9f636a65cfa885abc990b4569ae34137e6d45fbc43bebb5505e8ee68e0b6d7a39b9fc3bebc4377c4d1f51b4c59e44eaa34cc29b33d968d6df9d1c8dd4242a14c09ba5a5341b36fca90ad1bc5384faafae915babdb7f5a1d211d4d4b0c38b7d42139ae225f42b1b24752e95c0c1f5f62e5a88a83db3b24b8a6636a696224b7a2135ba1d2687c5e699b64e7cc6ae66d5b3c30dce2d4fd949785b71be22e9b206cee977f02207ef4bc-1cbe432a6c562d903bd34ea2dd75f482330d98e249c3359e4e258b9"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Zone: Infoblow.com rule list.</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Comment</strong></th>
-      <th><strong>Disable</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Type</strong></th>
-      <th><strong>View</strong></th>
-      <th><strong>Zone</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>  </td>
-      <td> false </td>
-      <td> 4.4.4.5 </td>
-      <td> record:rpz:cname </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-    <tr>
-      <td>  </td>
-      <td> false </td>
-      <td> 1.1.1.1 </td>
-      <td> record:rpz:cname:ipaddressdn </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-    <tr>
-      <td>  </td>
-      <td> false </td>
-      <td> 2.2.2.2 </td>
-      <td> record:rpz:a:ipaddress </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-    <tr>
-      <td>  </td>
-      <td> false </td>
-      <td> 5.5.5.111 </td>
-      <td> record:rpz:cname:ipaddress </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-    <tr>
-      <td>  </td>
-      <td> false </td>
-      <td> moshe </td>
-      <td> record:rpz:cname </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-    <tr>
-      <td>  </td>
-      <td> false </td>
-      <td> moshe2 </td>
-      <td> record:rpz:cname </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-    <tr>
-      <td>  </td>
-      <td> false </td>
-      <td> moshe3 </td>
-      <td> record:rpz:cname </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-list-response-policy-zones">4. infoblox-list-response-policy-zones</h3>
-<hr>
-<p>List all response policy zones.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-list-response-policy-zones</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>max_results</td>
-      <td>Maximum results to return. (default is 50)</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Zone: Infoblow.com rule list.
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ResponsePolicyZones.Disable</td>
-      <td>boolean</td>
-      <td>Whether this zone is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZones.FQDN</td>
-      <td>string</td>
-      <td>The fully qualified domain name.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZones.ReferenceID</td>
-      <td>string</td>
-      <td>The reference ID of the object.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZones.RpzPolicy</td>
-      <td>string</td>
-      <td>The response policy zone override policy.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZones.RpzSeverity</td>
-      <td>string</td>
-      <td>The severity of this response policy zone.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZones.RpzType</td>
-      <td>string</td>
-      <td>The type of response policy zone.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZones.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-  </tbody>
-</table>
+| **Comment** | **Disable** | **Name** | **Type** | **View** | **Zone** |
+| --- | --- | --- | --- | --- | --- |
+|     | false | 4.4.4.5 | record:rpz:cname | default | infoblow.com |
+|     | false | 1.1.1.1 | record:rpz:cname:ipaddressdn | default | infoblow.com |
+|     | false | 2.2.2.2 | record:rpz:a:ipaddress | default | infoblow.com |
+|     | false | 5.5.5.111 | record:rpz:cname:ipaddress | default | infoblow.com |
+|     | false | moshe | record:rpz:cname | default | infoblow.com |
+|     | false | moshe2 | record:rpz:cname | default | infoblow.com |
+|     | false | moshe3 | record:rpz:cname | default | infoblow.com |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-list-response-policy-zones</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-list-response-policy-zones
+
+* * *
+
+List all response policy zones.
+
+##### Base Command
+
+`infoblox-list-response-policy-zones`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| max_results | Maximum results to return. (Default is 50) | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ResponsePolicyZones.Disable | boolean | Whether this zone is disabled. |
+| Infoblox.ResponsePolicyZones.FQDN | string | The fully qualified domain name. |
+| Infoblox.ResponsePolicyZones.ReferenceID | string | The reference ID of the object. |
+| Infoblox.ResponsePolicyZones.RpzPolicy | string | The response policy zone override policy. |
+| Infoblox.ResponsePolicyZones.RpzSeverity | string | The severity of this response policy zone. |
+| Infoblox.ResponsePolicyZones.RpzType | string | The type of response policy zone. |
+| Infoblox.ResponsePolicyZones.View | string | The view of the definition. |
+
+##### Command Example
+
+`!infoblox-list-response-policy-zones`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ResponsePolicyZones": [
         {
@@ -790,249 +439,66 @@ This integration was integrated and tested with version V2 of Infoblox
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Response Policy Zones list (first 50 results):</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Disable</strong></th>
-      <th><strong>FQDN</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>Rpz Policy</strong></th>
-      <th><strong>Rpz Severity</strong></th>
-      <th><strong>Rpz Type</strong></th>
-      <th><strong>View</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> false </td>
-      <td> local.rpz </td>
-      <td> zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LnJwei5sb2NhbA:local.rpz/default </td>
-      <td> GIVEN </td>
-      <td> MAJOR </td>
-      <td> LOCAL </td>
-      <td> default </td>
-    </tr>
-    <tr>
-      <td> false </td>
-      <td> infoblow.com </td>
-      <td> zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdw:infoblow.com/default </td>
-      <td> SUBSTITUTE </td>
-      <td> WARNING </td>
-      <td> LOCAL </td>
-      <td> default </td>
-    </tr>
-    <tr>
-      <td> false </td>
-      <td> google.com </td>
-      <td> zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS5nb29nbGU:google.com/default </td>
-      <td> DISABLED </td>
-      <td> INFORMATIONAL </td>
-      <td> LOCAL </td>
-      <td> default </td>
-    </tr>
-    <tr>
-      <td> false </td>
-      <td> google2.com </td>
-      <td> zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS5nb29nbGUy:google2.com/default </td>
-      <td> DISABLED </td>
-      <td> INFORMATIONAL </td>
-      <td> LOCAL </td>
-      <td> default </td>
-    </tr>
-    <tr>
-      <td> false </td>
-      <td> google3.com </td>
-      <td> zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS5nb29nbGUz:google3.com/default </td>
-      <td> DISABLED </td>
-      <td> INFORMATIONAL </td>
-      <td> LOCAL </td>
-      <td> default </td>
-    </tr>
-    <tr>
-      <td> false </td>
-      <td> google4.com </td>
-      <td> zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS5nb29nbGU0:google4.com/default </td>
-      <td> DISABLED </td>
-      <td> INFORMATIONAL </td>
-      <td> LOCAL </td>
-      <td> default </td>
-    </tr>
-    <tr>
-      <td> false </td>
-      <td> google33.com </td>
-      <td> zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS5nb29nbGUzMw:google33.com/default </td>
-      <td> GIVEN </td>
-      <td> WARNING </td>
-      <td> LOCAL </td>
-      <td> default </td>
-    </tr>
-    <tr>
-      <td> false </td>
-      <td> google.test.com </td>
-      <td> zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0Lmdvb2dsZQ:google.test.com/default </td>
-      <td> NXDOMAIN </td>
-      <td> INFORMATIONAL </td>
-      <td> LOCAL </td>
-      <td> default </td>
-    </tr>
-    <tr>
-      <td> false </td>
-      <td> google.test2.com </td>
-      <td> zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0Mi5nb29nbGU:google.test2.com/default </td>
-      <td> NXDOMAIN </td>
-      <td> INFORMATIONAL </td>
-      <td> LOCAL </td>
-      <td> default </td>
-    </tr>
-    <tr>
-      <td> false </td>
-      <td> google.test4.com </td>
-      <td> zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0NC5nb29nbGU:google.test4.com/default </td>
-      <td> NXDOMAIN </td>
-      <td> INFORMATIONAL </td>
-      <td> LOCAL </td>
-      <td> default </td>
-    </tr>
-    <tr>
-      <td> false </td>
-      <td> test.com </td>
-      <td> zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default </td>
-      <td> GIVEN </td>
-      <td> WARNING </td>
-      <td> LOCAL </td>
-      <td> default </td>
-    </tr>
-    <tr>
-      <td> false </td>
-      <td> test123.com </td>
-      <td> zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0MTIz:test123.com/default </td>
-      <td> GIVEN </td>
-      <td> WARNING </td>
-      <td> LOCAL </td>
-      <td> default </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-create-response-policy-zone">5. infoblox-create-response-policy-zone</h3>
-<hr>
-<p>Creates a response policy zone.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-create-response-policy-zone</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>FQDN</td>
-      <td>The name of this DNS zone in FQDN format.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>rpz_policy</td>
-      <td>The override policy of the response policy zone. Can be: "DISABLED", "GIVEN", "NODATA", "NXDOMAIN", "PASSTHRU", or "SUBSTITUTE".</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>rpz_severity</td>
-      <td>The severity of the response policy zone. Can be: "CRITICAL", "MAJOR", "WARNING", or "INFORMATIONAL".</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>substitute_name</td>
-      <td>The alternative name of the redirect target in a substitute response policy. policy zone.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>rpz_type</td>
-      <td>The type of the rpz zone. Can be: "FEED", "FIREEYE", or "LOCAL".</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Response Policy Zones list (first 50 results):
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ResponsePolicyZones.Disable</td>
-      <td>boolean</td>
-      <td>Whether this zone is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZones.FQDN</td>
-      <td>string</td>
-      <td>A fully qualified domain name.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZones.ReferenceID</td>
-      <td>string</td>
-      <td>The reference ID of the object.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZones.RpzPolicy</td>
-      <td>string</td>
-      <td>The response policy zone override policy.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZones.RpzSeverity</td>
-      <td>string</td>
-      <td>The severity of the response policy zone.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZones.RpzType</td>
-      <td>string</td>
-      <td>The type of rpz zone.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ResponsePolicyZones.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-  </tbody>
-</table>
+| **Disable** | **FQDN** | **Reference ID** | **Rpz Policy** | **Rpz Severity** | **Rpz Type** | **View** |
+| --- | --- | --- | --- | --- | --- | --- |
+| false | local.rpz | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LnJwei5sb2NhbA:local.rpz/default | GIVEN | MAJOR | LOCAL | default |
+| false | infoblow.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdw:infoblow.com/default | SUBSTITUTE | WARNING | LOCAL | default |
+| false | google.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS5nb29nbGU:google.com/default | DISABLED | INFORMATIONAL | LOCAL | default |
+| false | google2.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS5nb29nbGUy:google2.com/default | DISABLED | INFORMATIONAL | LOCAL | default |
+| false | google3.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS5nb29nbGUz:google3.com/default | DISABLED | INFORMATIONAL | LOCAL | default |
+| false | google4.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS5nb29nbGU0:google4.com/default | DISABLED | INFORMATIONAL | LOCAL | default |
+| false | google33.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS5nb29nbGUzMw:google33.com/default | GIVEN | WARNING | LOCAL | default |
+| false | google.test.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0Lmdvb2dsZQ:google.test.com/default | NXDOMAIN | INFORMATIONAL | LOCAL | default |
+| false | google.test2.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0Mi5nb29nbGU:google.test2.com/default | NXDOMAIN | INFORMATIONAL | LOCAL | default |
+| false | google.test4.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0NC5nb29nbGU:google.test4.com/default | NXDOMAIN | INFORMATIONAL | LOCAL | default |
+| false | test.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0:test.com/default | GIVEN | WARNING | LOCAL | default |
+| false | test123.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50ZXN0MTIz:test123.com/default | GIVEN | WARNING | LOCAL | default |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-create-response-policy-zone FQDN="infonlox.nightly.tpb.com" rpz_policy="DISABLED" rpz_severity="INFORMATIONAL" rpz_type="FEED"</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### 5\. infoblox-create-response-policy-zone
+
+* * *
+
+Creates a response policy zone.
+
+##### Base Command
+
+`infoblox-create-response-policy-zone`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| FQDN | The name of this DNS zone in FQDN format. | Required |
+| rpz_policy | The override policy of the response policy zone. Can be: "DISABLED", "GIVEN", "NODATA", "NXDOMAIN", "PASSTHRU", or "SUBSTITUTE". | Required |
+| rpz_severity | The severity of the response policy zone. Can be: "CRITICAL", "MAJOR", "WARNING", or "INFORMATIONAL". | Required |
+| substitute_name | The alternative name of the redirect target in a substitute response policy. policy zone. | Optional |
+| rpz_type | The type of the RPZ. Can be: "FEED", "FIREEYE", or "LOCAL". | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ResponsePolicyZones.Disable | boolean | Whether this zone is disabled. |
+| Infoblox.ResponsePolicyZones.FQDN | string | A fully qualified domain name. |
+| Infoblox.ResponsePolicyZones.ReferenceID | string | The reference ID of the object. |
+| Infoblox.ResponsePolicyZones.RpzPolicy | string | The response policy zone override policy. |
+| Infoblox.ResponsePolicyZones.RpzSeverity | string | The severity of the response policy zone. |
+| Infoblox.ResponsePolicyZones.RpzType | string | The type of RPZ. |
+| Infoblox.ResponsePolicyZones.View | string | The view of the definition. |
+
+##### Command Example
+
+`!infoblox-create-response-policy-zone FQDN="infonlox.nightly.tpb.com" rpz_policy="DISABLED" rpz_severity="INFORMATIONAL" rpz_type="FEED"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ResponsePolicyZones": {
         "Disable": false,
@@ -1044,160 +510,57 @@ This integration was integrated and tested with version V2 of Infoblox
         "View": "default"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Response Policy Zone: infonlox.nightly.tpb.com has been created</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Disable</strong></th>
-      <th><strong>FQDN</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>Rpz Policy</strong></th>
-      <th><strong>Rpz Severity</strong></th>
-      <th><strong>Rpz Type</strong></th>
-      <th><strong>View</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> false </td>
-      <td> infonlox.nightly.tpb.com </td>
-      <td> zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50cGIubmlnaHRseS5pbmZvbmxveA:infonlox.nightly.tpb.com/default </td>
-      <td> DISABLED </td>
-      <td> INFORMATIONAL </td>
-      <td> LOCAL </td>
-      <td> default </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-create-rpz-rule">6. infoblox-create-rpz-rule</h3>
-<hr>
-<p>Creates a response policy rule.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-create-rpz-rule</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>rule_type</td>
-      <td>The type of the rule to create. Can be: "Passthru", "Block" (No such domain), "Block" (No data), or "Substitute" (domain name).</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>object_type</td>
-      <td>The type of the object for which to assign the rule. Can be: "Domain Name", "IP address", or "Client IP address".</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>name</td>
-      <td>The rule name in a FQDN format.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>rp_zone</td>
-      <td>The zone to assign the rule.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>comment</td>
-      <td>Adds a comment for this rule.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>substitute_name</td>
-      <td>The substitute name to assign (substitute domain only).</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>view</td>
-      <td>The DNS view in which the records are located. By default, the 'default' DNS view is searched.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Response Policy Zone: infonlox.nightly.tpb.com has been created
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Name</td>
-      <td>string</td>
-      <td>The rule name.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Disable</td>
-      <td>boolean</td>
-      <td>Whether this rule is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Comment</td>
-      <td>string</td>
-      <td>The comment for this rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Type</td>
-      <td>string</td>
-      <td>The object type as used in Infoblox.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Zone</td>
-      <td>string</td>
-      <td>The zone to which this rule belongs.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID</td>
-      <td>string</td>
-      <td>The reference ID of the rule.</td>
-    </tr>
-  </tbody>
-</table>
+| **Disable** | **FQDN** | **Reference ID** | **Rpz Policy** | **Rpz Severity** | **Rpz Type** | **View** |
+| --- | --- | --- | --- | --- | --- | --- |
+| false | infonlox.nightly.tpb.com | zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50cGIubmlnaHRseS5pbmZvbmxveA:infonlox.nightly.tpb.com/default | DISABLED | INFORMATIONAL | LOCAL | default |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-create-rpz-rule rule_type="Passthru" object_type="Domain Name" name="nightly-test-rpz-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-rpz-sub" </code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-create-rpz-rule
+
+* * *
+
+Creates a response policy rule.
+
+##### Base Command
+
+`infoblox-create-rpz-rule`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_type | The type of the rule to create. Can be: "Passthru", "Block" (No such domain), "Block" (No data), or "Substitute" (domain name). | Required |
+| object_type | The type of the object for which to assign the rule. Can be: "Domain Name", "IP address", or "Client IP address". | Required |
+| name | The rule name in a FQDN format. | Required |
+| rp_zone | The zone to assign the rule to. | Required |
+| comment | Comment for this rule. | Optional |
+| substitute_name | The substitute name to assign (substitute domain only). | Optional |
+| view | The DNS view in which the records are located. By default, the 'default' DNS view is searched. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ModifiedResponsePolicyZoneRules.Name | string | The rule name. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Disable | boolean | Whether this rule is disabled. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Comment | string | The comment for this rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Type | string | The object type as used in Infoblox. |
+| Infoblox.ModifiedResponsePolicyZoneRules.View | string | The view of the definition. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Zone | string | The zone to which this rule belongs. |
+| Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID | string | The reference ID of the rule. |
+
+##### Command Example
+
+`!infoblox-create-rpz-rule rule_type="Passthru" object_type="Domain Name" name="nightly-test-rpz-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-rpz-sub"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ModifiedResponsePolicyZoneRules": {
         "Canonical": "nightly-test-rpz-sub.infoblow.com",
@@ -1209,145 +572,54 @@ This integration was integrated and tested with version V2 of Infoblox
         "Zone": "infoblow.com"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Response Policy Zone rule: nightly-test-rpz-sub.infoblow.com has been created:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Canonical</strong></th>
-      <th><strong>Disable</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>Type</strong></th>
-      <th><strong>View</strong></th>
-      <th><strong>Zone</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> nightly-test-rpz-sub.infoblow.com </td>
-      <td> false </td>
-      <td> nightly-test-rpz-sub.infoblow.com </td>
-      <td> record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy5uaWdodGx5LXRlc3QtcnB6LXN1Yg:nightly-test-rpz-sub.infoblow.com/default </td>
-      <td> record:rpz:cname </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-create-a-substitute-record-rule">7. infoblox-create-a-substitute-record-rule</h3>
-<hr>
-<p>Creates a substitute record rule.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-create-a-substitute-record-rule</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>name</td>
-      <td>The name for a record in FQDN format.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>rp_zone</td>
-      <td>The zone to assign the rule.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>comment</td>
-      <td>Add a comment for this rule.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>ipv4addr</td>
-      <td>The IPv4 address of the substitute rule.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Response Policy Zone rule: nightly-test-rpz-sub.infoblow.com has been created:
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Name</td>
-      <td>string</td>
-      <td>The name of the rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Disable</td>
-      <td>boolean</td>
-      <td>Whether this rule is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Comment</td>
-      <td>string</td>
-      <td>The comment for this rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Type</td>
-      <td>string</td>
-      <td>The object type as used in Infoblox.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Zone</td>
-      <td>string</td>
-      <td>The zone to which this rule belongs.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID</td>
-      <td>string</td>
-      <td>The reference ID of the rule.</td>
-    </tr>
-  </tbody>
-</table>
+| **Canonical** | **Disable** | **Name** | **Reference ID** | **Type** | **View** | **Zone** |
+| --- | --- | --- | --- | --- | --- | --- |
+| nightly-test-rpz-sub.infoblow.com | false | nightly-test-rpz-sub.infoblow.com | record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy5uaWdodGx5LXRlc3QtcnB6LXN1Yg:nightly-test-rpz-sub.infoblow.com/default | record:rpz:cname | default | infoblow.com |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-create-a-substitute-record-rule name="nightly-test-a-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-a-sub" ipv4addr="0.0.0.0" </code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-create-a-substitute-record-rule
+
+* * *
+
+Creates a substitute record rule.
+
+##### Base Command
+
+`infoblox-create-a-substitute-record-rule`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for a record in FQDN format. | Required |
+| rp_zone | The zone to assign the rule to to. | Required |
+| comment | Comment for this rule. | Optional |
+| ipv4addr | The IPv4 address of the substitute rule. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ModifiedResponsePolicyZoneRules.Name | string | The name of the rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Disable | boolean | Whether this rule is disabled. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Comment | string | The comment for this rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Type | string | The object type as used in Infoblox. |
+| Infoblox.ModifiedResponsePolicyZoneRules.View | string | The view of the definition. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Zone | string | The zone to which this rule belongs. |
+| Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID | string | The reference ID of the rule. |
+
+##### Command Example
+
+`!infoblox-create-a-substitute-record-rule name="nightly-test-a-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-a-sub" ipv4addr="0.0.0.0"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ModifiedResponsePolicyZoneRules": {
         "Comment": "nightly-test-a-sub",
@@ -1360,147 +632,54 @@ This integration was integrated and tested with version V2 of Infoblox
         "Zone": "infoblow.com"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Response Policy Zone rule: nightly-test-a-sub.infoblow.com has been created:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Comment</strong></th>
-      <th><strong>Disable</strong></th>
-      <th><strong>Ipv 4 Addr</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>Type</strong></th>
-      <th><strong>View</strong></th>
-      <th><strong>Zone</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> nightly-test-a-sub </td>
-      <td> false </td>
-      <td> 0.0.0.0 </td>
-      <td> nightly-test-a-sub.infoblow.com </td>
-      <td> record:rpz:a/ZG5zLmJpbmRfYSQuX2RlZmF1bHQuY29tLmluZm9ibG93LG5pZ2h0bHktdGVzdC1hLXN1YiwwLjAuMC4w:nightly-test-a-sub.infoblow.com/default </td>
-      <td> record:rpz:a </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-create-aaaa-substitute-record-rule">8. infoblox-create-aaaa-substitute-record-rule</h3>
-<hr>
-<p>Creates a substitute rule for an AAAA record.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-create-aaaa-substitute-record-rule</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>name</td>
-      <td>The name for a record in FQDN format.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>rp_zone</td>
-      <td>The zone to assign the rule.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>comment</td>
-      <td>Add a comment for this rule.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>ipv6addr</td>
-      <td>The IPv6 address of the substitute rule.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Response Policy Zone rule: nightly-test-a-sub.infoblow.com has been created:
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Name</td>
-      <td>string</td>
-      <td>The name of the rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Disable</td>
-      <td>boolean</td>
-      <td>Whether this rule is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Comment</td>
-      <td>string</td>
-      <td>The comment for this rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Type</td>
-      <td>string</td>
-      <td>The object type as used in Infoblox.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Zone</td>
-      <td>string</td>
-      <td>The zone to which this rule belongs.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID</td>
-      <td>string</td>
-      <td>The reference ID of the rule.</td>
-    </tr>
-  </tbody>
-</table>
+| **Comment** | **Disable** | **Ipv 4 Addr** | **Name** | **Reference ID** | **Type** | **View** | **Zone** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| nightly-test-a-sub | false | 0.0.0.0 | nightly-test-a-sub.infoblow.com | record:rpz:a/ZG5zLmJpbmRfYSQuX2RlZmF1bHQuY29tLmluZm9ibG93LG5pZ2h0bHktdGVzdC1hLXN1YiwwLjAuMC4w:nightly-test-a-sub.infoblow.com/default | record:rpz:a | default | infoblow.com |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-create-aaaa-substitute-record-rule name="nightly-test-aaaa-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-aaaa-sub" ipv6addr="fd60:e32:f1b9::2" </code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-create-aaaa-substitute-record-rule
+
+* * *
+
+Creates a substitute rule for an AAAA record.
+
+##### Base Command
+
+`infoblox-create-aaaa-substitute-record-rule`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for a record in FQDN format. | Required |
+| rp_zone | The zone to assign the rule to to. | Required |
+| comment | Comment for this rule. | Optional |
+| ipv6addr | The IPv6 address of the substitute rule. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ModifiedResponsePolicyZoneRules.Name | string | The name of the rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Disable | boolean | Whether this rule is disabled. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Comment | string | The comment for this rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Type | string | The object type as used in Infoblox. |
+| Infoblox.ModifiedResponsePolicyZoneRules.View | string | The view of the definition. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Zone | string | The zone to which this rule belongs. |
+| Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID | string | The reference ID of the rule. |
+
+##### Command Example
+
+`!infoblox-create-aaaa-substitute-record-rule name="nightly-test-aaaa-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-aaaa-sub" ipv6addr="fd60:e32:f1b9::2"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ModifiedResponsePolicyZoneRules": {
         "Comment": "nightly-test-aaaa-sub",
@@ -1513,152 +692,55 @@ This integration was integrated and tested with version V2 of Infoblox
         "Zone": "infoblow.com"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Response Policy Zone rule: nightly-test-aaaa-sub.infoblow.com has been created:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Comment</strong></th>
-      <th><strong>Disable</strong></th>
-      <th><strong>Ipv 6 Addr</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>Type</strong></th>
-      <th><strong>View</strong></th>
-      <th><strong>Zone</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> nightly-test-aaaa-sub </td>
-      <td> false </td>
-      <td> fd60:e32:f1b9::2 </td>
-      <td> nightly-test-aaaa-sub.infoblow.com </td>
-      <td> record:rpz:aaaa/ZG5zLmJpbmRfYWFhYSQuX2RlZmF1bHQuY29tLmluZm9ibG93LG5pZ2h0bHktdGVzdC1hYWFhLXN1YixmZDYwOmUzMjpmMWI5Ojoy:nightly-test-aaaa-sub.infoblow.com/default </td>
-      <td> record:rpz:aaaa </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-create-mx-substitute-record-rule">9. infoblox-create-mx-substitute-record-rule</h3>
-<hr>
-<p>Creates a substitute rule for the MX record.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-create-mx-substitute-record-rule</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>name</td>
-      <td>The name for a record in FQDN format.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>rp_zone</td>
-      <td>The zone to assign the rule.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>comment</td>
-      <td>Add a comment for this rule.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>mail_exchanger</td>
-      <td>The mail exchanger name in FQDN format. This value can be in unicode format.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>preference</td>
-      <td>Preference value, 0 to 65535 (inclusive).</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Response Policy Zone rule: nightly-test-aaaa-sub.infoblow.com has been created:
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Name</td>
-      <td>string</td>
-      <td>The name of the rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Disable</td>
-      <td>boolean</td>
-      <td>Whether this rule is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Comment</td>
-      <td>string</td>
-      <td>The comment for this rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Type</td>
-      <td>string</td>
-      <td>The object type as used in Infoblox.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Zone</td>
-      <td>string</td>
-      <td>The zone to which this rule belongs.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID</td>
-      <td>string</td>
-      <td>The reference ID of the rule.</td>
-    </tr>
-  </tbody>
-</table>
+| **Comment** | **Disable** | **Ipv 6 Addr** | **Name** | **Reference ID** | **Type** | **View** | **Zone** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| nightly-test-aaaa-sub | false | fd60:e32:f1b9::2 | nightly-test-aaaa-sub.infoblow.com | record:rpz:aaaa/ZG5zLmJpbmRfYWFhYSQuX2RlZmF1bHQuY29tLmluZm9ibG93LG5pZ2h0bHktdGVzdC1hYWFhLXN1YixmZDYwOmUzMjpmMWI5Ojoy:nightly-test-aaaa-sub.infoblow.com/default | record:rpz:aaaa | default | infoblow.com |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-create-mx-substitute-record-rule name="nightly-test-mx-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-mx-sub" mail_exchanger="0.0.0.0" preference="5" </code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-create-mx-substitute-record-rule
+
+* * *
+
+Creates a substitute rule for the MX record.
+
+##### Base Command
+
+`infoblox-create-mx-substitute-record-rule`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for a record in FQDN format. | Required |
+| rp_zone | The zone to assign the rule to to. | Required |
+| comment | Comment for this rule. | Optional |
+| mail_exchanger | The mail exchanger name in FQDN format. This value can be in unicode format. | Required |
+| preference | Preference value, 0 to 65535 (inclusive). | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ModifiedResponsePolicyZoneRules.Name | string | The name of the rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Disable | boolean | Whether this rule is disabled. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Comment | string | The comment for this rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Type | string | The object type as used in Infoblox. |
+| Infoblox.ModifiedResponsePolicyZoneRules.View | string | The view of the definition. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Zone | string | The zone to which this rule belongs. |
+| Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID | string | The reference ID of the rule. |
+
+##### Command Example
+
+`!infoblox-create-mx-substitute-record-rule name="nightly-test-mx-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-mx-sub" mail_exchanger="0.0.0.0" preference="5"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ModifiedResponsePolicyZoneRules": {
         "Comment": "nightly-test-mx-sub",
@@ -1672,159 +754,56 @@ This integration was integrated and tested with version V2 of Infoblox
         "Zone": "infoblow.com"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Response Policy Zone rule: nightly-test-mx-sub.infoblow.com has been created:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Comment</strong></th>
-      <th><strong>Disable</strong></th>
-      <th><strong>Mail Exchanger</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Preference</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>Type</strong></th>
-      <th><strong>View</strong></th>
-      <th><strong>Zone</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> nightly-test-mx-sub </td>
-      <td> false </td>
-      <td> 0.0.0.0 </td>
-      <td> nightly-test-mx-sub.infoblow.com </td>
-      <td> 5 </td>
-      <td> record:rpz:mx/ZG5zLmJpbmRfbXgkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy5uaWdodGx5LXRlc3QtbXgtc3ViLjAuMC4wLjAuNQ:nightly-test-mx-sub.infoblow.com/default </td>
-      <td> record:rpz:mx </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-create-naptr-substitute-record-rule">10. infoblox-create-naptr-substitute-record-rule</h3>
-<hr>
-<p>Creates a substitute rule for a NAPTR record.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-create-naptr-substitute-record-rule</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>name</td>
-      <td>The name for a record in FQDN forma.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>rp_zone</td>
-      <td>The zone to assign the rule.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>comment</td>
-      <td>Add a comment for this rule.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>order</td>
-      <td>The order parameter of the substitute rule of the NAPTR record. This parameter specifies the order in which the NAPTR rules are applied when multiple rules are present. Can be from 0 to 65535 (inclusive).</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>preference</td>
-      <td>Preference value, 0 to 65535 (inclusive).</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>replacement</td>
-      <td>The substitute rule object replacement field of the NAPTR record. For non-terminal NAPTR records, this field specifies the next domain name to look up.</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Response Policy Zone rule: nightly-test-mx-sub.infoblow.com has been created:
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Name</td>
-      <td>string</td>
-      <td>The name of the rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Disable</td>
-      <td>boolean</td>
-      <td>Whether this rule is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Comment</td>
-      <td>string</td>
-      <td>The comment for this rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Type</td>
-      <td>string</td>
-      <td>The object type as used in Infoblox.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Zone</td>
-      <td>string</td>
-      <td>The zone to which this rule belongs.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID</td>
-      <td>string</td>
-      <td>The reference ID of the rule.</td>
-    </tr>
-  </tbody>
-</table>
+| **Comment** | **Disable** | **Mail Exchanger** | **Name** | **Preference** | **Reference ID** | **Type** | **View** | **Zone** |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| nightly-test-mx-sub | false | 0.0.0.0 | nightly-test-mx-sub.infoblow.com | 5   | record:rpz:mx/ZG5zLmJpbmRfbXgkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy5uaWdodGx5LXRlc3QtbXgtc3ViLjAuMC4wLjAuNQ:nightly-test-mx-sub.infoblow.com/default | record:rpz:mx | default | infoblow.com |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-create-naptr-substitute-record-rule name="nightly-test-naptr-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-naptr-sub" order="0" preference="1" replacement="infoblow.com" </code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-create-naptr-substitute-record-rule
+
+* * *
+
+Creates a substitute rule for a NAPTR record.
+
+##### Base Command
+
+`infoblox-create-naptr-substitute-record-rule`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for a record in FQDN format. | Required |
+| rp_zone | The zone to assign the rule to to. | Required |
+| comment | Comment for this rule. | Optional |
+| order | The order parameter of the substitute rule of the NAPTR record. This parameter specifies the order in which the NAPTR rules are applied when multiple rules are present. Can be from 0 to 65535 (inclusive). | Required |
+| preference | Preference value, 0 to 65535 (inclusive). | Required |
+| replacement | The substitute rule object replacement field of the NAPTR record. For non-terminal NAPTR records, this field specifies the next domain name to look up. | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ModifiedResponsePolicyZoneRules.Name | string | The name of the rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Disable | boolean | Whether this rule is disabled. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Comment | string | The comment for this rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Type | string | The object type as used in Infoblox. |
+| Infoblox.ModifiedResponsePolicyZoneRules.View | string | The view of the definition. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Zone | string | The zone to which this rule belongs. |
+| Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID | string | The reference ID of the rule. |
+
+##### Command Example
+
+`!infoblox-create-naptr-substitute-record-rule name="nightly-test-naptr-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-naptr-sub" order="0" preference="1" replacement="infoblow.com"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ModifiedResponsePolicyZoneRules": {
         "Comment": "nightly-test-naptr-sub",
@@ -1841,165 +820,56 @@ This integration was integrated and tested with version V2 of Infoblox
         "Zone": "infoblow.com"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Response Policy Zone rule: nightly-test-naptr-sub.infoblow.com has been created:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Comment</strong></th>
-      <th><strong>Disable</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Order</strong></th>
-      <th><strong>Preference</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>Regexp</strong></th>
-      <th><strong>Replacement</strong></th>
-      <th><strong>Services</strong></th>
-      <th><strong>Type</strong></th>
-      <th><strong>View</strong></th>
-      <th><strong>Zone</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> nightly-test-naptr-sub </td>
-      <td> false </td>
-      <td> nightly-test-naptr-sub.infoblow.com </td>
-      <td> 0 </td>
-      <td> 1 </td>
-      <td> record:rpz:naptr/ZG5zLmJpbmRfbmFwdHIkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdyxuaWdodGx5LXRlc3QtbmFwdHItc3ViLDAsMSwsLCxpbmZvYmxvdy5jb20:nightly-test-naptr-sub.infoblow.com/default </td>
-      <td>  </td>
-      <td> infoblow.com </td>
-      <td>  </td>
-      <td> record:rpz:naptr </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-create-ptr-substitute-record-rule">11. infoblox-create-ptr-substitute-record-rule</h3>
-<hr>
-<p>Creates a substitute rule of the PTR record.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-create-ptr-substitute-record-rule</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>rp_zone</td>
-      <td>The zone to assign the rule.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>comment</td>
-      <td>Add a comment for this rule.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>ptrdname</td>
-      <td>The domain name of the RPZ substitute rule object of the PTR record in FQDN format.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>name</td>
-      <td>The name of the RPZ Substitute rule object of the PTR record in FQDN format.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>ipv4addr</td>
-      <td>The IPv4 Address of the substitute rule.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>ipv6addr</td>
-      <td>The IPv6 Address of the substitute rule.</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Response Policy Zone rule: nightly-test-naptr-sub.infoblow.com has been created:
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Name</td>
-      <td>string</td>
-      <td>The name of the rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Disable</td>
-      <td>boolean</td>
-      <td>Whether this rule is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Comment</td>
-      <td>string</td>
-      <td>The Comment for this rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Type</td>
-      <td>string</td>
-      <td>The object type as used in Infoblox.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Zone</td>
-      <td>string</td>
-      <td>The zone to which this rule belongs.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID</td>
-      <td>string</td>
-      <td>The reference ID of the rule.</td>
-    </tr>
-  </tbody>
-</table>
+| **Comment** | **Disable** | **Name** | **Order** | **Preference** | **Reference ID** | **Regexp** | **Replacement** | **Services** | **Type** | **View** | **Zone** |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| nightly-test-naptr-sub | false | nightly-test-naptr-sub.infoblow.com | 0   | 1   | record:rpz:naptr/ZG5zLmJpbmRfbmFwdHIkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdyxuaWdodGx5LXRlc3QtbmFwdHItc3ViLDAsMSwsLCxpbmZvYmxvdy5jb20:nightly-test-naptr-sub.infoblow.com/default |     | infoblow.com |     | record:rpz:naptr | default | infoblow.com |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-create-ptr-substitute-record-rule rp_zone="infoblow.com" comment="nightly-test-ptr-sub" ptrdname="infoblow.com" ipv4addr="0.0.0.0" </code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-create-ptr-substitute-record-rule
+
+* * *
+
+Creates a substitute rule of the PTR record.
+
+##### Base Command
+
+`infoblox-create-ptr-substitute-record-rule`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rp_zone | The zone to assign the rule to to. | Required |
+| comment | Comment for this rule. | Optional |
+| ptrdname | The domain name of the RPZ substitute rule object of the PTR record in FQDN format. | Required |
+| name | The name of the RPZ Substitute rule object of the PTR record in FQDN format. | Optional |
+| ipv4addr | The IPv4 address of the substitute rule. | Optional |
+| ipv6addr | The IPv6 address of the substitute rule. | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ModifiedResponsePolicyZoneRules.Name | string | The name of the rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Disable | boolean | Whether this rule is disabled. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Comment | string | The Comment for this rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Type | string | The object type as used in Infoblox. |
+| Infoblox.ModifiedResponsePolicyZoneRules.View | string | The view of the definition. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Zone | string | The zone to which this rule belongs. |
+| Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID | string | The reference ID of the rule. |
+
+##### Command Example
+
+`!infoblox-create-ptr-substitute-record-rule rp_zone="infoblow.com" comment="nightly-test-ptr-sub" ptrdname="infoblow.com" ipv4addr="0.0.0.0"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ModifiedResponsePolicyZoneRules": {
         "Comment": "nightly-test-ptr-sub",
@@ -2013,164 +883,57 @@ This integration was integrated and tested with version V2 of Infoblox
         "Zone": "infoblow.com"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Response Policy Zone rule: None has been created:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Comment</strong></th>
-      <th><strong>Disable</strong></th>
-      <th><strong>Ipv 4 Addr</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Ptrdname</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>Type</strong></th>
-      <th><strong>View</strong></th>
-      <th><strong>Zone</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> nightly-test-ptr-sub </td>
-      <td> false </td>
-      <td> 0.0.0.0 </td>
-      <td> 0.0.0.0.in-addr.arpa.infoblow.com </td>
-      <td> infoblow.com </td>
-      <td> record:rpz:ptr/ZG5zLmJpbmRfcHRyJC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cuYXJwYS5pbi1hZGRyLjAuMC4wLjAuaW5mb2Jsb3cuY29t:0.0.0.0.in-addr.arpa.infoblow.com/default </td>
-      <td> record:rpz:ptr </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-create-srv-substitute-record-rule">12. infoblox-create-srv-substitute-record-rule</h3>
-<hr>
-<p>Creates a substitute rule of a SRV record.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-create-srv-substitute-record-rule</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>name</td>
-      <td>The name for a record in FQDN format.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>rp_zone</td>
-      <td>The zone to assign the rule.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>comment</td>
-      <td>Add a comment for this rule.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>port</td>
-      <td>The port of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive).</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>priority</td>
-      <td>The priority of the substitute rule for the SRV Record. Can be 0 to 65535 (inclusive).</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>target</td>
-      <td>The target of the substitute rule of the SRV record in FQDN format. This value can be in unicode format.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>weight</td>
-      <td>The weight of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive).</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Response Policy Zone rule: None has been created:
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Name</td>
-      <td>string</td>
-      <td>The rule name.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Disable</td>
-      <td>boolean</td>
-      <td>Whether this rule is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Comment</td>
-      <td>string</td>
-      <td>The comment for this rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Type</td>
-      <td>string</td>
-      <td>The object type as used in Infoblox.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Zone</td>
-      <td>string</td>
-      <td>The zone to which this rule belongs.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID</td>
-      <td>string</td>
-      <td>The reference ID of the rule.</td>
-    </tr>
-  </tbody>
-</table>
+| **Comment** | **Disable** | **Ipv 4 Addr** | **Name** | **Ptrdname** | **Reference ID** | **Type** | **View** | **Zone** |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| nightly-test-ptr-sub | false | 0.0.0.0 | 0.0.0.0.in-addr.arpa.infoblow.com | infoblow.com | record:rpz:ptr/ZG5zLmJpbmRfcHRyJC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cuYXJwYS5pbi1hZGRyLjAuMC4wLjAuaW5mb2Jsb3cuY29t:0.0.0.0.in-addr.arpa.infoblow.com/default | record:rpz:ptr | default | infoblow.com |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-create-srv-substitute-record-rule name="nightly-test-srv-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-srv-sub" port="22" priority="10" target="infoblow.com" weight="10" </code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-create-srv-substitute-record-rule
+
+* * *
+
+Creates a substitute rule of a SRV record.
+
+##### Base Command
+
+`infoblox-create-srv-substitute-record-rule`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for a record in FQDN format. | Required |
+| rp_zone | The zone to assign the rule to. | Required |
+| comment | Comment for this rule. | Optional |
+| port | The port of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive). | Required |
+| priority | The priority of the substitute rule for the SRV Record. Can be 0 to 65535 (inclusive). | Required |
+| target | The target of the substitute rule of the SRV record in FQDN format. This value can be in unicode format. | Required |
+| we.g.,t | The we.g.,t of the substitute rule of the SRV record. Can be 0 to 65535 (inclusive). | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ModifiedResponsePolicyZoneRules.Name | string | The rule name. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Disable | boolean | Whether this rule is disabled. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Comment | string | The comment for this rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Type | string | The object type as used in Infoblox. |
+| Infoblox.ModifiedResponsePolicyZoneRules.View | string | The view of the definition. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Zone | string | The zone to which this rule belongs. |
+| Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID | string | The reference ID of the rule. |
+
+##### Command Example
+
+`!infoblox-create-srv-substitute-record-rule name="nightly-test-srv-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-srv-sub" port="22" priority="10" target="infoblow.com" we.g.,t="10"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ModifiedResponsePolicyZoneRules": {
         "Comment": "nightly-test-srv-sub",
@@ -2182,157 +945,58 @@ This integration was integrated and tested with version V2 of Infoblox
         "Target": "infoblow.com",
         "Type": "record:rpz:srv",
         "View": "default",
-        "Weight": 10,
+        "We.g.,t": 10,
         "Zone": "infoblow.com"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Response Policy Zone rule: nightly-test-srv-sub.infoblow.com has been created:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Comment</strong></th>
-      <th><strong>Disable</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Port</strong></th>
-      <th><strong>Priority</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>Target</strong></th>
-      <th><strong>Type</strong></th>
-      <th><strong>View</strong></th>
-      <th><strong>Weight</strong></th>
-      <th><strong>Zone</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> nightly-test-srv-sub </td>
-      <td> false </td>
-      <td> nightly-test-srv-sub.infoblow.com </td>
-      <td> 22 </td>
-      <td> 10 </td>
-      <td> record:rpz:srv/ZG5zLmJpbmRfc3J2JC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cvbmlnaHRseS10ZXN0LXNydi1zdWIvMTAvMTAvMjIvaW5mb2Jsb3cuY29t:nightly-test-srv-sub.infoblow.com/default </td>
-      <td> infoblow.com </td>
-      <td> record:rpz:srv </td>
-      <td> default </td>
-      <td> 10 </td>
-      <td> infoblow.com </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-create-txt-substitute-record-rule">13. infoblox-create-txt-substitute-record-rule</h3>
-<hr>
-<p>Create a substitute rule for a txt record.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-create-txt-substitute-record-rule</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>name</td>
-      <td>The name for a record in FQDN format.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>rp_zone</td>
-      <td>The zone to assign the rule.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>comment</td>
-      <td>Add a comment for this rule.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>text</td>
-      <td>Text associated with the record. To enter leading, trailing, or embedded spaces in the text, add quotes around the text to preserve the spaces.</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Response Policy Zone rule: nightly-test-srv-sub.infoblow.com has been created:
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Name</td>
-      <td>string</td>
-      <td>The rule name.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Disable</td>
-      <td>boolean</td>
-      <td>Whether this rule is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Comment</td>
-      <td>string</td>
-      <td>The comment for this rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Type</td>
-      <td>string</td>
-      <td>The object type as used in Infoblox.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Zone</td>
-      <td>string</td>
-      <td>The zone to which this rule belongs.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID</td>
-      <td>string</td>
-      <td>The reference ID of the rule.</td>
-    </tr>
-  </tbody>
-</table>
+| **Comment** | **Disable** | **Name** | **Port** | **Priority** | **Reference ID** | **Target** | **Type** | **View** | **We.g.,t** | **Zone** |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| nightly-test-srv-sub | false | nightly-test-srv-sub.infoblow.com | 22  | 10  | record:rpz:srv/ZG5zLmJpbmRfc3J2JC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cvbmlnaHRseS10ZXN0LXNydi1zdWIvMTAvMTAvMjIvaW5mb2Jsb3cuY29t:nightly-test-srv-sub.infoblow.com/default | infoblow.com | record:rpz:srv | default | 10  | infoblow.com |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-create-txt-substitute-record-rule name="nightly-test-txt-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-txt-sub" text="nightly-test-txt-sub" </code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-create-txt-substitute-record-rule
+
+* * *
+
+Create a substitute rule for a txt record.
+
+##### Base Command
+
+`infoblox-create-txt-substitute-record-rule`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for a record in FQDN format. | Required |
+| rp_zone | The zone to assign the rule to. | Required |
+| comment | Comment for this rule. | Optional |
+| text | Text associated with the record. To enter leading, trailing, or embedded spaces in the text, add quotes around the text to preserve the spaces. | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ModifiedResponsePolicyZoneRules.Name | string | The rule name. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Disable | boolean | Whether this rule is disabled. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Comment | string | The comment for this rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Type | string | The object type as used in Infoblox. |
+| Infoblox.ModifiedResponsePolicyZoneRules.View | string | The view of the definition. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Zone | string | The zone to which this rule belongs. |
+| Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID | string | The reference ID of the rule. |
+
+##### Command Example
+
+`!infoblox-create-txt-substitute-record-rule name="nightly-test-txt-sub.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-txt-sub" text="nightly-test-txt-sub"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ModifiedResponsePolicyZoneRules": {
         "Comment": "nightly-test-txt-sub",
@@ -2345,147 +1009,54 @@ This integration was integrated and tested with version V2 of Infoblox
         "Zone": "infoblow.com"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Response Policy Zone rule: nightly-test-txt-sub.infoblow.com has been created:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Comment</strong></th>
-      <th><strong>Disable</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>Text</strong></th>
-      <th><strong>Type</strong></th>
-      <th><strong>View</strong></th>
-      <th><strong>Zone</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> nightly-test-txt-sub </td>
-      <td> false </td>
-      <td> nightly-test-txt-sub.infoblow.com </td>
-      <td> record:rpz:txt/ZG5zLmJpbmRfdHh0JC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cubmlnaHRseS10ZXN0LXR4dC1zdWIuIm5pZ2h0bHktdGVzdC10eHQtc3ViIg:nightly-test-txt-sub.infoblow.com/default </td>
-      <td> nightly-test-txt-sub </td>
-      <td> record:rpz:txt </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-create-ipv4-substitute-record-rule">14. infoblox-create-ipv4-substitute-record-rule</h3>
-<hr>
-<p>Create a substitute rule for an IPv4 rule.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-create-ipv4-substitute-record-rule</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>name</td>
-      <td>The name for a record in FQDN format.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>rp_zone</td>
-      <td>The zone to assign the rule.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>comment</td>
-      <td>Add a comment for this rule.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>ipv4addr</td>
-      <td>The IPv4 Address of the substitute rule.</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Response Policy Zone rule: nightly-test-txt-sub.infoblow.com has been created:
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Name</td>
-      <td>string</td>
-      <td>The rule name.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Disable</td>
-      <td>boolean</td>
-      <td>Whether this rule is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Comment</td>
-      <td>string</td>
-      <td>The comment for this rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Type</td>
-      <td>string</td>
-      <td>The object type as used in Infoblox.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Zone</td>
-      <td>string</td>
-      <td>The zone to which this rule belongs.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID</td>
-      <td>string</td>
-      <td>The reference ID of the rule.</td>
-    </tr>
-  </tbody>
-</table>
+| **Comment** | **Disable** | **Name** | **Reference ID** | **Text** | **Type** | **View** | **Zone** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| nightly-test-txt-sub | false | nightly-test-txt-sub.infoblow.com | record:rpz:txt/ZG5zLmJpbmRfdHh0JC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cubmlnaHRseS10ZXN0LXR4dC1zdWIuIm5pZ2h0bHktdGVzdC10eHQtc3ViIg:nightly-test-txt-sub.infoblow.com/default | nightly-test-txt-sub | record:rpz:txt | default | infoblow.com |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-create-ipv4-substitute-record-rule name="3.3.3.3.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-ipv4-sub" ipv4addr="3.3.3.4" </code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-create-ipv4-substitute-record-rule
+
+* * *
+
+Create a substitute rule for an IPv4 rule.
+
+##### Base Command
+
+`infoblox-create-ipv4-substitute-record-rule`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for a record in FQDN format. | Required |
+| rp_zone | The zone to assign the rule to. | Required |
+| comment | Comment for this rule. | Optional |
+| ipv4addr | The IPv4 Address of the substitute rule. | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ModifiedResponsePolicyZoneRules.Name | string | The rule name. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Disable | boolean | Whether this rule is disabled. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Comment | string | The comment for this rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Type | string | The object type as used in Infoblox. |
+| Infoblox.ModifiedResponsePolicyZoneRules.View | string | The view of the definition. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Zone | string | The zone to which this rule belongs. |
+| Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID | string | The reference ID of the rule. |
+
+##### Command Example
+
+`!infoblox-create-ipv4-substitute-record-rule name="3.3.3.3.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-ipv4-sub" ipv4addr="3.3.3.4"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ModifiedResponsePolicyZoneRules": {
         "Comment": "nightly-test-ipv4-sub",
@@ -2498,147 +1069,54 @@ This integration was integrated and tested with version V2 of Infoblox
         "Zone": "infoblow.com"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Response Policy Zone rule: 3.3.3.3.infoblow.com has been created:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Comment</strong></th>
-      <th><strong>Disable</strong></th>
-      <th><strong>Ipv 4 Addr</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>Type</strong></th>
-      <th><strong>View</strong></th>
-      <th><strong>Zone</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> nightly-test-ipv4-sub </td>
-      <td> false </td>
-      <td> 3.3.3.4 </td>
-      <td> 3.3.3.3.infoblow.com </td>
-      <td> record:rpz:a:ipaddress/ZG5zLmJpbmRfYSQuX2RlZmF1bHQuY29tLmluZm9ibG93LHJwei1pcC4zLjMuMy4zLjMyLDMuMy4zLjQ:3.3.3.3.infoblow.com/default </td>
-      <td> record:rpz:a:ipaddress </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-create-ipv6-substitute-record-rule">15. infoblox-create-ipv6-substitute-record-rule</h3>
-<hr>
-<p>Creates a substitute of the IPv6 record rule.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-create-ipv6-substitute-record-rule</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>name</td>
-      <td>The name for a record in FQDN format.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>rp_zone</td>
-      <td>The zone to assign the rule.</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>comment</td>
-      <td>Add a comment for this rule.</td>
-      <td>Optional</td>
-    </tr>
-    <tr>
-      <td>ipv6addr</td>
-      <td>The IPv6 Address of the substitute rule.</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Response Policy Zone rule: 3.3.3.3.infoblow.com has been created:
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Name</td>
-      <td>string</td>
-      <td>The rule name.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Disable</td>
-      <td>boolean</td>
-      <td>Whether this rule is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Comment</td>
-      <td>string</td>
-      <td>The comment for this rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Type</td>
-      <td>string</td>
-      <td>The object type as used in Infoblox.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Zone</td>
-      <td>string</td>
-      <td>The zone to which this rule belongs.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID</td>
-      <td>string</td>
-      <td>The reference ID of the rule.</td>
-    </tr>
-  </tbody>
-</table>
+| **Comment** | **Disable** | **Ipv 4 Addr** | **Name** | **Reference ID** | **Type** | **View** | **Zone** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| nightly-test-ipv4-sub | false | 3.3.3.4 | 3.3.3.3.infoblow.com | record:rpz:a:ipaddress/ZG5zLmJpbmRfYSQuX2RlZmF1bHQuY29tLmluZm9ibG93LHJwei1pcC4zLjMuMy4zLjMyLDMuMy4zLjQ:3.3.3.3.infoblow.com/default | record:rpz:a:ipaddress | default | infoblow.com |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-create-ipv6-substitute-record-rule name="000:000:000::1.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-ipv6-sub" ipv6addr="fd60:e22:f1b9::2" </code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-create-ipv6-substitute-record-rule
+
+* * *
+
+Creates a substitute of the IPv6 record rule.
+
+##### Base Command
+
+`infoblox-create-ipv6-substitute-record-rule`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name for a record in FQDN format. | Required |
+| rp_zone | The zone to assign the rule to. | Required |
+| comment | Comment for this rule. | Optional |
+| ipv6addr | The IPv6 Address of the substitute rule. | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ModifiedResponsePolicyZoneRules.Name | string | The rule name. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Disable | boolean | Whether this rule is disabled. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Comment | string | The comment for this rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Type | string | The object type as used in Infoblox. |
+| Infoblox.ModifiedResponsePolicyZoneRules.View | string | The view of the definition. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Zone | string | The zone to which this rule belongs. |
+| Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID | string | The reference ID of the rule. |
+
+##### Command Example
+
+`!infoblox-create-ipv6-substitute-record-rule name="000:000:000::1.infoblow.com" rp_zone="infoblow.com" comment="nightly-test-ipv6-sub" ipv6addr="fd60:e22:f1b9::2"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ModifiedResponsePolicyZoneRules": {
         "Comment": "nightly-test-ipv6-sub",
@@ -2651,127 +1129,50 @@ This integration was integrated and tested with version V2 of Infoblox
         "Zone": "infoblow.com"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Response Policy Zone rule: 000:000:000::1.infoblow.com has been created:</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Comment</strong></th>
-      <th><strong>Disable</strong></th>
-      <th><strong>Ipv 6 Addr</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>Type</strong></th>
-      <th><strong>View</strong></th>
-      <th><strong>Zone</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> nightly-test-ipv6-sub </td>
-      <td> false </td>
-      <td> fd60:e22:f1b9::2 </td>
-      <td> ::1.infoblow.com </td>
-      <td> record:rpz:aaaa:ipaddress/ZG5zLmJpbmRfYWFhYSQuX2RlZmF1bHQuY29tLmluZm9ibG93LHJwei1pcC56ei4xLjEyOCxmZDYwOmUyMjpmMWI5Ojoy:%3A%3A1.infoblow.com/default </td>
-      <td> record:rpz:aaaa:ipaddress </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-enable-rule">16. infoblox-enable-rule</h3>
-<hr>
-<p>Disables a rule by its reference ID (reference ID could be extracted by running the searah rules command).</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-enable-rule</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>reference_id</td>
-      <td>The ID of the rule reference (could be extracted by running the search rules command).</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Response Policy Zone rule: 000:000:000::1.infoblow.com has been created:
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Disable</td>
-      <td>boolean</td>
-      <td>Whether this rule is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Comment</td>
-      <td>string</td>
-      <td>The rule comment.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Name</td>
-      <td>string</td>
-      <td>The rule name.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID</td>
-      <td>string</td>
-      <td>The reference ID of the rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Zone</td>
-      <td>string</td>
-      <td>The response policy zone to which this rule belongs.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-  </tbody>
-</table>
+| **Comment** | **Disable** | **Ipv 6 Addr** | **Name** | **Reference ID** | **Type** | **View** | **Zone** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| nightly-test-ipv6-sub | false | fd60:e22:f1b9::2 | ::1.infoblow.com | record:rpz:aaaa:ipaddress/ZG5zLmJpbmRfYWFhYSQuX2RlZmF1bHQuY29tLmluZm9ibG93LHJwei1pcC56ei4xLjEyOCxmZDYwOmUyMjpmMWI5Ojoy:%3A%3A1.infoblow.com/default | record:rpz:aaaa:ipaddress | default | infoblow.com |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-enable-rule reference_id="record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy41LjQuNC40:4.4.4.5.infoblow.com/default" </code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-enable-rule
+
+* * *
+
+Disables a rule by its reference ID (reference ID can be extracted by running the search rules command).
+
+##### Base Command
+
+`infoblox-enable-rule`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| reference_id | The ID of the rule reference (can be extracted by running the search rules command). | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ModifiedResponsePolicyZoneRules.Disable | boolean | Whether this rule is disabled. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Comment | string | The rule comment. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Name | string | The rule name. |
+| Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID | string | The reference ID of the rule. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Zone | string | The response policy zone to which this rule belongs. |
+| Infoblox.ModifiedResponsePolicyZoneRules.View | string | The view of the definition. |
+
+##### Command Example
+
+`!infoblox-enable-rule reference_id="record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy41LjQuNC40:4.4.4.5.infoblow.com/default"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ModifiedResponsePolicyZoneRules": {
         "Canonical": "4.4.4.5.infoblow.com",
@@ -2782,123 +1183,50 @@ This integration was integrated and tested with version V2 of Infoblox
         "Zone": "infoblow.com"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Response Policy Zone rule: 4.4.4.5.infoblow.com has been enabled</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Canonical</strong></th>
-      <th><strong>Disable</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>View</strong></th>
-      <th><strong>Zone</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> 4.4.4.5.infoblow.com </td>
-      <td> false </td>
-      <td> 4.4.4.5.infoblow.com </td>
-      <td> record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy41LjQuNC40:4.4.4.5.infoblow.com/default </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-disable-rule">17. infoblox-disable-rule</h3>
-<hr>
-<p>Disable a rule by its reference ID (reference ID could be extracted by running the 'infoblox-search-rule' command).</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-disable-rule</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>reference_id</td>
-      <td>The ID of the rule reference (reference ID could be extracted by running the 'infoblox-search-rule' command).</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Response Policy Zone rule: 4.4.4.5.infoblow.com has been enabled
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Disable</td>
-      <td>boolean</td>
-      <td>Whether this rule is disabled.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Comment</td>
-      <td>string</td>
-      <td>The rule comment.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Name</td>
-      <td>string</td>
-      <td>The rule name.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID</td>
-      <td>string</td>
-      <td>The ID of the rule reference.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.Zone</td>
-      <td>string</td>
-      <td>The response policy zone to which this rule belongs.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ModifiedResponsePolicyZoneRules.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-  </tbody>
-</table>
+| **Canonical** | **Disable** | **Name** | **Reference ID** | **View** | **Zone** |
+| --- | --- | --- | --- | --- | --- |
+| 4.4.4.5.infoblow.com | false | 4.4.4.5.infoblow.com | record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy41LjQuNC40:4.4.4.5.infoblow.com/default | default | infoblow.com |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-disable-rule reference_id="record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy41LjQuNC40:4.4.4.5.infoblow.com/default" </code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-disable-rule
+
+* * *
+
+Disable a rule by its reference ID (reference ID can be extracted by running the 'infoblox-search-rule' command).
+
+##### Base Command
+
+`infoblox-disable-rule`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| reference_id | The ID of the rule reference (reference ID can be extracted by running the 'infoblox-search-rule' command). | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ModifiedResponsePolicyZoneRules.Disable | boolean | Whether this rule is disabled. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Comment | string | The rule comment. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Name | string | The rule name. |
+| Infoblox.ModifiedResponsePolicyZoneRules.ReferenceID | string | The ID of the rule reference. |
+| Infoblox.ModifiedResponsePolicyZoneRules.Zone | string | The response policy zone to which this rule belongs. |
+| Infoblox.ModifiedResponsePolicyZoneRules.View | string | The view of the definition. |
+
+##### Command Example
+
+`!infoblox-disable-rule reference_id="record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy41LjQuNC40:4.4.4.5.infoblow.com/default"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ModifiedResponsePolicyZoneRules": {
         "Canonical": "4.4.4.5.infoblow.com",
@@ -2909,103 +1237,46 @@ This integration was integrated and tested with version V2 of Infoblox
         "Zone": "infoblow.com"
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Response Policy Zone rule: 4.4.4.5.infoblow.com has been disabled</h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Canonical</strong></th>
-      <th><strong>Disable</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>View</strong></th>
-      <th><strong>Zone</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> 4.4.4.5.infoblow.com </td>
-      <td> true </td>
-      <td> 4.4.4.5.infoblow.com </td>
-      <td> record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy41LjQuNC40:4.4.4.5.infoblow.com/default </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-get-object-fields">18. infoblox-get-object-fields</h3>
-<hr>
-<p>Returns the object fields names which can be used in the search rules command.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-get-object-fields</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>object_type</td>
-      <td>The Infoblox object type (can be retrieved by running the 'infoblox-list-response-policy-zone-rules' command).</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Response Policy Zone rule: 4.4.4.5.infoblow.com has been disabled
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.ObjectFields.ObjectType</td>
-      <td>string</td>
-      <td>The Infoblox object type.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.ObjectFields.SupportedFields</td>
-      <td>string</td>
-      <td>The list of supported fields for this object.</td>
-    </tr>
-  </tbody>
-</table>
+| **Canonical** | **Disable** | **Name** | **Reference ID** | **View** | **Zone** |
+| --- | --- | --- | --- | --- | --- |
+| 4.4.4.5.infoblow.com | true | 4.4.4.5.infoblow.com | record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy41LjQuNC40:4.4.4.5.infoblow.com/default | default | infoblow.com |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-get-object-fields object_type="record:rpz:cname" </code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-get-object-fields
+
+* * *
+
+Returns the object fields names which can be used in the search rules command.
+
+##### Base Command
+
+`infoblox-get-object-fields`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The Infoblox object type (can be retrieved by running the 'infoblox-list-response-policy-zone-rules' command). | Required |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.ObjectFields.ObjectType | string | The Infoblox object type. |
+| Infoblox.ObjectFields.SupportedFields | string | The list of supported fields for this object. |
+
+##### Command Example
+
+`!infoblox-get-object-fields object_type="record:rpz:cname"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.ObjectFields": {
         "ObjectType": "record:rpz:cname",
@@ -3023,135 +1294,58 @@ This integration was integrated and tested with version V2 of Infoblox
         ]
     }
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Object record:rpz:cname supported fields: </h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Field Names</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> canonical </td>
-    </tr>
-    <tr>
-      <td> comment </td>
-    </tr>
-    <tr>
-      <td> disable </td>
-    </tr>
-    <tr>
-      <td> extattrs </td>
-    </tr>
-    <tr>
-      <td> name </td>
-    </tr>
-    <tr>
-      <td> rp_zone </td>
-    </tr>
-    <tr>
-      <td> ttl </td>
-    </tr>
-    <tr>
-      <td> use_ttl </td>
-    </tr>
-    <tr>
-      <td> view </td>
-    </tr>
-    <tr>
-      <td> zone </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-search-rule">19. infoblox-search-rule</h3>
-<hr>
-<p>Searches a specific rule by its name.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-search-rule</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>object_type</td>
-      <td>The Infoblox object type (can be retrieved by running the 'infoblox-list-response-policy-zone-rules' command).</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>rule_name</td>
-      <td>The full rule name (usually the rule name followed by its zone. Example: name.domain.com)</td>
-      <td>Required</td>
-    </tr>
-    <tr>
-      <td>output_fields</td>
-      <td>The fields to include in the return object (supported object fields can be retrieved by running the *infoblox-get-object-fields* command).</td>
-      <td>Optional</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Object record:rpz:cname supported fields:
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Path</strong>
-      </th>
-      <th>
-        <strong>Type</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Infoblox.RulesSearchResults.Name</td>
-      <td>string</td>
-      <td>The rule name.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.RulesSearchResults.ReferenceID</td>
-      <td>string</td>
-      <td>The reference ID of the rule.</td>
-    </tr>
-    <tr>
-      <td>Infoblox.RulesSearchResults.View</td>
-      <td>string</td>
-      <td>The view of the definition.</td>
-    </tr>
-  </tbody>
-</table>
+| **Field Names** |
+| --- |
+| canonical |
+| comment |
+| disable |
+| extattrs |
+| name |
+| rp_zone |
+| ttl |
+| use_ttl |
+| view |
+| zone |
 
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-search-rule object_type="record:rpz:cname" rule_name="4.4.4.5.infoblow.com" output_fields="canonical,comment,disable,extattrs,name,rp_zone,ttl,use_ttl,view,zone"</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+### infoblox-search-rule
+
+* * *
+
+Searches a specific rule by its name.
+
+##### Base Command
+
+`infoblox-search-rule`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The Infoblox object type (can be retrieved by running the 'infoblox-list-response-policy-zone-rules' command). | Required |
+| rule_name | The full rule name (usually the rule name followed by its zone. Example: name.domain.com) | Required |
+| output_fields | The fields to include in the return object (supported object fields can be retrieved by running the \*infoblox-get-object-fields\* command). | Optional |
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.RulesSearchResults.Name | string | The rule name. |
+| Infoblox.RulesSearchResults.ReferenceID | string | The reference ID of the rule. |
+| Infoblox.RulesSearchResults.View | string | The view of the definition. |
+
+##### Command Example
+
+`!infoblox-search-rule object_type="record:rpz:cname" rule_name="4.4.4.5.infoblow.com" output_fields="canonical,comment,disable,extattrs,name,rp_zone,ttl,use_ttl,view,zone"`
+
+##### Context Example
+
+```json
 {
     "Infoblox.RulesSearchResults": [
         {
@@ -3166,123 +1360,94 @@ This integration was integrated and tested with version V2 of Infoblox
         }
     ]
 }
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<h3>Infoblox Integration - Search result for: 4.4.4.5.infoblow.com: </h3>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th><strong>Canonical</strong></th>
-      <th><strong>Disable</strong></th>
-      <th><strong>Extattrs</strong></th>
-      <th><strong>Name</strong></th>
-      <th><strong>Reference ID</strong></th>
-      <th><strong>Use Ttl</strong></th>
-      <th><strong>View</strong></th>
-      <th><strong>Zone</strong></th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td> 4.4.4.5.infoblow.com </td>
-      <td> false </td>
-      <td>  </td>
-      <td> 4.4.4.5.infoblow.com </td>
-      <td> record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy41LjQuNC40:4.4.4.5.infoblow.com/default </td>
-      <td> false </td>
-      <td> default </td>
-      <td> infoblow.com </td>
-    </tr>
-  </tbody>
-</table>
-</p>
+```
 
-<h3 id="infoblox-delete-rpz-rule">20. infoblox-delete-rpz-rule</h3>
-<hr>
-<p>Deletes a rule.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-delete-rpz-rule</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>reference_id</td>
-      <td>The reference ID of the rule (reference ID can be retrieved by running the 'infoblox-search-rule' command).</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+### Infoblox Integration - Search result for: 4.4.4.5.infoblow.com:
 
-<p>&nbsp;</p>
-<h5>Context Output</h5>
+| **Canonical** | **Disable** | **Extattrs** | **Name** | **Reference ID** | **Use Ttl** | **View** | **Zone** |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 4.4.4.5.infoblow.com | false |     | 4.4.4.5.infoblow.com | record:rpz:cname/ZG5zLmJpbmRfY25hbWUkLl9kZWZhdWx0LmNvbS5pbmZvYmxvdy41LjQuNC40:4.4.4.5.infoblow.com/default | false | default | infoblow.com |
+
+### infoblox-delete-rpz-rule
+
+* * *
+
+Deletes a rule.
+
+##### Base Command
+
+`infoblox-delete-rpz-rule`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| reference_id | The reference ID of the rule (reference ID can be retrieved by running the 'infoblox-search-rule' command). | Required |
+
+##### Context Output
+
 There are no context output for this command.
-<p>&nbsp;</p>
-<h5>Command Example</h5>
-<p>
-  <code>!infoblox-delete-rpz-rule reference_id=record:rpz:ptr/ZG5zLmJpbmRfcHRyJC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cuYXJwYS5pbi1hZGRyLjAuMC4wLjAuaW5mb2Jsb3cuY29t:0.0.0.0.in-addr.arpa.infoblow.com/default</code>
-</p>
-<h5>Context Example</h5>
-<pre>
+
+##### Command Example
+
+`!infoblox-delete-rpz-rule reference_id=record:rpz:ptr/ZG5zLmJpbmRfcHRyJC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cuYXJwYS5pbi1hZGRyLjAuMC4wLjAuaW5mb2Jsb3cuY29t:0.0.0.0.in-addr.arpa.infoblow.com/default`
+
+##### Context Example
+
+```json
 {}
-</pre>
-<h5>Human Readable Output</h5>
-<p>
-<p>
-Infoblox Integration - A rule with the following id was deleted: 
- record:rpz:ptr/ZG5zLmJpbmRfcHRyJC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cuYXJwYS5pbi1hZGRyLjAuMC4wLjAuaW5mb2Jsb3cuY29t:0.0.0.0.in-addr.arpa.infoblow.com/default
-</p>
-</p>
+```
 
-<h3 id="infoblox-delete-response-policy-zone">21. infoblox-delete-response-policy-zone</h3>
-<hr>
-<p>Deletes a given response policy zone.</p>
-<h5>Base Command</h5>
-<p>
-  <code>infoblox-delete-response-policy-zone</code>
-</p>
+##### Human Readable Output
 
-<h5>Input</h5>
-<table style="width:750px" border="2" cellpadding="6">
-  <thead>
-    <tr>
-      <th>
-        <strong>Argument Name</strong>
-      </th>
-      <th>
-        <strong>Description</strong>
-      </th>
-      <th>
-        <strong>Required</strong>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>reference_id</td>
-      <td>The reference ID of the rule (could be extracted by running the search rules command).</td>
-      <td>Required</td>
-    </tr>
-  </tbody>
-</table>
+Infoblox Integration - A rule with the following id was deleted: record:rpz:ptr/ZG5zLmJpbmRfcHRyJC5fZGVmYXVsdC5jb20uaW5mb2Jsb3cuYXJwYS5pbi1hZGRyLjAuMC4wLjAuaW5mb2Jsb3cuY29t:0.0.0.0.in-addr.arpa.infoblow.com/default
 
-<p>&nbsp;</p>
+### infoblox-delete-response-policy-zone
+
+* * *
+
+Deletes a given response policy zone.
+
+##### Base Command
+
+`infoblox-delete-response-policy-zone`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| reference_id | The reference ID of the rule (can be extracted by running the search rules command). | Required |
+
+##### Context Output
+
+There are no context output for this command.
+
+##### Command Example
+
+`!infoblox-delete-response-policy-zone reference_id="zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50cGIubmlnaHRseS5pbmZvbmxveA:infonlox.nightly.tpb.com/default\"`
+
+##### Context Example
+
+```json
+{}
+```
+
+##### Human Readable Output
+
+Infoblox Integration - Response Policy Zone with the following id was deleted: zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50cGIubmlnaHRseS5pbmZvbmxveA:infonlox.nightly.tpb.com/default
+
+Additional Information
+----------------------
+
+In order to create new rule for a response policy zone for all rules different from substitute record use the command 'create-rpz-rule'. For substitute record rules use the designated command for each use case.
+
+Known Limitations
+-----------------
+
+Troubleshooting
+---------------
 <h5>Context Output</h5>
 There are no context output for this command.
 <p>&nbsp;</p>
@@ -3306,3 +1471,249 @@ Infoblox Integration - Response Policy Zone with the following id was deleted:
     In order to create new rule for a response policy zone for all rules different from substitute record use the command 'create-rpz-rule'. For substitute record rules use the designated command for each use case.
 </p>
 <h2>Known Limitations</h2><h2>Troubleshooting</h2>
+
+### infoblox-list-host-info
+
+***
+Get all host records.
+
+#### Base Command
+
+`infoblox-list-host-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_name | The hostname to retrieve records for, e.g., localhost.test. | Optional | 
+| extattrs | Comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue". | Optional | 
+| max_results | The maximum number of records to return. Default is 50, maximum is 1000. | Optional | 
+| additional_return_fields | Comma-separated list of additional fields to return for each host, e.g., extattrs,aliases. Default is extattrs. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.Host.Reference | String | The host record reference ID. | 
+| Infoblox.Host.IPv4Address | String | The host first IPv4 address. | 
+| Infoblox.Host.ConfigureForDHCP | Boolean | Whether the host is configured for DHCP. | 
+| Infoblox.Host.Name | String | The host record name. | 
+| Infoblox.Host.ExtendedAttributes | Unknown | The network extended attributes. | 
+| Infoblox.Host.AdditionalFields | Unknown | The additional fields for network. | 
+
+#### Command example
+```!infoblox-list-host-info```
+#### Context Example
+```json
+{
+    "Infoblox": {
+        "Host": [
+            {
+                "ConfigureForDHCP": false,
+                "ExtendedAttributes": {},
+                "IPv4Address": "192.168.10.10",
+                "Name": "localhost.test",
+                "Reference": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QuMTkyLjE2OC4xMC4xMC4:192.168.10.10/localhost.test/default"
+            },
+            {
+                "ConfigureForDHCP": false,
+                "ExtendedAttributes": {
+                    "IB Discovery Owned": "EMEA",
+                    "Site": "Tel-Aviv"
+                },
+                "IPv4Address": "192.168.100.100",
+                "Name": "localdoman.localhost.test",
+                "Reference": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QubG9jYWxkb21hbi4xOTIuMTY4LjEwMC4xMDAu:192.168.100.100/localdoman.localhost.test/default"
+            },
+            {
+                "ConfigureForDHCP": false,
+                "ExtendedAttributes": {
+                    "Site": "Local"
+                },
+                "IPv4Address": "255.255.255.192",
+                "Name": "test",
+                "Reference": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC4uMjU1LjI1NS4yNTUuMTkyLg:255.255.255.192/test/default"
+            },
+            {
+                "ConfigureForDHCP": false,
+                "ExtendedAttributes": {
+                    "IB Discovery Owned": "dummy value",
+                    "Site": "ciac-5843"
+                },
+                "IPv4Address": "192.168.1.0",
+                "Name": "ciac-3607.test",
+                "Reference": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5jaWFjLTM2MDcuMTkyLjE2OC4xLjAu:192.168.1.0/ciac-3607.test/default"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Host records (first 50)
+>|ConfigureForDHCP|ExtendedAttributes|IPv4Address|Name|Reference|
+>|---|---|---|---|---|
+>| false |  | 192.168.10.10 | localhost.test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QuMTkyLjE2OC4xMC4xMC4:192.168.10.10/localhost.test/default |
+>| false | IB Discovery Owned: EMEA<br/>Site: Tel-Aviv | 192.168.100.100 | localdoman.localhost.test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QubG9jYWxkb21hbi4xOTIuMTY4LjEwMC4xMDAu:192.168.100.100/localdoman.localhost.test/default |
+>| false | Site: Local | 255.255.255.192 | test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC4uMjU1LjI1NS4yNTUuMTkyLg:255.255.255.192/test/default |
+>| false | IB Discovery Owned: dummy value<br/>Site: ciac-5843 | 192.168.1.0 | ciac-3607.test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5jaWFjLTM2MDcuMTkyLjE2OC4xLjAu:192.168.1.0/ciac-3607.test/default |
+
+
+#### Command example
+```!infoblox-list-host-info additional_return_fields=extattrs,aliases```
+#### Context Example
+```json
+{
+    "Infoblox": {
+        "Host": [
+            {
+                "ConfigureForDHCP": false,
+                "ExtendedAttributes": {},
+                "IPv4Address": "192.168.10.10",
+                "Name": "localhost.test",
+                "Reference": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QuMTkyLjE2OC4xMC4xMC4:192.168.10.10/localhost.test/default"
+            },
+            {
+                "ConfigureForDHCP": false,
+                "ExtendedAttributes": {
+                    "IB Discovery Owned": "EMEA",
+                    "Site": "Tel-Aviv"
+                },
+                "IPv4Address": "192.168.100.100",
+                "Name": "localdoman.localhost.test",
+                "Reference": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QubG9jYWxkb21hbi4xOTIuMTY4LjEwMC4xMDAu:192.168.100.100/localdoman.localhost.test/default"
+            },
+            {
+                "ConfigureForDHCP": false,
+                "ExtendedAttributes": {
+                    "Site": "Local"
+                },
+                "IPv4Address": "255.255.255.192",
+                "Name": "test",
+                "Reference": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC4uMjU1LjI1NS4yNTUuMTkyLg:255.255.255.192/test/default"
+            },
+            {
+                "AdditionalFields": [
+                    {
+                        "Aliases": [
+                            "test_host.test"
+                        ]
+                    }
+                ],
+                "ConfigureForDHCP": false,
+                "ExtendedAttributes": {
+                    "IB Discovery Owned": "dummy value",
+                    "Site": "ciac-5843"
+                },
+                "IPv4Address": "192.168.1.0",
+                "Name": "ciac-3607.test",
+                "Reference": "record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5jaWFjLTM2MDcuMTkyLjE2OC4xLjAu:192.168.1.0/ciac-3607.test/default"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Host records (first 50)
+>|ConfigureForDHCP|ExtendedAttributes|IPv4Address|Name|Reference|
+>|---|---|---|---|---|
+>| false |  | 192.168.10.10 | localhost.test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QuMTkyLjE2OC4xMC4xMC4:192.168.10.10/localhost.test/default |
+>| false | IB Discovery Owned: EMEA<br/>Site: Tel-Aviv | 192.168.100.100 | localdoman.localhost.test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QubG9jYWxkb21hbi4xOTIuMTY4LjEwMC4xMDAu:192.168.100.100/localdoman.localhost.test/default |
+>| false | Site: Local | 255.255.255.192 | test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC4uMjU1LjI1NS4yNTUuMTkyLg:255.255.255.192/test/default |
+>| false | IB Discovery Owned: dummy value<br/>Site: ciac-5843 | 192.168.1.0 | ciac-3607.test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5jaWFjLTM2MDcuMTkyLjE2OC4xLjAu:192.168.1.0/ciac-3607.test/default |
+
+
+### infoblox-list-network-info
+
+***
+List network information.
+
+#### Base Command
+
+`infoblox-list-network-info`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| pattern | Filter networks by pattern, e.g., '.0/24' for netmask, '192.168' for subnet. | Optional | 
+| extattrs | comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue". | Optional | 
+| max_results | The maximum number of records to return. Maximum is 1000. Default is 50. | Optional | 
+| additional_return_fields | Comma separated list of additional fields to return for each host, e.g., extattrs,aliases. Default is extattrs. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Infoblox.NetworkInfo.Reference | String | The network reference. | 
+| Infoblox.NetworkInfo.Name | String | The network name. | 
+| Infoblox.NetworkInfo.NetworkView | String | The network view name. | 
+| Infoblox.NetworkInfo.ExtendedAttributes | Unknown | The network extended attributes. | 
+| Infoblox.NetworkInfo.AdditionalFields | Unknown | The additional fields for network. | 
+
+#### Command example
+```!infoblox-list-network-info```
+#### Context Example
+```json
+{
+    "Infoblox": {
+        "NetworkInfo": [
+            {
+                "ExtendedAttributes": {},
+                "Name": "192.168.1.0/24",
+                "NetworkView": "default",
+                "Reference": "network/ZG5zLm5ldHdvcmskMTkyLjE2OC4xLjAvMjQvMA:192.168.1.0/24/default"
+            },
+            {
+                "ExtendedAttributes": {
+                    "Region": "EMEA"
+                },
+                "Name": "255.255.255.192/26",
+                "NetworkView": "default",
+                "Reference": "network/ZG5zLm5ldHdvcmskMjU1LjI1NS4yNTUuMTkyLzI2LzA:255.255.255.192/26/default"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Network information found (50 limit)
+>|ExtendedAttributes|Name|NetworkView|Reference|
+>|---|---|---|---|
+>|  | 192.168.1.0/24 | default | network/ZG5zLm5ldHdvcmskMTkyLjE2OC4xLjAvMjQvMA:192.168.1.0/24/default |
+>| Region: EMEA | 255.255.255.192/26 | default | network/ZG5zLm5ldHdvcmskMjU1LjI1NS4yNTUuMTkyLzI2LzA:255.255.255.192/26/default |
+
+
+#### Command example
+```!infoblox-list-network-info pattern=255.255 extattrs="Region=EMEA"```
+#### Context Example
+```json
+{
+    "Infoblox": {
+        "NetworkInfo": [
+            {
+                "ExtendedAttributes": {
+                    "Region": "EMEA"
+                },
+                "Name": "255.255.255.192/26",
+                "NetworkView": "default",
+                "Reference": "network/ZG5zLm5ldHdvcmskMjU1LjI1NS4yNTUuMTkyLzI2LzA:255.255.255.192/26/default"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Network information found (50 limit)
+>|ExtendedAttributes|Name|NetworkView|Reference|
+>|---|---|---|---|
+>| Region: EMEA | 255.255.255.192/26 | default | network/ZG5zLm5ldHdvcmskMjU1LjI1NS4yNTUuMTkyLzI2LzA:255.255.255.192/26/default |
+
+

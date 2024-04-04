@@ -24,7 +24,7 @@ org_print = print
 CallArgs = Iterable[tuple[Any] | tuple[Any, dict]]
 
 
-def load_json(file_path: str) -> dict:
+def load_json(file_path: str | Path) -> dict:
     """ Reads and loads json file.
 
     Args:

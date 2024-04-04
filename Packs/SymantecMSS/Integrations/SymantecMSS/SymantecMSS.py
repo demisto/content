@@ -7,7 +7,9 @@ from CommonServerUserPython import *
 import xml
 import tempfile
 import contextlib
-import OpenSSL.crypto  # type: ignore[import]
+from cryptography.hazmat.primitives.serialization import pkcs12
+from cryptography.hazmat.primitives import serialization
+
 from xml.sax.saxutils import escape
 import defusedxml.ElementTree as defused_ET
 import re
@@ -26,13 +28,20 @@ def pfx_to_pem(pfx, pfx_password):
     """ Decrypts the .pfx file to be used with requests. """
     with tempfile.NamedTemporaryFile(suffix=".pem") as t_pem:
         f_pem = open(t_pem.name, "wb")
-        p12 = OpenSSL.crypto.load_pkcs12(pfx, pfx_password)
-        f_pem.write(OpenSSL.crypto.dump_privatekey(OpenSSL.crypto.FILETYPE_PEM, p12.get_privatekey()))
-        f_pem.write(OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_PEM, p12.get_certificate()))
-        ca = p12.get_ca_certificates()
-        if ca is not None:
-            for cert in ca:
-                f_pem.write(OpenSSL.crypto.dump_certificate(OpenSSL.crypto.FILETYPE_PEM, cert))
+
+        private_key, certificate, additional_certificates = pkcs12.load_key_and_certificates(pfx, str.encode(pfx_password))
+        if private_key:
+            f_pem.write(private_key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=serialization.NoEncryption()
+            ))
+        if certificate:
+            f_pem.write(certificate.public_bytes(serialization.Encoding.PEM))
+
+        if additional_certificates is not None:
+            for cert in additional_certificates:
+                f_pem.write(cert.public_bytes(serialization.Encoding.PEM))
         f_pem.close()
         yield t_pem.name
 

@@ -1,0 +1,13 @@
+{
+    "objectID": "ProfIp_pool:asdasdasd",
+    "reqAction": 1,
+    "nodePermission": 3,
+    "mkey": "asdasdasd",
+    "ip_range": "iptest",
+    "smtp_certificate": "",
+    "smtp_certificate_direction": 2,
+    "smtp_greeting_reply_name": "",
+    "comment": "",
+    "smtp_greeting_reply_name_option": 1,
+    "is_certificate_expired": false
+}

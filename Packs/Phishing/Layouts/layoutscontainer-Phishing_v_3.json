@@ -170,7 +170,17 @@
                                 "index": 12,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            }
+                            },
+							{
+								"endCol": 2,
+								"fieldId": "additionalemailaddresses",
+								"height": 26,
+								"id": "c477b540-d63e-11ee-a660-f13ca793ceb6",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+
                         ],
                         "maxW": 3,
                         "minH": 1,

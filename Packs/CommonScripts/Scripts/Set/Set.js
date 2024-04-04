@@ -8,12 +8,24 @@ try {
             value = JSON.stringify(args.value)
         }
     } else {
-        value = JSON.parse(args.value);
+        if (!isNaN(args.value)) {
+            // This means that the value is a number
+            if (args.value.includes('.')) {
+                // It is a decimal number
+                value = JSON.parse(args.value);
+            }
+            else {
+                // If the number is large
+                value = BigInt(args.value);
+            }
+        }
+        else {
+            value = JSON.parse(args.value);
+        }
     }
-} catch(err) {
+} catch (err) {
     value = args.value;
 }
-
 ec[args.key] = value;
 var result = {
     Type: entryTypes.note,
@@ -27,5 +39,5 @@ if (!args.append || args.append === 'false') {
 } else {
     result.EntryContext = ec;
 }
-
+logDebug(`Setting ${JSON.stringify(result)}`)
 return result;

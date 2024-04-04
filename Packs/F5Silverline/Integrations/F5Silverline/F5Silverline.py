@@ -168,14 +168,17 @@ def delete_ip_objects_command(client: Client, args: dict[str, Any]):
     exist, an error will be raised.
     API docs: https://portal.f5silverline.com/docs/api/v1/ip_objects.md (DELETE section)
     """
+
     list_type = args['list_type']
     object_id = args.get('object_id')
     object_ip = args.get('object_ip')
-    object_id_list = []
+    object_id_list: list[Any] = []
     list_target = args.get('list_target', 'proxy')
 
+    demisto.debug(f'debug-log: {list_type=}, {object_id=}, {object_ip=}, {list_target=}')
+
     if not object_id and not object_ip:
-        raise DemistoException("At least one of the following should be given: object_ip, object_id.")
+        raise DemistoException("At least one of the following arguments should be given: object_ip, object_id.")
 
     if not object_id:
         # we have got an ip, so we want to get all the matched ids for the given ip
@@ -184,7 +187,7 @@ def delete_ip_objects_command(client: Client, args: dict[str, Any]):
         # we have got a specific id to be deleted
         object_id_list.append(object_id)
 
-    if is_object_id_exist(client, object_id_list, list_type):
+    if object_id_list:
         human_readable = ""
         for object_id in object_id_list:
             url_suffix = f'{list_type}/ip_objects/{object_id}'
@@ -194,20 +197,58 @@ def delete_ip_objects_command(client: Client, args: dict[str, Any]):
                                       'list_target': list_target}, resp_type='content')
             human_readable += f"IP object with ID: {object_id} deleted successfully from the {list_type} list. \n"
         return CommandResults(readable_output=human_readable)
+    return None
 
 
 def get_object_id_by_ip(client, list_type, object_ip):
-    url_suffix = f'{list_type}/ip_objects'
-    response = client.request_ip_objects(body={}, method='GET', url_suffix=url_suffix, params={})
-    all_objects = response.get('data')
+    """Get object ID by its IP attribute.
+    This function paginates over a list of objects and extracts all of their ID attributes as preparation for deletion.
+
+    Note: this function, used by the 'delete_ip_objects_command' command is utilizing pagination.
+    This is because the GET request is limited to return up to 1,000 objects per requests,
+    which may result in 404 error if the user has overall more objects than that.
+    while the 'get_ip_objects_list_command' command already utilizes pagination,
+    this is a different use-case since there is no use user input regarding pagination in
+    'f5-silverline-ip-object-delete command (there is no need).
+
+    Args:
+        client (Client): Client object
+        list_type (list): Type of list to query
+        object_ip (_type_): Object IP to search for deletion.
+
+    Raises:
+        DemistoException: Raised in the case an object with the given IP address was not found.
+
+    Returns:
+        list: A list of found ID objects.
+    """
+
+    page = 1
+    url_suffix = f"{list_type}/ip_objects"
+    response = client.request_ip_objects(body={}, method="GET", url_suffix=url_suffix, params={})
+    all_objects: list = response.get("data")
+    try:
+        while next_page := response.get("links", {}).get("links", {}).get("next", {}):
+            page += 1
+            demisto.debug(f"debug-log: next page found in response: {next_page=}, performing pagination for {page=}")
+            response = client.request_ip_objects(body={}, method="GET", url_suffix=url_suffix, params={'page': page})
+            if response:
+                demisto.debug(f"debug-log: response from {page=} has {len(response.get('data'))} objects")
+            all_objects.extend(response.get('data'))
+    except Exception:
+        demisto.debug("debug-log: exception raised while trying to paginate in get_object_id_by_ip: str (e)")
+
+    demisto.debug(f"debug-log: found total of {len(all_objects)} objects.")
+
     all_match_ids = []
     for obj in all_objects:
-        attributes = obj.get('attributes')
-        ip = attributes.get('ip', "")
+        attributes = obj.get("attributes")
+        ip = attributes.get("ip", "")
         if ip == object_ip:
             all_match_ids.append(obj.get("id"))
     if not all_match_ids:
         raise DemistoException("An object with the given IP address was not found.")
+    demisto.debug(f"debug-log:  {all_match_ids=}")
     return all_match_ids
 
 

@@ -6,7 +6,8 @@ from datetime import datetime, timezone
 from base64 import b64decode
 
 # 3-rd party imports
-from typing import Dict, Tuple, Union, Optional, List, Any, Sequence
+from typing import Any
+from collections.abc import Iterator, Sequence
 import urllib.parse
 import urllib3
 from akamai.edgegrid import EdgeGridAuth
@@ -31,14 +32,19 @@ INTEGRATION_NAME = 'Akamai SIEM'
 INTEGRATION_COMMAND_NAME = 'akamai-siem'
 INTEGRATION_CONTEXT_NAME = 'Akamai'
 
+
+VENDOR = "Akamai"
+PRODUCT = "WAF"
+FETCH_EVENTS_PAGE_SIZE = 50000
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def get_events(self, config_ids: str, offset: Optional[str] = '', limit: Optional[Union[str, int]] = None,
-                   from_epoch: Optional[str] = '', to_epoch: Optional[str] = '') \
-            -> Tuple[List[Any], Any]:
+    def get_events(self, config_ids: str, offset: str | None = '', limit: str | int | None = None,
+                   from_epoch: str | None = '', to_epoch: str | None = '') \
+            -> tuple[list[Any], Any]:
         """
             Get security events from Akamai WAF service by - https://developer.akamai.com/api/cloud_security/siem/v1.html,
             Pay attention response as text of multiple json objects
@@ -78,13 +84,35 @@ class Client(BaseClient):
                                                url_suffix=f'/{config_ids}',
                                                params=assign_params(**params),
                                                resp_type='text')
-        events: List = []
+        events: list = []
         if '{ "total": 0' not in raw_response:
             events = [json.loads(event) for event in raw_response.split('\n')[:-2]]
             new_offset = str(max([int(event.get('httpMessage', {}).get('start')) for event in events]))
         else:
             new_offset = str(from_epoch)
         return events, new_offset
+
+    def get_events_with_offset(
+        self,
+        config_ids: str,
+        offset: str | None = '',
+        limit: str | int | None = None,
+        from_epoch: str | None = ''
+    ) -> tuple[list[dict], str | None]:
+        params = {
+            'offset': offset,
+            'limit': limit,
+            'from': from_epoch,
+        }
+        raw_response: str = self._http_request(
+            method='GET',
+            url_suffix=f'/{config_ids}',
+            params=assign_params(**params),
+            resp_type='text',
+        )
+        events: list[dict] = [json.loads(e) for e in raw_response.split('\n') if e]
+        offset = events.pop().get("offset")
+        return events, offset
 
 
 '''HELPER FUNCIONS'''
@@ -108,7 +136,7 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
     Returns:
         Converted date as Datetime object or string object
     """
-    converted_date: Union[str, int] = ''
+    converted_date: str | int = ''
     if from_format == 'epoch':
         converted_date = datetime.utcfromtimestamp(int(date_before)).strftime(readable_format)
     elif from_format == 'readable':
@@ -118,7 +146,7 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
     return str(converted_date)
 
 
-def decode_message(msg: str) -> Sequence[Optional[str]]:
+def decode_message(msg: str) -> Sequence[str | None]:
     """
         Follow these steps for data members that appear within the event’s attackData section:
             1. If the member name is prefixed rule, URL-decode the value.
@@ -147,7 +175,7 @@ def decode_message(msg: str) -> Sequence[Optional[str]]:
     return readable_msg
 
 
-def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
+def events_to_ec(raw_response: list) -> tuple[list, list, list]:
     """
         Convert raw response response to ec
     Args:
@@ -156,9 +184,9 @@ def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
     Returns:
         events as defined entry context and events for human readable
     """
-    events_ec: List[Dict] = []
-    ip_ec: List[Dict] = []
-    events_human_readable: List[Dict] = []
+    events_ec: list[dict] = []
+    ip_ec: list[dict] = []
+    events_human_readable: list[dict] = []
 
     for event in raw_response:
         events_ec.append(
@@ -227,7 +255,7 @@ def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
 
 
 @logger
-def test_module_command(client: Client) -> Tuple[None, None, str]:
+def test_module_command(client: Client) -> tuple[None, None, str]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
@@ -253,9 +281,9 @@ def test_module_command(client: Client) -> Tuple[None, None, str]:
 def fetch_incidents_command(
         client: Client,
         fetch_time: str,
-        fetch_limit: Union[str, int],
+        fetch_limit: str | int,
         config_ids: str,
-        last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
+        last_run: str | None = None) -> tuple[list[dict[str, Any]], dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -269,7 +297,7 @@ def fetch_incidents_command(
     Returns:
         incidents, new last_run
     """
-    raw_response: Optional[List] = []
+    raw_response: list | None = []
     if not last_run:
         last_run, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     raw_response, offset = client.get_events(config_ids=config_ids, from_epoch=last_run, limit=fetch_limit)
@@ -287,9 +315,9 @@ def fetch_incidents_command(
     return incidents, {'lastRun': offset}
 
 
-def get_events_command(client: Client, config_ids: str, offset: Optional[str] = None, limit: Optional[str] = None,
-                       from_epoch: Optional[str] = None, to_epoch: Optional[str] = None, time_stamp: Optional[str] = None) \
-        -> Tuple[object, dict, Union[List, Dict]]:
+def get_events_command(client: Client, config_ids: str, offset: str | None = None, limit: str | None = None,
+                       from_epoch: str | None = None, to_epoch: str | None = None, time_stamp: str | None = None) \
+        -> tuple[object, dict, list | dict]:
     """
         Get security events from Akamai WAF service
         Allowed query parameters combinations:
@@ -344,6 +372,76 @@ def get_events_command(client: Client, config_ids: str, offset: Optional[str] = 
         return f'{INTEGRATION_NAME} - Could not find any results for given query', {}, {}
 
 
+@logger
+def fetch_events_command(
+    client: Client,
+    fetch_time: str,
+    fetch_limit: str | int,
+    config_ids: str,
+    ctx: dict,
+) -> Iterator[Any]:
+    """Iteratively gathers events from Akamai SIEM. Stores the offset in integration context.
+
+    Args:
+        client: Client object with request
+        fetch_time: From when to fetch if first time, e.g. `3 days`
+        fetch_limit: limit of events in a fetch
+        config_ids: security configuration ids to fetch, e.g. `51000;56080`
+        ctx: The integration context
+
+    Yields:
+        (list[dict], str): events and new offset.
+    """
+    total_events_count = 0
+
+    from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
+    offset = ctx.get("offset")
+    while total_events_count < int(fetch_limit):
+        events, offset = client.get_events_with_offset(config_ids, offset, FETCH_EVENTS_PAGE_SIZE, from_epoch)
+        if not events:
+            break
+        for event in events:
+            try:
+                event["_time"] = event["httpMessage"]["start"]
+                if "attackData" in event:
+                    event['attackData']['rules'] = decode_message(event.get('attackData', {}).get('rules', ""))
+                    event['attackData']['ruleMessages'] = decode_message(event.get('attackData', {}).get('ruleMessages', ""))
+                    event['attackData']['ruleTags'] = decode_message(event.get('attackData', {}).get('ruleTags', ""))
+                    event['attackData']['ruleData'] = decode_message(event.get('attackData', {}).get('ruleData', ""))
+                    event['attackData']['ruleSelectors'] = decode_message(event.get('attackData', {}).get('ruleSelectors', ""))
+                    event['attackData']['ruleActions'] = decode_message(event.get('attackData', {}).get('ruleActions', ""))
+                    event['attackData']['ruleVersions'] = decode_message(event.get('attackData', {}).get('ruleVersions', ""))
+                if "httpMessage" in event:
+                    event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
+                    event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
+            except Exception as e:
+                config_id = event.get('attackData', {}).get('configId', "")
+                policy_id = event.get('attackData', {}).get('policyId', "")
+                demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
+        demisto.debug(f"Got {len(events)} events, and {offset=}")
+        total_events_count += len(events)
+        yield events, offset, total_events_count
+
+
+def decode_url(headers: str) -> dict:
+    """Decoding the httpMessage headers parts of the response.
+
+    Args:
+        headers (str): The headers to decode
+
+    Returns:
+        dict: The decoded and parsed headers as a dictionary.
+    """
+    decoded_lines = urllib.parse.unquote(headers).replace("\r", "").split("\n")
+    decoded_dict = {}
+    for line in decoded_lines:
+        parts = line.split(': ', 1)
+        if len(parts) == 2:
+            key, value = parts
+            decoded_dict[key.replace("-", "_")] = value.replace('"', '')
+    return decoded_dict
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -365,7 +463,11 @@ def main():
     }
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
+
     try:
+        if params.get("isFetch") and not (0 < (arg_to_number(params.get('fetchLimit')) or 20) <= 2000):
+            raise DemistoException('Fetch limit must be an integer between 1 and 2000')
+
         if command == 'fetch-incidents':
             incidents, new_last_run = fetch_incidents_command(client,
                                                               fetch_time=params.get('fetchTime'),
@@ -374,6 +476,17 @@ def main():
                                                               last_run=demisto.getLastRun().get('lastRun'))
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
+        elif command == "fetch-events":
+            for events, offset, total_events_count in fetch_events_command(  # noqa: B007
+                client,
+                params.get("fetchTime"),
+                params.get("fetchLimit"),
+                params.get("configIds"),
+                ctx=get_integration_context() or {},
+            ):
+                send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
+                set_integration_context({"offset": offset})
+            demisto.updateModuleHealth({'eventsPulled': total_events_count})
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
             return_outputs(human_readable, entry_context, raw_response)
@@ -383,5 +496,5 @@ def main():
         return_error(err_msg, error=e)
 
 
-if __name__ == 'builtins':
+if __name__ in ["__builtin__", "builtins", '__main__']:  # pragma: no cover
     main()

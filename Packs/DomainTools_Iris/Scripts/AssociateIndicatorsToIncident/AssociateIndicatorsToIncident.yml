@@ -1,0 +1,17 @@
+comment: Associate Indicators to an Incident.
+commonfields:
+  id: AssociateIndicatorsToIncident
+  version: -1
+enabled: false
+name: AssociateIndicatorsToIncident
+script: '-'
+system: false
+tags:
+- DomainTools
+timeout: '0'
+type: python
+subtype: python3
+fromversion: 6.6.0
+dockerimage: demisto/python3:3.10.13.87159
+tests:
+- No tests (auto formatted)

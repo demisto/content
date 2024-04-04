@@ -1,13 +1,12 @@
 import zipfile as z
 import os
-from google.cloud import storage
+from google.cloud import storage  # type: ignore[attr-defined]
 import argparse
 import shutil
 
-TEST_XDR_PREFIX = os.getenv("TEST_XDR_PREFIX", "")  # for testing
 
 ARTIFACTS_PATH = os.environ.get('ARTIFACTS_FOLDER')
-STORAGE_BUCKET_NAME = f'{TEST_XDR_PREFIX}xsoar-ci-artifacts'
+STORAGE_BUCKET_NAME = 'xsoar-ci-artifacts'
 FILES_TO_REMOVE = ['content-descriptor.json', 'doc-CommonServer.json', 'doc-howto.json', 'reputations.json',
                    'tools-o365.zip', 'tools-exchange.zip', 'tools-winpmem.zip']
 CONTENT_NEW_ZIP_PATH = f'{ARTIFACTS_PATH}/content_new.zip'

@@ -16,8 +16,15 @@ alter
     duration3 = arrayindex(regextract(_raw_log ,"\s(\d+)\sminutes"),0),
     log_prefix = lowercase(arrayindex(regextract(_raw_log ,"^([A-Za-z]*\s*[a-zA-Z]*)\>*\:"),0)),
     event_type = arrayindex(regextract(_log_source_file_name, "([\w_]+)[-\d+]{0,}\.log"),0),
-    user_name = arrayindex(regextract(_raw_log, "UserName=([^~\s]+)"), 0),
+    user_name_1 = arrayindex(regextract(_raw_log, "\[?UserName\]?=\[?([^~\s\[\]]+)"), 0),
+    user_name_2 = arrayindex(regextract(_raw_log, "User=([^~\s]+)"), 0),
+    user_name_3 = arrayindex(regextract(_raw_log, "User Context:\s+([^~\s]+)"), 0),
+    user_name_4 = arrayindex(regextract(_raw_log, "User -\s+\[([^~\s\]]+)"), 0),
+    user_name_5 = arrayindex(regextract(_raw_log, "user name \[([^~\s\]]+)"), 0),
+    user_name_6 = arrayindex(regextract(_raw_log, "\[User ([^~\s]+)"), 0),
     user_domain = arrayindex(regextract(_raw_log, "UserName=([^\\]+)\\"), 0)
+| alter
+        user_name = coalesce(user_name_1, user_name_2, user_name_3, user_name_4, user_name_5, user_name_6)
 | alter
     duration = coalesce(duration1 , duration2, duration3),
     component = coalesce(component, component2),

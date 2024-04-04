@@ -9,10 +9,10 @@ import stat
 import re
 import shutil
 import json
-from typing import List, Set, Tuple
 from pikepdf import Pdf, PasswordError
 import contextlib
 import io
+import html
 
 URL_EXTRACTION_REGEX = (
     r"(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+"
@@ -27,7 +27,6 @@ class PdfPermissionsException(Exception):
     Every exception class that is in charge of catching errors that occur when trying to
     extract data from the PDF must inherit this class
     """
-    pass
 
 
 class PdfCopyingProtectedException(PdfPermissionsException):
@@ -36,7 +35,6 @@ class PdfCopyingProtectedException(PdfPermissionsException):
     a `copy-protected` file (Copy-protected files are files that prevent us from copy its content)
     This is relevant since we run a command that copies the content of the pdf file into a text file.
     """
-    pass
 
 
 class PdfInvalidCredentialsException(PdfPermissionsException):
@@ -44,7 +42,6 @@ class PdfInvalidCredentialsException(PdfPermissionsException):
     This class is in charge of catching errors that occur when we try to decrypt an encrypted
     pdf file with the wrong password.
     """
-    pass
 
 
 # Error class for shell errors
@@ -120,7 +117,7 @@ def run_shell_command(command: str, *args) -> bytes:
     """Runs shell command and returns the result if not encountered an error"""
     cmd = [command] + list(args)
     demisto.debug(f'Running the shell command {cmd=}')
-    completed_process = subprocess.run(
+    completed_process = subprocess.run(  # noqa: UP022
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     exit_codes = completed_process.returncode
@@ -159,9 +156,9 @@ def get_files_names_in_path(path: str, name_of_file: str, full_path: bool = Fals
     return res
 
 
-def get_images_paths_in_path(path: str) -> List[str]:
+def get_images_paths_in_path(path: str) -> list[str]:
     """Gets images paths from path"""
-    res: List[str] = []
+    res: list[str] = []
     for img_type in IMG_FORMATS:
         img_format = f"*.{img_type}"
         res.extend(get_files_names_in_path(path, img_format, True))
@@ -232,7 +229,7 @@ def get_pdf_text(file_path: str, pdf_text_output_path: str) -> str:
     return text
 
 
-def get_pdf_htmls_content(pdf_path: str, output_folder: str) -> str:
+def get_pdf_htmls_content(pdf_path: str, output_folder: str, unescape_url: bool = True) -> str:
     """Creates an html file and images from the pdf in output_folder and returns the text content of the html files"""
     pdf_html_output_path = f'{output_folder}/PDF_html'
     try:
@@ -243,21 +240,22 @@ def get_pdf_htmls_content(pdf_path: str, output_folder: str) -> str:
     html_file_names = get_files_names_in_path(output_folder, "*.html")
     html_content = ""
     for file_name in html_file_names:
-        with open(file_name, "rb") as f:
+        with open(file_name) as f:
             for line in f:
-                html_content += str(line)
+                html_content += html.unescape(line) if unescape_url else line
     return html_content
 
 
 def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: list, emails: list, images: list[str],
-                               max_images: int) -> list[dict[str, Any]]:
+                               max_images: int,
+                               hash_contexts: list[dict[str, Any]] | None = None) -> list[dict[str, Any]]:
     """Builds an entry object for the main script flow"""
     pdf_file = {"EntryID": entry_id}
     # Add Text to file entity
     pdf_file["Text"] = text
 
     # Add Metadata to file entity
-    for k in metadata.keys():
+    for k in metadata:
         pdf_file[k] = metadata[k]
 
     md = "### Metadata\n"
@@ -306,6 +304,8 @@ def build_readpdf_entry_object(entry_id: str, metadata: dict, text: str, urls: l
         indicators_map = json.loads(indicators_map)
         if emails:
             indicators_map["Email"] = emails
+        if hash_contexts:
+            indicators_map['Hashes'] = hash_contexts
     except json.JSONDecodeError:
         pass
     ec = build_readpdf_entry_context(indicators_map)
@@ -334,6 +334,8 @@ def build_readpdf_entry_context(indicators_map: Any) -> dict:
             for email in indicators_map["Email"]:
                 ec_email.append({"Email": email})
             ec["Account"] = ec_email
+        if 'Hashes' in indicators_map:
+            ec['Hashes'] = indicators_map['Hashes']
     return ec
 
 
@@ -351,7 +353,8 @@ def get_urls_from_binary_file(file_path: str) -> set:
     return binary_file_urls
 
 
-def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder: str) -> Tuple[set, set]:
+def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder: str,
+                                              unescape_url: bool = True) -> tuple[set, set]:
     """
     Extract the URLs and emails from the pdf html content.
 
@@ -361,7 +364,7 @@ def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder:
     Returns:
         tuple[set, set]: The URLs and emails that were found.
     """
-    pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder)
+    pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder, unescape_url)
     return set(re.findall(URL_EXTRACTION_REGEX, pdf_html_content)), set(re.findall(EMAIL_REGXEX, pdf_html_content))
 
 
@@ -386,6 +389,8 @@ def extract_url_from_annot_object(annot_object: Any):
             if isinstance(url, PyPDF2.generic.IndirectObject):
                 url = url.get_object()
             return url
+        return None
+    return None
 
 
 def extract_url(extracted_object: Any):
@@ -461,7 +466,7 @@ def extract_urls_and_emails_from_annot_objects(annot_objects: list | Any):
     return urls, emails
 
 
-def get_urls_and_emails_from_pdf_annots(file_path: str) -> Tuple[set, set]:
+def get_urls_and_emails_from_pdf_annots(file_path: str) -> tuple[set, set]:
     """
     Extracts the URLs and Emails from the pdf's Annots (Annotations and Commenting) using PyPDF2 package.
     Args:
@@ -469,8 +474,8 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> Tuple[set, set]:
     Returns:
         Tuple[set, set]: A set includes the URLs that were found, A set includes the Emails that were found.
     """
-    all_urls: Set[str] = set()
-    all_emails: Set[str] = set()
+    all_urls: set[str] = set()
+    all_emails: set[str] = set()
     output_capture = io.StringIO()
     with open(file_path, 'rb') as pdf_file:
         # The following context manager was added so we could redirect error messages to the server logs since
@@ -510,7 +515,8 @@ def get_urls_and_emails_from_pdf_annots(file_path: str) -> Tuple[set, set]:
     return all_urls, all_emails
 
 
-def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) -> Tuple[list, list]:
+def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str,
+                                          unescape_url: bool = True) -> tuple[list, list]:
     """
     Extract URLs and Emails from the PDF file.
     Args:
@@ -526,7 +532,7 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) ->
 
     # Get URLS + emails:
     annots_urls, annots_emails = get_urls_and_emails_from_pdf_annots(file_path)
-    html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(file_path, output_folder)
+    html_urls, html_emails = get_urls_and_emails_from_pdf_html_content(file_path, output_folder, unescape_url)
 
     # This url might be generated with the pdf html file, if so, we remove it
     html_urls.discard('http://www.w3.org/1999/xhtml')
@@ -545,6 +551,57 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) ->
     return urls_ec, emails_ec
 
 
+def extract_hash_contexts_from_pdf_file(file_text: str) -> list[dict[str, Any]]:
+    """Extracts the hashes from the file's text, and converts them to hash contexts.
+
+    Args:
+        file_text (str): The text extracted from the PDF.
+
+    Returns:
+        list[dict[str, Any]]: A list of hash contexts.
+    """
+    hash_contexts: list[dict[str, Any]] = []
+    hashes_in_file = get_hashes_from_file(file_text)
+    for hash_type, hashes in hashes_in_file.items():
+        if hashes:
+            hash_contexts.extend(convert_hash_to_context(hash_type, hashes))
+    return hash_contexts
+
+
+def convert_hash_to_context(hash_type: str, hashes: set[Any]) -> list[dict[str, Any]]:
+    """Converts the given hashes to hash contexts
+
+    Args:
+        hash_type (str): The hash type of the given hashes.
+        hashes (set[Any]): The set of hashes.
+
+    Returns:
+        list[dict[str, Any]]: A list of hash contexts that have the same hash type.
+    """
+    hash_context: list[dict[str, Any]] = [{'type': hash_type, 'value': hash} for hash in hashes]
+    return hash_context
+
+
+def get_hashes_from_file(file_text: str) -> dict[str, set[Any]]:
+    """Extracts all the hashes found in the file's text.
+
+    Args:
+        file_text (str): The file's text.
+
+    Returns:
+        dict[str, set[Any]]: A dictionary that holds the hash types as keys, and each key
+        holds the set of hashes corresponding to that hash type.
+    """
+    demisto.debug('Extracting hashes from file')
+    hashes: dict[str, set[Any]] = {}
+    hashes['SHA1'] = set(re.findall(sha1Regex, file_text))
+    hashes['SHA256'] = set(re.findall(sha256Regex, file_text))
+    hashes['SHA512'] = set(re.findall(sha512Regex, file_text))
+    hashes['MD5'] = set(re.findall(md5Regex, file_text))
+
+    return hashes
+
+
 def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, encrypted: str = '',
                              user_password: str = '') -> str:
     """
@@ -560,7 +617,8 @@ def handling_pdf_credentials(cpy_file_path: str, dec_file_path: str, encrypted: 
     return cpy_file_path
 
 
-def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_images: int | None, working_dir: str) -> None:
+def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_images: int | None, working_dir: str,
+                          unescape_url: bool = True) -> None:
     max_images = max_images if max_images else DEFAULT_NUM_IMAGES
     if path:
         cpy_file_path = f'{working_dir}/WorkingReadPDF.pdf'
@@ -577,8 +635,11 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
         pdf_text_output_path = f"{working_dir}/PDFText.txt"
         text = get_pdf_text(cpy_file_path, pdf_text_output_path)
 
+        # Get hash contexts
+        hash_contexts = extract_hash_contexts_from_pdf_file(text)
+
         # Get URLS + emails:
-        urls_ec, emails_ec = extract_urls_and_emails_from_pdf_file(cpy_file_path, working_dir)
+        urls_ec, emails_ec = extract_urls_and_emails_from_pdf_file(cpy_file_path, working_dir, unescape_url)
 
         # Get images:
         images = get_images_paths_in_path(working_dir)
@@ -588,7 +649,8 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
                                                           urls_ec,
                                                           emails_ec,
                                                           images,
-                                                          max_images=max_images)
+                                                          max_images=max_images,
+                                                          hash_contexts=hash_contexts)
 
         return_results(readpdf_entry_object)
     else:
@@ -597,6 +659,7 @@ def extract_data_from_pdf(path: str, user_password: str, entry_id: str, max_imag
 
 def main():  # pragma: no cover
     args = demisto.args()
+    unescape_url: bool = argToBoolean(args.get("unescape_url", "true"))
     working_dir = 'ReadPDFTemp'
     try:
         if not os.path.exists(working_dir):
@@ -608,7 +671,7 @@ def main():  # pragma: no cover
         path = demisto.getFilePath(entry_id).get('path')
 
         extract_data_from_pdf(path=path, user_password=user_password, entry_id=entry_id, max_images=max_images,
-                              working_dir=working_dir)
+                              working_dir=working_dir, unescape_url=unescape_url)
     except PdfPermissionsException as e:
         return_warning(str(e))
     except ShellException as e:

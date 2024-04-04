@@ -1,0 +1,10 @@
+{
+    "objectID": "MailSetAccessRule:1",
+    "reqAction": 5,
+    "nodePermission": 3,
+    "mkey": 1,
+    "status": true,
+    "sender_pattern": "*@example.com",
+    "sender_ip_mask": "sender_ip_mask",
+    "action": 2
+}
