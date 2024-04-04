@@ -403,7 +403,7 @@ tasks:
       {
         "position": {
           "x": 730,
-          "y": 1540
+          "y": 1560
         }
       }
     note: false
@@ -440,7 +440,7 @@ tasks:
       {
         "position": {
           "x": 530,
-          "y": 1370
+          "y": 1390
         }
       }
     note: false
@@ -479,7 +479,7 @@ tasks:
       {
         "position": {
           "x": 930,
-          "y": 1370
+          "y": 1390
         }
       }
     note: false
@@ -533,7 +533,7 @@ tasks:
       {
         "position": {
           "x": 730,
-          "y": 1200
+          "y": 1220
         }
       }
     note: false
@@ -1155,10 +1155,10 @@ tasks:
     continueonerrortype: ""
   '49':
     id: '49'
-    taskid: 33c9bf73-1c08-4a14-8437-ffc0f164868b
+    taskid: 7ff4b4ce-3878-4104-8698-356105dd43ac
     type: condition
     task:
-      id: 33c9bf73-1c08-4a14-8437-ffc0f164868b
+      id: 7ff4b4ce-3878-4104-8698-356105dd43ac
       version: -1
       name: Were values provided?
       type: condition
@@ -1178,13 +1178,13 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: 'Indicators to block.Questions.0'
+              simple: 'Indicators to block.Answers.0'
             iscontext: true
     view: |-
       {
         "position": {
           "x": 1330,
-          "y": 315
+          "y": 320
         }
       }
     note: false
@@ -1854,7 +1854,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3145,
+        "height": 3165,
         "width": 2760,
         "x": -360,
         "y": -1540
