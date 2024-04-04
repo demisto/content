@@ -538,6 +538,7 @@ def search_indicators(field_filters: Optional[str], query: str, limit: int) -> I
 
     Returns: IndicatorsSearcher.
     """
+    a = 1 # TODO - TEST 
     indicator_searcher = IndicatorsSearcher(
         filter_fields=field_filters,
         query=query,

@@ -13,6 +13,7 @@ requests.packages.urllib3.disable_warnings()
 
 
 def alexa_fallback_command(domain, use_ssl, proxies):
+    a = 1 # TODO - TEST
     headers = {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/537.36 (KHTML, '
                       'like Gecko) Chrome/85.0.4183.121 Safari/537.36'

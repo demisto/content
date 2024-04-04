@@ -18,7 +18,8 @@ function hasDuplicates(arr) {
 
 /**
  * Deletes keys from the context and handles errors.
- * @param {Array<string>} keys - An array of keys to delete.
+ * @param {Array<string>} keysToDelete - An array of keys to delete.
+ * @param {Array<string>} keysToKeep - An array of keys to keep. (If a key exists in both, it won't be deleted)
  * @returns {string} A message summarizing the outcome of the delete operation.
  */
 function deleteKeys(keysToDelete, keysToKeep) {
