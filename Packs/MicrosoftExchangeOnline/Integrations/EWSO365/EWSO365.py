@@ -343,25 +343,20 @@ class EWSClient:
             folders_map = account.root._folders_map
             if path in folders_map:
                 return account.root._folders_map[path]
-        if is_public:
-            # folder_result = account.public_folders_root
-            inbox_folders = FolderCollection(account=account, folders=[account.public_folders_root])
-        else:
-            # folder_result = account.inbox.parent  # Top of Information Store
-            inbox_folders = FolderCollection(account=account, folders=[account.root])
+
+        root = account.public_folders_root if is_public else account.root
+
+        folder = root if path == 'AllItems' else root.tois
         path = path.replace("/", "\\")
         path = path.split("\\")
-        sub_folder_name = path[-1]
-        folder_filter_by_name = [
-            x
-            for x in inbox_folders.find_folders()
-            if x.name.lower() == sub_folder_name.lower()
-        ]
-        demisto.debug(f"{sub_folder_name=}, {folder_filter_by_name=}")
-        if len(folder_filter_by_name) == 0:
-            raise Exception(f"No such folder {path}")
-        inbox_folders = folder_filter_by_name[0]
-        return inbox_folders
+        for part in path:
+            try:
+                demisto.debug(f'resolving {part=} {path=}')
+                folder = folder // part
+            except Exception as e:
+                demisto.debug(f'got error {e}')
+                raise ValueError(f'No such folder {path}')
+        return folder
 
     def send_email(self, message: Message):
         account = self.get_account()
@@ -2510,7 +2505,7 @@ def sub_main():     # pragma: no cover
     params = demisto.params()
     args = prepare_args(demisto.args())
     # client's default_target_mailbox is the authorization source for the instance
-    params['default_target_mailbox'] = args.get('target_mailbox', args.get('source_mailbox', params['default_target_mailbox']))
+    params['default_target_mailbox'] = 'testbox@demistodev.onmicrosoft.com'
     if params.get('upn_mailbox') and not (args.get('target_mailbox')):
         params['default_target_mailbox'] = params.get('upn_mailbox')
     try:
