@@ -6,14 +6,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* CVE Enrichment - Generic v2
-* URL Enrichment - Generic v2
-* Domain Enrichment - Generic v2
+* IP Enrichment - Generic v2
 * Account Enrichment - Generic v2.1
 * Email Address Enrichment - Generic v2.1
-* IP Enrichment - Generic v2
+* Domain Enrichment - Generic v2
 * Endpoint Enrichment - Generic v2.1
 * File Enrichment - Generic v2
+* URL Enrichment - Generic v2
+* CVE Enrichment - Generic v2
 
 ### Integrations
 
@@ -34,7 +34,7 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | IP | The IP addresses to enrich | IP.Address | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
 | MD5 | File MD5 to enrich | File.MD5 | Optional |
 | SHA256 | File SHA256 to enrich | File.SHA256 | Optional |
 | SHA1 | File SHA1 to enrich | File.SHA1 | Optional |
@@ -48,6 +48,7 @@ This playbook does not use any commands.
 | CVE | CVE ID to enrich. | CVE.ID | Optional |
 | URLSSLVerification | Whether to verify SSL certificates for URLs.<br/>Can be True or False. | False | Optional |
 | UseReputationCommand | Whether to execute the reputation command on the indicator. | False | Optional |
+| AccountDomain | Optional - This input is needed for the IAM-get-user command \(used in the Account Enrichment - IAM playbook\). Please provide the domain name that the user is related to.<br/>Example: @xsoar.com |  | Optional |
 
 ## Playbook Outputs
 

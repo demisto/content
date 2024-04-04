@@ -83,14 +83,12 @@ def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
             int: The location of the chosen assignee in the sorted array.
     """
     values = sorted([assigned_prs_per_potential_reviewer[key] for key in assigned_prs_per_potential_reviewer])
-    if values[0] == values[1] == values[2]:
-        # choose randomly between 0-2
-        return randint(1, 3) - 1
-    elif values[0] == values[1]:
-        # choose randomly between 0-1
-        return randint(1, 2) - 1
-    else:
-        return 0
+    while len(values) > 1:
+        equal = all(reviewer == values[0] for reviewer in values)
+        if equal:
+            return randint(0, len(values) - 1)
+        values.pop(len(values) - 1)
+    return 0
 
 
 def determine_reviewer(potential_reviewers: list[str], repo: Repository) -> str:
@@ -246,6 +244,8 @@ def is_tim_content(pr_files: list[str]) -> bool:
     """
     integrations_checked = []
     for file in pr_files:
+        if 'CONTRIBUTORS.json' in file:
+            continue
         integration = BaseContent.from_path(CONTENT_PATH / file)
         if not isinstance(integration, Integration) or integration.path in integrations_checked:
             continue

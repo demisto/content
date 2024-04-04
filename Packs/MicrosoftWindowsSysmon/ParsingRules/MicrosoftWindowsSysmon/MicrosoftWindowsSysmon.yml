@@ -1,0 +1,6 @@
+name: Microsoft Windows Sysmon Parsing Rule
+id: Microsoft_Windows_Sysmon_ParsingRule
+fromversion: 8.4.0
+tags: []
+rules: ''
+samples: ''

@@ -111,7 +111,7 @@ tasks:
       {
         "position": {
           "x": 2170,
-          "y": -270
+          "y": -80
         }
       }
     note: false
@@ -154,7 +154,7 @@ tasks:
       {
         "position": {
           "x": 1765,
-          "y": -270
+          "y": -80
         }
       }
     note: false
@@ -196,7 +196,7 @@ tasks:
       {
         "position": {
           "x": 3040,
-          "y": -270
+          "y": -80
         }
       }
     note: false
@@ -240,7 +240,7 @@ tasks:
       {
         "position": {
           "x": 2605,
-          "y": -270
+          "y": -80
         }
       }
     note: false
@@ -317,7 +317,7 @@ tasks:
       {
         "position": {
           "x": 1765,
-          "y": -420
+          "y": -225
         }
       }
     note: false
@@ -348,7 +348,7 @@ tasks:
       {
         "position": {
           "x": 1360,
-          "y": -80
+          "y": 110
         }
       }
     note: false
@@ -380,7 +380,7 @@ tasks:
       {
         "position": {
           "x": 2605,
-          "y": -25
+          "y": 165
         }
       }
     note: false
@@ -412,7 +412,7 @@ tasks:
       {
         "position": {
           "x": 3040,
-          "y": -25
+          "y": 165
         }
       }
     note: false
@@ -444,7 +444,7 @@ tasks:
       {
         "position": {
           "x": 1770,
-          "y": -25
+          "y": 165
         }
       }
     note: false
@@ -476,7 +476,7 @@ tasks:
       {
         "position": {
           "x": 2170,
-          "y": -25
+          "y": 165
         }
       }
     note: false
@@ -843,7 +843,7 @@ tasks:
       {
         "position": {
           "x": 3440,
-          "y": -270
+          "y": -80
         }
       }
     note: false
@@ -875,7 +875,7 @@ tasks:
       {
         "position": {
           "x": 3440,
-          "y": -25
+          "y": 165
         }
       }
     note: false
@@ -917,7 +917,7 @@ tasks:
       {
         "position": {
           "x": 3840,
-          "y": -270
+          "y": -80
         }
       }
     note: false
@@ -949,7 +949,7 @@ tasks:
       {
         "position": {
           "x": 3840,
-          "y": -25
+          "y": 165
         }
       }
     note: false
@@ -991,7 +991,7 @@ tasks:
       {
         "position": {
           "x": 4240,
-          "y": -270
+          "y": -80
         }
       }
     note: false
@@ -1023,7 +1023,7 @@ tasks:
       {
         "position": {
           "x": 4240,
-          "y": -25
+          "y": 165
         }
       }
     note: false
@@ -1065,7 +1065,7 @@ tasks:
       {
         "position": {
           "x": 4640,
-          "y": -270
+          "y": -80
         }
       }
     note: false
@@ -1097,7 +1097,7 @@ tasks:
       {
         "position": {
           "x": 4640,
-          "y": -25
+          "y": 165
         }
       }
     note: false
@@ -1139,7 +1139,7 @@ tasks:
       {
         "position": {
           "x": 5040,
-          "y": -270
+          "y": -80
         }
       }
     note: false
@@ -1171,7 +1171,7 @@ tasks:
       {
         "position": {
           "x": 5040,
-          "y": -25
+          "y": 165
         }
       }
     note: false
@@ -1213,7 +1213,7 @@ tasks:
       {
         "position": {
           "x": 5440,
-          "y": -270
+          "y": -80
         }
       }
     note: false
@@ -1245,7 +1245,7 @@ tasks:
       {
         "position": {
           "x": 5440,
-          "y": -25
+          "y": 165
         }
       }
     note: false
@@ -1287,7 +1287,7 @@ tasks:
       {
         "position": {
           "x": 5840,
-          "y": -270
+          "y": -80
         }
       }
     note: false
@@ -1319,7 +1319,7 @@ tasks:
       {
         "position": {
           "x": 5840,
-          "y": -25
+          "y": 165
         }
       }
     note: false
@@ -1361,7 +1361,7 @@ tasks:
       {
         "position": {
           "x": 6250,
-          "y": -270
+          "y": -80
         }
       }
     note: false
@@ -1393,7 +1393,7 @@ tasks:
       {
         "position": {
           "x": 6250,
-          "y": -25
+          "y": 165
         }
       }
     note: false
@@ -1435,7 +1435,7 @@ tasks:
       {
         "position": {
           "x": 6660,
-          "y": -270
+          "y": -80
         }
       }
     note: false
@@ -1467,7 +1467,7 @@ tasks:
       {
         "position": {
           "x": 6660,
-          "y": -25
+          "y": 165
         }
       }
     note: false
@@ -1509,7 +1509,7 @@ tasks:
       {
         "position": {
           "x": 7060,
-          "y": -270
+          "y": -80
         }
       }
     note: false
@@ -1541,7 +1541,7 @@ tasks:
       {
         "position": {
           "x": 7060,
-          "y": -25
+          "y": 165
         }
       }
     note: false
@@ -1849,7 +1849,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "112"
+      - "366"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3049,7 +3049,47 @@ tasks:
       {
         "position": {
           "x": 540,
-          "y": 150
+          "y": 250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "366":
+    id: "366"
+    taskid: a6713fd8-827f-4339-845b-def430819831
+    type: condition
+    task:
+      id: a6713fd8-827f-4339-845b-def430819831
+      version: -1
+      name: Is the PaloAltoNetworksXDR Alert key defined?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "113"
+      "yes":
+      - "112"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1765,
+          "y": -420
         }
       }
     note: false
@@ -3087,6 +3127,7 @@ view: |-
       "359_338_Verified": 0.1,
       "361_338_Verified": 0.1,
       "363_338_Verified": 0.1,
+      "366_112_yes": 0.55,
       "46_113_Verified": 0.1,
       "73_113_Verified": 0.3,
       "73_116_#default#": 0.7,
@@ -3095,7 +3136,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1680,
+        "height": 1780,
         "width": 13370,
         "x": -5930,
         "y": -1465
