@@ -47,3 +47,4 @@ variables:
   DOCKER_IO: "docker.io" # defined in the project level CI/CD variables
   KUBERNETES_CPU_REQUEST: 2
   KUBERNETES_MEMORY_REQUEST: 2Gi
+  RESET_CORE_PACK_VERSION: "true"

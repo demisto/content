@@ -599,6 +599,8 @@ tasks:
       maxImages:
         complex:
           root: inputs.MaxImagesFromPDF
+      unescape_url:
+        simple: true
     reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
