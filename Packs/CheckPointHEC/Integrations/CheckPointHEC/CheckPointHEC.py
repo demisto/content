@@ -1,5 +1,6 @@
 import hashlib
 import uuid
+# from time import time
 from urllib.parse import urlencode
 
 import urllib3
@@ -68,6 +69,30 @@ class Client(BaseClient):
         self.client_id = client_id
         self.client_secret = client_secret
         self.token = None
+        self.token_expiry = float('-inf')
+        self.is_infinity = 'cloudinfra' in base_url
+
+    def _should_refresh_token(self) -> bool:
+        return not self.token or time.time() >= self.token_expiry
+
+    def _generate_infinity_token(self):
+        if self._should_refresh_token():
+            payload = {
+                "clientId": self.client_id,
+                "accessKey": self.client_secret
+            }
+            timestamp = time.time()
+
+            res = self._http_request(
+                method='POST',
+                url_suffix='auth/external',
+                json_data=payload
+            )
+            data = res['data']
+            self.token = data.get('token')
+            self.token_expiry = timestamp + float(data.get('expiresIn'))
+
+        return self.token
 
     def _generate_signature(self, request_id: str, timestamp: str, request_string: str = None) -> str:
         if request_string:
@@ -81,15 +106,22 @@ class Client(BaseClient):
 
     def _get_headers(self, request_string: str = None, auth: bool = False) -> dict[str, str]:
         request_id = str(uuid.uuid4())
-        timestamp = datetime.utcnow().isoformat()
-        headers = {
-            'x-av-req-id': request_id,
-            'x-av-app-id': self.client_id,
-            'x-av-date': timestamp,
-            'x-av-sig': self._generate_signature(request_id, timestamp, request_string),
-        }
-        if not auth:
-            headers['x-av-token'] = self._get_token()
+        if self.is_infinity:
+            token = self._generate_infinity_token()
+            headers = {
+                'Authorization': f'Bearer {token}',
+                'x-av-req-id': request_id,
+            }
+        else:
+            timestamp = datetime.utcnow().isoformat()
+            headers = {
+                'x-av-req-id': request_id,
+                'x-av-app-id': self.client_id,
+                'x-av-date': timestamp,
+                'x-av-sig': self._generate_signature(request_id, timestamp, request_string),
+            }
+            if not auth:
+                headers['x-av-token'] = self._get_token()
         return headers
 
     def _get_token(self) -> str:
@@ -105,10 +137,15 @@ class Client(BaseClient):
         return self.token or ''
 
     def _call_api(self, method: str, url_suffix: str, params: dict = None, json_data: dict = None) -> dict[str, Any]:
-        path = '/'.join([self.api_version, url_suffix])
-        request_string = f'/{path}'
-        if params:
-            request_string += f'?{urlencode(params)}'
+        if self.is_infinity:
+            path = '/'.join(['app', 'hec-api', self.api_version, url_suffix])
+            request_string = None
+        else:
+            path = '/'.join([self.api_version, url_suffix])
+            request_string = f'/{path}'
+            if params:
+                request_string += f'?{urlencode(params)}'
+
         return self._http_request(
             method,
             url_suffix=path,
@@ -574,7 +611,7 @@ def main() -> None:  # pragma: no cover
             kwargs = {
                 'start_date': args.get('start_date'),
                 'end_date': args.get('end_date'),
-                'saas_apps': [SAAS_APPS_TO_SAAS_NAMES.get(x) for x in argToList(params.get('saas_apps'))],
+                'saas_apps': [SAAS_APPS_TO_SAAS_NAMES.get(x) for x in argToList(args.get('saas_apps'))],
                 'states': [x.lower() for x in argToList(args.get('states'))],
                 'severities': [SEVERITY_VALUES.get(x.lower()) for x in argToList(args.get('severities'))],
                 'threat_types': [x.lower().replace(' ', '_') for x in argToList(args.get('threat_type'))],
