@@ -8,7 +8,7 @@ For more information, see the section about permissions here: [https://docs-cort
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python3 |
+| Script Type | javascript |
 | Tags | Utility |
 | Cortex XSOAR Version | 5.0.0 |
 

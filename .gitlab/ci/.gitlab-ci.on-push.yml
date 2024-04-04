@@ -88,6 +88,8 @@ run-unittests-and-lint:
       when: never
     - if: '$SECURITY_SCANS == "true"'
       when: never
+    - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
+      when: never
     - if: '$BUILD_MACHINES_CLEANUP == "true"'
       when: never
     - if: '$SDK_RELEASE == "true"'
@@ -99,6 +101,29 @@ run-unittests-and-lint:
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
+run-pre-commit:
+  allow_failure: true
+  extends:
+    - .run-pre-commit
+  cache:
+    policy: pull-push
+  rules:
+    - if: '$BUCKET_UPLOAD == "true"'
+      when: never
+    - if: '$SECURITY_SCANS == "true"'
+      when: never
+    - if: '$BUILD_MACHINES_CLEANUP == "true"'
+      when: never
+    - if: '$FORCE_BUCKET_UPLOAD == "true"'
+      when: never
+    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
+      when: never
+    - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
+      when: never
+    # In sdk nighly we run this separately 
+    - if: '$DEMISTO_SDK_NIGHTLY != "true"'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
   extends:
@@ -106,6 +131,16 @@ run-validations:
   rules:
     - if: '$NIGHTLY'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
+# runs in gitlab for the on-push flow (except for contributors)
+run-validations-new-validate-flow:
+  extends:
+    - .run-validations-new-validate-flow
+  rules:
+    - if: '$NIGHTLY'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+  allow_failure: true
+
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
@@ -214,6 +249,10 @@ validate-content-conf:
     - ./Tests/scripts/prepare_content_packs_for_testing.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION"
     - section_end "Prepare Content Packs for Testing"
 
+    - section_start "Override and upload core packs versions"
+    - ./Tests/Marketplace/upload_versions_core_files.sh "$MARKETPLACE_BUCKET" "$STORAGE_BASE_PATH" "$MARKETPLACE_VERSION" "$LAST_UPLOAD_COMMIT"
+    - section_end "Override and upload core packs versions"
+
     - section_start "Create Instances for XSOAR"
     - |
       if [[ ${MARKETPLACE_VERSION} = "xsoar" ]]; then
@@ -287,7 +326,7 @@ xpanse-prepare-testing-bucket:
       ./Tests/scripts/run_e2e_tests.sh || EXIT_CODE=$?
     else
       ./Tests/scripts/run_e2e_tests.sh --generate-empty-result-file
-      if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then	
+      if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then
         cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
       fi
       ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
@@ -348,6 +387,11 @@ xpanse-prepare-testing-bucket:
     - echo "Done sleeping!"
     - section_end "Wait Until Server Ready"
     - !reference [.run_tests]
+    - section_start "Get instance ssh-command"
+    - echo "INSTANCE_ROLE -> ${INSTANCE_ROLE}"
+    - INSTANCE_NAME=$(jq -r --arg role "$INSTANCE_ROLE" '.[] | select(.Role == $role) | .InstanceName' ./artifacts/env_results.json)
+    - echo -e "\e[1m gcloud compute ssh --zone \"us-central1-a\" \"${INSTANCE_NAME}\"  --tunnel-through-iap --project "xsoar-content-build" \e[0m"
+    - section_end "Get instance ssh-command"
     - section_start "Cleanup env results from artifacts folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk

@@ -47,6 +47,9 @@ def xls_file_to_indicator_list(file_path, sheet_name, col_num, starting_row, aut
 
     # TODO: add run on all columns functionality
 
+    # Ensure that the has_iter will not be reseted after opening the workbook.
+    xlrd.xlsx.ensure_elementtree_imported(False, None)
+    xlrd.xlsx.Element_has_iter = True
     xl_woorkbook = xlrd.open_workbook(file_path)
     if sheet_name and sheet_name != 'None':
         xl_sheet = xl_woorkbook.sheet_by_name(sheet_name)

@@ -906,7 +906,10 @@ class SecurityAndComplianceClient {
         #>
     }
 
-    [psobject]NewSearchAction([string]$search_name, [string]$action, [string]$purge_type) {
+    [psobject]NewSearchAction([string]$search_name, [string]$action, [string]$purge_type,
+                              [string]$share_point_archive_format, [string]$format,
+                              [bool]$include_sharepoint_document_versions, [string]$notify_email,
+                              [string]$notify_email_cc, [string]$scenario, [string]$scope) {
         # Establish session to remote
         $this.CreateDelegatedSession("New-ComplianceSearchAction")
         # Execute command
@@ -921,8 +924,32 @@ class SecurityAndComplianceClient {
             $cmd_params.PurgeType = $purge_type
             $cmd_params.Confirm = $false
             $cmd_params.Force = $true
+        } elseif ($action -eq "Export") {
+            $cmd_params.Export = $true
+            $cmd_params.Confirm = $false
+            if ($share_point_archive_format) {
+                $cmd_params.SharePointArchiveFormat = $share_point_archive_format
+            }
+            if ($format) {
+                $cmd_params.Format = $format
+            }
+            if ($include_sharepoint_document_versions -eq "true") {
+                $cmd_params.IncludeSharePointDocumentVersions = $true
+            }
+            if ($notify_email) {
+                $cmd_params.NotifyEmail = $notify_email
+            }
+            if ($notify_email_cc) {
+                $cmd_params.NotifyEmailCC = $notify_email_cc
+            }
+            if ($scenario) {
+                $cmd_params.Scenario = $scenario
+            }
+            if ($scope) {
+                $cmd_params.Scope = $scope
+            }
         } else {
-            throw "New action must include valid action - Preview/Purge"
+            throw "New action must include valid action - Preview/Purge/Export"
         }
         $response = New-ComplianceSearchAction @cmd_params
 
@@ -938,7 +965,7 @@ class SecurityAndComplianceClient {
             The name of the compliance search.
 
             .PARAMETER action
-            Search action type - Preview (Showing results) / Purge (Delete found emails)
+            Search action type - Preview (Showing results) / Purge (Delete found emails) / Export (Create Export file in UI)
 
             .PARAMETER purge_type
             Used if action type is purge, Search action purge type - SoftDelete (allow recover) / HardDelete (not recoverable).
@@ -946,6 +973,8 @@ class SecurityAndComplianceClient {
             .EXAMPLE
             $client.NewSearchAction("search-name", "Preview")
             $client.NewSearchAction("search-name", "Purge", "HardDelete")
+            $client.NewSearchAction("search-name", "Export")
+         #>
 
             .OUTPUTS
             psobject - Raw response.
@@ -1621,7 +1650,10 @@ function StopSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwa
 
 function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
-    $raw_response = $client.NewSearchAction($kwargs.search_name, $kwargs.action, $kwargs.purge_type)
+    $raw_response = $client.NewSearchAction($kwargs.search_name, $kwargs.action, $kwargs.purge_type,
+                                            $kwargs.share_point_archive_format, $kwargs.format,
+                                            $kwargs.include_sharepoint_document_versions, $kwargs.notify_email,
+                                            $kwargs.notify_email_cc, $kwargs.scenario, $kwargs.scope)
 
     if ($null -eq $raw_response) {
         # Handle the scenario if a search is not found:

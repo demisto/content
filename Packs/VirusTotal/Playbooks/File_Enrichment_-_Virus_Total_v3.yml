@@ -219,7 +219,6 @@ tasks:
       retry-count:
         simple: "2"
     separatecontext: false
-    continueonerror: true
     view: |-
       {
         "position": {

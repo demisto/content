@@ -6,9 +6,45 @@ function errorEntry(text) {
     };
 }
 
-var fieldsToDelete;
+function hasDuplicates(arr) {
+    return arr.some( function(item) {
+        return arr.indexOf(item) !== arr.lastIndexOf(item);
+    });
+}
+
+/**
+ * Deletes keys from the context and handles errors.
+ * @param {Array<string>} keys - An array of keys to delete.
+ * @returns {string} A message summarizing the outcome of the delete operation.
+ */
+function deleteKeys(keysToDelete) {
+    var deletedKeys = []
+    var errors = []
+    var message = "";
+    for (var key of keysToDelete) {
+        const originalKey = typeof key === "string" ? key.trim() : key;
+        if (!dq(invContext, originalKey)) {
+            errors.push(`key does not exist: ${originalKey}`);
+            continue;
+        }
+        const keyToDelete = isSubPlaybookKey ? 'subplaybook-${currentPlaybookID}.' + originalKey: originalKey;
+        const result = executeCommand('delContext', { key: keyToDelete });
+    
+        if (!result || result.type === entryTypes.error) {
+            errors.push(result.Contents);
+        } else {
+            deletedKeys.push(key);
+        }
+    }
+    if (deletedKeys.length > 0) {
+        message += `\nSuccessfully deleted keys '${deletedKeys.join("', '")}' from context.`;
+    }
+    return message;
+}
+
 var shouldDeleteAll = (args.all === 'yes');
 var isSubPlaybookKey = (args.subplaybook === 'yes');
+
 if (args.subplaybook === 'auto') {
     var res = executeCommand('Print', { value: 'id=${currentPlaybookID}' });
     if (res && res[0].Contents && res[0].Contents.startsWith('id=')) {
@@ -25,14 +61,8 @@ if (!shouldDeleteAll && !args.key) {
                     Type: entryTypes.error};
 }
 
-function hasDuplicates(arr) {
-    return arr.some( function(item) {
-        return arr.indexOf(item) !== arr.lastIndexOf(item);
-    });
-}
-
 if (shouldDeleteAll) {
-    var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',').map(function(item) { return item.trim(); }) : [];
+    var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',').map(item => item.trim()) : [];
     var keysToKeepObj = {};
     var KeepDBotScoreKey = false;
     index = keysToKeep.indexOf("DBotScore");
@@ -62,29 +92,9 @@ if (shouldDeleteAll) {
             }
         }
     }
-    fieldsToDelete = Object.keys(invContext);
+    var keysToDelete = Object.keys(invContext);
 
-    // delete each field in context
-    var errorsStr = "";
-    for (var i = 0; i < fieldsToDelete.length; i++) {
-        var key = fieldsToDelete[i];
-        if (isSubPlaybookKey) {
-            key = 'subplaybook-${currentPlaybookID}.' + key;
-        }
-        if (key !== "DBotScore" || !KeepDBotScoreKey) {
-            var result = executeCommand('delContext', {key: key});
-            if(!result || result.type === entryTypes.error) {
-                errorsStr = errorsStr + "\n" + result.Contents;
-            }
-        }
-    }
-
-    var message;
-    if (errorsStr) {
-        message = "Context cleared with the following errors:" + errorsStr;
-    } else {
-        message = "Context cleared";
-    }
+    var message = deleteKeys(keysToDelete, isSubPlaybookKey)
 
     return {
         Type: entryTypes.note,
@@ -96,7 +106,7 @@ if (shouldDeleteAll) {
     };
 
 } else if (args.index !== undefined) {
-    // delete key in a specific index
+    // Delete key in a specific index.
     var index = parseInt(args.index);
     if (isNaN(index)) {
         return errorEntry("Invalid index " + args.index)
@@ -134,9 +144,17 @@ if (shouldDeleteAll) {
     return "Successfully deleted index " + index + " from key " + args.key;
 
 } else {
-    var key = args.key;
-    if (isSubPlaybookKey) {
-      key = 'subplaybook-${currentPlaybookID}.' + key;
-    }
-    return executeCommand('delContext', {key: key});
+    // Supporting comma separated list of keys to be deleted.
+    var keysToDelete = (typeof args.key === "string") ? args.key.split(',') : [args.key]
+
+    var message = deleteKeys(keysToDelete, isSubPlaybookKey)
+    return {
+        Type: entryTypes.note,
+        Contents: message,
+        ContentsFormat: formats.json,
+        HumanReadable: message,
+        ReadableContentsFormat: formats.markdown,
+        EntryContext: keysToKeepObj
+    };
+
 }
