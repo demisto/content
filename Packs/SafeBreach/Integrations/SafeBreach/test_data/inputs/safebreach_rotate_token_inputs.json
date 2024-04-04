@@ -1,0 +1,8 @@
+{
+    "successful_creation": {
+        "command": "safebreach-rotate-verification-token",
+        "args": {
+            "name": "test rotate"
+        }
+    }
+}
