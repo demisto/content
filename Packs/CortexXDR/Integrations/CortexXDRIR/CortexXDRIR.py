@@ -525,7 +525,7 @@ def get_last_mirrored_in_time(args):
 def sort_incident_data(raw_incident):
     """
     Sorts and processes the raw incident data into a cleaned incident dict.
-    
+
     Parameters:
     -  raw_incident (dict): The raw incident data as provided by the API.
 
@@ -578,7 +578,7 @@ def get_incident_extra_data_command(client, args):
     demisto.debug(f"in get_incident_extra_data_command {incident_id=} {raw_incident=}")
     readable_output = [tableToMarkdown(f'Incident {incident_id}', raw_incident.get('incident'), removeNull=True)]
     incident = sort_incident_data(raw_incident)
-    if incident_alerts:= incident.get('alerts'):
+    if incident_alerts := incident.get('alerts'):
         readable_output.append(tableToMarkdown('Alerts', incident_alerts,
                                                headers=[key for key in incident_alerts[0]
                                                         if key != 'host_ip'], removeNull=True))
@@ -996,11 +996,11 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
             raw_incidents = []
             for status in statuses:
                 raw_incident_status = client.get_multiple_incidents_extra_data(
-                                     gte_creation_time_milliseconds=last_fetch,
-                                     status=status,
-                                     limit=max_fetch, starred=starred,
-                                     starred_incidents_fetch_window=starred_incidents_fetch_window,
-                                     fields_to_exclude=fields_to_exclude)
+                    gte_creation_time_milliseconds=last_fetch,
+                    status=status,
+                    limit=max_fetch, starred=starred,
+                    starred_incidents_fetch_window=starred_incidents_fetch_window,
+                    fields_to_exclude=fields_to_exclude)
                 raw_incidents.extend(raw_incident_status)
             raw_incidents = sorted(raw_incidents, key=lambda inc: inc.get('incident', {}).get('creation_time'))
         else:
@@ -1061,7 +1061,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
 
     if non_created_incidents:
         next_run['incidents_from_previous_run'] = non_created_incidents
-        next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS # type: ignore[assignment]
+        next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS  # type: ignore[assignment]
     else:
         next_run['incidents_from_previous_run'] = []
 

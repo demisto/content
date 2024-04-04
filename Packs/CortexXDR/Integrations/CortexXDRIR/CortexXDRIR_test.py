@@ -1288,4 +1288,3 @@ def test_sort_all_incident_data_fields_fetch_case_get_multiple_incidents_extra_d
     assert incident_data.get('incident_sources') == ['XDR Agent']
     assert incident_data.get('status') == 'new'
     assert len(incident_data.get('file_artifacts')) == 1
- 
