@@ -114,7 +114,7 @@ def test_gsuite_mobile_update_command_success(mocker_http_request, gsuite_client
     mocker_http_request.return_value = {}
 
     from GSuiteAdmin import mobile_update_command
-    response = mobile_update_command(gsuite_client, {'resource_id': 'RESOURCE_ID'})
+    response = mobile_update_command(gsuite_client, {'resource_id': 'RESOURCE_ID', 'customer_id': '1234'})
     assert response.readable_output == HR_MESSAGES['MOBILE_UPDATE_SUCCESS'].format('RESOURCE_ID')
 
 
@@ -141,7 +141,7 @@ def test_gsuite_mobile_update_command_failure(mocker_http_request, gsuite_client
 
     from GSuiteAdmin import mobile_update_command
     with pytest.raises(Exception, match='UPDATE_ERROR'):
-        mobile_update_command(gsuite_client, {})
+        mobile_update_command(gsuite_client, {'customer_id': '1234'})
 
 
 MOBILE_ACTION_ERROR_CASES = [
@@ -194,7 +194,7 @@ def test_gsuite_mobile_delete_command_success(mocker_http_request, gsuite_client
     mocker_http_request.return_value = {}
 
     from GSuiteAdmin import mobile_delete_command
-    response = mobile_delete_command(gsuite_client, {'resource_id': 'DELETE_RESOURCE'})
+    response = mobile_delete_command(gsuite_client, {'resource_id': 'DELETE_RESOURCE','customer_id': '1234'})
     assert response.readable_output == HR_MESSAGES['MOBILE_DELETE_SUCCESS'].format('DELETE_RESOURCE')
 
 
@@ -221,7 +221,7 @@ def test_gsuite_mobile_delete_command_failure(mocker_http_request, gsuite_client
 
     from GSuiteAdmin import mobile_delete_command
     with pytest.raises(Exception, match='DELETE_ERROR'):
-        mobile_delete_command(gsuite_client, {})
+        mobile_delete_command(gsuite_client, {'customer_id': '1234'})
 
 
 def test_user_create_command(gsuite_client, mocker):
@@ -485,7 +485,7 @@ def test_role_assignment_list(gsuite_client, mocker):
 
     arguments = {
         'customer_id': 'cfdge',
-        'max_results': '1'
+        'max_results': '1',
     }
     with open('test_data/role_assignment_list_response.json') as file:
         api_response = json.load(file)
@@ -497,8 +497,8 @@ def test_role_assignment_list(gsuite_client, mocker):
     assert command_result.readable_output == expected_entry_context['HumanReadable']
     assert command_result.outputs == expected_entry_context['EntryContext']
     assert command_result.raw_response == expected_entry_context['Contents']
-    assert role_assignment_list_command(gsuite_client, {}).readable_output == HR_MESSAGES['NO_RECORDS'].format(
-        'role assignment details')
+    assert role_assignment_list_command(gsuite_client, {'customer_id': '1234'}).readable_output == \
+           HR_MESSAGES['NO_RECORDS'].format('role assignment details')
 
 
 def test_role_assignment_create(gsuite_client, mocker):
@@ -586,7 +586,7 @@ def test_role_create_command_failure(mocker_http_request, gsuite_client):
     from GSuiteAdmin import role_create_command
 
     with pytest.raises(Exception, match="SOME_ERROR"):
-        role_create_command(gsuite_client, {'role_privileges': 'test:test'})
+        role_create_command(gsuite_client, {'role_privileges': 'test:test', 'customer_id': '1234'})
 
 
 @patch(MOCKER_HTTP_METHOD)
@@ -676,11 +676,11 @@ def test_datatransfer_list(gsuite_client, mocker):
         expected_entry_context = json.load(file)
     mocker.patch(MOCKER_HTTP_METHOD, side_effect=[api_response, {}])
 
-    command_result = datatransfer_list_command(gsuite_client, {})
+    command_result = datatransfer_list_command(gsuite_client, {'customer_id': '1234'})
     assert command_result.readable_output == expected_entry_context['HumanReadable']
     assert command_result.outputs == expected_entry_context['EntryContext']
     assert command_result.raw_response == expected_entry_context['Contents']
-    assert datatransfer_list_command(gsuite_client, {}).readable_output == HR_MESSAGES['NO_RECORDS'].format(
+    assert datatransfer_list_command(gsuite_client, {'customer_id': '1234'}).readable_output == HR_MESSAGES['NO_RECORDS'].format(
         'data transfer details')
 
 
@@ -789,10 +789,10 @@ def test_custom_user_schema_update_required_args_error(gsuite_client):
     from GSuiteAdmin import custom_user_schema_update_command
 
     with pytest.raises(ValueError, match=MESSAGES['CUSTOM_SCHEMA_UPDATE_REQUIRED_ARGS']):
-        custom_user_schema_update_command(gsuite_client, {})
+        custom_user_schema_update_command(gsuite_client, {'customer_id': '1234'})
 
     with pytest.raises(ValueError, match=MESSAGES['REQUIRED_ARGS_CUSTOM_SCHEMA']):
-        custom_user_schema_update_command(gsuite_client, {'schema_name': 'new_schema'})
+        custom_user_schema_update_command(gsuite_client, {'schema_name': 'new_schema','customer_id': '1234'})
 
 
 @patch(MOCKER_HTTP_METHOD)
