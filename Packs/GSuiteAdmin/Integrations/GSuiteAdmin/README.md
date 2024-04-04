@@ -86,7 +86,7 @@ Takes an action that affects a mobile device. For example, remotely wiping a dev
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | The unique ID of the customer's G Suite account. | Required | 
+| customer_id | The unique ID of the customer's G Suite account. | Optional | 
 | resource_id | The unique ID used to identify the mobile device. | Required | 
 | action | The action to be performed on the device.<br/><br/>Available Options:<br/>admin_account_wipe - Remotely wipes only G Suite data from the device.<br/><br/>admin_remote_wipe - Remotely wipes all data on the device.<br/><br/>approve - Approves the device.<br/><br/>block - Blocks access to G Suite data on the device.<br/><br/>cancel_remote_wipe_then_activate - Cancels a remote wipe of the device and then reactivates it.<br/><br/>cancel_remote_wipe_then_block - Cancels a remote wipe of the device and then blocks it. | Required | 
 | admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
@@ -121,7 +121,7 @@ Removes a mobile device. Note that this does not break the device's sync, it sim
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | The unique ID of the customer's G Suite account. | Required | 
+| customer_id | The unique ID of the customer's G Suite account. | Optional | 
 | resource_id | The unique ID used to identify the mobile device. | Required | 
 | admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
 
@@ -382,7 +382,7 @@ Retrieves a paginated list of all role assignments.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | Immutable ID of the G Suite account. | Required | 
+| customer_id | Immutable ID of the G Suite account. | Optional | 
 | role_id | Immutable ID of a role. If included, it returns only role assignments containing this role ID. | Optional | 
 | user_key | The user's primary email address, alias email address, or unique user ID. If included in the request, returns role assignments only for this user. | Optional | 
 | page_token | Token to specify the next page in the list. | Optional | 
@@ -462,7 +462,7 @@ Creates a role assignment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | Immutable ID of the G Suite account. | Required | 
+| customer_id | Immutable ID of the G Suite account. | Optional | 
 | role_id | The ID of the role to be assigned to the user. | Required | 
 | assigned_to | The unique ID of the user this role is assigned to. | Required | 
 | scope_type | The scope in which this role is assigned. | Required | 
@@ -524,7 +524,7 @@ Creates a new role.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | Immutable ID of the G Suite account. | Required | 
+| customer_id | Immutable ID of the G Suite account. | Optional | 
 | role_name | Name of the role. | Required | 
 | role_privileges | The set of privileges that are granted to this role. Comma-separated list of privilege names and service ids of the form "PrivilegeName1:ServiceId1,PrivilegeName2:ServiceId2". | Required | 
 | role_description | A short description of the role. | Optional | 
@@ -770,7 +770,7 @@ Note: field_raw_json has higher precedence when both field_raw_json and field_js
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
-| customer_id | Immutable ID of the G Suite account. | Required | 
+| customer_id | Immutable ID of the G Suite account. | Optional | 
 | schema_name | The schema's name. | Required | 
 | schema_display_name | Display name for the schema. | Required | 
 | field_raw_json | Raw JSON containing fields of the schema. Acceptable values for<br/>fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable<br/>values for readAccessType are ADMINS_AND_SELF- Only administrators and<br/>the associated user can see values, and ALL_DOMAIN_USERS- Any user in<br/>your domain can see values.<br/>E.g.<br/>{<br/>  "fields": [<br/>    {<br/>      "fieldType": string,<br/>      "fieldName": string,<br/>      "displayName": string,<br/>      "multiValued": boolean,<br/>      "readAccessType": string,<br/>      "indexed": boolean,<br/>      "numericIndexingSpec": {<br/>        "minValue": double,<br/>        "maxValue": double<br/>      }<br/>    }<br/>  ]<br/>}<br/> | Optional | 
@@ -857,7 +857,7 @@ Note: field_raw_json has higher precedence when both field_raw_json and field_js
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
-| customer_id | Immutable ID of the G Suite account. | Required | 
+| customer_id | Immutable ID of the G Suite account. | Optional | 
 | schema_name | The schema's name. | Optional | 
 | schema_id | Immutable ID of the schema. | Optional | 
 | schema_display_name | Display name for the schema. | Optional | 
@@ -1539,7 +1539,7 @@ Retrieves a paginated list that includes company-owned mobile devices.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | The unique ID of the customer's Google Workspace Admin account. | Required | 
+| customer_id | The unique ID of the customer's Google Workspace Admin account. | Optional | 
 | admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
 | projection | Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status). Default is FULL. Possible values are: BASIC, FULL. | Optional | 
 | query | Search string using the format given at https://developers.google.com/admin-sdk/directory/v1/search-operators. | Optional | 
@@ -1729,7 +1729,7 @@ Retrieves a paginated list of company-owned ChromeOS devices.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | The unique ID of the customer's Google Workspace Admin account. | Required | 
+| customer_id | The unique ID of the customer's Google Workspace Admin account. | Optional | 
 | admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
 | projection | Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, serialNumber, status, and user). Possible values are: BASIC, FULL. | Optional | 
 | query | Search string in the format given at https://developers.google.com/admin-sdk/directory/v1/list-query-operators. | Optional | 
@@ -1856,7 +1856,7 @@ Executes an action that affects a ChromeOS Device. This includes de-provisioning
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | The unique ID of the customer's Google Workspace Admin account. | Required | 
+| customer_id | The unique ID of the customer's Google Workspace Admin account. | Optional | 
 | admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
 | resource_id | The unique ID of the device. | Required | 
 | action | The action to be performed on the ChromeOS device. Possible values are: deprovision, disable, reenable, pre_provisioned_disable, pre_provisioned_reenable. | Required | 
@@ -2076,7 +2076,7 @@ To move Chrome browser devices assigned to an account from one organization unit
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | The unique identifier of the customer's Google account. | Required | 
+| customer_id | The unique identifier of the customer's Google account. | Optional | 
 | resource_ids | A comma-separated list of unique device IDs of Chrome browser devices to move. A maximum of 600 browsers may be moved per request. | Required | 
 | org_unit_path | Destination organization unit to move devices to. Full path of the organizational unit or its ID prefixed with 'id:'. | Required | 
 
@@ -2106,7 +2106,7 @@ Retrieve all Chrome browser devices for an account or a specific Chrome browser 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | The unique identifier of the customer's Google account. | Required | 
+| customer_id | The unique identifier of the customer's Google account. | Optional | 
 | device_id | The unique ID of the device. | Optional | 
 | order_by | Field by which to order. Possible values are: id, last_sync, machine_name, extension_count, policy_count, os_version, last_signed_in_user, annotated_user, annotated_location, annotated_asset_id, notes, browser_version_channel, org_unit, enrollment_date, save_browsing_clickthrough, platform_major_version, last_activity, browser_version_sortable, os_version_sortable. | Optional | 
 | org_unit_path | The full path of the organizational unit or its unique ID. | Optional | 
@@ -2186,7 +2186,7 @@ Modifies multiple policy values that are applied to a specific group. All target
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | ID of the Google Workspace account or literal 'my_customer' for the customer associated with the request. | Required | 
+| customer_id | ID of the Google Workspace account or literal 'my_customer' for the customer associated with the request. | Optional | 
 | target_type | In case of Group use “POST…groups:batchModify”. In case of OrgUnit use “POST…orgunits:batchModify”. Possible values are: Group, OrgUnit. | Required | 
 | policy_raw_json | String as JSON representation of the ModifyGroupPolicyRequest<br/>{<br/>    "requests": [<br/>        {<br/>            "policyTargetKey": {<br/>                "targetResource": "orgunits/03ph8a2z1kjba6k",<br/>                "additionalTargetKeys": {<br/>                    "app_id": "chrome:jldhpllghnbhlbpcmnajkpdmadaolakh"<br/>                }<br/>            },<br/>            "policyValue": {<br/>                "policySchema": "chrome.users.apps.InstallType",<br/>                "value": {<br/>                    "appInstallType": "BLOCKED"<br/>                }<br/>            },<br/>            "updateMask": "appInstallType"<br/>        }<br/>   ]<br/>}. | Optional | 
 | policy_field_json_entry_id | Entry ID of the file that contains JSON representation of the ModifyGroupPolicyRequest. | Optional | 
@@ -2222,7 +2222,7 @@ Gets a list of policy schemas that match a specified filter value for a given cu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | ID of the Google Workspace account or literal "my_customer" for the customer associated with the request. | Required | 
+| customer_id | ID of the Google Workspace account or literal "my_customer" for the customer associated with the request. | Optional | 
 | schema_name | The policy schema resource name to query. Required when asking for a specific policy. | Optional | 
 | filter | The schema filter is used to find a particular schema based on fields like its resource name, description and additionalTargetKeyNames. | Optional | 
 | page_size | The maximum number of policy schemas to return. Defaults to 100 and has a maximum of 1000. | Optional | 
@@ -2403,7 +2403,7 @@ Gets the resolved policy values for a list of policies that match a search query
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | ID of the Google Workspace account or literal "my_customer" for the customer associated with the request. | Required | 
+| customer_id | ID of the Google Workspace account or literal "my_customer" for the customer associated with the request. | Optional | 
 | policy_schema_filter | Specify a schema name to view a particular schema, for example: chrome.users.ShowLogoutButton. See https://developers.google.com/chrome/policy/guides/policy-schemas for details on schema namespaces. | Required | 
 | target_type | Type of target. Possible values are: Group, OrgUnit. | Required | 
 | target_resource | The target resource on which this policy is applied. The following resources are supported: Organizational Unit ("orgunits/{orgunit_id}") or Group ("groups/{groupId}"). | Required | 
@@ -2487,7 +2487,7 @@ Delete multiple policy values that are applied to a specific group. All targets 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | ID of the Google Workspace account or literal "my_customer" for the customer associated with the request. | Required | 
+| customer_id | ID of the Google Workspace account or literal "my_customer" for the customer associated with the request. | Optional | 
 | policy_raw_json | String as JSON representation of the DeleteGroupPolicyRequest<br/>{<br/>  "policyTargetKey": {<br/>    object (PolicyTargetKey)<br/>  },<br/>  "policySchema": string<br/>}. | Optional | 
 | policy_field_json_entry_id | Entry Id of the file that contains JSON representation of the DeleteGroupPolicyRequest<br/>{<br/>  "policyTargetKey": {<br/>    object (PolicyTargetKey)<br/>  },<br/>  "policySchema": string<br/>}. | Required | 
 | target_resource | The target resource on which this policy is applied. The following resources are supported:<br/><br/>Organizational Unit ("orgunits/{orgunit_id}")<br/>Group ("groups/{groupId}"). | Optional | 

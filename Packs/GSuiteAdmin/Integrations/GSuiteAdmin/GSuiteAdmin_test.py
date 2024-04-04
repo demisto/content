@@ -2,7 +2,7 @@ import json
 from unittest.mock import patch
 
 import pytest
-
+from CommonServerPython import DemistoException, CommandResults
 import demistomock as demisto
 from GSuiteAdmin import MESSAGES, GSuiteClient, OUTPUT_PREFIX, HR_MESSAGES, Client
 
@@ -1249,6 +1249,26 @@ def test_chromebrowser_move_ou_command(gsuite_client, mocker):
     mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value={})
     response = chromebrowser_move_ou_command(gsuite_client, args)
     assert response == f'Chrome browser devices have been moved to the new organization unit {args["org_unit_path"]}'
+
+
+def test_chromebrowser_move_ou_command_missing_customerId(gsuite_client, mocker):
+    """
+        Scenario: chromebrowserdevice move successful execution.
+
+        Given:
+        - Working API integration and correct parameters
+
+        When:
+        - Calling command chromebrowser_move_ou_command
+
+        Then:
+        - Ensure no error returns
+    """
+    from GSuiteAdmin import chromebrowser_move_ou_command
+    args = {"resource_ids": "1111", "org_unit_path": "/testing"}
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value={})
+    with pytest.raises(DemistoException, match="Missing required customer ID - either provide as an argument or set a parameter"):
+        chromebrowser_move_ou_command(gsuite_client, args)
 
 
 @pytest.mark.parametrize(
