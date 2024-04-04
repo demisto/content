@@ -28,6 +28,7 @@ from exchangelib import (
     ExtendedProperty,
     FileAttachment,
     Folder,
+    FolderCollection,
     HTMLBody,
     Identity,
     ItemAttachment,
@@ -343,24 +344,24 @@ class EWSClient:
             if path in folders_map:
                 return account.root._folders_map[path]
         if is_public:
-            folder_result = account.public_folders_root
-        elif path == "AllItems":
-            folder_result = account.root
+            # folder_result = account.public_folders_root
+            inbox_folders = FolderCollection(account=account, folders=[account.public_folders_root])
         else:
-            folder_result = account.inbox.parent  # Top of Information Store
+            # folder_result = account.inbox.parent  # Top of Information Store
+            inbox_folders = FolderCollection(account=account, folders=[account.root])
         path = path.replace("/", "\\")
         path = path.split("\\")
-        for sub_folder_name in path:
-            folder_filter_by_name = [
-                x
-                for x in folder_result.children
-                if x.name.lower() == sub_folder_name.lower()
-            ]
-            if len(folder_filter_by_name) == 0:
-                raise Exception(f"No such folder {path}")
-            folder_result = folder_filter_by_name[0]
-
-        return folder_result
+        sub_folder_name = path[-1]
+        folder_filter_by_name = [
+            x
+            for x in inbox_folders.find_folders()
+            if x.name.lower() == sub_folder_name.lower()
+        ]
+        demisto.debug(f"{sub_folder_name=}, {folder_filter_by_name=}")
+        if len(folder_filter_by_name) == 0:
+            raise Exception(f"No such folder {path}")
+        inbox_folders = folder_filter_by_name[0]
+        return inbox_folders
 
     def send_email(self, message: Message):
         account = self.get_account()
@@ -1230,7 +1231,8 @@ def search_items_in_mailbox(
         is_public = client.is_default_folder(folder_path, is_public)
         folders = [client.get_folder_by_path(folder_path, account, is_public)]
     else:
-        folders = account.inbox.parent.walk()  # pylint: disable=E1101
+        folders = FolderCollection(account=account, folders=[account.inbox])
+        # folders = account.inbox.parent.walk()  # pylint: disable=E1101
 
     items = []  # type: ignore
     selected_all_fields = selected_fields == "all"
