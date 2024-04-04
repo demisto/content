@@ -6815,5 +6815,5 @@ There is no context output for this command.
 >Mobile Detection(s) id_1, id_2 were successfully updated
 
 ### Troubleshooting
-When encountering connectivity or authorization errors within XSOAR 8, 
-it necessary to include the IP corresponding to the relevant region into the CrowdStrike Falcon whitelist.
+When encountering connectivity or authorization errors within Cortex XSOAR 8, 
+it necessary to include the IP corresponding to the relevant region into the CrowdStrike Falcon allow list.
