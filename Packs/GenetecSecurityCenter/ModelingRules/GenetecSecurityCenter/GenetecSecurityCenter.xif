@@ -1,0 +1,61 @@
+[MODEL: dataset = genetec_security_center_raw]
+alter // Extractions & Initializations
+    assigned_to = arrayindex(regextract(Description, "is assigned to ([^\.]+)"), 0), 
+    changed_property = arrayindex(regextract(Description, "Value of (.+?) changed from"), 0),
+    client_application_type_id = to_string(SourceApplicationType), 
+    client_application = arrayindex(regextract(SourceApplicationAsString, "(?:\S+\s*\-\s*)?(\S+)"), 0),
+    event_type_id = to_string(AuditTrailModificationType), 
+    entity_type = arrayindex(regextract(Description, "\S+:\s*(.+?)\s+modified\."), 0),
+    group_name = Value -> AuditData.Ex.AuditDataMem.groupName,
+    role_name = Value -> AuditData.Ex.AuditDataMem.roleName,
+    resource_type_id = to_string(Type)
+| alter resource_type = coalesce(entity_type, changed_property)
+| alter event_name = if( // Construct event name according to AuditTrailModificationType value & Description format 
+    event_type_id = "5", "Credential State Modified", 
+    event_type_id = "6", "Cardholder Modified", 
+    event_type_id = "8" or Description ~= "Entity deleted:", "Entity Deleted",
+    event_type_id = "9" or Description ~= "name changed from", "Entity Renamed",
+    Description ~= "Entity created:", "Entity Created",
+    Description ~= ".+? setting modified\.", "Entity Setting Modified",
+    Description ~= ":\s*(?:\S+\s+)*modified\.", "Entity Modified", 
+    Description ~= "is assigned to ", "Assignment Added",
+    Description ~= "is no longer assigned to ", "Assignment Removed",
+    Description ~= "is now a member of", "Membership Added",
+    Description ~= "is no longer a member of", "Membership Removed",
+    Description ~= "Item\s+.+?\s+added\.", "Item Added",
+    Description ~= "Item\s+.+?\s+removed\.", "Item Removed",
+    Description ~= "Security Desk [Tt]ask .+? added", "Security Desk Task Added",
+    Description ~= "Security Desk [Tt]ask .+? removed", "Security Desk Task Removed",
+    Description ~= "has been added as a link to map", "Map Link Added",
+    Description ~= "has been removed as a link from map", "Map Link Removed",
+    Description ~= "setting modified to Motion", "Camera Motion Setting Modified",
+    Description ~= "setting modified to Recording", "Camera Motion Recording Modified",
+    Description ~= "\sgained access rights to\s", "Access Rights Granted",
+    Description ~= "\slost access rights to\s", "Access Rights Revoked",
+    Description ~= "Value of (\S+\s+)+changed", "Property  Value Changed", 
+    Description ~= "The Active state value changed from", "Role Activation Changed",
+    Description ~= "state settings modified", "Zone Entity State Settings Modified",
+    Description ~= "Map layers added or removed", "Map Layers Modified",
+    Description ~= "Georeference modified\.", "Georeference Modified",
+    Description ~= "Default view modified\.", "Default View Modified",
+    Description ~= "Background modified\.", "Background Modified")
+| alter // XDM Mappings
+    xdm.event.description = Description, // Description of the audited event.
+    xdm.event.id = to_string(Id), // The unique Id number.
+    xdm.event.original_event_type = event_type_id, // The audit trail modification type
+    xdm.event.type = event_name, // The constructed event name. 
+    xdm.observer.name = Machine, // The machine name.
+    xdm.observer.type = coalesce(concat(client_application_type_id, " (", client_application, ")"), client_application_type_id),
+    xdm.observer.unique_identifier = SourceApplicationGuid, // The Guid of the application entity that modified the audited entity. This can be Config Tool, Security Desk, the SDK, etc.
+    xdm.source.application.name = client_application, // The name of the application that did the modification.
+    xdm.source.host.hostname = Machine, // The machine name.
+    xdm.source.user.identifier = ModifiedBy, // The Guid of the entity that modified the audited entity.
+    xdm.source.user.user_type = if(ModifiedByAsString ~= "Service|\w+svc$", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT, ModifiedByAsString != null, XDM_CONST.USER_TYPE_REGULAR),
+    xdm.source.user.username = ModifiedByAsString, // The name of the entity that modified the audited entity.
+    xdm.target.resource_before.value = OldValue, // The old value of the audited entity.
+    xdm.target.resource.id = Guid, // The Guid of the entity being audited.
+    xdm.target.resource.name = Name, // The name of the audited entity.
+    xdm.target.resource.type = coalesce(concat(resource_type_id, " (", resource_type, ")"), resource_type_id), // This represents the enum called EntityType.
+    xdm.target.resource.value = NewValue, // The new value of the audited entity.
+    xdm.target.user.username = assigned_to,
+    xdm.target.user.groups = arraycreate(group_name, role_name);

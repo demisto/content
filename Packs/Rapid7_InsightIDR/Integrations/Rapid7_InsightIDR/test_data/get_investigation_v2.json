@@ -1,0 +1,15 @@
+{
+  "rrn": "rrn",
+  "organization_id": "id",
+  "title": "jsmith enabled account rroe",
+  "source": "USER",
+  "status": "CLOSED",
+  "priority": "UNSPECIFIED",
+  "last_accessed": "2024-01-17T10:04:21.892Z",
+  "created_time": "2024-01-17T10:00:09.957Z",
+  "disposition": "UNDECIDED",
+  "assignee": null,
+  "first_alert_time": null,
+  "latest_alert_time": null,
+  "responsibility": null
+}

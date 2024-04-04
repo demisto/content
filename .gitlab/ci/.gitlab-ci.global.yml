@@ -7,7 +7,7 @@
       prefix: dev-content
     paths:
       - $PIP_CACHE_DIR
-      - /root/.cache/pre-commit
+      - $PRE_COMMIT_HOME
       - .venv/
       - node_modules/
       - .npm/
@@ -72,7 +72,7 @@
 .check_build_files_are_up_to_date: &check_build_files_are_up_to_date
   - section_start "Check Build Files Are Up To Date"
   - |
-    if [[ -n "${DEMISTO_SDK_NIGHTLY}" ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]] || [[ -n "${SLACK_JOB}" ]] || [[ "${BUILD_MACHINES_CLEANUP}" == "true" ]] || [[ "${DELETE_MISMATCHED_BRANCHES}" == "true" ]] || [[ "${SECURITY_SCANS}" == "true" ]] || [[ "${DEMISTO_TEST_NATIVE_CANDIDATE}" == "true" ]] || [[ "${CI_COMMIT_BRANCH}" == "master" ]] || [[ "${SDK_RELEASE}" == "true" ]]; then
+    if [[ -n "${DEMISTO_SDK_NIGHTLY}" ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_UPLOAD}" ]] || [[ -n "${SLACK_JOB}" ]] || [[ "${BUILD_MACHINES_CLEANUP}" == "true" ]] || [[ "${DELETE_MISMATCHED_BRANCHES}" == "true" ]] || [[ "${SECURITY_SCANS}" == "true" ]] || [[ "${DEMISTO_TEST_NATIVE_CANDIDATE}" == "true" ]] || [[ "${CI_COMMIT_BRANCH}" == "master" ]] || [[ "${SDK_RELEASE}" == "true" ]] || [[ "${TRIGGER_CONTRIBUTION_BUILD}" == "true" ]]; then
       echo "Running a build which doesn't require build files check validation"
     else
       ./Tests/scripts/is_file_up_to_date.sh .gitlab $CI_COMMIT_BRANCH
@@ -234,7 +234,7 @@
 
 .checkout-upload-commit-content-nightly: &checkout-upload-commit-content-nightly
   - section_start "Checkout upload commit content nightly" --collapsed
-  - | 
+  - |
     if [[ -n "${NIGHTLY}" && "${CI_COMMIT_BRANCH}" == "master" ]]; then
       if [[ ! -d "${CI_PROJECT_DIR}/artifacts/production_packs" ]]; then
         echo "content production packs do not exist in ${CI_PROJECT_DIR}/artifacts"
@@ -289,7 +289,6 @@
     - *build_parameters
     - *gitlab_ci_build_parameters
     - *checkout-upload-commit-content-nightly
-
 .default-after-script:
   - source .gitlab/helper_functions.sh
   - *setup-network-certs
@@ -480,7 +479,7 @@
             demisto-sdk lint --console-log-threshold DEBUG -p 8 -g --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report "${ARTIFACTS_FOLDER}/coverage_report" --check-dependent-api-module --docker-image ${DOCKER}
           fi
         fi
-      
+
         if [[ -f "${ARTIFACTS_FOLDER}/coverage_report/.coverage" ]]; then
           if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||   -n "$SHOULD_LINT_ALL"  ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
             demisto-sdk coverage-analyze -i "${ARTIFACTS_FOLDER}/coverage_report/.coverage" --report-dir "${ARTIFACTS_FOLDER}/coverage_report" --report-type all --allowed-coverage-degradation-percentage 100
@@ -508,23 +507,30 @@
     - gcloud auth configure-docker ${DOCKER_IO_DOMAIN} >> "${ARTIFACTS_FOLDER}/logs/configure_docker_with_registry.log" 2>&1
     - section_end "Revoking GCP Auth and Configure Docker"
     # temp solution not to spam the build
-    - PRE_COMMIT_SUCCESS=0
     - SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
+    - PRE_COMMIT_SUCCESS=0
     - |
-      if [[ -n "${SHOULD_LINT_ALL}" ]]; then
-        echo "Pre Commit all files"
-        # if we need to pre-commit all anyway we need the graph, and it's better (resource-wise) to create it here.
-        demisto-sdk graph update
-        demisto-sdk pre-commit -a --mode=nightly || PRE_COMMIT_SUCCESS=1
+      if [[ -n $BUCKET_UPLOAD && $TEST_UPLOAD == "true" ]]; then
+        echo "Skipping validations when uploading to a test bucket."
       else
-        echo "Pre Commit only changed files"
-        demisto-sdk pre-commit --mode=ci || PRE_COMMIT_SUCCESS=1
+        if [[ -n $BUCKET_UPLOAD ]]; then
+          demisto-sdk pre-commit -g --prev-version $LAST_UPLOAD_COMMIT --mode=nightly || PRE_COMMIT_SUCCESS=1
+        else
+          if [[ -n "${SHOULD_LINT_ALL}" ]]; then
+            echo "Pre Commit all files"
+            # if we need to pre-commit all anyway we need the graph, and it's better (resource-wise) to create it here.
+            demisto-sdk graph update
+            demisto-sdk pre-commit -a --mode=nightly || PRE_COMMIT_SUCCESS=1
+          else
+            echo "Pre Commit only changed files"
+            demisto-sdk pre-commit --mode=ci || PRE_COMMIT_SUCCESS=1
+          fi
+        fi
       fi
 
     - echo "PRE_COMMIT_SUCCESS=$PRE_COMMIT_SUCCESS"
     - job-done
-
-
+    - exit $PRE_COMMIT_SUCCESS
 
 .run-validations:
   stage: unittests-and-validations
