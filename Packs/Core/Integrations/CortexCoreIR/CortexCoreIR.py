@@ -158,7 +158,6 @@ def main():  # pragma: no cover
     except ValueError as e:
         demisto.debug(f'Failed casting timeout parameter to int, falling back to 120 - {e}')
         timeout = 120
-    demisto.debug(f'client {base_url}')
     client = Client(
         base_url=base_url,
         proxy=proxy,
@@ -166,7 +165,6 @@ def main():  # pragma: no cover
         headers={},
         timeout=timeout
     )
-    demisto.debug('after clientclient')
 
     try:
         if command == 'test-module':

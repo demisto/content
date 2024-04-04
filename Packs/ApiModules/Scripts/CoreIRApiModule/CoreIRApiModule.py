@@ -187,6 +187,10 @@ class CoreClient(BaseClient):
                 establish a connection to a remote machine before a timeout occurs.
                 can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
         '''
+        if not is_demisto_version_ge(version='8.0.0',build_number='924770'):
+            return BaseClient._http_request(self, method=method, url_suffix=url_suffix, full_url=full_url, headers=None,
+                                            json_data=json_data,params=params, data=data, timeout=timeout,
+                                            raise_on_status=raise_on_status)
         try:
             # Replace params if supplied
             address = full_url if full_url else urljoin(self._base_url, url_suffix)
@@ -199,7 +203,6 @@ class CoreClient(BaseClient):
                         headers=self._headers,
                         timeout=timeout
                     )
-            demisto.debug(f'_http_request {res}')
             return json.loads(res.get('data'))
         except requests.exceptions.ConnectTimeout as exception:
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
@@ -352,6 +355,7 @@ class CoreClient(BaseClient):
             headers=self._headers,
             timeout=self.timeout
         )
+        demisto.debug('')
         incidents = res.get('incidents', [])
 
         return incidents
