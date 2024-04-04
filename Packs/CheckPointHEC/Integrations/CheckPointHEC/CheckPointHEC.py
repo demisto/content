@@ -1,6 +1,5 @@
 import hashlib
 import uuid
-# from time import time
 from urllib.parse import urlencode
 
 import urllib3

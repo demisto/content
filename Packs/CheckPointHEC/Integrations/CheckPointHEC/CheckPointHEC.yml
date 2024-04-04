@@ -319,7 +319,7 @@ script:
       description: Sender of email related to the security event.
       type: String
     - contextPath: CheckPointHEC.Event.entityLink
-      description: Email link
+      description: Email link.
       type: String
   - name: checkpointhec-get-scan-info
     arguments:
