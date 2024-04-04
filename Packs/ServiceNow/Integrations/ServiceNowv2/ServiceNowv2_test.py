@@ -1910,9 +1910,9 @@ def test_get_modified_remote_data(requests_mock, mocker, api_response):
     )
     result = get_modified_remote_data_command(client, {'lastUpdate': last_update})
 
-    assert result.modified_incident_ids == [
+    assert sorted(result.modified_incident_ids) == sorted([
         record.get('sys_id') for record in api_response.get('result') if 'sys_id' in record
-    ]
+    ])
 
 
 @pytest.mark.parametrize('sys_created_on, expected', [

@@ -2915,6 +2915,7 @@ def get_modified_remote_data_command(
         modified_records_ids
     )
 
+
 def add_custom_fields(params):
     global SNOW_ARGS
     custom_fields = argToList(params.get('custom_fields'))
