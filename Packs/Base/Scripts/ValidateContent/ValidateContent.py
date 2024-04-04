@@ -14,7 +14,14 @@ from typing import Any
 import logging
 
 import git
-from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType
+from demisto_sdk.commands.common.constants import (
+    ENTITY_TYPE_TO_DIR,
+    TYPE_TO_EXTENSION,
+    FileType,
+    PACKS_PACK_META_FILE_NAME,
+    PACKS_FOLDER,
+    BASE_PACK
+)
 from demisto_sdk.commands.common.logger import logging_setup
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.common.handlers import YAML_Handler
@@ -193,22 +200,41 @@ def prepare_single_content_item_for_validation(
     filename: str,
     data: bytes,
     tmp_directory: str
-) -> tuple[str, dict]:
+) -> tuple[Path, dict]:
+    
+    """
+    Helper function to convert the content item
+    into a pack format.
+    The function checks the content item type of the input
+    file. If the file is not a script or an integration,
+    it raises an exception since these are the only types
+    of validations that can be triggered from the UI.
 
+    Args:
+    - `filename` (``str``): The path to the content item file to validate.
+    - `data` (``bytes``): The byte content of the file to validate.
+    - `tmp_directory` (``str``): The path to the temporary directory where the file is saved.
+    """
+
+    # TODO check if we can create it instead of raising an exception
+    if not Path(tmp_directory).exists():
+        raise FileNotFoundError(f"The directory '{tmp_directory}' doesn't exist")
+
+    # Create file to validate and write its contents
     tmp_path_file_to_validate = Path(tmp_directory, filename)
     tmp_path_file_to_validate.touch()
     tmp_path_file_to_validate.write_bytes(data)
 
     file_type = find_type(path=str(tmp_path_file_to_validate))
 
-    # If the content item is a JSON
-    # or a Playbook, we return the path as is
-    if tmp_path_file_to_validate.suffix == ".json" or file_type in (FileType.PLAYBOOK.value, FileType.TEST_PLAYBOOK.value):
-        return str(tmp_path_file_to_validate), {}
-    elif file_type in (FileType.INTEGRATION.value, FileType.SCRIPT.value):
-        output_path = Path(tmp_directory, "Packs", "Base", ENTITY_TYPE_TO_DIR.get(file_type))
-        with Path(tmp_directory, "Packs", "Base", "pack_metadata.json").open("w") as md:
+    # Validation is only available for integrations and scripts from the UI
+    if file_type in (FileType.INTEGRATION.value, FileType.SCRIPT.value):
+
+        # Create a Pack metadata
+        with Path(tmp_directory, PACKS_FOLDER, BASE_PACK, PACKS_PACK_META_FILE_NAME).open("w") as md:
             json.dump({'description': 'Temporary Pack', 'author': 'xsoar'}, md)
+
+        output_path = Path(tmp_directory, PACKS_FOLDER, BASE_PACK, ENTITY_TYPE_TO_DIR.get(file_type))
         extractor = YmlSplitter(
             input=str(tmp_path_file_to_validate),
             output=output_path,
@@ -218,13 +244,13 @@ def prepare_single_content_item_for_validation(
             no_basic_fmt=True
         )
         tmp_path_file_to_validate.unlink()
-        # validate the resulting package files, ergo set path_to_validate to the package directory that results
-        # from extracting the unified yaml to a package format
         extractor.extract_to_package_format()
         code_fp_to_row_offset = {get_extracted_code_filepath(extractor): extractor.lines_inserted_at_code_start}
         return extractor.get_output_path(), code_fp_to_row_offset
+    elif not file_type:
+        raise ValueError(f"Could not parse file type from file '{tmp_path_file_to_validate}'")
     else:
-        raise NotImplementedError(f"Validation for file type '{file_type}' not supported")
+        raise NotImplementedError(f"Validation for file type '{file_type}' is not supported")
 
 
 def validate_content(filename: str, data: bytes, tmp_directory: str) -> list:

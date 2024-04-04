@@ -13,7 +13,15 @@ from ValidateContent import (
     get_content_modules,
     adjust_linter_row_and_col,
     get_file_name_and_contents,
+    prepare_single_content_item_for_validation,
     main,
+)
+from demisto_sdk.commands.common.constants import (
+    PACKS_PACK_META_FILE_NAME,
+    PACKS_FOLDER,
+    BASE_PACK,
+    SCRIPTS_DIR,
+    SCRIPTS_README_FILE_NAME
 )
 
 
@@ -372,96 +380,185 @@ def setup_mocker(mocker: MockerFixture, tmpdir: LocalPath):
     mocker.patch.object(ValidateContent, "CACHED_MODULES_DIR", cached_modules)
 
 
-@pytest.mark.usefixtures("setup_mocker", "setup_requests_mock")
-class TestValidateContent:
-
-    test_invalid_script_path = Path(__file__).parent.resolve() / "test_data" / "automationwitherrors.yml"
-    test_valid_script_path = Path(__file__).parent.resolve() / "test_data" / "valid_automation.yml"
-    test_valid_script_b64_path = Path(__file__).parent.resolve() / "test_data" / "valid_automation.yml.b64"
-    test_contrib_zip_path = Path(__file__).parent.resolve() / "test_data" / \
+class CommonTestResources:
+    valid_script_path = Path(__file__).parent.resolve() / "test_data" / "valid_automation.yml"
+    invalid_script_path = Path(__file__).parent.resolve() / "test_data" / "automationwitherrors.yml"
+    invalid_yml_script_path = Path(__file__).parent.resolve() / "test_data" / "invalid_script_yml.yml"
+    valid_script_b64_path = Path(__file__).parent.resolve() / "test_data" / "valid_automation.yml.b64"
+    valid_playbook_path = Path(__file__).parent.resolve() / "test_data" / "valid_pb.yml"
+    contrib_zip_path = Path(__file__).parent.resolve() / "test_data" / \
         "contentpack-6ade7368-803c-4c4b-873c-4a0555c6ca03-Test.zip"
-    docker_demistp_py3_response = Path(__file__).parent.resolve() / "test_data" / \
-        "demisto_py3_tags.json"
 
-    def test_validate_automation_with_errors(
-            self,
-            mocker: MockerFixture,
-            capfd: pytest.CaptureFixture[str]
-    ):
+
+class TestPrepareForValidation:
+    """
+    Test class for the following methods:
+    - `prepare_single_content_item_for_validation`
+    - `prepare_content_pack_for_validation`
+    """
+
+    def _setup(self, tmp_path: Path):
+
+        Path(tmp_path, PACKS_FOLDER, BASE_PACK).mkdir(parents=True)
+        Path(tmp_path, PACKS_FOLDER, BASE_PACK, PACKS_PACK_META_FILE_NAME).touch()
+
+    def test_valid_script(self, tmp_path: Path):
         """
-        Test ValidateContent on a script with a SyntaxError.
+        Test a valid script preparation.
 
         Given:
-        - A script YML.
-
-        When:
-        - The script has a SyntaxError.
-
-        Then:
-        - The script results should include an error.
-        """
-
-        mocker.patch.object(demisto, "args", return_value={
-            "filename": self.test_invalid_script_path.name,
-            "data": b64encode(self.test_invalid_script_path.read_bytes()),
-            "trust_any_certificate": True,
-        })
-
-        results = mocker.patch.object(demisto, 'results')
-
-        with capfd.disabled():
-            main()
-
-        assert results.called
-
-        # Number of errors
-        assert len(results.call_args[0][0]["Contents"]) == 6
-        assert "unterminated string literal" in results.call_args[0][0]["Contents"][5]["message"]
-
-    def test_validate_automation_no_errors(
-        self,
-        mocker: MockerFixture,
-        capfd: pytest.CaptureFixture[str]
-    ):
-        """
-        Test ValidateContent on a valid script.
-
-        Given:
-        - A script YML.
+        - A script.
 
         When:
         - The script is valid.
 
         Then:
-        - The script results should not have any errors
+        - The output path is as expected.
+        - The input script file is removed.
         """
 
-        mocker.patch.object(demisto, "args", return_value={
-            "filename": self.test_valid_script_path.name,
-            "data": b64encode(self.test_valid_script_path.read_bytes()),
-            "trust_any_certificate": True,
-        })
+        self._setup(tmp_path)
 
-        results = mocker.patch.object(demisto, 'results')
+        script_name = "ValidAutomation"
+        input_filename = CommonTestResources.valid_script_path.name
+        input_bytes = CommonTestResources.valid_script_path.read_bytes()
 
-        with capfd.disabled():
-            main()
+        actual_output_path, _ = prepare_single_content_item_for_validation(
+            filename=input_filename,
+            data=input_bytes,
+            tmp_directory=str(tmp_path)
+        )
 
-        assert results.called
+        assert actual_output_path == Path(tmp_path, PACKS_FOLDER, BASE_PACK, SCRIPTS_DIR, script_name)
+        assert actual_output_path.exists()
+        assert Path(actual_output_path, f"{script_name}.yml").exists()
+        assert Path(actual_output_path, f"{script_name}.py").exists()
+        assert Path(actual_output_path, SCRIPTS_README_FILE_NAME).exists()
+        assert not Path(tmp_path, input_filename).exists()
 
-    def test_validate_playbook(self):
-        pass
-
-    def test_validate_zip(self):
+    def test_invalid_script(self, tmp_path: Path):
         """
-        Test ValidateContent on a valid contribution zip.
+        Test an invalid script preparation.
+
+        Given:
+        - A script.
+
+        When:
+        - The script is invalid.
+
+        Then:
+        - The output path is as expected.
+        - The input script file is removed.
         """
 
-    def test_validate_zip_with_errors(self):
+        self._setup(tmp_path)
+
+        script_name = "Automationwitherrors"
+        input_filename = CommonTestResources.invalid_script_path.name
+        input_bytes = CommonTestResources.invalid_script_path.read_bytes()
+
+        actual_output_path, _ = prepare_single_content_item_for_validation(
+            filename=input_filename,
+            data=input_bytes,
+            tmp_directory=str(tmp_path)
+        )
+
+        assert actual_output_path == Path(tmp_path, PACKS_FOLDER, BASE_PACK, SCRIPTS_DIR, script_name)
+        assert actual_output_path.exists()
+        assert Path(actual_output_path, f"{script_name}.yml").exists()
+        assert Path(actual_output_path, f"{script_name}.py").exists()
+        assert Path(actual_output_path, SCRIPTS_README_FILE_NAME).exists()
+        assert not Path(tmp_path, input_filename).exists()
+
+    def test_invalid_yml_script(self, tmp_path: Path):
         """
-        Test ValidateContent on a invalid contribution zip.
+        Test an invalid script preparation.
+
+        Given:
+        - A script.
+
+        When:
+        - The script is not valid YML.
+
+        Then:
+        - A `ValueError` is raised.
         """
 
+        self._setup(tmp_path)
+
+        input_filename = CommonTestResources.invalid_yml_script_path.name
+        input_bytes = CommonTestResources.invalid_yml_script_path.read_bytes()
+
+        with pytest.raises(
+            ValueError,
+            match=f"Could not parse file type from file '{os.path.join(str(tmp_path), input_filename)}'"
+        ):
+            prepare_single_content_item_for_validation(
+                filename=input_filename,
+                data=input_bytes,
+                tmp_directory=str(tmp_path)
+            )
+
+    def test_valid_playbook(self, tmp_path: Path):
+        """
+        Test a valid playbook preparation.
+
+        Given:
+        - A playbook.
+
+        When:
+        - The playbook is valid.
+
+        Then:
+        - A `NotImplementedError` is raised.
+        """
+
+        self._setup(tmp_path)
+
+        input_filename = CommonTestResources.valid_playbook_path.name
+        input_bytes = CommonTestResources.valid_playbook_path.read_bytes()
+
+        with pytest.raises(
+            NotImplementedError,
+            match="Validation for file type 'playbook' is not supported"
+        ):
+            prepare_single_content_item_for_validation(
+                filename=input_filename,
+                data=input_bytes,
+                tmp_directory=str(tmp_path)
+            )
+
+    def test_non_existing_dir(self):
+        """
+        Test what happens when a non-existing directory
+        is provided to `prepare_single_content_item_for_validation`.
+
+        Given:
+        - A directory.
+
+        When:
+        - The the directory doesn't exist.
+
+        Then:
+        - A `FileNotFoundError` is raised.
+        """
+
+        input_filename = CommonTestResources.valid_playbook_path.name
+        input_bytes = CommonTestResources.valid_playbook_path.read_bytes()
+        input_dir = '/non/existing/dir'
+
+        with pytest.raises(
+            FileNotFoundError,
+            match=f"The directory '{input_dir}' doesn't exist"
+        ):
+            prepare_single_content_item_for_validation(
+                filename=input_filename,
+                data=input_bytes,
+                tmp_directory=input_dir
+            )
+
+
+class TestFilenameContents:
     def test_get_file_name_and_contents_filename_data(self):
         """
         Validate a successful scenario where a file name and its base64
@@ -482,8 +579,8 @@ class TestValidateContent:
         input file.
         """
 
-        input_filename = expected_filename = self.test_valid_script_path.name
-        input_data = b64encode(self.test_valid_script_path.read_bytes())
+        input_filename = expected_filename = CommonTestResources.valid_script_path.name
+        input_data = b64encode(CommonTestResources.valid_script_path.read_bytes())
 
         actual_filename, actual_decoded_data = get_file_name_and_contents(input_filename, input_data)
 
@@ -510,15 +607,15 @@ class TestValidateContent:
         """
 
         mocker.patch.object(demisto, "getFilePath", return_value={
-            "path": self.test_valid_script_b64_path.absolute(),
-            "name": self.test_valid_script_b64_path.name,
+            "path": CommonTestResources.valid_script_b64_path.absolute(),
+            "name": CommonTestResources.valid_script_b64_path.name,
             "id": "1337"
         })
 
         actual_filename, actual_decoded_data = get_file_name_and_contents(entry_id="1337")
 
-        assert actual_filename == self.test_valid_script_b64_path.name
-        assert actual_decoded_data == self.test_valid_script_b64_path.read_bytes()
+        assert actual_filename == CommonTestResources.valid_script_b64_path.name
+        assert actual_decoded_data == CommonTestResources.valid_script_b64_path.read_bytes()
 
     def test_get_file_name_and_contents_entry_id_filename_data(
         self,
@@ -551,12 +648,12 @@ class TestValidateContent:
         """
 
         mocker.patch.object(demisto, "getFilePath", return_value={
-            "path": self.test_valid_script_b64_path.absolute(),
-            "name": self.test_valid_script_b64_path.name,
+            "path": CommonTestResources.valid_script_b64_path.absolute(),
+            "name": CommonTestResources.valid_script_b64_path.name,
             "id": "1337"
         })
-        input_filename = expected_filename = self.test_valid_script_path.name
-        input_data = b64encode(self.test_valid_script_path.read_bytes())
+        input_filename = expected_filename = CommonTestResources.valid_script_path.name
+        input_data = b64encode(CommonTestResources.valid_script_path.read_bytes())
 
         actual_filename, actual_decoded_data = get_file_name_and_contents(
             filename=input_filename,

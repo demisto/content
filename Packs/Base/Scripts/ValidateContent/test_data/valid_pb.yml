@@ -1,0 +1,82 @@
+id: e04c0fca-6505-45b4-821b-1bfbeb538a6c
+version: 3
+vcShouldKeepItemLegacyProdMachine: false
+name: valid_pb
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3033a583-7e20-4eb6-844a-b3a84ce8687a
+    type: start
+    task:
+      id: 3033a583-7e20-4eb6-844a-b3a84ce8687a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3e248da9-8011-487f-81d8-504d1e645eed
+    type: regular
+    task:
+      id: 3e248da9-8011-487f-81d8-504d1e645eed
+      version: -1
+      name: Print
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      value:
+        simple: I am a valid Playbook!
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
