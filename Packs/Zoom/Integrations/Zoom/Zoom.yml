@@ -831,13 +831,13 @@ script:
     - contextPath: Zoom.Channel.member_ids
       description: A comma-separated list of member IDs of the members added to the channel.
       type: string
-  - name: zoom-remove-from-channel
+  - name: zoom-remove-from-channel_test
     description: >
       Removes a member from a chat channel. A channel can have one or more members.
       Use the command zoom-list-account-public-channels in order to fetch the channel ID by the channel name.
       In order get the user ID by the user email - use the existing command zoom-list-users.
     arguments:
-    - name: channel_id
+    - name: channel_id_test
       description: The unique identifier of the channel from where to remove a member.
       required: true
       type: string
@@ -851,7 +851,7 @@ script:
       required: true
       type: string
     outputs: []
-  - name: zoom-send-file
+  - name: zoom-send-file_test
     description: >
       Sends a file on Zoom to either an individual user in your contact list or a channel of which you are a member.
       Use existing command zoom-list-users to get the user ID by the user email (for to_contact).
