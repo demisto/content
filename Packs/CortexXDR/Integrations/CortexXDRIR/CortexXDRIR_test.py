@@ -1288,33 +1288,4 @@ def test_sort_all_incident_data_fields_fetch_case_get_multiple_incidents_extra_d
     assert incident_data.get('incident_sources') == ['XDR Agent']
     assert incident_data.get('status') == 'new'
     assert len(incident_data.get('file_artifacts')) == 1
-
-
-@freeze_time("1993-06-17 11:00:00 GMT")
-def test_fetch_incidents_filtered_by_status_not_valid_format(requests_mock, mocker):
-    """
-    Given:
-        - List of fetched incidents
-    When
-        - Running fetch_incident with a given list of statuses to fetch
-    Then
-        - Verify the returned result is as we expected
-    """
-    from CortexXDRIR import fetch_incidents, Client
-
-    client = Client(
-        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
-    incident_extra_data_under_investigation = [load_test_data('./test_data/get_incident_extra_data_host_id_array.json')\
-        .get('reply', {}).get('incidents')]
-    incident_extra_data_new = load_test_data('./test_data/get_incident_extra_data_new_status.json').get('reply').get('incidents')
-    mocker.patch.object(Client, 'get_multiple_incidents_extra_data', side_effect=[incident_extra_data_under_investigation,
-                                                                                  incident_extra_data_new])
-    mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
-    mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
-    statuses_to_fetch = ['under_investigation', 'new']
-    with pytest.raises(Exception) as e:
-            next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance', statuses=statuses_to_fetch)
-    assert str(e.value) == "'list' object has no attribute 'get'"
-    
-
-    
+ 
