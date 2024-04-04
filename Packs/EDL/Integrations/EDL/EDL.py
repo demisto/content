@@ -1161,7 +1161,7 @@ def route_edl_log() -> Response:
             prepend_str = prepend_str.replace("\\n", "\n")
             edl_data_log = f"{prepend_str}\n{edl_data_log}"
 
-    etag = f'"{hashlib.sha1(edl_data_log.encode()).hexdigest()}"'  # nosec
+    etag = f'"{hashlib.sha3_256(edl_data_log.encode()).hexdigest()}"'
     headers = [
         ('X-EDL-LOG-Request-Created', created.isoformat()),
         ('ETag', etag)
