@@ -3443,7 +3443,7 @@ def main():  # pragma: no cover
                 return
             execution_start_time = time.time()
             assets, vulnerabilities = fetch_assets(client=client)
-            send_data_to_xsiam(data=assets, vendor=VENDOR, product='host_detections', data_type='assets')
+            send_data_to_xsiam(data=assets, vendor=VENDOR, product='assets', data_type='assets')
             send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product='vulnerabilities', data_type='assets')
             demisto.setAssetsLastRun({'assets_last_fetch': execution_start_time})
 

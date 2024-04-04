@@ -46,6 +46,14 @@ configuration:
   advanced: true
   required: false
   type: 0
+- additionalinfo: The fetch interval. It is recommended to set it to 24 hours, and the minimum interval is 1 hour.
+  defaultvalue: 1440
+  display: Assets and Vulnerabilities Fetch Interval
+  name: assetsFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
 description: Qualys Vulnerability Management lets you create, run, manage reports and to fetch Activity Logs, Assets and Vulnerabilities, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 display: Qualys VMDR
 name: QualysV2
