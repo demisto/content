@@ -25,7 +25,7 @@ from demisto_sdk.commands.common.constants import (
 from demisto_sdk.commands.common.logger import logging_setup
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.common.handlers import YAML_Handler
-from demisto_sdk.commands.init.contribution_converter import (ContributionConverter)
+from demisto_sdk.commands.init.contribution_converter import ContributionConverter
 from demisto_sdk.commands.lint.lint_manager import LintManager
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.validate.old_validate_manager import OldValidateManager as ValidateManager
