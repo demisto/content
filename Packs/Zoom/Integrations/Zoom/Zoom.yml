@@ -831,13 +831,13 @@ script:
     - contextPath: Zoom.Channel.member_ids
       description: A comma-separated list of member IDs of the members added to the channel.
       type: string
-  - name: zoom-remove-from-channel_test
+  - name: zoom-remove-from-channel
     description: >
       Removes a member from a chat channel. A channel can have one or more members.
       Use the command zoom-list-account-public-channels in order to fetch the channel ID by the channel name.
       In order get the user ID by the user email - use the existing command zoom-list-users.
     arguments:
-    - name: channel_id_test
+    - name: channel_id
       description: The unique identifier of the channel from where to remove a member.
       required: true
       type: string
@@ -851,7 +851,7 @@ script:
       required: true
       type: string
     outputs: []
-  - name: zoom-send-file_test
+  - name: zoom-send-file
     description: >
       Sends a file on Zoom to either an individual user in your contact list or a channel of which you are a member.
       Use existing command zoom-list-users to get the user ID by the user email (for to_contact).
@@ -879,11 +879,11 @@ script:
       In order to send a style message you need to provide is-markdown=true and the message can contain a markdown format.
       If you are using mention markdown in a message, provide the email address in the at_contact argument.
     arguments:
-    - name: user_id_test
+    - name: user_id
       description: Email or unique identifier of the user.
       type: string
       required: true
-    - name: at_contact_test
+    - name: at_contact
       description: >
         Email address of the mention contact.
       type: string
@@ -946,7 +946,7 @@ script:
       description: Email or unique identifier of the user.
       required: true
       type: string
-    - name: message_id_test
+    - name: message_id
       description: Unique identifier of the message.
       required: true
       type: string
