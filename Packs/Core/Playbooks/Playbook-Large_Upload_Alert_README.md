@@ -19,14 +19,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Command-Line Analysis
-* User Investigation - Generic
 * Entity Enrichment - Generic v3
+* TIM - Indicator Relationships Analysis
 * Block Indicators - Generic v3
-* Endpoint Investigation Plan
+* User Investigation - Generic
+* Command-Line Analysis
 * Threat Hunting - Generic
 * Search and Compare Process Executions - Generic
-* TIM - Indicator Relationships Analysis
+* Endpoint Investigation Plan
 
 ### Integrations
 
@@ -40,9 +40,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * setAlertStatus
+* core-isolate-endpoint
 * setAlert
 * core-get-cloud-original-alerts
-* core-isolate-endpoint
 
 ## Playbook Inputs
 
@@ -69,4 +69,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Large Upload](../doc_files/Large_Upload.png)
+![Large Upload Alert](../doc_files/Large_Upload_Alert.png)

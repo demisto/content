@@ -1,6 +1,6 @@
-id: Large Upload
+id: Large Upload Alert
 version: -1
-name: Large Upload
+name: Large Upload Alert
 description: "The playbook investigates Cortex XDR incidents involving large upload alerts. \nThe playbook consists of the following procedures:\n- Searches for similar previous incidents that were closed as false positives.\n- Enrichment and investigation of the initiator and destination hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\nThis playbook supports the following Cortex XDR alert names:\n- Large Upload (Generic)\n- Large Upload (SMTP)\n- Large Upload (FTP)\n- Large Upload (HTTPS)"
 starttaskid: "0"
 tasks:
@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -110
+          "y": -130
         }
       }
     note: false
@@ -55,7 +55,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 10
+          "y": 0
         }
       }
     note: false
@@ -105,7 +105,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 140
+          "y": 130
         }
       }
     note: false
@@ -150,7 +150,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 300
+          "y": 290
         }
       }
     note: false
@@ -195,7 +195,7 @@ tasks:
       {
         "position": {
           "x": 1710,
-          "y": 470
+          "y": 460
         }
       }
     note: false
@@ -231,7 +231,7 @@ tasks:
       {
         "position": {
           "x": 1450,
-          "y": 640
+          "y": 630
         }
       }
     note: false
@@ -262,7 +262,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 810
+          "y": 800
         }
       }
     note: false
@@ -410,10 +410,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 72c8eae5-2896-416b-88e6-e0589b496cdb
+    taskid: c59f8c90-7ce9-424a-87b5-e745802ba32b
     type: playbook
     task:
-      id: 72c8eae5-2896-416b-88e6-e0589b496cdb
+      id: c59f8c90-7ce9-424a-87b5-e745802ba32b
       version: -1
       name: Entity Enrichment - Generic v3
       description: Enrich entities using one or more integrations.
@@ -1210,10 +1210,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 456bbf40-631f-4e9b-8cd9-0be9f5377811
+    taskid: 77a259eb-dfd2-4fa1-8c8c-17f20b43dbab
     type: playbook
     task:
-      id: 456bbf40-631f-4e9b-8cd9-0be9f5377811
+      id: 77a259eb-dfd2-4fa1-8c8c-17f20b43dbab
       version: -1
       name: Block Indicators - Generic v3
       description: |-
@@ -3331,10 +3331,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 8bd5f057-e1ae-46b2-894c-08ddbb11e650
+    taskid: 7457343f-900b-4460-816a-490fbae4c836
     type: playbook
     task:
-      id: 8bd5f057-e1ae-46b2-894c-08ddbb11e650
+      id: 7457343f-900b-4460-816a-490fbae4c836
       version: -1
       name: Block Indicators - Generic v3
       description: |-
@@ -3643,6 +3643,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "58"
       "yes":
       - "55"
     separatecontext: false
@@ -3866,16 +3868,17 @@ view: |-
       "39_46_Remediation": 0.18,
       "39_57_#default#": 0.31,
       "3_6_#default#": 0.34,
+      "48_58_#default#": 0.58,
       "4_56_#default#": 0.41,
       "5_56_#default#": 0.43,
       "5_6_Yes": 0.13
     },
     "paper": {
       "dimensions": {
-        "height": 5285,
+        "height": 5305,
         "width": 2640,
         "x": -550,
-        "y": -110
+        "y": -130
       }
     }
   }
