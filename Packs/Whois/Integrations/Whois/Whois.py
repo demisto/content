@@ -8652,10 +8652,12 @@ def whois_command(reliability: str) -> List[CommandResults]:
     execution_metrics = ExecutionMetrics()
     results: List[CommandResults] = []
     for query in argToList(query):
+        demisto.debug(f'Getting whois for a single {query=}')
         domain = get_domain_from_query(query)
 
         try:
             whois_result = get_whois(domain, is_recursive=is_recursive)
+            demisto.debug(f'Got whois for a single {query=}')
             execution_metrics.success += 1
             md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability, query)
             context_res = {}
@@ -8734,9 +8736,11 @@ def domain_command(reliability: str) -> List[CommandResults]:
     execution_metrics = ExecutionMetrics()
     results: List[CommandResults] = []
     for domain in argToList(domains):
+        demisto.debug(f'Getting domain for a single {domain=}')
 
         try:
             whois_result = get_whois(domain, is_recursive=is_recursive)
+            demisto.debug(f'Got domain for a single {domain=}')
             execution_metrics.success += 1
             md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
             context_res = {}
