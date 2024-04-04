@@ -42,6 +42,12 @@ configuration:
   type: 8
   section: Connect - Advanced
   required: false
+- display: Allow external users to create incidents via DM
+  name: allow_incidents
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
 - defaultvalue: 'true'
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning
@@ -49,6 +55,12 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: Listen Port
+  name: longRunningPort
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: You must enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -389,7 +401,7 @@ script:
     - description: The channel name of the channel to delete.
       name: channel_name
       required: true
-    description: Deletes a channel.
+    description: Deletes a mirrored MatterMost channel.
     name: close-channel
     outputs: []
   - arguments:
@@ -422,11 +434,12 @@ script:
     description: Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
     name: mirror-investigation
   longRunning: true
+  longRunningPort: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/slackv3:1.0.0.88538
+  dockerimage: devdemisto/mattermost:1.0.0.91765
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
