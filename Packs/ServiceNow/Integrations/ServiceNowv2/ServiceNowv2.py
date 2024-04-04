@@ -2604,10 +2604,10 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         required=False
     )
 
-    is_new_incident = is_new_incident(ticket_id)
+    is_new_ticket_id = is_new_incident(ticket_id)
     demisto.debug(f'ticket_last_update of {ticket_id=} is {ticket_last_update}')
     is_fetch = demisto.params().get('isFetch')
-    if is_fetch and last_update > ticket_last_update and not is_new_incident:
+    if is_fetch and last_update > ticket_last_update and not is_new_ticket_id:
         demisto.debug(f'Nothing new in the ticket {ticket_id=}')
         ticket = {}
 
@@ -2630,7 +2630,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     if client.use_display_value:
         try:
             time_info = {'display_date_format': client.display_date_format, 'timezone_offset': timezone_offset}
-            if not is_new_incident:
+            if not is_new_ticket_id:
                 time_info.update({'filter': datetime.fromtimestamp(last_update)})
             comments_result = convert_to_notes_result(ticket, time_info)
 
@@ -2642,7 +2642,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         sys_param_offset = args.get('offset', client.sys_param_offset)
 
         sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
-        if not is_new_incident:  # for latest fetch run incidents do not filter by last_update
+        if not is_new_ticket_id:  # for latest fetch run incidents do not filter by last_update
             sys_param_query += f'^sys_created_on>{datetime.fromtimestamp(last_update)}'
 
         comments_result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
