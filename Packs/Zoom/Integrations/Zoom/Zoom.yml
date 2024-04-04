@@ -946,7 +946,7 @@ script:
       description: Email or unique identifier of the user.
       required: true
       type: string
-    - name: message_id
+    - name: message_id_test
       description: Unique identifier of the message.
       required: true
       type: string
