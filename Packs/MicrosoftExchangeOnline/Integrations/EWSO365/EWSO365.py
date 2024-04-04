@@ -1423,13 +1423,18 @@ def create_folder(client: EWSClient, new_folder_name, folder_path, target_mailbo
     account = client.get_account(target_mailbox)
     full_path = os.path.join(folder_path, new_folder_name)
     try:
+        demisto.debug('checking if folder exists')
         if client.get_folder_by_path(full_path, account):
             return f"Folder {full_path} already exists",
     except Exception:
         pass
+    demisto.debug('folder doesnt already exist. Getting path to add folder')
     parent_folder = client.get_folder_by_path(folder_path, account)
+
+    demisto.debug('saving folder')
     f = Folder(parent=parent_folder, name=new_folder_name)
     f.save()
+    demisto.debug('verifying folder was saved')
     client.get_folder_by_path(full_path, account)
     return f"Folder {full_path} created successfully",
 
@@ -1442,15 +1447,18 @@ def find_folders(client: EWSClient, target_mailbox=None):
     :return: Output tuple
     """
     account = client.get_account(target_mailbox)
-    root = account.root
+    root_collection = FolderCollection(account=account, folders=[account.root])
+    root_folder = account.root
+
     if client.is_public_folder:
-        root = account.public_folders_root
+        root_folder = account.public_folders_root
+        root_collection = FolderCollection(account=account, folders=[account.public_folders_root])
     folders = []
-    for f in root.walk():  # pylint: disable=E1101
+    for f in root_collection.find_folders():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
         folders.append(folder)
-    folders_tree = root.tree()  # pylint: disable=E1101
-    readable_output = folders_tree
+    # folders_tree = root_folder.tree()  # pylint: disable=E1101
+    readable_output = 'folders_tree' #todo find a solution
     output = {"EWS.Folders(val.id == obj.id)": folders}
     return readable_output, output, folders
 
