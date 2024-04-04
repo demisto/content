@@ -119,6 +119,7 @@ class TestHelperFunctions:
             - calling get_edl_on_demand
         Then:
             - save the edl to the system file
+            - assert the edl log is as expected
         """
         import EDL as edl
         expected_edl = "8.8.8.8"
@@ -249,6 +250,7 @@ class TestHelperFunctions:
             - calling create_new_edl
         Then:
             - Ensure that the list is the same as is should.
+            - Ensure the log is as expected.
         """
 
         import EDL as edl
@@ -316,6 +318,7 @@ class TestHelperFunctions:
             - calling create_new_edl
         Then:
             - Ensure that the list is the same as is should with no offset and with offset=2
+            - Ensure the log is as expected.
         """
 
         import EDL as edl
@@ -890,6 +893,7 @@ def test_get_indicators_to_format_text():
       - request indicators on text format
     Then:
       - assert the indicators are returned properly for the requested format
+      - assert the log is as expected
     """
     import EDL as edl
     indicator_searcher = IndicatorsSearcher(4)
@@ -918,6 +922,7 @@ def test_get_indicators_to_format_text_enforce_ascii(mocker):
       - request indicators on text format
     Then:
       - assert the indicators are returned properly for the requested format
+      - assert the log is as expected
     """
     import EDL as edl
     mocker.patch.object(demisto, 'params', return_value={'enforce_ascii': True})
@@ -946,10 +951,6 @@ def test_get_indicators_to_format_text_enforce_ascii(mocker):
                            "Dropped | www.Inv@l*id_token.com | www.Inv@l*id_token.com | Invalid tokens or port."),
                           ([{"value": "*.com", "indicator_type": "Domain"}], {""},
                            "Dropped | com | *.com | Domain is a TLD."),
-                          ([{"value": "*.com", "indicator_type": "Domain"}], {""},
-                           "Dropped | com | *.com | Domain is a TLD."),
-                          ([{"value": "http://www.google.com", "indicator_type": "URL"}], {"www.google.com"},
-                           "Added | www.google.com | http://www.google.com | Found new URL."),
                           ([{"value": "http://www.google.com", "indicator_type": "URL"}], {"www.google.com"},
                            "Added | www.google.com | http://www.google.com | Found new URL."),
                           ([{"value": "http://www.very_long_url_example_very_long.com", "indicator_type": "URL"}], {""},
@@ -969,6 +970,26 @@ def test_get_indicators_to_format_text_enforce_ascii(mocker):
                            "Added | 1.3.3.10 | 1.3.3.10 | Found new IPv6.")
                           ])
 def test_create_log_str_from_indicators(raw_indicators, expected_indicators, expected_log):
+    """
+    Given:
+        - Indicator list.
+        - Strict request arguments.
+        Cases:
+            Case 1: Valid new Domain.
+            Case 2: CIDR exceeds max length.
+            Case 3: Invalid tokens or port.
+            Case 4: Domain is a TLD.
+            Case 5: Valid new URL.
+            Case 6: URL exceeds max length
+            Case 7: Collapsed some IPv4 To Ranges.
+            Case 8: Collapsed some IPv6 To Ranges
+    When:
+        - Running create_text_out_format with out_format PAN-OS (text).
+    Then:
+        - Ensure the log lines are as expected.
+        - Ensure the indicator list is as expected.
+
+    """
     import EDL as edl
     edl_request_args = edl.RequestArguments(out_format='PAN-OS (text)', query='', limit=3, url_port_stripping=True,
                                             url_protocol_stripping=True, url_truncate=False, drop_invalids=True,
@@ -994,6 +1015,15 @@ def test_create_log_str_from_indicators(raw_indicators, expected_indicators, exp
 
 
 def test_route_edl_log(mocker):
+    """
+    Given:
+        - Append and prepend strings in demisto params.
+        - A stored log in the relevant file.
+    When:
+        - A request to the '/log' endpoint is sent.
+    Then:
+        - Ensure the contents of the returned log are as the one stored in the file with append and prepend strings.
+    """
     import EDL as edl
 
     mocker.patch.object(demisto, 'params', return_value={'append_string': '+append_string+',
@@ -1014,6 +1044,15 @@ def test_route_edl_log(mocker):
 
 
 def test_route_edl_log_empty(mocker):
+    """
+    Given:
+        - Append and prepend strings in demisto params.
+        - An empty log in the stored log file.
+    When:
+        - A request to the '/log' endpoint is sent.
+    Then:
+        - Ensure the comment '# Empty' is returned.
+    """
     import EDL as edl
 
     mocker.patch.object(demisto, 'params', return_value={'append_string': '+append_string+',

@@ -697,7 +697,19 @@ def list_to_str(inp_list: list, delimiter: str = ',', map_func: Callable = str) 
 
 
 def log_indicator_line(raw_indicator: str, indicator: str, action: str, reason: str, logged_indicators: List[str]) -> List[str]:
+    """Create a log line for the indicator.
 
+    Args:
+        raw_indicator (str): The raw indicator before modification.
+        indicator (str): The indicator after modification.
+        action (str): The action preformed, Added / Dropped / Modified.
+        reason (str): The reason for the action.
+        logged_indicators (List[str]): Previous log entries to add the log entry to.
+                                  If the log entry already exists, it will not be added again.
+
+    Returns:
+        (List[str]) The new logged_indicators list.
+    """
     log_line = f"{action} | {indicator} | {raw_indicator} | {reason}"
     if log_line not in logged_indicators:
         logged_indicators.append(log_line)
@@ -705,6 +717,16 @@ def log_indicator_line(raw_indicator: str, indicator: str, action: str, reason: 
 
 
 def add_log_header(logged_edl_data: str, request_args: RequestArguments, created: datetime) -> str:
+    """Add the header to the log string.
+
+    Args:
+        logged_edl_data: The log string.
+        request_args: The request args, they will be added to the header.
+        created: The time the log was created. This will be added to the header.
+
+    Returns:
+        (str) The log with the header.
+    """
     # count modified
     # count dropped
     added_count = 0
@@ -733,7 +755,7 @@ def add_log_header(logged_edl_data: str, request_args: RequestArguments, created
 @debug_function
 def create_text_out_format(iocs: IO, request_args: RequestArguments) -> Tuple[Union[IO, IO[str]], str]:
     """
-    Create a list in new file of formatted_indicators
+    Create a list in new file of formatted_indicators, and log the modifications.
      * IP / CIDR:
          1) if collapse_ips, collapse IPs/CIDRs
      * URL:
@@ -915,7 +937,13 @@ def get_outbound_mimetype(request_args: RequestArguments) -> str:
 
 
 def store_log_edl_data(log_edl_data: str, created: datetime, request_args: RequestArguments) -> None:
+    """Store the generated log string in the log file.
 
+    Args:
+        log_edl_data (str): The generated log data string.
+        created: The datetime object of time of creation. This will be added to the header.
+        request_args: The request args of the generated log. This will be added to the header.
+    """
     logged_edl_data = add_log_header(log_edl_data, request_args, created)
     try:
         demisto.debug(f"## Created new EDL at {created}. Saving log file.")
@@ -1007,6 +1035,16 @@ def get_bool_arg_or_param(args: dict, params: dict, key: str):
 
 
 def authenticate_app(params: dict, request_headers: Any) -> Optional[Response]:
+    """Make sure the user is authenticated on API request.
+
+    Args:
+        params (dict): The demisto params, where the credentials are stored.
+        request_headers: The request headers.
+
+    Returns:
+        (Response) '401 Login Required' on failure to authenticate.
+        None on success.
+    """
     credentials = params.get('credentials', {})
     username: str = credentials.get('identifier', '')
     password: str = credentials.get('password', '')
@@ -1091,9 +1129,7 @@ def route_edl() -> Response:
 
 @APP.route('/log', methods=['GET'])
 def route_edl_log() -> Response:
-    """
-    Main handler for values saved in the integration context
-    """
+    """Show the edl indicators log on '/log' API request. """
     params = demisto.params()
 
     cache_refresh_rate: str = params.get('cache_refresh_rate')
@@ -1125,9 +1161,10 @@ def route_edl_log() -> Response:
             prepend_str = prepend_str.replace("\\n", "\n")
             edl_data_log = f"{prepend_str}\n{edl_data_log}"
 
+    etag = f'"{hashlib.sha1(edl_data_log.encode()).hexdigest()}"'  # nosec
     headers = [
         ('X-EDL-LOG-Request-Created', created.isoformat()),
-        ('ETag', f'"{hashlib.sha1(edl_data_log.encode()).hexdigest()}"')  # nosec
+        ('ETag', etag)
     ]  # type: ignore[assignment]
     headers_str = f'{[f"{header[0]}: {header[1]}" for header in headers]}'
     demisto.debug(f'edl: Returning log response with the following headers:\n{headers_str}')
