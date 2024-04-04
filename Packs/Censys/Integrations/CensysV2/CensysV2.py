@@ -281,7 +281,7 @@ def ip_command(client: Client, args: dict):
                 'geo_latitude': res.get('location', {}).get('coordinates', {}).get('latitude'),
                 'geo_longitude': res.get('location', {}).get('coordinates', {}).get('longitude'),
                 'geo_country': res.get('location', {}).get('country'),
-                'port': ', '.join([f"{service.get('port')}" for service in res.get('services', [])]),
+                'port': ', '.join([service.get('port') for service in res.get('services', [])]),
             }
             indicator = Common.IP(dbot_score=dbot_score, **content)
             results.append(CommandResults(
@@ -330,7 +330,7 @@ def domain_command(client: Client, args: dict):
                 'description': res.get('autonomous_system', {}).get('description'),
                 'updated_date': res.get('last_updated_at'),
                 'geo_country': res.get('location', {}).get('country'),
-                'port': ', '.join([f"{service.get('port')}" for service in res.get('services', [])]),
+                'port': ', '.join([service.get('port') for service in res.get('services', [])]),
             }
             indicator = Common.Domain(dbot_score=dbot_score, **content)
             results.append(CommandResults(
