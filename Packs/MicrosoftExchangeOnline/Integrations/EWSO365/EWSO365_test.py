@@ -50,6 +50,8 @@ class TestNormalCommands:
 
     class MockClient:
         class MockAccount:
+            DEFAULT_FOLDER_TRAVERSAL_DEPTH = 3
+
             def __init__(self):
                 self.root = self
                 self.walk_res = []
@@ -99,7 +101,15 @@ class TestNormalCommands:
         def get_folder_by_path(self, path, account=None, is_public=False):
             return ""
 
-    def test_ews_find_folders(self):
+    class MockFolderCollection:
+
+        def __init__(self, res):
+            self.find_folders_res = res
+
+        def find_folders(self):
+            return self.find_folders_res
+
+    def test_ews_find_folders(self, mocker):
         """
         This test checks the following normal_command:
             * ews-find-folders
@@ -115,11 +125,11 @@ class TestNormalCommands:
             - the expected result will be the same as the entry context
         """
         command_name = "ews-find-folders"
-
         raw_response = RAW_RESPONSES[command_name]
+        mocker.patch('EWSO365.FolderCollection', return_value=self.MockFolderCollection(raw_response))
         expected = COMMAND_OUTPUTS[command_name]
         client = self.MockClient()
-        client.account.walk_res = raw_response
+
         res = find_folders(client)
         actual_ec = res[1]
         assert expected == actual_ec
@@ -265,10 +275,12 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in messages)
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
+
     from EWSO365 import RECEIVED_FILTER
     client = TestNormalCommands.MockClient()
     client.max_fetch = 1
@@ -306,10 +318,12 @@ def test_fetch_and_mark_as_read(mocker):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in [])
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
+
     from EWSO365 import RECEIVED_FILTER
     client = TestNormalCommands.MockClient()
     client.get_folder_by_path = mock_get_folder_by_path
@@ -463,6 +477,7 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in [Message(), Message(), Message(), Message(), Message()])
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
@@ -513,6 +528,7 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in [Message(), Message(), Message(), Message(), Message()])
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
@@ -798,8 +814,8 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
             return "Account"
 
         def get_item_from_mailbox(self, account, item_id):
-
             return Item(mime_content=content, headers=item_headers, subject=subject)
+
     mock_file_result = mocker.patch('EWSO365.fileResult')
 
     get_item_as_eml(MockEWSClient(), "item", "account@test.com")

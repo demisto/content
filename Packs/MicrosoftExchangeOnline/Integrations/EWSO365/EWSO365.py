@@ -28,6 +28,7 @@ from exchangelib import (
     ExtendedProperty,
     FileAttachment,
     Folder,
+    FolderCollection,
     HTMLBody,
     Identity,
     ItemAttachment,
@@ -342,25 +343,20 @@ class EWSClient:
             folders_map = account.root._folders_map
             if path in folders_map:
                 return account.root._folders_map[path]
-        if is_public:
-            folder_result = account.public_folders_root
-        elif path == "AllItems":
-            folder_result = account.root
-        else:
-            folder_result = account.inbox.parent  # Top of Information Store
+
+        root = account.public_folders_root if is_public else account.root
+
+        folder = root if path == 'AllItems' else root.tois
         path = path.replace("/", "\\")
         path = path.split("\\")
-        for sub_folder_name in path:
-            folder_filter_by_name = [
-                x
-                for x in folder_result.children
-                if x.name.lower() == sub_folder_name.lower()
-            ]
-            if len(folder_filter_by_name) == 0:
-                raise Exception(f"No such folder {path}")
-            folder_result = folder_filter_by_name[0]
-
-        return folder_result
+        for part in path:
+            try:
+                demisto.debug(f'resolving {part=} {path=}')
+                folder = folder // part
+            except Exception as e:
+                demisto.debug(f'got error {e}')
+                raise ValueError(f'No such folder {path}')
+        return folder
 
     def send_email(self, message: Message):
         account = self.get_account()
@@ -1230,7 +1226,7 @@ def search_items_in_mailbox(
         is_public = client.is_default_folder(folder_path, is_public)
         folders = [client.get_folder_by_path(folder_path, account, is_public)]
     else:
-        folders = account.inbox.parent.walk()  # pylint: disable=E1101
+        folders = FolderCollection(account=account, folders=[account.root.tois]).find_folders()
 
     items = []  # type: ignore
     selected_all_fields = selected_fields == "all"
@@ -1421,13 +1417,18 @@ def create_folder(client: EWSClient, new_folder_name, folder_path, target_mailbo
     account = client.get_account(target_mailbox)
     full_path = os.path.join(folder_path, new_folder_name)
     try:
+        demisto.debug('checking if folder exists')
         if client.get_folder_by_path(full_path, account):
             return f"Folder {full_path} already exists",
     except Exception:
         pass
+    demisto.debug('folder doesnt already exist. Getting path to add folder')
     parent_folder = client.get_folder_by_path(folder_path, account)
+
+    demisto.debug('saving folder')
     f = Folder(parent=parent_folder, name=new_folder_name)
     f.save()
+    demisto.debug('verifying folder was saved')
     client.get_folder_by_path(full_path, account)
     return f"Folder {full_path} created successfully",
 
@@ -1440,15 +1441,15 @@ def find_folders(client: EWSClient, target_mailbox=None):
     :return: Output tuple
     """
     account = client.get_account(target_mailbox)
-    root = account.root
+    root_collection = FolderCollection(account=account, folders=[account.root])
+
     if client.is_public_folder:
-        root = account.public_folders_root
+        root_collection = FolderCollection(account=account, folders=[account.public_folders_root])
     folders = []
-    for f in root.walk():  # pylint: disable=E1101
+    for f in root_collection.find_folders():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
         folders.append(folder)
-    folders_tree = root.tree()  # pylint: disable=E1101
-    readable_output = folders_tree
+    readable_output = tableToMarkdown(t=folders, name='Available folders')
     output = {"EWS.Folders(val.id == obj.id)": folders}
     return readable_output, output, folders
 
