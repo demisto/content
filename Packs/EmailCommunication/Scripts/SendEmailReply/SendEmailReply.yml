@@ -29,6 +29,11 @@ args:
   - 'false'
   description: Specify whether to calculate the reputation in an asynchronous way.
   defaultValue: 'false'
+- description: 'Whether to add recipients to emails sent via Email Communication content pack to EmailDomainAllowList.'
+  name: dynamic_allowlist
+  predefined:
+  - 'true'
+  - 'false'
 - auto: PREDEFINED
   defaultValue: html
   description: 'The body type of the email. Can be: "text", or "HTML".'
@@ -51,7 +56,7 @@ subtype: python3
 system: true
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/bs4-py3:1.0.0.88847
+dockerimage: demisto/bs4-py3:1.0.0.91692
 tests:
 - No tests (auto formatted)
 contentitemexportablefields:
