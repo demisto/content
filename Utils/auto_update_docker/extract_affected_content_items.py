@@ -288,7 +288,7 @@ def get_affected_content_items(
         " where the last option will exclude the stated docker images"),
     ),
     batch_index: int = typer.Argument(
-        default="1",
+        default="0",
         help="The batch index",
     ),
     coverage_report: str = typer.Argument(
