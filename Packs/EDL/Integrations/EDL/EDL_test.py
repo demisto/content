@@ -7,7 +7,8 @@ import pytest
 import os
 from tempfile import mkdtemp
 import demistomock as demisto
-from EDL import DONT_COLLAPSE, initialize_edl_context, get_indicators_to_format, check_platform_and_version
+from EDL import DONT_COLLAPSE, initialize_edl_context, get_indicators_to_format, check_platform_and_version, datetime, timezone
+from freezegun import freeze_time
 
 IOC_RES_LEN = 38
 
@@ -108,6 +109,7 @@ class TestHelperFunctions:
         assert actual_edl == expected_edl
         assert original_indicators_count == edl.EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE
 
+    @freeze_time("2024-04-04 03:21:34")
     def test_get_edl_on_demand__with_refresh_signal(self, mocker):
         """
         Test get_edl_on_demand fetches new indicators and stores them to cache when key is passed
@@ -120,16 +122,33 @@ class TestHelperFunctions:
         """
         import EDL as edl
         expected_edl = "8.8.8.8"
+        edl_log_line = "Added | 8.8.8.8 | 8.8.8.8 | Found new Domain."
         ctx = {edl.EDL_ON_DEMAND_KEY: True, edl.RequestArguments.CTX_QUERY_KEY: "*"}
         tmp_dir = mkdtemp()
         edl.EDL_ON_DEMAND_CACHE_PATH = os.path.join(tmp_dir, 'cache')
         mocker.patch.object(edl, 'get_integration_context', return_value=ctx)
-        mocker.patch.object(edl, 'create_new_edl', return_value=(expected_edl, 1))
+        mocker.patch.object(edl, 'create_new_edl', return_value=(expected_edl, 1, edl_log_line))
+        created_time = datetime.now(timezone.utc)
+
         actual_edl, _ = edl.get_edl_on_demand()
 
         with open(edl.EDL_ON_DEMAND_CACHE_PATH) as f:
             cached_edl = f.read()
             assert actual_edl == expected_edl == cached_edl
+
+        expected_edl_log = f"# Created new EDL at {created_time.isoformat()}\n\n" \
+                           f"## EDL stats: 1 indicators in total, 0 modified, 0 dropped, 1 added.\n\n" \
+                           f"## Request Args: {{'last_query': '*', 'out_format': 'PAN-OS (text)', 'last_limit': 10000, " \
+                           f"'last_offset': 0, 'drop_invalids': False, 'url_port_stripping': False, " \
+                           f"'collapse_ips': \"Don't Collapse\", 'add_comment_if_empty': True, 'mwg_type': 'string', " \
+                           f"'bc_category': 'bc_category', 'category_attribute': [], 'fields_to_present': 'name,type', " \
+                           f"'csv_text': False, 'url_protocol_stripping': False, 'url_truncate': False, " \
+                           f"'maximum_cidr_size': 8, 'no_wildcard_tld': False}}\n\n" \
+                           f"Action | Indicator | Raw Indicator | Reason\n{edl_log_line}"
+
+        with open(edl.EDL_FULL_LOG_PATH) as f:
+            edl_log = f.read()
+            assert edl_log == expected_edl_log
 
     def test_iterable_to_str_1(self):
         """Test invalid"""
@@ -181,12 +200,25 @@ class TestHelperFunctions:
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=(f, 4))
         request_args = edl.RequestArguments(query='', limit=3, url_port_stripping=True, url_protocol_stripping=True,
                                             url_truncate=True)
-        edl_vals, original_indicators_count = edl.create_new_edl(request_args)
+        edl_vals, original_indicators_count, edl_log = edl.create_new_edl(request_args)
 
         assert edl_vals == 'google.com\ndemisto.com\ndemisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopq' \
                            'wertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert' \
                            'yuiopqwertyuiopqwertyuiopyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwe' \
                            'rtyuiopqwertyuiopqwertyuiop\n'
+
+        expected_log = 'Added | google.com | https://google.com | Found new URL.\n' \
+                       'Added | demisto.com | demisto.com:7000 | Found new URL.\n' \
+                       'Added | demisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwe' \
+                       'rtyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopyui' \
+                       'oplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop | demi' \
+                       'sto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwerty' \
+                       'uiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopyuioplkjhgfdsazx' \
+                       'qwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiop' \
+                       'qwertyuiopqwertyuiopqwertyuiopqwertyuiop | Found new URL.\n' \
+                       'Added | demisto.com | demisto.com | Found new URL.'
+
+        assert edl_log == expected_log
         f = tempfile.TemporaryFile(mode='w+t')
         f.write('{"value": "https://google.com", "indicator_type": "URL"}\n'
                 '{"value": "demisto.com:7000", "indicator_type": "URL"}\n'
@@ -198,7 +230,7 @@ class TestHelperFunctions:
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=(f, 4))
         request_args = edl.RequestArguments(out_format='CSV', query='', limit=3, url_port_stripping=True,
                                             url_protocol_stripping=True, url_truncate=True, fields_to_present='name,value')
-        edl_v, original_indicators_count = edl.create_new_edl(request_args)
+        edl_v, original_indicators_count, edl_log = edl.create_new_edl(request_args)
         assert edl_v == '{"value": "https://google.com", "indicator_type": "URL"}\n' \
                         '{"value": "demisto.com:7000", "indicator_type": "URL"}\n' \
                         '{"value": "demisto.com/qwertqwertyuioplkjhgfdsazxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyu' \
@@ -206,6 +238,7 @@ class TestHelperFunctions:
                         'zxqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwertyuiopqwert' \
                         'yuiopqwertyuiopqwertyuiopqwertyuiop", "indicator_type": "URL"}\n' \
                         '{"value": "demisto.com", "indicator_type": "URL"}'
+        assert edl_log == ''  # No log when exporting to csv
 
     def test_create_new_edl_edge_cases(self, mocker, requests_mock):
         """
@@ -231,7 +264,7 @@ class TestHelperFunctions:
         f = '\n'.join(json.dumps(indicator) for indicator in indicators)
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=2)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=(io.StringIO(f), 6))
-        edl_v, _ = edl.create_new_edl(request_args)
+        edl_v, _, edl_log = edl.create_new_edl(request_args)
         expected_values = set()
         for indicator in indicators:
             value = indicator.get('value')
@@ -239,17 +272,40 @@ class TestHelperFunctions:
                 expected_values.add(value.lstrip('*.'))
             expected_values.add(value)
         assert set(edl_v.split('\n')) == expected_values
+        expected_log = 'Added | 1.1.1.1/7 | 1.1.1.1/7 | Found new CIDR.\n' \
+                       'Added | 1.1.1.1/12 | 1.1.1.1/12 | Found new CIDR.\n' \
+                       'Added | *.com | *.com | Found new Domain.\n' \
+                       'Added | *.co.uk | *.co.uk | Found new Domain.\n' \
+                       'Added | *.google.com | *.google.com | Found new Domain.\n' \
+                       'Added | aא.com | aא.com | Found new URL.'
+        assert edl_log == expected_log
 
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=8)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=((io.StringIO(f)), 6))
-        edl_v, _ = edl.create_new_edl(request_args)
+        edl_v, _, edl_log = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"1.1.1.1/12", "*.com", "com", "*.co.uk",
                                           "co.uk", "*.google.com", "google.com", "aא.com"}
 
+        expected_log = 'Dropped | 1.1.1.1/7 | 1.1.1.1/7 | CIDR exceeds max length 8.\n' \
+                       'Added | 1.1.1.1/12 | 1.1.1.1/12 | Found new CIDR.\n' \
+                       'Added | *.com | *.com | Found new Domain.\n' \
+                       'Added | *.co.uk | *.co.uk | Found new Domain.\n' \
+                       'Added | *.google.com | *.google.com | Found new Domain.\n' \
+                       'Added | aא.com | aא.com | Found new URL.'
+        assert edl_log == expected_log
+
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, no_wildcard_tld=True, maximum_cidr_size=13)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=(io.StringIO(f), 6))
-        edl_v, _ = edl.create_new_edl(request_args)
+        edl_v, _, edl_log = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"*.google.com", "google.com", "aא.com"}
+
+        expected_log = 'Dropped | 1.1.1.1/7 | 1.1.1.1/7 | CIDR exceeds max length 13.\n' \
+                       'Dropped | 1.1.1.1/12 | 1.1.1.1/12 | CIDR exceeds max length 13.\n' \
+                       'Dropped | com | *.com | Domain is a TLD.\n' \
+                       'Dropped | co.uk | *.co.uk | Domain is a TLD.\n' \
+                       'Added | *.google.com | *.google.com | Found new Domain.\n' \
+                       'Added | aא.com | aא.com | Found new URL.'
+        assert edl_log == expected_log
 
     def test_create_new_edl_with_offset(self, mocker, requests_mock):
         """
@@ -277,15 +333,24 @@ class TestHelperFunctions:
         # create_new_edl with no offset
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=8)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=((io.StringIO(f)), 6))
-        edl_v, _ = edl.create_new_edl(request_args)
+        edl_v, _, edl_log = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"1.1.1.1/12", "*.com", "com", "*.co.uk",
                                           "co.uk", "*.google.com", "google.com", "aא.com"}
+
+        expected_log = "Dropped | 1.1.1.1/7 | 1.1.1.1/7 | CIDR exceeds max length 8.\n" \
+                       "Added | 1.1.1.1/12 | 1.1.1.1/12 | Found new CIDR.\n" \
+                       "Added | *.com | *.com | Found new Domain.\n" \
+                       "Added | *.co.uk | *.co.uk | Found new Domain.\n" \
+                       "Added | *.google.com | *.google.com | Found new Domain.\n" \
+                       "Added | aא.com | aא.com | Found new URL."
+        assert edl_log == expected_log
 
         # create_new_edl with offset=2
         request_args = edl.RequestArguments(collapse_ips=DONT_COLLAPSE, maximum_cidr_size=8, offset=2)
         mocker.patch.object(edl, 'get_indicators_to_format', return_value=((io.StringIO(f)), 6))
-        edl_v, _ = edl.create_new_edl(request_args)
+        edl_v, _, edl_log = edl.create_new_edl(request_args)
         assert set(edl_v.split('\n')) == {"google.com", "co.uk", "*.co.uk", "*.google.com", "*.com", "aא.com"}
+        assert edl_log == expected_log
 
     def test_create_json_out_format(self):
         """
@@ -831,11 +896,16 @@ def test_get_indicators_to_format_text():
     request_args = edl.RequestArguments(out_format='PAN-OS (text)', query='', limit=3, url_port_stripping=True,
                                         url_protocol_stripping=True, url_truncate=True)
     indicators_data, _ = get_indicators_to_format(indicator_searcher, request_args)
-    indicators_data = edl.create_text_out_format(indicators_data, request_args)
+    indicators_data, indicators_log = edl.create_text_out_format(indicators_data, request_args)
 
     indicators_data.seek(0)
     indicators = indicators_data.read()
     assert indicators == 'google.com\ndemisto.com\ndemisto.com/qwertqwer\ndemisto.com'
+    expected_indicators_log = 'Added | google.com | https://google.com | Found new URL.' \
+                              '\nAdded | demisto.com | demisto.com:7000 | Found new URL.' \
+                              '\nAdded | demisto.com/qwertqwer | demisto.com/qwertqwer | Found new URL.' \
+                              '\nAdded | demisto.com | demisto.com | Found new URL.'
+    assert indicators_log == expected_indicators_log
 
 
 def test_get_indicators_to_format_text_enforce_ascii(mocker):
@@ -855,8 +925,108 @@ def test_get_indicators_to_format_text_enforce_ascii(mocker):
     request_args = edl.RequestArguments(out_format='PAN-OS (text)', query='', limit=3, url_port_stripping=True,
                                         url_protocol_stripping=True, url_truncate=True)
     indicators_data, _ = get_indicators_to_format(indicator_searcher, request_args)
-    indicators_data = edl.create_text_out_format(indicators_data, request_args)
+    indicators_data, indicators_log = edl.create_text_out_format(indicators_data, request_args)
 
     indicators_data.seek(0)
     indicators = indicators_data.read()
     assert indicators == 'google.com\ndemisto.com\ndemisto.com/qwertqwer\ndemisto.com'
+    expected_indicators_log = 'Added | google.com | https://google.com | Found new URL.' \
+                              '\nAdded | demisto.com | demisto.com:7000 | Found new URL.' \
+                              '\nAdded | demisto.com/qwertqwer | demisto.com/qwertqwer | Found new URL.' \
+                              '\nAdded | demisto.com | demisto.com | Found new URL.'
+    assert indicators_log == expected_indicators_log
+
+
+@pytest.mark.parametrize('raw_indicators, expected_indicators, expected_log',
+                         [([{"value": "1.3.3.7", "indicator_type": "Domain"}], {"1.3.3.7"},
+                           "Added | 1.3.3.7 | 1.3.3.7 | Found new Domain."),
+                          ([{"value": "1.1.1.1/7", "indicator_type": "CIDR"}], {""},
+                           "Dropped | 1.1.1.1/7 | 1.1.1.1/7 | CIDR exceeds max length 8."),
+                          ([{"value": "www.Inv@l*id_token.com", "indicator_type": "Domain"}], {""},
+                           "Dropped | www.Inv@l*id_token.com | www.Inv@l*id_token.com | Invalid tokens or port."),
+                          ([{"value": "*.com", "indicator_type": "Domain"}], {""},
+                           "Dropped | com | *.com | Domain is a TLD."),
+                          ([{"value": "*.com", "indicator_type": "Domain"}], {""},
+                           "Dropped | com | *.com | Domain is a TLD."),
+                          ([{"value": "http://www.google.com", "indicator_type": "URL"}], {"www.google.com"},
+                           "Added | www.google.com | http://www.google.com | Found new URL."),
+                          ([{"value": "http://www.google.com", "indicator_type": "URL"}], {"www.google.com"},
+                           "Added | www.google.com | http://www.google.com | Found new URL."),
+                          ([{"value": "http://www.very_long_url_example_very_long.com", "indicator_type": "URL"}], {""},
+                           "Dropped | www.very_long_url_example_very_long.com | http://www.very_long_url_example_very_long.com"
+                           " | URL exceeds max length 20."),
+                          ([{"value": "1.3.3.7", "indicator_type": "IP"},
+                            {"value": "1.3.3.8", "indicator_type": "IP"},
+                            {"value": "1.3.3.10", "indicator_type": "IP"}], {"1.3.3.10", "1.3.3.7-1.3.3.8"},
+                           "Modified | 1.3.3.7 | 1.3.3.7 | Collapsed IPv4 To Ranges.\n"
+                           "Modified | 1.3.3.8 | 1.3.3.8 | Collapsed IPv4 To Ranges.\n"
+                           "Added | 1.3.3.10 | 1.3.3.10 | Found new IPv4."),
+                          ([{"value": "1.3.3.7", "indicator_type": "IPv6"},
+                            {"value": "1.3.3.8", "indicator_type": "IPv6"},
+                            {"value": "1.3.3.10", "indicator_type": "IPv6"}], {"1.3.3.10", "1.3.3.7-1.3.3.8"},
+                           "Modified | 1.3.3.7 | 1.3.3.7 | Collapsed IPv6 To Ranges.\n"
+                           "Modified | 1.3.3.8 | 1.3.3.8 | Collapsed IPv6 To Ranges.\n"
+                           "Added | 1.3.3.10 | 1.3.3.10 | Found new IPv6.")
+                          ])
+def test_create_log_str_from_indicators(raw_indicators, expected_indicators, expected_log):
+    import EDL as edl
+    edl_request_args = edl.RequestArguments(out_format='PAN-OS (text)', query='', limit=3, url_port_stripping=True,
+                                            url_protocol_stripping=True, url_truncate=False, drop_invalids=True,
+                                            collapse_ips="To Ranges", no_wildcard_tld=True, maximum_cidr_size=8)
+    indicators_file = tempfile.TemporaryFile(mode='w+t')
+    for raw_indicator in raw_indicators:
+        indicators_file.write(json.dumps(raw_indicator))
+        indicators_file.write("\n")
+    indicators_file.seek(0)
+    edl.PAN_OS_MAX_URL_LEN = 20
+    indicators_data, indicators_log = edl.create_text_out_format(indicators_file, edl_request_args)
+
+    indicators_data.seek(0)
+    indicators = indicators_data.read()
+
+    expected_log_entries = expected_log.split("\n")
+    log_lines = indicators_log.split("\n")
+    for log_line in log_lines:
+        assert log_line in expected_log_entries
+
+    indicator_lines = indicators.split("\n")
+    assert set(indicator_lines) == expected_indicators
+
+
+def test_route_edl_log(mocker):
+    import EDL as edl
+
+    mocker.patch.object(demisto, 'params', return_value={'append_string': '+append_string+',
+                                                         'prepend_string': '+prepend_string+',
+                                                         'cache_refresh_rate': '30 minutes'})
+    request_args = edl.RequestArguments()
+
+    mocker.patch.object(edl, 'authenticate_app', return_value=None)
+    mocker.patch.object(edl, 'get_request_args', return_value=request_args)
+    log_content = "test log"
+    with open(edl.EDL_FULL_LOG_PATH, "w+") as f:
+        f.write(log_content)
+
+    test_app = edl.APP.test_client()
+    response = test_app.get('/log')
+    assert response.status_code == 200
+    assert response.data.decode() == f'+prepend_string+\n{log_content}+append_string+'
+
+
+def test_route_edl_log_empty(mocker):
+    import EDL as edl
+
+    mocker.patch.object(demisto, 'params', return_value={'append_string': '+append_string+',
+                                                         'prepend_string': '+prepend_string+',
+                                                         'cache_refresh_rate': '30 minutes'})
+    request_args = edl.RequestArguments()
+
+    mocker.patch.object(edl, 'authenticate_app', return_value=None)
+    mocker.patch.object(edl, 'get_request_args', return_value=request_args)
+    with open(edl.EDL_FULL_LOG_PATH, "w+") as f:
+        f.write('')
+
+    test_app = edl.APP.test_client()
+    response = test_app.get('/log')
+    assert response.status_code == 200
+    assert response.data.decode() == '# Empty'
