@@ -176,6 +176,12 @@ class Client(GSuiteClient):
         super().set_authorized_http(scopes=scopes, subject=subject, timeout=timeout)
 
 
+def return_customer_id(args):
+    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
+        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    return customer_id
+
+
 def return_file_from_entry_id(entry_id):  # pragma: no cover
     try:
         file_info = demisto.getFilePath(entry_id)
@@ -395,8 +401,7 @@ def prepare_args_for_datatransfer_list(args: dict[str, str]) -> dict[str, str]:
 
     :return: Prepared arguments.
     """
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
     return GSuiteClient.remove_empty_entities({
         'customerId': customer_id,
         'maxResults': GSuiteClient.validate_get_int(args.get('max_results'),
@@ -586,8 +591,7 @@ def mobile_update_command(client: Client, args: dict[str, str]) -> CommandResult
     """
 
     client.set_authorized_http(scopes=COMMAND_SCOPES['MOBILE_UPDATE'])
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
     args.pop('admin_email', '')
     resource_id = urllib.parse.quote(args.pop('resource_id', ''))
     try:
@@ -615,8 +619,7 @@ def mobile_delete_command(client: Client, args: dict[str, str]) -> CommandResult
     :return: CommandResults which returns detailed results to war room and sets the context data.
     """
     client.set_authorized_http(scopes=SCOPES['DEVICE_MOBILE'])
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
     resource_id = urllib.parse.quote(args.pop('resource_id', ''))
     client.http_request(
         url_suffix=URL_SUFFIX['MOBILE_DELETE'].format(urllib.parse.quote(customer_id), resource_id),
@@ -670,8 +673,7 @@ def role_assignment_list_command(client: Client, args: dict[str, Any]) -> Comman
     :return: CommandResults object with context and human-readable.
     """
     arguments = prepare_args_for_role_assignment_list(args)
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
     client.set_authorized_http(scopes=COMMAND_SCOPES['ROLE_ASSIGNMENT'])
     response = client.http_request(
         url_suffix=URL_SUFFIX['ROLE_ASSIGNMENT'].format(urllib.parse.quote(customer_id)),
@@ -708,8 +710,7 @@ def role_assignment_create_command(client: Client, args: dict[str, Any]) -> Comm
     :return: CommandResults object with context and human-readable.
     """
     arguments = prepare_args_for_role_assignment_create(args)
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
 
     client.set_authorized_http(scopes=SCOPES['ROLE_MANAGEMENT'])
     response = client.http_request(
@@ -845,8 +846,7 @@ def role_create_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
 
     client.set_authorized_http(scopes=SCOPES['ROLE_MANAGEMENT'])
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
 
     params = {
         'rolePrivileges': get_privileges_list_from_string(args.pop('role_privileges', '')),
@@ -959,8 +959,7 @@ def custom_user_schema_create_command(client: Client, args: dict[str, Any]) -> C
     """
     body = prepare_args_for_custom_user_schema(args)
     client.set_authorized_http(scopes=SCOPES['CUSTOM_USER_SCHEMA'])
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
     response = client.http_request(method='POST',
                                    url_suffix=URL_SUFFIX['CUSTOM_USER_SCHEMA'].format(
                                        urllib.parse.quote(customer_id)),
@@ -1005,8 +1004,7 @@ def custom_user_schema_update_command(client: Client, args: dict[str, Any]) -> C
     """
     if not args.get('schema_id') and not args.get('schema_name'):
         raise ValueError(MESSAGES['CUSTOM_SCHEMA_UPDATE_REQUIRED_ARGS'])
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
     body = prepare_args_for_custom_user_schema(args)
 
     schema_key = args['schema_id'] if args.get('schema_id') else args.get('schema_name', '')
@@ -1348,8 +1346,7 @@ def gsuite_mobile_device_list_command(client: Client, args: dict[str, str]) -> C
         List[CommandResults]: List of CommandResults that hold the data to return to the engine.
     """
     client.set_authorized_http(scopes=COMMAND_SCOPES.get('MOBILE_DEVICES_LIST', []))
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
     query_params = mobile_device_list_create_query_parameters(projection=args.get('projection', 'full'),
                                                               query=args.get('query', ''),
                                                               order_by=args.get('order_by', 'status'),
@@ -1433,8 +1430,7 @@ def gsuite_chromeos_device_list_command(client: Client, args: dict[str, str]) ->
         List[CommandResults]: List of CommandResults that hold the data to return to the engine.
     """
     client.set_authorized_http(scopes=COMMAND_SCOPES.get('CHROMEOS_DEVICES_LIST', []))
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
     query_params = chromeos_device_list_create_query_parameters(projection=args.get('projection', 'full'),
                                                                 query=args.get('query', ''),
                                                                 include_child_org_units=argToBoolean(args.get(
@@ -1511,8 +1507,7 @@ def gsuite_chromeos_device_action_command(client: Client, args: dict[str, str]) 
     """
     try:
         client.set_authorized_http(scopes=COMMAND_SCOPES.get('CHROMEOS_DEVICE_ACTION', []))
-        if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-            raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+        customer_id = return_customer_id(args)
         chromeos_device_action_request(client=client, customer_id=customer_id,
                                        resource_id=args.get('resource_id', ''),
                                        action=args.get('action', ''),
@@ -1568,8 +1563,7 @@ def chromebrowser_move_ou_command(client: Client, args: dict[str, str]) -> str:
         :return: Message for user upon success
     """
     client.set_authorized_http(scopes=SCOPES['CHROME_BROWSERS'])
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
     resource_ids_list = argToList(args.get('resource_ids', ''))
     org_unit_path = args.get('org_unit_path', '')
     full_url = f'https://www.googleapis.com/admin/directory/v1.1beta1/customer/{customer_id}' \
@@ -1604,8 +1598,7 @@ def chromebrowser_list_command(client: Client, args: dict[str, str]) -> CommandR
     '''
     API_LIMIT = 100
     client.set_authorized_http(scopes=SCOPES['CHROME_BROWSERS'])
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
     device_id = args.get('device_id', '')
     order_by = args.get('order_by', '')
     org_unit_path = args.get('org_unit_path', '')
@@ -1673,8 +1666,7 @@ def modify_policy_command(client: Client, args: dict[str, str]) -> str:
         :return: String that confirms request was executed.
     """
     client.set_authorized_http(scopes=SCOPES['POLICY_MANAGEMENT'])
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
     target_type = args.get('target_type', '')
     policy_raw_json = args.get('policy_raw_json', '')
     policy_field_json_entry_id = args.get('policy_field_json_entry_id', '')
@@ -1737,8 +1729,7 @@ def policy_resolve_command(client: Client, args: dict[str, str]) -> CommandResul
     """
     API_LIMIT = 1000
     client.set_authorized_http(scopes=SCOPES['POLICY_MANAGEMENT'])
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
     target_type = args.get('target_type', '')
     policy_schema_filter = args.get('policy_schema_filter', '')
     target_resource = args.get('target_resource', '')
@@ -1832,8 +1823,7 @@ def policy_schemas_list_command(client: Client, args: dict[str, str]) -> Command
     """
     API_LIMIT = 1000
     client.set_authorized_http(scopes=SCOPES['POLICY_MANAGEMENT'])
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
     schema_name = args.get('schema_name', '')
     filter = args.get('filter', '')
     page_size = args.get('page_size', '')
@@ -1893,8 +1883,7 @@ def group_delete_command(client: Client, args: dict[str, str]) -> str:
        :return: String that confirms request was executed.
    """
     client.set_authorized_http(scopes=SCOPES['POLICY_MANAGEMENT'])
-    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
-        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    customer_id = return_customer_id(args)
     policy_raw_json = args.get('policy_raw_json', '')
     policy_field_json_entry_id = args.get('policy_field_json_entry_id', '')
     target_resource = args.get('target_resource', '')
