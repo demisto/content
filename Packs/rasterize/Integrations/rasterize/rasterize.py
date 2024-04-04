@@ -447,7 +447,7 @@ def setup_tab_event(browser, tab):
     tab.Network.dataReceived = tab_event_handler.network_data_received
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
-    tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
+    # tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
     tab.Page.frameNavigated = tab_event_handler.page_frame_navigated
 
     return tab_event_handler, tab_ready_event
@@ -469,12 +469,12 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         else:
             tab.Page.navigate(url=path)
 
-        success_flag = tab_ready_event.wait(navigation_timeout)
+        # success_flag = tab_ready_event.wait(navigation_timeout)
 
-        if not success_flag:
-            message = f'Timeout of {navigation_timeout} seconds reached while waiting for {path}'
-            demisto.error(message)
-            return_error(message)
+        # if not success_flag:
+        #     message = f'Timeout of {navigation_timeout} seconds reached while waiting for {path}'
+        #     demisto.error(message)
+        #     return_error(message)
 
         time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"Navigated to {path=} on {tab.id=}")
@@ -509,6 +509,37 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     """
     :param include_source: Whether to include the page source in the response
     """
+
+    ### ##################################
+
+    # create a browser instance
+    # browser = pychrome.Browser(url="http://127.0.0.1:9347")
+
+    # create a tab
+    # tab = browser.new_tab()
+
+    # start the tab 
+    # tab.start()
+
+    # call method
+    # tab.Network.enable()
+    # call method with timeout
+    # tab.Page.navigate(url="https://www.openstreetmap.org/directions?route=48.8566,2.35222%3b49.1198,6.1522", _timeout=5)
+    # tab.Page.navigate(url=path, _timeout=5)
+
+    # # wait for loading
+    # tab.wait(5)
+
+
+    # screenshot_data = tab.Page.captureScreenshot()['data']
+    # captured_image = base64.b64decode(screenshot_data)
+    # return captured_image, None
+
+    ### ##################################
+
+
+
+    # tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
     tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
 
     try:
