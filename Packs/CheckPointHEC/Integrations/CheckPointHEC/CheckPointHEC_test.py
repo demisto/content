@@ -140,7 +140,7 @@ def test_fetch_incidents(mocker):
     )
     demisto_incidents = mocker.patch.object(demisto, 'incidents')
 
-    fetch_incidents(client, '1 day', [], [], [], 10)
+    fetch_incidents(client, '1 day', ['office365_emails'], [], [], [], 10)
     call_api.assert_called_once()
     demisto_incidents.assert_called_once()
 
@@ -368,7 +368,7 @@ def test_checkpointhec_send_action(mocker):
     )
 
     result = checkpointhec_send_action(
-        client, ['00000000000000000000000000000002'], 'restore'
+        client, ['00000000000000000000000000000002'], 'office365_emails_email', 'restore'
     )
     call_api.assert_called_once()
     assert result.outputs == {'task': mock_response['responseData'][0]['taskId']}
