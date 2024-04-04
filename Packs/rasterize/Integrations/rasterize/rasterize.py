@@ -432,6 +432,7 @@ def setup_tab_event(browser, tab):
     tab_event_handler = PychromeEventHandler(browser, tab, tab_ready_event)
 
     tab.Network.enable()
+    tab.Network.dataReceived = tab_event_handler.network_data_received
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
     # tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
@@ -513,8 +514,6 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
             screenshot_data = tab.Page.captureScreenshot(clip=viewport, captureBeyondViewport=True)['data']
         else:
             screenshot_data = tab.Page.captureScreenshot()['data']
-        navigation_history = tab.Page.getNavigationHistory()
-        demisto.debug(f'{navigation_history=}')
     except Exception as ex:
         demisto.info(f'Failed to capture screenshot due to {ex}')
         raise ex
