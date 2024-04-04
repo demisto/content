@@ -1061,7 +1061,7 @@ def fetch_incidents(client, first_fetch_time, integration_instance, last_run: di
 
     if non_created_incidents:
         next_run['incidents_from_previous_run'] = non_created_incidents
-        next_run['alerts_limit_per_incident'] = [ALERTS_LIMIT_PER_INCIDENTS # type: ignore[assignment]
+        next_run['alerts_limit_per_incident'] = ALERTS_LIMIT_PER_INCIDENTS # type: ignore[assignment]
     else:
         next_run['incidents_from_previous_run'] = []
 
