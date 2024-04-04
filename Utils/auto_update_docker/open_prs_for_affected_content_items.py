@@ -56,15 +56,18 @@ def create_remote_pr(
         head=head_branch,
         draft=True,
     )
-    # pr.add_to_labels
-    pr.create_review_request(reviewers=pr_reviewers)
-    logging.info(f'Requested review from {",".join(sorted(pr_reviewers))}')
+    
+    if(pr_reviewers):
+        pr.create_review_request(reviewers=pr_reviewers)
+        logging.info(f'Requested review from {",".join(sorted(pr_reviewers))}')
 
-    pr.add_to_assignees(*pr_assignees)
-    logging.info(f'Assigned to {",".join(sorted(pr_assignees))}')
+    if(pr_assignees):
+        pr.add_to_assignees(*pr_assignees)
+        logging.info(f'Assigned to {",".join(sorted(pr_assignees))}')
 
-    pr.set_labels(*pr_labels)
-    logging.info(f'Set labels to {",".join(sorted(pr_labels))}')
+    if(pr_labels):
+        pr.set_labels(*pr_labels)
+        logging.info(f'Set labels to {",".join(sorted(pr_labels))}')
 
 
 def update_content_items_docker_images_and_push(
@@ -78,6 +81,8 @@ def update_content_items_docker_images_and_push(
     git: Git,
     remote_content_repo: Repository.Repository,
     origin: Remote,
+    pr_assignees: list[str],
+    pr_reviewers: list[str]
 ):
     """Updates the content items' docker tags, and pushes the changes to a remote branch.
 
@@ -136,9 +141,13 @@ def update_content_items_docker_images_and_push(
         head_branch=current_batch_branch_name,
         base_branch=staging_branch,
         pr_labels=pr_labels,
-        updated_content_items=updated_content_items
+        updated_content_items=updated_content_items,
+        pr_assignees=pr_assignees,
+        pr_reviewers=pr_reviewers
     )
 
+def comma_list(raw_data: str) -> list[str]:
+    return raw_data.split(",") if raw_data else []
 
 @app.command()
 def open_prs_for_content_items(
@@ -154,6 +163,16 @@ def open_prs_for_content_items(
         # TODO Change to 50 later
         default="2",
         help="The maximum number of content items to open in one PR",
+    ),
+    pr_assignees: list = typer.Argument(
+        default="",
+        help="The PR assignees",
+        parser=comma_list,
+    ),
+    pr_reviewers: list = typer.Argument(
+        default="",
+        help="The PR reviewers",
+        parser=comma_list,
     ),
 ):
     prs_limit_int = int(prs_limit)
@@ -213,6 +232,8 @@ def open_prs_for_content_items(
                         content_items=content_items_for_batch,
                         pr_labels=image_config["pr_labels"],
                         target_tag=image_config["target_tag"],
+                        pr_assignees=pr_assignees,
+                        pr_reviewers=pr_reviewers
                     )
                     pr_batch_start = pr_batch_end
                     pr_batch_end = pr_batch_start + prs_limit_int
