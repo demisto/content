@@ -1483,6 +1483,99 @@ def test_get_remote_data(mocker):
     assert res[2]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
 
 
+def test_get_remote_data_last_fetched_incidents_entries(mocker):
+    """
+    Given:
+        -  LastUpdate argument set to higher then the modification time.
+        -  Integration context containing the last fetched ids to get their entries.
+    When
+        - running get_remote_data_command.
+    Then
+        - The ticket was updated with the entries even the lastUpdate is higher than modification time.
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+
+    args = {'id': 'sys_id', 'lastUpdate': 9999999999}
+    params = {"file_tag_from_service_now": "FromServiceNow"}
+    demisto.setIntegrationContext({"last_fetched_incident_ids": ["sys_id"]})
+    mocker.patch.object(client, 'get', side_effect=[RESPONSE_TICKET_MIRROR, RESPONSE_ASSIGNMENT_GROUP])
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
+    client_query_mocker = mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
+
+    res = get_remote_data_command(client, args, params)
+
+    assert 'sys_created_on' not in client_query_mocker.call_args[0][3]
+    assert res[1]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
+    assert not demisto.getIntegrationContext()["last_fetched_incident_ids"]
+
+
+def test_get_remote_data_no_last_fetched_incidents(mocker):
+    """
+    Given:
+        -  LastUpdate argument set to higher then the modification time.
+        -  Integration context does not containing the last fetched ids to get their entries.
+    When
+        - running get_remote_data_command.
+    Then
+        - The ticket is not updated with the entries.
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+
+    args = {'id': 'sys_id', 'lastUpdate': 9999999999}
+    params = {"file_tag_from_service_now": "FromServiceNow"}
+    demisto.setIntegrationContext({"last_fetched_incident_ids": []})
+    mocker.patch.object(demisto, 'params', return_value={"isFetch": True})
+    mocker.patch.object(client, 'get', side_effect=[RESPONSE_TICKET_MIRROR, RESPONSE_ASSIGNMENT_GROUP])
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
+    client_query_mocker = mocker.patch.object(client, 'query', return_value={'result': []})
+
+    res = get_remote_data_command(client, args, params)
+
+    assert 'sys_created_on' in client_query_mocker.call_args[0][3]
+    assert len(res) == 1
+    assert not res[0]
+
+
+def test_get_remote_data_last_fetched_incidents_use_display_value(mocker):
+    """
+    Given:
+        -  LastUpdate argument set to higher then the modification time.
+        -  Integration context containing the last fetched ids to get their entries.
+        -  Using display value.
+    When
+        - running get_remote_data_command.
+    Then
+        - The ticket was updated with the entries even the lastUpdate is higher than modification time.
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description',
+                    use_display_value=True, display_date_format='yyyy-MM-dd')
+
+    args = {'id': 'sys_id', 'lastUpdate': 9999999999}
+    params = {"file_tag_from_service_now": "FromServiceNow"}
+    demisto.setIntegrationContext({"last_fetched_incident_ids": ["sys_id"]})
+    mocker.patch.object(client, 'get', side_effect=[RESPONSE_QUERY_TABLE_SYS_PARAMS, RESPONSE_ASSIGNMENT_GROUP])
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
+    client_query_mocker = mocker.patch.object(ServiceNowv2, 'convert_to_notes_result', return_value=MIRROR_COMMENTS_RESPONSE)
+
+    res = get_remote_data_command(client, args, params)
+
+    assert 'filter' not in client_query_mocker.call_args[0][1]
+    assert res[1]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
+    assert not demisto.getIntegrationContext()["last_fetched_incident_ids"]
+
+
 def test_assigned_to_field_no_user():
     """
     Given:

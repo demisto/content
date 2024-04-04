@@ -2390,6 +2390,11 @@ def fetch_incidents(client: Client) -> list:
         occurred = datetime.strptime(ticket.get('occurred'), DATE_FORMAT).isoformat()  # type: ignore[arg-type]
         ticket['occurred'] = f"{occurred}Z"
 
+    int_context = get_integration_context()
+    int_context.setdefault("last_fetched_incident_ids", []).extend([incident["sys_id"] for incident in incidents])
+    demisto.debug(f"ServiceNowV2 - Saving the following incident ids in the integration context: {int_context=}")
+    set_integration_context(int_context)
+
     demisto.setLastRun(last_run)
     return incidents
 
@@ -2589,9 +2594,15 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         required=False
     )
 
+    last_fetched_ids = get_integration_context().get("last_fetched_incident_ids") or []
+    demisto.debug(f"ServiceNowV2 - Last fetched incident ids are: {last_fetched_ids}")
+    if ticket_id_in_last_fetch := ticket_id in last_fetched_ids:
+        last_fetched_ids.remove(ticket_id)
+        set_integration_context({"last_fetched_incident_ids": last_fetched_ids})
+
     demisto.debug(f'ticket_last_update of {ticket_id=} is {ticket_last_update}')
     is_fetch = demisto.params().get('isFetch')
-    if is_fetch and last_update > ticket_last_update:
+    if is_fetch and last_update > ticket_last_update and not ticket_id_in_last_fetch:
         demisto.debug(f'Nothing new in the ticket {ticket_id=}')
         ticket = {}
 
@@ -2613,9 +2624,11 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     if client.use_display_value:
         try:
-            comments_result = convert_to_notes_result(ticket, time_info={'display_date_format': client.display_date_format,
-                                                                         'filter': datetime.fromtimestamp(last_update),
-                                                                         'timezone_offset': timezone_offset})
+            time_info = {'display_date_format': client.display_date_format, 'timezone_offset': timezone_offset}
+            if not ticket_id_in_last_fetch:
+                time_info.update({'filter': datetime.fromtimestamp(last_update)})
+            comments_result = convert_to_notes_result(ticket, time_info)
+
         except Exception as e:
             demisto.debug(f'Failed to retrieve notes using display value. Continuing without retrieving notes.\n Error: {e}')
             comments_result = {'result': []}
@@ -2623,14 +2636,15 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         sys_param_limit = args.get('limit', client.sys_param_limit)
         sys_param_offset = args.get('offset', client.sys_param_offset)
 
-        sys_param_query = f'element_id={ticket_id}^sys_created_on>' \
-                          f'{datetime.fromtimestamp(last_update)}^element=comments^ORelement=work_notes'
+        sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
+        if not ticket_id_in_last_fetch:  # for latest fetch run incidents do not filter by last_update
+            sys_param_query += f'^sys_created_on>{datetime.fromtimestamp(last_update)}'
 
         comments_result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
     demisto.debug(f'Comments result is {comments_result}')
 
     if not comments_result or 'result' not in comments_result:
-        demisto.debug(f'Pull result is {ticket}')
+        demisto.debug(f'ServiceNowV2 - Pull result is {ticket}')
         return [ticket] + entries
 
     entries.extend(get_entries_for_notes(comments_result.get('result', []), params))
@@ -2662,7 +2676,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
                 'ContentsFormat': EntryFormat.JSON
             })
 
-    demisto.debug(f'Pull result is {ticket}')
+    demisto.debug(f'ServiceNowV2 - Pull result is {ticket=}, {entries=}')
     return [ticket] + entries
 
 
@@ -2892,8 +2906,14 @@ def get_modified_remote_data_command(
     if result and (modified_records := result.get('result')):
         modified_records_ids = [record.get('sys_id') for record in modified_records if 'sys_id' in record]
 
-    return GetModifiedRemoteDataResponse(modified_records_ids)
+    int_context = get_integration_context()
+    modified_records_ids.extend(int_context.get("last_fetched_incident_ids") or [])
+    modified_records_ids = list(set(modified_records_ids))  # remove duplicates
 
+    demisto.debug(f'ServiceNowV2 - returning the following incident ids: {modified_records_ids}')
+    return GetModifiedRemoteDataResponse(
+        modified_records_ids
+    )
 
 def add_custom_fields(params):
     global SNOW_ARGS
