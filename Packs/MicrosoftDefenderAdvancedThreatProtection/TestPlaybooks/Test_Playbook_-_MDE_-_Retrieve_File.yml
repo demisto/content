@@ -30,7 +30,7 @@ tasks:
       {
         "position": {
           "x": -140,
-          "y": -3005
+          "y": -2345
         }
       }
     note: false
@@ -55,7 +55,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "286"
+      - "288"
     scriptarguments:
       all:
         simple: "yes"
@@ -65,7 +65,7 @@ tasks:
       {
         "position": {
           "x": -140,
-          "y": -2875
+          "y": -2215
         }
       }
     note: false
@@ -97,88 +97,6 @@ tasks:
         "position": {
           "x": -140,
           "y": -900
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "246":
-    id: "246"
-    taskid: 19811ceb-429c-4dda-8a87-510f699e7437
-    type: regular
-    task:
-      id: 19811ceb-429c-4dda-8a87-510f699e7437
-      version: -1
-      name: Get MDE Available Alerts
-      description: Retrieves a collection of alerts related to the SHA1 of 'taskhostw.exe' and 'svc.exe' common processes.
-      script: Microsoft Defender Advanced Threat Protection|||microsoft-atp-get-file-alerts
-      type: regular
-      iscommand: true
-      brand: Microsoft Defender Advanced Threat Protection
-    nexttasks:
-      '#none#':
-      - "248"
-    scriptarguments:
-      file_hash:
-        complex:
-          root: incident
-          accessor: filesha1
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -140,
-          "y": -2550
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "248":
-    id: "248"
-    taskid: bb7a1210-65ba-47eb-815d-33663c4a2fa7
-    type: condition
-    task:
-      id: bb7a1210-65ba-47eb-815d-33663c4a2fa7
-      version: -1
-      name: Check MDE Available Alerts & Related Files
-      description: Checks if there are available alerts and related files for testing processes.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "285"
-      "yes":
-      - "290"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: MicrosoftATP.FileAlert.Alerts.Evidence
-                accessor: filePath
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -140,
-          "y": -2390
         }
       }
     note: false
@@ -919,78 +837,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "285":
-    id: "285"
-    taskid: 217d870a-d526-4cef-889c-5a4bb006fa6e
-    type: title
-    task:
-      id: 217d870a-d526-4cef-889c-5a4bb006fa6e
-      version: -1
-      name: Tests cannot be performed
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "289"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 330,
-          "y": -2220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "286":
-    id: "286"
-    taskid: eaee7645-5d1b-4dbd-8b25-e807c78c65be
-    type: regular
-    task:
-      id: eaee7645-5d1b-4dbd-8b25-e807c78c65be
-      version: -1
-      name: Set SHA1 To Incident Field
-      description: Publish the SHA1 of 'taskhostw.exe' and 'svc.exe' common processes in the 'incident.filesha1' incident field so that alerts relating to these files can be identified later.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "246"
-    scriptarguments:
-      filesha1:
-        simple: '6d9d0be989c8383c06b279a71f770edad617af27'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -140,
-          "y": -2710
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "287":
     id: "287"
-    taskid: 018cfb4a-c18a-48ce-81f1-d2705073bada
+    taskid: 6e4d7069-1341-4792-807b-16f4d4860954
     type: playbook
     task:
-      id: 018cfb4a-c18a-48ce-81f1-d2705073bada
+      id: 6e4d7069-1341-4792-807b-16f4d4860954
       version: -1
       name: MDE - Retrieve File
       description: |-
@@ -1006,8 +858,7 @@ tasks:
       - "332"
     scriptarguments:
       paths:
-        complex:
-          root: zipped_list
+        simple: C:\Users\Administrator\Desktop\test.txt
       MachineID:
         complex:
           root: incident
@@ -1035,10 +886,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "288":
     id: "288"
-    taskid: 5c25fdcb-594e-475f-8127-e95a8c2fbb44
+    taskid: 4425a1fa-8577-4472-843d-e3dd548b01b4
     type: regular
     task:
-      id: 5c25fdcb-594e-475f-8127-e95a8c2fbb44
+      id: 4425a1fa-8577-4472-843d-e3dd548b01b4
       version: -1
       name: Set Device ID To Incident Field
       description: Change the properties of an incident
@@ -1051,16 +902,7 @@ tasks:
       - "287"
     scriptarguments:
       deviceid:
-        complex:
-          root: MicrosoftATP.FileAlert.Alerts.MachineID
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: MicrosoftATP.FileAlert.Alerts.MachineID
-                iscontext: true
-          transformers:
-          - operator: FirstArrayElement
+        simple: 96444b946be252d1f4550354edef5fdc23aca2c5
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1096,53 +938,6 @@ tasks:
         "position": {
           "x": -150,
           "y": -440
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "290":
-    id: "290"
-    taskid: f7f15156-956b-45d2-853f-5c4e616afd33
-    type: regular
-    task:
-      id: f7f15156-956b-45d2-853f-5c4e616afd33
-      version: -1
-      name: Join File Paths and File Names
-      description: Joins values from two lists by index according to a given format.
-      scriptName: ZipStrings
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "288"
-    scriptarguments:
-      format:
-        simple: '{1}\{2}'
-      list1:
-        complex:
-          root: MicrosoftATP.FileAlert.Alerts.Evidence
-          accessor: filePath
-          transformers:
-          - operator: FirstArrayElement
-      list2:
-        complex:
-          root: MicrosoftATP.FileAlert.Alerts.Evidence
-          accessor: fileName
-          transformers:
-          - operator: FirstArrayElement
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -140,
-          "y": -2220
         }
       }
     note: false
@@ -2246,10 +2041,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "329":
     id: "329"
-    taskid: cfed7b18-351e-4546-80ec-f0aec09589c3
+    taskid: 60fd2b9e-b1d7-4d0a-83a2-4c2b8dd490db
     type: condition
     task:
-      id: cfed7b18-351e-4546-80ec-f0aec09589c3
+      id: 60fd2b9e-b1d7-4d0a-83a2-4c2b8dd490db
       version: -1
       name: Verify Commands Params Value
       description: |
@@ -2266,17 +2061,12 @@ tasks:
     conditions:
     - label: ' Verified'
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: MicrosoftATP.LiveResponseAction.commands.command.params
                 accessor: value
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: zipped_list
             iscontext: true
           ignorecase: true
     continueonerrortype: ""
@@ -2503,10 +2293,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "336":
     id: "336"
-    taskid: e6116975-66c8-484b-8054-f55a1250dff2
+    taskid: b7bf5d90-8942-4f38-811a-2549f4045179
     type: playbook
     task:
-      id: e6116975-66c8-484b-8054-f55a1250dff2
+      id: b7bf5d90-8942-4f38-811a-2549f4045179
       version: -1
       name: MDE - Retrieve File
       description: |-
@@ -2526,8 +2316,7 @@ tasks:
           root: incident
           accessor: deviceid
       paths:
-        complex:
-          root: zipped_list
+        simple: C:\\Users\\Administrator\\Desktop\\test.txt
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -2554,10 +2343,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2700,
+        "height": 2040,
         "width": 9490,
         "x": -4900,
-        "y": -3005
+        "y": -2345
       }
     }
   }
