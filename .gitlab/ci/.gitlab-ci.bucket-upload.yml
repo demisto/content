@@ -71,6 +71,14 @@ run-unittests-and-lint-upload-flow:
     - .run-unittests-and-lint
     - .bucket-upload-rule
 
+run-pre-commit-upload-flow:
+  cache:
+    policy: push
+  allow_failure: true
+  extends:
+    - .run-pre-commit
+    - .bucket-upload-rule
+
 jobs-done-check-upload-flow:
   extends:
     - .jobs-done-check
