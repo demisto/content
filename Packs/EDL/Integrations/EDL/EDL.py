@@ -1127,7 +1127,7 @@ def route_edl_log() -> Response:
 
     headers = [
         ('X-EDL-LOG-Request-Created', created.isoformat()),
-        ('ETag', f'"{hashlib.sha1(edl_data_log.encode()).hexdigest()}"')
+        ('ETag', f'"{hashlib.sha1(edl_data_log.encode()).hexdigest()}"')  # nosec
     ]  # type: ignore[assignment]
     headers_str = f'{[f"{header[0]}: {header[1]}" for header in headers]}'
     demisto.debug(f'edl: Returning log response with the following headers:\n{headers_str}')
