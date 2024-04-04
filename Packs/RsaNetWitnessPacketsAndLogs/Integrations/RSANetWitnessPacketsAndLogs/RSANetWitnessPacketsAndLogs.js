@@ -592,6 +592,11 @@ function encodeParams(p) {
 }
 
 function doReq(method, path, args, responseType, body) {
+    if ((path == '/database?msg=dump') || (path == '/sdk?msg=summary') || (path == '/sdk?msg=session')) {
+        delete (args.concentratorPort)
+        delete (args.useSSL)
+    }
+    
     var parametersUrl = encodeParams(args);
     var fullUrl = BASE_URL + path + parametersUrl;
     if(responseType){
