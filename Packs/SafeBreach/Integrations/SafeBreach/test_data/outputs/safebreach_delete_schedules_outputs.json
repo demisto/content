@@ -1,0 +1,28 @@
+{
+    "outputs": {
+        "success": {
+            "data": {
+                "id": 230,
+                "name": "Step 1 - Fortify your Network Perimeter",
+                "accountId": 123456,
+                "description": "This scenario will run infiltration attacks against your perimeter defenses with a variety of threats that are expected to be blocked by the network perimeter",
+                "successCriteria": null,
+                "originalScenarioId": "123dds-0000-0000-0000-6350420983a5",
+                "systemFilter": null,
+                "tags": null,
+                "createdAt": "2024-03-26T12:11:48.510Z",
+                "updatedAt": "2024-03-26T12:11:48.510Z"
+            }
+        },
+        "fail": {
+            "error": {
+                "errors": [
+                    {
+                        "sbcode": 707,
+                        "data": {}
+                    }
+                ]
+            }
+        }
+    }
+}
