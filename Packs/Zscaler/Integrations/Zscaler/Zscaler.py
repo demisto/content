@@ -31,6 +31,7 @@ DEFAULT_HEADERS = {"content-type": "application/json"}
 EXCEEDED_RATE_LIMIT_STATUS_CODE = 429
 TOTAL_RETRIES_TIME = 40
 TOTAL_NUMBER_OF_RETRIES = 5
+MAX_SLEEP_TIME = 12
 SESSION_ID_KEY = "session_id"
 ERROR_CODES_DICT = {
     400: "Invalid or bad request",
@@ -91,8 +92,7 @@ def parse_retry_after(response: requests.Response, backoff_sleep_time_seconds: i
         retry_after = res_json.get("Retry-After", "").split()
         if retry_after and retry_after[-1].lower() == "seconds" and retry_after[0].isdigit():
             sleep_time = int(retry_after[0])
-            if sleep_time > 15:
-                sleep_time = 15
+            sleep_time = MAX_SLEEP_TIME if sleep_time > MAX_SLEEP_TIME else sleep_time
             return sleep_time
         else:
             return backoff_sleep_time_seconds
@@ -108,9 +108,8 @@ def http_request(method, url_suffix, data=None, headers=None):
     url = BASE_URL + url_suffix
     try:
         start_time = time.time()
-        current_time = start_time
         for _current_try in range(TOTAL_NUMBER_OF_RETRIES):
-            if current_time - start_time > TOTAL_RETRIES_TIME:
+            if time.time() - start_time > TOTAL_RETRIES_TIME:
                 raise RateLimitError('Exceeded maximum retries time for rate limit.')
             res = requests.request(
                 method,
@@ -145,7 +144,6 @@ def http_request(method, url_suffix, data=None, headers=None):
                         raise Exception(
                             f"Your request failed with the following error: {res.status_code}.\nMessage: {res.text}"
                         )
-                current_time = time.time()
             else:
                 return res
     except Exception as e:
