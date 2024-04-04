@@ -353,7 +353,11 @@ class EntryFormat(object):
 class FileAttachmentType(object):
     """
     Enum: contains the file attachment types,
-    Used to add metadata to the description of the attachment whether the file content is expected to be inline or attached as a file
+          Used to add metadata to the description of the attachment
+          whether the file content is expected to be inline or attached as a file
+
+    :return:: The file attachment type
+    :rtype: ``str``
     """
     ATTACHED = "attached_file"
 
