@@ -62,7 +62,7 @@ configuration:
 - section: Collect
   display: Maximum number of incidents per fetch
   name: max_fetch
-  defaultvalue: "100"
+  defaultvalue: "1000"
   type: 0
   required: false
 description: Collect network security events from Check Point Infinity NDR for your secured SaaS periodically

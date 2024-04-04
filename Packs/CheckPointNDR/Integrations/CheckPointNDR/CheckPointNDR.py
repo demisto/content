@@ -56,28 +56,20 @@ class Client(BaseClient):
             raise DemistoException(f"API call failed: {res_json.get('message')}")
         return res_json.get('objects')
 
-    def test_api(self) -> None:
-        last_run = demisto.getLastRun()
-        params = demisto.params()
-        domain = params.get('domain', "")
-        fetch_time = params.get('first_fetch', '3 days').strip()
-        first_fetch = dateparser.parse(fetch_time, settings={'TIMEZONE': 'UTC'})
-        if not first_fetch:
-            raise Exception(f"Invalid first fetch time value '{fetch_time}', must be '<number> <time unit>', e.g., '24 hours'")
-        fetch_incidents(self, last_run, first_fetch, domain)
-
-    def get_insights(self, startTS: int) -> tuple[list[dict[str, Any]], datetime]:
+    def get_insights(self, startTS: int, max_fetch: int) -> tuple[list[dict[str, Any]], datetime]:
         lastTS = startTS
 
         self._login()
         insights = self._call_api('insights', params={'updated': f"gt.{startTS}"})
-        demisto.debug(f"Fetched {len(insights)} NDR Insights")
+        demisto.debug(f"Fetched {len(insights)} NDR Insights, processing {min(len(insights), max_fetch)} of them...")
 
+        insights = sorted(insights, key=lambda x: x['updated'])[:max_fetch]
         for insight in insights:
-            lastTS = max(lastTS, insight['updated'])
             ids = ','.join(map(str, insight['events']))
             insight['events'] = self._call_api('events', params={'id': ids})
             demisto.debug(f"Fetched {len(insight['events'])} events of Insight {insight['id']}")
+        if(len(insights) > 0):
+            lastTS = insights[-1]['updated']
 
         self._logout()
         last_time = datetime.fromtimestamp(lastTS / 1000)
@@ -85,12 +77,13 @@ class Client(BaseClient):
         return insights, last_time
 
 
-def test_module(client: Client):
+def test_module(client: Client, last_run: dict[str, str], first_fetch: datetime, domain: str):
     try:
-        client.test_api()
+        fetch_incidents(client, last_run, first_fetch, domain, 1)
         return 'ok'
     except DemistoException as e:
         return e.message
+
 
 def parse_insights(insights: list[dict[str, Any]], domain: str, startTS: int):
     incidents: list[dict[str, Any]] = []
@@ -131,14 +124,15 @@ def parse_insights(insights: list[dict[str, Any]], domain: str, startTS: int):
     demisto.debug(f"Made {len(incidents)} XSOAR incidents")
     return incidents
 
-def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch: datetime, domain: str):
+
+def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch: datetime, domain: str, max_fetch: int):
     last_fetch = last_run.get('last_fetch', first_fetch.isoformat())
     last_fetch_time = dateparser.parse(last_fetch)
     if not last_fetch_time:
         raise Exception(f"Invalid last fetch time value '{last_fetch}'")
 
     startTS = int(last_fetch_time.timestamp() * 1000)
-    insights, last_insight_time = client.get_insights(startTS)
+    insights, last_insight_time = client.get_insights(startTS, max_fetch)
     incidents = parse_insights(insights, domain, startTS)
 
     return {'last_fetch': last_insight_time.isoformat()}, incidents
@@ -153,6 +147,7 @@ def main() -> None:  # pragma: no cover
     domain = params.get('domain', "")
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    max_fetch = int(params.get('max_fetch', 1000))
 
     fetch_time = params.get('first_fetch', '3 days').strip()
     first_fetch = dateparser.parse(fetch_time, settings={'TIMEZONE': 'UTC'})
@@ -164,11 +159,11 @@ def main() -> None:  # pragma: no cover
 
     try:
         client = Client(base_url, client_id, access_key, domain, verify, proxy)
+        last_run = demisto.getLastRun()
         if command == 'test-module':
-            return_results(test_module(client))
+            return_results(test_module(client, last_run, first_fetch, domain))
         elif command == 'fetch-incidents':
-            last_run = demisto.getLastRun()
-            next_run, incidents = fetch_incidents(client, last_run, first_fetch, domain)
+            next_run, incidents = fetch_incidents(client, last_run, first_fetch, domain, max_fetch)
             demisto.incidents(incidents)
             demisto.debug(f"Set last run to {next_run.get('last_fetch')}")
             demisto.setLastRun(next_run)
