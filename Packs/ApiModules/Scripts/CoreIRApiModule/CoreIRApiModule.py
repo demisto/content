@@ -192,7 +192,6 @@ class CoreClient(BaseClient):
             address = full_url if full_url else urljoin(self._base_url, url_suffix)
             headers = headers if headers else self._headers
             data = json.dumps(json_data) if json_data else data
-            demisto.debug(f'address {address} | headers : {headers} | data {data}')
             res = demisto._apiCall(
                         method=method,
                         path=address,
@@ -200,6 +199,7 @@ class CoreClient(BaseClient):
                         headers=self._headers,
                         timeout=timeout
                     )
+            demisto.debug(f'_http_request {res}')
             return json.loads(res.get('data'))
         except requests.exceptions.ConnectTimeout as exception:
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
@@ -541,7 +541,7 @@ class CoreClient(BaseClient):
             timeout=self.timeout
         )
         demisto.debug(f'reply {reply}')
-        return reply
+        return reply.get('reply')
 
     def create_distribution(self, name, platform, package_type, agent_version, description):
         request_data = {}
@@ -3005,12 +3005,12 @@ def get_distribution_versions_command(client, args):
     if versions:
         for operation_system in versions:
             os_versions = versions[operation_system]
-
             readable_output.append(
                 tableToMarkdown(operation_system, os_versions or [], ['versions'])
             )
+
     return (
-        '\n\n'.join(readable_output),
+         '\n\n'.join(readable_output),
         {
             f'{args.get("integration_context_brand", "CoreApiModule")}.DistributionVersions': versions
         },

@@ -224,7 +224,6 @@ def main():  # pragma: no cover
             return_outputs(*get_distribution_status_command(client, args))
 
         elif command == 'core-get-distribution-versions':
-            demisto.debug('ok in main')
             return_outputs(*get_distribution_versions_command(client, args))
 
         elif command == 'core-create-distribution':
