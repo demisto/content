@@ -611,8 +611,9 @@ def test_fetch_incidents(mocker):
     - mock the parse_date_range.
     - mock the Client's send_request.
     Then
-    - run the fetch incidents command using the Client
-    Validate The length of the results.
+    - run the fetch incidents command using the Client.
+    - Validate The length of the results.
+    - Ensure the incident sys IDs are stored in integration context for the first mirroring.
     """
     RESPONSE_FETCH['result'][0]['opened_at'] = (datetime.utcnow() - timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
     RESPONSE_FETCH['result'][1]['opened_at'] = (datetime.utcnow() - timedelta(minutes=8)).strftime('%Y-%m-%d %H:%M:%S')
@@ -627,6 +628,7 @@ def test_fetch_incidents(mocker):
     incidents = fetch_incidents(client)
     assert len(incidents) == 2
     assert incidents[0].get('name') == 'ServiceNow Incident INC0000040'
+    assert ["sys_id1", "sys_id2"] == demisto.getIntegrationContext()["last_fetched_incident_ids"]
 
 
 @freeze_time('2022-05-01 12:52:29')

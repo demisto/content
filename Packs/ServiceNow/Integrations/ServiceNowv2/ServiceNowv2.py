@@ -2390,13 +2390,23 @@ def fetch_incidents(client: Client) -> list:
         occurred = datetime.strptime(ticket.get('occurred'), DATE_FORMAT).isoformat()  # type: ignore[arg-type]
         ticket['occurred'] = f"{occurred}Z"
 
+    store_ids_for_first_mirroring(incidents)
+    demisto.setLastRun(last_run)
+    return incidents
+
+
+def store_ids_for_first_mirroring(incidents: list):
+    """
+    Stores the fetched incident IDs in the integration context to trigger mirroring.
+    We're triggering mirroring for new incidents to mirror existing comments and notes.
+
+    Args:
+        incidents (list): List of fetched incidents.
+    """
     int_context = get_integration_context()
     int_context.setdefault("last_fetched_incident_ids", []).extend([incident["sys_id"] for incident in incidents])
     demisto.debug(f"ServiceNowV2 - Saving the following incident ids in the integration context: {int_context=}")
     set_integration_context(int_context)
-
-    demisto.setLastRun(last_run)
-    return incidents
 
 
 def test_instance(client: Client):
@@ -2594,15 +2604,10 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         required=False
     )
 
-    last_fetched_ids = get_integration_context().get("last_fetched_incident_ids") or []
-    demisto.debug(f"ServiceNowV2 - Last fetched incident ids are: {last_fetched_ids}")
-    if ticket_id_in_last_fetch := ticket_id in last_fetched_ids:
-        last_fetched_ids.remove(ticket_id)
-        set_integration_context({"last_fetched_incident_ids": last_fetched_ids})
-
+    is_new_incident = is_new_incident(ticket_id)
     demisto.debug(f'ticket_last_update of {ticket_id=} is {ticket_last_update}')
     is_fetch = demisto.params().get('isFetch')
-    if is_fetch and last_update > ticket_last_update and not ticket_id_in_last_fetch:
+    if is_fetch and last_update > ticket_last_update and not is_new_incident:
         demisto.debug(f'Nothing new in the ticket {ticket_id=}')
         ticket = {}
 
@@ -2625,7 +2630,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     if client.use_display_value:
         try:
             time_info = {'display_date_format': client.display_date_format, 'timezone_offset': timezone_offset}
-            if not ticket_id_in_last_fetch:
+            if not is_new_incident:
                 time_info.update({'filter': datetime.fromtimestamp(last_update)})
             comments_result = convert_to_notes_result(ticket, time_info)
 
@@ -2637,7 +2642,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         sys_param_offset = args.get('offset', client.sys_param_offset)
 
         sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
-        if not ticket_id_in_last_fetch:  # for latest fetch run incidents do not filter by last_update
+        if not is_new_incident:  # for latest fetch run incidents do not filter by last_update
             sys_param_query += f'^sys_created_on>{datetime.fromtimestamp(last_update)}'
 
         comments_result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
@@ -2678,6 +2683,24 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     demisto.debug(f'ServiceNowV2 - Pull result is {ticket=}, {entries=}')
     return [ticket] + entries
+
+
+def is_new_incident(ticket_id: str) -> bool:
+    """
+    Returns whether the ticket id is a new fetched incident in XSOAR which should mirror existing notes.
+
+    Args:
+        ticket_id (str): The ticket ID.
+
+    Returns:
+        bool: Whether its a new incident in XSOAR.
+    """
+    last_fetched_ids = get_integration_context().get("last_fetched_incident_ids") or []
+    demisto.debug(f"ServiceNowV2 - Last fetched incident ids are: {last_fetched_ids}")
+    if ticket_id_in_last_fetch := ticket_id in last_fetched_ids:
+        last_fetched_ids.remove(ticket_id)
+        set_integration_context({"last_fetched_incident_ids": last_fetched_ids})
+    return ticket_id_in_last_fetch
 
 
 def converts_close_code_or_state_to_close_reason(ticket_state: str, ticket_close_code: str, server_close_custom_state: str,
@@ -2906,14 +2929,28 @@ def get_modified_remote_data_command(
     if result and (modified_records := result.get('result')):
         modified_records_ids = [record.get('sys_id') for record in modified_records if 'sys_id' in record]
 
-    int_context = get_integration_context()
-    modified_records_ids.extend(int_context.get("last_fetched_incident_ids") or [])
-    modified_records_ids = list(set(modified_records_ids))  # remove duplicates
-
+    modified_records_ids = extend_with_new_incidents(modified_records_ids)
     demisto.debug(f'ServiceNowV2 - returning the following incident ids: {modified_records_ids}')
     return GetModifiedRemoteDataResponse(
         modified_records_ids
     )
+
+
+def extend_with_new_incidents(modified_records_ids: list) -> list:
+    """
+    Extend list of modified incidents with new fetched incidents to trigger mirroring.
+    We're triggering mirroring for new incidents to mirror existing comments and notes.
+
+    Args:
+        modified_records_ids (list): List of modified incidents.
+
+    Returns:
+        list: Extended list of incidents to trigger mirroring.
+    """
+    int_context = get_integration_context()
+    modified_records_ids.extend(int_context.get("last_fetched_incident_ids") or [])
+    modified_records_ids = list(set(modified_records_ids))  # remove duplicates
+    return modified_records_ids
 
 
 def add_custom_fields(params):
