@@ -10,12 +10,6 @@ ignore=IF113
 [file:incidentfield-CheckPointHEC_Email_Subject.json]
 ignore=IF113
 
-[file:incidentfield-CheckPointHEC_Reported.json]
-ignore=IF113
-
-[file:incidentfield-CheckPointHEC_Task.json]
-ignore=IF113
-
 [known_words]
 HEC
 CP

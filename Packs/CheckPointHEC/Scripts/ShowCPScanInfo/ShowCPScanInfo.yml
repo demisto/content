@@ -13,7 +13,7 @@ dependson:
   must:
   - CheckPointHEC|||checkpointhec-get-scan-info
 runonce: false
-dockerimage: demisto/python3:3.10.13.80014
+dockerimage: demisto/python3:3.10.14.91134
 runas: DBotWeakRole
 fromversion: 6.9.0
 tests:
