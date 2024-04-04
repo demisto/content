@@ -1,0 +1,11 @@
+{
+    "id": "15",
+    "ver": "2.0",
+    "result": {
+        "url": "/scan/result/job",
+        "status": {
+            "code": 29,
+            "message": "DATA_IN_QUEUE_OR_PROGRESS"
+        }
+    }
+}

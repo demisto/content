@@ -268,7 +268,6 @@ def get_all_events(client: Client, last_run: dict, limit: int = MAX_EVENTS_PAGE_
     for event_type in client.event_types_to_fetch:
         event_type_operation = last_run.get(event_type, {}).get('operation')
 
-        # Wait time should be handled by type and not to all types together.
         events, time_out = handle_data_export_single_event_type(client=client, event_type=event_type,
                                                                 operation=event_type_operation, limit=limit,
                                                                 execution_start_time=execution_start_time)
