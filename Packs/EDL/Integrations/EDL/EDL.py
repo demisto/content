@@ -939,7 +939,6 @@ def get_edl_on_demand() -> tuple[str, int]:
     """
     global EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE
     ctx = get_integration_context()
-    demisto.debug(f"integration ctx is {ctx} and key in ctx {EDL_ON_DEMAND_KEY in ctx}")
 
     if EDL_ON_DEMAND_KEY in ctx:
         ctx.pop(EDL_ON_DEMAND_KEY, None)
@@ -1386,7 +1385,7 @@ def initialize_edl_context(params: dict):
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
     set_integration_context(ctx)
-    demisto.debug(f"Setting context data on demand to true: {ctx}")
+    demisto.debug(f"Setting context data on demand to true.")
 
 
 def check_platform_and_version(params: dict) -> bool:
