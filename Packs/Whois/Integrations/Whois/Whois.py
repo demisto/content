@@ -7254,7 +7254,7 @@ def get_whois_raw(domain, server="", previous=None, never_cut=False, with_server
         demisto.debug(f"Attempt {attempt}/{attempts} to get response for whois '{domain}' from '{target_server}'...")
         response = whois_request_get_response(request_domain, target_server)
         response_size = len(response.encode('utf-8'))
-        demisto.debug(f"Response byte size: {response_size}")
+        demisto.debug(f"Response of attempt {attempt}/{attempts} to get whois {domain=} from {target_server=}, {response_size=}")
 
         if response_size > 0:
             demisto.debug(f"Response received for domain '{domain}' after {attempt} attempt(s)")
