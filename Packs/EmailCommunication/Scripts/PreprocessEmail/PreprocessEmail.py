@@ -216,7 +216,7 @@ def get_attachments_using_instance(email_related_incident, labels, email_to):
                                {'command': 'gmail-get-attachments', 'incidents': email_related_incident,
                                 'arguments': {'user-id': 'me', 'message-id': str(message_id), 'using': instance_name}})
 
-    elif integration_name in ['MicrosoftGraphMail', 'Microsoft Graph Mail Single User']:
+    elif integration_name in ['MicrosoftGraphMail']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'msgraph-mail-get-attachment', 'incidents': email_related_incident,
                                 'arguments': {'user_id': email_to, 'message_id': str(message_id),
@@ -381,6 +381,24 @@ def create_thread_context(email_code, email_cc, email_bcc, email_text, email_fro
         demisto.error(f"Unable to add new email message to Incident {incident_id}. Reason: \n {e}")
 
 
+def in_email_domain_allowlist(email_from):
+    """Checks if the email_from, the sender's, domain is on an allowlist to prevent spam from creating incidents in XSOAR
+    Args:
+        email_from: The email sender address
+    Returns:
+        True or False indicating if the domain is found or not
+    """
+    domain = email_from.split('@')[1]
+    # Expects an XSOAR list called EmailDomainAllowList with newline separated domains to allow emails to create incidents from with mail integration(s)
+    allowList = demisto.executeCommand("getList", {"listName": "EmailDomainAllowList"})[0]['Contents'].split('\r\n')
+    found = False
+    for item in allowList:
+        if domain in item:
+            found = True
+            return found
+    return found
+
+
 def main():
     args = demisto.args()
     incident = demisto.incident()
@@ -400,6 +418,9 @@ def main():
     reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
 
     try:
+        allow = in_email_domain_allowlist(email_from)
+        if not allow:
+            return_results(False)
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]
         email_original_subject = email_subject.split('<')[-1].split('>')[1].strip()
 
