@@ -1,0 +1,14 @@
+{
+    "success": {
+        "args": {
+            "schedule_id": 1
+        },
+        "command": "safebreach-delete-scheduled-scenarios"
+    },
+    "fail": {
+        "args": {
+            "schedule_id": 111
+        },
+        "command": "safebreach-delete-scheduled-scenarios"
+    }
+}

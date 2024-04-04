@@ -1,0 +1,91 @@
+{
+    "outputs": {
+        "success_with_details": {
+            "data": [
+                {
+                    "id": 74,
+                    "name": "(#1263) Dummy Info",
+                    "accountId": 1234567890,
+                    "description": "",
+                    "successCriteria": null,
+                    "originalScenarioId": null,
+                    "actions": [
+                        {
+                            "id": 1,
+                            "type": "multiAttack",
+                            "data": {
+                                "uuid": "0000000-0000-0000-0000-00000000"
+                            }
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "from": 0,
+                            "to": 1
+                        }
+                    ],
+                    "createdAt": "2023-04-06T10:04:11.075Z",
+                    "updatedAt": "2023-04-06T10:04:11.075Z",
+                    "steps": [
+                        {
+                            "id": 109,
+                            "uuid": "0000000-0000-0000-0000-00000000",
+                            "attacksFilter": {
+                                "playbook": {
+                                    "operator": "is",
+                                    "values": [
+                                        1263
+                                    ],
+                                    "name": "playbook"
+                                }
+                            },
+                            "attackerFilter": {
+                                "simulators": {
+                                    "operator": "is",
+                                    "values": [
+                                        "0000000-0000-0000-0000-00000000"
+                                    ],
+                                    "name": "simulators"
+                                }
+                            },
+                            "targetFilter": {
+                                "simulators": {
+                                    "operator": "is",
+                                    "values": [
+                                        "1343424a-9b15-4e74-a420-dfa217fffeb4"
+                                    ],
+                                    "name": "simulators"
+                                }
+                            },
+                            "systemFilter": {
+                                "bypassProxy": {
+                                    "operator": "is",
+                                    "values": [
+                                        true
+                                    ],
+                                    "name": "bypassproxy"
+                                },
+                                "proxies": {
+                                    "operator": "is",
+                                    "values": [],
+                                    "name": "proxies"
+                                }
+                            },
+                            "name": "Step 1",
+                            "wait": 0
+                        }
+                    ]
+                }
+            ]
+        },
+        "success_without_details": {
+            "data": [
+                {
+                    "id": 123,
+                    "name": "Dummy - Baseline"
+                }
+            ]
+        },
+        "fail": {}
+    }
+}

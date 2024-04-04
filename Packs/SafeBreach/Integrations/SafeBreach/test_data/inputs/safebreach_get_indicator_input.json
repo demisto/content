@@ -1,0 +1,17 @@
+{
+    "success": {
+        "args": {
+            "test_id": "1111111111111.1",
+            "insightCategory": "Network Access,Network Inspection,Endpoint,Email,Web,Data Leak",
+            "insightDataType": "Hash,Domain,URI,Command,Port,Protocol,Registry",
+            "behavioralReputation": "Suspicious",
+            "nonBehavioralReputation": "Bad",
+            "limit": "1000"
+        },
+        "command": "safebreach-get-indicators"
+    },
+    "fail": {
+        "args": {},
+        "command": "safebreach-get-indicators"
+    }
+}

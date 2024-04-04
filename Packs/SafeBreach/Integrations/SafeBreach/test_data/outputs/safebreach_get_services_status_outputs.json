@@ -1,0 +1,588 @@
+{
+    "outputs": {
+        "fail": [
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": false,
+                "lastCheck": "2023-09-15T07:45:15.174Z",
+                "name": "Pythonect Provider",
+                "path": "/api/pythonect_provider/v1/",
+                "port": "2913",
+                "version": "1.115.1"
+            },
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.176Z",
+                "name": "SIEM PCI",
+                "path": "/api/siem/v1/",
+                "port": "10020",
+                "version": "1.167.4"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.198Z",
+                "name": "Update Manager",
+                "path": "/api/updater/v1/",
+                "port": "7812",
+                "version": "0.247.1"
+            },
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.178Z",
+                "name": "SIEM API",
+                "path": "/api/siem/v1/",
+                "port": "10010",
+                "version": "1.167.4"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.202Z",
+                "name": "Audit",
+                "path": "/api/audit/v1/",
+                "port": "8173",
+                "version": "1.292.0"
+            },
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.180Z",
+                "name": "Simulation Provider",
+                "path": "/api/simulation_provider/v1/",
+                "port": "2912",
+                "version": "1.115.1"
+            },
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.224Z",
+                "name": "Playbook Interface",
+                "path": "/api/aggregator/v1/",
+                "port": "6800",
+                "version": "0.425.1"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.203Z",
+                "name": "Data Processing",
+                "path": "/api/snapshot-builder/v1/",
+                "port": "3122",
+                "version": "2.543.1"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.203Z",
+                "name": "Orchestrator",
+                "path": "/api/orch/v1/",
+                "port": "9900",
+                "version": "2.494.1"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.204Z",
+                "name": "Authentication",
+                "path": "/api/authentication/v2/",
+                "port": "7080",
+                "version": "1.156.0"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.204Z",
+                "name": "SafeBreach CLI",
+                "path": "/dummy/path/v2/",
+                "port": "1307",
+                "version": "1.183.0"
+            },
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.609Z",
+                "name": "Content Manager",
+                "path": "/api/content-manager/v1/",
+                "port": "5100",
+                "version": "0.151.1"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.205Z",
+                "name": "Mail",
+                "path": "/api/mailer/v1/",
+                "port": "3560",
+                "version": "0.113.1"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.212Z",
+                "name": "System Configuration",
+                "path": "/api/config/v1/",
+                "port": "5000",
+                "version": "2.565.2"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.213Z",
+                "name": "Data Event Dispatcher",
+                "path": "/api/events-dispatcher/v1/",
+                "port": "3124",
+                "version": "2.543.1"
+            },
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.182Z",
+                "name": "PCAP Service",
+                "path": "/api/files/v1/",
+                "port": "8888",
+                "version": "1.142.1"
+            },
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.183Z",
+                "name": "Task Execution Manager",
+                "path": "/v2/",
+                "port": "8153",
+                "version": "2.446.2"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.213Z",
+                "name": "Data API",
+                "path": "/api/data/v1/",
+                "port": "3123",
+                "version": "2.543.2"
+            },
+            {
+                "displayName": "System Event Bus",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.888Z",
+                "name": "System Event Bus",
+                "path": "/",
+                "port": "0",
+                "version": "7.0.5"
+            },
+            {
+                "displayName": "Task Queue Manager",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.918Z",
+                "name": "Task Queue Manager",
+                "path": "/",
+                "port": "0",
+                "version": "3.9.29"
+            },
+            {
+                "displayName": "System Database",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.898Z",
+                "name": "System Database",
+                "path": "/",
+                "port": "0",
+                "version": "15.1"
+            },
+            {
+                "displayName": "Kibana",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2022-12-18T10:20:22.679Z",
+                "name": "Kibana",
+                "path": "/",
+                "port": "0",
+                "version": "7.16.3"
+            },
+            {
+                "displayName": "SafeBreach DSL Parser",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.884Z",
+                "name": "SafeBreach DSL Parser",
+                "path": "/",
+                "port": "0",
+                "version": "1.1.2"
+            },
+            {
+                "displayName": "Web Server",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.890Z",
+                "name": "Web Server",
+                "path": "/",
+                "port": "0",
+                "version": "1.21.4"
+            },
+            {
+                "displayName": "SafeBreach Cloud Services",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.900Z",
+                "name": "SafeBreach Cloud Services",
+                "path": "/",
+                "port": "0",
+                "version": "1.0.0"
+            },
+            {
+                "displayName": "Search Engine",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.901Z",
+                "name": "Search Engine",
+                "path": "/",
+                "port": "0",
+                "version": "7.16.3"
+            },
+            {
+                "displayName": "Secrets Manager",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.895Z",
+                "name": "Secrets Manager",
+                "path": "/",
+                "port": "0",
+                "version": "0.10.0"
+            },
+            {
+                "displayName": "Open Policy Agent",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.894Z",
+                "name": "Open Policy Agent",
+                "path": "/",
+                "port": "0",
+                "version": "0.45.0"
+            }
+        ],
+        "success": [
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.174Z",
+                "name": "Pythonect Provider",
+                "path": "/api/pythonect_provider/v1/",
+                "port": "2913",
+                "version": "1.115.1"
+            },
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.176Z",
+                "name": "SIEM PCI",
+                "path": "/api/siem/v1/",
+                "port": "10020",
+                "version": "1.167.4"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.198Z",
+                "name": "Update Manager",
+                "path": "/api/updater/v1/",
+                "port": "7812",
+                "version": "0.247.1"
+            },
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.178Z",
+                "name": "SIEM API",
+                "path": "/api/siem/v1/",
+                "port": "10010",
+                "version": "1.167.4"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.202Z",
+                "name": "Audit",
+                "path": "/api/audit/v1/",
+                "port": "8173",
+                "version": "1.292.0"
+            },
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.180Z",
+                "name": "Simulation Provider",
+                "path": "/api/simulation_provider/v1/",
+                "port": "2912",
+                "version": "1.115.1"
+            },
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.224Z",
+                "name": "Playbook Interface",
+                "path": "/api/aggregator/v1/",
+                "port": "6800",
+                "version": "0.425.1"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.203Z",
+                "name": "Data Processing",
+                "path": "/api/snapshot-builder/v1/",
+                "port": "3122",
+                "version": "2.543.1"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.203Z",
+                "name": "Orchestrator",
+                "path": "/api/orch/v1/",
+                "port": "9900",
+                "version": "2.494.1"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.204Z",
+                "name": "Authentication",
+                "path": "/api/authentication/v2/",
+                "port": "7080",
+                "version": "1.156.0"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.204Z",
+                "name": "SafeBreach CLI",
+                "path": "/dummy/path/v2/",
+                "port": "1307",
+                "version": "1.183.0"
+            },
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.609Z",
+                "name": "Content Manager",
+                "path": "/api/content-manager/v1/",
+                "port": "5100",
+                "version": "0.151.1"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.205Z",
+                "name": "Mail",
+                "path": "/api/mailer/v1/",
+                "port": "3560",
+                "version": "0.113.1"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.212Z",
+                "name": "System Configuration",
+                "path": "/api/config/v1/",
+                "port": "5000",
+                "version": "2.565.2"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.213Z",
+                "name": "Data Event Dispatcher",
+                "path": "/api/events-dispatcher/v1/",
+                "port": "3124",
+                "version": "2.543.1"
+            },
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.182Z",
+                "name": "PCAP Service",
+                "path": "/api/files/v1/",
+                "port": "8888",
+                "version": "1.142.1"
+            },
+            {
+                "error": "",
+                "hostname": "127.0.0.1",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.183Z",
+                "name": "Task Execution Manager",
+                "path": "/v2/",
+                "port": "8153",
+                "version": "2.446.2"
+            },
+            {
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:15.213Z",
+                "name": "Data API",
+                "path": "/api/data/v1/",
+                "port": "3123",
+                "version": "2.543.2"
+            },
+            {
+                "displayName": "System Event Bus",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.888Z",
+                "name": "System Event Bus",
+                "path": "/",
+                "port": "0",
+                "version": "7.0.5"
+            },
+            {
+                "displayName": "Task Queue Manager",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.918Z",
+                "name": "Task Queue Manager",
+                "path": "/",
+                "port": "0",
+                "version": "3.9.29"
+            },
+            {
+                "displayName": "System Database",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.898Z",
+                "name": "System Database",
+                "path": "/",
+                "port": "0",
+                "version": "15.1"
+            },
+            {
+                "displayName": "Kibana",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2022-12-18T10:20:22.679Z",
+                "name": "Kibana",
+                "path": "/",
+                "port": "0",
+                "version": "7.16.3"
+            },
+            {
+                "displayName": "SafeBreach DSL Parser",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.884Z",
+                "name": "SafeBreach DSL Parser",
+                "path": "/",
+                "port": "0",
+                "version": "1.1.2"
+            },
+            {
+                "displayName": "Web Server",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.890Z",
+                "name": "Web Server",
+                "path": "/",
+                "port": "0",
+                "version": "1.21.4"
+            },
+            {
+                "displayName": "SafeBreach Cloud Services",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.900Z",
+                "name": "SafeBreach Cloud Services",
+                "path": "/",
+                "port": "0",
+                "version": "1.0.0"
+            },
+            {
+                "displayName": "Search Engine",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.901Z",
+                "name": "Search Engine",
+                "path": "/",
+                "port": "0",
+                "version": "7.16.3"
+            },
+            {
+                "displayName": "Secrets Manager",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.895Z",
+                "name": "Secrets Manager",
+                "path": "/",
+                "port": "0",
+                "version": "0.10.0"
+            },
+            {
+                "displayName": "Open Policy Agent",
+                "error": "",
+                "hostname": "localhost",
+                "isUp": true,
+                "lastCheck": "2023-09-15T07:45:30.894Z",
+                "name": "Open Policy Agent",
+                "path": "/",
+                "port": "0",
+                "version": "0.45.0"
+            }
+        ]
+    }
+}

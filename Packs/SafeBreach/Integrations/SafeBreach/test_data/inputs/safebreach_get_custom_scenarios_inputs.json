@@ -1,0 +1,20 @@
+{
+    "success_with_details": {
+        "args": {
+            "schedule_details": "true"
+        },
+        "command": "safebreach-get-custom-scenarios"
+    },
+    "success_without_details": {
+        "args": {
+            "schedule_details": "false"
+        },
+        "command": "safebreach-get-custom-scenarios"
+    },
+    "fail": {
+        "args": {
+            "schedule_details": "false"
+        },
+        "command": "safebreach-get-custom-scenarios"
+    }
+}
