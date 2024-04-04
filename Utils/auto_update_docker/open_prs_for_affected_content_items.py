@@ -26,7 +26,8 @@ def create_remote_pr(
     target_tag: str,
     head_branch: str,
     remote_content_repo: Repository.Repository,
-    pr_tags: list[str],
+    updated_content_items: list[str],
+    pr_labels: list[str] = [],
     pr_assignees: list[str] = [],
     pr_reviewers: list[str] = [],
     base_branch: str = "master",
@@ -40,13 +41,14 @@ def create_remote_pr(
         target_tag (str): The docker's target tag.
         head_branch (str): The head branch, that has the committed changes.
         remote_content_repo (Repository.Repository): Remote repository.
-        pr_tags (list[str]): PR tags.
+        pr_labels (list[str]): PR tags.
         pr_assignees (list[str], optional): PR assignee/s. Defaults to [].
         pr_reviewers (list[str], optional): PR reviewer/s. Defaults to [].
         base_branch (str, optional): The base branch. Defaults to "master".
     """
-    body = "Auto update docker PR"
-    title = f"Auto update docker for {docker_image}:{target_tag}. Batch #{current_batch}/{number_of_batches}"
+    joined_content_items = "\n".join(updated_content_items)
+    body = f"Auto updated docker tags for the following content items:\n{joined_content_items}"
+    title = f"Auto update docker for {docker_image}:{target_tag}. PR batch #{current_batch}/{number_of_batches}"
     pr = remote_content_repo.create_pull(
         title=title,
         body=body,
@@ -61,15 +63,15 @@ def create_remote_pr(
     pr.add_to_assignees(*pr_assignees)
     logging.info(f'Assigned to {",".join(sorted(pr_assignees))}')
 
-    pr.set_labels(*pr_tags)
-    logging.info(f'Set labels to {",".join(sorted(pr_tags))}')
+    pr.set_labels(*pr_labels)
+    logging.info(f'Set labels to {",".join(sorted(pr_labels))}')
 
 
 def update_content_items_docker_images_and_push(
     docker_image: str,
     content_items: list[str],
     target_tag: str,
-    pr_tags: list[str],
+    pr_labels: list[str],
     current_batch: int,
     number_of_batches: int,
     staging_branch: str,
@@ -83,7 +85,7 @@ def update_content_items_docker_images_and_push(
         docker_image (str): The docker image.
         content_items (list[str]): Content items to update their docker images.
         target_tag (str): Target tag of docker image.
-        pr_tags (list[str]): PR tags.
+        pr_labels (list[str]): PR tags.
         current_batch (int): PR batch number, with respect to docker image.
         number_of_batches (int): Overall number of batches.
         staging_branch (str): The staging branch, which is treated as the base branch of the PR.
@@ -92,7 +94,7 @@ def update_content_items_docker_images_and_push(
         origin (Remote): Remote object. Used to open PRs on the remote repository.
     """
     logging.info(f"Updating the following content items: {','.join(content_items)}")
-    current_batch_branch_name = f"AUD-{docker_image}-{target_tag}-batch-{current_batch}"
+    current_batch_branch_name = f"AUD-{docker_image}-{target_tag}-pr-batch-{current_batch}"
     # Create branch off of master
     git.checkout("-b", current_batch_branch_name, "master")
     yml_content: dict[str, Any] = {}
@@ -106,8 +108,8 @@ def update_content_items_docker_images_and_push(
             # For scripts
             yml_content["dockerimage"] = new_docker_image
         elif "dockerimage" in yml_content.get("script", {}):
-            yml_content["script"]["dockerimage"] = new_docker_image
             # For integrations
+            yml_content["script"]["dockerimage"] = new_docker_image
         else:
             logging.error(f"Could not locate docker image field in YAML, skipping {content_item}")
             continue
@@ -119,12 +121,12 @@ def update_content_items_docker_images_and_push(
     git.add(updated_content_items)
     git.commit(
         "-m",
-        f"Updated docker image to {docker_image}:{target_tag}. Batch #{current_batch}/{number_of_batches}",
+        f"Updated docker image to {docker_image}:{target_tag}. PR batch #{current_batch}/{number_of_batches}",
     )
 
-    create_remote_branch_result = origin.push(f"+refs/heads/{current_batch_branch_name}:refs/heads/{current_batch_branch_name}")
+    push_changes_to_remote_pr = origin.push(f"+refs/heads/{current_batch_branch_name}:refs/heads/{current_batch_branch_name}")
     logging.info(f"Created remote branch {current_batch_branch_name}")
-    create_remote_branch_result.raise_if_error()
+    push_changes_to_remote_pr.raise_if_error()
     create_remote_pr(
         remote_content_repo=remote_content_repo,
         docker_image=docker_image,
@@ -133,7 +135,8 @@ def update_content_items_docker_images_and_push(
         target_tag=target_tag,
         head_branch=current_batch_branch_name,
         base_branch=staging_branch,
-        pr_tags=pr_tags,
+        pr_labels=pr_labels,
+        updated_content_items=updated_content_items
     )
 
 
@@ -172,31 +175,33 @@ def open_prs_for_content_items(
     # Pull from master
     origin.pull()
     source_branch = remote_content_repo.get_branch(master_branch_name)
-    # Check if the staging branch exists, if not, create one
-    try:
-        src = remote_content_repo.get_git_ref(f"heads/{staging_branch}")
-        # If reached here, that means there is a remote branch with the same name as the staging branch.
+    if staging_branch != master_branch_name:
+        # If staging branch is the master/main branch, then no need to create or update it
+        try:
+            # Check if the staging branch exists, if not, create one
+            src = remote_content_repo.get_git_ref(f"heads/{staging_branch}")
+            # If reached here, that means there is a remote branch with the same name as the staging branch.
 
-        # Make staging branch up to date with master
-        src.edit(sha=source_branch.commit.sha)
-    except GithubException as github_exception:
-        if "Branch not found" in str(github_exception):
-            # We need to create remote branch that corresponds to the staging branch
-            remote_content_repo.create_git_ref(ref="refs/heads/" + staging_branch, sha=source_branch.commit.sha)
-        else:
-            raise github_exception
+            # Make staging branch up to date with master
+            src.edit(sha=source_branch.commit.sha)
+        except GithubException as github_exception:
+            if "Branch not found" in str(github_exception):
+                # We need to create remote branch that corresponds to the staging branch
+                remote_content_repo.create_git_ref(ref="refs/heads/" + staging_branch, sha=source_branch.commit.sha)
+            else:
+                raise github_exception
 
     try:
         for docker_image in affected_content_items:
             image_config = affected_content_items[docker_image]
             if content_items := image_config["content_items"]:
                 number_of_batches = math.ceil(len(content_items) / prs_limit_int)
-                # We divide the content items to batches
-                batch_start = 0
-                batch_end = batch_start + prs_limit_int
+                # We divide the content items to PR batches
+                pr_batch_start = 0
+                pr_batch_end = pr_batch_start + prs_limit_int
                 for current_batch in range(1, number_of_batches + 1):
                     logging.info(f"{current_batch=}")
-                    content_items_for_batch = content_items[batch_start:batch_end]
+                    content_items_for_batch = content_items[pr_batch_start:pr_batch_end]
                     update_content_items_docker_images_and_push(
                         current_batch=current_batch,
                         number_of_batches=number_of_batches,
@@ -206,11 +211,11 @@ def open_prs_for_content_items(
                         remote_content_repo=remote_content_repo,
                         origin=origin,
                         content_items=content_items_for_batch,
-                        pr_tags=image_config["pr_tags"],
+                        pr_labels=image_config["pr_labels"],
                         target_tag=image_config["target_tag"],
                     )
-                    batch_start = batch_end
-                    batch_end = batch_start + prs_limit_int
+                    pr_batch_start = pr_batch_end
+                    pr_batch_end = pr_batch_start + prs_limit_int
 
     except Exception as e:
         logging.error(f"Got error when opening PRs {e}")

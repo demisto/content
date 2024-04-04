@@ -1,3 +1,5 @@
+import math
+import time
 import logging
 from collections import defaultdict
 from pathlib import Path
@@ -23,14 +25,14 @@ def load_json(path: str) -> dict[str, Any]:
         return json.loads(f.read())
 
 
-def calculate_affected_content_items(
+def filter_content_items_to_run_on(
     batch_config: dict[str, Any],
     content_items_coverage: dict[str, int],
     content_items_by_docker_image: list[dict[str, Any]],
     target_docker_tag: str,
     nightly_packs: list[str],
 ) -> dict[str, Any]:
-    """Calculate the affected content items with respect to the batch config.
+    """Collect the content items with respect to the batch config.
 
     Args:
         batch_config (dict[str, Any]): The batch config. (Default or custom)
@@ -49,7 +51,7 @@ def calculate_affected_content_items(
     min_cov: int = batch_config["min"]
     max_cov: int = batch_config["max"]
     # If the key is not found, then support_levels will equal {""}
-    support_levels = set(batch_config.get("support", "").split(","))
+    support_levels = batch_config.get("support", [])
     for content_item in content_items_by_docker_image:
         content_item_path = Path(content_item["content_item"])
         content_item_support = content_item["support_level"]
@@ -59,11 +61,13 @@ def calculate_affected_content_items(
             logging.info(f"Pack path {content_pack_path} for {content_item} is not in nightly, skipping.")
             continue
         if content_item_cov := content_items_coverage.get(str(content_item_path)):
-            if support_levels != {""} and content_item_support not in support_levels:
+            content_item_cov_floor = math.floor(content_item_cov)
+            if support_levels and content_item_support not in support_levels:
                 # If support levels is not empty, and the content item's support level is not in the allowed support levels,
                 # then we skip it.
                 logging.info(f"Is not of {support_levels=}, skipping")
-            elif content_item_cov >= min_cov and content_item_cov <= max_cov:
+            elif content_item_cov_floor >= min_cov and content_item_cov_floor <= max_cov:
+                # We check the coverage of the content item
                 # Since the content item that we get will be a python file, and we want to
                 # return a YML
                 affected_content_items.append(str(content_item_path.with_suffix('.yml')))
@@ -74,13 +78,13 @@ def calculate_affected_content_items(
 
     return {
         "content_items": affected_content_items,
-        "pr_tags": batch_config.get("pr_tags", []),
+        "pr_labels": batch_config.get("pr_labels", []),
         "target_tag": target_docker_tag,
-    }
+    } if affected_content_items else {}
 
 def get_docker_image_tag(docker_image: str, images_tag: dict[str, str]) -> str:
     """Return the docker image tag from the 'images_tag' file supplied to the program, if not found,
-    will query DockerHub to retrieve the latest tag for the docker image.
+    will query DockerHub to retrieve the latest tag of the docker image.
 
     Args:
         docker_image (str): The docker image to query on.
@@ -96,8 +100,30 @@ def get_docker_image_tag(docker_image: str, images_tag: dict[str, str]) -> str:
     latest_tag = DockerImage(docker_image).latest_tag
     return latest_tag.base_version
 
+def get_docker_batch_config(docker_image: str, custom_images: list[str], default_batches: list[dict[str, Any]],
+                      image_custom_configs: dict[str, Any], current_batch_index: int) -> dict[str, Any]:
+    """_summary_
+
+    Args:
+        docker_image (str): The docker image to retrieve its relevant batch config.
+        custom_images (list[str]): Dockers that have custom configs.
+        default_batches (list[dict[str, Any]]): The default batches' configs.
+        image_custom_configs (dict[str, Any]): Custom batches' configs for specific dockers.
+        current_batch_index (int): The default batches' configs.
+
+    Returns:
+        dict[str, Any]: The relevant batch config for the docker image
+    """
+    batches_configs_to_use = default_batches  # Holds the default list of the batches' configurations
+    if docker_image in custom_images:
+        # Get custom configs for docker image
+        batches_configs_to_use: list[dict[str, Any]] = image_custom_configs[docker_image]["batches"]
+
+    return batches_configs_to_use[current_batch_index] if current_batch_index < len(batches_configs_to_use) else {}
+    
+
 def get_affected_content_items_by_docker_image(
-    default_batch_config: dict[str, Any],
+    default_batches: list[dict[str, Any]],
     current_batch_index: int,  # Since custom configs for images might be configured
     image_custom_configs: dict[str, Any],
     content_items_coverage: dict[str, int],
@@ -110,8 +136,9 @@ def get_affected_content_items_by_docker_image(
     batch.
 
     Args:
-        default_batch_config (dict[str, Any]): The default batch config.
+        default_batches (list[dict[str, Any]]): The default batches' configs.
         current_batch_index (int): Batch index.
+        image_custom_configs (dict[str, Any]): Custom batches' configs for specific dockers.
         content_items_coverage (dict[str, int]): Coverage of content items.
         affected_docker_images (list[str]): Affected docker images.
         content_items_by_docker_image (dict[str, list[dict[str, Any]]]): A dictionary that holds docker images as keys,
@@ -126,40 +153,29 @@ def get_affected_content_items_by_docker_image(
     affected_content_items_by_docker_image: dict[str, Any] = {}
     custom_images: list[str] = list(image_custom_configs.keys())
     for docker_image in affected_docker_images:
-        affected_content_items_by_docker_image[docker_image] = {}
         affected_content_items: dict[str, Any] = {}
         docker_image_tag = get_docker_image_tag(docker_image=docker_image,
                                                 images_tag=images_tag)
-        if docker_image in custom_images:
-            image_custom_batches: list[dict[str, Any]] = image_custom_configs[
-                docker_image
-            ]["batches"]
-            if current_batch_index < len(image_custom_batches):
-                custom_batch_config: dict[str, Any] = image_custom_batches[
-                    current_batch_index
-                ]
-                affected_content_items = calculate_affected_content_items(
-                    batch_config=custom_batch_config,
-                    content_items_coverage=content_items_coverage,
-                    content_items_by_docker_image=content_items_by_docker_image[docker_image],
-                    target_docker_tag=docker_image_tag,
-                    nightly_packs=nightly_packs,
-                )
-            else:
-                logging.info(f"{current_batch_index=} is larger than the batches number of custom image {docker_image}")
-
-        elif default_batch_config:
-            affected_content_items = calculate_affected_content_items(
-                batch_config=default_batch_config,
+        docker_batch_config = get_docker_batch_config(
+            docker_image=docker_image,
+            custom_images=custom_images,
+            default_batches=default_batches,
+            image_custom_configs=image_custom_configs,
+            current_batch_index=current_batch_index)
+        if docker_batch_config:
+            affected_content_items = filter_content_items_to_run_on(
+                batch_config=docker_batch_config,
                 content_items_coverage=content_items_coverage,
                 content_items_by_docker_image=content_items_by_docker_image[docker_image],
                 target_docker_tag=docker_image_tag,
                 nightly_packs=nightly_packs,
-            )
+                )
         else:
-            # Should we throw an error?
-            logging.error("No default or custom configs were given")
-        affected_content_items_by_docker_image[docker_image] = affected_content_items
+            logging.info(f"No batch config was found for {docker_image = }, and {current_batch_index = }")
+        if affected_content_items:
+            affected_content_items_by_docker_image[docker_image] = affected_content_items
+        else:
+            logging.info(f"{docker_image = } does not have any content items to update")
     return affected_content_items_by_docker_image
 
 
@@ -274,25 +290,34 @@ def get_affected_content_items(
         default="Utils/auto_update_docker/coverage_report.json",
         help="The coverage report from last nightly",
     ),
-    docker_images_latest_tag_path: str = typer.Argument(
+    docker_images_target_tags_path: str = typer.Argument(
         default="",
         help=("The file that contains the docker images tag, if given an empty string,"
               " will retrieve them latest tags from DockerHub"),
     ),
+    dir: str = typer.Argument(
+        default="",
+        help=("The directory that will hold the output files. The default will be the current working directory"),
+    ),
 ):
     # IMPORTANT - "demisto-sdk create-content-graph" must be ran before
     # Entry point of code
-    # TODO Will need to delete later, and add default value for the argument docker_images_latest_tag_path
-    docker_images_latest_tag_path = f"{CWD}/Utils/auto_update_docker/images_tag.json"
+    # TODO Will need to delete later, and add default value for the argument docker_images_target_tags_path
+    docker_images_target_tags_path = f"{CWD}/Utils/auto_update_docker/images_tag.json"
+
+    # TODO Will need to delete later
+    dir = f"{CWD}/Utils/auto_update_docker"
+
+    path_dir = Path(dir) if dir else Path(CWD)
 
     tests_conf = load_json('Tests/conf.json')
-    # Get nightly packs from tests condf
+    # Get nightly packs from tests conf
     nightly_packs: list[str] = tests_conf.get('nightly_packs', [])
 
     
     images_tag: dict[str, str] = {}
-    if docker_images_latest_tag_path:
-        images_tag = load_json(docker_images_latest_tag_path)
+    if docker_images_target_tags_path:
+        images_tag = load_json(docker_images_target_tags_path)
 
     coverage_report_dict: dict[str, Any] = load_json(coverage_report)
     # The content items and their coverage are found under the key "files"
@@ -310,11 +335,9 @@ def get_affected_content_items(
         images_to_exclude=images_to_exclude,
         all_docker_images=list(content_items_by_docker_image.keys()),
     )
-    default_batches = image_configs["default"]["batches"]
+    default_batches: list[dict[str, Any]] = image_configs["default"]["batches"]
     affected_content_items_by_docker_image = get_affected_content_items_by_docker_image(
-        default_batch_config=default_batches[batch_index]
-        if batch_index < len(default_batches)
-        else {},
+        default_batches=default_batches,
         current_batch_index=batch_index,
         image_custom_configs=image_custom_configs,
         content_items_coverage=content_items_coverage,
@@ -326,12 +349,15 @@ def get_affected_content_items(
 
     docker_images_target_tag = {docker_image: affected_items["target_tag"] for docker_image, affected_items in
                                 affected_content_items_by_docker_image.items()}
+    
+    current_time_str = time.strftime("%Y-%m-%d-%H:%M:%S")
+
     # Output the docker images tags that were gathered in the batch
-    with open(f"{CWD}/Utils/auto_update_docker/images_tag_output.json", "w") as images_tag_output:
+    with open(f"{path_dir}/images_tag_output_{current_time_str}.json", "w") as images_tag_output:
         json.dump(docker_images_target_tag, images_tag_output)
 
     # Output the affected content items
-    with open(f"{CWD}/content/Utils/auto_update_docker/affected_content_items.json", "w") as affected_content_items:
+    with open(f"{path_dir}/affected_content_items_{current_time_str}.json", "w") as affected_content_items:
         json.dump(affected_content_items_by_docker_image, affected_content_items)
 
 def main():
