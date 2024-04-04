@@ -50,7 +50,7 @@ script:
     description: Gets information about a file in the repository, such as name, size, content.
     arguments:
     - name: file_path
-      description: Encoded file path (e.g. app/models -> app%2Fmodels).
+      description: The file path.
     - name: ref
       description: The name of the branch, tag or commit.
     outputs:
@@ -2657,7 +2657,7 @@ script:
   - name: gitlab-raw-file-get
     description: Get the file in a raw format.
     arguments:
-    - description: Encoded file path (e.g. app/models -> app%2Fmodels).
+    - description: The file path.
       name: file_path
       required: true
     - description: The branch to retrieve the file from. Default is master.

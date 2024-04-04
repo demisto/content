@@ -118,7 +118,7 @@ Allows to receive information about file in repository like name, size, content.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_path | Encoded file path (e.g. app/models -&gt; app%2Fmodels). | Optional | 
+| file_path | The file path. | Optional | 
 | ref | The name of branch, tag or commit. | Optional | 
 
 
@@ -1605,7 +1605,7 @@ Get the file in a raw format.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_path | Encoded file path (e.g. app/models -&gt; app%2Fmodels). | Required | 
+| file_path | The file path. | Required | 
 | ref | The branch to retrieve the file from. Default is master. | Optional | 
 
 #### Context Output
