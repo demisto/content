@@ -1385,7 +1385,7 @@ def initialize_edl_context(params: dict):
     ctx = request_args.to_context_json()
     ctx[EDL_ON_DEMAND_KEY] = True
     set_integration_context(ctx)
-    demisto.debug(f"Setting context data on demand to true.")
+    demisto.debug("Setting context data on demand to true.")
 
 
 def check_platform_and_version(params: dict) -> bool:
