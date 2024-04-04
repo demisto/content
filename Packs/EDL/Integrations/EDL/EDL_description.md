@@ -99,11 +99,14 @@ Make sure you run the ***!export-indicators-list-update*** command for the first
 
 ## Troubleshoot
 
-To view logs concerning addition and modification of the indicator list visit:
-`https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
+To view logs concerning the creation of the indicator list add the `/log` suffix to the list url.
 
-To download the full log bundle (including the rolled log files) you can either:
-1. Visit the URL endpoint:
-   `https://*<xsoar_address>*/instance/execute/*<instance_name>*/download-logs`
-2. Use the following XSOAR command:
-   `!HttpV2 method=GET url=https://*<xsoar_address>*/instance/execute/*<instance_name>*/download-logs save_as_file=yes filename=logs.zip`
+<~XSOAR_SAAS>
+`https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>/log`
+</~XSOAR_SAAS>
+<~XSOAR_ON_PREM>
+`https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
+</~XSOAR_ON_PREM>
+<~XSIAM>
+`https://edl-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>`
+</~XSIAM>
