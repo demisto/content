@@ -1,0 +1,14 @@
+{
+    "success_with_data": {
+        "args": {},
+        "command": "safebreach-get-running-simulations"
+    },
+    "success_without_data": {
+        "args": {},
+        "command": "safebreach-get-running-simulations"
+    },
+    "fail": {
+        "args": {},
+        "command": "safebreach-get-running-simulations"
+    }
+}
