@@ -2,7 +2,7 @@
     "objects": [
         {
             "id": 636750,
-            "domain": "cpx",
+            "domain": "test",
             "type": "Behavioral",
             "criteria": "Behavioral.Geo.Bulgaria",
             "updated": 1703387404367,
@@ -10,7 +10,7 @@
             "data": {
                 "color": 6,
                 "engine": "Geo.Incoming",
-                "description": "An anomaly detected from 91.92.243.71 located in Bulgaria, owned by Owner: Natskovi & Sie Ltd.,  accessed 10.0.30.12"
+                "description": "An anomaly detected from 127.0.0.1"
             },
             "actions": null,
             "handled": false,

@@ -2,11 +2,11 @@
     "objects": [
       {
         "id": 950961,
-        "domain": "cpx",
+        "domain": "test",
         "from": 1703258128000,
         "to": 1703261728000,
-        "filter": "src:\"91.92.243.71\"",
-        "targetDomain": "cpx",
+        "filter": "src:\"127.0.0.1\"",
+        "targetDomain": "test",
         "type": "Behavioral",
         "insight": "Behavioral.Geo.Bulgaria",
         "count": 1,
