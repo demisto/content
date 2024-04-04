@@ -1442,17 +1442,14 @@ def find_folders(client: EWSClient, target_mailbox=None):
     """
     account = client.get_account(target_mailbox)
     root_collection = FolderCollection(account=account, folders=[account.root])
-    root_folder = account.root
 
     if client.is_public_folder:
-        root_folder = account.public_folders_root
         root_collection = FolderCollection(account=account, folders=[account.public_folders_root])
     folders = []
     for f in root_collection.find_folders():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
         folders.append(folder)
-    # folders_tree = root_folder.tree()  # pylint: disable=E1101
-    readable_output = 'folders_tree' #todo find a solution
+    readable_output = tableToMarkdown(t=folders, name='Available folders')
     output = {"EWS.Folders(val.id == obj.id)": folders}
     return readable_output, output, folders
 
