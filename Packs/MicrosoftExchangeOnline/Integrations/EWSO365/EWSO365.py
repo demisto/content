@@ -2505,7 +2505,7 @@ def sub_main():     # pragma: no cover
     params = demisto.params()
     args = prepare_args(demisto.args())
     # client's default_target_mailbox is the authorization source for the instance
-    params['default_target_mailbox'] = 'testbox@demistodev.onmicrosoft.com'
+    params['default_target_mailbox'] = args.get('target_mailbox', args.get('source_mailbox', params['default_target_mailbox']))
     if params.get('upn_mailbox') and not (args.get('target_mailbox')):
         params['default_target_mailbox'] = params.get('upn_mailbox')
     try:
