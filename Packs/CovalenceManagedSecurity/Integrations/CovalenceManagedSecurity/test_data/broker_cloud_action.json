@@ -1,0 +1,8 @@
+{
+    "action_id": "string",
+    "action_type": "disable_user",
+    "action_params": {},
+    "created_time": "string",
+    "status": "QUEUED",
+    "result": "SUCCESS"
+}

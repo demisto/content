@@ -83,7 +83,7 @@ configuration:
   name: use_display_value
   type: 8
   required: false
-- additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration.'
+- additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format (full form) `HH:mm:ss` with support to `a` notation for AM/PM.'
   defaultvalue: None
   display: Instance Date Format
   name: display_date_format
@@ -1624,7 +1624,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api.
       type: string
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.10.14.90585
   isfetch: true
   ismappable: true
   isremotesyncin: true
