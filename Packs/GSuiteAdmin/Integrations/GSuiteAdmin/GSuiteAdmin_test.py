@@ -2,7 +2,7 @@ import json
 from unittest.mock import patch
 
 import pytest
-from CommonServerPython import DemistoException, CommandResults
+from CommonServerPython import DemistoException
 import demistomock as demisto
 from GSuiteAdmin import MESSAGES, GSuiteClient, OUTPUT_PREFIX, HR_MESSAGES, Client
 
@@ -194,7 +194,7 @@ def test_gsuite_mobile_delete_command_success(mocker_http_request, gsuite_client
     mocker_http_request.return_value = {}
 
     from GSuiteAdmin import mobile_delete_command
-    response = mobile_delete_command(gsuite_client, {'resource_id': 'DELETE_RESOURCE','customer_id': '1234'})
+    response = mobile_delete_command(gsuite_client, {'resource_id': 'DELETE_RESOURCE', 'customer_id': '1234'})
     assert response.readable_output == HR_MESSAGES['MOBILE_DELETE_SUCCESS'].format('DELETE_RESOURCE')
 
 
@@ -498,7 +498,7 @@ def test_role_assignment_list(gsuite_client, mocker):
     assert command_result.outputs == expected_entry_context['EntryContext']
     assert command_result.raw_response == expected_entry_context['Contents']
     assert role_assignment_list_command(gsuite_client, {'customer_id': '1234'}).readable_output == \
-           HR_MESSAGES['NO_RECORDS'].format('role assignment details')
+        HR_MESSAGES['NO_RECORDS'].format('role assignment details')
 
 
 def test_role_assignment_create(gsuite_client, mocker):
@@ -792,7 +792,7 @@ def test_custom_user_schema_update_required_args_error(gsuite_client):
         custom_user_schema_update_command(gsuite_client, {'customer_id': '1234'})
 
     with pytest.raises(ValueError, match=MESSAGES['REQUIRED_ARGS_CUSTOM_SCHEMA']):
-        custom_user_schema_update_command(gsuite_client, {'schema_name': 'new_schema','customer_id': '1234'})
+        custom_user_schema_update_command(gsuite_client, {'schema_name': 'new_schema', 'customer_id': '1234'})
 
 
 @patch(MOCKER_HTTP_METHOD)
