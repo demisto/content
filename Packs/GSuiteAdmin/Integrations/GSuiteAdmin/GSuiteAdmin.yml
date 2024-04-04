@@ -19,6 +19,11 @@ configuration:
   additionalinfo: An admin email is required for the Test validation to run. If not configured, then each command can receive an optional admin_email argument.
   hidden: true
   required: false
+- display: Customer ID
+  name: customer_id
+  type: 0
+  additionalinfo: The customer ID is a unique identifier of the customer's Google account.
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -35,7 +40,6 @@ script:
   - arguments:
     - description: The unique ID of the customer's Google Workspace Admin account.
       name: customer_id
-      required: true
     - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
     - description: Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status). Default is FULL.
@@ -214,7 +218,6 @@ script:
   - arguments:
     - description: The unique ID of the customer's Google Workspace Admin account.
       name: customer_id
-      required: true
     - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
     - description: Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, serialNumber, status, and user).
@@ -531,7 +534,6 @@ script:
   - arguments:
     - description: The unique ID of the customer's Google Workspace Admin account.
       name: customer_id
-      required: true
     - description: Email ID of the G Suite domain admin who acts on behalf of an end-user.
       name: admin_email
     - description: The unique ID of the device.
@@ -560,7 +562,6 @@ script:
   - arguments:
     - description: The unique ID of the customer's G Suite account.
       name: customer_id
-      required: true
     - description: The unique ID used to identify the mobile device.
       name: resource_id
       required: true
@@ -596,7 +597,6 @@ script:
   - arguments:
     - description: The unique ID of the customer's G Suite account.
       name: customer_id
-      required: true
     - description: The unique ID used to identify the mobile device.
       name: resource_id
       required: true
@@ -884,7 +884,6 @@ script:
   - arguments:
     - description: Immutable ID of the G Suite account.
       name: customer_id
-      required: true
     - description: Immutable ID of a role. If included, it returns only role assignments containing this role ID.
       name: role_id
     - description: The user's primary email address, alias email address, or unique user ID. If included in the request, returns role assignments only for this user.
@@ -925,7 +924,6 @@ script:
   - arguments:
     - description: Immutable ID of the G Suite account.
       name: customer_id
-      required: true
     - description: The ID of the role to be assigned to the user.
       name: role_id
       required: true
@@ -972,7 +970,6 @@ script:
   - arguments:
     - description: Immutable ID of the G Suite account.
       name: customer_id
-      required: true
     - description: Name of the role.
       name: role_name
       required: true
@@ -1093,7 +1090,6 @@ script:
       name: admin_email
     - description: Immutable ID of the G Suite account.
       name: customer_id
-      required: true
     - description: The schema's name.
       name: schema_name
       required: true
@@ -1204,7 +1200,6 @@ script:
       name: admin_email
     - description: Immutable ID of the G Suite account.
       name: customer_id
-      required: true
     - description: The schema's name.
       name: schema_name
     - description: Immutable ID of the schema.
@@ -2565,7 +2560,6 @@ script:
   - arguments:
       - description: The unique identifier of the customer's Google account.
         name: customer_id
-        required: true
       - description: A comma-separated list of unique device IDs of Chrome browser devices to move. A maximum of 600 browsers may be moved per request. To get resource_id, please use gsuite-chromebrowserdevice-list command.
         name: resource_ids
         isArray: true
@@ -2578,7 +2572,6 @@ script:
   - arguments:
       - description: The unique identifier of the customer's Google account.
         name: customer_id
-        required: true
       - description: The unique ID of the device.
         name: device_id
       - auto: PREDEFINED
@@ -2673,7 +2666,6 @@ script:
   - arguments:
       - description: ID of the Google Workspace account or literal 'my_customer' for the customer associated with the request.
         name: customer_id
-        required: true
       - auto: PREDEFINED
         description: In case of Group use “POST…groups:batchModify”. In case of OrgUnit use “POST…orgunits:batchModify”.
         name: target_type
@@ -2732,7 +2724,6 @@ script:
   - arguments:
       - description: ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.
         name: customer_id
-        required: true
       - description: The policy schema resource name to query. Required when asking for a specific policy.
         name: schema_name
       - description: The schema filter is used to find a particular schema based on fields like its resource name, description and additionalTargetKeyNames.
@@ -2822,7 +2813,6 @@ script:
   - arguments:
       - description: ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.
         name: customer_id
-        required: true
       - description: 'Specify a schema name to view a particular schema, for example: chrome.users.ShowLogoutButton. See https://developers.google.com/chrome/policy/guides/policy-schemas for details on schema namespaces.'
         name: policy_schema_filter
         required: true
@@ -2872,7 +2862,6 @@ script:
   - arguments:
       - description: ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.
         name: customer_id
-        required: true
       - description: |-
           String as JSON representation of the DeleteGroupPolicyRequest
           {
