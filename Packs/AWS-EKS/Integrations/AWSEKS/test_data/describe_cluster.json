@@ -1,0 +1,79 @@
+{
+    "expected_outputs": {
+        "name": "cluster_name",
+        "arn": "arn",
+        "createdAt": "2024-01-01 00:00:00",
+        "version": "1.29",
+        "endpoint": "endpoint",
+        "roleArn": "roleArn",
+        "resourcesVpcConfig": {
+            "subnetIds": [
+                "subnetId"
+            ],
+            "securityGroupIds": [
+                "securityGroupId"
+            ],
+            "clusterSecurityGroupId": "clusterSecurityGroupId",
+            "vpcId": "string",
+            "endpointPublicAccess": true,
+            "endpointPrivateAccess": true,
+            "publicAccessCidrs": [
+                "publicAccessCidr"
+            ]
+        },
+        "kubernetesNetworkConfig": {
+            "serviceIpv4Cidr": "serviceIpv4Cidr",
+            "ipFamily": "ipv4"
+        },
+        "logging": {
+            "clusterLogging": [{
+                "types": [
+                    "controllerManager", "scheduler"
+                ],
+                "enabled": true
+            }]},
+        "identity": {
+            "oidc": {
+                "issuer": "issuer"
+            }},
+        "status": "ACTIVE",
+        "certificateAuthority": {
+            "data": "data"
+        },
+        "clientRequestToken": "clientRequestToken",
+        "platformVersion": "ek.3",
+        "tags": {},
+        "encryptionConfig": [{
+            "resources": [
+                "resources"
+            ],
+            "provider": {
+                "keyArn": "keyArn"
+            }}],
+        "connectorConfig": {
+            "activationId": "activationId",
+            "activationCode": "activationCode",
+            "activationExpiry": "2024-01-01 00:00:00",
+            "provider": "provider",
+            "roleArn": "roleArn"
+        },
+        "id": "id",
+        "health": {
+            "issues": []
+        },
+        "outpostConfig": {
+            "outpostArns": [
+                "outpostArns"
+            ],
+            "controlPlaneInstanceType": "controlPlaneInstanceType",
+            "controlPlanePlacement": {
+                "groupName": "groupName"
+            }
+        },
+        "accessConfig": {
+            "bootstrapClusterCreatorAdminPermissions": true,
+            "authenticationMode": "API"
+        }
+    },
+    "expected_readable_output": "### Describe Cluster Information\n|Name|Id|Status|Arn|Created At|Version|\n|---|---|---|---|---|---|\n| cluster_name | id | ACTIVE | arn | 2024-01-01 00:00:00 | 1.29 |\n"
+}
