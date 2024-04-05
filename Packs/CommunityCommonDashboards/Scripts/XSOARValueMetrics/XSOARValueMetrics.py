@@ -301,7 +301,8 @@ def GenerateTables(startday: str, endday: str, records: list, slatimers: list) -
 
 def GetIncSmallWindow(w, page: int, curday: int, curhour: int, filters: dict, userquery: str):
     if userquery == "":
-        query = {'page': page, 'size': MAXINC, 'fromdate': f"{w[curday]}T{curhour-4:02d}:00:00", 'todate': f"{w[curday]}T{curhour-1:02d}:59:59"}
+        query = {'page': page, 'size': MAXINC, 'fromdate': f"{w[curday]}T{curhour-4:02d}:00:00",
+                 'todate': f"{w[curday]}T{curhour-1:02d}:59:59"}
         query.update(filters)
     else:
         userquery += f" occurred:>={w[curday]}T{curhour-4:02d}:00:00 and occurred:<={w[curday]}T{curhour-1:02d}:59:59"
@@ -519,10 +520,10 @@ def main():
                     response: List = GetIncLargeWindow(w, page, filters, query)
                     if not FoundIncidents(response):
                         break
-                    inccount, monthly, period = ProcessResponse(w, response, monthly, period, inccount, 
+                    inccount, monthly, period = ProcessResponse(w, response, monthly, period, inccount,
                                                                 slatimers, windowstart, windowend)
                     page += 1
-                # Switch to 4 hour window if the ES flag is set since it thows error next page if 
+                # Switch to 4 hour window if the ES flag is set since it thows error next page if
                 # 10000 or more incidents were found even while paging through a smaller size page
                 else:
                     curday = 0
