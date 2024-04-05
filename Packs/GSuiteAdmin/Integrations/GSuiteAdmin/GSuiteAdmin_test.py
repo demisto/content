@@ -1256,13 +1256,13 @@ def test_chromebrowser_move_ou_command_missing_customerId(gsuite_client, mocker)
         Scenario: chromebrowserdevice move successful execution.
 
         Given:
-        - Working API integration and correct parameters
+        - Working API integration and missing customer ID
 
         When:
         - Calling command chromebrowser_move_ou_command
 
         Then:
-        - Ensure no error returns
+        - Catch the returned error
     """
     from GSuiteAdmin import chromebrowser_move_ou_command
     args = {"resource_ids": "1111", "org_unit_path": "/testing"}
@@ -1308,7 +1308,7 @@ def test_chromebrowser_list_command_multiple_limits(gsuite_client, mocker, args)
 
 def test_chromebrowser_list_command_device_id(gsuite_client, mocker):
     """
-        Scenario: chromebrowserdevice list successful execution.
+        Scenario: chromebrowserdevice list successful execution with specific device ID
 
         Given:
         - Working API integration and correct parameters
@@ -1360,7 +1360,7 @@ def test_modify_policy_command_with_raw_json(gsuite_client, mocker):
         Scenario: Policy Modify command successful execution.
 
         Given:
-        - Working API integration and correct parameters
+        - Working API integration and raw JSON file
 
         When:
         - Calling command modify_policy_command
@@ -1419,7 +1419,7 @@ def test_policy_schemas_command_schema_name(gsuite_client, mocker):
         Scenario: Policy Schema list command successful execution.
 
         Given:
-        - Working API integration and correct parameters
+        - Working API integration and specific schema name
 
         When:
         - Calling command policy_schemas_command
