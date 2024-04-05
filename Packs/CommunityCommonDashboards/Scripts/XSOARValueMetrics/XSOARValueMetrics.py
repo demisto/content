@@ -447,7 +447,7 @@ def LoadJsonList(list_name: str) -> dict:
 
 
 def SaveJsonList(list_name: str, json_data: dict):
-    res = demisto.executeCommand('demisto-api-post', {
+    res = demisto.executeCommand('core-api-post', {
         "uri": '/lists/save',
         "body": {
             'name': list_name,
