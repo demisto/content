@@ -534,7 +534,7 @@ def main():
                     while True:
                         response = GetIncSmallWindow(w, page, curday, curhour, filters, query)
                         if FoundIncidents(response):
-                            inccount, monthly, period = ProcessResponse(w, response, monthly, period, inccount, 
+                            inccount, monthly, period = ProcessResponse(w, response, monthly, period, inccount,
                                                                         slatimers, windowstart, windowend)
                             page += 1
                         # If no incidents found, step to the next 4 hour window
