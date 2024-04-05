@@ -2,11 +2,11 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 EFFORTCOLORS = ["RoyalBlue", "SkyBlue", "ForestGreen", "LimeGreen"]
-SLACOLORS = ["Thistle", "Violet", "Orchid", "Magenta", "MediumOrchid", 
+SLACOLORS = ["Thistle", "Violet", "Orchid", "Magenta", "MediumOrchid",
              "MediumPurple", "BlueViolet", "Purple", "Indigo", "DarkSlateBlue"]
-INCCOLORS = ["PaleGreen", "Bisque", "LightGreen", "Wheat", "DarkSeaGreen", 
+INCCOLORS = ["PaleGreen", "Bisque", "LightGreen", "Wheat", "DarkSeaGreen",
              "Tan", "MediumSeaGreen", "SandyBrown", "SeaGreen", "GoldenRod",
-             "ForestGreen", "DarkGoldenRod", "Green", "Chocolate", "DarkGreen", 
+             "ForestGreen", "DarkGoldenRod", "Green", "Chocolate", "DarkGreen",
              "Sienna", "DarkOliveGreen", "Brown", "Teal", "Maroon"]
 
 METRICCOLORS = {
