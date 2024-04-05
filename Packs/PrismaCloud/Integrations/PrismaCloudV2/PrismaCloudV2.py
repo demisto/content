@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from copy import deepcopy
 
-import urllib3
 import json
 
 
@@ -98,11 +97,12 @@ TIME_FIELDS = ['firstSeen', 'lastSeen', 'alertTime', 'eventOccurred', 'lastUpdat
 
 class Client(BaseClient):
     def __init__(self, server_url: str, verify: bool, proxy: bool, headers: Dict[str, str], username: str, password: str,
-                 mirror_direction: str | None, close_incident: bool, close_alert: bool):
+                 mirror_direction: str | None, close_incident: bool, close_alert: bool, is_test_module: bool):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
         self.mirror_direction = mirror_direction
         self.close_incident = close_incident
         self.close_alert = close_alert
+        self.retries = 0 if is_test_module else 2
         self.generate_auth_token(username, password)
 
     def generate_auth_token(self, username: str, password: str) -> None:
@@ -113,7 +113,7 @@ class Client(BaseClient):
         data = {'username': username, 'password': password}
         demisto.debug("Sending request to get the auth token")
 
-        response = self._http_request('POST', 'login', json_data=data, retries=2)
+        response = self._http_request('POST', 'login', json_data=data, retries=self.retries)
         try:
             token = response.get('token')
             if not token:
@@ -139,7 +139,7 @@ class Client(BaseClient):
                                     })
         demisto.info(f'Executing Prisma Cloud alert search with payload: {data}')
 
-        return self._http_request('POST', 'v2/alert', params=params, json_data=data, retries=2)
+        return self._http_request('POST', 'v2/alert', params=params, json_data=data, retries=self.retries)
 
     def alert_get_details_request(self, alert_id: str, detailed: Optional[str] = None):
         params = assign_params(detailed=detailed)
@@ -202,12 +202,14 @@ class Client(BaseClient):
 
     def config_search_request(self, time_range: Dict[str, Any], query: str, limit: Optional[int] = None,
                               search_id: Optional[str] = None, sort_direction: Optional[str] = None,
-                              sort_field: Optional[str] = None):
+                              sort_field: Optional[str] = None, include_resource_json: Optional[str] = 'true',
+                              ):
         data = remove_empty_values({'id': search_id,
                                     'limit': limit,
                                     'query': query,
                                     'sort': [{'direction': sort_direction, 'field': sort_field}],
                                     'timeRange': time_range,
+                                    'withResourceJson': include_resource_json,
                                     })
 
         return self._http_request('POST', 'search/config', json_data=data)
@@ -525,6 +527,24 @@ def extract_namespace(response_items: List[Dict[str, Any]]):
             if item_namespace := member.get('namespaces', []):
                 item['namespaces'] = item_namespace
                 break
+
+
+def remove_additional_resource_fields(input_dict):
+    items = demisto.get(input_dict, 'data.items')
+    if items:
+        for current_item in list(items):
+            data = current_item.get('data', {})
+
+            disks = data.get('disks', [])
+            for current_disk in disks:
+                if 'shieldedInstanceInitialState' in current_disk:
+                    del current_disk['shieldedInstanceInitialState']
+
+            metadata = data.get('metadata', {})
+            metadata_items = metadata.get('items', [])
+            for current_metadata_item in list(metadata_items):
+                if 'key' in current_metadata_item and current_metadata_item['key'] == 'configure-sh':
+                    metadata_items.remove(current_metadata_item)
 
 
 ''' FETCH AND MIRRORING HELPER FUNCTIONS '''
@@ -1472,12 +1492,22 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
                                      time_from=args.get('time_range_date_from'),
                                      time_to=args.get('time_range_date_to'))
     search_id = args.get('search_id')
+
     sort_direction = args.get('sort_direction', 'desc')
     sort_field = args.get('sort_field', 'insertTs')
     if any([sort_direction, sort_field]) and not all([sort_direction, sort_field]):
         raise DemistoException('Both sort direction and field must be specified if sorting.')
 
-    response = client.config_search_request(time_filter, str(query), limit, search_id, sort_direction, sort_field)
+    include_resource_json = args.get('include_resource_json', 'true')
+    include_additional_resource_fields = argToBoolean(args.get('include_additional_resource_fields', 'false'))
+
+    demisto.debug(f'Searching for config with the following params: {query=}, {limit=}, {time_filter=}, {include_resource_json=},'
+                  f' {include_additional_resource_fields=}')
+    response = client.config_search_request(time_filter, str(query), limit, search_id, sort_direction, sort_field,
+                                            include_resource_json,)
+    if not include_additional_resource_fields:
+        remove_additional_resource_fields(response)
+
     response_items = response.get('data', {}).get('items', [])
     for response_item in response_items:
         change_timestamp_to_datestring_in_dict(response_item)
@@ -2164,11 +2194,13 @@ def main() -> None:
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
+    is_test_module: bool = (command == 'test-module')
 
     try:
-        urllib3.disable_warnings()
+
         client: Client = Client(url, verify_certificate, proxy, headers=HEADERS, username=username, password=password,
-                                mirror_direction=mirror_direction, close_incident=close_incident, close_alert=close_alert)
+                                mirror_direction=mirror_direction, close_incident=close_incident, close_alert=close_alert,
+                                is_test_module=is_test_module)
         commands_without_args = {
             'prisma-cloud-alert-filter-list': alert_filter_list_command,
 

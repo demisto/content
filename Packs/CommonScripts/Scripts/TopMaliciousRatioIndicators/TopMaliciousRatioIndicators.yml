@@ -15,7 +15,7 @@ enabled: true
 args:
 - name: maxNumberOfIndicators
   description: Maximum number of indicators for malicious ratio calculation.
-  defaultValue: "10000"
+  defaultValue: "1000"
 - name: minimumNumberOfInvs
   description: Minimum number of investigation the indicator has to appear in.
   defaultValue: "3"
@@ -23,6 +23,6 @@ args:
   description: Maximum number of results to display.
   defaultValue: "100"
 scripttarget: 0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.86272
 tests:
 - No tests (auto formatted)

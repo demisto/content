@@ -6,7 +6,8 @@ from datetime import datetime, timezone
 from base64 import b64decode
 
 # 3-rd party imports
-from typing import Dict, Tuple, Union, Optional, List, Any, Sequence
+from typing import Any
+from collections.abc import Sequence
 import urllib.parse
 import urllib3
 from akamai.edgegrid import EdgeGridAuth
@@ -36,9 +37,9 @@ urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def get_events(self, config_ids: str, offset: Optional[str] = '', limit: Optional[Union[str, int]] = None,
-                   from_epoch: Optional[str] = '', to_epoch: Optional[str] = '') \
-            -> Tuple[List[Any], Any]:
+    def get_events(self, config_ids: str, offset: str | None = '', limit: str | int | None = None,
+                   from_epoch: str | None = '', to_epoch: str | None = '') \
+            -> tuple[list[Any], Any]:
         """
             Get security events from Akamai WAF service by - https://developer.akamai.com/api/cloud_security/siem/v1.html,
             Pay attention response as text of multiple json objects
@@ -78,7 +79,7 @@ class Client(BaseClient):
                                                url_suffix=f'/{config_ids}',
                                                params=assign_params(**params),
                                                resp_type='text')
-        events: List = []
+        events: list = []
         if '{ "total": 0' not in raw_response:
             events = [json.loads(event) for event in raw_response.split('\n')[:-2]]
             new_offset = str(max([int(event.get('httpMessage', {}).get('start')) for event in events]))
@@ -108,7 +109,7 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
     Returns:
         Converted date as Datetime object or string object
     """
-    converted_date: Union[str, int] = ''
+    converted_date: str | int = ''
     if from_format == 'epoch':
         converted_date = datetime.utcfromtimestamp(int(date_before)).strftime(readable_format)
     elif from_format == 'readable':
@@ -118,7 +119,7 @@ def date_format_converter(from_format: str, date_before: str, readable_format: s
     return str(converted_date)
 
 
-def decode_message(msg: str) -> Sequence[Optional[str]]:
+def decode_message(msg: str) -> Sequence[str | None]:
     """
         Follow these steps for data members that appear within the event’s attackData section:
             1. If the member name is prefixed rule, URL-decode the value.
@@ -147,7 +148,7 @@ def decode_message(msg: str) -> Sequence[Optional[str]]:
     return readable_msg
 
 
-def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
+def events_to_ec(raw_response: list) -> tuple[list, list, list]:
     """
         Convert raw response response to ec
     Args:
@@ -156,9 +157,9 @@ def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
     Returns:
         events as defined entry context and events for human readable
     """
-    events_ec: List[Dict] = []
-    ip_ec: List[Dict] = []
-    events_human_readable: List[Dict] = []
+    events_ec: list[dict] = []
+    ip_ec: list[dict] = []
+    events_human_readable: list[dict] = []
 
     for event in raw_response:
         events_ec.append(
@@ -227,7 +228,7 @@ def events_to_ec(raw_response: List) -> Tuple[List, List, List]:
 
 
 @logger
-def test_module_command(client: Client) -> Tuple[None, None, str]:
+def test_module_command(client: Client) -> tuple[None, None, str]:
     """Performs a basic GET request to check if the API is reachable and authentication is successful.
 
     Args:
@@ -253,9 +254,9 @@ def test_module_command(client: Client) -> Tuple[None, None, str]:
 def fetch_incidents_command(
         client: Client,
         fetch_time: str,
-        fetch_limit: Union[str, int],
+        fetch_limit: str | int,
         config_ids: str,
-        last_run: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict]:
+        last_run: str | None = None) -> tuple[list[dict[str, Any]], dict]:
     """Uses to fetch incidents into Demisto
     Documentation: https://github.com/demisto/content/tree/master/docs/fetching_incidents
 
@@ -269,7 +270,7 @@ def fetch_incidents_command(
     Returns:
         incidents, new last_run
     """
-    raw_response: Optional[List] = []
+    raw_response: list | None = []
     if not last_run:
         last_run, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     raw_response, offset = client.get_events(config_ids=config_ids, from_epoch=last_run, limit=fetch_limit)
@@ -287,9 +288,9 @@ def fetch_incidents_command(
     return incidents, {'lastRun': offset}
 
 
-def get_events_command(client: Client, config_ids: str, offset: Optional[str] = None, limit: Optional[str] = None,
-                       from_epoch: Optional[str] = None, to_epoch: Optional[str] = None, time_stamp: Optional[str] = None) \
-        -> Tuple[object, dict, Union[List, Dict]]:
+def get_events_command(client: Client, config_ids: str, offset: str | None = None, limit: str | None = None,
+                       from_epoch: str | None = None, to_epoch: str | None = None, time_stamp: str | None = None) \
+        -> tuple[object, dict, list | dict]:
     """
         Get security events from Akamai WAF service
         Allowed query parameters combinations:
@@ -365,7 +366,11 @@ def main():
     }
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
+
     try:
+        if params.get("isFetch") and not (0 < (arg_to_number(params.get('fetchLimit')) or 20) <= 2000):
+            raise DemistoException('Fetch limit must be an integer between 1 and 2000')
+
         if command == 'fetch-incidents':
             incidents, new_last_run = fetch_incidents_command(client,
                                                               fetch_time=params.get('fetchTime'),
@@ -383,5 +388,5 @@ def main():
         return_error(err_msg, error=e)
 
 
-if __name__ == 'builtins':
+if __name__ in ["__builtin__", "builtins", '__main__']:  # pragma: no cover
     main()

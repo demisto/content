@@ -121,7 +121,7 @@ configuration:
   additionalinfo: 'Score maximum value to filter by. Values range is 1-100. '
   type: 0
   required: false
-description: Ingest indicators from the OpenCTI feed. Compatible with OpenCTI 4.X API version.
+description: Ingest indicators from the OpenCTI feed. Compatible with OpenCTI 5.12.17 and above.
 display: OpenCTI Feed 4.X
 name: OpenCTI Feed 4.X
 script:
@@ -155,7 +155,7 @@ script:
       name: score_end
     description: Gets indicators from the feed.
     name: opencti-get-indicators
-  dockerimage: demisto/vendors-sdk:1.0.0.86010
+  dockerimage: demisto/vendors-sdk:1.0.0.86440
   feed: true
   runonce: false
   script: '-'

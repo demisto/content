@@ -1,8 +1,11 @@
+from enum import Enum, unique
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import json
 
 ''' IMPORTS '''
-from typing import Any, Callable, Dict, Optional, Tuple, Union
+from typing import Any, cast
+from collections.abc import Callable
 
 import urllib3
 
@@ -12,12 +15,89 @@ urllib3.disable_warnings()
 INTEGRATION_NAME = 'Infoblox Integration'
 INTEGRATION_COMMAND_NAME = 'infoblox'
 INTEGRATION_CONTEXT_NAME = 'Infoblox'
-REQUEST_PARAM_EXTRA_ATTRIBUTES = {'_return_fields+': 'extattrs'}
-REQUEST_PARAM_ZONE = {'_return_fields+': 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'}
-REQUEST_PARAM_CREATE_RULE = {'_return_fields+': 'name,rp_zone,comment,canonical,disable'}
-REQUEST_PARAM_LIST_RULES = {'_return_fields+': 'name,zone,comment,disable,type'}
-REQUEST_PARAM_SEARCH_RULES = {'_return_fields+': 'name,zone,comment,disable'}
-REQUEST_PARAM_PAGING_FLAG = {'_paging': '1'}
+INTEGRATION_HOST_RECORDS_CONTEXT_NAME = "Host"
+INTEGRATION_NETWORK_INFO_CONTEXT_KEY = "NetworkInfo"
+
+# COMMON RAW RESULT KEYS
+INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY = "_ref"
+INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY = "extattrs"
+INTEGRATION_COMMON_RAW_RESULT_NETWORK_KEY = "network"
+INTEGRATION_COMMON_RAW_RESULT_NETWORKVIEW_KEY = "network_view"
+
+# COMMON CONTEXT KEYS
+INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY = "Reference"
+INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY = "ReferenceID"
+INTEGRATION_COMMON_NAME_CONTEXT_KEY = "Name"
+INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY = "ExtendedAttributes"
+INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY = "AdditionalFields"
+INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY = "NetworkView"
+
+# IP RAW RESULT KEYS
+INTEGRATION_IP_RAW_RESULT_MAC_ADDRESS_KEY = "mac_address"
+INTEGRATION_IP_RAW_RESULT_NETWORK = "network"
+INTEGRATION_IP_RAW_RESULT_STATUS_KEY = "status"
+INTEGRATION_IP_RAW_RESULT_FQDN_KEY = "fqdn"
+INTEGRATION_IP_RAW_RESULT_RP_ZONE_KEY = "rp_zone"
+INTEGRATION_IP_RAW_RESULT_IS_CONFLICT_KEY = "is_conflict"
+INTEGRATION_IP_RAW_RESULT_OBJECTS_KEY = "objects"
+INTEGRATION_IP_RAW_RESULT_TYPES_KEY = "types"
+INTEGRATION_IP_RAW_RESULT_NAMES_KEY = "names"
+INTEGRATION_IP_RAW_RESULT_IP_ADDRESS_KEY = "ip_address"
+INTEGRATION_IP_RAW_RESULT_USAGE_KEY = "usage"
+
+# IP CONTEXT KEYS
+INTEGRATION_IP_RP_ZONE_CONTEXT_KEY = "Zone"
+INTEGRATION_IP_FQDN_CONTEXT_KEY = "FQDN"
+
+
+IP_MAPPING = {
+    INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY: INTEGRATION_COMMON_REFERENCE_ID_CONTEXT_KEY,
+    INTEGRATION_IP_RAW_RESULT_MAC_ADDRESS_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_MAC_ADDRESS_KEY),
+    INTEGRATION_COMMON_RAW_RESULT_NETWORK_KEY: string_to_context_key(INTEGRATION_COMMON_RAW_RESULT_NETWORK_KEY),
+    INTEGRATION_COMMON_RAW_RESULT_NETWORKVIEW_KEY: string_to_context_key(INTEGRATION_COMMON_RAW_RESULT_NETWORKVIEW_KEY),
+    INTEGRATION_IP_RAW_RESULT_TYPES_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_TYPES_KEY),
+    INTEGRATION_IP_RAW_RESULT_NAMES_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_NAMES_KEY),
+    INTEGRATION_IP_RAW_RESULT_OBJECTS_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_OBJECTS_KEY),
+    INTEGRATION_IP_RAW_RESULT_STATUS_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_STATUS_KEY),
+    INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY: string_to_context_key(INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY),  # noqa: E501
+    INTEGRATION_IP_RAW_RESULT_IP_ADDRESS_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_IP_ADDRESS_KEY),
+    INTEGRATION_IP_RAW_RESULT_USAGE_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_USAGE_KEY),
+    INTEGRATION_IP_RAW_RESULT_IS_CONFLICT_KEY: string_to_context_key(INTEGRATION_IP_RAW_RESULT_IS_CONFLICT_KEY),
+    INTEGRATION_IP_RAW_RESULT_FQDN_KEY: INTEGRATION_IP_FQDN_CONTEXT_KEY,
+    INTEGRATION_IP_RAW_RESULT_RP_ZONE_KEY: INTEGRATION_IP_RP_ZONE_CONTEXT_KEY
+}
+
+# Host info mapping
+INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY = "ipv4addrs"
+INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESS_KEY = "ipv4addr"
+INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY = "IPv4Address"
+INTEGRATION_HOST_RECORDS_RAW_RESULT_CONFIGURE_FOR_DHCP_KEY = "configure_for_dhcp"
+INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY = "ConfigureForDHCP"
+INTEGRATION_HOST_RECORDS_RAW_RESULT_NAME_KEY = "name"
+INTEGRATION_HOST_RECORDS_RAW_RESULT_HOST_KEY = "host"
+INTEGRATION_HOST_RECORDS_RAW_RESULT_VIEW_KEY = "view"
+HOST_INFO_MAPPING: dict[str, str] = {
+    INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY: INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY,
+    INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESS_KEY: INTEGRATION_HOST_RECORDS_IPV4ADDRESS_CONTEXT_KEY,
+    INTEGRATION_HOST_RECORDS_RAW_RESULT_CONFIGURE_FOR_DHCP_KEY: INTEGRATION_HOST_RECORDS_CONFIGURE_FOR_DHCP_KEY_CONTEXT_KEY,
+    INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY: INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY,
+    INTEGRATION_HOST_RECORDS_RAW_RESULT_HOST_KEY: INTEGRATION_COMMON_NAME_CONTEXT_KEY
+}
+
+
+# Network info mapping
+
+INTEGRATION_COMMON_RAW_RESULT_NETWORKVIEW_KEY = "network_view"
+INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY = "NetworkView"
+NETWORK_INFO_MAPPING: dict[str, str] = {
+    INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY: INTEGRATION_COMMON_REFERENCE_CONTEXT_KEY,
+    INTEGRATION_COMMON_RAW_RESULT_NETWORK_KEY: INTEGRATION_COMMON_NAME_CONTEXT_KEY,
+    INTEGRATION_COMMON_RAW_RESULT_NETWORKVIEW_KEY: INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY,
+    INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY: INTEGRATION_COMMON_EXTENSION_ATTRIBUTES_CONTEXT_KEY
+}
+
+INTEGRATION_IPV4_CONTEXT_NAME = "IP"
+INTEGRATION_MAX_RESULTS_DEFAULT = 50
 
 RESPONSE_TRANSLATION_DICTIONARY = {
     '_ref': 'ReferenceID',
@@ -72,13 +152,35 @@ RPZ_RULES_DICT = {
     }
 }
 
-NETWORK_NOT_FOUND = "A network was not found for this address"
+
+@unique
+class IPv4AddressStatus(Enum):
+    """Possible statuses for an IPv4 address."""
+    ACTIVE = "ACTIVE"
+    UNUSED = "UNUSED"
+    USED = "USED"
 
 
-class Client(BaseClient):
-    def __init__(self, base_url, verify=True, proxy=False, ok_codes=tuple(), headers=None, auth=None, params=None):
-        super(Client, self).__init__(base_url, verify, proxy, ok_codes, headers, auth)
-        self.params = params
+class InfoBloxNIOSClient(BaseClient):
+
+    REQUEST_PARAMS_RETURN_AS_OBJECT_KEY = '_return_as_object'
+    REQUEST_PARAM_RETURN_FIELDS_KEY = '_return_fields+'
+
+    REQUEST_PARAM_EXTRA_ATTRIBUTES = {REQUEST_PARAM_RETURN_FIELDS_KEY: INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}
+    REQUEST_PARAM_ZONE = {
+        REQUEST_PARAM_RETURN_FIELDS_KEY: 'fqdn,rpz_policy,rpz_severity,rpz_type,substitute_name,comment,disable'
+    }
+    REQUEST_PARAM_CREATE_RULE = {REQUEST_PARAM_RETURN_FIELDS_KEY: 'name,rp_zone,comment,canonical,disable'}
+    REQUEST_PARAM_LIST_RULES = {REQUEST_PARAM_RETURN_FIELDS_KEY: 'name,zone,comment,disable,type'}
+    REQUEST_PARAM_SEARCH_RULES = {REQUEST_PARAM_RETURN_FIELDS_KEY: 'name,zone,comment,disable'}
+
+    REQUEST_PARAM_PAGING_FLAG = {'_paging': '1'}
+    REQUEST_PARAM_MAX_RESULTS_KEY = "_max_results"
+    REQUEST_PARAM_MAX_RESULTS_VALUE_DEFAULT = 1000
+
+    def __init__(self, base_url, verify=True, proxy=False, ok_codes=(), headers=None, auth=None):
+        super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
+        self.params: dict[str, Any] = {self.REQUEST_PARAMS_RETURN_AS_OBJECT_KEY: '1'}
 
     def _http_request(self, method, url_suffix, full_url=None, headers=None, auth=None, json_data=None, params=None,
                       data=None, files=None, timeout=10, resp_type='json', ok_codes=None, **kwargs):
@@ -91,7 +193,7 @@ class Client(BaseClient):
         except DemistoException as error:
             raise parse_demisto_exception(error, 'text')
 
-    def test_module(self) -> Dict:
+    def test_module(self) -> dict:
         """Performs basic GET request (List Response Policy Zones) to check if the API is reachable and authentication
         is successful.
 
@@ -100,7 +202,7 @@ class Client(BaseClient):
         """
         return self.list_response_policy_zones()
 
-    def list_response_policy_zones(self, max_results: Optional[str] = None) -> Dict:
+    def list_response_policy_zones(self, max_results: int | None = None) -> dict:
         """List all response policy zones.
         Args:
                 max_results:  maximum number of results
@@ -109,26 +211,110 @@ class Client(BaseClient):
         """
         suffix = 'zone_rp'
         request_params = assign_params(_max_results=max_results)
-        request_params.update(REQUEST_PARAM_ZONE)
+        request_params.update(self.REQUEST_PARAM_ZONE)
         return self._http_request('GET', suffix, params=request_params)
 
-    def get_ip(self, ip: Optional[str]) -> Dict:
-        """Get ip information.
+    def get_ipv4_address_from_ip(
+        self,
+        ip: str,
+        status: str,
+        extended_attributes: Optional[str],
+        max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+    ) -> dict:
+        """
+        Get IPv4 information based on an IP address.
         Args:
-            ip: ip to retrieve.
+        - `ip` (``str``): ip to retrieve.
+        - `status` (``str``): status of the IP address.
+        - `extended_attributes` (``str``): comma-separated list of extended attributes to return.
+        - `max_results` (``int``): maximum number of results to return.
 
         Returns:
             Response JSON
         """
-        # The server endpoint to request from
-        suffix = 'ipv4address'
 
         # Dictionary of params for the request
-        request_params = assign_params(ip_address=ip)
-        request_params.update(REQUEST_PARAM_EXTRA_ATTRIBUTES)
-        return self._http_request('GET', suffix, params=request_params)
+        request_params = assign_params(ip_address=ip, status=status, _max_results=max_results)
 
-    def search_related_objects_by_ip(self, ip: Optional[str], max_results: Optional[str]) -> Dict:
+        # Add extended attributes param if provided
+        if extended_attributes:
+            request_params.update(self.REQUEST_PARAM_EXTRA_ATTRIBUTES)
+            extended_attributes_params = transform_ext_attrs(extended_attributes)
+
+            for e in extended_attributes_params:
+                request_params.update(e)
+
+        return self._get_ipv4_addresses(params=request_params)
+
+    def get_ipv4_address_from_netmask(
+        self,
+        network: str,
+        status: str,
+        extended_attributes: Optional[str],
+        max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+    ) -> dict:
+        """
+        Get IPv4 network information based on a netmask.
+
+        Args:
+        - `network` (``str``): Netmask to retrieve the IPv4 for.
+        - `status` (``str``): Status of the network.
+        - `extended_attributes` (``str``): comma-separated list of extended attributes to return.
+        - `max_results` (``int``): maximum number of results to return.
+
+        Returns:
+        - `dict` with response.
+        """
+
+        request_params = assign_params(network=network, status=status, _max_results=max_results)
+
+        # Add extended attributes param if provided
+        if extended_attributes:
+            request_params.update(self.REQUEST_PARAM_EXTRA_ATTRIBUTES)
+            extended_attributes_params = transform_ext_attrs(extended_attributes)
+
+            for e in extended_attributes_params:
+                request_params.update(e)
+
+        return self._get_ipv4_addresses(params=request_params)
+
+    def get_ipv4_address_range(
+        self,
+        start_ip: str,
+        end_ip: str,
+        extended_attributes: Optional[str],
+        max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+    ) -> dict:
+        """
+        Get IPv4 address range information based on a start and end IP.
+
+        Args:
+        - `start_ip` (``str``): Start IP of the range.
+        - `end_ip` (``str``): End IP of the range.
+        - `extended_attributes` (``str``): comma-separated list of extended attributes to return.
+        - `max_results` (``int``): maximum number of results to return.
+
+        Returns:
+        - `dict` with response.
+        """
+
+        request_params = assign_params(_max_results=max_results)
+        request_params.update(transform_ipv4_range(start_ip, end_ip))
+
+        # Add extended attributes param if provided
+        if extended_attributes:
+            request_params.update(self.REQUEST_PARAM_EXTRA_ATTRIBUTES)
+            extended_attributes_params = transform_ext_attrs(extended_attributes)
+
+            for e in extended_attributes_params:
+                request_params.update(e)
+
+        return self._get_ipv4_addresses(params=request_params)
+
+    def _get_ipv4_addresses(self, params: dict[str, Any]) -> dict:
+        return self._http_request('GET', "ipv4address", params=params)
+
+    def search_related_objects_by_ip(self, ip: str | None, max_results: str | None) -> dict:
         """Search ip related objects.
         Args:
             ip: ip to retrieve.
@@ -144,8 +330,8 @@ class Client(BaseClient):
         request_params = assign_params(address=ip, _max_results=max_results)
         return self._http_request('GET', suffix, params=request_params)
 
-    def list_response_policy_zone_rules(self, zone: Optional[str], view: Optional[str], max_results: Optional[str],
-                                        next_page_id: Optional[str]) -> Dict:
+    def list_response_policy_zone_rules(self, zone: str | None, view: str | None, max_results: str | None,
+                                        next_page_id: str | None) -> dict:
         """List response policy zones rules by a given zone name.
         Args:
             zone: response policy zone name.
@@ -160,14 +346,14 @@ class Client(BaseClient):
         suffix = 'allrpzrecords'
         # Dictionary of params for the request
         request_params = assign_params(zone=zone, view=view, _max_results=max_results, _page_id=next_page_id)
-        request_params.update(REQUEST_PARAM_PAGING_FLAG)
-        request_params.update(REQUEST_PARAM_LIST_RULES)
+        request_params.update(self.REQUEST_PARAM_PAGING_FLAG)
+        request_params.update(self.REQUEST_PARAM_LIST_RULES)
 
         return self._http_request('GET', suffix, params=request_params)
 
-    def create_response_policy_zone(self, fqdn: Optional[str], rpz_policy: Optional[str],
-                                    rpz_severity: Optional[str], substitute_name: Optional[str],
-                                    rpz_type: Optional[str]) -> Dict:
+    def create_response_policy_zone(self, fqdn: str | None, rpz_policy: str | None,
+                                    rpz_severity: str | None, substitute_name: str | None,
+                                    rpz_type: str | None) -> dict:
         """Creates new response policy zone
         Args:
             fqdn: The name of this DNS zone.
@@ -181,10 +367,9 @@ class Client(BaseClient):
 
         data = assign_params(fqdn=fqdn, rpz_policy=rpz_policy, rpz_severity=rpz_severity,
                              substitute_name=substitute_name, rpz_type=rpz_type)
-        suffix = 'zone_rp'
-        return self._http_request('POST', suffix, data=json.dumps(data), params=REQUEST_PARAM_ZONE)
+        return self._http_request('POST', "zone_rp", data=json.dumps(data), params=self.REQUEST_PARAM_ZONE)
 
-    def delete_response_policy_zone(self, ref_id: Optional[str]) -> Dict:
+    def delete_response_policy_zone(self, ref_id: str | None) -> dict:
         """Delete new response policy zone
         Args:
             ref_id: Zone reference id to delete.
@@ -195,9 +380,9 @@ class Client(BaseClient):
         suffix = ref_id
         return self._http_request('DELETE', suffix)
 
-    def create_rpz_rule(self, rule_type: Optional[str], object_type: Optional[str], name: Optional[str],
-                        rp_zone: Optional[str], view: Optional[str], substitute_name: Optional[str],
-                        comment: Optional[str] = None) -> Dict:
+    def create_rpz_rule(self, rule_type: str | None, object_type: str | None, name: str | None,
+                        rp_zone: str | None, view: str | None, substitute_name: str | None,
+                        comment: str | None = None) -> dict:
         """Creates new response policy zone rule.
         Args:
             rule_type: Type of rule to create.
@@ -210,7 +395,7 @@ class Client(BaseClient):
         Returns:
             Response JSON
         """
-        canonical: Optional[str] = ''
+        canonical: str | None = ''
         if rule_type == 'Passthru':
             canonical = 'rpz-passthru' if object_type == 'Client IP address' else name
         elif rule_type == 'Block (No data)':
@@ -225,14 +410,14 @@ class Client(BaseClient):
                 'canonical': canonical
             }
         )
-        request_params = REQUEST_PARAM_CREATE_RULE
+        request_params = self.REQUEST_PARAM_CREATE_RULE
         suffix = demisto.get(RPZ_RULES_DICT, f'{rule_type}.{object_type}.infoblox_object_type')
 
         rule = self._http_request('POST', suffix, data=json.dumps(data), params=request_params)
         rule['result']['type'] = suffix
         return rule
 
-    def create_substitute_record_rule(self, suffix: Optional[str], **kwargs: Union[str, int, None]) -> Dict:
+    def create_substitute_record_rule(self, suffix: str | None, **kwargs: str | int | None) -> dict:
         """Creates new response policy zone substitute rule.
         Args:
             suffix: The infoblox object to be used as a url path.
@@ -262,7 +447,7 @@ class Client(BaseClient):
         rule['result']['type'] = suffix
         return rule
 
-    def change_rule_status(self, reference_id: Optional[str], disable: Optional[bool]) -> Dict:
+    def change_rule_status(self, reference_id: str | None, disable: bool | None) -> dict:
         """Changes a given rule status.
         Args:
             reference_id: Rule reference ID
@@ -272,9 +457,9 @@ class Client(BaseClient):
         """
         request_data = assign_params(disable=disable)
         suffix = reference_id
-        return self._http_request('PUT', suffix, data=json.dumps(request_data), params=REQUEST_PARAM_SEARCH_RULES)
+        return self._http_request('PUT', suffix, data=json.dumps(request_data), params=self.REQUEST_PARAM_SEARCH_RULES)
 
-    def get_object_fields(self, object_type: Optional[str]) -> Dict:
+    def get_object_fields(self, object_type: str | None) -> dict:
         """Retrieve a given object fields.
         Args:
             object_type: Infoblox object type
@@ -285,8 +470,8 @@ class Client(BaseClient):
         suffix = object_type
         return self._http_request('GET', suffix, params=request_params)
 
-    def search_rule(self, object_type: Optional[str], rule_name: Optional[str],
-                    output_fields: Optional[str]) -> Dict:
+    def search_rule(self, object_type: str | None, rule_name: str | None,
+                    output_fields: str | None) -> dict:
         """Search rule by its name
         Args:
             object_type: Infoblox object type
@@ -301,7 +486,7 @@ class Client(BaseClient):
         suffix = object_type
         return self._http_request('GET', suffix, params=request_params)
 
-    def delete_rpz_rule(self, reference_id: Optional[str]) -> Dict:
+    def delete_rpz_rule(self, reference_id: str | None) -> dict:
         """Deletes a rule by its reference id
         Args:
             reference_id: Rule reference ID
@@ -311,6 +496,83 @@ class Client(BaseClient):
 
         suffix = reference_id
         return self._http_request('DELETE', suffix)
+
+    def get_host_records(
+        self,
+        name: str | None,
+        additional_return_fields: str,
+        extended_attributes: Optional[str],
+        max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+    ) -> dict:
+        """
+        Get the host records.
+
+        Args:
+        - `name` (``str``): Name of the host record to search for.
+        - `additional_return_fields` (``Optional[str]``): Comma-separated list of additional fields to return.
+        - `extended_attributes` (``str``): comma-separated list of extended attributes to return.
+        - `max_results` (``int``): maximum number of results to return.
+
+        Returns:
+        - Response JSON
+        """
+
+        request_params = assign_params(name=name, _max_results=max_results)
+        request_params.update({self.REQUEST_PARAM_RETURN_FIELDS_KEY: additional_return_fields})
+
+        # Add extended attributes param if provided
+        if extended_attributes:
+
+            # If the extended attributes return field is not specified
+            # add it.
+            if INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY not in request_params.get(self.REQUEST_PARAM_RETURN_FIELDS_KEY):  # noqa: E501
+                request_params[self.REQUEST_PARAM_RETURN_FIELDS_KEY] += f",{INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}"  # noqa: E501
+            extended_attributes_params = transform_ext_attrs(extended_attributes)
+
+            for e in extended_attributes_params:
+                request_params.update(e)
+
+        return self._http_request('GET', "record:host", params=request_params)
+
+    def get_network_info(
+        self,
+        pattern: str | None,
+        additional_return_fields: Optional[str],
+        extended_attributes: Optional[str],
+        max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+    ) -> dict:
+        """
+        Get the network information.
+
+        Args:
+        - `pattern` (``str | None``): Filter networks by pattern, e.g. '.0/24' for netmask, '192.168' for subnet.
+        - `additional_return_fields` (``Optional[str]``): Comma-separated list of additional fields to return.
+        - `extended_attributes` (``str``): comma-separated list of extended attributes to return.
+        - `max_results` (``int``): maximum number of results to return.
+
+        Returns:
+        - Response JSON
+        """
+
+        request_params = assign_params(_max_results=max_results)
+
+        if pattern:
+            request_params["network~"] = pattern
+
+        request_params.update({self.REQUEST_PARAM_RETURN_FIELDS_KEY: additional_return_fields})
+
+        # Add extended attributes param if provided
+        if extended_attributes:
+            # If the extended attributes return field is not specified
+            # add it.
+            if INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY not in request_params.get(self.REQUEST_PARAM_RETURN_FIELDS_KEY):  # noqa: E501
+                request_params[self.REQUEST_PARAM_RETURN_FIELDS_KEY] += f",{INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY}"  # noqa: E501
+            extended_attributes_params = transform_ext_attrs(extended_attributes)
+
+            for e in extended_attributes_params:
+                request_params.update(e)
+
+        return self._http_request("GET", "network", params=request_params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -330,15 +592,228 @@ def parse_demisto_exception(error: DemistoException, field_in_error: str = 'text
     return DemistoException(err_msg)
 
 
+def transform_ext_attrs(ext_attrs: str) -> list:
+    """
+    Helper function to transform the extension attributes.
+    The user supplies a string of key/value pairs separated by commas.
+
+    This function parses that string and returns a list of dictionaries with "name" and "value" keys.
+
+    Args:
+    - `ext_attrs` (`str`): The string of key/value pairs separated by commas.
+
+    Returns:
+    - `list[dict]` or `None`: A `list[dict]` representing the extension attributes.
+    Returns `None` in case there were no delimiters present. If the attributes
+    cannot be parsed, an exception is raised.
+
+    For example:
+
+    ```python
+    >>>> transform_ext_attrs("Site=Tel-Aviv")
+    [{"Site": "Tel-Aviv"}]
+
+    >>>> transform_ext_attrs("IB Discovery Owned=EMEA,Site=Tel-Aviv")
+    [{"*IB Discovery Owned": "EMEA", "*Site": "Tel-Aviv"}]
+    ```
+    """
+
+    # In case there are no delimiters present in the input
+    if "," not in ext_attrs and "=" not in ext_attrs:
+        return []
+
+    l_ext_attrs: list[dict] = []
+
+    attributes = ext_attrs.split(",")
+
+    for ext_attr in attributes:
+        try:
+            key, value = ext_attr.split("=")
+            if key and value:
+                l_ext_attrs.append({f"*{key.strip()}": value.strip()})
+        except ValueError:
+            raise DemistoException(f"Unable to parse provided {ext_attrs=}. Expected format is 'ExtKey1=ExtVal1,ExtKeyN=ExtValN'")
+
+    return l_ext_attrs
+
+
+def transform_ipv4_range(from_ip: str, to_ip: str) -> dict[str, str]:
+    """Transform IPv4 range to list of IPs.
+
+    Args:
+        from_ip: Start of IPv4 range.
+        to_ip: End of IPv4 range.
+
+    Returns:
+        dictionary of IPv4 addresses in range.
+    """
+
+    return {"ip_address>": from_ip, "ip_address<": to_ip}
+
+
+def transform_network_info_context(network_info: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Helper function to transform the network info
+    raw response to the expected context structure.
+
+    Args:
+    - `network_info` (``list[dict[str, Any]]``): The network info request result.
+
+    Returns:
+    - `list[dict[str, Any]]` context output.
+    """
+
+    output: list[dict[str, Any]] = []
+    additional_options: list[dict[str, Any]] = []
+
+    for network in network_info:
+        n: dict[str, Any] = {}
+        for k, v in network.items():
+            if k == INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY:
+                n[NETWORK_INFO_MAPPING[k]] = get_extended_attributes_context(v)
+            elif k in NETWORK_INFO_MAPPING:
+                n[NETWORK_INFO_MAPPING[k]] = v
+            # TODO take this out to a new function as it's used twice
+            else:
+                additional_options.append(v)
+        if additional_options:
+            n[INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY] = additional_options
+        output.append(n)
+
+    return output
+
+
+def transform_ip_context(ip_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Helper function to transform the IP info
+    raw response to the expected context structure.
+
+    Args:
+    - `network_info` (``list[dict[str, Any]]``): The network info request result.
+
+    Returns:
+    - `list[dict[str, Any]]` context output.
+    """
+
+    output: list[dict[str, Any]] = []
+
+    for ip in ip_list:
+        i: dict[str, Any] = {}
+        for k, v in ip.items():
+            i[IP_MAPPING[k]] = v
+        output.append(i)
+
+    return output
+
+
+def transform_host_records_context(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Helper function to transform the host records
+    raw response to the expected context structure.
+
+    Args:
+    - `records` (``list[dict[str, Any]]``): The host records request result.
+
+    Returns:
+    - `list[dict[str, Any]]` context output.
+    """
+
+    output: list[dict[str, Any]] = []
+    additional_options: list[dict[str, Any]] = []
+
+    for record in records:
+        r: dict[str, Any] = {}
+        for record_key, record_value in record.items():
+            # We're interested in the ref ID of the first host address
+            ipv4_addresses = record.get(INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY, [])
+
+            # We're not interested in these fields
+            if record_key == INTEGRATION_COMMON_RAW_RESULT_REFERENCE_KEY:
+                continue
+            elif record_key == INTEGRATION_HOST_RECORDS_RAW_RESULT_VIEW_KEY:
+                continue
+            elif record_key == INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY:
+                r[NETWORK_INFO_MAPPING[record_key]] = get_extended_attributes_context(record_value)
+            elif record_key == INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY:
+                # We're interested in the first host address
+                ipv4_addresses = record.get(INTEGRATION_HOST_RECORDS_RAW_RESULT_IPV4ADDRESSES_KEY, [])
+
+                if ipv4_addresses:
+                    first_address: dict[str, Any] = ipv4_addresses[0]
+                    try:
+                        for k, v in first_address.items():
+                            r[HOST_INFO_MAPPING[k]] = v
+                    except KeyError as err:
+                        demisto.debug(f"Unable to parse key '{err}' from first host record address {str(record)}: {err}")
+
+            elif record_key == INTEGRATION_HOST_RECORDS_RAW_RESULT_NAME_KEY:
+                r[INTEGRATION_COMMON_NAME_CONTEXT_KEY] = record_value
+            else:
+                # TODO take this out to a new function as it's used twice
+                additional_options.append({string_to_context_key(record_key): record_value})
+        if additional_options:
+            r[INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY] = additional_options
+
+        output.append(r)
+
+    return output
+
+
+def get_extended_attributes_context(v: dict[str, Any]) -> dict:
+    """
+    Helper function to transform extended attributes.
+
+    Extended attributes are returned in the following structure:
+
+    ```json
+    {
+        "EXTATTR_KEY_1": {
+            "value": "EXTATTR_VALUE_1"
+        },
+        "EXTATTR_KEY_2": {
+            "value": "EXTATTR_VALUE_2"
+        }
+    }
+    ```
+
+    This method returns it in the following strucutre:
+
+    ```json
+    {
+        "EXTATTR_KEY_1": "EXTATTR_VALUE_1",
+        "EXTATTR_KEY_2": "EXTATTR_VALUE_2"
+    }
+    ```
+
+    Args:
+    - `v` (``dict[str, Any]``): The extended attributes dict to process.
+
+    Returns:
+    - `dict[str, Any]` Extended attributes in the expected context structure.
+
+    """
+
+    ext_attr_value = {}
+
+    if isinstance(v, dict) and v:
+        for ext_attr_key, ext_attr_val in v.items():
+            if isinstance(ext_attr_val, dict) and ext_attr_val.get("value"):
+                ext_attr_value[ext_attr_key] = cast(dict[str, Any], ext_attr_val).get("value")
+            else:
+                ext_attr_value[ext_attr_key] = "N/A"
+
+    return ext_attr_value
+
+
 ''' COMMANDS '''
 
 
-def test_module_command(client: Client, *_) -> Tuple[str, Dict, Dict]:
+def test_module_command(client: InfoBloxNIOSClient, *_) -> tuple[str, dict, dict]:
     client.test_module()
     return 'ok', {}, {}
 
 
-def get_ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict, Dict]:
+def get_ip_command(client: InfoBloxNIOSClient, args: dict[str, str]) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -348,28 +823,63 @@ def get_ip_command(client: Client, args: Dict[str, str]) -> Tuple[str, Dict, Dic
         Outputs
     """
     ip = args.get('ip')
-    try:
-        raw_response = client.get_ip(ip)
-    except DemistoException as e:
-        if e.message and NETWORK_NOT_FOUND in e.message:
-            return "No indicators found", {}, {}
-        else:
-            raise
+    network = args.get('network')
+    from_ip = args.get('from_ip')
+    to_ip = args.get('to_ip')
+    max_results = arg_to_number(args.get('max_results', INTEGRATION_MAX_RESULTS_DEFAULT), required=False)
+
+    # Input validation
+
+    # If too many arguments are supplied, return an error
+    if sum(bool(arg) for arg in [ip, network, from_ip or to_ip]) > 1:
+        raise ValueError("Please specify only one of the `ip`, `network` or `from_ip`/`to_ip` arguments")
+
+    # If neither ip, network nor from/to_ip were specified, return an error.
+    elif not any([ip, network, from_ip and to_ip]):
+        raise ValueError("Please specify either the `ip`, `network` or `from_ip`/`to_ip` argument")
+
+    extended_attributes = args.get("extended_attrs")
+
+    if ip:
+        status = args.get('status', IPv4AddressStatus.USED.value)
+        raw_response = client.get_ipv4_address_from_ip(
+            ip,
+            status=status,
+            max_results=max_results,
+            extended_attributes=extended_attributes
+        )
+    elif network:
+        status = args.get('status', IPv4AddressStatus.USED.value)
+        raw_response = client.get_ipv4_address_from_netmask(
+            network,
+            status=status,
+            max_results=max_results,
+            extended_attributes=extended_attributes
+        )
+    elif from_ip and to_ip:
+        raw_response = client.get_ipv4_address_range(
+            from_ip,
+            to_ip,
+            max_results=max_results,
+            extended_attributes=extended_attributes
+        )
+
     ip_list = raw_response.get('result')
 
-    # If no IP object was returned
     if not ip_list:
-        return f'{INTEGRATION_NAME} - Could not find any data corresponds to: {ip}', {}, {}
-    fixed_keys_obj = {RESPONSE_TRANSLATION_DICTIONARY.get(key, string_to_context_key(key)): val for key, val in
-                      ip_list[0].items()}
-    title = f'{INTEGRATION_NAME} - IP: {ip} info.'
-    context = {
-        f'{INTEGRATION_CONTEXT_NAME}.IP(val.ReferenceID && val.ReferenceID === obj.ReferenceID)': fixed_keys_obj}
-    human_readable = tableToMarkdown(title, fixed_keys_obj, headerTransform=pascalToSpace)
+        human_readable = f'{INTEGRATION_NAME} - Could not find any data'
+        context = {}
+    else:
+        output = transform_ip_context(ip_list)
+        title = f'{INTEGRATION_NAME}'
+        context = {
+            f'{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_IPV4_CONTEXT_NAME}': output
+        }
+        human_readable = tableToMarkdown(title, output)
     return human_readable, context, raw_response
 
 
-def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def search_related_objects_by_ip_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -398,7 +908,7 @@ def search_related_objects_by_ip_command(client: Client, args: Dict) -> Tuple[st
     return human_readable, context, raw_response
 
 
-def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_response_policy_zone_rules_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -409,7 +919,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     """
     zone = args.get('response_policy_zone_name')
     view = args.get('view')
-    max_results = args.get('page_size', 50)
+    max_results = args.get('page_size', INTEGRATION_MAX_RESULTS_DEFAULT)
     next_page_id = args.get('next_page_id')
     if not zone and not next_page_id:
         raise DemistoException('To run this command either a zone or a next page ID must be given')
@@ -441,7 +951,7 @@ def list_response_policy_zone_rules_command(client: Client, args: Dict) -> Tuple
     return human_readable, context, raw_response
 
 
-def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def list_response_policy_zones_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -450,7 +960,7 @@ def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str,
     Returns:
         Outputs
     """
-    max_results = args.get('max_results', 50)
+    max_results = arg_to_number(args.get('max_results', INTEGRATION_MAX_RESULTS_DEFAULT), required=False)
     raw_response = client.list_response_policy_zones(max_results)
     zones_list = raw_response.get('result')
     if not zones_list:
@@ -468,7 +978,7 @@ def list_response_policy_zones_command(client: Client, args: Dict) -> Tuple[str,
     return human_readable, context, raw_response
 
 
-def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_response_policy_zone_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -495,7 +1005,7 @@ def create_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     return human_readable, context, raw_response
 
 
-def delete_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def delete_response_policy_zone_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -512,7 +1022,7 @@ def delete_response_policy_zone_command(client: Client, args: Dict) -> Tuple[str
     return human_readable, {}, raw_response
 
 
-def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_rpz_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -546,7 +1056,7 @@ def create_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     return human_readable, context, raw_response
 
 
-def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_a_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -573,7 +1083,7 @@ def create_a_substitute_record_rule_command(client: Client, args: Dict) -> Tuple
     return human_readable, context, raw_response
 
 
-def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_aaaa_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -600,7 +1110,7 @@ def create_aaaa_substitute_record_rule_command(client: Client, args: Dict) -> Tu
     return human_readable, context, raw_response
 
 
-def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_mx_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -629,7 +1139,7 @@ def create_mx_substitute_record_rule_command(client: Client, args: Dict) -> Tupl
     return human_readable, context, raw_response
 
 
-def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_naptr_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -660,7 +1170,7 @@ def create_naptr_substitute_record_rule_command(client: Client, args: Dict) -> T
     return human_readable, context, raw_response
 
 
-def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_ptr_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -691,7 +1201,7 @@ def create_ptr_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     return human_readable, context, raw_response
 
 
-def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_srv_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -722,7 +1232,7 @@ def create_srv_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     return human_readable, context, raw_response
 
 
-def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_txt_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -749,7 +1259,7 @@ def create_txt_substitute_record_rule_command(client: Client, args: Dict) -> Tup
     return human_readable, context, raw_response
 
 
-def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_ipv4_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -776,7 +1286,7 @@ def create_ipv4_substitute_record_rule_command(client: Client, args: Dict) -> Tu
     return human_readable, context, raw_response
 
 
-def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def create_ipv6_substitute_record_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -803,7 +1313,7 @@ def create_ipv6_substitute_record_rule_command(client: Client, args: Dict) -> Tu
     return human_readable, context, raw_response
 
 
-def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def enable_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -825,7 +1335,7 @@ def enable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, context, raw_response
 
 
-def disable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def disable_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -847,7 +1357,7 @@ def disable_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, context, raw_response
 
 
-def get_object_fields_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def get_object_fields_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -873,7 +1383,7 @@ def get_object_fields_command(client: Client, args: Dict) -> Tuple[str, Dict, Di
     return human_readable, context, raw_response
 
 
-def search_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def search_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -902,7 +1412,7 @@ def search_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
     return human_readable, context, raw_response
 
 
-def delete_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict]:
+def delete_rpz_rule_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict]:
     """
     Args:
         client: Client object
@@ -918,6 +1428,96 @@ def delete_rpz_rule_command(client: Client, args: Dict) -> Tuple[str, Dict, Dict
     return title, {}, raw_response
 
 
+def get_host_records_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict[str, Any]]:
+    """
+    Get host records.
+
+    Args:
+    - `client` (``InfoBloxNIOSClient``): Client object
+    - `args` (``dict``): Usually demisto.args()
+
+    Returns:
+    - `tuple[str, Dict, Dict]`: The human readable output, the records and the raw response.
+    """
+
+    hostname = args.get("host_name")
+    max_results = arg_to_number(args.get("max_results", INTEGRATION_MAX_RESULTS_DEFAULT))
+    additional_return_fields = args.get("additional_return_fields", INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
+    extended_attributes = args.get(INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
+
+    raw = client.get_host_records(
+        name=hostname,
+        additional_return_fields=additional_return_fields,
+        extended_attributes=extended_attributes,
+        max_results=max_results
+    )
+
+    if 'Error' in raw:
+        msg = raw.get("text")
+        raise DemistoException(f"Error retrieving host records: {msg}", res=raw)
+
+    records = raw.get("result", [])
+
+    demisto.debug(f"Found {len(records)} host records")
+
+    title = "Host records"
+
+    if records:
+        outputs = transform_host_records_context(records)
+        context = {
+            f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_HOST_RECORDS_CONTEXT_NAME}": outputs
+        }
+        human_readable = tableToMarkdown(title, outputs)
+    else:
+        human_readable = "No host records found"
+        context = {}
+
+    return human_readable, context, raw
+
+
+def get_network_info_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict[str, Any]]:
+    """
+    Get network information command.
+
+    Args:
+    - `client` (``InfoBloxNIOSClient``): Client object
+    - `args` (``dict``): Usually demisto.args()
+
+    Returns:
+    - `tuple[str, Dict, Dict]`: The human readable output, the records and the raw response.
+    """
+
+    pattern = args.get("pattern")
+    max_results = arg_to_number(args.get("max_results", INTEGRATION_MAX_RESULTS_DEFAULT))
+    additional_return_fields = args.get("additional_return_fields", INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
+    extended_attributes = args.get(INTEGRATION_COMMON_RAW_RESULT_EXTENSION_ATTRIBUTES_KEY)
+
+    raw_response = client.get_network_info(
+        pattern,
+        additional_return_fields=additional_return_fields,
+        extended_attributes=extended_attributes,
+        max_results=max_results
+    )
+
+    if 'Error' in raw_response:
+        msg = raw_response.get("text")
+        raise DemistoException(f"Error retrieving host records: {msg}", res=raw_response)
+
+    network_info = raw_response.get("result")
+
+    if not network_info:
+        hr = "No networks found"
+        context = {}
+    else:
+        output = transform_network_info_context(network_info)
+        hr = tableToMarkdown("Network information", output)
+        context = {
+            f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_NETWORK_INFO_CONTEXT_KEY}": output
+        }
+
+    return hr, context, raw_response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -928,15 +1528,17 @@ def main():  # pragma: no cover
     proxy = params.get('proxy', False)
     user = demisto.get(params, 'credentials.identifier')
     password = demisto.get(params, 'credentials.password')
-    default_request_params = {
-        '_return_as_object': '1'
-    }
-    client = Client(base_url, verify=verify, proxy=proxy, auth=(user, password), params=default_request_params)
+    client = InfoBloxNIOSClient(
+        base_url,
+        verify=verify,
+        proxy=proxy,
+        auth=(user, password)
+    )
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
     # Switch case
-    commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
+    commands: dict[str, Callable[[InfoBloxNIOSClient, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any]]]] = {
         'test-module': test_module_command,
         f'{INTEGRATION_COMMAND_NAME}-get-ip': get_ip_command,
         f'{INTEGRATION_COMMAND_NAME}-search-related-objects-by-ip': search_related_objects_by_ip_command,
@@ -959,6 +1561,8 @@ def main():  # pragma: no cover
         f'{INTEGRATION_COMMAND_NAME}-get-object-fields': get_object_fields_command,
         f'{INTEGRATION_COMMAND_NAME}-search-rule': search_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-rpz-rule': delete_rpz_rule_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-host-info': get_host_records_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-network-info': get_network_info_command
     }
     try:
         if command in commands:

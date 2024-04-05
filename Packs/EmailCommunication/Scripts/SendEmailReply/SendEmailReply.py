@@ -2,11 +2,39 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 import json
-import random
 import re
 from datetime import datetime as dt
+from markdown import Extension, markdown
+from markdown.inlinepatterns import UnderscoreProcessor, EmStrongItem
 
 ERROR_TEMPLATE = 'ERROR: SendEmailReply - {function_name}: {reason}'
+UNDERLINE_RE = r'(\+)([^+]+)\1'  # +underline+ -> <u>underline</u>
+STRIKETHROUGH_RE = r'(~{2})(.+?)\1'  # ~~Strikethrough~~ -> <s>Strikethrough</s>
+
+
+class DemistoUnderlineProcessor(UnderscoreProcessor):
+    """Processor for handling Underline."""
+
+    PATTERNS = [
+        EmStrongItem(re.compile(UNDERLINE_RE, re.DOTALL | re.UNICODE), 'single', 'u')
+    ]
+
+
+class DemistoStrikethroughProcessor(UnderscoreProcessor):
+    """Processor for handling Strikethrough."""
+
+    PATTERNS = [
+        EmStrongItem(re.compile(STRIKETHROUGH_RE, re.DOTALL | re.UNICODE), 'single', 's')
+    ]
+
+
+class DemistoExtension(Extension):
+    """ Add Custom Demisto Markdown support."""
+
+    def extendMarkdown(self, md):
+        """ Modify inline patterns. """
+        md.inlinePatterns.register(DemistoUnderlineProcessor(r'\+'), 'underline', 50)
+        md.inlinePatterns.register(DemistoStrikethroughProcessor(r'~'), 'strikethrough', 50)
 
 
 def get_utc_now():
@@ -24,6 +52,7 @@ def append_email_signature(html_body):
     Args: (string) html_body
     Returns: (string) Original HTML body with HTML formatted email signature appended
     """
+    demisto.debug("append_email_signature")
     email_signature = demisto.executeCommand('getList', {'listName': 'XSOAR - Email Communication Signature'})
 
     if is_error(email_signature):
@@ -87,6 +116,7 @@ def execute_reply_mail(incident_id, email_subject, subject_include_incident_id, 
 
         # setting the email's subject for gmail adjustments
         try:
+            demisto.debug(f'Setting incident {incident_id} email subject to {subject_with_id}')
             demisto.executeCommand('setIncident',
                                    {'id': incident_id, 'customFields': {'emailsubject': f'{subject_with_id}'}})
         except Exception:
@@ -117,6 +147,7 @@ def execute_reply_mail(incident_id, email_subject, subject_include_incident_id, 
         instances = demisto.getModules()
         if instances.get(mail_sender_instance, {}).get("brand") == "Gmail Single User":
             mail_content["references"] = email_latest_message
+    demisto.debug(f"Sending email with the following subject: {subject_with_id}, and content: {mail_content}")
     return demisto.executeCommand("reply-mail", mail_content)
 
 
@@ -129,6 +160,7 @@ def get_email_threads(incident_id):
         Dict of email thread entries
     """
     # Get current email threads from context if any are present
+    demisto.debug(f"Getting email threads for incident {incident_id}")
     incident_context = demisto.executeCommand("getContext", {'id': incident_id})
     incident_email_threads = dict_safe_get(incident_context[0], ['Contents', 'context', 'EmailThreads'])
     return incident_email_threads
@@ -297,6 +329,8 @@ def send_new_mail_request(incident_id, email_subject, subject_include_incident_i
         mail_content["using"] = mail_sender_instance
 
     # Send email
+    demisto.debug(
+        f"Sending email for incident {incident_id}, with the following subject: {email_subject}, and content: {mail_content}")
     email_result = demisto.executeCommand("send-mail", mail_content)
 
     # Store message details in context entry
@@ -349,6 +383,7 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
         for attachment in attachment_list:
             attachment_name = attachment.get('name', '')
             file_data = create_file_data_json(attachment, field_name)
+            demisto.debug(f"Removing attachment {attachment} from incident {incident_id}")
             demisto.executeCommand("core-api-post", {"uri": f"/incident/remove/{incident_id}", "body": file_data})
             if not isinstance(files, list):
                 files = [files]
@@ -407,9 +442,10 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
     if notes:
         for note in notes:
             note_user = note['Metadata']['user']
+            demisto.debug(f"Getting user data for user {note_user} in incident {incident_id}")
             note_userdata = demisto.executeCommand("getUserByUsername", {"username": note_user})
             user_fullname = dict_safe_get(note_userdata[0], ['Contents', 'name']) or "DBot"
-            reply_body += f"{user_fullname}: \n{note['Contents']}\n\n"
+            reply_body += f"{user_fullname}: \n\n{note['Contents']}\n\n"
 
         if isinstance(attachments, str):
             attachments = argToList(attachments)
@@ -420,9 +456,10 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
 
         entry_note = json.dumps(
             [{"Type": 1, "ContentsFormat": 'html', "Contents": reply_body, "tags": ['email-thread']}])
+        demisto.debug(f"Adding note to incident {incident_id}")
         entry_tags_res = demisto.executeCommand(
             "addEntries", {"entries": entry_note, 'id': incident_id, 'reputationCalcAsync': reputation_calc_async})
-
+        demisto.debug(f"Removing note:{note.get('ID')} from incident {incident_id}")
         entry_note_res = demisto.executeCommand("core-api-post", {"uri": "/entry/note", "body": json.dumps(
             {"id": note.get('ID'), "version": -1, "investigationId": incident_id, "data": "false"})})
         if is_error(entry_note_res):
@@ -433,12 +470,8 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
     else:
         return_error("Please add a note")
 
-    try:
-        res = demisto.executeCommand("mdToHtml", {"contextKey": "replyhtmlbody", "text": reply_body})
-        reply_html_body = res[0]['EntryContext']['replyhtmlbody']
-        return reply_body, reply_html_body
-    except Exception:
-        return_error(get_error(res))
+    reply_html_body = format_body(reply_body)
+    return reply_body, reply_html_body
 
 
 def get_email_recipients(email_to, email_from, service_mail, mailbox):
@@ -496,6 +529,7 @@ def get_query_window():
     Check if the user defined the list `XSOAR - Email Communication Days To Query` to give a custom value for the time
     to query back for related incidents. If yes, use this value, else use the default value of 60 days.
     """
+    demisto.debug('Getting the number of days to query back for related incidents')
     user_defined_time = demisto.executeCommand('getList', {'listName': 'XSOAR - Email Communication Days To Query'})
     if is_error(user_defined_time):
         demisto.debug('Error occurred while trying to load the `XSOAR - Email Communication Days To Query` list. Using'
@@ -528,7 +562,7 @@ def get_incident_by_query(query):
     query_from_date = str(parse_date_range(query_time)[0])
 
     query += f' modified:>="{query_from_date}"'
-
+    demisto.debug(f'Querying for incidents with the following query: {query}')
     res = demisto.executeCommand("getIncidents", {"query": query, "populateFields": "id,status"})[0]
     if is_error(res):
         return_results(ERROR_TEMPLATE.format('getIncidents', res['Contents']))
@@ -539,19 +573,34 @@ def get_incident_by_query(query):
     return incidents_details
 
 
-def get_unique_code():
+def get_unique_code(incident_id, max_tries=1000):
     """
-        Create an 8-digit unique random code that should be used to identify new created incidents.
-    Args: None
+        Create an 16-digit unique random code that should be used to identify new created incidents.
+    Args:
+        max_tries: The maximum number of tries to generate a unique code.
+        incident_id: The incident ID.
+
     Returns:
-        8-digit code returned as a string
+        16-digit code returned as a string
     """
+    demisto.debug(f'Generating a unique code for incident {incident_id}')
+    tried_codes = set()
+    incident_id_padded = incident_id[-3:].rjust(3, "0")  # Take padded last 3 digits of incident ID.
     while True:
-        code = f'{random.randrange(1, 10 ** 8):08}'
-        query = f'emailgeneratedcode: {code}'
-        incidents_details = get_incident_by_query(query)
-        if incidents_details is None or len(incidents_details) == 0:
-            return code
+        # The random code is 16 digits long and is created by concatenating the last 3 digits of the incident ID and epoch.
+        code = f'{incident_id_padded}{time.time_ns():013d}'[:16]
+        if code not in tried_codes:
+            tried_codes.add(code)
+            query = f'emailgeneratedcode: {code}'
+            incidents_details = get_incident_by_query(query)
+            if incidents_details is None or len(incidents_details) == 0:
+                demisto.debug(f'Generated unique code for incident {incident_id}: {code}, tried {len(tried_codes)} times')
+                return code
+            if len(tried_codes) > max_tries:
+                demisto.debug(f'Failed to generate unique code for incident {incident_id} after {max_tries} tries')
+                return_error(f'Failed to generate unique code for incident {incident_id} after {max_tries} tries')
+            if len(tried_codes) % 10 == 0:
+                demisto.debug(f'Generated {len(tried_codes)} unique codes for incident {incident_id}')
 
 
 def reset_fields():
@@ -559,6 +608,7 @@ def reset_fields():
     Clears fields used to send the email message so that they can be used again to create another new message.
     Args: None
     """
+    demisto.debug('Resetting fields used to send the email message')
     demisto.executeCommand('setIncident', {'emailnewrecipients': '', 'emailnewsubject': '',
                                            'emailnewbody': '', 'addcctoemail': '', 'addbcctoemail': ''})
 
@@ -616,13 +666,15 @@ def format_body(new_email_body):
         new_email_body (str): Email body text with or without Markdown formatting included
     Returns: (str) HTML email body
     """
-    # Replace newlines with <br> element to preserve line breaks
-    new_email_body = new_email_body.replace('\n', '<br>')
-
-    res = demisto.executeCommand("mdToHtml", {"text": new_email_body})
-    html_body = res[0]['Contents']
-
-    return html_body
+    return markdown(new_email_body,
+                    extensions=[
+                        'tables',
+                        'fenced_code',
+                        'legacy_em',
+                        'sane_lists',
+                        'nl2br',
+                        DemistoExtension(),
+                    ])
 
 
 def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_type, attachments, files, email_subject,
@@ -652,7 +704,8 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_t
     # Use Incident fields to construct & send email reply.
     if not email_code:
         # If a unique code is not set for this incident yet, generate and set it
-        email_code = get_unique_code()
+        email_code = get_unique_code(incident_id)
+        demisto.debug(f"Setting incident {incident_id} emailgeneratedcode to {email_code}")
         demisto.executeCommand('setIncident', {'id': incident_id,
                                                'customFields': {'emailgeneratedcode': email_code}})
     try:
@@ -703,17 +756,19 @@ def multi_thread_new(new_email_subject, subject_include_incident_id, new_email_r
             missing_fields.append('New Email Recipients')
         if not new_email_body:
             missing_fields.append('New Email Body')
-        return_error(f'The following required fields have not been set.  Please set them and try again. '
+        return_error(f'The following required fields have not been set. Please set them and try again. '
                      f'{missing_fields}')
 
-    thread_code = get_unique_code()
+    thread_code = get_unique_code(incident_id)
 
     # If there are already other values in 'emailgeneratedcodes', append the new code as a comma-separated list
     if email_codes:
+        demisto.debug(f"Setting incident {incident_id} emailgeneratedcodes to {email_codes},{thread_code}")
         demisto.executeCommand('setIncident',
                                {'id': incident_id,
                                 'customFields': {'emailgeneratedcodes': f"{email_codes},{thread_code}"}})
     else:
+        demisto.debug(f"Setting incident {incident_id} emailgeneratedcodes to {thread_code}")
         demisto.executeCommand('setIncident',
                                {'id': incident_id,
                                 'customFields': {'emailgeneratedcodes': f"{thread_code}"}})
@@ -940,62 +995,67 @@ def multi_thread_reply(new_email_body, body_type, incident_id, email_selected_th
 
 
 def main():
-    args = demisto.args()
-    incident = demisto.incident()
-    incident_id = incident.get('id')
-    custom_fields = incident.get('CustomFields')
-    labels = incident.get('labels', [])
-    # The mailbox configured in the relevant integration
-    mailbox = custom_fields.get('emailreceived') or get_mailbox_from_incident_labels(labels)
-    email_subject = custom_fields.get('emailsubject')
-    email_cc = custom_fields.get('emailcc', '')
-    add_cc = custom_fields.get('addcctoemail', '')
-    add_bcc = custom_fields.get('addbcctoemail', '')
-    service_mail = args.get('service_mail', '')
-    email_from = custom_fields.get('emailfrom', '')
-    email_to = custom_fields.get('emailto', '')
-    email_latest_message = custom_fields.get('emaillatestmessage')
-    email_code = custom_fields.get('emailgeneratedcode')  # single code field for 'Email Communication' types
-    email_codes = custom_fields.get('emailgeneratedcodes')  # multi-code field for other incident types
-    email_to_str = get_email_recipients(email_to, email_from, service_mail, mailbox)
-    files = args.get('files', {})
-    attachments = argToList(args.get('attachment', []))
-    new_email_attachments = custom_fields.get('emailnewattachment', {})
-    notes = demisto.executeCommand("getEntries", {'filter': {'categories': ['notes']}})
-    mail_sender_instance = args.get('mail_sender_instance', None)
-    new_thread = args.get('new_thread')
-    new_email_recipients = custom_fields.get('emailnewrecipients')
-    new_email_subject = custom_fields.get('emailnewsubject')
-    new_email_body = custom_fields.get('emailnewbody')
-    email_selected_thread = custom_fields.get('emailselectedthread')
-    subject_include_incident_id = argToBoolean(args.get('subject_include_incident_id', False))
-    body_type = args.get('bodyType') or args.get('body_type') or 'html'
+    try:
+        demisto.debug("Starting SendEmailReply script")
+        args = demisto.args()
+        incident = demisto.incident()
+        incident_id = incident.get('id')
+        custom_fields = incident.get('CustomFields')
+        labels = incident.get('labels', [])
+        # The mailbox configured in the relevant integration
+        mailbox = custom_fields.get('emailreceived') or get_mailbox_from_incident_labels(labels)
+        email_subject = custom_fields.get('emailsubject')
+        email_cc = custom_fields.get('emailcc', '')
+        add_cc = custom_fields.get('addcctoemail', '')
+        add_bcc = custom_fields.get('addbcctoemail', '')
+        service_mail = args.get('service_mail', '')
+        email_from = custom_fields.get('emailfrom', '')
+        email_to = custom_fields.get('emailto', '')
+        email_latest_message = custom_fields.get('emaillatestmessage')
+        email_code = custom_fields.get('emailgeneratedcode')  # single code field for 'Email Communication' types
+        email_codes = custom_fields.get('emailgeneratedcodes')  # multi-code field for other incident types
+        email_to_str = get_email_recipients(email_to, email_from, service_mail, mailbox)
+        files = args.get('files', {})
+        attachments = argToList(args.get('attachment', []))
+        new_email_attachments = custom_fields.get('emailnewattachment', {})
+        mail_sender_instance = args.get('mail_sender_instance', None)
+        new_thread = args.get('new_thread')
+        new_email_recipients = custom_fields.get('emailnewrecipients')
+        new_email_subject = custom_fields.get('emailnewsubject')
+        new_email_body = custom_fields.get('emailnewbody')
+        email_selected_thread = custom_fields.get('emailselectedthread')
+        subject_include_incident_id = argToBoolean(args.get('subject_include_incident_id', False))
+        body_type = args.get('bodyType') or args.get('body_type') or 'html'
+        reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
+        demisto.debug("Getting notes")
+        notes = demisto.executeCommand("getEntries", {'filter': {'categories': ['notes']}})
 
-    argToBoolean(args.get('reputation_calc_async', False))
+        if new_email_attachments:
+            new_attachment_names = ', '.join([attachment.get('name', '') for attachment in new_email_attachments])
+        else:
+            new_attachment_names = 'None'
+        demisto.debug(f"New thread: {new_thread}")
+        if new_thread == 'n/a':
+            # This case is run when replying to an email from the 'Email Communication' layout
+            single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_type, attachments, files, email_subject,
+                                subject_include_incident_id, email_to_str, service_mail, email_latest_message,
+                                mail_sender_instance, reputation_calc_async)
 
-    if new_email_attachments:
-        new_attachment_names = ', '.join([attachment.get('name', '') for attachment in new_email_attachments])
-    else:
-        new_attachment_names = 'None'
+        elif new_thread == 'true':
+            # This case is run when using the 'Email Threads' layout to send a new first-contact email message
+            multi_thread_new(new_email_subject, subject_include_incident_id, new_email_recipients, new_email_body, body_type,
+                             incident_id, email_codes, new_email_attachments, files, service_mail, add_cc, add_bcc,
+                             mail_sender_instance, new_attachment_names)
 
-    if new_thread == 'n/a':
-        # This case is run when replying to an email from the 'Email Communication' layout
-        single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, body_type, attachments, files, email_subject,
-                            subject_include_incident_id, email_to_str, service_mail, email_latest_message,
-                            mail_sender_instance, reputation_calc_async=False)
-
-    elif new_thread == 'true':
-        # This case is run when using the 'Email Threads' layout to send a new first-contact email message
-        multi_thread_new(new_email_subject, subject_include_incident_id, new_email_recipients, new_email_body, body_type,
-                         incident_id, email_codes, new_email_attachments, files, service_mail, add_cc, add_bcc,
-                         mail_sender_instance, new_attachment_names)
-
-    elif new_thread == 'false':
-        # This case is run when using the 'Email Threads' layout to reply to an existing email thread
-        multi_thread_reply(new_email_body, body_type, incident_id, email_selected_thread, new_email_attachments, files, add_cc,
-                           add_bcc, service_mail, mail_sender_instance, new_attachment_names,
-                           subject_include_incident_id)
+        elif new_thread == 'false':
+            # This case is run when using the 'Email Threads' layout to reply to an existing email thread
+            multi_thread_reply(new_email_body, body_type, incident_id, email_selected_thread, new_email_attachments, files,
+                               add_cc, add_bcc, service_mail, mail_sender_instance, new_attachment_names,
+                               subject_include_incident_id)
+    except Exception as ex:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute SendEmailReply. Error: {str(ex)}')
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):  # pragma: no cover
     main()

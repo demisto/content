@@ -9,7 +9,7 @@ import pytest
 
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
-from CoreIRApiModule import CoreClient
+from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure, XSOAR_RESOLVED_STATUS_TO_XDR
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command, list_user_groups_command, parse_user_groups, list_users_command, list_roles_command, \
     change_user_role_command, list_risky_users_or_host_command, enrich_error_message_id_group_role, get_incidents_command
@@ -17,7 +17,6 @@ from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoi
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
 )
-
 
 Core_URL = 'https://api.xdrurl.com'
 
@@ -544,7 +543,7 @@ def test_allowlist_files_command_with_more_than_one_file(requests_mock):
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
         'CoreApiModule.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)':
-        test_data['multi_command_args']['hash_list']
+            test_data['multi_command_args']['hash_list']
     }
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
@@ -845,6 +844,28 @@ def test_get_update_args_unassgning_user(mocker):
     assert update_args.get('assigned_user_mail') is None
     assert update_args.get('assigned_user_pretty_name') is None
     assert update_args.get('unassign_user') == 'true'
+
+
+def test_handle_outgoing_issue_closure_close_reason(mocker):
+    """
+    Given:
+        -  a dict indicating changed fields (delta)
+        - the incident status - set to set to 2 == Closed
+    When
+        - running handle_outgoing_issue_closure
+    Then
+        - Closing the issue with the resolved_security_testing status
+    """
+    from CoreIRApiModule import handle_outgoing_issue_closure
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({'delta': {'assigned_user_mail': 'None', 'closeReason': 'Security Testing'},
+                                          'status': 2, 'inc_status': 2, 'data': {'status': 'other'}})
+    request_data_log = mocker.patch.object(demisto, 'debug')
+    handle_outgoing_issue_closure(remote_args)
+
+    assert "handle_outgoing_issue_closure Closing Remote incident incident_id=None with status resolved_security_testing" in \
+           request_data_log.call_args[  # noqa: E501
+               0][0]
 
 
 def test_get_update_args_close_incident():
@@ -3147,8 +3168,8 @@ GRACEFULLY_FAILING = [
         },
         {
             "err_msg": "An error occurred while processing XDR public API - No endpoint "
-            "was found "
-            "for creating the requested action",
+                       "was found "
+                       "for creating the requested action",
             "status_code": 500,
         },
         False,
@@ -3423,7 +3444,7 @@ def test_parse_user_groups(data: dict[str, Any], expected_results: list[dict[str
     [
         ({"group_names": "test"}, "Error: Group test was not found. Full error message: Group 'test' was not found"),
         ({"group_names": "test, test2"}, "Error: Group test was not found. Note: If you sent more than one group name, "
-         "they may not exist either. Full error message: Group 'test' was not found")
+                                         "they may not exist either. Full error message: Group 'test' was not found")
     ]
 )
 def test_list_user_groups_command_raise_exception(mocker, test_data: dict[str, str], excepted_error: str):
@@ -3789,3 +3810,101 @@ class TestGetIncidents:
         _, outputs, _ = get_incidents_command(client, args)
 
         assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
+
+
+INPUT_test_handle_outgoing_issue_closure = load_test_data('./test_data/handle_outgoing_issue_closure_input.json')
+
+
+@pytest.mark.parametrize("args, expected_delta",
+                         [
+                             # close an incident from xsoar ui, and the incident type isn't cortex xdr incident
+                             (INPUT_test_handle_outgoing_issue_closure["xsoar_ui_common_mapping"]["args"],
+                              INPUT_test_handle_outgoing_issue_closure["xsoar_ui_common_mapping"]["expected_delta"]),
+                             # close an incident from xsoar ui, and the incident type is cortex xdr incident
+                             (INPUT_test_handle_outgoing_issue_closure["xsoar_ui_cortex_xdr_incident"]["args"],
+                              INPUT_test_handle_outgoing_issue_closure["xsoar_ui_cortex_xdr_incident"]["expected_delta"]),
+                             # close an incident from XDR
+                             (INPUT_test_handle_outgoing_issue_closure["xdr"]["args"],
+                              INPUT_test_handle_outgoing_issue_closure["xdr"]["expected_delta"])
+                         ])
+def test_handle_outgoing_issue_closure(args, expected_delta):
+    """
+    Given: An UpdateRemoteSystemArgs object.
+    - case A: data & delta that match a case of closing an incident from xsoar ui, and the incident type isn't cortex xdr incident
+    - case B: data & delta that match a case of closing an incident from xsoar ui, and the incident type is cortex xdr incident
+    - case C: data & delta that match a case of closing an incident from XDR.
+    When: Closing an incident.
+    Then: Ensure the update_args has the expected value.
+    - case A: a status is added with the correct value.
+    - case B: a status is added with the correct value.
+    - case C: a status isn't added. (If the closing status came from XDR, there is no need to update it again)
+    """
+    from CommonServerPython import UpdateRemoteSystemArgs
+
+    remote_args = UpdateRemoteSystemArgs(args)
+    handle_outgoing_issue_closure(remote_args)
+    assert remote_args.delta == expected_delta
+
+
+@pytest.mark.parametrize('custom_mapping, expected_resolved_status',
+                         [
+                             ("Other=Other,Duplicate=Other,False Positive=False Positive,Resolved=True Positive",
+                              ["resolved_other", "resolved_other", "resolved_false_positive", "resolved_true_positive",
+                               "resolved_security_testing"]),
+
+                             ("Other=True Positive,Duplicate=Other,False Positive=False Positive,Resolved=True Positive",
+                              ["resolved_true_positive", "resolved_other", "resolved_false_positive",
+                               "resolved_true_positive", "resolved_security_testing"]),
+
+                             ("Duplicate=Other", ["resolved_other", "resolved_other", "resolved_false_positive",
+                                                  "resolved_true_positive", "resolved_security_testing"]),
+
+                             # Expecting default mapping to be used when no mapping provided.
+                             ("", list(XSOAR_RESOLVED_STATUS_TO_XDR.values())),
+
+                             # Expecting default mapping to be used when improper mapping is provided.
+                             ("Duplicate=RANDOM1, Other=Random2", list(XSOAR_RESOLVED_STATUS_TO_XDR.values())),
+
+                             ("Random1=Duplicate Incident", list(XSOAR_RESOLVED_STATUS_TO_XDR.values())),
+
+                             # Expecting default mapping to be used when improper mapping *format* is provided.
+                             ("Duplicate=Other False Positive=Other", list(XSOAR_RESOLVED_STATUS_TO_XDR.values())),
+
+                             # Expecting default mapping to be used for when improper key-value pair *format* is provided.
+                             ("Duplicate=Other, False Positive=Other True Positive=Other, Other=True Positive",
+                              ["resolved_true_positive", "resolved_other", "resolved_false_positive",
+                               "resolved_true_positive", "resolved_security_testing"]),
+
+                         ],
+                         ids=["case-1", "case-2", "case-3", "empty-case", "improper-input-case-1", "improper-input-case-2",
+                              "improper-input-case-3", "improper-input-case-4"]
+                         )
+def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mapping, expected_resolved_status):
+    """
+    Given:
+        - A custom XSOAR->XDR close-reason mapping
+        - Expected resolved XDR status according to the custom mapping.
+    When
+        - Handling outgoing issue closure (handle_outgoing_issue_closure(...) executed).
+    Then
+        - The resolved XDR statuses match the expected statuses for all possible XSOAR close-reasons.
+    """
+    from CoreIRApiModule import handle_outgoing_issue_closure
+    from CommonServerPython import UpdateRemoteSystemArgs
+
+    mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
+                                                         "custom_xsoar_to_xdr_close_reason_mapping": custom_mapping})
+
+    all_xsoar_close_reasons = XSOAR_RESOLVED_STATUS_TO_XDR.keys()
+    for i, close_reason in enumerate(all_xsoar_close_reasons):
+        remote_args = UpdateRemoteSystemArgs({'delta': {'closeReason': close_reason},
+                                              'status': 2,
+                                              'inc_status': 2,
+                                              'data': {'status': 'other'}
+                                              })
+        # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr when improper mapping is provided).
+        with capfd.disabled():
+            handle_outgoing_issue_closure(remote_args)
+
+        assert remote_args.delta.get('status')
+        assert remote_args.delta['status'] == expected_resolved_status[i]

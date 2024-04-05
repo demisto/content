@@ -518,7 +518,15 @@ class Client(BaseClient):
         return response.get('data', {})
 
     def get_hash_reputation_request(self, hash_):
+        """
+        [DEPRECATED by S1] IN 2.1
+        """
         endpoint_url = f'hashes/{hash_}/reputation'
+        response = self._http_request(method='GET', url_suffix=endpoint_url)
+        return response
+
+    def get_hash_verdict_request(self, hash_):
+        endpoint_url = f'hashes/{hash_}/verdict'
         response = self._http_request(method='GET', url_suffix=endpoint_url)
         return response
 
@@ -1146,7 +1154,8 @@ def get_threats_command(client: Client, args: dict) -> CommandResults:
 
 def get_hash_command(client: Client, args: dict) -> CommandResults:
     """
-    Get hash reputation.
+    Get hash verdict.
+    Removed hash reputation since SentinelOne has deprecated it - Breaking BC.
     Removed hash classification since SentinelOne has deprecated it - Breaking BC.
     """
     hash_ = args.get('hash')
@@ -1154,20 +1163,20 @@ def get_hash_command(client: Client, args: dict) -> CommandResults:
     if type_ == 'Unknown':
         raise DemistoException('Enter a valid hash format.')
 
-    hash_reputation = client.get_hash_reputation_request(hash_)
-    reputation = hash_reputation.get('data', {})
+    hash_verdict = client.get_hash_verdict_request(hash_)
+    reputation = hash_verdict.get('data', {})
     contents = {
-        'Rank': reputation.get('rank'),
+        'Verdict': reputation.get('verdict'),
         'Hash': hash_,
     }
 
     return CommandResults(
-        readable_output=tableToMarkdown('Sentinel One - Hash Reputation\nProvides hash reputation (rank from 0 to 10):',
+        readable_output=tableToMarkdown('SentinelOne - Hash Reputation Verdict\nProvides hash reputation verdict:',
                                         contents, removeNull=True),
         outputs_prefix='SentinelOne.Hash',
         outputs_key_field='Hash',
         outputs=contents,
-        raw_response=hash_reputation)
+        raw_response=hash_verdict)
 
 
 def mark_as_threat_command(client: Client, args: dict) -> CommandResults:
@@ -3483,10 +3492,7 @@ def fetch_handler(client: Client, args):
 
 def to_incident(type, data):
     incident = {
-        'details': json.dumps(data),
         'rawJSON': json.dumps(data),
-        'labels': [{'type': _type, 'value': value if isinstance(value, str) else json.dumps(value)}
-                   for _type, value in data.items()]
     }
 
     if type == 'Threat':

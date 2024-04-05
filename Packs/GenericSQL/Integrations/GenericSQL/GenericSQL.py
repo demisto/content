@@ -13,6 +13,7 @@ from sqlalchemy.engine.url import URL
 from urllib.parse import parse_qsl
 import dateparser
 
+TERADATA = "Teradata"
 ORACLE = "Oracle"
 POSTGRES_SQL = "PostgreSQL"
 MY_SQL = "MySQL"
@@ -25,7 +26,6 @@ try:
     from expiringdict import ExpiringDict  # pylint: disable=E0401
 except Exception:  # noqa: S110
     pass
-
 
 # In order to use and convert from pymysql to MySQL this line is necessary
 pymysql.install_as_MySQLdb()
@@ -44,7 +44,9 @@ class Client:
 
     def __init__(self, dialect: str, host: str, username: str, password: str, port: str,
                  database: str, connect_parameters: str, ssl_connect: bool, use_pool=False, verify_certificate=True,
-                 pool_ttl=DEFAULT_POOL_TTL):
+                 pool_ttl: int = DEFAULT_POOL_TTL, use_ldap: bool = False):
+        if use_ldap and dialect != TERADATA:
+            raise ValueError(f"The LDAP parameter is only supported with {TERADATA}")
         self.dialect = dialect
         self.host = host
         self.username = username
@@ -55,6 +57,7 @@ class Client:
         self.ssl_connect = ssl_connect
         self.use_pool = use_pool
         self.pool_ttl = pool_ttl
+        self.use_ldap = use_ldap
         self.connection = self._create_engine_and_connect()
 
     @staticmethod
@@ -115,6 +118,31 @@ class Client:
             setattr(sqlalchemy, GLOBAL_CACHE_ATTR, cache)
         return cache
 
+    def _generate_db_url(self, module):
+        """
+            This method generates the db url object for creating the engine later.
+            Args:
+                module:
+                    The appropriate module according to the db.
+            Returns:
+                    The URL object, in case of Teradata is an url string.
+            """
+
+        # Teradata has a unique connection, unlike the others with URL object
+        if self.dialect == TERADATA:
+            if self.use_ldap:
+                return f'teradatasql://{self.username}:{self.password}@{self.host}:{self.port}/?logmech=LDAP'
+            else:
+                return f'teradatasql://{self.host}:{self.port}/?user={self.username}&password={self.password}'
+
+        return URL(drivername=module,
+                   username=self.username,
+                   password=self.password,
+                   host=self.host,
+                   port=arg_to_number(self.port),
+                   database=self.dbname,
+                   query=self.connect_parameters)
+
     def _create_engine_and_connect(self) -> sqlalchemy.engine.base.Connection:
         """
         Creating and engine according to the instance preferences and connecting
@@ -122,19 +150,14 @@ class Client:
         """
         ssl_connection = {}
         module = self._convert_dialect_to_module(self.dialect)
-        db_url = URL(drivername=module,
-                     username=self.username,
-                     password=self.password,
-                     host=self.host,
-                     port=arg_to_number(self.port),
-                     database=self.dbname,
-                     query=self.connect_parameters)
+        db_url = self._generate_db_url(module)
+
         if self.ssl_connect:
             if self.dialect == POSTGRES_SQL:
                 ssl_connection = {'sslmode': 'require'}
             else:
                 ssl_connection = {'ssl': {'ssl-mode': 'preferred'}}  # type: ignore[dict-item]
-        engine: sqlalchemy.engine.Engine = None
+
         if self.use_pool:
             if 'expiringdict' not in sys.modules:
                 raise ValueError('Usage of connection pool is not support in this docker image')
@@ -144,6 +167,7 @@ class Client:
             if engine is None:  # (first time or expired) need to initialize
                 engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection)
                 cache[cache_key] = engine
+
         else:
             demisto.debug('Initializing engine with no pool (NullPool)')
             engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection,
@@ -174,26 +198,29 @@ class Client:
 
         headers = []
         if results:
-            # if the table isn't empty
-            headers = list(results[0].keys() or '')
-
+            # Teradata's response structure differs from those of other databases
+            if self.dialect == TERADATA:
+                headers = list(result.keys())
+            else:
+                headers = list(results[0].keys() or '')
         return results, headers
 
 
 def generate_default_port_by_dialect(dialect: str) -> str | None:
     """
-    In case no port was chosen, a default port will be chosen according to the SQL db type. Only return a port for
-    Microsoft SQL Server and ODBC Driver 18 for SQL Server where it seems to be required.
-    For the other drivers a None port is supported
+    In case no port was chosen, a default port will be chosen according to the SQL db type.
+    Returns a port for drivers that seem to require it. For other drivers, a None port is supported.
     :param dialect: sql db type
     :return: default port needed for connection
     """
-    if dialect in {'Microsoft SQL Server', 'ODBC Driver 18 for SQL Server'}:
-        return "1433"
-    return None
+    return {
+        "Microsoft SQL Server": "1433",
+        "ODBC Driver 18 for SQL Server": "1433",
+        TERADATA: "1025",
+    }.get(dialect)
 
 
-def generate_variable_names_and_mapping(bind_variables_values_list: list, query: str, dialect: str) ->\
+def generate_variable_names_and_mapping(bind_variables_values_list: list, query: str, dialect: str) -> \
         tuple[dict[str, Any], str | Any]:
     """
     In case of passing just bind_variables_values, since it's no longer supported in SQL Alchemy v2.,
@@ -219,8 +246,8 @@ def generate_variable_names_and_mapping(bind_variables_values_list: list, query:
 
     bind_variables_names_list = []
     for i in range(len(re.findall(char_to_count, query))):
-        query = query.replace(char_to_replace, f":bind_variable_{i+1}", 1)
-        bind_variables_names_list.append(f"bind_variable_{i+1}")
+        query = query.replace(char_to_replace, f":bind_variable_{i + 1}", 1)
+        bind_variables_names_list.append(f"bind_variable_{i + 1}")
     return dict(zip(bind_variables_names_list, bind_variables_values_list)), query
 
 
@@ -243,7 +270,10 @@ def generate_bind_vars(bind_variables_names: str, bind_variables_values: str, qu
     elif len(bind_variables_names_list) == len(bind_variables_values_list):
         return dict(zip(bind_variables_names_list, bind_variables_values_list)), query
     else:
-        raise Exception("The bind variables lists are not is the same length")
+        raise Exception(
+            "Bind variables length must match the variable count."
+            f"Got {len(bind_variables_names_list)} variables and {len(bind_variables_values_list)} values"
+        )
 
 
 def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
@@ -267,7 +297,7 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
 
         if params.get('fetch_parameters') == 'ID and timestamp' and not (params.get('column_name') and params.get('id_column')):
             msg += 'Missing Fetch Column or ID Column name (when ID and timestamp are chosen,' \
-                ' fill in both). '
+                   ' fill in both). '
 
         if params.get('fetch_parameters') in ['Unique ascending', 'Unique timestamp']:
             if not params.get('column_name'):
@@ -296,9 +326,9 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
             params['max_fetch'] = 1
             last_run = initialize_last_run(params.get('fetch_parameters', ''), params.get('first_fetch', ''))
             sql_query = create_sql_query(last_run, params.get('query', ''), params.get('column_name', ''),
-                                         params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+                                         params.get('max_fetch') or FETCH_DEFAULT_LIMIT)
             bind_variables = generate_bind_variables_for_fetch(params.get('column_name', ''),
-                                                               params.get('max_fetch', FETCH_DEFAULT_LIMIT), last_run)
+                                                               params.get('max_fetch') or FETCH_DEFAULT_LIMIT, last_run)
             result, headers = client.sql_query_execute_request(sql_query, bind_variables, 1)
         except Exception as e:
             raise e
@@ -317,6 +347,23 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
     return msg if msg else 'ok', {}, []
 
 
+def result_to_list_of_dicts(client: Client, result: list[dict], headers: list[str]) -> list[dict]:
+    """
+    This function pre-processes the query's result to a list of dictionaries.
+    """
+    if client.dialect == TERADATA:
+        # binding the headers with the columns
+        converted_table = [dict(zip(headers, row)) for row in result]
+    else:
+        # converting a sqlalchemy object to a table
+        converted_table = [dict(row) for row in result]
+
+    # converting b'' and datetime objects to readable ones
+    table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
+
+    return table
+
+
 def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, Any], list[dict[str, Any]]]:
     """
     Executes the sql query with the connection that was configured in the client
@@ -332,20 +379,21 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
         bind_variables_values = args.get('bind_variables_values', "")
         bind_variables, sql_query = generate_bind_vars(bind_variables_names, bind_variables_values, sql_query, client.dialect)
 
-        result, headers = client.sql_query_execute_request(sql_query, bind_variables)
-        result = convert_sqlalchemy_to_readable_table(result)
-        result = result[skip:skip + limit]
+        result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit)
 
-        human_readable = tableToMarkdown(name="Query result", t=result, headers=headers, removeNull=True)
+        table = result_to_list_of_dicts(client, result, headers)
+        table = table[skip:skip + limit]
 
+        human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers,
+                                         removeNull=True)
         context = {
-            "Result": result,
+            "Result": table,
             "Headers": headers,
             "Query": sql_query,
             "InstanceName": f"{client.dialect}_{client.dbname}",
         }
         entry_context: dict = {'GenericSQL(val.Query && val.Query === obj.Query)': {'GenericSQL': context}}
-        return human_readable, entry_context, result
+        return human_readable, entry_context, table
 
     except Exception as err:
         # In case there is no query executed and only an action e.g - insert, delete, update
@@ -516,11 +564,11 @@ def fetch_incidents(client: Client, params: dict):
     demisto.debug("GenericSQL - Start fetching")
     demisto.debug(f"GenericSQL - Last run: {json.dumps(last_run)}")
     sql_query = create_sql_query(last_run, params.get('query', ''), params.get('column_name', ''),
-                                 params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+                                 params.get('max_fetch') or FETCH_DEFAULT_LIMIT)
     demisto.debug(f"GenericSQL - Query sent to the server: {sql_query}")
-    limit_fetch = len(last_run.get('ids', [])) + int(params.get('max_fetch', FETCH_DEFAULT_LIMIT))
+    limit_fetch = len(last_run.get('ids', [])) + int(params.get('max_fetch') or FETCH_DEFAULT_LIMIT)
     bind_variables = generate_bind_variables_for_fetch(params.get('column_name', ''),
-                                                       params.get('max_fetch', FETCH_DEFAULT_LIMIT), last_run)
+                                                       params.get('max_fetch') or FETCH_DEFAULT_LIMIT, last_run)
     result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit_fetch)
     table = convert_sqlalchemy_to_readable_table(result)
     table = table[:limit_fetch]
@@ -577,15 +625,17 @@ def main():
         ssl_connect = params.get('ssl_connect')
         connect_parameters = params.get('connect_parameters')
         use_pool = params.get('use_pool', False)
+        use_ldap = params.get('use_ldap', False)
         verify_certificate: bool = not params.get('insecure', False)
         pool_ttl = int(params.get('pool_ttl') or DEFAULT_POOL_TTL)
         if pool_ttl <= 0:
             pool_ttl = DEFAULT_POOL_TTL
         command = demisto.command()
+        LOG(f'Command being called in SQL is: {command}')
         client = Client(dialect=dialect, host=host, username=user, password=password,
                         port=port, database=database, connect_parameters=connect_parameters,
                         ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,
-                        pool_ttl=pool_ttl)
+                        pool_ttl=pool_ttl, use_ldap=use_ldap)
         commands: dict[str, Callable[[Client, dict[str, str], str], tuple[str, dict[Any, Any], list[Any]]]] = {
             'test-module': test_module,
             'query': sql_query_execute,

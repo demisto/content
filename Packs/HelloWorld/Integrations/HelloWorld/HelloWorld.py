@@ -909,7 +909,6 @@ def main() -> None:  # pragma: no cover
     """
 
     params = demisto.params()
-    params = demisto.params()
     args = demisto.args()
     command = demisto.command()
 

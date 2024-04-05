@@ -279,10 +279,47 @@ def test_domain_command(mocker, requests_mock):
     assert results[0].outputs == expected_results
 
 
+def test_not_found_domain_command(mocker, requests_mock):
+    """
+    Given:
+    - A not found domain (testing.com)
+
+    When:
+    - Running the !domain command
+
+    Then:
+    - Display "Not found" message to user
+    """
+    from VirusTotalV3 import domain_command, ScoreCalculator, Client
+    import CommonServerPython
+    # Setup Mocks
+    mocker.patch.object(demisto, 'args', return_value={'domain': 'testing.com', 'extended_data': 'false'})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(" ", "_")
+    client = Client(params=params)
+
+    mock_response = {'error': {'code': 'NotFoundError'}}
+    requests_mock.get(f'https://www.virustotal.com/api/v3/domains/testing.com?relationships={domain_relationships}',
+                      json=mock_response)
+
+    results = domain_command(
+        client=client, score_calculator=mocked_score_calculator,
+        args=demisto.args(), relationships=domain_relationships)
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == 'Domain "testing.com" was not found in VirusTotal'
+    assert results[0].indicator.dbot_score.score == 0
+
+
 def test_ip_command(mocker, requests_mock):
     """
     Given:
-    - A valid (and private) testing ip (192.168.0.1)
+    - A valid (and private) ip (192.168.0.1)
 
     When:
     - Running the !ip command
@@ -319,6 +356,31 @@ def test_ip_command(mocker, requests_mock):
     assert results[0].execution_metrics is None
     assert results[0].outputs == expected_results
 
+
+def test_ip_command_private_ip_lookup(mocker):
+    """
+    Given:
+    - A valid (and private) ip (192.168.0.1) and enabling private ip lookup
+
+    When:
+    - Running the !ip command
+
+    Then:
+    - Display "Reputation lookups disabled" message to user
+    """
+    from VirusTotalV3 import ip_command, ScoreCalculator, Client
+    import CommonServerPython
+    # Setup Mocks
+    mocker.patch.object(demisto, 'args', return_value={'ip': '192.168.0.1', 'extended_data': 'false'})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(" ", "_")
+    client = Client(params=params)
+
     # Run command but disabling private IP enrichment
     results = ip_command(
         client=client, score_calculator=mocked_score_calculator,
@@ -327,12 +389,42 @@ def test_ip_command(mocker, requests_mock):
 
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
     assert results[0].execution_metrics is None
-    assert results[0].readable_output == ('Reputation lookups have been disabled for private IP addresses. '
-                                          'Enrichment skipped for 192.168.0.1')
+    assert results[0].readable_output == ('IP "192.168.0.1" was not enriched. '
+                                          'Reputation lookups have been disabled for private IP addresses.')
 
-    # Run command but enabling private IP enrichment after disabling it
+
+def test_ip_command_override_private_lookup(mocker, requests_mock):
+    """
+    Given:
+    - A valid (and private) ip (192.168.0.1) and enabling private ip lookup
+
+    When:
+    - Running the !ip command
+
+    Then:
+    - Display "Reputation lookups disabled" message to user
+    """
+    from VirusTotalV3 import ip_command, ScoreCalculator, Client
+    import CommonServerPython
+    # Setup Mocks
     mocker.patch.object(demisto, 'args', return_value={'ip': '192.168.0.1', 'extended_data': 'false',
                                                        'override_private_lookup': 'true'})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(" ", "_")
+    client = Client(params=params)
+
+    # Load assertions and mocked request data
+    mock_response = util_load_json('test_data/ip.json')
+    expected_results = util_load_json('test_data/ip_results.json')
+    requests_mock.get(f'https://www.virustotal.com/api/v3/ip_addresses/192.168.0.1?relationships={ip_relationships}',
+                      json=mock_response)
+
+    # Run command but enabling private IP enrichment after disabling it
     results = ip_command(
         client=client, score_calculator=mocked_score_calculator,
         args=demisto.args(), relationships=ip_relationships,
@@ -343,7 +435,45 @@ def test_ip_command(mocker, requests_mock):
     assert results[0].outputs == expected_results
 
 
-def test_url_command_success(mocker, requests_mock):
+def test_not_found_ip_command(mocker, requests_mock):
+    """
+    Given:
+    - A not found ip (192.168.0.1)
+
+    When:
+    - Running the !ip command
+
+    Then:
+    - Display "Not found" message to user
+    """
+    from VirusTotalV3 import ip_command, ScoreCalculator, Client
+    import CommonServerPython
+    # Setup Mocks
+    mocker.patch.object(demisto, 'args', return_value={'ip': '192.168.0.1', 'extended_data': 'false'})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    ip_relationships = (','.join(argToList(params.get('ip_relationships')))).replace('* ', '').replace(" ", "_")
+    client = Client(params=params)
+
+    mock_response = {'error': {'code': 'NotFoundError'}}
+    requests_mock.get(f'https://www.virustotal.com/api/v3/ip_addresses/192.168.0.1?relationships={ip_relationships}',
+                      json=mock_response)
+
+    results = ip_command(
+        client=client, score_calculator=mocked_score_calculator,
+        args=demisto.args(), relationships=ip_relationships,
+        disable_private_ip_lookup=False)
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == 'IP "192.168.0.1" was not found in VirusTotal'
+    assert results[0].indicator.dbot_score.score == 0
+
+
+def test_url_command(mocker, requests_mock):
     """
     Given:
     - A valid testing url (https://vt_is_awesome.com/uts)
@@ -384,6 +514,44 @@ def test_url_command_success(mocker, requests_mock):
     assert results[0].outputs == expected_results
 
 
+def test_not_found_url_command(mocker, requests_mock):
+    """
+    Given:
+    - A not found url (https://vt_is_awesome.com/uts)
+
+    When:
+    - Running the !url command
+
+    Then:
+    - Display "Not found" message to user
+    """
+    from VirusTotalV3 import url_command, ScoreCalculator, Client
+    import CommonServerPython
+    # Setup Mocks
+    mocker.patch.object(demisto, 'args', return_value={'url': 'https://vt_is_awesome.com/uts', 'extended_data': 'false'})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    testing_url = 'https://vt_is_awesome.com/uts'
+    params = demisto.params()
+    mocked_score_calculator = ScoreCalculator(params=params)
+    url_relationships = (','.join(argToList(params.get('url_relationships')))).replace('* ', '').replace(" ", "_")
+    client = Client(params=params)
+
+    mock_response = {'error': {'code': 'NotFoundError'}}
+    requests_mock.get(f'https://www.virustotal.com/api/v3/urls/{encode_url_to_base64(testing_url)}'
+                      f'?relationships={url_relationships}', json=mock_response)
+
+    results = url_command(
+        client=client, score_calculator=mocked_score_calculator,
+        args=demisto.args(), relationships=url_relationships)
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == f'URL "{testing_url}" was not found in VirusTotal'
+    assert results[0].indicator.dbot_score.score == 0
+
+
 def test_private_file_command(mocker, requests_mock):
     """
     Given:
@@ -419,3 +587,70 @@ def test_private_file_command(mocker, requests_mock):
     assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
     assert results[0].execution_metrics is None
     assert results[0].outputs == expected_results
+
+
+def test_not_found_private_file_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid Testing private file
+
+    When:
+    - Running the !vt-privatescanning-file command
+
+    Then:
+    - Display "Not found" message to user
+    """
+    from VirusTotalV3 import private_file_command, Client
+    import CommonServerPython
+    # Setup Mocks
+    sha256 = 'Example_sha256_with_64_characters_000000000000000000000000000000'
+    mocker.patch.object(demisto, 'args', return_value={'file': sha256})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    client = Client(params=params)
+
+    mock_response = {'error': {'code': 'NotFoundError'}}
+    requests_mock.get(f'https://www.virustotal.com/api/v3/private/files/{sha256}',
+                      json=mock_response)
+
+    results = private_file_command(client=client, args=demisto.args())
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal'
+    assert results[0].indicator.dbot_score.score == 0
+
+
+def test_not_found_file_sandbox_report_command(mocker, requests_mock):
+    """
+    Given:
+    - A valid Testing hash
+
+    When:
+    - Running the !vt-file-sandbox-report command
+
+    Then:
+    - Display "Not found" message to user
+    """
+    from VirusTotalV3 import file_sandbox_report_command, Client
+    import CommonServerPython
+    # Setup Mocks
+    sha256 = 'Example_sha256_with_64_characters_000000000000000000000000000000'
+    mocker.patch.object(demisto, 'args', return_value={'file': sha256, 'limit': '10'})
+    mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
+    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
+
+    # Assign arguments
+    params = demisto.params()
+    client = Client(params=params)
+
+    mock_response = {'error': {'code': 'NotFoundError'}}
+    requests_mock.get(f'https://www.virustotal.com/api/v3/files/{sha256}/behaviours',
+                      json=mock_response)
+
+    results = file_sandbox_report_command(client=client, args=demisto.args())
+
+    assert results[0].execution_metrics is None
+    assert results[0].readable_output == f'File "{sha256}" was not found in VirusTotal'

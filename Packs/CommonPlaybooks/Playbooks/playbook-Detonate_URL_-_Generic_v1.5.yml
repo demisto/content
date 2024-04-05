@@ -775,9 +775,9 @@ tasks:
       - "20"
     scriptarguments:
       Interval:
-        simple: "1"
+        simple: "60"
       Timeout:
-        simple: "8"
+        simple: "600"
       URL:
         complex:
           root: inputs.URL
@@ -870,7 +870,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false

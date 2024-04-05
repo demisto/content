@@ -1,0 +1,44 @@
+{
+    "jamf_protect_raw": {
+        "source_log_type": {
+        "type": "string",
+        "is_array": false
+      },
+        "op": {
+        "type": "string",
+        "is_array": false
+      },
+        "ips": {
+        "type": "string",
+        "is_array": false
+      },
+        "resourceId": {
+        "type": "string",
+        "is_array": false
+      },
+        "args": {
+        "type": "string",
+        "is_array": false
+      },
+        "user": {
+        "type": "string",
+        "is_array": false
+      },
+        "error": {
+        "type": "string",
+        "is_array": false
+      },
+        "json": {
+        "type": "string",
+        "is_array": false
+      },
+        "severity": {
+        "type": "string",
+        "is_array": false
+      },
+        "computer": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+}

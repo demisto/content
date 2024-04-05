@@ -84,6 +84,8 @@ configuration:
   name: close_incident
   type: 8
   required: false
+  hidden:
+  - marketplacev2
 - defaultvalue: None
   display: Mirroring Direction
   name: mirror_direction
@@ -94,30 +96,40 @@ configuration:
   - Incoming And Outgoing
   type: 15
   required: false
+  hidden:
+  - marketplacev2
 - additionalinfo: Add this tag to an entry to mirror it as an attachment to Jira.
   defaultvalue: attachment tag
   display: Attachment Entry Tag to Jira
   name: attachment_tag_to_jira
   type: 0
   required: false
+  hidden:
+  - marketplacev2
 - additionalinfo: Add this tag to an entry to mirror it as an attachment from Jira.
   defaultvalue: attachment tag from Jira
   display: Attachment Entry Tag from Jira
   name: attachment_tag_from_jira
   type: 0
   required: false
+  hidden:
+  - marketplacev2
 - additionalinfo: Add this tag to an entry to mirror it as a comment in Jira.
   defaultvalue: comment tag
   display: Comment Entry Tag to Jira
   name: comment_tag_to_jira
   type: 0
   required: false
+  hidden:
+  - marketplacev2
 - additionalinfo: Add this tag to an entry to mirror it as a comment from Jira.
   defaultvalue: comment tag from Jira
   display: Comment Entry Tag from Jira
   name: comment_tag_from_jira
   type: 0
   required: false
+  hidden:
+  - marketplacev2
 - additionalinfo: Fetch comments for a Jira ticket.
   display: Fetch comments
   name: fetch_comments
@@ -419,7 +431,7 @@ script:
       name: issue_id
     - description: The issue key (Issue ID or key is required).
       name: issue_key
-    - description: 'The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}.'
+    - description: 'The issue object (in JSON format). This argument is for advanced users, as when utilizing this argument, one cannot use other arguments (it will raise an error) except the `issue_id` `issue_key` `action` `transition` and `status` and must input all required arguments into the issue_json. In addition, when issue_json is used, it is not possible to use the project name but only the project key. For example {"fields":{"customfield_10037":"field_value", "summary": "some summary", "project": {"key": "<project_key>"}}}. For more information about this argument, see https://developer.atlassian.com/server/jira/platform/jira-rest-api-example-create-issue-7897248/.'
       name: issue_json
     - description: Deprecated. Please use issue_json.
       name: issueJson
@@ -556,7 +568,7 @@ script:
       description: The last time the ticket was updated.
       type: Date
   - arguments:
-    - description: 'The issue object (in JSON format). Using this argument will override the other arguments. For example {"fields":{"customfield_10037":"field_value"}}.'
+    - description: 'The issue object (in JSON format). This argument is for advanced users, as when utilizing this argument, one cannot use other arguments and must input all required arguments into the issue_json. In addition, when issue_json is used, it is not possible to use the project name but only the project key. For example {"fields":{"customfield_10037":"field_value", "summary": "some summary", "project": {"key": "<project_key>"}}}. For more information about this argument, see https://developer.atlassian.com/server/jira/platform/jira-rest-api-example-create-issue-7897248/.'
       name: issue_json
     - description: Deprecated. Please use issue_json.
       name: issueJson
@@ -806,6 +818,12 @@ script:
       name: issue_key
     description: Delete a comment from an issue.
     name: jira-issue-delete-comment
+  - arguments:
+    - description: The attachment ID. In order to see the attachment ID please use the jira-get-issue command.
+      name: attachment_id
+      required: true
+    description: Delete an attachment from an issue.
+    name: jira-issue-delete-file
   - arguments:
     - description: The issue ID (Issue ID or key is required).
       name: issue_id
@@ -1462,7 +1480,7 @@ script:
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
     arguments: []
-  dockerimage: demisto/btfl-soup:1.0.1.85862
+  dockerimage: demisto/btfl-soup:1.0.1.89280
   isfetch: true
   ismappable: true
   isremotesyncin: true

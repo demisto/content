@@ -1,4 +1,4 @@
-Github logs event collector integration for XSIAM.
+Github logs event collector integration for Cortex XSIAM.
 This integration was integrated and tested with Github REST API V3
 
 ## Configure Github Event Collector on Cortex XSOAR
@@ -33,7 +33,7 @@ Manual command to fetch events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to True in orfer to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
 
 
 #### Context Output

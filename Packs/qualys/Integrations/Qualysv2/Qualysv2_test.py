@@ -1155,7 +1155,6 @@ class TestAssetTags:
             "modified": "2022-11-24T13:09:35Z",
             "ruleType": "INSTALLED_SOFTWARE",
             "criticalityScore": "3",
-            "criticalityScore": "3",
             "childTags": [
                 {"id": "1", "name": "child_1"},
                 {"id": "2", "name": "child_2"},

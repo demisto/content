@@ -6,17 +6,17 @@ script: ''
 type: javascript
 tags:
 - filter
-comment: Determines whether an IPv4 or IPv6 address is contained in at least one of the comma-delimited CIDR ranges. Multiple IPv4/IPv6 addresses can be passed comma-delimited and each will be tested.
+comment: Determines whether an IPv4 or IPv6 address is contained in at least one of the comma-delimited CIDR ranges. Multiple IPv4/IPv6 addresses can be passed comma-delimited and each will be tested. A mix of IPv4 and IPv6 addresses will always return false.
 enabled: true
 args:
 - name: left
   required: true
   isArray: true
-  description: The IPv4/IPv6 address (or comma-delimited addresses) to check.
+  description: A comma-separated list of IPv4 or IPv6 addresses to search for.
 - name: right
   required: true
   isArray: true
-  description: A comma-delimited list of IPv4/IPv6 ranges in CIDR notation against which to match.
+  description: A comma-separated list of IPv4 or IPv6 ranges in CIDR notation against which to match.
 scripttarget: 0
 runas: DBotWeakRole
 tests:

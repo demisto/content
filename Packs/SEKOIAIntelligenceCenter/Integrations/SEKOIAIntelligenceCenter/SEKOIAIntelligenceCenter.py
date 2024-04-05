@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """SEKOIA.IO Integration for Cortex XSOAR (aka Demisto)
 """
 import ipaddress
@@ -36,7 +37,6 @@ DBOTSCORE_MAPPING = {
 REPUTATION_MAPPING = {
     "domain": "domain-name",
     "url": "url",
-    "ip": "ip",
     "file": "file",
     "email": "email-addr",
 }
@@ -53,7 +53,7 @@ class Client(BaseClient):
 
     def get_validate_resource(self) -> str:
         """
-        Validate the API Key against SEKOIA.IO API
+        Request Sekoia.io to validate the API Key
         """
         try:
             self._http_request(
@@ -63,12 +63,10 @@ class Client(BaseClient):
             )
             return "ok"
         except DemistoException as e:
-            raise DemistoException(
-                f"{INTEGRATION_NAME} error: the request failed due to: {e}"
-            )
+            raise DemistoException(f"{INTEGRATION_NAME} error: the request failed due to: {e}")
 
     def get_observable(self, value: str, indicator_type: str) -> dict:
-        """Find observable matching the given value
+        """Request Sekoia.io CTI observable endpoint and return the API response
 
         :type value: ``str``
         :param value: indicator to get the context for
@@ -87,7 +85,7 @@ class Client(BaseClient):
         )
 
     def get_indicator(self, value: str, indicator_type: str) -> dict:
-        """Find indicators matching the given value
+        """Request Sekoia.io CTI indicator endpoint and return the API response
 
         :type value: ``str``
         :param value: indicator to get the context for
@@ -106,7 +104,7 @@ class Client(BaseClient):
         )
 
     def get_indicator_context(self, value: str, indicator_type: str) -> dict:
-        """Get context around the indicators matching the given value
+        """Request Sekoia.io CTI indicator context endpoint and return the API response
 
         :type value: ``str``
         :param value: indicator to get the context for
@@ -129,6 +127,7 @@ class Client(BaseClient):
 
 
 def ip_version(ip: str | None) -> str | None:
+    """Return the STIX type of the provided IP (ipv4-addr or ipv6-addr)"""
     if not ip:
         return None
     ip_version = ipaddress.ip_address(ip).version
@@ -149,14 +148,17 @@ def get_reputation_score(indicator_types: list[str]) -> int:
     return Common.DBotScore.NONE
 
 
-def extract_indicator_from_pattern(pattern_str: str) -> str | None:
+def extract_indicator_from_pattern(stix_object: dict) -> str:
     """
     Extract indicator from STIX indicator pattern.
     i.e.
         [ipv4-addr:value = '198.51.100.1/32'] => 198.51.100.1/32
         [ipv4-addr:value = '198.51.100.1/32' OR ipv4-addr:value = '203.0.113.33/32'] => 198.51.100.1/32
     """
-    pattern = PatternParser(pattern_str)
+    if 'pattern' not in stix_object:
+        return stix_object['name']
+
+    pattern = PatternParser(stix_object['pattern'])
     data = pattern.inspect()
 
     # item looks like [(['value'], '=', "'198.51.100.1/32'")]
@@ -219,30 +221,34 @@ def get_tlp(object_marking_refs: list[str], stix_bundle: dict) -> str:
     return "red"
 
 
-def get_stix_object_reputation(stix_bundle: dict, stix_object: dict) -> Optional[CommandResults]:
+def get_stix_object_reputation(stix_bundle: dict, stix_object: dict, is_unknown: bool) -> Optional[CommandResults]:
     """ "
     Transform a STIX object into a Cortex XSOAR indicator
     """
 
     reputation_score: int = get_reputation_score(stix_object.get("indicator_types", []))
     reliability_score: str = get_reliability_score(int(stix_object.get("confidence", -1)))
-    tlp: str = get_tlp(stix_object["object_marking_refs"], stix_bundle)
-
+    tlp: str = get_tlp(stix_object.get("object_marking_refs", []), stix_bundle)
     if "ipv4-addr" in stix_object["x_ic_observable_types"] or "ipv6-addr" in stix_object["x_ic_observable_types"]:
-        return get_ip_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
+        return get_ip_indicator_reputation(stix_object, reputation_score, reliability_score, tlp, is_unknown)
     if "file" in stix_object["x_ic_observable_types"]:
-        return get_file_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
+        return get_file_indicator_reputation(stix_object, reputation_score, reliability_score, tlp, is_unknown)
     if "domain-name" in stix_object["x_ic_observable_types"]:
-        return get_domain_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
+        return get_domain_indicator_reputation(stix_object, reputation_score, reliability_score, tlp, is_unknown)
     if "url" in stix_object["x_ic_observable_types"]:
-        return get_url_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
+        return get_url_indicator_reputation(stix_object, reputation_score, reliability_score, tlp, is_unknown)
     if "email-addr" in stix_object["x_ic_observable_types"]:
-        return get_email_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
-
+        return get_email_indicator_reputation(stix_object, reputation_score, reliability_score, tlp, is_unknown)
     return None
 
 
-def get_ip_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
+def get_ip_indicator_reputation(
+    stix_object: dict,
+    reputation_score: int,
+    reliability_score: str,
+    tlp: str,
+    is_unknown: bool
+) -> CommandResults:
     """
     Return stix_object of type IP as indicator
     """
@@ -252,28 +258,35 @@ def get_ip_indicator_reputation(stix_object: dict, reputation_score: int, reliab
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
+        message='No results found.' if is_unknown else None
     )
 
-    ip_addr = extract_indicator_from_pattern(stix_object["pattern"])
+    indicator_value: str = extract_indicator_from_pattern(stix_object)
+
     ip = Common.IP(
-        ip=ip_addr,
+        ip=indicator_value,
         dbot_score=dbot_score,
         traffic_light_protocol=tlp,
     )
     return CommandResults(
         outputs_prefix="SEKOIAIntelligenceCenter.IP",
         outputs_key_field="name",
-        outputs=stix_object,
+        outputs=None if is_unknown else stix_object,
         indicator=ip,
     )
 
 
-def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
+def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str,
+                                  tlp: str, is_unknown: bool) -> CommandResults:
     """
     Return stix_object of type file as indicator
     """
 
-    hashes = extract_file_indicator_hashes(stix_object["pattern"])
+    if is_unknown:
+        return create_indicator_result_with_dbotscore_unknown(stix_object["name"], DBotScoreType.FILE, reliability_score)
+
+    hashes = extract_file_indicator_hashes(stix_object['pattern'])
+
     dbot_score = Common.DBotScore(
         indicator=hashes["md5"],
         indicator_type=DBotScoreType.FILE,
@@ -295,11 +308,12 @@ def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reli
         outputs_prefix="SEKOIAIntelligenceCenter.File",
         outputs_key_field="name",
         outputs=stix_object,
-        indicator=file,
+        indicator=file
     )
 
 
-def get_domain_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
+def get_domain_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str,
+                                    tlp: str, is_unknown: bool) -> CommandResults:
     """
     Return stix_object of type domain as indicator
     """
@@ -310,9 +324,10 @@ def get_domain_indicator_reputation(stix_object: dict, reputation_score: int, re
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
+        message='No results found.' if is_unknown else None
     )
 
-    domain_name = extract_indicator_from_pattern(stix_object["pattern"])
+    domain_name = extract_indicator_from_pattern(stix_object)
     domain = Common.Domain(
         domain=domain_name,
         dbot_score=dbot_score,
@@ -322,12 +337,14 @@ def get_domain_indicator_reputation(stix_object: dict, reputation_score: int, re
     return CommandResults(
         outputs_prefix="SEKOIAIntelligenceCenter.Domain",
         outputs_key_field="name",
-        outputs=stix_object,
+        outputs=None if is_unknown else stix_object,
         indicator=domain,
     )
 
 
-def get_url_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
+def get_url_indicator_reputation(stix_object: dict, reputation_score: int,
+                                 reliability_score: str, tlp: str,
+                                 is_unknown: bool) -> CommandResults:
     """
     Return stix_object of type url as indicator
     """
@@ -338,9 +355,10 @@ def get_url_indicator_reputation(stix_object: dict, reputation_score: int, relia
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
+        message='No results found.' if is_unknown else None
     )
 
-    url_addr = extract_indicator_from_pattern(stix_object["pattern"])
+    url_addr = extract_indicator_from_pattern(stix_object)
     url = Common.URL(
         url=url_addr,
         dbot_score=dbot_score,
@@ -350,36 +368,42 @@ def get_url_indicator_reputation(stix_object: dict, reputation_score: int, relia
     return CommandResults(
         outputs_prefix="SEKOIAIntelligenceCenter.URL",
         outputs_key_field="name",
-        outputs=stix_object,
+        outputs=None if is_unknown else stix_object,
         indicator=url,
     )
 
 
 def get_email_indicator_reputation(
-    stix_object: dict, reputation_score: int, reliability_score: str, tlp: str
+    stix_object: dict, reputation_score: int, reliability_score: str,
+    tlp: str, is_unknown: bool
 ) -> CommandResults | None:
     """
     Return stix_object of type email as indicator
     """
-
     dbot_score = Common.DBotScore(
         indicator=stix_object["name"],
         indicator_type=DBotScoreType.EMAIL,
         integration_name=INTEGRATION_NAME,
         score=reputation_score,
         reliability=reliability_score,
+        message='No results found.' if is_unknown else None
     )
 
-    email_addr = extract_indicator_from_pattern(stix_object["pattern"])
+    email_addr = extract_indicator_from_pattern(stix_object)
     if not email_addr:
         return None
 
-    email = Common.EMAIL(address=email_addr, domain=email_addr.split("@")[-1], dbot_score=dbot_score, traffic_light_protocol=tlp)
+    email = Common.EMAIL(
+        address=email_addr,
+        domain=email_addr.split("@")[-1],
+        dbot_score=dbot_score,
+        traffic_light_protocol=tlp,
+    )
 
     return CommandResults(
         outputs_prefix="SEKOIAIntelligenceCenter.EMAIL",
         outputs_key_field="name",
-        outputs=stix_object,
+        outputs=None if is_unknown else stix_object,
         indicator=email,
     )
 
@@ -445,14 +469,32 @@ def indicator_context_to_markdown(indicator_context: dict) -> str:
     return markdown
 
 
-def extract_indicators(indicator_context: dict, command_results_list: list[CommandResults]) -> list:
+def extract_indicators(indicator: dict, indicator_context: dict) -> list:
     """
     Return each indicators of the STIX bundles as a list of CommandResults
     """
+    # Indicator context for empty API response
+    if indicator_context["items"] == []:
+        stix_object = {
+            "name": indicator["value"],
+            "x_ic_observable_types": [indicator["type"]],
+        }
+
+        object_reputation = get_stix_object_reputation(stix_bundle={}, stix_object=stix_object, is_unknown=True)
+
+        if object_reputation:
+            object_reputation.readable_output = tableToMarkdown(name=f'{INTEGRATION_NAME}:',
+                                                                t={indicator["type"]: indicator["value"], 'Result': 'Not found'},
+                                                                headers=[indicator["type"], 'Result'])
+
+        return [object_reputation]
+
+    # Indicator context for known indicator
+    command_results_list: list = []
     for stix_bundle in indicator_context["items"]:
         for stix_object in stix_bundle["objects"]:
             if stix_object["type"] == "indicator":
-                object_reputation = get_stix_object_reputation(stix_bundle, stix_object)
+                object_reputation = get_stix_object_reputation(stix_bundle, stix_object, is_unknown=False)
                 if object_reputation:
                     command_results_list.append(object_reputation)
 
@@ -481,7 +523,6 @@ def test_module(client: Client) -> str:
     try:
         client.get_validate_resource()
     except DemistoException as e:
-
         doc = """Please visit the API Key documentation for more information:
          https://docs.sekoia.io/getting_started/generate_api_keys/"""
 
@@ -549,7 +590,7 @@ def get_observable_command(client: Client, args: dict[str, str]) -> CommandResul
 
 
 def get_indicator_command(client: Client, args: dict[str, str]) -> CommandResults:
-    """ip command: Returns IP reputation for a list of IPs
+    """get indicator command: Returns reputation for a list of indicator
 
     :type client: ``Client``
     :param Client: SEKOIA.IO client to use
@@ -620,11 +661,10 @@ def get_indicator_context_command(client: Client, args: dict[str, str]) -> list[
 
     :rtype: ``CommandResults``
     """
+
     indicator = {"value": args.get("value"), "type": args.get("type")}
     if not indicator["value"] or not indicator["type"]:
         raise ValueError(f"incomplete command for {indicator}")
-
-    command_results_list: list[CommandResults] = []
 
     indicator_context = client.get_indicator_context(value=indicator["value"], indicator_type=indicator["type"])
     outputs = {"indicator": indicator, "items": indicator_context.get("items", [])}
@@ -636,7 +676,7 @@ def get_indicator_context_command(client: Client, args: dict[str, str]) -> list[
         markdown = indicator_context_to_markdown(indicator_context)
 
     # Extract STIX object type indicator from the STIX bundles
-    command_results_list = extract_indicators(indicator_context, command_results_list)
+    command_results_list: list = extract_indicators(indicator=indicator, indicator_context=indicator_context)
 
     command_results_list.append(
         CommandResults(
@@ -649,18 +689,11 @@ def get_indicator_context_command(client: Client, args: dict[str, str]) -> list[
     return command_results_list
 
 
-def ip_command(client: Client, args: dict[str, str]) -> list[CommandResults]:
-    """ip command: Returns IP reputation for a list of IPs
-
-    This command is a wrapper around the `get_indicator_context_command`
-    """
-    ips = argToList(args["ip"])
-    results: list[CommandResults] = list()
-
-    for ip in ips:
-        indicator = {"value": ip, "type": ip_version(ip)}
-        results += get_indicator_context_command(client=client, args=indicator)
-    return results
+def get_stix_type(indicator: str, indicator_type) -> str | None:
+    """Convert Demisto reputation command type to STIX (ex. email = email-addr)"""
+    if indicator_type == "ip":
+        return ip_version(indicator)
+    return REPUTATION_MAPPING.get(indicator_type)
 
 
 def reputation_command(client: Client, args: dict[str, str], indicator_type) -> list[CommandResults]:
@@ -669,14 +702,13 @@ def reputation_command(client: Client, args: dict[str, str], indicator_type) -> 
     This command is a wrapper around the `get_indicator_context_command`
     """
     indicators = argToList(args[indicator_type])
-    results: list[CommandResults] = list()
-    ic_type = REPUTATION_MAPPING.get(indicator_type)
-
-    if not ic_type:
-        raise ValueError(f"Type {indicator_type=} is not a valid type")
-
+    results: list[CommandResults] = []
     for indicator in indicators:
-        args = {"value": indicator, "type": ic_type}
+        stix_type = get_stix_type(indicator, indicator_type)
+        if stix_type is None:
+            raise ValueError(f"Type {indicator_type=} is not a valid type")
+
+        args = {"value": indicator, "type": stix_type}
         results += get_indicator_context_command(client=client, args=args)
     return results
 
@@ -721,10 +753,7 @@ def main() -> None:
         elif demisto.command() == "GetIndicatorContext":
             return_results(get_indicator_context_command(client, demisto.args()))
 
-        elif demisto.command() == "ip":
-            return_results(ip_command(client, demisto.args()))
-
-        elif demisto.command() in ["url", "domain", "file", "email"]:
+        elif demisto.command() in ["ip", "url", "domain", "file", "email"]:
             return_results(reputation_command(client, demisto.args(), indicator_type=demisto.command()))
 
     # Log exceptions and return errors

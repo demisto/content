@@ -1,0 +1,91 @@
+{
+    "id": "indicator_x509v3extensions",
+    "version": -1,
+    "modified": "2023-09-28T09:05:21.07895269Z",
+    "name": "X.509 v3 Extensions",
+    "ownerOnly": false,
+    "cliName": "x509v3extensions",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedToAll": false,
+    "associatedTypes": [
+        "X509 Certificate"
+    ],
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "title",
+            "displayName": "Title",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "data",
+            "displayName": "Data",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {
+            "title": "Authority Info Access"
+        },
+        {
+            "title": "Authority Key Identifier"
+        },
+        {
+            "title": "Basic Constraints"
+        },
+        {
+            "title": "Certificate Policies"
+        },
+        {
+            "title": "CRL Distribution Points"
+        },
+        {
+            "title": "CTL Poison Byte"
+        },
+        {
+            "title": "Extended Key Usage"
+        },
+        {
+            "title": "Key Usage"
+        },
+        {
+            "title": "Subject Alt Name"
+        },
+        {
+            "title": "Subject Key Identifier"
+        }
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

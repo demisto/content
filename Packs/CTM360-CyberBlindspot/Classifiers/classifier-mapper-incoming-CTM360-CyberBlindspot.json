@@ -1,0 +1,99 @@
+{
+	"description": "Maps incoming CTM360 CyberBlindspot incidents.",
+	"feed": false,
+	"id": "CTM360-CyberBlindspot - Incoming Mapper",
+	"mapping": {
+		"CyberBlindspot Incident": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"CTM360 CyberBlindspot Course of Action": {
+					"simple": "CustomFields.cbs_coa"
+				},
+				"External Status": {
+					"simple": "externalstatus"
+				},
+				"Ticket Number": {
+					"simple": "xsoar_mirroring.mirror_id"
+				},
+				"dbotMirrorDirection": {
+					"simple": "xsoar_mirroring.mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "xsoar_mirroring.mirror_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "xsoar_mirroring.mirror_instance"
+				},
+				"name": {
+					"complex": {
+						"filters": [],
+						"root": "name",
+						"transformers": []
+					}
+				},
+				"occurred": {
+					"complex": {
+						"filters": [],
+						"root": "occurred",
+						"transformers": []
+					}
+				},
+				"severity": {
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"CTM360 CyberBlindspot Course of Action": {
+					"simple": "CustomFields.cbs_coa"
+				},
+				"External Status": {
+					"simple": "externalstatus"
+				},
+				"Ticket Number": {
+					"simple": "xsoar_mirroring.mirror_id"
+				},
+				"dbotMirrorDirection": {
+					"simple": "xsoar_mirroring.mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "xsoar_mirroring.mirror_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "xsoar_mirroring.mirror_instance"
+				},
+				"name": {
+					"complex": {
+						"filters": [],
+						"root": "name",
+						"transformers": []
+					}
+				},
+				"occurred": {
+					"complex": {
+						"filters": [],
+						"root": "occurred",
+						"transformers": []
+					}
+				},
+				"severity": {
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": []
+					}
+				}
+			}
+		}
+	},
+	"name": "CTM360-CyberBlindspot - Incoming Mapper",
+	"type": "mapping-incoming",
+	"version": -1,
+    "fromVersion": "6.10.0"
+}

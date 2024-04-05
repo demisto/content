@@ -1,0 +1,742 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: EclecticIQ Intelligence Center v3
+  version: -1
+configuration:
+- display: EclecticIQ Intelligence Center URL (e.g. https://eclecticiq-platform.local)
+  name: url
+  required: true
+  type: 0
+- display: API user token to authenticate in EclecticIQ Intelligence Center
+  name: eiq_token
+  required: true
+  type: 4
+- defaultvalue: v2
+  display: EclecticIQ Intelligence Center public API version
+  name: eiq_api_version
+  options:
+  - v1
+  - v2
+  required: true
+  type: 15
+- defaultvalue: Low
+  display: 'IP threshold. Minimum maliciousness confidence level to consider the IP address malicious: High, Medium, Low, Safe, Unknown'
+  name: ip_threshold
+  options:
+  - High
+  - Medium
+  - Low
+  - Safe
+  - Unknown
+  required: false
+  type: 15
+- defaultvalue: Low
+  display: 'URL threshold. Minimum maliciousness confidence level to consider the URL malicious: High, Medium, Low, Safe, Unknown'
+  name: url_threshold
+  options:
+  - High
+  - Medium
+  - Low
+  - Safe
+  - Unknown
+  required: false
+  type: 15
+- defaultvalue: Low
+  display: 'File threshold. Minimum maliciousness confidence level to consider the file malicious: High, Medium, Low, Safe, Unknown'
+  name: file_threshold
+  options:
+  - High
+  - Medium
+  - Low
+  - Safe
+  - Unknown
+  required: false
+  type: 15
+- defaultvalue: Low
+  display: 'Email threshold. Minimum maliciousness confidence level to consider the email address malicious: High, Medium, Low, Safe, Unknown'
+  name: email_threshold
+  options:
+  - High
+  - Medium
+  - Low
+  - Safe
+  - Unknown
+  required: false
+  type: 15
+- defaultvalue: Low
+  display: 'Domain threshold. Minimum maliciousness confidence level to consider the domain malicious: High, Medium, Low, Safe, Unknown'
+  name: domain_threshold
+  options:
+  - High
+  - Medium
+  - Low
+  - Safe
+  - Unknown
+  required: false
+  type: 15
+- display: Group name in EclecticIQ Intelligence Center to use as entities source
+  name: group_name
+  required: false
+  type: 0
+- defaultvalue: 'false'
+  display: Create sightings automatically in EclecticIQ Intelligence Center when reputation check command executed.
+  name: sightings_auto_creation
+  required: false
+  type: 8
+- display: Fetch indicators
+  defaultvalue: 'true'
+  name: feed
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: indicatorType
+  display: ''
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  display: ''
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '240'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- additionalinfo: e.g. 12,14,22
+  display: Feed IDs to fetch
+  name: feedId
+  required: false
+  type: 0
+- defaultvalue: 'true'
+  display: ''
+  name: feedIncremental
+  required: false
+  type: 8
+  hidden: true
+- name: feedTags
+  display: Tags
+  type: 0
+  additionalinfo: Supports CSV values.
+- display: Traffic Light Protocol Color
+  name: tlp_color
+  type: 15
+  required: false
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Threat Intelligence Platform that connects and interprets intelligence data from open sources, commercial suppliers and industry partnerships .
+display: EclecticIQ Intelligence Center v3
+name: EclecticIQ Intelligence Center v3
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: IPv4 to get the reputation of.
+      name: ip
+      required: true
+      isArray: true
+    description: Get reputation of IP address observable.
+    name: ip
+    outputs:
+    - contextPath: EclecticIQ.IP.Created
+      description: 'Observable creation time.'
+      type: Date
+    - contextPath: EclecticIQ.IP.LastUpdated
+      description: 'Observable last update time.'
+      type: Date
+    - contextPath: EclecticIQ.IP.Maliciousness
+      description: 'Observable maliciousness.'
+      type: String
+    - contextPath: EclecticIQ.IP.Observable
+      description: 'Observable value.'
+      type: String
+    - contextPath: EclecticIQ.IP.SourceName
+      description: 'Observable source name.'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: How reliable the score is (for example, "C - fairly reliable").
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+  - arguments:
+    - default: true
+      description: URL observable to get the reputation of.
+      name: url
+      required: true
+      isArray: true
+    description: Gets the reputation of a URL observable.
+    name: url
+    outputs:
+    - contextPath: EclecticIQ.URL.Created
+      description: 'Observable creation time.'
+      type: Date
+    - contextPath: EclecticIQ.URL.LastUpdated
+      description: 'Observable last update time.'
+      type: Date
+    - contextPath: EclecticIQ.URL.Maliciousness
+      description: 'Observable maliciousness.'
+      type: String
+    - contextPath: EclecticIQ.URL.Observable
+      description: 'Observable value.'
+      type: String
+    - contextPath: EclecticIQ.URL.SourceName
+      description: 'Observable source name.'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: How reliable the score is (for example, "C - fairly reliable").
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: URL.Data
+      description: URL requested.
+      type: String
+  - arguments:
+    - default: true
+      description: File hash observable to get the reputation of.
+      name: file
+      required: true
+      isArray: true
+    description: Gets the reputation of a file hash observable.
+    name: file
+    outputs:
+    - contextPath: EclecticIQ.File.Created
+      description: 'Observable creation time.'
+      type: Date
+    - contextPath: EclecticIQ.File.LastUpdated
+      description: 'Observable last update time.'
+      type: Date
+    - contextPath: EclecticIQ.File.Maliciousness
+      description: 'Observable maliciousness.'
+      type: String
+    - contextPath: EclecticIQ.File.Observable
+      description: 'Observable value.'
+      type: String
+    - contextPath: EclecticIQ.File.SourceName
+      description: 'Observable source name.'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: How reliable the score is (for example, "C - fairly reliable").
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: File.MD5
+      description: Bad MD5 hash.
+      type: String
+    - contextPath: File.SHA1
+      description: Bad SHA1 hash.
+      type: String
+    - contextPath: File.SHA256
+      description: Bad SHA256 hash.
+      type: String
+  - arguments:
+    - description: Observable value to query related entities.
+      name: observable_value
+      type: textArea
+    - description: Text to search inside entity title.
+      name: entity_title
+      type: textArea
+    - auto: PREDEFINED
+      defaultValue: all
+      description: Type of entity to limit query.
+      name: entity_type
+      predefined:
+      - all
+      - campaign
+      - course-of-action
+      - exploit-target
+      - incident
+      - indicator
+      - sighting
+      - threat-actor
+      - ttp
+      type: textArea
+    description: Query EclecticIQ Intelligence Center for entities.
+    name: eclecticiq-get-entity
+    outputs:
+    - contextPath: EclecticIQ.Entity.confidence
+      description: 'Entity confidence.'
+      type: String
+    - contextPath: EclecticIQ.Entity.created_at
+      description: 'Entity creation time.'
+      type: Date
+    - contextPath: EclecticIQ.Entity.description
+      description: 'Entity description.'
+      type: String
+    - contextPath: EclecticIQ.Entity.entity_title
+      description: 'Entity title.'
+      type: String
+    - contextPath: EclecticIQ.Entity.entity_type
+      description: 'Entity type.'
+      type: String
+    - contextPath: EclecticIQ.Entity.impact.type
+      description: 'Entity impact type.'
+      type: String
+    - contextPath: EclecticIQ.Entity.impact.value
+      description: 'Entity impact value.'
+      type: String
+    - contextPath: EclecticIQ.Entity.impact.value_vocab
+      description: 'Entity impact STIX vocabulary.'
+      type: String
+    - contextPath: EclecticIQ.Entity.observables_list.maliciousness
+      description: 'Related observable maliciousness.'
+      type: String
+    - contextPath: EclecticIQ.Entity.observables_list.type
+      description: 'Related observable type.'
+      type: String
+    - contextPath: EclecticIQ.Entity.observables_list.value
+      description: 'Related observable value.'
+      type: String
+    - contextPath: EclecticIQ.Entity.observables_output
+      description: 'Related observables string.'
+      type: String
+    - contextPath: EclecticIQ.Entity.relationships_list
+      description: 'Entity relationships list.'
+      type: Unknown
+    - contextPath: EclecticIQ.Entity.relationships_output
+      description: 'Entity relationships string.'
+      type: String
+    - contextPath: EclecticIQ.Entity.source_name
+      description: 'Entity source.'
+      type: String
+    - contextPath: EclecticIQ.Entity.tags_list
+      description: 'Entity tags and taxonomies.'
+      type: Unknown
+  - arguments:
+    - default: true
+      description: Email address observable to get the reputation of.
+      name: email
+      isArray: true
+      required: true
+    description: Gets the reputation of an email address observable.
+    name: email
+    outputs:
+    - contextPath: EclecticIQ.Email.Created
+      description: 'Observable creation time.'
+      type: Date
+    - contextPath: EclecticIQ.Email.LastUpdated
+      description: 'Observable last update time.'
+      type: Date
+    - contextPath: EclecticIQ.Email.Maliciousness
+      description: 'Observable maliciousness.'
+      type: String
+    - contextPath: EclecticIQ.Email.Observable
+      description: 'Observable value.'
+      type: String
+    - contextPath: EclecticIQ.Email.SourceName
+      description: 'Observable source name.'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: How reliable the score is (for example, "C - fairly reliable").
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+  - arguments:
+    - default: true
+      description: Domain observable to get the reputation of.
+      name: domain
+      isArray: true
+      required: true
+    description: Gets the reputation of a domain observable.
+    name: domain
+    outputs:
+    - contextPath: EclecticIQ.Domain.Created
+      description: 'Observable creation time.'
+      type: Date
+    - contextPath: EclecticIQ.Domain.LastUpdated
+      description: 'Observable last update time.'
+      type: Date
+    - contextPath: EclecticIQ.Domain.Maliciousness
+      description: 'Observable maliciousness.'
+      type: String
+    - contextPath: EclecticIQ.Domain.Observable
+      description: 'Observable value.'
+      type: String
+    - contextPath: EclecticIQ.Domain.SourceName
+      description: 'Observable source name.'
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: How reliable the score is (for example, "C - fairly reliable").
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: Domain.Name
+      description: Requested Domain.
+      type: String
+  - arguments:
+    - description: Observable value to connect to Sighting.
+      name: observable_value
+      required: true
+    - auto: PREDEFINED
+      description: Observable type.
+      isArray: true
+      name: observable_type
+      predefined:
+      - domain
+      - email
+      - email-subject
+      - file
+      - hash
+      - hash-md5
+      - hash-sha1
+      - hash-sha256
+      - hash-sha512
+      - host
+      - ipv4
+      - ipv6
+      - mutex
+      - port
+      - process
+      - uri
+      - winregistry
+      required: true
+    - auto: PREDEFINED
+      description: Observable maliciousness.
+      isArray: true
+      name: observable_maliciousness
+      predefined:
+      - Malicious (High confidence)
+      - Malicious (Medium confidence)
+      - Malicious (Low confidence)
+      - Safe
+      - Unknown
+      required: true
+    - description: Sighting title.
+      name: sighting_title
+      required: true
+    - description: Sighting description.
+      name: sighting_description
+    - auto: PREDEFINED
+      description: Sighting confidence.
+      isArray: true
+      name: sighting_confidence
+      predefined:
+      - None
+      - Unknown
+      - Low
+      - Medium
+      - High
+      required: true
+    - auto: PREDEFINED
+      description: Sighting impact.
+      isArray: true
+      name: sighting_impact
+      predefined:
+      - None
+      - Unknown
+      - Low
+      - Medium
+      - High
+      required: true
+    - description: Sighting tags, use comma (",") as delimeter between tags.
+      name: sighting_tag
+    name: eclecticiq-create-sighting
+    description: Creates Sighting in EclecticIQ IC.
+    outputs:
+    - contextPath: EclecticIQ.Sightings.SightingDetails.ObservableMaliciousness
+      description: 'Sighting related observable maliciousness.'
+      type: String
+    - contextPath: EclecticIQ.Sightings.SightingDetails.ObservableType
+      description: 'Sighting related observable type.'
+      type: String
+    - contextPath: EclecticIQ.Sightings.SightingDetails.ObservableValue
+      description: 'Sighting related observable value.'
+      type: String
+    - contextPath: EclecticIQ.Sightings.SightingDetails.SightingTitle
+      description: 'Sighting title.'
+      type: String
+    - contextPath: EclecticIQ.Sightings.SightingId
+      description: 'Sighting entity ID.'
+      type: String
+  - arguments:
+    - description: Indicator title.
+      name: indicator_title
+      required: true
+    - description: Indicator description.
+      name: indicator_description
+    - auto: PREDEFINED
+      description: Indicator confidence.
+      isArray: true
+      name: indicator_confidence
+      predefined:
+      - None
+      - Unknown
+      - Low
+      - Medium
+      - High
+      required: true
+    - auto: PREDEFINED
+      description: Indicator impact.
+      isArray: true
+      name: indicator_impact
+      predefined:
+      - None
+      - Unknown
+      - Low
+      - Medium
+      - High
+      required: true
+    - description: Indicator tags, use comma (",") as delimeter between tags.
+      name: indicator_tag
+    - description: Observable value to connect to Indicator.
+      name: observable_value
+      required: true
+    - auto: PREDEFINED
+      description: Observable type.
+      isArray: true
+      name: observable_type
+      predefined:
+      - domain
+      - email
+      - email-subject
+      - file
+      - hash
+      - hash-md5
+      - hash-sha1
+      - hash-sha256
+      - hash-sha512
+      - host
+      - ipv4
+      - ipv6
+      - mutex
+      - port
+      - process
+      - uri
+      - winregistry
+      required: true
+    - auto: PREDEFINED
+      description: Observable maliciousness.
+      isArray: true
+      name: observable_maliciousness
+      predefined:
+      - Malicious (High confidence)
+      - Malicious (Medium confidence)
+      - Malicious (Low confidence)
+      - Safe
+      - Unknown
+      required: true
+    - description: 'Any amount observables in format: [{"value":"192.168.0.192", "type":"ipv4", "maliciousness":"medium"}]. Observable types use as in EclecticIQ. Observable maliciousness could be: high, medium, low, safe, unknown.'
+      name: observable_dictionary
+    name: eclecticiq-create-indicator
+    description: Creates Indicator Entity in EclecticIQ IC.
+    outputs:
+    - contextPath: EclecticIQ.Indicators.IndicatorId
+      description: 'Indicator entity ID.'
+      type: String
+    - contextPath: EclecticIQ.Indicators.IndicatorTitle
+      description: 'Indicator entity title.'
+      type: String
+    - contextPath: EclecticIQ.Indicators.ObservablesList.observable_classification
+      description: 'Indicator related observable classification.'
+      type: String
+    - contextPath: EclecticIQ.Indicators.ObservablesList.observable_maliciousness
+      description: 'Indicator related observable maliciousness.'
+      type: String
+    - contextPath: EclecticIQ.Indicators.ObservablesList.observable_type
+      description: 'Indicator related observable type.'
+      type: String
+    - contextPath: EclecticIQ.Indicators.ObservablesList.observable_value
+      description: 'Indicator related observable value.'
+      type: String
+  - arguments:
+    - description: 'Entity ID in EclecticIQ format, for example: a86f8393-eff6-4b31-b203-f63152be5a43.'
+      name: entity_id
+      required: true
+      type: textArea
+    description: Query EclecticIQ Intelligence Center for entity by its ID.
+    name: eclecticiq-get-entity-by-id
+    outputs:
+    - contextPath: EclecticIQ.EntityById.confidence
+      description: 'Entity confidence.'
+      type: String
+    - contextPath: EclecticIQ.EntityById.created_at
+      description: 'Entity creation time.'
+      type: Date
+    - contextPath: EclecticIQ.EntityById.description
+      description: 'Entity description.'
+      type: String
+    - contextPath: EclecticIQ.EntityById.entity_title
+      description: 'Entity title.'
+      type: String
+    - contextPath: EclecticIQ.EntityById.entity_type
+      description: 'Entity type.'
+      type: String
+    - contextPath: EclecticIQ.EntityById.impact
+      description: 'Entity impact.'
+      type: String
+    - contextPath: EclecticIQ.EntityById.observables_list.maliciousness
+      description: 'Related observable maliciousness.'
+      type: String
+    - contextPath: EclecticIQ.EntityById.observables_list.type
+      description: 'Related observable type.'
+      type: String
+    - contextPath: EclecticIQ.EntityById.observables_list.value
+      description: 'Related observable value.'
+      type: String
+    - contextPath: EclecticIQ.EntityById.relationships_list
+      description: 'Entity relationships list.'
+      type: Unknown
+    - contextPath: EclecticIQ.EntityById.source_name
+      description: 'Entity source.'
+      type: String
+    - contextPath: EclecticIQ.EntityById.tags_list
+      description: 'Entity tags and taxonomies.'
+      type: Unknown
+  - arguments:
+    - description: EclecticIQ URI excluding Intelligence Cetner address but including API version and params if needed. e.g. /private/status.
+      name: uri
+      required: true
+    description: Make HTTP GET request to EclecticIQ Intelligence Center.
+    name: eclecticiq-request-get
+    outputs:
+    - contextPath: EclecticIQ.GET.ReplyBody
+      description: 'GET reply body.'
+      type: Unknown
+    - contextPath: EclecticIQ.GET.ReplyStatus
+      description: 'GET reply status code.'
+      type: String
+    - contextPath: EclecticIQ.GET.URI
+      description: 'GET reply requested URI.'
+      type: String
+  - arguments:
+    - description: EclecticIQ URI excluding Intelligence Cetner address but including API version and params if needed.
+      name: uri
+      required: true
+    - description: JSON payload.
+      name: body
+    description: Make HTTP POST request to EclecticIQ Intelligence Center.
+    name: eclecticiq-request-post
+    outputs:
+    - contextPath: EclecticIQ.POST.ReplyBody
+      description: 'POST reply body.'
+      type: String
+    - contextPath: EclecticIQ.POST.ReplyStatus
+      description: 'POST reply status code.'
+      type: String
+    - contextPath: EclecticIQ.POST.URI
+      description: 'POST reply requested URI.'
+      type: String
+  - arguments:
+    - description: EclecticIQ URI excluding Intelligence Cetner address but including API version and params if needed.
+      name: uri
+      required: true
+    description: Make HTTP DELETE request to EclecticIQ Intelligence Center.
+    name: eclecticiq-request-delete
+    outputs:
+    - contextPath: EclecticIQ.DELETE.ReplyStatus
+      description: 'DELETE reply status code.'
+      type: String
+    - contextPath: EclecticIQ.DELETE.URI
+      description: 'DELETE reply requested URI.'
+      type: String
+  - arguments: []
+    name: eclecticiq-get-indicators
+    description: Get last block of Indicators from configured to fetch Outgoing feed.
+  dockerimage: demisto/python3:3.10.13.89009
+  feed: true
+  isFetchSamples: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.6.0
+tests:
+- No tests (auto formatted)

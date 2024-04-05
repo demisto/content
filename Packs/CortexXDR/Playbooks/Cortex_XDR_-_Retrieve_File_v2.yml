@@ -23,14 +23,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+      - "9"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 50
+          "y": -130
         }
       }
     note: false
@@ -92,7 +92,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 395
+          "y": 425
         }
       }
     note: false
@@ -120,7 +120,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1095
+          "y": 1120
         }
       }
     note: false
@@ -162,7 +162,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 750
+          "y": 770
         }
       }
     note: false
@@ -196,8 +196,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
-          "y": 920
+          "x": -10,
+          "y": 940
         }
       }
     note: false
@@ -234,7 +234,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 565
+          "y": 595
         }
       }
     note: false
@@ -246,15 +246,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: e5d73a46-72d1-4e69-854e-3e28963904ff
+    taskid: 7f5e247a-d7ab-4b77-8152-a951cfddbf7d
     type: condition
     task:
-      id: e5d73a46-72d1-4e69-854e-3e28963904ff
+      id: 7f5e247a-d7ab-4b77-8152-a951cfddbf7d
       version: -1
-      name: Is there any file path to retrieve?
+      name: Is there an endpoint and a file path to retrieve?
       type: condition
       iscommand: false
-      description: ''
+      description: 'Checks whether there is at least one endpoint ID and one file path for the file to retrieve.'
       brand: ""
     nexttasks:
       '#default#':
@@ -270,6 +270,8 @@ tasks:
             value:
               simple: inputs.file_path
             iscontext: true
+          right:
+            value: {}
         - operator: isNotEmpty
           left:
             value:
@@ -284,6 +286,11 @@ tasks:
           left:
             value:
               simple: inputs.mac_file_paths
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.endpoint_ids
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -300,24 +307,63 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: ceaa2410-c99b-408a-85a4-2c5b7734eb95
+    type: condition
+    task:
+      id: ceaa2410-c99b-408a-85a4-2c5b7734eb95
+      version: -1
+      name: Is Cortex XDR is enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "8"
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 15
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "5_6_#default#": 0.68
+      "5_6_#default#": 0.68,
+      "8_4_#default#": 0.14,
+      "9_4_no": 0.15
     },
     "paper": {
       "dimensions": {
-        "height": 1110,
-        "width": 635,
-        "x": 10,
-        "y": 50
+        "height": 1315,
+        "width": 655,
+        "x": -10,
+        "y": -130
       }
     }
   }
 inputs:
 - key: endpoint_ids
   value: {}
-  required: true
+  required: false
   description: A comma-separated list of endpoint IDs.
   playbookInputQuery:
 - key: file_path
@@ -377,5 +423,6 @@ outputs:
   description: The file type, as determined by libmagic (same as displayed in the file entries).
   type: String
 tests:
-- No tests
+- no tests
 fromversion: 6.10.0
+system: true

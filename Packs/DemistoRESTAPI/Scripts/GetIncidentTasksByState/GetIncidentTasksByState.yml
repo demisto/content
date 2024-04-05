@@ -6,7 +6,7 @@ script: ''
 type: javascript
 tags:
 - Utility
-comment: Get all tasks for specific incident by the given state.
+comment: Deprecated. Use the GetIncidentTasks script instead.
 enabled: true
 args:
 - name: inc_id
@@ -54,5 +54,6 @@ outputs:
 scripttarget: 0
 sensitive: true
 tests:
-- No test
+- No tests (deprecated)
 fromversion: 5.0.0
+deprecated: true

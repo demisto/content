@@ -8,7 +8,7 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g., https://api.crowdstrike.com) |  | True |
+    | Server URL (e.g., <https://api.crowdstrike.com>) |  | True |
     | Client ID |  | True |
     | Secret |  | True |
     | Source Reliability | Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command. | False |
@@ -135,6 +135,7 @@ Available parameters:
 
 Exmample: `cloud_provider=aws&region=eu-west-2`
 More information about the parameters can be found [here](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13).
+
 ### 1. Search for a device
 
 ---
@@ -156,6 +157,8 @@ Searches for a device that matches the query.
 | hostname | The host name of the device. Possible values are: . | Optional | 
 | platform_name | The platform name of the device. Possible values are: Windows, Mac, and Linux. Possible values are: Windows, Mac, Linux. | Optional | 
 | site_name | The site name of the device. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
+| offset | The offset to begin the list from. For example, start from the 10th record and return the list. Default is 0. | Optional |
 
 #### Context Output
 
@@ -343,7 +346,7 @@ or by providing the IDs of the detections.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | The IDs of the detections to search. If provided, will override other arguments. | Optional | 
-| filter | Filter detections using a query in Falcon Query Language (FQL).<br/>For example, filter="device.hostname:'CS-SE-TG-W7-01'"<br/>For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch. | Optional | 
+| filter | Filter detections using a query in Falcon Query Language (FQL).<br/>For example, filter="device.hostname:'CS-SE-TG-W7-01'"<br/>For a full list of valid filter options, see: <https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch>. | Optional | 
 | extended_data | Whether to get additional data such as device and behaviors processed. Possible values are: Yes, No. | Optional | 
 
 #### Context Output
@@ -4778,7 +4781,7 @@ Get a list of ML exclusions by specifying their IDs, value, or a specific filter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'` for example: value:'test'.<br/> Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.<br/> For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language. | Optional | 
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'` for example: value:'test'.<br/> Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.<br/> For more information, see: <https://www.falconpy.io/Service-Collections/Falcon-Query-Language>. | Optional | 
 | value | The value by which the exclusions should be filtered. | Optional | 
 | ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and value. | Optional | 
 | limit | The maximum number of records to return. [1-500]. Applies only if the IDs argument is not supplied. | Optional | 
@@ -5100,7 +5103,7 @@ Get a list of IOA exclusions by specifying their IDs or a filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'` for example: name:'test'.<br/> Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.<br/> For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language. | Optional | 
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'` for example: name:'test'.<br/> Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.<br/> For more information, see: <https://www.falconpy.io/Service-Collections/Falcon-Query-Language>. | Optional | 
 | name | The name by which the exclusions should be filtered. | Optional | 
 | ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and name. | Optional | 
 | limit | The limit of how many exclusions to retrieve. Default is 50. Applies only if the IDs argument is not supplied. | Optional | 
@@ -6239,8 +6242,11 @@ List identity entities.
 | CrowdStrike.CSPMPolicy.account_scope | String | The account scope. | 
 
 #### Command example
+
 ```!cs-falcon-cspm-list-policy-details policy_ids=1,2```
+
 #### Context Example
+
 ```json
 {
     "CrowdStrike": {
@@ -6353,6 +6359,7 @@ List identity entities.
 #### Human Readable Output
 
 >### CSPM Policy Details:
+
 >|Id|Description|Policy Statement|Policy Remediation|Cloud Service Subtype|Cloud Platform Type|Cloud Service Type|Default Severity|Policy Type|Tactic|Technique|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | Because IAM access keys are long-term credentials, as time goes on, the risk of these keys being exposed is increased.<br/><br/>Keys are often left on old servers, accidentally published through Git, or stolen from developer machines. The longer the keys are valid, the more likely they are to be discovered in one of these places. By ensuring keys are rotated at least every 90 days, you can be confident that if those keys are discovered, they cannot be abused. | IAM user access key active longer than 90 days | Step 1. From the AWS Console, navigate to the IAM page.\|<br/>Step 2. Locate and click on the offending IAM User.\|<br/>Step 3. Click on the Security Credentials tab.\|<br/>Step 4. Navigate to the Access Keys section and choose between making the access key inactive, deleting the key, or rotating the key. | Access Keys | aws | IAM | informational | Configuration | Credential Access | Steal Application Access Token |
@@ -6416,8 +6423,11 @@ Returns information about current policy settings.
 | CrowdStrike.CSPMPolicySetting.attack_types | Array | The attack types. | 
 
 #### Command example
+
 ```!cs-falcon-cspm-list-service-policy-settings limit=2```
+
 #### Context Example
+
 ```json
 {
     "CrowdStrike": {
@@ -6556,6 +6566,7 @@ Returns information about current policy settings.
 #### Human Readable Output
 
 >### CSPM Policy Settings:
+
 >|Policy Id|Is Remediable|Remediation Summary|Name|Policy Type|Cloud Service Subtype|Cloud Service|Default Severity|
 >|---|---|---|---|---|---|---|---|
 >| 1 | false |  | EFS File System is encrypted without CMK | Configuration | N/A | efs | informational |
@@ -6585,8 +6596,11 @@ Updates a policy setting - can be used to override policy severity or to disable
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cs-falcon-cspm-update-policy_settings policy_id=1 enabled=true regions="eu-central-1,eu-central-2" severity=high tag_excluded=false```
+
 #### Human Readable Output
 
 >Policy 1 was updated successfully
@@ -6594,7 +6608,7 @@ There is no context output for this command.
 ### cs-falcon-resolve-identity-detection
 
 ***
-Perform actions on alerts.
+Perform actions on identity detection alerts.
 
 #### Base Command
 
@@ -6619,7 +6633,9 @@ Perform actions on alerts.
 There is no context output for this command.
 
 #### Command example
+
 ```!cs-falcon-resolve-identity-detection ids="id_1,id_2" add_tag="Demo tag" append_comment="Demo comment" assign_to_name="morganf" show_in_ui=true update_status=in_progress```
+
 #### Human Readable Output
 
 >IDP Detection(s) id_1, id_2 were successfully updated
@@ -6760,3 +6776,38 @@ Get IOA Rules for Custom IOA rule triggered detections
 | CrowdStrike.IOARules.ruletype_id | String | The IOA Rule's Rule Type ID. | 
 | CrowdStrike.IOARules.ruletype_name | String | The IOA Rule's Rule Type Name. | 
 | CrowdStrike.IOARules.version_ids | String | The IOA Rule's Version ID. | 
+
+### cs-falcon-resolve-mobile-detection
+
+***
+Perform actions on mobile detection alerts.
+
+#### Base Command
+
+`cs-falcon-resolve-mobile-detection`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | IDs of the alerts to update. | Required | 
+| assign_to_name | Assign the specified detections to a user based on their username. | Optional | 
+| assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional | 
+| append_comment | Appends a new comment to any existing comments for the specified detections. | Optional | 
+| add_tag | Add a tag to the specified detections. | Optional | 
+| remove_tag | Remove a tag from the specified detections. | Optional | 
+| update_status | Update status of the alert to the specified value. Possible values are: new, in_progress, closed, reopened. | Optional | 
+| unassign | Whether to unassign any assigned users to the specified detections. Possible values are: false, true. | Optional | 
+| show_in_ui | If true, displays the detection in the UI. Possible values are: false, true. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!cs-falcon-resolve-mobile-detection ids="id_1,id_2" add_tag="Demo tag" append_comment="Demo comment" assign_to_name="morganf" show_in_ui=true update_status=in_progress```
+
+#### Human Readable Output
+
+>Mobile Detection(s) id_1, id_2 were successfully updated

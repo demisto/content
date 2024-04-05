@@ -34,7 +34,6 @@ class Client(BaseClient):
         self._whois_api_key = whois_api_key
         self._more_server_url = more_server_url.rstrip("/")
         self._whois_server_url = f'{whois_server_url.rstrip("/")}/v1/{whois_api_key}'
-        self.execution_metrics = ExecutionMetrics()
 
         super().__init__(base_url='', **kwargs)
 
@@ -48,8 +47,11 @@ class Client(BaseClient):
             dict: dict containing the Email reputation as returned from the API
         """
 
-        return self._http_request(method='GET',
-                                  full_url=f'{self._more_server_url}/v3/more/json/{self._more_api_key}/{email}')
+        return self._http_request(
+            method='GET',
+            full_url=f'{self._more_server_url}/v3/more/json/{self._more_api_key}/{email}',
+            with_metrics=True,
+        )
 
     def get_domain_reputation(self, domain: str) -> dict[str, Any]:
         """
@@ -62,39 +64,34 @@ class Client(BaseClient):
             dict: dict containing the domain reputation as returned from the API.
         """
 
-        return self._http_request(method='GET', full_url=f'{self._whois_server_url}/{domain}')
+        return self._http_request(
+            method='GET',
+            full_url=f'{self._whois_server_url}/{domain}',
+            with_metrics=True,
+        )
 
     def get_email_quota(self) -> dict[str, Any]:
         """
         Get the email quota remaining for the API key
         """
-        return self._http_request(method='GET',
-                                  full_url=f'{self._more_server_url}/customer/reports/v3/quota/{self._more_api_key}')
+        return self._http_request(
+            method='GET',
+            full_url=f'{self._more_server_url}/customer/reports/v3/quota/{self._more_api_key}',
+            with_metrics=True,
+        )
 
-    def error_handler(self, res: Response):
-        """
-        Error handling for http responses, to support the API Execution Metrics.
+    def determine_error_type(self, res: Response):
+        """ Determines the error type based on response.
 
         Args:
             res (Response): The response object from the http request.
-        """
-        if res.status_code == 429 or 'Insufficient quota' in res.text:
-            self.execution_metrics.quota_error += 1
-        elif res.status_code == 401:
-            self.execution_metrics.auth_error += 1
-        else:
-            self.execution_metrics.general_error += 1
 
-        self.client_error_handler(res)
-
-    def _http_request(self, **kwargs):
+        Returns:
+            (ErrorTypes): The error type determined.
         """
-        Wrapper for BaseClient._http_request for supporting API Execution Metrics.
-        """
-        try:
-            return super()._http_request(error_handler=self.error_handler, **kwargs)
-        finally:
-            self.execution_metrics.success += 1
+        if 'Insufficient quota' in res.text:
+            return ErrorTypes.QUOTA_ERROR
+        return super().determine_error_type(res)
 
 
 def parse_domain_date(domain_date: list[str] | str, date_format: str = '%Y-%m-%dT%H:%M:%S.000Z') -> str | None:
@@ -391,12 +388,10 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
         if res:
-            return_results(append_metrics(client.execution_metrics, res))
+            return_results(res)
 
     # Log exceptions and return errors
     except Exception as e:
-        if client:
-            return_results(client.execution_metrics.metrics)
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 

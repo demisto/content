@@ -39,7 +39,7 @@ type: python
 dependson:
   must:
   - Cherwell|||cherwell-create-business-object
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.86272
 subtype: python3
 tests:
 - Cherwell Example Scripts - test

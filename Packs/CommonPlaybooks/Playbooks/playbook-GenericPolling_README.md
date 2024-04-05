@@ -39,6 +39,7 @@ This playbook does not use any commands.
 | dt | The DT filter for polling IDs. Polling will stop when no results are returned. Use single quotes, for example: WildFire.Report(val.Status!=='Success').SHA256. | - | Required |
 | AdditionalPollingCommandArgNames | The names of additional arguments for the polling command. For example, "arg1,arg2,...". | - | Optional |
 | AdditionalPollingCommandArgValues | The values of the additional arguments for the polling command. For example, "value1,value2,...". | - | Optional |
+| ExtractMode | Indicator Extraction mode for the command sequence. (In XSOAR 8 and above, for first run command set manually the RunPollingCommand task in the playbook, Advanced -> Indicator Extraction mode). | Optional |
 
 ## Playbook Outputs
 ---

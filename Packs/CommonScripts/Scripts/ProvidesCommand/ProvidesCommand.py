@@ -50,7 +50,7 @@ def main():
 
     for integration in integration_commands:
 
-        integration_name = integration['display']
+        integration_name = integration['name']
 
         if 'commands' in integration:
             for command in integration['commands']:

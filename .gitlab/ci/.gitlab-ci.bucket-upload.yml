@@ -50,10 +50,19 @@
       fi
 
 run-validations-upload-flow:
+  variables:
+    DEMISTO_SDK_GRAPH_FORCE_CREATE: "true"
   extends:
     - .run-validations
     - .bucket-upload-rule
 
+run-validations-upload-flow-new-validate-flow:
+  variables:
+    DEMISTO_SDK_GRAPH_FORCE_CREATE: "true"
+  extends:
+    - .run-validations-new-validate-flow
+    - .bucket-upload-rule
+  allow_failure: true
 
 run-unittests-and-lint-upload-flow:
   cache:
@@ -351,6 +360,12 @@ upload-packs-to-marketplace:
         fi
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar
         
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+        if [[ $TEST_UPLOAD == "false" ]] && [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" ]]; then
+          gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" "gs://xsoar-ci-artifacts/content/$CI_COMMIT_SHA/$MARKETPLACE_VERSION/packs_results_upload.json"
+          echo "packs_results_upload.json upload successfully"
+        fi
+        
         core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
         if [ "${core_packs_files_count}" -eq 0 ]; then
           echo "No core packs files were found, skipping uploading."
@@ -389,14 +404,6 @@ upload-packs-to-marketplace:
     - python3 ./Tests/Marketplace/zip_packs.py -z $ZIP_FOLDER -a $ARTIFACTS_FOLDER -s $GCS_MARKET_KEY
     - section_end "Zip Content Packs From GCS"
 
-    - section_start "Validate Premium Packs"
-    - |
-      if [[ $(cat "${ENV_RESULTS_PATH}") != "[]" ]] && ( [[ "$CI_COMMIT_BRANCH" == "master" ]] || [[ $GCS_MARKET_BUCKET != $GCS_PRODUCTION_BUCKET ]])  ; then
-        ./Tests/scripts/validate_premium_packs.sh "$INSTANCE_ROLE"
-      else
-        echo "Skipping Premium Packs Validation"
-      fi
-    - section_end "Validate Premium Packs"
     - job-done
 
 upload-packs-to-marketplace-v2:
@@ -445,6 +452,13 @@ upload-packs-to-marketplace-v2:
           PACKS_TO_UPLOAD="All"
         fi
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_V2_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace marketplacev2
+        
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+      
+        if [[ $TEST_UPLOAD == "false" ]] && [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" ]]; then
+          gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" "gs://xsoar-ci-artifacts/content/$CI_COMMIT_SHA/$MARKETPLACE_VERSION/packs_results_upload.json"
+          echo "packs_results_upload.json upload successfully"
+        fi
         
         core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
         if [ "${core_packs_files_count}" -eq 0 ]; then
@@ -531,6 +545,12 @@ upload-packs-to-xpanse-marketplace:
         fi
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_XPANSE_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -p "${PACKS_TO_UPLOAD}" -pbp "$STORAGE_BASE_PATH/packs" --marketplace xpanse
         
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+        if [[ $TEST_UPLOAD == "false" ]] && [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" ]]; then
+          gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" "gs://xsoar-ci-artifacts/content/$CI_COMMIT_SHA/$MARKETPLACE_VERSION/packs_results_upload.json"
+          echo "packs_results_upload.json upload successfully"
+        fi
+      
         core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
         if [ "${core_packs_files_count}" -eq 0 ]; then
           echo "No core packs files were found, skipping uploading."
@@ -615,6 +635,12 @@ upload-packs-to-xsoar-saas-marketplace:
           echo "Set storage base path to $STORAGE_BASE_PATH"
         fi
         python3 ./Tests/Marketplace/copy_and_upload_packs.py -a "${PACK_ARTIFACTS}" -e $EXTRACT_FOLDER -pb "$GCS_MARKET_XSOAR_SAAS_BUCKET" -bb "$GCS_BUILD_BUCKET" -s $GCS_MARKET_KEY -n $CI_PIPELINE_ID -c $CI_COMMIT_BRANCH -pbp "$STORAGE_BASE_PATH/packs" --marketplace xsoar_saas
+        
+        gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
+        if [[ $TEST_UPLOAD == "false" ]] && [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" ]]; then
+          gsutil cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/packs_results_upload.json" "gs://xsoar-ci-artifacts/content/$CI_COMMIT_SHA/$MARKETPLACE_VERSION/packs_results_upload.json"
+          echo "packs_results_upload.json upload successfully"
+        fi
         
         core_packs_files_count=$(find "${ARTIFACTS_FOLDER_SERVER_TYPE}" -name "corepacks*.json" | wc -l)
         if [ "${core_packs_files_count}" -eq 0 ]; then

@@ -10,7 +10,7 @@ from datetime import timezone
 from collections.abc import Sequence, Iterable
 from dateparser import parse
 from urllib3 import disable_warnings
-
+import zipfile
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
@@ -168,23 +168,34 @@ def prepare_disable_iocs(iocs: str) -> tuple[str, list]:
 
 
 def create_file_iocs_to_keep(file_path, batch_size: int = 200):
-    demisto.info('Starting create file ioc to keep')
+    demisto.debug('starting create_file_iocs_to_keep')
+    ioc_count = 0
+    has_iocs = False
     with open(file_path, 'w') as _file:
-        has_iocs = False
         for ioc in (batch.get('value', '') for batch in get_iocs_generator(size=batch_size)):
-            has_iocs = True
             _file.write(ioc + '\n')
+            has_iocs = True
+            ioc_count += 1
 
-        if not has_iocs:
-            demisto.debug('All indicators that follow the "Sync Query" are expired, adding a space to the iocs_to_keep file.')
+        if has_iocs:
+            demisto.info(f"created iocs_to_keep file with {ioc_count} IOCs, file size is {_file.tell()} bytes")
+
+        else:
+            demisto.info('All IOCs matching the "Sync Query" are expired, only writing a space to the iocs_to_keep file.')
             _file.write(' ')
 
 
 def create_file_sync(file_path, batch_size: int = 200):
+    ioc_count = 0
     with open(file_path, 'w') as _file:
         for ioc in map(demisto_ioc_to_xdr, get_iocs_generator(size=batch_size)):
             if ioc:
                 _file.write(json.dumps(ioc) + '\n')
+                ioc_count += 1
+        if ioc_count:
+            demisto.info(f"created sync file with {ioc_count} IOCs. File size is {_file.tell()}")
+        else:
+            demisto.info("created sync file without any indicators")
 
 
 def get_iocs_generator(size=200, query=None) -> Iterable:
@@ -242,7 +253,44 @@ def demisto_types_to_xdr(_type: str) -> str:
         return xdr_type
 
 
-def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags: bool) -> list[str] | None:
+def _parse_demisto_comments(ioc: dict, comment_field_name: list[str] | str, comments_as_tags: bool) -> list[Any] | None:
+    """"
+    Parsing xsoar fields to xdr from multiple fields value or a single value.
+    Args:
+        ioc (dict): the IOC dict.
+        comment_field_name (list[str] | str): the name of the comment field(s) to parse.
+        comments_as_tags (bool): whether to return comments as XDR tags rather than notes.
+
+    Returns:
+        A list with the parsed comment(s) joined by commas if multiple comment fields were provided,
+        otherwise the parsed comment from the single provided field.
+        Returns None if no comments were found.
+    """
+    # parse comments from multiple fields if specified as list
+    if isinstance(comment_field_name, list):
+        comments = []
+        for field in comment_field_name:
+            parsing = parse_demisto_single_comments(ioc, field, comments_as_tags)
+            if parsing:
+                comments.extend(parsing)
+        return [', '.join(comments)]
+
+    # else return single field
+    return parse_demisto_single_comments(ioc, comment_field_name, comments_as_tags)
+
+
+def parse_demisto_single_comments(ioc: dict, comment_field_name: list[str] | str, comments_as_tags: bool) -> list[str] | None:
+    """"
+    Parsing xsoar fields to xdr from a single value.
+    Args:
+        ioc (dict): the IOC dict.
+        comment_field_name (list[str] | str): the name of the comment field(s) to parse.
+        comments_as_tags (bool): whether to return comments as XDR tags rather than notes.
+
+    Returns:
+        The parsed comment from the single provided field.
+        Returns None if no comments were found.
+    """
     if comment_field_name == 'comments':
         if comments_as_tags:
             raise DemistoException("When specifying comments_as_tags=True, the xsoar_comment_field cannot be `comments`)."
@@ -256,6 +304,12 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
             return None
         return [comment]
 
+    elif comment_field_name == 'indicator_link':
+        # parse indicator link into comments field
+        if is_xsoar_saas():
+            return [f'{demisto.demistoUrls().get("server")}/indicator/{ioc.get("id")}']
+        return [f'{demisto.demistoUrls().get("server")}/#/indicator/{ioc.get("id")}']
+
     else:  # custom comments field
         if not (raw_comment := ioc.get('CustomFields', {}).get(comment_field_name)):
             return None
@@ -268,7 +322,7 @@ def _parse_demisto_comments(ioc: dict, comment_field_name: str, comments_as_tags
 
 def demisto_ioc_to_xdr(ioc: dict) -> dict:
     try:
-        demisto.debug(f'Raw outgoing IOC: {ioc}')
+        # demisto.debug(f'Raw outgoing IOC: {ioc}') # uncomment to debug, otherwise spams the log
         xdr_ioc: dict = {
             'indicator': ioc['value'],
             'severity': Client.severity,  # default, may be overwritten, see below
@@ -280,8 +334,9 @@ def demisto_ioc_to_xdr(ioc: dict) -> dict:
             xdr_ioc['reliability'] = aggregated_reliability[0]
         if vendors := demisto_vendors_to_xdr(ioc.get('moduleToFeedMap', {})):
             xdr_ioc['vendors'] = vendors
-        if (comment := _parse_demisto_comments(ioc=ioc, comment_field_name=Client.xsoar_comments_field,
-                                               comments_as_tags=Client.comments_as_tags)):
+
+        if comment := _parse_demisto_comments(ioc=ioc, comment_field_name=Client.xsoar_comments_field,
+                                              comments_as_tags=Client.comments_as_tags):
             xdr_ioc['comment'] = comment
 
         custom_fields = ioc.get('CustomFields', {})
@@ -302,7 +357,7 @@ def demisto_ioc_to_xdr(ioc: dict) -> dict:
 
         xdr_ioc['severity'] = validate_fix_severity_value(xdr_ioc['severity'], ioc['value'])
 
-        demisto.debug(f'Processed outgoing IOC: {xdr_ioc}')
+        # demisto.debug(f'Processed outgoing IOC: {xdr_ioc}') # uncomment to debug, otherwise spams the log
         return xdr_ioc
 
     except KeyError as error:
@@ -315,26 +370,32 @@ def get_temp_file() -> str:
     return temp_file[1]
 
 
+def set_sync_time(timestamp: datetime) -> None:
+    value = {
+        "ts": int(timestamp.timestamp()) * 1000,
+        "time": timestamp.strftime(DEMISTO_TIME_FORMAT),
+    }
+    demisto.info(f"setting sync time to integration context: {value}")
+    set_integration_context(get_integration_context() | value)  # latter value matters when updating a dict
+
+
 def sync(client: Client):
     """
     Sync command is supposed to run only in first run or the integration context is empty.
     Creates the initial sync between xdr and xsoar iocs.
     """
-    demisto.debug("executing sync")
+    demisto.info("executing sync")
     temp_file_path: str = get_temp_file()
     try:
-        create_file_sync(temp_file_path)  # can be empty
+        sync_time = datetime.now(timezone.utc)
+        create_file_sync(temp_file_path)  # may end up empty
         requests_kwargs: dict = get_requests_kwargs(file_path=temp_file_path)
         path: str = 'sync_tim_iocs'
         client.http_request(path, requests_kwargs)
     finally:
         os.remove(temp_file_path)
-    set_integration_context(
-        {
-            "ts": int(datetime.now(timezone.utc).timestamp() * 1000),
-            "time": datetime.now(timezone.utc).strftime(DEMISTO_TIME_FORMAT),
-        }
-    )
+
+    set_sync_time(sync_time)
     set_new_iocs_to_keep_time()
     return_outputs("sync with XDR completed.")
 
@@ -345,7 +406,10 @@ def iocs_to_keep(client: Client):
     All the indicators not send to XDR with the file will be deleted from XDR.
     This is to sync the expired/deleted/no more under filter IOC.
     """
-    demisto.debug("executing iocs_to_keep")
+    demisto.info("Skipping iocs_to_keep due to an issue with the XDR API")
+    return
+
+    demisto.info("executing iocs_to_keep: this will send non-expired IOCs matching the query from XSOAR to XDR")  # noqa: suppress vulture on dead code
     if datetime.utcnow().hour not in range(1, 3):
         raise DemistoException('iocs_to_keep runs only between 01:00 and 03:00.')
     temp_file_path: str = get_temp_file()
@@ -353,6 +417,7 @@ def iocs_to_keep(client: Client):
         create_file_iocs_to_keep(temp_file_path)  # can't be empty
         requests_kwargs: dict = get_requests_kwargs(file_path=temp_file_path)
         path = 'iocs_to_keep'
+        demisto.debug(f"calling endpoint {path}")
         client.http_request(path, requests_kwargs)
         set_new_iocs_to_keep_time()
     finally:
@@ -361,7 +426,6 @@ def iocs_to_keep(client: Client):
 
 
 def get_iocs_to_keep_file():
-    demisto.info('get_iocs_to_keep_file executed')
     temp_file_path = Path(get_temp_file())
     try:
         create_file_iocs_to_keep(temp_file_path)
@@ -378,13 +442,17 @@ def get_last_iocs(batch_size=200) -> list:
     current_run: str = datetime.utcnow().strftime(DEMISTO_TIME_FORMAT)
     last_run: dict = get_integration_context()
     query = create_last_iocs_query(from_date=last_run['time'], to_date=current_run)
+    demisto.info(f"querying XSOAR's recently-modified IOCs with {query=}")
     iocs: list = list(get_iocs_generator(query=query, size=batch_size))
+    demisto.info(f"querying XSOAR's recently-modified: got {len(iocs)}")
     last_run['time'] = current_run
+    demisto.debug(f"querying querying XSOAR's recently-modified IOCs: setting last_run['time']={current_run}")
     set_integration_context(last_run)
     return iocs
 
 
 def get_indicators(indicators: str) -> list:
+    demisto.debug("searching for IOCs in XSOAR")
     if indicators:
         iocs: list = []
         not_found = []
@@ -396,32 +464,43 @@ def get_indicators(indicators: str) -> list:
             else:
                 not_found.append(indicator)
         if not_found:
-            return_warning('The following indicators were not found: {}'.format(', '.join(not_found)))
+            warning_message = f'{len(not_found)} indicators were not found: {",".join(not_found)}'
+            demisto.info(warning_message)
+            return_warning(warning_message)
         else:
+            demisto.info(f"get_indicators found {len(iocs)} IOCs")
             return iocs
+    demisto.debug("get_indicators found 0 IOCs")
     return []
 
 
 def tim_insert_jsons(client: Client):
     # takes our changes and pushes to XDR
     indicators = demisto.args().get('indicator', '')
-    validation_errors = []
-    if not indicators:
-        iocs = get_last_iocs()
-    else:
+    if indicators:
+        demisto.info(f"pushing IOCs to XDR: querying with input {indicators}")
         iocs = get_indicators(indicators)
+    else:
+        demisto.info("pushing IOCs to XDR: did not get indicators, will use recently-modified IOCs")
+        iocs = get_last_iocs()
+
+    validation_errors = []
     if iocs:
         path = 'tim_insert_jsons/'
+        demisto.info(f"pushing IOCs to XDR: pushing {len(iocs)} IOCs to the {path} endpoint")
         for i, single_batch_iocs in enumerate(batch_iocs(iocs)):
-            demisto.debug(f'push batch: {i}')
+            demisto.debug(f'pushing IOCs to XDR: batch #{i} with {len(single_batch_iocs)} IOCs')
             requests_kwargs: dict = get_requests_kwargs(_json=list(
                 map(demisto_ioc_to_xdr, single_batch_iocs)), validate=True)
             response = client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
             validation_errors.extend(response.get('reply', {}).get('validation_errors'))
+    else:
+        demisto.info("pushing IOCs to XDR: found no matching IOCs")
     if validation_errors:
         errors = create_validation_errors_response(validation_errors)
+        demisto.info('pushing IOCs to XDR:' + errors.replace('\n', '. '))
         return_warning(errors)
-    return_outputs('push done.')
+    return_outputs('pushing IOCs to XDR: complete.')
 
 
 def iocs_command(client: Client):
@@ -431,9 +510,10 @@ def iocs_command(client: Client):
         path, iocs = prepare_enable_iocs(indicators)
     else:  # command == 'disable'
         path, iocs = prepare_disable_iocs(indicators)
+    demisto.info(f"IOCs command: sending {len(iocs)} IOCs to endpoint {path}")
     requests_kwargs: dict = get_requests_kwargs(_json=iocs)
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
-    return_outputs(f'indicators {indicators} {command}d.')
+    return_outputs(f'IOCs command: {command}d {indicators=}')
 
 
 def xdr_ioc_to_timeline(iocs: list) -> dict:
@@ -475,7 +555,7 @@ def list_of_single_to_str(values: Sequence[str]) -> list[str] | str:
 
 
 def xdr_ioc_to_demisto(ioc: dict) -> dict:
-    demisto.debug(f'Raw incoming IOC: {ioc}')
+    # demisto.debug(f'Raw incoming IOC: {ioc}') # uncomment to debug, otherwise spams the log
     indicator = ioc.get('RULE_INDICATOR', '')
     xdr_server_score = int(xdr_reputation_to_demisto.get(ioc.get('REPUTATION'), 0))
     score = get_indicator_xdr_score(indicator, xdr_server_score)
@@ -508,45 +588,52 @@ def xdr_ioc_to_demisto(ioc: dict) -> dict:
     if Client.tlp_color:
         entry['fields']['trafficlightprotocol'] = Client.tlp_color
 
-    demisto.debug(f'Processed incoming entry: {entry}')
+    # demisto.debug(f'Processed incoming entry: {entry}') # uncomment to debug, otherwise it spams the log
     return entry
 
 
 def get_changes(client: Client):
-    # takes changes from XDR
+    demisto.debug("pull XDR changes: starting")
     from_time: dict = get_integration_context()
     if not from_time:
         raise DemistoException('XDR is not synced.')
     path, requests_kwargs = prepare_get_changes(from_time['ts'])
     requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
-    demisto.debug(f'creating http request to {path} with {str(requests_kwargs)}')
+    demisto.debug(f'pull XDR changes: calling endpoint {path}, {requests_kwargs=}')
     if iocs := client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', []):
         from_time['ts'] = iocs[-1].get('RULE_MODIFY_TIME', from_time) + 1
-        demisto.debug(f'setting integration context with {from_time=}')
+        demisto.info(f'pull XDR changes: got {len(iocs)} IOCs from XDR')
+        demisto.info(f'pull XDR changes: setting {from_time} to integration context ')
         set_integration_context(from_time)
+        demisto.debug(f"pull XDR changes: converting {len(iocs)} XDR IOCs to demisto format, then creating indicators")
         demisto_indicators = list(map(xdr_ioc_to_demisto, iocs))
-        for indicator in demisto_indicators:
-            demisto.debug(f'indicator: {indicator}')
         demisto.createIndicators(demisto_indicators)
+        demisto.debug("pull XDR changes: done")
+    else:
+        demisto.info("pull XDR changes:Got 0 IOCs from XDR")
 
 
 def module_test(client: Client):
     ts = int(datetime.now(timezone.utc).timestamp() * 1000) - 1
     path, requests_kwargs = prepare_get_changes(ts)
     requests_kwargs: dict = get_requests_kwargs(_json=requests_kwargs)
+    demisto.debug(f"calling endpoint {path} with {requests_kwargs=}")
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
     demisto.results('ok')
 
 
 def fetch_indicators(client: Client, auto_sync: bool = False):
+    demisto.debug("fetching IOCs: starting")
     if not get_integration_context() and auto_sync:
-        demisto.debug("running sync with first_time=True")
+        demisto.debug("fetching IOCs: running sync with first_time=True")
         # this will happen on the first time we run
         xdr_iocs_sync_command(client, first_time=True)
     else:
         # This will happen every fetch time interval as defined in the integration configuration
+        demisto.debug("fetching IOCs: running get_changes")
         get_changes(client)
         if auto_sync:
+            demisto.debug("fetching IOCs: auto_sync is on")
             tim_insert_jsons(client)
             demisto.debug("checking if iocs_to_keep should run")
             if is_iocs_to_keep_time():
@@ -557,6 +644,7 @@ def fetch_indicators(client: Client, auto_sync: bool = False):
 
 def xdr_iocs_sync_command(client: Client, first_time: bool = False):
     if first_time or not get_integration_context():
+        demisto.debug("first time, running sync")
         # the sync is the large operation including the data and the get_integration_context is fill in the sync
         sync(client)
     else:
@@ -632,12 +720,28 @@ def get_indicator_xdr_score(indicator: str, xdr_server: int):
         return xdr_local
 
 
-def get_sync_file():
+def get_sync_file(set_time: bool = False, zip: bool = False) -> None:
     temp_file_path = get_temp_file()
+
+    timestamp = datetime.now(timezone.utc)
+    demisto.debug(f"creating sync file with {timestamp=!s}")
     try:
         create_file_sync(temp_file_path)
-        with open(temp_file_path) as _tmpfile:
-            return_results(fileResult('xdr-sync-file', _tmpfile.read()))
+
+        if zip:
+            with tempfile.NamedTemporaryFile(mode='w+b', suffix=".zip") as temp_zip_file:
+                zipfile.ZipFile(temp_zip_file.name, 'w', compression=zipfile.ZIP_DEFLATED).write(temp_file_path, 'xdr-sync-file')
+                temp_zip_file.seek(0, os.SEEK_END)
+                demisto.info(f"returning a zip, file size is {temp_zip_file.tell()} bytes")
+                temp_zip_file.seek(0)
+                return_results(fileResult('xdr-sync-file-zipped.zip', temp_zip_file.read()))
+        else:
+            with open(temp_file_path) as temp_sync_file:
+                # raw file size is logged in create_file_sync
+                return_results(fileResult('xdr-sync-file', temp_sync_file.read()))
+
+        if set_time:
+            set_sync_time(timestamp)
     finally:
         os.remove(temp_file_path)
 
@@ -697,21 +801,21 @@ def main():  # pragma: no cover
         'xdr-iocs-push': tim_insert_jsons,
     }
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
-
+    args = demisto.args()
+    demisto.debug(f'Command being called is {command}, {args=}')
     try:
         if command == "fetch-indicators":
             fetch_indicators(client, params.get("autoSync", False))
         elif command == 'xdr-iocs-set-sync-time':
             return_warning('This command is deprecated and is not relevant anymore.')
         elif command == "xdr-iocs-create-sync-file":
-            get_sync_file()
+            get_sync_file(set_time=argToBoolean(args['set_time']), zip=argToBoolean(args['zip']))
         elif command == 'xdr-iocs-to-keep-file':
             get_iocs_to_keep_file()
         elif command in commands:
             commands[command](client)
         elif command == 'xdr-iocs-sync':
-            xdr_iocs_sync_command(client, demisto.args().get('firstTime') == 'true')
+            xdr_iocs_sync_command(client, args.get('firstTime') == 'true')
         else:
             raise NotImplementedError(command)
     except Exception as error:

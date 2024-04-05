@@ -63,6 +63,9 @@ PREFIX_OUTPUTS: dict[str, Any] = {
     "registry_key": "RegistryKey",
 }
 
+DEFAULT_MALICIOUS_THRESHOLD = 85
+DEFAULT_SUSPICIOUS_THRESHOLD = 50
+
 
 class Client(BaseClient):
     """API Client to communicate with ThreatGrid API."""
@@ -605,6 +608,8 @@ def analysis_sample_command(
     arg_value = args.get(arg_name) if arg_name else None
     sample_id = args["sample_id"]
     response = client.analysis_sample(sample_id, url_param, arg_value)
+    if not response or not response.get("data"):
+        return CommandResults(readable_output=f'### No results were found for sample_id {sample_id}')
 
     items = (response["data"]["items"]
              if response["data"].get("items") else response["data"])
@@ -1006,6 +1011,10 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
             continue_to_poll=False,
         )
 
+    if sample_state == "fail":
+        # In case the upload not succeeded raise the error
+        raise DemistoException(f"Uploading {args['sample_id']} to ThreatGrid failed")
+
     return PollResult(
         response=command_results,
         continue_to_poll=True,
@@ -1031,11 +1040,11 @@ def get_dbotscore(
     Returns:
         Common.DBotScore: DBot Score according to the disposition.
     """
-    score = Common.DBotScore.NONE
-
-    if api_score >= 85:
+    if api_score == 0:
+        score = Common.DBotScore.NONE
+    elif api_score >= DEFAULT_MALICIOUS_THRESHOLD:
         score = Common.DBotScore.BAD
-    elif api_score >= 50:
+    elif api_score >= DEFAULT_SUSPICIOUS_THRESHOLD:
         score = Common.DBotScore.SUSPICIOUS
     else:
         score = Common.DBotScore.GOOD

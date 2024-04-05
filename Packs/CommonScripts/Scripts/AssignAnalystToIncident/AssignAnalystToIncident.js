@@ -1,3 +1,21 @@
+// returns true if the current platform is XSIAM.
+isXsiam = function () {
+    res = getDemistoVersion();
+    platform = res.platform;
+    if  (platform === "x2") {
+        return true
+    }
+    return false
+}
+
+if (isXsiam()){
+    incidentObject = JSON.parse(incObj);
+    if (incidentObject.length > 0 && incidentObject[0].id.startsWith("INCIDENT")) {
+        throw "AssignAnalystToIncident script can only be used within an alert and not from an incident."
+    }
+}
+
+
 if (args.email && args.username) {
     throw 'Please provide either username or email';
 }

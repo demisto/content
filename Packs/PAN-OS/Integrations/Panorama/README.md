@@ -2328,6 +2328,7 @@ Creates a policy rule.
 | profile_setting | A profile setting group. | Optional | 
 | where | Where to move the rule. Can be "before", "after", "top", or "bottom". If you specify "before" or "after", you need to supply the "dst" argument. | Optional | 
 | dst | Destination rule relative to the rule that you are moving. This field is only relevant if you specify "before" or "after" in the "where" argument. | Optional |
+| audit_comment | An audit comment for the rule. | Optional |
 
 #### Context Output
 
@@ -7958,6 +7959,7 @@ Creates a new NAT rule in a Panorama/firewall instance.
 | destination_translation_distribution_method | The destination translation distribution method. Possible values are: round-robin, source-ip-hash, ip-modulo, ip-hash, least-sessions. | Optional | 
 | negate_destination | Whether to use negate destination. Possible values are: yes, no. | Optional | 
 | destination_dns_rewrite_direction | The DNS rewrite direction. Possible values are: forward, reverse. | Optional | 
+| audit_comment | An audit comment for the rule. | Optional |
 
 
 #### Context Output
@@ -8007,7 +8009,7 @@ Edits a NAT rule.
 | device-group | The device-group that the NAT rule is part of. (Panorama instances only). | Optional     | 
 | pre_post | The pre rule or post rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional     | 
 | behavior | The operation to perform on the rule. Possible values are: replace, add, remove. Default is replace. | Optional     | 
-| element_to_change | The element to change. Possible values are: tags, service, nat_type, description, source_zone, destination_zone, source_address, destination_address, destination_interface, negate_destination, source_translation_dynamic_ip_and_port, source_translation_interface, source_translation_dynamic_ip, source_translation_static_ip, destination_translation_port, destination_translation_ip, destination_translation_dynamic_port, destination_translation_dynamic_ip, destination_translation_dynamic_distribution_method, disabled. | Required     | 
+| element_to_change | The element to change. Possible values are: tags, service, nat_type, description, source_zone, destination_zone, source_address, destination_address, destination_interface, negate_destination, source_translation_dynamic_ip_and_port, source_translation_interface, source_translation_dynamic_ip, source_translation_static_ip, destination_translation_port, destination_translation_ip, destination_translation_dynamic_port, destination_translation_dynamic_ip, destination_translation_dynamic_distribution_method, disabled, audit-comment. | Required     | 
 | element_value | The value of the element to change. Can be a list for certain elements. | Required     | 
 
 
@@ -8573,6 +8575,7 @@ Creates a new policy-based-forwarding (PBF) rule in a Panorama/firewall instance
 | negate_source | Whether to negate the source. Possible values are: yes, no. Default is no. | Optional | 
 | negate_destination | Whether to negate the destination. Possible values are: yes, no. Default is no. | Optional | 
 | nexthop_address_list | The nexthop addresses list for the symmetric return. | Optional | 
+| audit_comment | An audit comment for the rule. | Optional |
 
 
 #### Context Output
@@ -8598,7 +8601,7 @@ Edits a redistribution-profile in a virtual-router.
 | rulename | The name of the PBF rule to edit. Can be retrieved from the pan-os-list-pbf-rules command. | Required | 
 | device-group | The device-group that the PBF rule is in. | Optional | 
 | pre_post | The pre-rule or post-rule (Panorama instances only). Possible values are: pre-rulebase, post-rulebase. | Optional | 
-| element_to_change | The element to change. Possible values are: source_zone, source_address, source_user, service, destination_address, application, negate_source, negate_destination, nexthop_address_list, enforce_symmetric_return, action_forward_egress_interface, action_forward_nexthop_ip, action_forward_nexthop_fqdn, action_forward_discard, action_forward_no_pbf, disabled. | Required | 
+| element_to_change | The element to change. Possible values are: source_zone, source_address, source_user, service, destination_address, application, negate_source, negate_destination, nexthop_address_list, enforce_symmetric_return, action_forward_egress_interface, action_forward_nexthop_ip, action_forward_nexthop_fqdn, action_forward_discard, action_forward_no_pbf, disabled, audit-comment. | Required | 
 | element_value | The value of the element to change. Can be a list for some of the elements. When element_to_change == 'action_forward_egress_interface', the action of the rule will be changed to 'forward' automatically. | Required | 
 
 
@@ -9014,3 +9017,205 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Waiting for tech support file export with job ID 101 to finish...
+
+### pan-os-list-security-profile-group
+
+***
+Returns a list of security profile groups from Panorama.
+
+#### Base Command
+
+`pan-os-list-security-profile-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | A given group name to return the data for. | Optional | 
+| device-group | The device group that the security profile groups are part of. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.ProfileGroup.name | String | The name of the group. | 
+| Panorama.ProfileGroup.location | String | The security profile group's device group location. | 
+| Panorama.ProfileGroup.virus | String | The antivirus profile. | 
+| Panorama.ProfileGroup.spyware | String | The anti-spyware profile. | 
+| Panorama.ProfileGroup.vulnerability | String | The vulnerability protection profile. | 
+| Panorama.ProfileGroup.url-filtering | String | The URL filtering profile. | 
+| Panorama.ProfileGroup.file-blocking | String | The file blocking profile. | 
+| Panorama.ProfileGroup.data-filtering | String | The data filtering profile. | 
+| Panorama.ProfileGroup.wildfire-analysis | String | The WildFire analysis profile. | 
+| Panorama.ProfileGroup.disable-override | String | Whether overriding the security profile group is disabled. | 
+
+#### Command example
+```!pan-os-list-security-profile-group```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "ProfileGroups": [
+            {
+                "name": "test_security_pg",
+                "location": "TestDevice",
+                "virus": "default",
+                "spyware": "default",
+            },
+            {
+                "name": "test_security_pg_v2",
+                "file-blocking": "basic file blocking",
+                "data-filtering": "test data filtering",
+                "wildfire-analysis": "test wildfire analysis",
+                "url-filtering": "default",
+                "location": "TestDevice",
+                "spyware": "default",
+                "vulnerability": "vulnerability",
+                "virus": "default",
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Security Profile Groups:
+>|Name|Location|Antivirus Profile|Anti-Spyware Profile|Vulnerability Protection Profile|URL Filtering Profile|File Blocking Profile|Data Filtering Profile|WildFire Analysis Profile|
+>|---|---|---|---|---|---|---|---|---|
+>| test_security_pg | TestDevice | default | default |  |  |  |  |  |
+>| test_security_pg_v2 | TestDevice | default | default | vulnerability | default | basic file blocking | test data filtering | test wildfire analysis |
+
+### pan-os-create-security-profile-group
+
+***
+Creates a new security profile group in Panorama.
+
+#### Base Command
+
+`pan-os-create-security-profile-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | The name of the security profile group. | Required | 
+| device-group | The device group that the security profile group will be part of. | Optional | 
+| antivirus_profile | The antivirus profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command. | Optional | 
+| anti_spyware_profile | The anti-spyware profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command. | Optional | 
+| vulnerability_protection_profile | The vulnerability protection profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command. | Optional | 
+| URL_filtering_profile | The URL filtering profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command. | Optional | 
+| file_blocking_profile | The file blocking profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command. | Optional | 
+| data_filtering_profile | The data filtering profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command. | Optional | 
+| wildfire_analysis_profile | The WildFire analysis profile of the group. You can get the possible values for this argument by running the pan-os-get-security-profile command. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!pan-os-create-security-profile-group group_name="test_security_pg" antivirus_profile="default" anti_spyware_profile="default"```
+
+#### Human Readable Output
+
+>Successfull created Security Profile Group: "test-spg"
+
+### pan-os-edit-security-profile-group
+
+***
+Edits the security profile group in Panorama.
+
+#### Base Command
+
+`pan-os-edit-security-profile-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | The name of the security profile group to edit. | Required | 
+| profile_to_change | The profile to edit in the group. Possible values are: Antivirus Profile, Anti-Spyware Profile, Vulnerability Protection Profile, URL Filtering Profile, File Blocking Profile, Data Filtering  Profile, WildFire Analysis Profile. | Required | 
+| profile_value | The value to set in the profile. You can get the possible values for this argument by running the pan-os-get-security-profile command. | Required | 
+| device-group | The device group that the security profile group is part of. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!pan-os-edit-security-profile-group group_name="test-spg" profile_to_change="Antivirus Profile" profile_value="default"```
+
+#### Human Readable Output
+
+>Successfull edited Security Profile Group: "test-spg"
+
+### pan-os-delete-security-profile-group
+
+***
+Deletes a security profile group from Panorama.
+
+#### Base Command
+
+`pan-os-delete-security-profile-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_name | The name of the security profile group to delete. | Required | 
+| device-group | The device group that the security profile group is part of. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!pan-os-delete-security-profile-group group_name="test-spg"```
+
+#### Human Readable Output
+
+>Successfull deleted Security Profile Group: "test-spg"
+
+### pan-os-get-audit-comment
+
+***
+Gets the audit comment of a rule.
+
+#### Base Command
+
+`pan-os-get-audit-comment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_name | The rule name to apply. | Required | 
+| rule_type | The rule type. Possible values are: Security Rule, NAT Rule, PBF Rule. | Optional | 
+| pre_post | Pre rule or Post rule (Panorama instances). | Optional | 
+| device_group | The device group that the tag will be part of. | Optional | 
+
+#### Command example
+```!pan-os-get-audit-comment rule_name="test" rule_type="Security Rule" pre_post=Post```
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "AuditComment": [
+            {
+                "comment": "some comment",
+                "rule_name": "test",
+                "rule_type": "Security Rule"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Audit Comment for Rule: test
+>|Comment|Rule Name|Rule Type|
+>|---|---|---|
+>| some comment | test | Security Rule |

@@ -3,9 +3,9 @@ import pytest
 import demistomock as demisto
 
 from CommonServerPython import DemistoException, ThreatIntel, FeedIndicatorType
-from FeedMISP import clean_user_query, build_indicators_iterator, \
-    handle_file_type_fields, get_galaxy_indicator_type, build_indicators_from_galaxies, update_indicators_iterator, \
-    update_indicator_fields, get_ip_type, search_query_indicators_pagination, Client
+from FeedMISP import parsing_user_query, build_indicators_iterator, \
+    handle_file_type_fields, get_galaxy_indicator_type, build_indicators_from_galaxies, \
+    update_indicator_fields, get_ip_type, Client, fetch_attributes_command
 
 
 def test_build_indicators_iterator_success():
@@ -90,7 +90,7 @@ def test_handle_file_type_fields_hash_and_filename():
     assert indicator_obj['value'] == 'somehashvalue'
 
 
-def test_clean_user_query_success():
+def test_parsing_user_query_success():
     """
     Given
         - A json string query
@@ -99,12 +99,12 @@ def test_clean_user_query_success():
     Then
         - create a dict from json string
     """
-    querystr = '{"returnFormat": "json", "type": {"OR": ["ip-src"]}, "tags": {"OR": ["tlp:%"]}}'
-    params = clean_user_query(querystr)
-    assert len(params) == 3
+    querystr = '{"returnFormat": "json","limit": "3", "type": {"OR": ["ip-src"]}, "tags": {"OR": ["tlp:%"]}}'
+    params = parsing_user_query(querystr, limit=40000)
+    assert len(params) == 5
 
 
-def test_clean_user_query_bad_query():
+def test_parsing_user_query_bad_query():
     """
     Given
         - A json string query
@@ -115,10 +115,10 @@ def test_clean_user_query_bad_query():
     """
     with pytest.raises(DemistoException):
         querystr = '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]'
-        clean_user_query(querystr)
+        parsing_user_query(querystr, limit=4)
 
 
-def test_clean_user_query_change_format():
+def test_parsing_user_query_change_format():
     """
     Given
         - A json parsed result from qualys
@@ -128,11 +128,11 @@ def test_clean_user_query_change_format():
         - change return format to json
     """
     querystr = '{"returnFormat": "xml", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
-    params = clean_user_query(querystr)
+    params = parsing_user_query(querystr, limit=4)
     assert params["returnFormat"] == "json"
 
 
-def test_clean_user_query_remove_timestamp():
+def test_parsing_user_query_remove_timestamp():
     """
     Given
         - A json parsed result from qualys
@@ -141,9 +141,9 @@ def test_clean_user_query_remove_timestamp():
     Then
         - Return query without the timestamp parameter
     """
-    good_query = '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
+    good_query = '{"returnFormat": "json", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}, "page": 1, "limit": 2000}'
     querystr = '{"returnFormat": "json", "timestamp": "1617875568", "type": {"OR": ["md5"]}, "tags": {"OR": ["tlp:%"]}}'
-    params = clean_user_query(querystr)
+    params = parsing_user_query(querystr, limit=2)
     assert good_query == json.dumps(params)
 
 
@@ -204,173 +204,6 @@ def test_build_indicators_from_galaxies():
     assert len(galaxy_indicators) == 1
     assert galaxy_indicators[0]['value'] == "Some Value"
     assert galaxy_indicators[0]['type'] == ThreatIntel.ObjectsNames.ATTACK_PATTERN
-
-
-def test_update_indicators_iterator_first_fetch(mocker):
-    """
-    Given
-        - Indicators received
-    When
-        - First fetch, no last run parameters
-    Then
-        - return all indicators
-    """
-    indicators_iterator = [
-        {
-            'value': {'timestamp': '5'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '1'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '3'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-    ]
-    query = {'key': 'val'}
-    mocker.patch.object(demisto, 'getLastRun', return_value=None)
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
-    assert added_indicators_iterator == indicators_iterator
-
-
-def test_update_indicators_iterator_timestamp_exists_all_new_indicators_same_query(mocker):
-    """
-     Given
-         - Indicators received, lastrun has timestamp and query
-     When
-         - indicators updated after timestamp and same query as before
-     Then
-         - return all indicators
-     """
-    indicators_iterator = [
-        {
-            'value': {'timestamp': '5'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '1'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '3'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-    ]
-    query = {'key': 'val'}
-    mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '0', 'params': query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
-    assert added_indicators_iterator == indicators_iterator
-
-
-def test_update_indicators_iterator_timestamp_exists_no_new_indicators_same_query(mocker):
-    """
-     Given
-         - Indicators received, lastrun has the timestamp and query
-     When
-         - last run timestamp is bigger then the indicators timestamp and query is the same
-     Then
-         - return no indicators
-     """
-    indicators_iterator = [
-        {
-            'value': {'timestamp': '1'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '3'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-    ]
-    query = {'key': 'val'}
-    mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '4', 'params': query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
-    assert not added_indicators_iterator
-
-
-def test_update_indicators_iterator_timestamp_exists_some_new_indicators_same_query(mocker):
-    """
-     Given
-         - Indicators received, lastrun has the timestamp and query
-     When
-         - some indicators has timestamp bigger then the lastrun timestamp
-     Then
-         - return indicators which have timestamp bigger then lastrun timestamp
-     """
-    indicators_iterator = [
-        {
-            'value': {'timestamp': '5'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '1'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '3'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-    ]
-    query = {'key': 'val'}
-    mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '4', 'params': query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
-    assert added_indicators_iterator[0]['value']['timestamp'] == '5'
-
-
-def test_update_indicators_iterator_timestamp_exists_no_indicators_same_query(mocker):
-    """
-     Given
-         - No indicators received
-     When
-         - lastrun has timestamp and query
-     Then
-         - return no indicators
-     """
-    indicators_iterator = []
-    query = {'key': 'val'}
-    mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '4', 'params': query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
-    assert not added_indicators_iterator
-
-
-def test_update_indicators_iterator_indicators_before_timestamp_different_query(mocker):
-    """
-     Given
-         - Indicators received, lastrun has the timestamp and query
-     When
-         - all indicators have smaller timestamp then lastrun but query has changed
-     Then
-         - reset lastrun and return all indicators
-     """
-    indicators_iterator = [
-        {
-            'value': {'timestamp': '1'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-        {
-            'value': {'timestamp': '3'},
-            'type': 'IP',
-            'raw_type': 'ip-src',
-        },
-    ]
-    query = {'key': 'val'}
-    old_query = {'key': 'old'}
-    mocker.patch.object(demisto, 'getLastRun', return_value={'timestamp': '4', 'params': old_query})
-    added_indicators_iterator = update_indicators_iterator(indicators_iterator, query, True)
-    assert added_indicators_iterator == indicators_iterator
 
 
 @pytest.mark.parametrize(
@@ -450,31 +283,70 @@ def test_get_ip_type(indicator, indicator_type):
     assert get_ip_type(indicator) == indicator_type
 
 
-indicators_examples = [
-    ({'response': {'Attribute': ['data1', 'data2']}}, ({'response': {'Attribute': []}}),
-     {'response': {'Attribute': ['data1', 'data2']}}),
-    ({'response': {'Attribute': []}}, ({'response': {'Attribute': []}}),
-     {'response': {'Attribute': []}})
-
-]
-
-
-@pytest.mark.parametrize('returned_result_1, returned_result_2, expected_result', indicators_examples)
-def test_search_query_indicators_pagination(mocker, returned_result_1, returned_result_2, expected_result):
+def test_search_query_indicators_pagination(mocker):
     """
     Given:
         - All relevant arguments for the command
     When:
-        - the search_query_indicators_pagination function runs
+        - the fetch_attributes_command function runs
     Then:
-        - Ensure the pagination mechanism return the expected result
+        - Ensure the pagination mechanism return the expected result (good http response is returned)
     """
     client = Client(base_url="example",
                     authorization="auth",
                     verify=False,
                     proxy=False,
                     timeout=60)
+    returned_result_1 = {'response':
+                         {'Attribute': [{'id': '1', 'event_id': '1', 'object_id': '0',
+                                         'object_relation': None, 'category': 'Payload delivery',
+                                         'type': 'sha256', 'to_ids': True, 'uuid': '5fd0c620',
+                                         'timestamp': '1607517728', 'distribution': '5', 'sharing_group_id': '0',
+                                         'comment': 'malspam', 'deleted': False, 'disable_correlation': False,
+                                         'first_seen': None, 'last_seen': None,
+                                         'value': 'val1', 'Event': {}},
+                                        {'id': '2', 'event_id': '2', 'object_id': '0',
+                                         'object_relation': None, 'category': 'Payload delivery',
+                                         'type': 'sha256', 'to_ids': True, 'uuid': '5fd0c620',
+                                         'timestamp': '1607517728', 'distribution': '5', 'sharing_group_id': '0',
+                                         'comment': 'malspam', 'deleted': False, 'disable_correlation': False, 'first_seen': None,
+                                         'last_seen': None, 'value': 'val2', 'Event': {}}]}}
+    returned_result_2 = {'response': {'Attribute': []}}
     mocker.patch.object(Client, '_http_request', side_effect=[returned_result_1, returned_result_2])
-    params_dict = {'param1': 'value1'}
-    result = search_query_indicators_pagination(client, params_dict)
-    assert result == expected_result
+    params_dict = {
+        'type': 'attribute',
+        'filters': {'category': ['Payload delivery']},
+    }
+    mocker.patch("FeedMISP.LIMIT", new=2000)
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'createIndicators')
+    fetch_attributes_command(client, params_dict)
+    indicators = demisto.createIndicators.call_args[0][0]
+    assert len(indicators) == 2
+
+
+def test_search_query_indicators_pagination_bad_case(mocker):
+    """
+    Given:
+        - All relevant arguments for the command
+    When:
+        - the fetch_attributes_command function runs
+    Then:
+        - Ensure the pagination mechanism raises an error (bad http response is returned)
+    """
+    from CommonServerPython import DemistoException
+    client = Client(base_url="example",
+                    authorization="auth",
+                    verify=False,
+                    proxy=False,
+                    timeout=60)
+    returned_result = {'Error': 'failed api call'}
+    expected_result = "Error in API call - check the input parameters and the API Key. Error: failed api call"
+    mocker.patch.object(Client, '_http_request', return_value=returned_result)
+    params_dict = {
+        'type': 'attribute',
+        'filters': {'category': ['Payload delivery']}
+    }
+    with pytest.raises(DemistoException) as e:
+        fetch_attributes_command(client, params_dict)
+    assert str(e.value) == expected_result

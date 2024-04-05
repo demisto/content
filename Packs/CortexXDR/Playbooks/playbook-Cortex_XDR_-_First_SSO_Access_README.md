@@ -1,3 +1,4 @@
+Deprecated. Use `Cortex XDR - Identity Analytics` instead.
 Investigates a Cortex XDR incident containing First SSO access from ASN in organization
  or First successful SSO connection from a country in organization.
 
@@ -15,18 +16,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* TIM - Indicator Relationships Analysis
-* Endpoint Enrichment - Generic v2.1
-* Block Account - Generic v2
-* User Investigation - Generic
-* Account Enrichment - Generic v2.1
 * Cortex XDR - First SSO Access - Set Verdict
+* User Investigation - Generic
+* TIM - Indicator Relationships Analysis
+* Block Account - Generic v2
+* Account Enrichment - Generic v2.1
+* Endpoint Enrichment - Generic v2.1
 
 ### Integrations
 
 * CortexXDRIR
-* XDR_iocs
 * XQLQueryingEngine
+* XDR_iocs
 
 ### Scripts
 
@@ -34,10 +35,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* setIncident
+* okta-clear-user-sessions
 * xdr-endpoint-isolate
 * ip
-* okta-clear-user-sessions
+* setIncident
 
 ## Playbook Inputs
 
