@@ -2,12 +2,10 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 import csv
-import io
 import pandas as pd
-from datetime import datetime, timedelta
-from calendar import monthrange, month_abbr
+from datetime import datetime
+from calendar import monthrange
 from collections import defaultdict
-from dateutil.parser import isoparse
 from typing import Tuple
 
 MAXINC = 2000
@@ -40,17 +38,17 @@ def LogMessage(message: str) -> str:
 
 def IncidentRecord(inc: dict, slatimers: list, windowstart: str, windowend: str) -> dict:
     record = {
-      'type': inc.get('type'),
-      'status': inc.get('status'),
-      'created': inc.get('created'),
-      'occurred': inc.get('occurred'),
-      'duration': inc.get('openDuration'),
-      'contime': "-1",
-      'dettime': "-1",
-      'remtime': "-1",
-      'asstime': "-1",
-      'tritime': "-1",
-      'UserWindow': "-1"
+        'type': inc.get('type'),
+        'status': inc.get('status'),
+        'created': inc.get('created'),
+        'occurred': inc.get('occurred'),
+        'duration': inc.get('openDuration'),
+        'contime': "-1",
+        'dettime': "-1",
+        'remtime': "-1",
+        'asstime': "-1",
+        'tritime': "-1",
+        'UserWindow': "-1"
     }
 
     for timer in slatimers:
@@ -69,8 +67,10 @@ def IncidentRecord(inc: dict, slatimers: list, windowstart: str, windowend: str)
 
         if windowstart != "" and windowend != "":
             if windowstart in inc['CustomFields'] and windowend in inc['CustomFields']:
-                if inc['CustomFields'][windowstart]['runStatus'] == "ended" and inc['CustomFields'][windowend]['runStatus'] == "ended":
-                    winduration = ToDatetime(inc['CustomFields'][windowend]['endDate']) - ToDatetime(inc['CustomFields'][windowstart]['startDate'])
+                if inc['CustomFields'][windowstart]['runStatus'] == "ended" and \
+                        inc['CustomFields'][windowend]['runStatus'] == "ended":
+                    winduration = ToDatetime(inc['CustomFields'][windowend]['endDate']) - \
+                        ToDatetime(inc['CustomFields'][windowstart]['startDate'])
                     record['UserWindow'] = winduration.total_seconds()
 
     return record
@@ -210,7 +210,7 @@ def SlaMetrics(records: list, slatimers: list) -> str:
                 if m == -1:
                     length -= 1
                 else:
-                    total +=m
+                    total += m
             if length > 0:
                 averages[month][field] = total / length
             else:
@@ -483,6 +483,7 @@ def FoundIncidents(res: List):
             return False
         return True
 
+
 def main():
     try:
         XLOG = "\n"
@@ -507,7 +508,7 @@ def main():
             slatimers = [item.strip().lower() for item in timers.split(",")]
         else:
             slatimers = []
-        windows= BuildWindows(firstday, lastday)
+        windows = BuildWindows(firstday, lastday)
 
         for w in windows:
             XLOG += LogMessage(f"Start Two Day Window: {w[0]} | End: {w[1]} | {inccount}, {page}")
@@ -518,9 +519,11 @@ def main():
                     response: List = GetIncLargeWindow(w, page, filters, query)
                     if not FoundIncidents(response):
                         break
-                    inccount, monthly, period = ProcessResponse(w, response, monthly, period, inccount, slatimers, windowstart, windowend)
+                    inccount, monthly, period = ProcessResponse(w, response, monthly, period, inccount, 
+                                                                slatimers, windowstart, windowend)
                     page += 1
-                # Switch to 4 hour window if the ES flag is set since it thows error next page if 10000 or more incidents were found even while paging through a smaller size page
+                # Switch to 4 hour window if the ES flag is set since it thows error next page if 
+                # 10000 or more incidents were found even while paging through a smaller size page
                 else:
                     curday = 0
                     curhour = 4
@@ -530,7 +533,8 @@ def main():
                     while True:
                         response = GetIncSmallWindow(w, page, curday, curhour, filters, query)
                         if FoundIncidents(response):
-                            inccount, monthly, period = ProcessResponse(w, response, monthly, period, inccount, slatimers, windowstart, windowend)
+                            inccount, monthly, period = ProcessResponse(w, response, monthly, period, inccount, 
+                                                                        slatimers, windowstart, windowend)
                             page += 1
                         # If no incidents found, step to the next 4 hour window
                         else:
@@ -582,4 +586,3 @@ def main():
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
