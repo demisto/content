@@ -10,7 +10,7 @@ SLACOLORS = ["Thistle", "Violet", "Orchid", "Magenta", "MediumOrchid",
              "MediumPurple", "BlueViolet", "Purple", "Indigo", "DarkSlateBlue"]
 INCCOLORS = ["PaleGreen", "Bisque", "LightGreen", "Wheat", "DarkSeaGreen",
              "Tan", "MediumSeaGreen", "SandyBrown", "SeaGreen", "GoldenRod",
-             "ForestGreen", "DarkGoldenRod", "Green", "Chocolate", "DarkGreen", 
+             "ForestGreen", "DarkGoldenRod", "Green", "Chocolate", "DarkGreen",
              "Sienna", "DarkOliveGreen", "Brown", "Teal", "Maroon"]
 
 METRICCOLORS = {
