@@ -2741,7 +2741,7 @@ def test_rubrik_radar_suspicious_file_list_command_success(client, requests_mock
     response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                 "test_data/radar_suspicious_file_list_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/radar_suspicious_file_list_hr.md"), 'r') as f:
+                           "test_data/radar_suspicious_file_list_hr.md")) as f:
         hr_data = f.read()
 
     args = {"snapshot_id": "00000000-0000-0000-0000-000000000001"}
@@ -2751,7 +2751,7 @@ def test_rubrik_radar_suspicious_file_list_command_success(client, requests_mock
 
     assert response.raw_response == response_data.get('raw_response')
     assert response.outputs.get(f'{OUTPUT_PREFIX["SUSPICIOUS_FILE"]}(val.id == obj.id)') == \
-           remove_empty_elements(response_data.get('outputs'))
+        remove_empty_elements(response_data.get('outputs'))
     assert response.readable_output == hr_data
 
 
@@ -2770,7 +2770,7 @@ def test_rubrik_radar_suspicious_file_list_command_success_when_no_anomalies(cli
     response_data = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                                 "test_data/radar_suspicious_file_list_response.json"))
     with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           "test_data/radar_suspicious_file_list_no_anomalies_hr.md"), 'r') as f:
+                           "test_data/radar_suspicious_file_list_no_anomalies_hr.md")) as f:
         hr_data = f.read()
 
     args = {"snapshot_id": "00000000-0000-0000-0000-000000000001"}
@@ -2780,7 +2780,7 @@ def test_rubrik_radar_suspicious_file_list_command_success_when_no_anomalies(cli
 
     assert response.raw_response == response_data.get('raw_response_no_anomalies')
     assert response.outputs.get(f'{OUTPUT_PREFIX["SUSPICIOUS_FILE"]}(val.id == obj.id)') == \
-           remove_empty_elements(response_data.get('outputs_when_no_anomalies'))
+        remove_empty_elements(response_data.get('outputs_when_no_anomalies'))
     assert response.readable_output == hr_data
 
 
