@@ -201,7 +201,6 @@ def prepare_single_content_item_for_validation(
     data: bytes,
     tmp_directory: str
 ) -> tuple[Path, dict]:
-    
     """
     Helper function to convert the content item
     into a pack format.

@@ -6,9 +6,6 @@ from pytest_mock import MockerFixture
 import demistomock as demisto
 from base64 import b64decode, b64encode
 from ValidateContent import (
-    get_content_modules,
-    adjust_linter_row_and_col,
-    get_file_name_and_contents,
     prepare_single_content_item_for_validation,
 )
 from demisto_sdk.commands.common.constants import (
@@ -31,6 +28,9 @@ def test_get_content_modules(tmp_path, requests_mock, monkeypatch):
     Then:
         - Verify content modules exist in the temp content dir
     """
+
+    from ValidateContent import get_content_modules
+
     requests_mock.get(
         'https://raw.githubusercontent.com/demisto/content/master/Packs/Base/Scripts'
         '/CommonServerPython/CommonServerPython.py',
@@ -111,6 +111,9 @@ row_and_column_adjustment_test_data = [
 
 @pytest.mark.parametrize('original_validation_result,expected_output', row_and_column_adjustment_test_data)
 def test_adjust_linter_row_and_col(original_validation_result, expected_output):
+
+    from ValidateContent import adjust_linter_row_and_col
+
     adjust_linter_row_and_col(original_validation_result)
     # after adjustment, the original validation result should match the expected
     assert original_validation_result == expected_output
@@ -119,7 +122,7 @@ def test_adjust_linter_row_and_col(original_validation_result, expected_output):
 class CommonTestResources:
     valid_script_path = Path(__file__).parent.resolve() / "test_data" / "valid_automation.yml"
     invalid_script_path = Path(__file__).parent.resolve() / "test_data" / "automationwitherrors.yml"
-    invalid_yml_script_path = Path(__file__).parent.resolve() / "test_data" / "invalid_script_yml.yml"
+    invalid_yml_script_path = Path(__file__).parent.resolve() / "test_data" / "invalid_script_yml"
     valid_script_b64_path = Path(__file__).parent.resolve() / "test_data" / "valid_automation.yml.b64"
     valid_playbook_path = Path(__file__).parent.resolve() / "test_data" / "valid_pb.yml"
     contrib_zip_path = Path(__file__).parent.resolve() / "test_data" / \
@@ -295,6 +298,7 @@ class TestPrepareForValidation:
 
 
 class TestFilenameContents:
+
     def test_get_file_name_and_contents_filename_data(self):
         """
         Validate a successful scenario where a file name and its base64
@@ -315,10 +319,15 @@ class TestFilenameContents:
         input file.
         """
 
+        from ValidateContent import get_file_name_and_contents
+
         input_filename = expected_filename = CommonTestResources.valid_script_path.name
         input_data = b64encode(CommonTestResources.valid_script_path.read_bytes())
 
-        actual_filename, actual_decoded_data = get_file_name_and_contents(input_filename, input_data)
+        actual_filename, actual_decoded_data = get_file_name_and_contents(
+            filename=input_filename,
+            data=input_data
+        )
 
         assert actual_filename == expected_filename
         assert actual_decoded_data == b64decode(input_data)
@@ -342,6 +351,8 @@ class TestFilenameContents:
         - The entry file name and data are as expected.
         """
 
+        from ValidateContent import get_file_name_and_contents
+
         mocker.patch.object(demisto, "getFilePath", return_value={
             "path": CommonTestResources.valid_script_b64_path.absolute(),
             "name": CommonTestResources.valid_script_b64_path.name,
@@ -353,7 +364,7 @@ class TestFilenameContents:
         assert actual_filename == CommonTestResources.valid_script_b64_path.name
         assert actual_decoded_data == CommonTestResources.valid_script_b64_path.read_bytes()
 
-    def test_get_file_name_and_contents_entry_id_filename_data(
+    def test_test_function_entry_id_filename_data(
         self,
         mocker: MockerFixture,
     ):
@@ -382,6 +393,8 @@ class TestFilenameContents:
         Then:
         - The entry file name and data are as expected.
         """
+
+        from ValidateContent import get_file_name_and_contents
 
         mocker.patch.object(demisto, "getFilePath", return_value={
             "path": CommonTestResources.valid_script_b64_path.absolute(),
