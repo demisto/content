@@ -2,13 +2,13 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-MONTHLABELS = ["01_Jan", "02_Feb", "03_Mar", "04_Apr", "05_May", "06_Jun", 
+MONTHLABELS = ["01_Jan", "02_Feb", "03_Mar", "04_Apr", "05_May", "06_Jun",
                "07_Jul", "08_Aug", "09_Sep", "10_Oct", "11_Nov", "12_Dec"]
 
 EFFORTCOLORS = ["RoyalBlue", "SkyBlue", "ForestGreen", "LimeGreen"]
-SLACOLORS = ["Thistle", "Violet", "Orchid", "Magenta", "MediumOrchid", 
+SLACOLORS = ["Thistle", "Violet", "Orchid", "Magenta", "MediumOrchid",
              "MediumPurple", "BlueViolet", "Purple", "Indigo", "DarkSlateBlue"]
-INCCOLORS = ["PaleGreen", "Bisque", "LightGreen", "Wheat", "DarkSeaGreen", 
+INCCOLORS = ["PaleGreen", "Bisque", "LightGreen", "Wheat", "DarkSeaGreen",
              "Tan", "MediumSeaGreen", "SandyBrown", "SeaGreen", "GoldenRod",
              "ForestGreen", "DarkGoldenRod", "Green", "Chocolate", "DarkGreen", 
              "Sienna", "DarkOliveGreen", "Brown", "Teal", "Maroon"]
