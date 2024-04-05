@@ -24,6 +24,7 @@ from Infoblox import (
     get_network_info_command,
     transform_ext_attrs,
     transform_host_records_context,
+    transform_ip_context,
     transform_ipv4_range,
     transform_network_info_context
 )
@@ -643,6 +644,21 @@ class TestIPOperations:
         assert self.CONTEXT_PATH in actual_context
         actual_output = cast(list, actual_context.get(self.CONTEXT_PATH))
         assert len(actual_output) == 9
+
+    # TODO
+    def test_transform_ip_context_known_keys(self):
+        """
+        """
+
+    def test_transform_ip_context_unknown_key(self):
+
+        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
+                         / "get_ipv4_address_from_ip_address_unknown_key.json").read_text()
+
+        res: dict[str, list] = json.loads(mock_response)
+        ip = res.get("result")
+
+        transform_ip_context(ip)
 
 
 class TestHostRecordsOperations:
