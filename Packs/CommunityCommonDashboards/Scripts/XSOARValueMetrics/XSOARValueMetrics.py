@@ -390,7 +390,7 @@ def CsvToJson(csv_text: str) -> dict:
     for i, row in enumerate(data[1:]):
         series_data = {}
         for j, cell in enumerate(row[1:]):
-            month = header[j+1]
+            month = header[j + 1]
             series_data[month] = cell
         json_data[series[i]] = series_data
 
