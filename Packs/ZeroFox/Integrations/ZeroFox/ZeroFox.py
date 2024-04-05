@@ -1216,15 +1216,16 @@ def fetch_incidents(
     params = {
         "last_modified_min_date": last_modified_fetched.strftime(DATE_FORMAT),
         "sort_direction": "asc",
+        "sort_field" : "last_modified",
         "offset": last_modified_offset,
     }
 
-    def is_not_a_new_alert(alert):
+    def is_non_registered_alert(alert):
         return str(alert.get("id")) not in zf_ids
     incidents, next_offset, oldest_timestamp, alert_ids = get_incidents_data(
         client=client,
         params=params,
-        is_valid_alert=is_not_a_new_alert,
+        is_valid_alert=is_non_registered_alert,
         timestamp_field="last_modified",
     )
     next_run: FetchIncidentsStorage = {
@@ -1253,6 +1254,8 @@ def get_modified_remote_data_command(
     # Get alerts modified after `last_update`
     list_alert_params = {
         "last_modified_min_date": str(last_update),
+        "sort_direction": "asc",
+        "sort_field": "last_modified",
     }
 
     try:
