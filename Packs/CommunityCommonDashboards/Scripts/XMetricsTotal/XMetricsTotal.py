@@ -1,10 +1,13 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-EFFORTCOLORS = ["RoyalBlue", "SkyBlue", "ForestGreen","LimeGreen"]
-SLACOLORS = ["Thistle", "Violet", "Orchid", "Magenta", "MediumOrchid", "MediumPurple", "BlueViolet", "Purple", "Indigo", "DarkSlateBlue"]
-INCCOLORS = ["PaleGreen", "Bisque", "LightGreen", "Wheat", "DarkSeaGreen", "Tan", "MediumSeaGreen", "SandyBrown", "SeaGreen", "GoldenRod",
-             "ForestGreen", "DarkGoldenRod", "Green", "Chocolate", "DarkGreen", "Sienna", "DarkOliveGreen", "Brown", "Teal", "Maroon"]
+EFFORTCOLORS = ["RoyalBlue", "SkyBlue", "ForestGreen", "LimeGreen"]
+SLACOLORS = ["Thistle", "Violet", "Orchid", "Magenta", "MediumOrchid", 
+             "MediumPurple", "BlueViolet", "Purple", "Indigo", "DarkSlateBlue"]
+INCCOLORS = ["PaleGreen", "Bisque", "LightGreen", "Wheat", "DarkSeaGreen", 
+             "Tan", "MediumSeaGreen", "SandyBrown", "SeaGreen", "GoldenRod",
+             "ForestGreen", "DarkGoldenRod", "Green", "Chocolate", "DarkGreen", 
+             "Sienna", "DarkOliveGreen", "Brown", "Teal", "Maroon"]
 
 METRICCOLORS = {
     'Incident Effort': EFFORTCOLORS,
@@ -15,6 +18,7 @@ METRICCOLORS = {
     "Effort Reduction": INCCOLORS
 }
 
+
 def SetMetricColors(wstats: list, metrictype: str) -> list:
     if metrictype in METRICCOLORS:
         colors = METRICCOLORS[metrictype]
@@ -23,10 +27,11 @@ def SetMetricColors(wstats: list, metrictype: str) -> list:
 
     i = 0
     for w in wstats:
-        wstats[i]['color'] = colors[i%len(colors)]
+        wstats[i]['color'] = colors[i % len(colors)]
         i += 1
 
     return(wstats)
+
 
 def MetricWidget(wstats: list, name: str, data: list) -> list:
     w = {'name': name, 'data': [data], 'color': ""}
@@ -80,7 +85,7 @@ def BuildEffortReductionAvg(incidents, efforts) -> dict:
     for inctype, v in incidents.items():
 
         for month, val in v.items():
-            ival= int(val)
+            ival = int(val)
             if inctype in efforts:
                 manualeffort = int(ival * efforts[inctype][0])
                 autoeffort = int(ival * efforts[inctype][1])
