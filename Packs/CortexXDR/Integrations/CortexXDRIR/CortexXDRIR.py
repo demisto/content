@@ -432,20 +432,20 @@ class Client(CoreClient):
 
     def update_alerts_in_xdr_request(self, alerts_ids, severity, status, comment) -> List[Any]:
         request_data = {"request_data": {
-            "alert_id_list": f'[{alerts_ids}]',
+            "alert_id_list": alerts_ids,
         }}
         if severity or status or comment:
-            request_data["update_data"] = {}
+            request_data["request_data"]["update_data"] = {} # type: ignore
         if severity:
-            request_data["update_data"]["severity"] = severity
+            request_data["request_data"]["update_data"]["severity"] = severity # type: ignore
         if status:
-            request_data["update_data"]["status"] = status
+            request_data["request_data"]["update_data"]["status"] = status # type: ignore
         if comment:
-            request_data["update_data"]["comment"] = comment
+            request_data["request_data"]["update_data"]["comment"] = comment # type: ignore
 
         response = self._http_request(
             method='POST',
-            url_suffix='/public_api/v1/alerts/update_alerts',
+            url_suffix='/alerts/update_alerts',
             json_data=request_data,
             headers=self.headers,
             timeout=self.timeout,
@@ -949,39 +949,48 @@ def get_remote_data_command(client, args):
 
 
 def update_remote_system_command(client, args):
+    demisto.debug("fun to debug hiiiii")
     remote_args = UpdateRemoteSystemArgs(args)
     demisto.debug(f"{remote_args=}")
     incident_id = remote_args.remote_incident_id
-    demisto.debug(f"{incident_id}")
+    demisto.debug(f"check_the_incident_that_was_changed {incident_id=}")
     demisto.debug(f"update_remote_system_command {incident_id=} {remote_args=}")
 
     if remote_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
                       f'incident {remote_args.remote_incident_id}')
-        demisto.debug(f'{remote_args.delta=}')
+        demisto.debug(f'The delta {remote_args.delta=}')
     try:
         if remote_args.incident_changed:
             demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
             update_args = get_update_args(remote_args)
-            demisto.debug(f"{update_args}")
+            demisto.debug(f"{remote_args}, {update_args=}")
             update_args['incident_id'] = remote_args.remote_incident_id
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
+            demisto.debug("help taklll!!!!!!")
+            demisto.debug(f"{update_args=}")
             update_incident_command(client, update_args)
             
             close_alerts_in_xdr = client._params.get("close_alerts_in_xdr", False)
-            status = update_args.get('status')
-            comment = args.get('add_comment')
-            if close_alerts_in_xdr and status:
-                severity = args.get('manual_severity')
+            is_closed = update_args.get('close_reason')
+            if close_alerts_in_xdr and is_closed:
+                new_status = update_args.get('status')
+                comment = update_args.get('resolve_comment')
+                demisto.debug(f"{close_alerts_in_xdr=}, {is_closed=}, {new_status=}, {comment=}")
+                if not new_status:
+                    raise DemistoException(f"Failed to update alerts related to incident {incident_id},"
+                                           "no status found")
                 incident_extra_data = client.get_incident_extra_data(incident_id)
                 if 'alerts' in incident_extra_data and 'data' in incident_extra_data['alerts']:
                     alerts_array = incident_extra_data['alerts']['data']
                     related_alerts_ids_array = []
                     for alert in alerts_array:
-                        if '1' in alert:
-                            related_alerts_ids_array.append(alert['1'])
+                        if 'alert_id' in alert:
+                            related_alerts_ids_array.append(alert['alert_id'])
+                    demisto.debug(f"hi this is the alert to update: {related_alerts_ids_array}")
                     related_alerts_ids_string = ','.join(related_alerts_ids_array)
-                    client.update_alerts_in_xdr_request(related_alerts_ids_string, severity, status, comment)
+                    args_for_command = {'alert_ids': related_alerts_ids_string, 'status': new_status, 'comment': comment}
+                    update_alerts_in_xdr_command(client, args_for_command)
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
@@ -1197,13 +1206,18 @@ def replace_featured_field_command(client: Client, args: Dict) -> CommandResults
 
 
 def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
-    alerts_ids = args.get('alert_ids')
+    alerts_list = argToList(args.get('alert_ids'))
+    array_of_all_ids = []
     severity = args.get('severity')
     status = args.get('status')
     comment = args.get('comment')
-    array_of_ids = client.update_alerts_in_xdr_request(alerts_ids, severity, status, comment)
-    return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_ids))
-                          )
+    for index in range(0, len(alerts_list), 100):
+        alerts_sublist = alerts_list[index:index+100]
+        demisto.debug(f'{alerts_sublist=}, {severity=}, {status=}, {comment=}')
+        array_of_sublist_ids = client.update_alerts_in_xdr_request(alerts_sublist, severity, status, comment)
+        array_of_all_ids += array_of_sublist_ids
+    return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids))
+                            )
 
 
 def main():  # pragma: no cover
@@ -1212,7 +1226,6 @@ def main():  # pragma: no cover
     """
     command = demisto.command()
     params = demisto.params()
-    # print(params)
     LOG(f'Command being called is {command}')
 
     # using two different credentials object as they both fields need to be encrypted
