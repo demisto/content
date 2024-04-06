@@ -1,0 +1,492 @@
+{
+    "outputs": {
+        "success": [
+            {
+                "id": "0000000-0000-0000-0000-00000000",
+                "name": "Lazarus Group",
+                "description": null,
+                "createdBy": "SafeBreach",
+                "createdAt": "2022-02-13T09:05:05.000Z",
+                "recommended": false,
+                "tags": [
+                    "Lazarus Group"
+                ],
+                "categories": [
+                    3
+                ],
+                "steps": [
+                    {
+                        "name": "Network Infection (IOC)",
+                        "draft": false,
+                        "systemFilter": {
+                            "bypassProxy": {
+                                "name": "bypassproxy",
+                                "values": [
+                                    true
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "targetFilter": {},
+                        "attacksFilter": {
+                            "tags": {
+                                "threat actor": {
+                                    "name": "threat actor",
+                                    "values": [
+                                        "Lazarus Group"
+                                    ],
+                                    "operator": "is"
+                                }
+                            },
+                            "attackType": {
+                                "name": "attacktype",
+                                "values": [
+                                    "Hidden Malware Transfer",
+                                    "Malware Transfer"
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "attackerFilter": {}
+                    },
+                    {
+                        "name": "Host Infection (IOC)",
+                        "draft": false,
+                        "systemFilter": {
+                            "bypassProxy": {
+                                "name": "bypassproxy",
+                                "values": [
+                                    true
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "targetFilter": {},
+                        "attacksFilter": {
+                            "tags": {
+                                "threat actor": {
+                                    "name": "threat actor",
+                                    "values": [
+                                        "Lazarus Group"
+                                    ],
+                                    "operator": "is"
+                                }
+                            },
+                            "attackType": {
+                                "name": "attacktype",
+                                "values": [
+                                    "Malware Drop",
+                                    "Write Hidden Malware to Disk",
+                                    "Malware Pre-Execution",
+                                    "Ransomware Execution"
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "attackerFilter": {}
+                    },
+                    {
+                        "name": "Defense Evasion",
+                        "draft": false,
+                        "systemFilter": {
+                            "bypassProxy": {
+                                "name": "bypassproxy",
+                                "values": [
+                                    true
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "targetFilter": {},
+                        "attacksFilter": {
+                            "tags": {
+                                "mitre_tactic": {
+                                    "name": "mitre_tactic",
+                                    "values": [
+                                        "Defense Evasion"
+                                    ],
+                                    "operator": "is"
+                                },
+                                "threat actor": {
+                                    "name": "threat actor",
+                                    "values": [
+                                        "Lazarus Group"
+                                    ],
+                                    "operator": "is"
+                                }
+                            }
+                        },
+                        "attackerFilter": {}
+                    },
+                    {
+                        "name": "Exfiltration",
+                        "draft": false,
+                        "systemFilter": {
+                            "bypassProxy": {
+                                "name": "bypassproxy",
+                                "values": [
+                                    true
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "targetFilter": {},
+                        "attacksFilter": {
+                            "tags": {
+                                "mitre_tactic": {
+                                    "name": "mitre_tactic",
+                                    "values": [
+                                        "Exfiltration"
+                                    ],
+                                    "operator": "is"
+                                },
+                                "threat actor": {
+                                    "name": "threat actor",
+                                    "values": [
+                                        "Lazarus Group"
+                                    ],
+                                    "operator": "is"
+                                }
+                            }
+                        },
+                        "attackerFilter": {}
+                    },
+                    {
+                        "name": "Credential Access",
+                        "draft": false,
+                        "systemFilter": {
+                            "bypassProxy": {
+                                "name": "bypassproxy",
+                                "values": [
+                                    true
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "targetFilter": {},
+                        "attacksFilter": {
+                            "tags": {
+                                "mitre_tactic": {
+                                    "name": "mitre_tactic",
+                                    "values": [
+                                        "Credential Access"
+                                    ],
+                                    "operator": "is"
+                                },
+                                "threat actor": {
+                                    "name": "threat actor",
+                                    "values": [
+                                        "Lazarus Group"
+                                    ],
+                                    "operator": "is"
+                                }
+                            }
+                        },
+                        "attackerFilter": {}
+                    },
+                    {
+                        "name": "Discovery",
+                        "draft": false,
+                        "systemFilter": {
+                            "bypassProxy": {
+                                "name": "bypassproxy",
+                                "values": [
+                                    true
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "targetFilter": {},
+                        "attacksFilter": {
+                            "tags": {
+                                "mitre_tactic": {
+                                    "name": "mitre_tactic",
+                                    "values": [
+                                        "Discovery"
+                                    ],
+                                    "operator": "is"
+                                },
+                                "threat actor": {
+                                    "name": "threat actor",
+                                    "values": [
+                                        "Lazarus Group"
+                                    ],
+                                    "operator": "is"
+                                }
+                            }
+                        },
+                        "attackerFilter": {}
+                    },
+                    {
+                        "name": "Persistence",
+                        "draft": false,
+                        "systemFilter": {
+                            "bypassProxy": {
+                                "name": "bypassproxy",
+                                "values": [
+                                    true
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "targetFilter": {},
+                        "attacksFilter": {
+                            "tags": {
+                                "mitre_tactic": {
+                                    "name": "mitre_tactic",
+                                    "values": [
+                                        "Persistence"
+                                    ],
+                                    "operator": "is"
+                                },
+                                "threat actor": {
+                                    "name": "threat actor",
+                                    "values": [
+                                        "Lazarus Group"
+                                    ],
+                                    "operator": "is"
+                                }
+                            }
+                        },
+                        "attackerFilter": {}
+                    },
+                    {
+                        "name": "Execution",
+                        "draft": false,
+                        "systemFilter": {
+                            "bypassProxy": {
+                                "name": "bypassproxy",
+                                "values": [
+                                    true
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "targetFilter": {},
+                        "attacksFilter": {
+                            "tags": {
+                                "mitre_tactic": {
+                                    "name": "mitre_tactic",
+                                    "values": [
+                                        "Execution"
+                                    ],
+                                    "operator": "is"
+                                },
+                                "threat actor": {
+                                    "name": "threat actor",
+                                    "values": [
+                                        "Lazarus Group"
+                                    ],
+                                    "operator": "is"
+                                }
+                            }
+                        },
+                        "attackerFilter": {}
+                    },
+                    {
+                        "name": "Command And Control",
+                        "draft": false,
+                        "systemFilter": {
+                            "bypassProxy": {
+                                "name": "bypassproxy",
+                                "values": [
+                                    true
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "targetFilter": {},
+                        "attacksFilter": {
+                            "tags": {
+                                "mitre_tactic": {
+                                    "name": "mitre_tactic",
+                                    "values": [
+                                        "Command And Control"
+                                    ],
+                                    "operator": "is"
+                                },
+                                "threat actor": {
+                                    "name": "threat actor",
+                                    "values": [
+                                        "Lazarus Group"
+                                    ],
+                                    "operator": "is"
+                                }
+                            }
+                        },
+                        "attackerFilter": {}
+                    },
+                    {
+                        "name": "Lateral Movement",
+                        "draft": false,
+                        "systemFilter": {
+                            "bypassProxy": {
+                                "name": "bypassproxy",
+                                "values": [
+                                    true
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "targetFilter": {},
+                        "attacksFilter": {
+                            "tags": {
+                                "mitre_tactic": {
+                                    "name": "mitre_tactic",
+                                    "values": [
+                                        "Lateral Movement"
+                                    ],
+                                    "operator": "is"
+                                },
+                                "threat actor": {
+                                    "name": "threat actor",
+                                    "values": [
+                                        "Lazarus Group"
+                                    ],
+                                    "operator": "is"
+                                }
+                            }
+                        },
+                        "attackerFilter": {}
+                    },
+                    {
+                        "name": "Initial Access",
+                        "draft": false,
+                        "systemFilter": {
+                            "bypassProxy": {
+                                "name": "bypassproxy",
+                                "values": [
+                                    true
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "targetFilter": {},
+                        "attacksFilter": {
+                            "tags": {
+                                "mitre_tactic": {
+                                    "name": "mitre_tactic",
+                                    "values": [
+                                        "Initial Access"
+                                    ],
+                                    "operator": "is"
+                                },
+                                "threat actor": {
+                                    "name": "threat actor",
+                                    "values": [
+                                        "Lazarus Group"
+                                    ],
+                                    "operator": "is"
+                                }
+                            }
+                        },
+                        "attackerFilter": {}
+                    },
+                    {
+                        "name": "Collection",
+                        "draft": false,
+                        "systemFilter": {
+                            "bypassProxy": {
+                                "name": "bypassproxy",
+                                "values": [
+                                    true
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "targetFilter": {},
+                        "attacksFilter": {
+                            "tags": {
+                                "mitre_tactic": {
+                                    "name": "mitre_tactic",
+                                    "values": [
+                                        "Collection"
+                                    ],
+                                    "operator": "is"
+                                },
+                                "threat actor": {
+                                    "name": "threat actor",
+                                    "values": [
+                                        "Lazarus Group"
+                                    ],
+                                    "operator": "is"
+                                }
+                            }
+                        },
+                        "attackerFilter": {}
+                    },
+                    {
+                        "name": "Privilege Escalation",
+                        "draft": false,
+                        "systemFilter": {
+                            "bypassProxy": {
+                                "name": "bypassproxy",
+                                "values": [
+                                    true
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "targetFilter": {},
+                        "attacksFilter": {
+                            "tags": {
+                                "mitre_tactic": {
+                                    "name": "mitre_tactic",
+                                    "values": [
+                                        "Privilege Escalation"
+                                    ],
+                                    "operator": "is"
+                                },
+                                "threat actor": {
+                                    "name": "threat actor",
+                                    "values": [
+                                        "Lazarus Group"
+                                    ],
+                                    "operator": "is"
+                                }
+                            }
+                        },
+                        "attackerFilter": {}
+                    },
+                    {
+                        "name": "Impact",
+                        "draft": false,
+                        "systemFilter": {
+                            "bypassProxy": {
+                                "name": "bypassproxy",
+                                "values": [
+                                    true
+                                ],
+                                "operator": "is"
+                            }
+                        },
+                        "targetFilter": {},
+                        "attacksFilter": {
+                            "tags": {
+                                "mitre_tactic": {
+                                    "name": "mitre_tactic",
+                                    "values": [
+                                        "Impact"
+                                    ],
+                                    "operator": "is"
+                                },
+                                "threat actor": {
+                                    "name": "threat actor",
+                                    "values": [
+                                        "Lazarus Group"
+                                    ],
+                                    "operator": "is"
+                                }
+                            }
+                        },
+                        "attackerFilter": {}
+                    }
+                ],
+                "updatedAt": "2023-09-08T09:47:50.000Z",
+                "order": null,
+                "minApiVer": null
+            }
+        ],
+        "fail": []
+    }
+}
