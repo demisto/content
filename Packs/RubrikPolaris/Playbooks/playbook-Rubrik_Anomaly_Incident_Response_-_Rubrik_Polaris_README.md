@@ -6,6 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Rubrik Retrieve Anomaly Result - Rubrik Security Cloud
 * Rubrik Polaris - Anomaly Analysis
 * Rubrik Ransomware Discovery and VM Recovery - Rubrik Polaris
 * Rubrik User Access Analysis - Rubrik Polaris
