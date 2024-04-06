@@ -125,10 +125,14 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment"
+            "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
+            "timeout": 1200
         },
         {
-            "integrations": "Cortex XDR - IR",
+            "integrations": [
+                "Cortex XDR - IR",
+                "Core REST API"
+            ],
             "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256"
         },
         {
