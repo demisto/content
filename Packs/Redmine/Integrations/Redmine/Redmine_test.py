@@ -347,6 +347,7 @@ def test_update_issue_command_with_file(mocker, redmine_client):
                                         'Content-Type': 'application/json', 'X-Redmine-API-Key': True}, empty_valid_codes=[204],
                                         return_empty_response=True)
 
+
 def test_get_tracker_and_id_dict_request_called_with(mocker, redmine_client):
     """
     Given:
@@ -375,11 +376,10 @@ def test_get_tracker_and_id_dict_request_invalid_response(mocker, redmine_client
     from CommonServerPython import DemistoException
     http_request = mocker.patch.object(redmine_client, '_http_request')
     http_request.return_value = {'trackerss': [{'bug': '1'},
-                                              {'task': '2'}]}
+                                               {'task': '2'}]}
     with pytest.raises(DemistoException) as e:
         redmine_client.get_tracker_and_id_dict_request()
     assert e.value.message == "Failed to retrieve tracker IDs due to a parsing error."
-
 
 
 def test_get_issues_list_command(mocker, redmine_client):
