@@ -128,13 +128,13 @@ class Client(BaseClient):
     def get_users_request(self, args: dict[str, Any]):
         response = self._http_request('GET', '/users.json', params=args, headers=self._get_header)
         return response
-    
+
     def get_tracker_and_id_dict_request(self):
         integration_context = get_integration_context()
         if not integration_context.get('trackers'):
             response = self._http_request('GET', '/trackers.json', headers=self._get_header)
             if 'trackers' not in response:
-                raise DemistoException("Unsuccessful request to retrieve tracker ids, Parse Error.")
+                raise DemistoException("Failed to retrieve tracker IDs due to a parsing error.")
             integration_context['trackers'] = {}
             for tracker in response['trackers']:
                 if tracker.get("id") and tracker.get("name"):
@@ -200,6 +200,7 @@ def convert_args_to_request_format(client: Client, args: Dict[str, Any]):
                 raise DemistoException("Custom fields not in format, please follow the instructions")
             raise
 
+
 def handle_convert_tracker(client, tracker: str):
     try:
         integration_context = get_integration_context().get('trackers', {})
@@ -213,7 +214,7 @@ def handle_convert_tracker(client, tracker: str):
         tracker_id = integration_context.get(tracker.lower())
         if not tracker_id:
             raise DemistoException(f"Could not find {tracker} in your trackers list, please make sure using an existing"
-                                " tracker name.")
+                                   " tracker name.")
         return tracker_id
     except DemistoException:
         raise

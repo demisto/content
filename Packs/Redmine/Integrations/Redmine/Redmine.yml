@@ -41,7 +41,7 @@ script:
       description: The project ID for this issue. If not specified, the value from the integration configuration will be used.
       required: false
     - name: tracker
-      description: Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task)
+      description: Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task).
       required: true
     - name: status_id
       auto: PREDEFINED
@@ -150,7 +150,7 @@ script:
     - name: exclude
       description: A subproject ID to exclude from the list (you can't use both subproject_id and exclude), you need to add a project_id for this field to be included.
     - name: tracker
-      description: Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task)
+      description: Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task).
     - name: status_id
       auto: PREDEFINED
       description: The status ID to display issues of this status ID.
@@ -183,7 +183,7 @@ script:
     - name: project_id
       description: The ID of the project to associate with the issue. If not specified, the value from the integration configuration will be used if specified.
     - name: tracker
-      description: Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task)
+      description: Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task).
     - name: status_id
       auto: PREDEFINED
       description: The ID of the status to set for the issue.
