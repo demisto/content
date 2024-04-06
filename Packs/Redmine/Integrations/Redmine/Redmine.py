@@ -24,11 +24,6 @@ USER_STATUS_DICT = {
     'Locked': '3',
 }
 
-ISSUE_TRACKER_DICT = {
-    'Bug': '1',
-    'Feature': '2',
-    'Support': '3'}
-
 ISSUE_STATUS_DICT = {
     'New': '1',
     'In progress': '2',
@@ -133,6 +128,18 @@ class Client(BaseClient):
     def get_users_request(self, args: dict[str, Any]):
         response = self._http_request('GET', '/users.json', params=args, headers=self._get_header)
         return response
+    
+    def get_tracker_and_id_dict_request(self):
+        integration_context = get_integration_context()
+        if not integration_context.get('trackers'):
+            response = self._http_request('GET', '/trackers.json', headers=self._get_header)
+            if 'trackers' not in response:
+                raise DemistoException("Unsuccessful request to retrieve tracker ids, Parse Error.")
+            integration_context['trackers'] = {}
+            for tracker in response['trackers']:
+                if tracker.get("id") and tracker.get("name"):
+                    integration_context['trackers'][tracker.get("name").lower()] = str(tracker.get("id"))
+            set_integration_context(integration_context)
 
 
 ''' HELPER FUNCTIONS '''
@@ -171,11 +178,10 @@ def adjust_paging_to_request(page_number, page_size, limit):
     return BASE_DEFAULT_OFFSET_NUMBER, limit, BASE_DEFAULT_PAGE_NUMBER_INT
 
 
-def convert_args_to_request_format(args: Dict[str, Any]):
-    if tracker_id := args.pop('tracker_id', None):
-        if tracker_id not in ISSUE_TRACKER_DICT:
-            raise DemistoException("Predefined value for tracker_id is not in format.")
-        args['tracker_id'] = ISSUE_TRACKER_DICT[tracker_id]
+def convert_args_to_request_format(client: Client, args: Dict[str, Any]):
+    if tracker := args.pop('tracker', None):
+        tracker_id = handle_convert_tracker(client, tracker)
+        args['tracker_id'] = tracker_id
     if status_id := args.pop('status_id', None):
         if status_id not in ISSUE_STATUS_DICT:
             raise DemistoException("Predefined value for status_id is not in format.")
@@ -193,6 +199,24 @@ def convert_args_to_request_format(args: Dict[str, Any]):
             if 'list index out of range' in e.args[0] or 'substring not found' in e.args[0]:
                 raise DemistoException("Custom fields not in format, please follow the instructions")
             raise
+
+def handle_convert_tracker(client, tracker: str):
+    integration_context = get_integration_context().get('trackers', {})
+    try:
+        tracker_id = arg_to_number(tracker)
+        if integration_context and tracker not in integration_context.values():
+            raise DemistoException(f"Tracker_id {tracker_id} not found, please make sure this tracker_id exists.")
+        return tracker
+    except ValueError:
+        client.get_tracker_and_id_dict_request()
+        integration_context = get_integration_context().get('trackers', {})
+        tracker_id = integration_context.get(tracker)
+        if not tracker_id:
+            raise DemistoException(f"Could not find {tracker} in your trackers list, please make sure using an existing"
+                                " tracker name.")
+        return tracker_id
+    except DemistoException:
+        raise
 
 
 def get_file_content(entry_id: str) -> bytes:
@@ -269,7 +293,7 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
     if entry_id:
         handle_file_attachment(client, args, entry_id)
     # Change predefined values to id
-    convert_args_to_request_format(args)
+    convert_args_to_request_format(client, args)
     watcher_user_ids = argToList(args.pop('watcher_user_ids', None))
     try:
         response = client.create_issue_request(args, watcher_user_ids, project_id)
@@ -310,7 +334,7 @@ def update_issue_command(client: Client, args: dict[str, Any]):
     entry_id = args.pop('file_entry_id', None)
     if entry_id:
         handle_file_attachment(client, args, entry_id)
-    convert_args_to_request_format(args)
+    convert_args_to_request_format(client, args)
     watcher_user_ids = args.pop('watcher_user_ids', None)
     if watcher_user_ids:
         watcher_user_ids = argToList(watcher_user_ids)
@@ -327,17 +351,14 @@ def update_issue_command(client: Client, args: dict[str, Any]):
 
 
 def get_issues_list_command(client: Client, args: dict[str, Any]):
-    def check_args_validity_and_convert_to_id(status_id: str, tracker_id: str, custom_field: str):
+    def check_args_validity_and_convert_to_id(status_id: str, tracker: str, custom_field: str):
         if status_id:
             if status_id in ISSUE_STATUS_FOR_LIST_COMMAND:
                 status_id = ISSUE_STATUS_FOR_LIST_COMMAND[status_id]
             else:
                 raise DemistoException("Invalid status ID, please use only predefined values.")
-        if tracker_id:
-            if tracker_id in ISSUE_TRACKER_DICT:
-                tracker_id = ISSUE_TRACKER_DICT[tracker_id]
-            else:
-                raise DemistoException("Invalid tracker ID, please use only predefined values.")
+        if tracker:
+            tracker_id = handle_convert_tracker(client, tracker)
         if custom_field:
             try:
                 cf_in_format = custom_field.split(":", 1)
@@ -353,9 +374,9 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
     limit = args.pop('limit', None)
     offset_to_dict, limit_to_dict, page_number_for_header = adjust_paging_to_request(page_number, page_size, limit)
     status_id = args.pop('status_id', 'Open')
-    tracker_id = args.pop('tracker_id', None)
+    tracker = args.pop('tracker', None)
     custom_field = args.pop('custom_field', None)
-    status_id, tracker_id = check_args_validity_and_convert_to_id(status_id, tracker_id, custom_field)
+    status_id, tracker_id = check_args_validity_and_convert_to_id(status_id, tracker, custom_field)
     project_id = args.pop('project_id', client._project_id)
     exclude_sub_project = args.pop('exclude', None)
     try:
