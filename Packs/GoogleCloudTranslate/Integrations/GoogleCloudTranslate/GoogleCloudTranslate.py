@@ -7,7 +7,7 @@ from CommonServerUserPython import *
 import json
 import hashlib
 import traceback
-from google.cloud import translate_v3
+from google.cloud import translate_v3  # type: ignore[attr-defined]
 
 
 class Client:

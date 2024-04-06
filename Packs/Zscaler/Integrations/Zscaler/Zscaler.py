@@ -125,21 +125,15 @@ def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_
             else:
                 if res.status_code in ERROR_CODES_DICT:
                     raise Exception(
-                        "Your request failed with the following error: {}.\nMessage: {}".format(
-                            ERROR_CODES_DICT[res.status_code], res.text
-                        )
+                        f"Your request failed with the following error: {ERROR_CODES_DICT[res.status_code]}.\nMessage: {res.text}"
                     )
                 else:
                     raise Exception(
-                        "Your request failed with the following error: {}.\nMessage: {}".format(
-                            res.status_code, res.text
-                        )
+                        f"Your request failed with the following error: {res.status_code}.\nMessage: {res.text}"
                     )
     except Exception as e:
         LOG(
-            "Zscaler request failed with url={url}\tdata={data}".format(
-                url=url, data=data
-            )
+            f"Zscaler request failed with url={url}\tdata={data}"
         )
         LOG(e)
         raise e
@@ -608,20 +602,23 @@ def lookup_request(ioc, multiple=True):
     return response
 
 
-def category_add_url(category_id, url, retaining_parent_category_url):
-    demisto.debug('##### category_add_url function now running')
+def category_add(category_id, data, retaining_parent_category_data, data_type):
+    if not any((data, retaining_parent_category_data)):
+        return_error(f'Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.')
+
     category_data = get_category_by_id(category_id)
     demisto.debug(f'{category_data=}')
     if category_data:  # check if the category exists
-        url_list = argToList(url)
-        all_urls = url_list[:]
-        all_urls.extend([x.strip() for x in category_data["urls"]])
-        category_data["urls"] = all_urls
-        retaining_parent_category_url_list = argToList(retaining_parent_category_url)
-        if not (url_list, retaining_parent_category_url_list):
-            return_error('Please provide retaining_parent_category_url or url argument.')
+        data_list = argToList(data)
+        all_data = data_list[:]
+        all_data.extend([x.strip() for x in category_data["urls"]])
+        category_data["urls"] = all_data
+        retaining_parent_category_data_list = argToList(retaining_parent_category_data)
+        if not any((data_list, retaining_parent_category_data_list)):
+            return_error(f'Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.')
+
         add_or_remove_urls_from_category(
-            ADD, url_list, category_data, retaining_parent_category_url_list
+            ADD, data_list, category_data, retaining_parent_category_data_list
         )  # add the urls to the category
         context = {
             "ID": category_id,
@@ -631,12 +628,12 @@ def category_add_url(category_id, url, retaining_parent_category_url):
         if category_data.get("description"):  # Custom might not have description
             context["Description"] = category_data["description"]
         ec = {"Zscaler.Category(val.ID && val.ID === obj.ID)": context}
-        urls = ""
-        for url in url_list:
-            urls += "- " + url + "\n"
-        hr = "Added the following URL addresses to category {}:\n{}".format(
-            category_id, urls
-        )
+        added_data = ""
+        for item in data_list:
+            added_data += f"- {item}\n"
+
+        hr = f"Added the following {data_type.upper()} addresses to category {category_id}:\n{added_data}"
+
         entry = {
             "Type": entryTypes["note"],
             "Contents": category_data,
@@ -650,83 +647,36 @@ def category_add_url(category_id, url, retaining_parent_category_url):
         return return_error("Category could not be found.")
 
 
-def category_add_ip(category_id, ip, retaining_parent_category_ip):
-    if not (ip, retaining_parent_category_ip):
-        return_error('Please provide ip or retaining_parent_category_ip argument.')
-
-    categories = get_categories()
-    found_category = False
-    for category in categories:
-        if category["id"] == category_id:
-            category_data = category
-            found_category = True
-            break
-    if found_category:
-        ip_list = argToList(ip)
-        all_ips = ip_list[:]
-        all_ips.extend(category_data["urls"])
-        category_data["urls"] = all_ips
-        retaining_parent_category_ip_list = argToList(retaining_parent_category_ip)
-        if not (ip_list, retaining_parent_category_ip_list):
-            return_error('Please provide ip_list argument or retaining_parent_category_ip_list argument.')
-        response = category_ioc_update(category_data, retaining_parent_category_ip_list)
-        context = {
-            "ID": category_id,
-            "CustomCategory": category_data["customCategory"],
-            "URL": category_data["urls"],
-        }
-        if (
-            "description" in category_data and category_data["description"]
-        ):  # Custom might not have description
-            context["Description"] = category_data["description"]
-        ec = {"Zscaler.Category(val.ID && val.ID === obj.ID)": context}
-        ips = ""
-        for ip in ip_list:
-            ips += "- " + ip + "\n"
-        hr = "Added the following IP addresses to category {}:\n{}".format(
-            category_id, ips
-        )
-        entry = {
-            "Type": entryTypes["note"],
-            "Contents": response,
-            "ContentsFormat": formats["json"],
-            "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": hr,
-            "EntryContext": ec,
-        }
-        return entry
-    else:
-        return return_error("Category could not be found.")
-
-
-def category_remove_url(category_id, url, retaining_parent_category_url):
-    if not (url, retaining_parent_category_url):
-        return_error('Please provide  url or retaining_parent_category_url argument.')
+def category_remove(category_id, data, retaining_parent_category_data, data_type):
+    if not any((data, retaining_parent_category_data)):
+        return_error(f'Either {data_type} argument or retaining-parent-category-{data_type} argument must be provided.')
 
     category_data = get_category_by_id(category_id)  # check if the category exists
+    demisto.debug(f'{category_data=}')
 
     if category_data:
-        removed_urls = ''
-        url_list = retaining_parent_category_url_list = []
+        removed_data = ''
+        data_list = []
+        retaining_parent_category_data_list = []
 
-        if url:
-            url_list = argToList(url)
-            updated_urls = [
-                url for url in category_data["urls"] if url not in url_list
-            ]  # noqa
-            if updated_urls == category_data["urls"]:
-                return return_error("Could not find given URL in the category.")
-            category_data["urls"] = updated_urls
-            for url in url_list:
-                removed_urls += "- " + url + "\n"
+        if data:
+            data_list = argToList(data)
+            updated_data = [
+                item for item in category_data["urls"] if item not in data_list
+            ]
+            if updated_data == category_data["urls"]:
+                return return_error(f"Could not find given {data_type.upper()} in the category.")
+            category_data["urls"] = updated_data
+            for item in data_list:
+                removed_data += f"- {item}\n"
 
-        if retaining_parent_category_url:
-            retaining_parent_category_url_list = argToList(retaining_parent_category_url)
-            for url in retaining_parent_category_url_list:
-                removed_urls += "- " + url + "\n"
+        if retaining_parent_category_data:
+            retaining_parent_category_data_list = argToList(retaining_parent_category_data)
+            for item in retaining_parent_category_data_list:
+                removed_data += f"- {item}\n"
 
         add_or_remove_urls_from_category(
-            REMOVE, url_list, category_data, retaining_parent_category_url_list)  # remove the urls from list
+            REMOVE, data_list, category_data, retaining_parent_category_data_list)  # remove the urls from list
 
         context = {
             "ID": category_id,
@@ -735,10 +685,10 @@ def category_remove_url(category_id, url, retaining_parent_category_url):
         }
         if category_data.get("description"):  # Custom might not have description
             context["Description"] = category_data["description"]
+
+        hr = f"Removed the following {data_type.upper()} addresses to category {category_id}:\n{removed_data}"
+
         ec = {"Zscaler.Category(val.ID && val.ID === obj.ID)": context}
-        hr = "Removed the following URL addresses to category {}:\n{}".format(
-            category_id, removed_urls
-        )
         entry = {
             "Type": entryTypes["note"],
             "Contents": category_data,
@@ -752,83 +702,7 @@ def category_remove_url(category_id, url, retaining_parent_category_url):
         return return_error("Category could not be found.")
 
 
-def category_remove_ip(category_id, ip, retaining_parent_category_ip):
-    if not (ip, retaining_parent_category_ip):
-        return_error('Either ip argument or retaining_parent_category_ip argument must be provided.')
-
-    category_data = {}
-    categories = get_categories()
-    found_category = False
-    for category in categories:
-        if category["id"] == category_id:
-            category_data = category
-            found_category = True
-            break
-
-    if found_category and category_data:
-        removed_ips = ''
-        ip_list = retaining_parent_category_ip_list = []
-
-        if ip:
-            ip_list = argToList(ip)
-            updated_ips = [ip for ip in category_data["urls"] if ip not in ip_list]  # noqa
-            if updated_ips == category_data["urls"]:
-                return return_error("Could not find given IP in the category.")
-            category_data["urls"] = updated_ips
-            for ip in ip_list:
-                removed_ips += "- " + ip + "\n"
-
-        if retaining_parent_category_ip:
-            retaining_parent_category_ip_list = argToList(retaining_parent_category_ip)
-            for ip in retaining_parent_category_ip_list:
-                removed_ips += "- " + ip + "\n"
-
-        response = category_ioc_update(category_data, retaining_parent_category_ip_list)
-        context = {
-            "ID": category_id,
-            "CustomCategory": category_data["customCategory"],
-            "URL": category_data["urls"],
-        }
-        if (
-            "description" in category_data and category_data["description"]
-        ):  # Custom might not have description
-            context["Description"] = category_data["description"]
-        ec = {"Zscaler.Category(val.ID && val.ID === obj.ID)": context}
-        hr = "Removed the following IP addresses to category {}:\n{}".format(
-            category_id, removed_ips
-        )
-        entry = {
-            "Type": entryTypes["note"],
-            "Contents": response,
-            "ContentsFormat": formats["json"],
-            "ReadableContentsFormat": formats["markdown"],
-            "HumanReadable": hr,
-            "EntryContext": ec,
-        }
-        return entry
-    else:
-        return return_error("Category could not be found.")
-
-
-def category_ioc_update(category_data, retaining_parent_category_ip=None):
-    cmd_url = "/urlCategories/" + category_data["id"]
-    data = {
-        "customCategory": category_data["customCategory"],
-        "urls": category_data["urls"],
-        "id": category_data["id"],
-    }
-    if retaining_parent_category_ip:
-        data['dbCategorizedUrls'] = retaining_parent_category_ip
-    if "description" in category_data:
-        data["description"] = category_data["description"]
-    if "configuredName" in category_data:
-        data["configuredName"] = category_data["configuredName"]
-    json_data = json.dumps(data)
-    response = http_request("PUT", cmd_url, json_data).json()
-    return response
-
-
-def add_or_remove_urls_from_category(action, urls, category_data, retaining_parent_category_url=None):
+def add_or_remove_urls_from_category(action, urls, category_data, retaining_parent_category_data=None):
     """
     Add or remove urls from a category.
     Args:
@@ -848,8 +722,8 @@ def add_or_remove_urls_from_category(action, urls, category_data, retaining_pare
         "urls": urls,
         "id": category_data.get("id"),
     }
-    if retaining_parent_category_url:
-        data['dbCategorizedUrls'] = retaining_parent_category_url
+    if retaining_parent_category_data:
+        data['dbCategorizedUrls'] = retaining_parent_category_data
     if "description" in category_data:
         data["description"] = category_data["description"]
     if "configuredName" in category_data:
@@ -998,9 +872,7 @@ def sandbox_report_command():
 
 
 def sandbox_report(md5, details):
-    cmd_url = "/sandbox/report/{md5Hash}?details={details}".format(
-        md5Hash=md5, details=details
-    )
+    cmd_url = f"/sandbox/report/{md5}?details={details}"
 
     response = http_request("GET", cmd_url).json()
     return response
@@ -1094,9 +966,7 @@ def get_departments_command(args):
     pageSize = args.get("pageSize")
     pageNo = args.get("page", 1)
     if name is not None:
-        cmd_url = "/departments?page={}&pageSize={}&search={}&limitSearch=true".format(
-            pageNo, pageSize, name
-        )
+        cmd_url = f"/departments?page={pageNo}&pageSize={pageSize}&search={name}&limitSearch=true"
     else:
         cmd_url = f"/departments?page={pageNo}&pageSize={pageSize}"
     response = http_request("GET", cmd_url).json()
@@ -1481,16 +1351,19 @@ def main():  # pragma: no cover
                 return_results(unwhitelist_ip(args.get("ip")))
             elif command == "zscaler-category-add-url":
                 return_results(
-                    category_add_url(args.get("category-id"), args.get("url"), args.get('retaining-parent-category-url'))
+                    category_add(args.get("category-id"), args.get("url"), args.get('retaining-parent-category-url'), "url")
                 )
             elif command == "zscaler-category-add-ip":
-                return_results(category_add_ip(args.get("category-id"), args.get("ip"), args.get('retaining-parent-category-ip')))
+                return_results(category_add(args.get("category-id"), args.get("ip"), args.get('retaining-parent-category-ip'),
+                               "ip"))
             elif command == "zscaler-category-remove-url":
                 return_results(
-                    category_remove_url(args.get("category-id"), args.get("url"), args.get('retaining-parent-category-url')))
+                    category_remove(args.get("category-id"), args.get("url"), args.get('retaining-parent-category-url'),
+                                    "url"))
             elif command == "zscaler-category-remove-ip":
                 return_results(
-                    category_remove_ip(args.get("category-id"), args.get("ip"), args.get('retaining-parent-category-ip'))
+                    category_remove(args.get("category-id"), args.get("ip"), args.get('retaining-parent-category-ip'),
+                                    "ip")
                 )
             elif command == "zscaler-get-categories":
                 return_results(get_categories_command(args))
@@ -1538,5 +1411,5 @@ def main():  # pragma: no cover
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins", "__main__"):
+if __name__ in ("__builtin__", "builtins", "__main__"):  # pragma: no cover
     main()

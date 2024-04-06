@@ -1,8 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from typing import Dict
 
 
-def get_guid_from_system_incident(incident: dict[str, Any]) -> str:
+def get_guid_from_system_incident(incident: Dict[str, Any]) -> str:
     malop_guid = ''
     for label in incident['labels']:
         if label['type'] == 'guidString':

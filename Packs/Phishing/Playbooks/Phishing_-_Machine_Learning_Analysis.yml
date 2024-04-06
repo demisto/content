@@ -1,7 +1,7 @@
 id: Phishing - Machine Learning Analysis
 version: -1
 name: Phishing - Machine Learning Analysis
-description: Runs various machine-learning based checks on phishing emails and URLs, in an attempt to predict whether they are phishing or benign.
+description: Runs various machine-learning based checks on phishing emails and URLs, in an attempt to predict whether they are phishing or benign. This playbook is available only on Cortex XSOAR.
 starttaskid: "0"
 tasks:
   "0":
@@ -528,3 +528,5 @@ fromversion: 6.1.0
 contentitemexportablefields:
   contentitemfields: {}
 system: true
+marketplaces:
+  - xsoar

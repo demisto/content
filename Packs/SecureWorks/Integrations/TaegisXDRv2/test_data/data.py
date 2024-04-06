@@ -154,7 +154,6 @@ EXECUTE_PLAYBOOK_BAD_RESPONSE = {
 }
 
 
-
 FETCH_ALERTS_RESPONSE = {
     "data": {
         "alertsServiceSearch": {
