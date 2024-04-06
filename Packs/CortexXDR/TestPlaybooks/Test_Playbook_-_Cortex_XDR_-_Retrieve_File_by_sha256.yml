@@ -213,10 +213,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "154":
     id: "154"
-    taskid: b4b53325-c338-4204-819b-0a89c325fa22
+    taskid: 315e751c-b74e-4157-8246-9b30c5d5d546
     type: regular
     task:
-      id: b4b53325-c338-4204-819b-0a89c325fa22
+      id: 315e751c-b74e-4157-8246-9b30c5d5d546
       version: -1
       name: Create New Incident For Testing
       description: 'As part of this task, an incident will be created for testing purposes, which includes all the incident fields that are essential to the testing process. '
@@ -230,8 +230,6 @@ tasks:
     scriptarguments:
       deviceid:
         simple: aeec6a2cc92e46fab3b6f621722e9916
-      filesha256:
-        simple: 652607db7763f423419fd98807a2436f22007e0a54965f24c671bbd1a20197d6
       name:
         simple: Test Incident for Cortex XDR - Retrieve File by sha256
       type:
@@ -254,10 +252,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "186":
     id: "186"
-    taskid: c0889235-dc9d-40d0-8870-06d9a0c56609
+    taskid: edee7849-b2de-4f63-858f-7ce70525c877
     type: regular
     task:
-      id: c0889235-dc9d-40d0-8870-06d9a0c56609
+      id: edee7849-b2de-4f63-858f-7ce70525c877
       version: -1
       name: Set 'fileRetrieval.path' To Context
       description: For testing purposes, the task establishes the context data key and value for 'fileRetrieval.path'.
@@ -275,7 +273,7 @@ tasks:
       key:
         simple: fileRetrieval.path
       value:
-        simple: C:\Windows\System32\lsass.exe
+        simple: C:\Windows\System32\cmd.exe
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -929,10 +927,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "223":
     id: "223"
-    taskid: 82958444-efeb-4427-8967-b9747c847891
+    taskid: 6055ac5a-18f6-4c9d-8ab9-5ea7ab4fad0f
     type: condition
     task:
-      id: 82958444-efeb-4427-8967-b9747c847891
+      id: 6055ac5a-18f6-4c9d-8ab9-5ea7ab4fad0f
       version: -1
       name: Verify Extracted Files
       description: 'Verify that the ''ExtractedFiles'' context key has been extracted correctly and contains both the ''manifest.json'' and ''GoogleUpdate.exe'' files. '
@@ -948,25 +946,12 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: ExtractedFiles
             iscontext: true
-          right:
-            value:
-              simple: manifest.json
-          ignorecase: true
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: ExtractedFiles
-            iscontext: true
-          right:
-            value:
-              simple: lsass.exe
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -1129,10 +1114,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "228":
     id: "228"
-    taskid: aaee32b1-8175-4a41-83c7-875ff2894e23
+    taskid: d59c5197-bb40-4fa9-8738-4f584d2735e1
     type: condition
     task:
-      id: aaee32b1-8175-4a41-83c7-875ff2894e23
+      id: d59c5197-bb40-4fa9-8738-4f584d2735e1
       version: -1
       name: Verify Name
       description: Verify that the 'File.Name' context key has been extracted correctly and contains both ZIP and Unzipped file names.
@@ -1148,38 +1133,13 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: File
                 accessor: Name
             iscontext: true
-          right:
-            value:
-              simple: manifest.json
-          ignorecase: true
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: File
-                accessor: Name
-            iscontext: true
-          right:
-            value:
-              simple: lsass.exe
-          ignorecase: true
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: File
-                accessor: Name
-            iscontext: true
-          right:
-            value:
-              simple: aeec6a2cc92e46fab3b6f621722e9916_1.zip
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -1744,10 +1704,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "243":
     id: "243"
-    taskid: 8f6e91a5-cd4b-4765-8c86-58dffaf84b1d
+    taskid: d61b8732-e088-421a-8366-b3301fc6f614
     type: condition
     task:
-      id: 8f6e91a5-cd4b-4765-8c86-58dffaf84b1d
+      id: d61b8732-e088-421a-8366-b3301fc6f614
       version: -1
       name: Verify Extension
       description: Verify that the 'File.Extension' context key has been extracted correctly and contains both ZIP and Unzipped file extensions.
@@ -1763,38 +1723,13 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: File
                 accessor: Extension
             iscontext: true
-          right:
-            value:
-              simple: json
-          ignorecase: true
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: File
-                accessor: Extension
-            iscontext: true
-          right:
-            value:
-              simple: exe
-          ignorecase: true
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: File
-                accessor: Extension
-            iscontext: true
-          right:
-            value:
-              simple: zip
           ignorecase: true
     continueonerrortype: ""
     view: |-

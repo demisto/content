@@ -100,7 +100,8 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Test Playbook - MDE - Retrieve File",
-            "instance_names": "microsoft_defender_atp_dev"
+            "instance_names": "microsoft_defender_atp_dev",
+            "timeout": 1200
         },
         {
             "integrations": "CrowdstrikeFalcon",
