@@ -201,8 +201,8 @@ def convert_args_to_request_format(client: Client, args: Dict[str, Any]):
             raise
 
 def handle_convert_tracker(client, tracker: str):
-    integration_context = get_integration_context().get('trackers', {})
     try:
+        integration_context = get_integration_context().get('trackers', {})
         tracker_id = arg_to_number(tracker)
         if integration_context and tracker not in integration_context.values():
             raise DemistoException(f"Tracker_id {tracker_id} not found, please make sure this tracker_id exists.")
@@ -210,7 +210,7 @@ def handle_convert_tracker(client, tracker: str):
     except ValueError:
         client.get_tracker_and_id_dict_request()
         integration_context = get_integration_context().get('trackers', {})
-        tracker_id = integration_context.get(tracker)
+        tracker_id = integration_context.get(tracker.lower())
         if not tracker_id:
             raise DemistoException(f"Could not find {tracker} in your trackers list, please make sure using an existing"
                                 " tracker name.")
@@ -352,6 +352,7 @@ def update_issue_command(client: Client, args: dict[str, Any]):
 
 def get_issues_list_command(client: Client, args: dict[str, Any]):
     def check_args_validity_and_convert_to_id(status_id: str, tracker: str, custom_field: str):
+        tracker_id = None
         if status_id:
             if status_id in ISSUE_STATUS_FOR_LIST_COMMAND:
                 status_id = ISSUE_STATUS_FOR_LIST_COMMAND[status_id]
