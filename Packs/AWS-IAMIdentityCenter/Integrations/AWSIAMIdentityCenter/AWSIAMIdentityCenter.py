@@ -68,6 +68,17 @@ def get_userId_by_username(args, client):
     return response_id
 
 
+def delete_user(args, client):
+    userId = get_userId_by_username(args, client)['UserId']
+    response = client.delete_user(
+        IdentityStoreId=f'{IDENTITYSTOREID}',
+        UserId=f'{userId}'
+    )
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results(f'The User {userId} has been removed')
+    
+    
+
 def get_user(args, client):  # pragma: no cover
     response_id = get_userId_by_username(args, client)
     response = client.describe_user(
@@ -215,7 +226,6 @@ def get_group(args, client):  # pragma: no cover
 def list_groups_for_user(args, client):  # pragma: no cover
     context_data = []
     hr_data = []
-    userName = args.get('userName')
     userID = get_userId_by_username(args, client)['UserId']
     kwargs = {
         'IdentityStoreId':f'{IDENTITYSTOREID}',
@@ -225,19 +235,26 @@ def list_groups_for_user(args, client):  # pragma: no cover
         'MaxResults': arg_to_number(args.get('limit') or params.get('limit')),
         'NextToken': args.get('nextToken')
     }
+    kwargs = remove_empty_elements(kwargs)
     response = client.list_group_memberships_for_member(**kwargs)
     for group in response.get('GroupMemberships'):
         group_details = {
-            'UserID': group['UserId'],
+            'UserID': group['MemberId']['UserId'],
             'GroupID': group['GroupId'],
             'MembershipID': group['MembershipId']
         }
         context_data.append(group)
         hr_data.append(group_details)
-    # ec = {'AWS.IAMIdentityCenter.Users.GroupMemeberships': context_data}
-    # human_readable = tableToMarkdown(f'AWS IAM Identity Center Group for user {userName} ', hr_data)
-    # return_outputs(human_readable, ec)
-    # return membershipID
+        
+    outputs = {'AWS.IAMIdentityCenter.User(val.UserName === obj.UserName).Groups': context_data,
+               'AWS.IAMIdentityCenter(true)': {'GroupsUserNextToken': response.get('NextToken')}}
+    human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
+    result = CommandResults(
+        readable_output=human_readable,
+        outputs_key_field='UserId',
+        outputs=outputs
+    )
+    return_results(result)
 
 
 def add_user_to_group(args, client):  # pragma: no cover
@@ -336,6 +353,8 @@ def main():     # pragma: no cover
             add_user_to_group(args, client)
         elif command == 'aws-iam-identitycenter-remove-user-from-all-groups':
             remove_user_from_groups(args, client)
+        elif command == 'aws-iam-identitycenter-delete-user':
+            delete_user(args, client)
 
     except Exception as e:
         return_error('Error has occurred in the AWS IAM Integration: {code}\n {message}'.format(

@@ -505,6 +505,45 @@ script:
       type: string
     description: This will get user information using email address.
     name: aws-iam-identitycenter-get-user-by-email
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region, if not specified the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: Role Arn.
+      name: roleArn
+      required: false
+    - description: Role Session Duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role Session Name.
+      name: roleSessionName
+      required: false 
+    - description: Identity Store ID.
+      name: IdentityStoreId
+      required: false
+    - description: The name of the user to get information about.
+      name: userName
+      required: true
+    description: This will delete the entered user.
+    name: aws-iam-identitycenter-delete-user
   dockerimage: demisto/boto3py3:1.0.0.76002
   runonce: false
   script: ''
