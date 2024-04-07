@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 import pytest
 from Infoblox import (
     INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY,
@@ -648,17 +648,58 @@ class TestIPOperations:
     # TODO
     def test_transform_ip_context_known_keys(self):
         """
+        Test for a scenario when the `infoblox-get-ip` command returns
+        an unexpected/unknown key and the program doesn't raise
+        an exception.
+
+        Given:
+        - A mock response from InfoBlox API.
+
+        When:
+        - The response has all expected attributes.
+
+        Then:
+        - The transformation keys are as expected.
         """
 
-    def test_transform_ip_context_unknown_key(self):
-
         mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
-                         / "get_ipv4_address_from_ip_address_unknown_key.json").read_text()
+                         / "get_ipv4_address_from_ip_address.json").read_text()
 
         res: dict[str, list] = json.loads(mock_response)
+        ip: list[dict[str, Any]] = res.get("result")
+
+        actual_transformation = transform_ip_context(ip)
+
+        assert len(actual_transformation) == 1
+        assert actual_transformation[0].get("IpAddress") == ip[0].get("ip_address")
+
+    def test_transform_ip_context_unknown_key(self):
+        """
+        Test for a scenario when the `infoblox-get-ip` command returns
+        an unexpected/unknown key and the program doesn't raise
+        an exception. See https://jira-dc.paloaltonetworks.com/browse/XSUP-35724.
+
+        Given:
+        - A mock response from InfoBlox API.
+
+        When:
+        - The response has an attribute that is unknown.
+
+        Then:
+        - `transform_ip_context` doesn't raise an exception.
+        """
+
+        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
+                         / "get_ipv4_address_from_ip_address.json").read_text()
+
+        res: dict[str, list] = json.loads(mock_response)
+        res["lease_state"] = "active"
         ip = res.get("result")
 
-        transform_ip_context(ip)
+        try:
+            transform_ip_context(ip)
+        except Exception as e:
+            pytest.fail(f"Function raised an exception: {e}")
 
 
 class TestHostRecordsOperations:
