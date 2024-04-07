@@ -1,5 +1,4 @@
 import json
-import io
 from datetime import datetime, timedelta
 from freezegun import freeze_time
 
@@ -8,7 +7,7 @@ from ServiceNowEventCollector import Client, LOGS_DATE_FORMAT
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -93,7 +92,8 @@ class TestFetchActivity:
 
         loggings = self.create_response_with_duplicates(*args)
 
-        activity_loggings, previous_run_ids = process_and_filter_events(loggings, last_run.get('previous_run_ids'), "2023-04-15 07:00:00")
+        activity_loggings, previous_run_ids = process_and_filter_events(
+            loggings, last_run.get('previous_run_ids'), "2023-04-15 07:00:00")
         assert len(activity_loggings) == len_of_audit_logs
         assert len(previous_run_ids) == len_of_previous
 
@@ -138,7 +138,8 @@ class TestFetchActivity:
 
         assert audit_logs == fetched_events.get("fetched_events")
         assert new_last_run.get("last_fetch_time") == "2023-04-15 07:00:00"
-        assert "2" and "3" in new_last_run.get("previous_run_ids")
+        assert "2"
+        assert "3" in new_last_run.get("previous_run_ids")
 
         # assert no new results when given the last_run:
         http_responses = mocker.patch.object(Client, "get_audit_logs", return_value=fetched_events.get("fetch_loggings"))
@@ -148,4 +149,5 @@ class TestFetchActivity:
         assert http_responses.call_args[0][0] == "2023-04-15 07:00:00"
         assert audit_logs == []
         assert new_last_run.get("last_fetch_time") == "2023-04-15 07:00:00"
-        assert "2" and "3" in new_last_run.get("previous_run_ids")
+        assert "2"
+        assert "3" in new_last_run.get("previous_run_ids")
