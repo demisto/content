@@ -1,6 +1,6 @@
-fromversion: 6.10.0
+fromversion: 8.4.0
 id: Tenable_io_ModelingRule
-name: Tenable.io Modeling Rule
+name: Tenable_io Modeling Rule
 rules: ''
 schema: ''
 tags: tenable
