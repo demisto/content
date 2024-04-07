@@ -1,0 +1,13 @@
+{
+    "success": {
+        "args": {
+            "test_id": "1111111111111.1",
+            "test_name": "(#1263) Dummy Info"
+        },
+        "command": "safebreach-rerun-test"
+    },
+    "fail": {
+        "args": {},
+        "command": "safebreach-rerun-test"
+    }
+}
