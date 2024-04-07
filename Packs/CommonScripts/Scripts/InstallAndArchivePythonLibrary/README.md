@@ -1,4 +1,4 @@
-The script installs a Python library using pip and archive it.
+The script downloads a Python library using PIP, archives it and return in to the war room.
 
 ## Script Data
 
@@ -16,7 +16,7 @@ The script installs a Python library using pip and archive it.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| library_name | The Python library you wish to install and archive. |
+| library_name | The Python library you wish to download and archive. |
 
 ## Outputs
 

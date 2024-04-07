@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-register_module_line('InstallAndArchivePythonLibrary', 'start', __line__)
+register_module_line('DownloadAndArchivePythonLibrary', 'start', __line__)
 
 import shutil
 import shlex
@@ -10,37 +10,43 @@ from tempfile import mkdtemp
 from subprocess import Popen, PIPE
 import zipfile
 
-def installLibrary(dir_path: str, library_name: str) -> str:
-    # Install the package using pip
-    cmd = f'python3 -m pip install --target {dir_path} {library_name}'
-    process = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
+def installLibrary(dir_path: Path, library_name: str) -> str:
+    try:
+        # Install the package using pip
+        cmd = f'python3 -m pip install --target {dir_path} {library_name}'
+        process = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate()
 
-    if process.returncode != 0:
-        return_error(f"Failed to install the {library_name} library: {stderr.decode('utf-8')}")
+        if process.returncode != 0:
+            return_error(f"Failed to install the {library_name} library: {stderr.decode('utf-8')}")
 
-    # Create a zip file with maximum compression level
-    zip_path = library_name+'.zip'
-    with zipfile.ZipFile(zip_path, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zip_file:
-        for root, dirs, files in os.walk(dir_path):
-            for file in files:
-                file_path = os.path.join(root, file)
-                # Ensure the folder inside the ZIP file is named 'python'
-                arcname = os.path.join('python', os.path.relpath(file_path, dir_path))
-                zip_file.write(file_path, arcname=arcname)
+        # Create a zip file with maximum compression level
+        zip_path = dir_path / (library_name + '.zip')
+        with zipfile.ZipFile(zip_path, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as zip_file:
+            for root, dirs, files in os.walk(dir_path):
+                for file in files:
+                    file_path = Path(root) / file
+                    # Ensure the folder inside the ZIP file is named 'python'
+                    arcname = Path('python') / file_path.relative_to(dir_path)
+                    zip_file.write(file_path, arcname=arcname)
 
-    # Read the zip file contents
-    with open(zip_path, 'rb') as zip_file:
-        zip_content = zip_file.read()
+        # Read the zip file contents
+        with open(zip_path, 'rb') as zip_file:
+            zip_content = zip_file.read()
 
-    return fileResult(library_name+'.zip', zip_content)
+        return fileResult(library_name+'.zip', zip_content)
+
+    except Exception as e:
+        return_error(f"An error occurred: {str(e)}")
+
+    finally:
+        shutil.rmtree(dir_path)
 
 def main():
     args = demisto.args()
     library_name = args.get('library_name')
-    dir_path = mkdtemp(prefix='python')
+    dir_path = Path(mkdtemp(prefix='python'))
     result = installLibrary(dir_path, library_name)
-    shutil.rmtree(dir_path)
     return_results(result)
 
 if __name__ in ('__builtin__', 'builtins'):
