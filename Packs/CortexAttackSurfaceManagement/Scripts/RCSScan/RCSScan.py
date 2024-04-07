@@ -68,7 +68,7 @@ def rcs_scan_start(args: Dict[str, Any], demisto: Any):
         0
     ].get("Contents"):
         return_error(
-            "Failed to execute RCSScanStatus. Check alert id and other input values."
+            "Failed to execute RCSScanStatus. Check input values."
         )
 
     scan_id = output_scan_start[0].get("Contents").get("reply").get("scanId")
