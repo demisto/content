@@ -24,19 +24,13 @@ configuration:
     The Tennant Service Group must contain an active “AIOps for NGFW (Free)” application.
     For more information about the service activation, visit the following link: https://docs.paloaltonetworks.com/ngfw/aiops/about/activate-aiops-for-ngfw#activate-aiops-for-ngfw_section_xjs_p55_fyb
 - section: Connect
-  display: ""
-  displaypassword: Client ID
-  name: client_id
-  type: 9
+  name: credentials-aiops
+  display: Client ID
   required: true
-  hiddenusername: true
-- section: Connect
-  display: ""
+  defaultvalue:
+  type: 9
+  additionalinfo: Client ID and Client Secret for AIOps instance.
   displaypassword: Client Secret
-  name: client_secret
-  type: 9
-  required: true
-  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -50,11 +44,12 @@ script:
     arguments:
     - name: entry_id
       description: |-
+        - Optional: Use this argument if you prefer to upload a configuration file instead of generating the report from Panorama/PAN-OS.
         - Entry_id from Cortex XSOAR War Room after uploading a file - should be a config file in xml format.
         - If you used this argument and the process failed or reached a timeout, make sure the config file is in xml format and with correct tags.
     - name: requester_email
       required: true
-      description: Requester email.
+      description: Requester email. Make sure the email is in a valid email format (includes a @).
     - name: requester_name
       required: true
       description: Requester name.
@@ -63,7 +58,7 @@ script:
       defaultValue: "30"
     - name: timeout
       default: true
-      description: Timeout for downloading the file.
+      description: Timeout (in seconds) for downloading the file.
       defaultValue: "600"
     - name: export_as_file
       auto: PREDEFINED
@@ -81,7 +76,6 @@ script:
       - 'false'
     description: |- 
       Generates a bpa report. Steps:
-      - Get information about Pan-OS/Panorama device.
       - Get configuration file of Pan-OS/Panorama. If the user provided an entry_id to a config file this step is skipped.
       - Use the information retrieved above to generate a BPA report.
       - During this process the API also generates a report_id.

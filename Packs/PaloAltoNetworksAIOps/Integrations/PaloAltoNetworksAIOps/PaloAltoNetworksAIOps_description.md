@@ -19,7 +19,7 @@ curl -H "Content-Type: application/x-www-form-urlencoded"
 <response status="success">
     <result>
         <key>
-            gJlQWE56987nBxIqyfa62sZeRtYuIo2BgzEA9UOnlZBhU==
+            API-KEY
         </key>
     </result>
 </response>
