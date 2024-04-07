@@ -123,7 +123,6 @@ class Client(BaseClient):
                     integration_context['trackers'][tracker.get("name").lower()] = str(tracker.get("id"))
             set_integration_context(integration_context)
 
-
     def get_status_and_id_dict_request(self):
         integration_context = get_integration_context()
         if not integration_context.get('statuses'):
@@ -147,6 +146,7 @@ class Client(BaseClient):
                 if priority.get("id") and priority.get("name"):
                     integration_context['priorities'][priority.get("name").lower()] = str(priority.get("id"))
             set_integration_context(integration_context)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -204,6 +204,7 @@ def convert_args_to_request_format(client: Client, args: Dict[str, Any]):
                 raise DemistoException("Custom fields not in format, please follow the instructions")
             raise
 
+
 def handle_convert_tracker(client, tracker: str):
     try:
         integration_context = get_integration_context().get('trackers', {})
@@ -221,7 +222,8 @@ def handle_convert_tracker(client, tracker: str):
         return tracker_id
     except DemistoException:
         raise
-    
+
+
 def handle_convert_status(client, status: str):
     try:
         integration_context = get_integration_context().get('statuses', {})
@@ -240,6 +242,7 @@ def handle_convert_status(client, status: str):
     except DemistoException:
         raise
 
+
 def handle_convert_priority(client, priority: str):
     try:
         integration_context = get_integration_context().get('priorities', {})
@@ -257,7 +260,8 @@ def handle_convert_priority(client, priority: str):
         return priority_id
     except DemistoException:
         raise
-        
+
+
 def get_file_content(entry_id: str) -> bytes:
     """Returns the XSOAR file entry's content.
 

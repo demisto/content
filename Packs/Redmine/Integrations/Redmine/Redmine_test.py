@@ -33,16 +33,16 @@ def test_create_issue_command(mocker, redmine_client):
         http_request.assert_called_with('POST', '/issues.json',
                                         params={},
                                         json_data={'issue':
-                                            {'issue_id': '1',
-                                             'subject': 'changeFromCode',
-                                             'priority_id': '1',
-                                             'tracker_id': '1',
-                                             'status_id': '2',
-                                             'custom_fields': [{'id': '1', 'value': 'https://test:appear'}],
-                                             'project_id': '1',
-                                             'watcher_user_ids': [1]
-                                             }
-                                            },
+                                                   {'issue_id': '1',
+                                                    'subject': 'changeFromCode',
+                                                    'priority_id': '1',
+                                                    'tracker_id': '1',
+                                                    'status_id': '2',
+                                                    'custom_fields': [{'id': '1', 'value': 'https://test:appear'}],
+                                                    'project_id': '1',
+                                                    'watcher_user_ids': [1]
+                                                    }
+                                                   },
                                         headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
 
 
@@ -68,13 +68,13 @@ def test_create_issue_command_not_url_cf(mocker, redmine_client):
         http_request.assert_called_with('POST', '/issues.json',
                                         params={},
                                         json_data={'issue':
-                                            {'issue_id': '1',
-                                             'subject': 'changeFromCode',
-                                             'tracker_id': '1',
-                                             'status_id': '2',
-                                             'priority_id': '1',
-                                             'custom_fields': [{'id': '1', 'value': 'hello'}],
-                                             'project_id': '1', 'watcher_user_ids': [1]}},
+                                                   {'issue_id': '1',
+                                                    'subject': 'changeFromCode',
+                                                    'tracker_id': '1',
+                                                    'status_id': '2',
+                                                    'priority_id': '1',
+                                                    'custom_fields': [{'id': '1', 'value': 'hello'}],
+                                                    'project_id': '1', 'watcher_user_ids': [1]}},
                                         headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
 
 
@@ -179,14 +179,14 @@ def test_create_issue_command_with_file(mocker, redmine_client):
         http_request.assert_called_with('POST', '/issues.json',
                                         params={},
                                         json_data={'issue':
-                                            {'issue_id': '1',
-                                             'subject': 'testSub',
-                                             'uploads': [{'token': 'token123'}],
-                                             'tracker_id': '1',
-                                             'status_id': '1',
-                                             'priority_id': '1',
-                                             'project_id': '1',
-                                             'watcher_user_ids': [1]}},
+                                                   {'issue_id': '1',
+                                                    'subject': 'testSub',
+                                                    'uploads': [{'token': 'token123'}],
+                                                    'tracker_id': '1',
+                                                    'status_id': '1',
+                                                    'priority_id': '1',
+                                                    'project_id': '1',
+                                                    'watcher_user_ids': [1]}},
                                         headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
 
 
@@ -274,9 +274,9 @@ def test_update_issue_command(mocker, redmine_client):
         update_issue_command(redmine_client, args=args)
         http_request.assert_called_with('PUT', '/issues/1.json',
                                         json_data={'issue':
-                                            {'subject': 'changeFromCode',
-                                             'tracker_id': '1', 'status_id': '1',
-                                             'priority_id': '1', 'watcher_user_ids': [1]}},
+                                                   {'subject': 'changeFromCode',
+                                                    'tracker_id': '1', 'status_id': '1',
+                                                    'priority_id': '1', 'watcher_user_ids': [1]}},
                                         headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True},
                                         empty_valid_codes=[204], return_empty_response=True)
 
@@ -408,6 +408,7 @@ def test_get_tracker_and_id_dict_request_invalid_response(mocker, redmine_client
         redmine_client.get_tracker_and_id_dict_request()
     assert e.value.message == "Failed to retrieve tracker IDs due to a parsing error."
 
+
 def test_get_status_and_id_dict_request_called_with(mocker, redmine_client):
     """
     Given:
@@ -421,6 +422,7 @@ def test_get_status_and_id_dict_request_called_with(mocker, redmine_client):
     http_request.return_value = {'issue_statuses': [{'high': '1'}]}
     redmine_client.get_status_and_id_dict_request()
     http_request.assert_called_with('GET', '/issue_statuses.json', headers={'X-Redmine-API-Key': True})
+
 
 def test_get_status_and_id_dict_request_invalid_response(mocker, redmine_client):
     """
@@ -437,6 +439,7 @@ def test_get_status_and_id_dict_request_invalid_response(mocker, redmine_client)
     with pytest.raises(DemistoException) as e:
         redmine_client.get_status_and_id_dict_request()
     assert e.value.message == "Failed to retrieve status IDs due to a parsing error."
+
 
 def test_get_issues_list_command(mocker, redmine_client):
     """
@@ -561,6 +564,7 @@ def test_get_issues_list_command_invalid_status_using_request(mocker, redmine_cl
         get_issues_list_command(redmine_client, {'status': 'hhjuhkk'})
     assert e.value.message == "Could not find hhjuhkk in your statuses list, please make sure using an existing status name."
 
+
 def test_get_issues_list_command_invalid_status_using_request_with_number(mocker, redmine_client):
     """
     Given:
@@ -582,6 +586,7 @@ def test_get_issues_list_command_invalid_status_using_request_with_number(mocker
         get_issues_list_command(redmine_client, {'status': '5'})
     assert e.value.message == "Status id 5 not found, please make sure this status exists."
 
+
 def test_get_issue_by_id_command(mocker, redmine_client):
     """
     Given:
@@ -598,6 +603,7 @@ def test_get_issue_by_id_command(mocker, redmine_client):
     get_issue_by_id_command(redmine_client, args)
     http_request.assert_called_with('GET', '/issues/1.json',
                                     params={'include': 'watchers,attachments'}, headers={'X-Redmine-API-Key': True})
+
 
 def test_get_issue_by_id_command_response(mocker, redmine_client):
     """
@@ -1125,6 +1131,7 @@ def test_handle_convert_tracker_from_id(redmine_client):
         }}
         assert handle_convert_tracker(redmine_client, '1') == '1'
 
+
 def test_handle_convert_status_from_id(redmine_client):
     """
     Given:
@@ -1140,6 +1147,7 @@ def test_handle_convert_status_from_id(redmine_client):
             'new': '1'
         }}
         assert handle_convert_status(redmine_client, '1') == '1'
+
 
 def test_handle_convert_priority_from_id(redmine_client):
     """
@@ -1157,6 +1165,7 @@ def test_handle_convert_priority_from_id(redmine_client):
         }}
         assert handle_convert_priority(redmine_client, '1') == '1'
 
+
 def test_handle_convert_tracker_from_name(redmine_client):
     """
     Given:
@@ -1172,6 +1181,7 @@ def test_handle_convert_tracker_from_name(redmine_client):
             'bug': '1'
         }}
         assert handle_convert_tracker(redmine_client, 'bug') == '1'
+
 
 def test_handle_convert_status_from_name(redmine_client):
     """
@@ -1189,6 +1199,7 @@ def test_handle_convert_status_from_name(redmine_client):
         }}
         assert handle_convert_status(redmine_client, 'new') == '1'
 
+
 def test_handle_convert_priority_from_name(redmine_client):
     """
     Given:
@@ -1204,6 +1215,7 @@ def test_handle_convert_priority_from_name(redmine_client):
             'high': '1'
         }}
         assert handle_convert_priority(redmine_client, 'High') == '1'
+
 
 def test_handle_convert_tracker_from_name_capital_letter(redmine_client):
     """
@@ -1221,6 +1233,7 @@ def test_handle_convert_tracker_from_name_capital_letter(redmine_client):
         }}
         assert handle_convert_tracker(redmine_client, 'Bug') == '1'
 
+
 def test_handle_convert_status_from_name_capital_letter(redmine_client):
     """
     Given:
@@ -1236,6 +1249,7 @@ def test_handle_convert_status_from_name_capital_letter(redmine_client):
             'new': '1'
         }}
         assert handle_convert_status(redmine_client, 'New') == '1'
+
 
 def test_handle_convert_priority_from_name_capital_letter(redmine_client):
     """
@@ -1253,6 +1267,7 @@ def test_handle_convert_priority_from_name_capital_letter(redmine_client):
         }}
         assert handle_convert_priority(redmine_client, 'High') == '1'
 
+
 def test_handle_convert_tracker_from_id_with_request(redmine_client):
     """
     Given:
@@ -1266,6 +1281,7 @@ def test_handle_convert_tracker_from_id_with_request(redmine_client):
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
         mock_get_integration_context.return_value = {}
         assert handle_convert_tracker(redmine_client, '1') == '1'
+
 
 def test_handle_convert_status_from_id_with_request(redmine_client):
     """
@@ -1281,6 +1297,7 @@ def test_handle_convert_status_from_id_with_request(redmine_client):
         mock_get_integration_context.return_value = {}
         assert handle_convert_status(redmine_client, '1') == '1'
 
+
 def test_handle_convert_priority_from_id_with_request(redmine_client):
     """
     Given:
@@ -1294,6 +1311,7 @@ def test_handle_convert_priority_from_id_with_request(redmine_client):
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
         mock_get_integration_context.return_value = {}
         assert handle_convert_priority(redmine_client, '1') == '1'
+
 
 def test_handle_convert_tracker_from_name_with_request(mocker, redmine_client):
     """
@@ -1313,6 +1331,7 @@ def test_handle_convert_tracker_from_name_with_request(mocker, redmine_client):
         mock_get_integration_context.return_value = {}
         assert handle_convert_tracker(redmine_client, 'Bug') == '1'
 
+
 def test_handle_convert_status_from_name_with_request(mocker, redmine_client):
     """
     Given:
@@ -1331,6 +1350,7 @@ def test_handle_convert_status_from_name_with_request(mocker, redmine_client):
         mock_get_integration_context.return_value = {}
         assert handle_convert_status(redmine_client, 'New') == '1'
 
+
 def test_handle_convert_priority_from_name_with_request(mocker, redmine_client):
     """
     Given:
@@ -1348,6 +1368,7 @@ def test_handle_convert_priority_from_name_with_request(mocker, redmine_client):
         ]})
         mock_get_integration_context.return_value = {}
         assert handle_convert_status(redmine_client, 'Low') == '2'
+
 
 def test_handle_convert_status_from_name_with_request_invalid_response(mocker, redmine_client):
     """
@@ -1369,6 +1390,7 @@ def test_handle_convert_status_from_name_with_request_invalid_response(mocker, r
         handle_convert_status(redmine_client, 'New')
     assert e.value.message == "Failed to retrieve status IDs due to a parsing error."
 
+
 def test_handle_convert_tracker_from_name_with_request_invalid_response(mocker, redmine_client):
     """
     Given:
@@ -1389,6 +1411,7 @@ def test_handle_convert_tracker_from_name_with_request_invalid_response(mocker, 
         handle_convert_tracker(redmine_client, 'fail')
     assert e.value.message == "Failed to retrieve tracker IDs due to a parsing error."
 
+
 def test_handle_convert_priority_from_name_with_request_invalid_response(mocker, redmine_client):
     """
     Given:
@@ -1408,6 +1431,7 @@ def test_handle_convert_priority_from_name_with_request_invalid_response(mocker,
         mock_get_integration_context.return_value = {}
         handle_convert_priority(redmine_client, 'fail')
     assert e.value.message == "Failed to retrieve priority IDs due to a parsing error."
+
 
 def test_handle_convert_tracker_from_name_with_request_id_fail(mocker, redmine_client):
     """
@@ -1430,6 +1454,7 @@ def test_handle_convert_tracker_from_name_with_request_id_fail(mocker, redmine_c
         handle_convert_tracker(redmine_client, '5')
     assert e.value.message == "Tracker id 5 not found, please make sure this tracker id exists."
 
+
 def test_handle_convert_status_from_name_with_request_id_fail(mocker, redmine_client):
     """
     Given:
@@ -1451,6 +1476,7 @@ def test_handle_convert_status_from_name_with_request_id_fail(mocker, redmine_cl
         handle_convert_status(redmine_client, '5')
     assert e.value.message == "Status id 5 not found, please make sure this status id exists."
 
+
 def test_handle_convert_priority_from_name_with_request_id_fail(mocker, redmine_client):
     """
     Given:
@@ -1468,9 +1494,10 @@ def test_handle_convert_priority_from_name_with_request_id_fail(mocker, redmine_
             {'id': '2', 'name': 'In progress'}
         ]})
         mock_get_integration_context.return_value = {'priorities': {'high': '1',
-                                                                  'low': '2'}}
+                                                                    'low': '2'}}
         handle_convert_priority(redmine_client, '5')
     assert e.value.message == "Priority id 5 not found, please make sure this priority id exists."
+
 
 def test_handle_convert_tracker_from_name_with_request_fail(mocker, redmine_client):
     """
@@ -1492,6 +1519,7 @@ def test_handle_convert_tracker_from_name_with_request_fail(mocker, redmine_clie
         handle_convert_tracker(redmine_client, 'aaa')
     assert e.value.message == "Could not find aaa in your trackers list, please make sure using an existing tracker name."
 
+
 def test_handle_convert_status_from_name_with_request_fail(mocker, redmine_client):
     """
     Given:
@@ -1511,6 +1539,7 @@ def test_handle_convert_status_from_name_with_request_fail(mocker, redmine_clien
         mock_get_integration_context.return_value = {}
         handle_convert_status(redmine_client, 'aaa')
     assert e.value.message == "Could not find aaa in your statuses list, please make sure using an existing status name."
+
 
 def test_handle_convert_priority_from_name_with_request_fail(mocker, redmine_client):
     """
