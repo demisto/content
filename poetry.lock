@@ -4286,6 +4286,17 @@ files = [
 ]
 
 [[package]]
+name = "types-emoji"
+version = "2.1.0.3"
+description = "Typing stubs for emoji"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-emoji-2.1.0.3.tar.gz", hash = "sha256:98ddb0ff5f48622550c431206e4dbfcbde8ca8bc03fcfbb9962a778d2049aa13"},
+    {file = "types_emoji-2.1.0.3-py3-none-any.whl", hash = "sha256:32fe5cf02c4834bb59579380f600a89d1471571fb56e36465cbd0c7d95f669ca"},
+]
+
+[[package]]
 name = "types-paramiko"
 version = "2.12.0.1"
 description = "Typing stubs for paramiko"
@@ -4723,4 +4734,4 @@ pyyaml = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "0658bf1d4f113e87fcee8d2a9a8515abcf69a5085ee2949fe09ab3f144bffd9d"
+content-hash = "432f3b5bbf600dbe142044661216a8739af3b8474fb5da6ed1a997f01faac855"

@@ -61,6 +61,7 @@ types-setuptools = "^69.2.0.20240317"
 types-ujson = "^5.9.0.0"
 types-paramiko ="^2.11.0"
 types-requests = "^2.31.0.20240311"
+types-emoji = "^2.1.0.3"
 
 [tool.poetry.group.ci]
 optional = true
