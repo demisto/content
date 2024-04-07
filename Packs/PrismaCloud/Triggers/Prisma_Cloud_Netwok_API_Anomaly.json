@@ -1,0 +1,32 @@
+{
+  "trigger_id": "7106713a54ef8482181fe37bbf7fda29",
+  "playbook_id": "Prisma Cloud - Network, API and Anomaly Incidents",
+  "suggestion_reason": "Recommended for Prisma Cloud Network, API and Anomaly alerts",
+  "description": "This trigger is responsible for handling  Prisma Cloud Network, API and Anomaly alerts",
+  "trigger_name": " Prisma Cloud Network, API and Anomaly alerts",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "OR": [
+            {
+              "SEARCH_FIELD": "policy_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "network"
+            },
+            {
+                "SEARCH_FIELD": "policy_type",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "api"
+            },
+            {
+                "SEARCH_FIELD": "policy_type",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "anomaly"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
