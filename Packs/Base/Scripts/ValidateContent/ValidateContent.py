@@ -28,7 +28,7 @@ from demisto_sdk.commands.common.handlers import YAML_Handler
 from demisto_sdk.commands.init.contribution_converter import ContributionConverter
 from demisto_sdk.commands.lint.lint_manager import LintManager
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
-from demisto_sdk.commands.validate.validate_manager import ValidateManager
+from demisto_sdk.commands.validate.old_validate_manager import OldValidateManager as ValidateManager
 
 COMMAND_OUTPUT_PREFIX = "ValidationResult"
 COMMAND_OUTPUT_KEY_NAME = "Name"
