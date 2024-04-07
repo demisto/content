@@ -22,7 +22,7 @@ configuration:
 - display: Customer ID
   name: customer_id
   type: 0
-  additionalinfo: The customer ID is a unique identifier of the customer's Google account.
+  additionalinfo: A unique identifier of the customer's Google account.
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
