@@ -22,7 +22,7 @@ function hasDuplicates(arr) {
  * @param {Array<string>} _keysToKeep - An array of keys to keep. (If a key exists in both, it won't be deleted)
  * @returns {string} A message summarizing the outcome of the delete operation.
  */
-function deleteKeys(keysToDelete, _keysToKeep) {
+function deleteKeys(keysToDelete = [], _keysToKeep = []) {
 
     var deletedKeys = []
     var errors = []
@@ -150,7 +150,6 @@ if (shouldDeleteAll) {
 } else {
     // Supporting comma separated list of keys to be deleted.
     var keysToDelete = (typeof args.key === "string") ? args.key.split(',') : [args.key]
-
     var message = deleteKeys(keysToDelete, keysToKeep)
     return {
         Type: entryTypes.note,
