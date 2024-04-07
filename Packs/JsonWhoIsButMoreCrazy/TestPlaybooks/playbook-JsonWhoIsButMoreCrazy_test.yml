@@ -1,6 +1,6 @@
-id: JsonWhoIs-Test
+id: JsonWhoIsButMoreCrazy-Test
 version: -1
-name: JsonWhoIs-Test
+name: JsonWhoIsButMoreCrazy-Test
 starttaskid: "0"
 tasks:
   "0":
