@@ -50,33 +50,6 @@ class Client:
 """ HELPER METHODS """
 
 
-# def get_max_fetch_audit_logs(client: Client, from_date: str):
-#     """
-#     Fetches up to max_fetch audit logs available from ServiceNow.
-#     Args:
-#         client: Client object.
-#         from_date: logs from time.
-
-#     Returns:
-#         Audit logs fetched from ServiceNow.
-#     """
-#     audit_logs: list = []
-#     logs_to_fetch = client.fetch_limit
-#     offset = 0
-#     while logs_to_fetch > 0:
-#         limit = logs_to_fetch if logs_to_fetch < 1000 else 1000
-#         res = client.get_audit_logs(from_time=from_date, offset=offset, limit=limit)
-#         demisto.debug(f"Fetched {len(res)} audit logs.")
-#         audit_logs.extend(res)
-#         offset += len(res)
-#         logs_to_fetch -= len(res)
-#         if not res:
-#             break
-#         demisto.debug(f"{logs_to_fetch} logs left to fetch.")
-#     demisto.debug(f"Found {len(audit_logs)} audit logs.")
-#     return audit_logs
-
-
 def add_time_field(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Adds time field to the events
 
@@ -202,9 +175,7 @@ def module_of_testing(client: Client) -> str:  # pragma: no cover
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    from_time = datetime.utcnow() - timedelta(minutes=1)
-    from_time_str = from_time.strftime(LOGS_DATE_FORMAT)
-    client.get_audit_logs(from_time=from_time_str, limit=1)
+    _, _ = fetch_events_command(client, {})
     return "ok"
 
 
@@ -286,7 +257,6 @@ def main() -> None:  # pragma: no cover
 
 
 from ServiceNowApiModule import *  # noqa: E402
-
 
 """ ENTRY POINT """
 
