@@ -1,4 +1,4 @@
-This playbook will investigate an object from the Rubrik Anomaly incident to get the Network or IT information based on the object type.
+This playbook will investigate based on the object type from the Rubrik Anomaly incident to retrieve the policy hits of the files related to the object.
 
 ## Dependencies
 

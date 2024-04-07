@@ -90,6 +90,28 @@ function ParseMessageTraceToEntryContext([PSObject]$raw_response) {
     #>
 }
 
+function ParseRawResponse([PSObject]$response) {
+    $items = @()
+    ForEach ($item in $response){
+        if ($item -Is [HashTable])
+            {
+        # Need to convert hashtables to ordered dicts so that the keys/values will be in the same order
+            $item = $item | ConvertTo-OrderedDict
+            }
+        elseif ($item -Is [PsCustomObject]){
+            $newItem = @{}
+            $item.PSObject.Properties | ForEach-Object { $newItem[$_.Name] = $_.Value }
+            $item = $newItem | ConvertTo-OrderedDict
+        }
+
+        if($item.Keys -contains "RuleIdentity"){
+            $item.RuleIdentity = ($item.RuleIdentity).ToString()
+        }
+        $items += $item
+    }
+    return $items
+}
+
 
 class ExchangeOnlinePowershellV3Client
 {
@@ -1573,10 +1595,16 @@ function ListRulesCommand {
     $mailbox = $kwargs.mailbox
     $limit = ($kwargs.limit -as [int])
     $raw_response = $client.GetRules($mailbox, $limit)
-    $md_columns = $raw_response | Select-Object -Property RuleIdentity, Name, Enabled, Priority
-    $human_readable = TableToMarkdown $md_columns "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    if($raw_response -eq $null){
+        Write-Output "No Rules were found."
+    }
+    else{
+        $parsed_raw_response = ParseRawResponse $raw_response
+        $md_columns = $raw_response | Select-Object -Property Identity, Name, Enabled, Priority, RuleIdentity
+        $human_readable = TableToMarkdown $md_columns "Results of $command"
+        $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule(obj.RuleIdentity === val.RuleIdentity)" = $parsed_raw_response }
+        Write-Output $human_readable, $entry_context, $parsed_raw_response
+    }
 }
 function GetRuleCommand {
     [CmdletBinding()]
@@ -1587,10 +1615,18 @@ function GetRuleCommand {
     $mailbox = $kwargs.mailbox
     $identity = $kwargs.identity
     $raw_response = $client.GetRule($mailbox, $identity)
-    $md_columns = $raw_response | Select-Object -Property RuleIdentity, Name, Enabled, Priority, Description, StopProcessingRules, IsValid
-    $human_readable = TableToMarkdown $md_columns "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    if($raw_response -eq $null){
+        Write-Output "No Rule with identity $identity was found."
+    }
+    else{
+        $parsed_raw_response = ParseRawResponse $raw_response
+
+        $md_columns = $raw_response | Select-Object -Property RuleIdentity, Name, Enabled, Priority, Description, StopProcessingRules, IsValid
+        $human_readable = TableToMarkdown $md_columns "Results of $command"
+        $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule(obj.RuleIdentity == val.RuleIdentity)" = $parsed_raw_response }
+        Write-Output $human_readable, $entry_context, $parsed_raw_response
+    }
+
 }
 function RemoveRuleCommand {
     [CmdletBinding()]
