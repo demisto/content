@@ -21,8 +21,8 @@ configuration:
 - display: API Key
   name: apikey
   type: 4
-  required: false
   hidden: true
+  required: false
 - display: API Key ID
   name: credentials
   defaultvalue: ""
