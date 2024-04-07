@@ -154,7 +154,7 @@ Display a list of issues
 | project_id | Aa project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed. | Optional | 
 | subproject_id | A subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!name_of_subproject" to exclude subprojects). | Optional | 
 | tracker | Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task). | Optional | 
-| status | - The status to display issues related to this status.</br> - You can use Open/Closed/All from the predefined values or use any of your custom status ids (e.g 1)/ status names(e.g New). | Optional | 
+| status | - The status to display issues related to this status.  </br>- You can use Open/Closed/All from the predefined values or use any of your custom status ids (e.g 1)/ status names(e.g New). | Optional | 
 | assigned_to_id | An assigned-to ID to display issues assigned to this user ID. | Optional | 
 | parent_id | A parent ID to display issues that are under this parent ID. | Optional | 
 | custom_field | - The custom field to filter by. The format is costumFieldID:Value.<br/>- To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  <br/>- You can only filter one custom field at a time. <br/>- Make sure the custom field ID you entered is valid, or the request won't fail but will not be filtered correctly.   <br/>| Optional | 
@@ -340,13 +340,13 @@ Show an issue by id
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.Issue.id | unknown | The ID of the found issue. | 
-| Redmine.Issue.priority.id | unknown | The ID of the priority of the issue. | 
-| Redmine.Issue.tracker.id | unknown | The ID of the tracker of the issue. | 
-| Redmine.Issue.project.id | unknown | The ID of the project of the issue. | 
-| Redmine.Issue.status.id | unknown | The ID of the status of the issue. | 
-| Redmine.Issue.subject | unknown | The subject of the issue. | 
-| Redmine.Issue.watchers.id | unknown | The watchers of the issue. | 
+| Redmine.Issue.id | str | The ID of the found issue. | 
+| Redmine.Issue.priority.id | str | The ID of the priority of the issue. | 
+| Redmine.Issue.tracker.id | str | The ID of the tracker of the issue. | 
+| Redmine.Issue.project.id | str | The ID of the project of the issue. | 
+| Redmine.Issue.status.id | str | The ID of the status of the issue. | 
+| Redmine.Issue.subject | str | The subject of the issue. | 
+| Redmine.Issue.watchers.id | str | The watchers of the issue. | 
 
 #### Command example
 ```!redmine-issue-get issue_id=130 include=watchers```
@@ -513,7 +513,7 @@ Retrieve a list of all projects, including both public and private ones that the
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.Project | unknown | Display a list of projects accessible to the user. | 
+| Redmine.Project | Array | Display a list of projects accessible to the user. | 
 
 #### Command example
 ```!redmine-project-list ```
