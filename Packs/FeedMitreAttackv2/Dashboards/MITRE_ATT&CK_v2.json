@@ -8,7 +8,7 @@
         "byTo": "",
         "byFrom": "days",
         "toValue": null,
-        "fromValue": 7,
+        "fromValue": 30,
         "field": ""
     },
     "fromDateLicense": "0001-01-01T00:00:00Z",
@@ -147,7 +147,7 @@
             "id": "8b8478b0-9f31-11ea-9d1e-efa455bba3f4",
             "forceRange": true,
             "x": 4,
-            "y": 3,
+            "y": 6,
             "i": "8b8478b0-9f31-11ea-9d1e-efa455bba3f4",
             "w": 2,
             "h": 1,
@@ -217,7 +217,7 @@
             "id": "34f20330-a348-11ea-a2b7-37dacd919b68",
             "forceRange": false,
             "x": 6,
-            "y": 3,
+            "y": 6,
             "i": "34f20330-a348-11ea-a2b7-37dacd919b68",
             "w": 2,
             "h": 1,
@@ -286,8 +286,8 @@
         {
             "id": "673b1700-a348-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 8,
-            "y": 3,
+            "x": 0,
+            "y": 7,
             "i": "673b1700-a348-11ea-a2b7-37dacd919b68",
             "w": 2,
             "h": 1,
@@ -356,8 +356,8 @@
         {
             "id": "85a61b90-a348-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 10,
-            "y": 3,
+            "x": 2,
+            "y": 7,
             "i": "85a61b90-a348-11ea-a2b7-37dacd919b68",
             "w": 2,
             "h": 1,
@@ -426,8 +426,8 @@
         {
             "id": "a5d42ce0-a348-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 0,
-            "y": 4,
+            "x": 4,
+            "y": 7,
             "i": "a5d42ce0-a348-11ea-a2b7-37dacd919b68",
             "w": 2,
             "h": 1,
@@ -496,8 +496,8 @@
         {
             "id": "08cf87e0-a349-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 4,
-            "y": 4,
+            "x": 0,
+            "y": 8,
             "i": "08cf87e0-a349-11ea-a2b7-37dacd919b68",
             "w": 2,
             "h": 1,
@@ -566,8 +566,8 @@
         {
             "id": "315ed4e0-a349-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 6,
-            "y": 4,
+            "x": 2,
+            "y": 8,
             "i": "315ed4e0-a349-11ea-a2b7-37dacd919b68",
             "w": 2,
             "h": 1,
@@ -636,8 +636,8 @@
         {
             "id": "605dc6c0-a349-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 8,
-            "y": 4,
+            "x": 4,
+            "y": 8,
             "i": "605dc6c0-a349-11ea-a2b7-37dacd919b68",
             "w": 2,
             "h": 1,
@@ -706,8 +706,8 @@
         {
             "id": "ce291380-a349-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 10,
-            "y": 4,
+            "x": 6,
+            "y": 8,
             "i": "ce291380-a349-11ea-a2b7-37dacd919b68",
             "w": 2,
             "h": 1,
@@ -776,8 +776,8 @@
         {
             "id": "0e3e4210-a34a-11ea-a2b7-37dacd919b68",
             "forceRange": false,
-            "x": 6,
-            "y": 5,
+            "x": 2,
+            "y": 9,
             "i": "0e3e4210-a34a-11ea-a2b7-37dacd919b68",
             "w": 2,
             "h": 1,
@@ -847,7 +847,7 @@
             "id": "38d3bf50-a34a-11ea-a2b7-37dacd919b68",
             "forceRange": false,
             "x": 4,
-            "y": 5,
+            "y": 9,
             "i": "38d3bf50-a34a-11ea-a2b7-37dacd919b68",
             "w": 2,
             "h": 1,
@@ -916,10 +916,10 @@
         {
             "id": "d8de5460-a4d5-11ea-ac2f-65b884bb2f43",
             "forceRange": false,
-            "x": 4,
-            "y": 0,
+            "x": 8,
+            "y": 6,
             "i": "d8de5460-a4d5-11ea-ac2f-65b884bb2f43",
-            "w": 8,
+            "w": 4,
             "h": 3,
             "widget": {
                 "id": "5add0cf9-010b-4e6b-8912-945fb49d7770",
@@ -971,8 +971,8 @@
         {
             "id": "84e563a0-b247-11eb-bba6-a17854c1d523",
             "forceRange": false,
-            "x": 2,
-            "y": 4,
+            "x": 6,
+            "y": 7,
             "i": "84e563a0-b247-11eb-bba6-a17854c1d523",
             "w": 2,
             "h": 1,
@@ -1041,8 +1041,8 @@
         {
             "id": "d30a7f40-f004-11ee-8364-358ac255f0be",
             "forceRange": true,
-            "x": 2,
-            "y": 3,
+            "x": 0,
+            "y": 6,
             "i": "d30a7f40-f004-11ee-8364-358ac255f0be",
             "w": 2,
             "h": 1,
@@ -1111,8 +1111,8 @@
         {
             "id": "464d2e30-f005-11ee-8364-358ac255f0be",
             "forceRange": true,
-            "x": 0,
-            "y": 3,
+            "x": 2,
+            "y": 6,
             "i": "464d2e30-f005-11ee-8364-358ac255f0be",
             "w": 2,
             "h": 1,
@@ -1177,6 +1177,413 @@
                 "category": ""
             },
             "reflectDimensions": false
+        },
+        {
+            "id": "267cc3c0-f1a6-11ee-8324-a33475926ab2",
+            "forceRange": false,
+            "x": 8,
+            "y": 3,
+            "i": "267cc3c0-f1a6-11ee-8324-a33475926ab2",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-31T13:36:29.876892015Z",
+                "created": "2024-01-31T13:36:22.530651544Z",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.46",
+                "fromServerVersion": "6.2.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "size": 10,
+                "sort": [
+                    {
+                        "field": "id",
+                        "fieldType": "",
+                        "asc": false
+                    }
+                ],
+                "Cache": null,
+                "name": "Newly Added Attack Pattern Indicators",
+                "prevName": "Top 10 Attack Pattern Indicators in Related Incidents",
+                "dataType": "indicators",
+                "widgetType": "table",
+                "query": "type:\"Attack Pattern\" and -incident.type:\"MITRE ATT\u0026CK CoA\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "enablePagination": true,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "cb10b900-f1a6-11ee-8324-a33475926ab2",
+            "forceRange": false,
+            "x": 4,
+            "y": 3,
+            "i": "cb10b900-f1a6-11ee-8324-a33475926ab2",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-31T13:36:29.876419221Z",
+                "created": "2024-01-31T13:36:22.529053428Z",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.46",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Attack Pattern Activity by Verdict",
+                "prevName": "Indicators Activity by Type",
+                "dataType": "indicators",
+                "widgetType": "line",
+                "query": "type:\"Attack Pattern\" and lastSeen:\u003e=\"7 days ago\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "calculatedTime(d)",
+                        "score"
+                    ]
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "7627bea0-f1a8-11ee-8324-a33475926ab2",
+            "forceRange": false,
+            "x": 8,
+            "y": 0,
+            "i": "7627bea0-f1a8-11ee-8324-a33475926ab2",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "8d75816f-f9c2-451d-8479-08af6b18c3e9",
+                "version": 5,
+                "cacheVersn": 0,
+                "modified": "2024-01-31T13:36:29.876892015Z",
+                "created": "2024-01-31T13:36:22.530651544Z",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.46",
+                "fromServerVersion": "6.2.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "size": 10,
+                "sort": [
+                    {
+                        "field": "relatedIncCount",
+                        "fieldType": "",
+                        "asc": false
+                    }
+                ],
+                "Cache": null,
+                "name": "Top 10 Attack Pattern Indicators in Related Incidents",
+                "prevName": "Top 10 Attack Pattern Indicators in Related Incidents",
+                "dataType": "indicators",
+                "widgetType": "table",
+                "query": "type:\"Attack Pattern\" and (verdict:Malicious or verdict:Suspicious) and incident.id:*",
+                "isPredefined": true,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 180,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "enablePagination": true,
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "width": 120
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "value",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "width": 150
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Kill Chain Phases",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Tags",
+                            "width": 200
+                        }
+                    ]
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "1ed21060-f1b2-11ee-8324-a33475926ab2",
+            "forceRange": false,
+            "x": 4,
+            "y": 0,
+            "i": "1ed21060-f1b2-11ee-8324-a33475926ab2",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-31T13:36:29.876419221Z",
+                "created": "2024-01-31T13:36:22.529053428Z",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.46",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Attack Pattern Activity by Phase",
+                "prevName": "Indicators Activity by Type",
+                "dataType": "indicators",
+                "widgetType": "pie",
+                "query": "type:\"Attack Pattern\" and investigationsCount:\u003e0 and lastSeen:\u003e=\"7 days ago\"",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": 30,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "killchainphases"
+                    ],
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
+        },
+        {
+            "id": "18049ea0-f1b3-11ee-8324-a33475926ab2",
+            "forceRange": false,
+            "x": 0,
+            "y": 3,
+            "i": "18049ea0-f1b3-11ee-8324-a33475926ab2",
+            "w": 4,
+            "h": 3,
+            "widget": {
+                "id": "",
+                "version": 0,
+                "cacheVersn": 0,
+                "modified": "2024-01-31T13:36:29.876419221Z",
+                "created": "2024-01-31T13:36:22.529053428Z",
+                "sizeInBytes": 0,
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "itemVersion": "1.2.46",
+                "fromServerVersion": "5.0.0",
+                "toServerVersion": "",
+                "propagationLabels": [],
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "definitionId": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "commitMessage": "",
+                "shouldCommit": false,
+                "Cache": null,
+                "name": "Attack Pattern investigation by Mitre ID",
+                "prevName": "Indicators Activity by Type",
+                "dataType": "indicators",
+                "widgetType": "line",
+                "query": "type:\"Attack Pattern\"  and investigationsCount:\u003e0",
+                "isPredefined": false,
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "toDate": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byTo": "",
+                        "byFrom": "days",
+                        "toValue": null,
+                        "fromValue": null,
+                        "field": ""
+                    },
+                    "fromDateLicense": "0001-01-01T00:00:00Z"
+                },
+                "params": {
+                    "groupBy": [
+                        "firstSeen(d)",
+                        "mitreid"
+                    ],
+                    "showGraphValues": false,
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "category": ""
+            },
+            "reflectDimensions": true
         }
     ],
     "fromVersion": "5.0.0",
