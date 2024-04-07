@@ -5,11 +5,12 @@ import json
 import traceback
 import zipfile
 from base64 import b64decode
-from contextlib import redirect_stderr, redirect_stdout
+from contextlib import redirect_stderr
+from demisto_sdk.commands.common.logger import logging_setup
 from datetime import datetime
 from pathlib import Path
 from shutil import copy
-from tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory, TemporaryFile
 from typing import Any
 import logging
 
@@ -22,14 +23,12 @@ from demisto_sdk.commands.common.constants import (
     PACKS_FOLDER,
     BASE_PACK
 )
-from demisto_sdk.commands.common.logger import logging_setup
 from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.common.handlers import YAML_Handler
 from demisto_sdk.commands.init.contribution_converter import ContributionConverter
 from demisto_sdk.commands.lint.lint_manager import LintManager
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
-from demisto_sdk.commands.validate.old_validate_manager import OldValidateManager as ValidateManager
-
+from demisto_sdk.commands.validate.validate_manager import ValidateManager
 
 COMMAND_OUTPUT_PREFIX = "ValidationResult"
 COMMAND_OUTPUT_KEY_NAME = "Name"
@@ -164,8 +163,6 @@ def run_validate(file_path: str, json_output_file: str) -> None:
 
 def run_lint(file_path: str, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
-    logging_setup(console_log_threshold=logging.DEBUG, skip_log_file_creation=True)
-
     lint_manager = LintManager(
         input=str(file_path),
         git=False,
@@ -256,9 +253,15 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> list:
     json_output_path = os.path.join(tmp_directory, 'validation_res.json')
     lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
     output_capture = io.StringIO()
-    log_capture = io.StringIO()
 
-    with redirect_stdout(output_capture), redirect_stderr(output_capture):
+    with redirect_stderr(output_capture), TemporaryFile(mode="w+") as tmp:
+        logging_setup(
+            console_log_threshold=logging.INFO,
+            file_log_threshold=logging.DEBUG,
+            log_file_path=tmp.name,
+            skip_log_file_creation=True
+        )
+
         if filename.endswith('.zip'):
             path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
                 filename, data, tmp_directory
@@ -268,37 +271,28 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> list:
                 filename, data, tmp_directory
             )
 
-        handler = logging.StreamHandler(log_capture)
-        for name in [None, 'demisto-sdk']:
-            logger = logging.getLogger(name)
-            logger.handlers.clear()
-            logger.addHandler(handler)
-
         run_validate(path_to_validate, json_output_path)
         run_lint(path_to_validate, lint_output_path)
 
-        handler.flush()
-        handler.close()
+        demisto.debug("log capture:" + tmp.read())
+        all_outputs = []
+        with open(json_output_path) as json_outputs:
+            outputs_as_json = json.load(json_outputs)
+            if outputs_as_json:
+                if isinstance(outputs_as_json, list):
+                    all_outputs.extend(outputs_as_json)
+                else:
+                    all_outputs.append(outputs_as_json)
 
-    demisto.debug("log capture:" + log_capture.getvalue())
-    all_outputs = []
-    with open(json_output_path) as json_outputs:
-        outputs_as_json = json.load(json_outputs)
-        if outputs_as_json:
-            if isinstance(outputs_as_json, list):
-                all_outputs.extend(outputs_as_json)
-            else:
-                all_outputs.append(outputs_as_json)
-
-    with open(lint_output_path) as json_outputs:
-        outputs_as_json = json.load(json_outputs)
-        if outputs_as_json:
-            if isinstance(outputs_as_json, list):
-                for validation in outputs_as_json:
-                    adjust_linter_row_and_col(validation, code_fp_to_row_offset)
-                all_outputs.extend(outputs_as_json)
-            else:
-                all_outputs.append(outputs_as_json)
+        with open(lint_output_path) as json_outputs:
+            outputs_as_json = json.load(json_outputs)
+            if outputs_as_json:
+                if isinstance(outputs_as_json, list):
+                    for validation in outputs_as_json:
+                        adjust_linter_row_and_col(validation, code_fp_to_row_offset)
+                    all_outputs.extend(outputs_as_json)
+                else:
+                    all_outputs.append(outputs_as_json)
     return all_outputs
 
 
@@ -449,7 +443,7 @@ def main():
         result = validate_content(filename, file_contents, content_tmp_dir.name)
         outputs = []
         for validation in result:
-            if validation.get('ui') or validation.get('fileType') in {'py', 'ps1'}:
+            if validation.get('ui') or validation.get('fileType') in {'py', 'ps1', 'yml'}:
                 outputs.append({
                     COMMAND_OUTPUT_KEY_NAME: validation.get('name'),
                     COMMAND_OUTPUT_KEY_ERROR: validation.get('message'),
