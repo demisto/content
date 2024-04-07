@@ -962,6 +962,7 @@ def update_remote_system_command(client, args):
         if remote_args.incident_changed:
             demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
             update_args = get_update_args(remote_args)
+            
             update_args['incident_id'] = remote_args.remote_incident_id
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
             demisto.debug(f"{update_args=}")
