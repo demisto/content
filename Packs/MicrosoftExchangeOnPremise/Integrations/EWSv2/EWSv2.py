@@ -54,6 +54,8 @@ class exchangelibSSLAdapter(SSLAdapter):  # pragma: no cover
     
     def cert_verify(self, conn, url, verify, cert):
         # We're overriding a method, so we have to keep the signature, although verify is unused
+        del verify
+
         ctx = ssl.create_default_context()
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
