@@ -216,7 +216,7 @@ configuration:
   hidden: true
   required: false
 - defaultvalue: 'false'
-  additionalinfo: Select this checkbox to retrieve existing comments and work notes for new fetched incidents. Enabling this involves adding API calls on the machine to execute, which may cause overload in case of many incidents.
+  additionalinfo: 'When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present.'
   display: Mirror Existing Notes For New Fetched Incidents
   name: mirror_notes_for_new_incidents
   type: 8
