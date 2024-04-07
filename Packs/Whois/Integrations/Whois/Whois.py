@@ -8684,8 +8684,6 @@ def whois_command(reliability: str) -> List[CommandResults]:
             results.append(result)
 
         except Exception as e:
-            import traceback
-            demisto.info(traceback.format_exc())
             demisto.error(
                 f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}'")
             execution_metrics = increment_metric(
