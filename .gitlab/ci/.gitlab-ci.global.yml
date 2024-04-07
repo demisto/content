@@ -506,7 +506,6 @@
     - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
     - gcloud auth configure-docker ${DOCKER_IO_DOMAIN} >> "${ARTIFACTS_FOLDER}/logs/configure_docker_with_registry.log" 2>&1
     - section_end "Revoking GCP Auth and Configure Docker"
-    - unset DEMISTO_SDK_GRAPH_FORCE_CREATE  # we need to use update graph in content nightly
     # temp solution not to spam the build
     - SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
     - PRE_COMMIT_SUCCESS=0
@@ -521,6 +520,7 @@
             echo "Pre Commit all files"
             # if we need to pre-commit all anyway we need the graph, and it's better (resource-wise) to create it here.
             demisto-sdk graph update
+            unset DEMISTO_SDK_GRAPH_FORCE_CREATE  # The graph is already up, no need to force create it
             demisto-sdk pre-commit -a --mode=nightly || PRE_COMMIT_SUCCESS=1
           else
             echo "Pre Commit only changed files"
