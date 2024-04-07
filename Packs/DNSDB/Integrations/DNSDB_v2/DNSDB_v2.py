@@ -1,6 +1,7 @@
 import inspect
 import locale
-from typing import Iterator, Dict, List, Tuple, Union, Any, Callable, Iterable
+from typing import Dict, List, Union
+from collections.abc import Iterator, Iterable
 import urllib
 import urllib.parse
 

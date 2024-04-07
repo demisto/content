@@ -8,7 +8,6 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.message import Message
 from email.header import Header
 from smtplib import SMTP, SMTP_SSL
 from smtplib import SMTPRecipientsRefused
