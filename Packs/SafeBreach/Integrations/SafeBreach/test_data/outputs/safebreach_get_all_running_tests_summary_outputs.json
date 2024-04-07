@@ -1,0 +1,377 @@
+{
+    "outputs": {
+        "success": {
+            "data": [
+                {
+                    "id": 123,
+                    "name": "Dummy - Baseline",
+                    "accountId": 1234567890,
+                    "description": ".",
+                    "successCriteria": null,
+                    "originalScenarioId": "baa50109-deb7-466b-86b1-8049c270cd9a",
+                    "actions": [
+                        {
+                            "id": 1,
+                            "type": "multiAttack",
+                            "data": {
+                                "uuid": "a725050e-11b3-4b43-b96f-4a4d6f9ff8ed"
+                            },
+                            "maxSimulations": 19
+                        }
+                    ],
+                    "edges": [
+                        {
+                            "from": 0,
+                            "to": 1
+                        }
+                    ],
+                    "createdAt": "2023-09-08T10:30:35.761Z",
+                    "updatedAt": "2023-09-12T08:44:40.281Z",
+                    "steps": [
+                        {
+                            "id": 199,
+                            "uuid": "a725050e-11b3-4b43-b96f-4a4d6f9ff8ed",
+                            "attacksFilter": {
+                                "tags": {
+                                    "Security Controls": {
+                                        "operator": "is",
+                                        "values": [
+                                            "Endpoint"
+                                        ],
+                                        "name": "security controls"
+                                    }
+                                },
+                                "playbook": {
+                                    "operator": "is",
+                                    "values": [
+                                        1552,
+                                        1558,
+                                        3075,
+                                        3199,
+                                        6180,
+                                        2337,
+                                        4136,
+                                        3680,
+                                        2221,
+                                        2264,
+                                        5307,
+                                        1465,
+                                        6246,
+                                        5388,
+                                        2195,
+                                        2196,
+                                        2389,
+                                        2353,
+                                        795,
+                                        2199,
+                                        2243,
+                                        2608
+                                    ],
+                                    "name": "playbook"
+                                }
+                            },
+                            "attackerFilter": {
+                                "simulators": {
+                                    "operator": "is",
+                                    "values": [
+                                        "0000000-0000-0000-0000-00000000"
+                                    ]
+                                }
+                            },
+                            "targetFilter": {
+                                "simulators": {
+                                    "operator": "is",
+                                    "values": [
+                                        "0000000-0000-0000-0000-00000000"
+                                    ]
+                                }
+                            },
+                            "systemFilter": {
+                                "bypassProxy": {
+                                    "operator": "is",
+                                    "values": [
+                                        true
+                                    ],
+                                    "name": "bypassproxy"
+                                },
+                                "proxies": {
+                                    "operator": "is",
+                                    "values": [],
+                                    "name": "proxies"
+                                }
+                            },
+                            "name": "Host actions",
+                            "wait": 0,
+                            "stepRunId": "1111111111111.1",
+                            "planRunId": "1111111111111.1",
+                            "pausedDate": "2023-09-13T12:43:59.572Z",
+                            "pauseDuration": 0,
+                            "totalJobs": 31,
+                            "retryStartTime": null,
+                            "retryDuration": 0,
+                            "startTime": "2023-09-13T12:43:21.185Z",
+                            "pausePeriods": [],
+                            "ranFrom": "UI",
+                            "ranBy": 123456789000002,
+                            "expectedSimulationsAmount": 19,
+                            "dispatchedSimulationsAmount": 0,
+                            "blockedSimulationsAmount": 0,
+                            "unblockedSimulationsAmount": 0,
+                            "skippedSimulationsAmount": 0,
+                            "failedSimulationsAmount": 0,
+                            "constraints": null,
+                            "nodeIds": [
+                                "0000000-0000-0000-0000-00000000"
+                            ],
+                            "proxies": [],
+                            "bypassProxy": true,
+                            "assetIds": [
+                                2
+                            ],
+                            "originalPlan": {
+                                "id": 123,
+                                "name": "Dummy - Baseline",
+                                "accountId": 1234567890,
+                                "description": ".",
+                                "successCriteria": null,
+                                "originalScenarioId": "baa50109-deb7-466b-86b1-8049c270cd9a",
+                                "actions": [
+                                    {
+                                        "id": 1,
+                                        "type": "multiAttack",
+                                        "data": {
+                                            "uuid": "a725050e-11b3-4b43-b96f-4a4d6f9ff8ed"
+                                        }
+                                    }
+                                ],
+                                "edges": [
+                                    {
+                                        "from": 0,
+                                        "to": 1
+                                    }
+                                ],
+                                "createdAt": "2023-09-08T10:30:35.761Z",
+                                "updatedAt": "2023-09-12T08:44:40.281Z",
+                                "steps": [
+                                    {
+                                        "id": 199,
+                                        "uuid": "a725050e-11b3-4b43-b96f-4a4d6f9ff8ed",
+                                        "attacksFilter": {
+                                            "tags": {
+                                                "Security Controls": {
+                                                    "operator": "is",
+                                                    "values": [
+                                                        "Endpoint"
+                                                    ],
+                                                    "name": "security controls"
+                                                }
+                                            },
+                                            "playbook": {
+                                                "operator": "is",
+                                                "values": [
+                                                    1552,
+                                                    1558,
+                                                    3075,
+                                                    3199,
+                                                    6180,
+                                                    2337,
+                                                    4136,
+                                                    3680,
+                                                    2221,
+                                                    2264,
+                                                    5307,
+                                                    1465,
+                                                    6246,
+                                                    5388,
+                                                    2195,
+                                                    2196,
+                                                    2389,
+                                                    2353,
+                                                    795,
+                                                    2199,
+                                                    2243,
+                                                    2608
+                                                ],
+                                                "name": "playbook"
+                                            }
+                                        },
+                                        "attackerFilter": {
+                                            "simulators": {
+                                                "operator": "is",
+                                                "values": [
+                                                    "0000000-0000-0000-0000-00000000"
+                                                ],
+                                                "name": "simulators"
+                                            }
+                                        },
+                                        "targetFilter": {
+                                            "simulators": {
+                                                "operator": "is",
+                                                "values": [
+                                                    "0000000-0000-0000-0000-00000000"
+                                                ],
+                                                "name": "simulators"
+                                            }
+                                        },
+                                        "systemFilter": {
+                                            "bypassProxy": {
+                                                "operator": "is",
+                                                "values": [
+                                                    true
+                                                ],
+                                                "name": "bypassproxy"
+                                            },
+                                            "proxies": {
+                                                "operator": "is",
+                                                "values": [],
+                                                "name": "proxies"
+                                            }
+                                        },
+                                        "name": "Host actions",
+                                        "wait": 0
+                                    }
+                                ],
+                                "planId": 123
+                            },
+                            "status": "ACTIVE",
+                            "isPrepared": true,
+                            "notified": 1694609017088
+                        }
+                    ],
+                    "planId": 123,
+                    "originalPlan": {
+                        "id": 123,
+                        "name": "Dummy - Baseline",
+                        "accountId": 1234567890,
+                        "description": ".",
+                        "successCriteria": null,
+                        "originalScenarioId": "baa50109-deb7-466b-86b1-8049c270cd9a",
+                        "actions": [
+                            {
+                                "id": 1,
+                                "type": "multiAttack",
+                                "data": {
+                                    "uuid": "a725050e-11b3-4b43-b96f-4a4d6f9ff8ed"
+                                }
+                            }
+                        ],
+                        "edges": [
+                            {
+                                "from": 0,
+                                "to": 1
+                            }
+                        ],
+                        "createdAt": "2023-09-08T10:30:35.761Z",
+                        "updatedAt": "2023-09-12T08:44:40.281Z",
+                        "steps": [
+                            {
+                                "id": 199,
+                                "uuid": "a725050e-11b3-4b43-b96f-4a4d6f9ff8ed",
+                                "attacksFilter": {
+                                    "tags": {
+                                        "Security Controls": {
+                                            "operator": "is",
+                                            "values": [
+                                                "Endpoint"
+                                            ],
+                                            "name": "security controls"
+                                        }
+                                    },
+                                    "playbook": {
+                                        "operator": "is",
+                                        "values": [
+                                            1552,
+                                            1558,
+                                            3075,
+                                            3199,
+                                            6180,
+                                            2337,
+                                            4136,
+                                            3680,
+                                            2221,
+                                            2264,
+                                            5307,
+                                            1465,
+                                            6246,
+                                            5388,
+                                            2195,
+                                            2196,
+                                            2389,
+                                            2353,
+                                            795,
+                                            2199,
+                                            2243,
+                                            2608
+                                        ],
+                                        "name": "playbook"
+                                    }
+                                },
+                                "attackerFilter": {
+                                    "simulators": {
+                                        "operator": "is",
+                                        "values": [
+                                            "0000000-0000-0000-0000-00000000"
+                                        ],
+                                        "name": "simulators"
+                                    }
+                                },
+                                "targetFilter": {
+                                    "simulators": {
+                                        "operator": "is",
+                                        "values": [
+                                            "0000000-0000-0000-0000-00000000"
+                                        ],
+                                        "name": "simulators"
+                                    }
+                                },
+                                "systemFilter": {
+                                    "bypassProxy": {
+                                        "operator": "is",
+                                        "values": [
+                                            true
+                                        ],
+                                        "name": "bypassproxy"
+                                    },
+                                    "proxies": {
+                                        "operator": "is",
+                                        "values": [],
+                                        "name": "proxies"
+                                    }
+                                },
+                                "name": "Host actions",
+                                "wait": 0
+                            }
+                        ],
+                        "planId": 123
+                    },
+                    "ranBy": 123456789000002,
+                    "ranFrom": "UI",
+                    "enableFeedbackLoop": true,
+                    "planRunId": "1111111111111.1",
+                    "priority": "low",
+                    "retrySimulations": false,
+                    "flowControl": {
+                        "pointer": 1,
+                        "conditionResults": {}
+                    },
+                    "slot": {
+                        "id": 0,
+                        "isPaused": false
+                    },
+                    "pauseDuration": 0,
+                    "totalJobs": 0,
+                    "pausedDate": null,
+                    "pausePeriods": [],
+                    "expectedSimulationsAmount": 0,
+                    "dispatchedSimulationsAmount": 0,
+                    "blockedSimulationsAmount": 0,
+                    "unblockedSimulationsAmount": 0,
+                    "skippedSimulationsAmount": 0,
+                    "failedSimulationsAmount": 0,
+                    "isPrepared": true
+                }
+            ]
+        },
+        "fail": {}
+    }
+}
