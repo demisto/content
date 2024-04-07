@@ -30,7 +30,7 @@ function deleteKeys(keysToDelete = [], _keysToKeep = []) {
     for (var key of keysToDelete) {
         const originalKey = typeof key === "string" ? key.trim() : key;
         const keyToDelete = isSubPlaybookKey ? 'subplaybook-${currentPlaybookID}.' + originalKey: originalKey;
-        if (!_keysToKeep.includes(keyToDelete)) {
+        if (_keysToKeep.indexOf(keyToDelete) === -1) {
             const result = executeCommand('delContext', { key: keyToDelete });
             if (!result || result.type === entryTypes.error ) {
                 errors.push(result.Contents);
