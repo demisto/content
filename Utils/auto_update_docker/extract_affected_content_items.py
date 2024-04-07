@@ -278,7 +278,7 @@ def get_content_items_by_docker_image() -> dict[str, list[dict[str, Any]]]:
 @app.command()
 def get_affected_content_items(
     config_path: str = typer.Argument(
-        default="Utils/auto_update_docker/auto_update_docker_config.json",
+        # default="Utils/auto_update_docker/auto_update_docker_config.json",
         help="The config file that holds all the configuration of the batches and docker images",
     ),
     docker_images_arg: str = typer.Argument(
@@ -292,7 +292,7 @@ def get_affected_content_items(
         help="The batch index",
     ),
     coverage_report: str = typer.Argument(
-        default="Utils/auto_update_docker/coverage_report.json",
+        # default="Utils/auto_update_docker/coverage_report.json",
         help="The coverage report from last nightly",
     ),
     docker_images_target_tags_path: str = typer.Argument(
@@ -308,10 +308,10 @@ def get_affected_content_items(
     # IMPORTANT - "demisto-sdk create-content-graph" must be ran before
     # Entry point of code
     # TODO Will need to delete later, and add default value for the argument docker_images_target_tags_path
-    docker_images_target_tags_path = f"{CWD}/Utils/auto_update_docker/images_tag.json"
+    # docker_images_target_tags_path = f"{CWD}/Utils/auto_update_docker/images_tag.json"
 
     # TODO Will need to delete later
-    dir = f"{CWD}/Utils/auto_update_docker"
+    # dir = f"{CWD}/Utils/auto_update_docker"
 
     path_dir = Path(dir) if dir else Path(CWD)
 
