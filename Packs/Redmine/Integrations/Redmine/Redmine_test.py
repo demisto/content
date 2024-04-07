@@ -584,7 +584,7 @@ def test_get_issues_list_command_invalid_status_using_request_with_number(mocker
             {'id': '2', 'name': 'Feedback'}
         ]})
         get_issues_list_command(redmine_client, {'status': '5'})
-    assert e.value.message == "Status id 5 not found, please make sure this status exists."
+    assert e.value.message == "Status id 5 not found, please make sure this status id exists."
 
 
 def test_get_issue_by_id_command(mocker, redmine_client):
