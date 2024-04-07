@@ -7,7 +7,7 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
-  required: true
+  required: false
 - display: Server URL (copy URL from Core - click ? to see more info.)
   name: url
   type: 0
