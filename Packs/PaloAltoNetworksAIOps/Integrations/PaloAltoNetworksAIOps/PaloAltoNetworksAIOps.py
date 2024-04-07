@@ -408,7 +408,6 @@ def main() -> None:
     client_id = params.get('credentials-aiops', {}).get('identifier')
     client_secret = params.get('credentials-aiops', {}).get('password')
     proxy = params.get('proxy', False)
-    print(f'{verify_certificate=}, {base_url=}, {api_key=}, {tsg_id=}, {client_id=}, {client_secret=}')
     demisto.debug(f'Command being called is {command}')
 
     try:
