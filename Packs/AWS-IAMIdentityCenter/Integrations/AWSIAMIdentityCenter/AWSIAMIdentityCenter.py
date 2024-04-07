@@ -187,6 +187,30 @@ def list_groups(args, client):  # pragma: no cover
     return_results(result)
 
 
+def create_group(args, client):
+    kwargs = {
+        'IdentityStoreId':f'{IDENTITYSTOREID}',
+        'DisplayName':args.get('displayName'),
+        'Description':args.get('description')
+    }
+    kwargs = remove_empty_elements(kwargs)
+    response = client.create_group(**kwargs)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        group_id = response.get('GroupId')
+        demisto.results(f'Group {group_id} has been successfully created')
+
+
+def delete_group(args, client):
+    groupId = get_groupId_by_displayName(args, client).get('GroupId')
+    response = client.delete_group(
+        IdentityStoreId=f'{IDENTITYSTOREID}',
+        GroupId=groupId
+    )
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results(f'The Group {groupId} has been removed')
+    
+    
+
 def get_groupId_by_displayName(args, client):
     groupName = args.get('displayName') or args.get('groupName')
     response_id = client.get_group_id(
@@ -306,8 +330,10 @@ def main():     # pragma: no cover
     # aws_role_session_name = args.get('roleSessionName') or params.get('roleSessionName')
     # aws_role_session_duration = args.get('roleSessionDuration') or params.get('sessionDuration')
     aws_role_policy = None
-    aws_access_key_id = params.get('access_key')
-    aws_secret_access_key = params.get('secret_key')
+    aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
+    aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
+    # aws_access_key_id = params.get('access_key')
+    # aws_secret_access_key = params.get('secret_key')
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout')
     retries = params.get('retries') or 5
@@ -355,6 +381,10 @@ def main():     # pragma: no cover
             remove_user_from_groups(args, client)
         elif command == 'aws-iam-identitycenter-delete-user':
             delete_user(args, client)
+        elif command == 'aws-iam-identitycenter-create-group':
+            create_group(args, client)
+        elif command == 'aws-iam-identitycenter-delete-group':
+            delete_group(args, client)
 
     except Exception as e:
         return_error('Error has occurred in the AWS IAM Integration: {code}\n {message}'.format(

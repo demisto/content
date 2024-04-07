@@ -51,16 +51,34 @@ configuration:
   additionalinfo: ''
   section: Connect
   type: 4
+# - display: Access Key
+#   name: access_key
+#   required: false
+#   section: Connect
+#   type: 4
+# - display: Secret Key
+#   name: secret_key
+#   required: false
+#   section: Connect
+#   type: 4
+- display: Access Key
+  name: credentials
+  type: 9
+  displaypassword: Secret Key
+  section: Connect
+  required: false
 - display: Access Key
   name: access_key
-  required: false
+  type: 0
+  hidden: true
   section: Connect
-  type: 4
+  required: false
 - display: Secret Key
   name: secret_key
-  required: false
-  section: Connect
   type: 4
+  hidden: true
+  section: Connect
+  required: false
 - additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
   display: Timeout
@@ -539,11 +557,92 @@ script:
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
-    - description: The name of the user to get information about.
+    - description: The name of the user to remove.
       name: userName
       required: true
-    description: This will delete the entered user.
+    description: This will remove the entered user.
     name: aws-iam-identitycenter-delete-user
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region, if not specified the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: Role Arn.
+      name: roleArn
+      required: false
+    - description: Role Session Duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role Session Name.
+      name: roleSessionName
+      required: false 
+    - description: Identity Store ID.
+      name: IdentityStoreId
+      required: false
+    - description: The name of the group to create.
+      name: displayName
+      required: false
+    - description: The description of the group to create.
+      name: description
+      required: false
+    description: Creates a new IAM Identity Center group for your AWS account.
+    name: aws-iam-identitycenter-create-group
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region, if not specified the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: Role Arn.
+      name: roleArn
+      required: false
+    - description: Role Session Duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role Session Name.
+      name: roleSessionName
+      required: false 
+    - description: Identity Store ID.
+      name: IdentityStoreId
+      required: false
+    - description: The name of the group to remove.
+      name: groupName
+      required: true
+    description: This will remove the entered group.
+    name: aws-iam-identitycenter-delete-group
   dockerimage: demisto/boto3py3:1.0.0.76002
   runonce: false
   script: ''
