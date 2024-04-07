@@ -25,6 +25,7 @@ variables:
   BASH_ENV: "${CI_PROJECT_DIR}/artifacts/bash_env"
   PYTHONPATH: "${CI_PROJECT_DIR}"
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PRE_COMMIT_HOME: "${CI_PROJECT_DIR}/.cache/pre-commit"
   FEATURE_BRANCH_NAME: "v4.5.0"
   IFRA_ENV_TYPE: "Content-Env"
   GET_SOURCES_ATTEMPTS: 3  # see https://docs.gitlab.com/ee/ci/runners/configure_runners.html#job-stages-attempts

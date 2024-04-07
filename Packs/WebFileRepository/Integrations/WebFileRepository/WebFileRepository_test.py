@@ -12,6 +12,8 @@ import importlib
 import uuid
 import copy
 import random
+import math
+import string
 import urllib.parse
 import WebFileRepository
 import freezegun
@@ -1033,6 +1035,159 @@ def test_process_root_post_upload(mocker,
     response = WebFileRepository.process_root_post()
     assert response.status_code == 200
     assert response.body.get('success') is True
+    with open(integration_context_filename_after) as f:
+        assert integration_context.equals(json.load(f))
+
+
+@freezegun.freeze_time('2022-01-23 12:34:56')
+@pytest.mark.parametrize(
+    argnames=(
+        'integration_context_filename_before, '
+        'file_list, '
+        'upload_dir, '
+        'extract_archive, '
+        'integration_context_filename_after'
+    ),
+    argvalues=[
+        (
+            './test_data/integration_ctx_empty.json',
+            ['./test_data/upload_file.txt'],
+            '/',
+            False,
+            './test_data/upload_out_01.json',
+        ),
+        (
+            './test_data/integration_ctx_empty.json',
+            ['./test_data/upload_file.txt', './test_data/upload_file.dat'],
+            '/',
+            False,
+            './test_data/upload_out_02.json',
+        ),
+        (
+            './test_data/integration_ctx_empty.json',
+            ['./test_data/upload_file.zip'],
+            '/',
+            True,
+            './test_data/upload_out_03.json',
+        ),
+        (
+            './test_data/integration_ctx_empty.json',
+            ['./test_data/upload_file.tar.gz'],
+            '/',
+            True,
+            './test_data/upload_out_04.json',
+        ),
+        (
+            './test_data/integration_ctx_empty.json',
+            ['./test_data/upload_file.txt'],
+            '/あいうえお',
+            False,
+            './test_data/upload_out_05.json',
+        ),
+    ]
+)
+def test_process_root_post_upload_chunk(
+    mocker,
+    integration_context_filename_before,
+    file_list,
+    upload_dir,
+    extract_archive,
+    integration_context_filename_after
+):
+    """
+        Given:
+            The repository and request parameters with 'upload'
+
+        When:
+            Running script to send a request.
+
+        Then:
+            Validate the right response returns.
+    """
+    mocker.patch.object(demisto, 'params', return_value={
+        'longRunningPort': '8000',
+        'rwCredentials': {},
+        'authenticationMethod': None,
+        'publicReadAccess': True,
+        'mimeTypes': None,
+        'mergeMimeTypes': True,
+        'attachmentExtensions': None,
+        'storageProtection': 'read/write',
+        'maxStorageSize': None,
+        'maxSandboxSize': None,
+    })
+    MockUUID(mocker)
+
+    importlib.reload(WebFileRepository)
+
+    with open(integration_context_filename_before) as f:
+        integration_context = MockIntegrationContext(json.load(f), mocker)
+
+    for file_path in file_list:
+        file_name = os.path.basename(file_path)
+        file_size = os.path.getsize(file_path)
+
+        with open(file_path, 'rb') as f:
+            chunk_size = int(file_size / 3)
+            chunk_num = math.ceil(file_size / chunk_size)
+            chunk_sid = ''.join([random.choice(string.digits) for i in range(16)])
+
+            for chunk_index in range(0, chunk_num):
+                chunk = f.read(chunk_size)
+
+                boundary = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+                post_data = '\r\n'.join([
+                    '',
+                    f'--{boundary}',
+                    f'Content-Disposition: form-data; name="file"; filename="{file_name}"',
+                    'Content-Type: application/octet-stream',
+                    '\r\n',
+                ]).encode()
+
+                post_data += chunk
+
+                if chunk_index < chunk_num - 1:
+                    form_params = {
+                        'q': 'upload',
+                        'dir': upload_dir,
+                        'chunk_sid': chunk_sid,
+                        'chunk_index': chunk_index,
+                    }
+                else:
+                    form_params = {
+                        'q': 'upload',
+                        'dir': upload_dir,
+                        'chunk_sid': chunk_sid,
+                        'chunk_index': chunk_index,
+                        'last_chunk': 'true',
+                        'file_size': file_size,
+                        'extract': 'true' if extract_archive else 'false'
+                    }
+
+                for k, v in form_params.items():
+                    post_data += '\r\n'.join([
+                        '',
+                        f'--{boundary}',
+                        f'Content-Disposition: form-data; name="{k}"',
+                        '',
+                        str(v)
+                    ]).encode()
+
+                post_data += f'\r\n--{boundary}--\r\n'.encode()
+
+                environ = {
+                    'REQUEST_METHOD': 'POST',
+                    'CONTENT_LENGTH': len(post_data),
+                    'PATH_INFO': '/',
+                    'CONTENT_TYPE': f'multipart/form-data; boundary={boundary}',
+                    'wsgi.input': io.BytesIO(post_data),
+                }
+                bottle.request = bottle.LocalRequest(environ)
+
+                response = WebFileRepository.process_root_post()
+                assert response.status_code == 200
+                assert response.body.get('success') is True
+
     with open(integration_context_filename_after) as f:
         assert integration_context.equals(json.load(f))
 
