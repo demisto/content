@@ -18,34 +18,36 @@ function hasDuplicates(arr) {
 
 /**
  * Deletes keys from the context and handles errors.
- * @param {Array<string>} keys - An array of keys to delete.
+ * @param {Array<string>} keysToDelete - An array of keys to delete.
+ * @param {Array<string>} _keysToKeep - An array of keys to keep. (If a key exists in both, it won't be deleted)
  * @returns {string} A message summarizing the outcome of the delete operation.
  */
-function deleteKeys(keysToDelete, keysToKeep) {
+function deleteKeys(keysToDelete = [], _keysToKeep = []) {
     var deletedKeys = []
     var errors = []
-    var message = "";
+    var message = '';
     for (var key of keysToDelete) {
         const originalKey = typeof key === "string" ? key.trim() : key;
-        
         const keyToDelete = isSubPlaybookKey ? 'subplaybook-${currentPlaybookID}.' + originalKey: originalKey;
-        const result = executeCommand('delContext', { key: keyToDelete });
-
-        if (!result || result.type === entryTypes.error) {
-            errors.push(result.Contents);
-        } else if (!keysToKeep.includes(key)) {
-            deletedKeys.push(key);
+        if (_keysToKeep.indexOf(keyToDelete) === -1) {
+            const result = executeCommand('delContext', { key: keyToDelete });
+            if (!result || result.type === entryTypes.error ) {
+                errors.push(result.Contents);
+            } else {
+                deletedKeys.push(key);
+            }
         }
     }
     if (deletedKeys.length > 0) {
         message += LINE_SEPARATOR + `Successfully deleted keys '${deletedKeys.join("', '")}' from context.`;
     }
-    
+
     return errors.join(LINE_SEPARATOR) + LINE_SEPARATOR + message;
 }
 
 var shouldDeleteAll = (args.all === 'yes');
 var isSubPlaybookKey = (args.subplaybook === 'yes');
+var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',').map(item => item.trim()) : [];
 
 if (args.subplaybook === 'auto') {
     var res = executeCommand('Print', { value: 'id=${currentPlaybookID}' });
@@ -64,7 +66,6 @@ if (!shouldDeleteAll && !args.key) {
 }
 
 if (shouldDeleteAll) {
-    var keysToKeep = (args.keysToKeep) ? args.keysToKeep.split(',').map(item => item.trim()) : [];
     var keysToKeepObj = {};
     var KeepDBotScoreKey = false;
     index = keysToKeep.indexOf("DBotScore");
@@ -148,7 +149,6 @@ if (shouldDeleteAll) {
 } else {
     // Supporting comma separated list of keys to be deleted.
     var keysToDelete = (typeof args.key === "string") ? args.key.split(',') : [args.key]
-
     var message = deleteKeys(keysToDelete, keysToKeep)
     return {
         Type: entryTypes.note,
@@ -158,5 +158,4 @@ if (shouldDeleteAll) {
         ReadableContentsFormat: formats.markdown,
         EntryContext: keysToKeepObj
     };
-
 }
