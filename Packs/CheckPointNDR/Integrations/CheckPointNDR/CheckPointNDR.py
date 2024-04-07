@@ -56,9 +56,7 @@ class Client(BaseClient):
             raise DemistoException(f"API call failed: {res_json.get('message')}")
         return res_json.get('objects')
 
-    def get_insights(self, startTS: int, max_fetch: int) -> tuple[list[dict[str, Any]], datetime]:
-        lastTS = startTS
-
+    def get_insights(self, startTS: int, max_fetch: int):
         self._login()
         insights = self._call_api('insights', params={'updated': f"gt.{startTS}"})
         demisto.debug(f"Fetched {len(insights)} NDR Insights, processing {min(len(insights), max_fetch)} of them...")
@@ -68,13 +66,10 @@ class Client(BaseClient):
             ids = ','.join(map(str, insight['events']))
             insight['events'] = self._call_api('events', params={'id': ids})
             demisto.debug(f"Fetched {len(insight['events'])} events of Insight {insight['id']}")
-        if(len(insights) > 0):
-            lastTS = insights[-1]['updated']
 
         self._logout()
-        last_time = datetime.fromtimestamp(lastTS / 1000)
 
-        return insights, last_time
+        return insights
 
 
 def test_module(client: Client, last_run: dict[str, str], first_fetch: datetime, domain: str):
@@ -85,11 +80,11 @@ def test_module(client: Client, last_run: dict[str, str], first_fetch: datetime,
         return e.message
 
 
-def parse_insights(insights: list[dict[str, Any]], domain: str, startTS: int):
+def parse_insights(insights: list[dict[str, Any]], domain: str, startTS: int, max_fetch: int):
     incidents: list[dict[str, Any]] = []
     for insight in insights:
         for event in insight['events']:
-            if event['created'] <= startTS:
+            if event['updated'] <= startTS:
                 continue
 
             id = f"{insight['id']}_{event['id']}"
@@ -111,6 +106,7 @@ def parse_insights(insights: list[dict[str, Any]], domain: str, startTS: int):
                 'name': name,
                 'severity': severity,
                 'occurred': datetime.utcfromtimestamp(updated / 1000).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                'updated': event['updated'],
                 'details': description,
                 'CustomFields': {
                     'externalstarttime': datetime.utcfromtimestamp(event['from'] / 1000).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
@@ -121,8 +117,12 @@ def parse_insights(insights: list[dict[str, Any]], domain: str, startTS: int):
                 },
                 'rawJSON': json.dumps(event)
             })
+
+    incidents = sorted(incidents, key=lambda x: x['updated'])[:max_fetch]
+    last_time = datetime.fromtimestamp((incidents[-1]['updated'] if len(incidents) > 0 else startTS) / 1000).isoformat()
+
     demisto.debug(f"Made {len(incidents)} XSOAR incidents")
-    return incidents
+    return incidents, last_time
 
 
 def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch: datetime, domain: str, max_fetch: int):
@@ -132,10 +132,10 @@ def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch: datet
         raise Exception(f"Invalid last fetch time value '{last_fetch}'")
 
     startTS = int(last_fetch_time.timestamp() * 1000)
-    insights, last_insight_time = client.get_insights(startTS, max_fetch)
-    incidents = parse_insights(insights, domain, startTS)
+    insights = client.get_insights(startTS, max_fetch)
+    incidents, last_insight_time = parse_insights(insights, domain, startTS, max_fetch)
 
-    return {'last_fetch': last_insight_time.isoformat()}, incidents
+    return {'last_fetch': last_insight_time}, incidents
 
 
 def main() -> None:  # pragma: no cover

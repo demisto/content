@@ -5,6 +5,7 @@
     "name": "Behavioral.Geo.Bulgaria",
     "severity": 2,
     "occurred": "2023-12-24T03:10:02.954000Z",
+    "updated": 1703387404364,
     "details": "An anomaly detected from 127.0.0.1",
     "CustomFields": {
         "externalstarttime": "2023-12-22T15:15:28.000000Z",

@@ -45,9 +45,11 @@ def test_test_module(mocker):
 def test_parse_insights():
     mock_insights = util_load_json('./test_data/checkpointndr-get_insights.json').get('objects')
     mock_insights[0]['events'] = util_load_json('./test_data/checkpointndr-get_insight_event.json').get('objects')
-    mock_result = util_load_json('./test_data/checkpointndr-parse_insights-output.json')
 
-    result = parse_insights(mock_insights, 'test', 0)
+    mock_result = (util_load_json('./test_data/checkpointndr-parse_insights-output.json'), 
+    datetime.datetime.fromtimestamp(1703387404.364).isoformat())
+
+    result = parse_insights(mock_insights, 'test', 0, 10)
     assert result == mock_result
 
 
