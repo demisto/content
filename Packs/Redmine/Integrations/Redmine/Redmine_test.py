@@ -23,18 +23,26 @@ def test_create_issue_command(mocker, redmine_client):
     from Redmine import create_issue_command
     http_request = mocker.patch.object(redmine_client, '_http_request')
     http_request.return_value = {"issue": {"id": "1"}}
-    args = {'project_id': '1', 'issue_id': '1', 'subject': 'changeFromCode', 'tracker': 'Bug', 'watcher_user_ids': '[1]',
-            'custom_fields': '1:https://test:appear'}
+    args = {'project_id': '1', 'issue_id': '1', 'subject': 'changeFromCode', 'priority': 'High', 'status': '2', 'tracker': 'Bug',
+            'watcher_user_ids': '[1]', 'custom_fields': '1:https://test:appear'}
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
-        mock_get_integration_context.return_value = {'trackers': {
-            'bug': '1'
-        }}
+        mock_get_integration_context.return_value = {'trackers': {'bug': '1'},
+                                                     'status': {'rejected': '2'},
+                                                     'priorities': {'high': '1'}}
         create_issue_command(redmine_client, args=args)
-        http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue':
-                                                                                      {'issue_id': '1', 'subject': 'changeFromCode',
-                                                                                       'tracker_id': '1', 'custom_fields':
-                                                                                       [{'id': '1', 'value': 'https://test:appear'}],
-                                                                                          'project_id': '1', 'watcher_user_ids': [1]}},
+        http_request.assert_called_with('POST', '/issues.json',
+                                        params={},
+                                        json_data={'issue':
+                                            {'issue_id': '1',
+                                             'subject': 'changeFromCode',
+                                             'priority_id': '1',
+                                             'tracker_id': '1',
+                                             'status_id': '2',
+                                             'custom_fields': [{'id': '1', 'value': 'https://test:appear'}],
+                                             'project_id': '1',
+                                             'watcher_user_ids': [1]
+                                             }
+                                            },
                                         headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
 
 
@@ -50,17 +58,24 @@ def test_create_issue_command_not_url_cf(mocker, redmine_client):
     from Redmine import create_issue_command
     http_request = mocker.patch.object(redmine_client, '_http_request')
     http_request.return_value = {"issue": {"id": "1"}}
-    args = {'project_id': '1', 'issue_id': '1', 'subject': 'changeFromCode', 'tracker': 'Bug', 'watcher_user_ids': '[1]',
-            'custom_fields': '1:hello'}
+    args = {'project_id': '1', 'issue_id': '1', 'subject': 'changeFromCode', 'tracker': 'Bug', 'priority': 'high', 'status': '2',
+            'watcher_user_ids': '[1]', 'custom_fields': '1:hello'}
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
-        mock_get_integration_context.return_value = {'trackers': {
-            'bug': '1'
-        }}
+        mock_get_integration_context.return_value = {'trackers': {'bug': '1'},
+                                                     'status': {'rejected': '2'},
+                                                     'priorities': {'high': '1'}}
         create_issue_command(redmine_client, args=args)
-        http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue': {
-            'issue_id': '1', 'subject': 'changeFromCode', 'tracker_id': '1', 'custom_fields':
-                [{'id': '1', 'value': 'hello'}], 'project_id': '1', 'watcher_user_ids': [1]}},
-            headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
+        http_request.assert_called_with('POST', '/issues.json',
+                                        params={},
+                                        json_data={'issue':
+                                            {'issue_id': '1',
+                                             'subject': 'changeFromCode',
+                                             'tracker_id': '1',
+                                             'status_id': '2',
+                                             'priority_id': '1',
+                                             'custom_fields': [{'id': '1', 'value': 'hello'}],
+                                             'project_id': '1', 'watcher_user_ids': [1]}},
+                                        headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
 
 
 def test_create_issue_command_response(mocker, redmine_client):
@@ -108,11 +123,12 @@ def test_create_issue_command_invalid_custom_fields(redmine_client):
     from Redmine import create_issue_command
     from CommonServerPython import DemistoException
     args = {'project_id': '1', 'custom_fields': '1:https://test:appear,111', 'issue_id': '1', 'subject': 'testSub',
-            'tracker': 'Bug', 'watcher_user_ids': '[1]', 'status_id': 'New', 'priority_id': 'High'}
+            'tracker': 'Bug', 'watcher_user_ids': '[1]', 'status': 'New', 'priority': 'High'}
     with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
-        mock_get_integration_context.return_value = {'trackers': {
-            'bug': '1'
-        }}
+        mock_get_integration_context.return_value = {'trackers': {'bug': '1'},
+                                                     'statuses': {'new': '1'},
+                                                     'priorities': {'high': '1'}
+                                                     }
         create_issue_command(redmine_client, args)
     assert e.value.message == "Custom fields not in format, please follow the instructions"
 
@@ -130,8 +146,8 @@ def test_create_issue_command_no_token_created_for_file(mocker, redmine_client):
     from CommonServerPython import DemistoException
     create_file_token_request_mock = mocker.patch.object(redmine_client, 'create_file_token_request')
     create_file_token_request_mock.return_value = {'token': 'token123'}
-    args = {'project_id': '1', 'status_id': 'New', 'file_entry_id': 'a.png', 'issue_id': '1',
-            'subject': 'testSub', 'tracker': 'Bug', 'watcher_user_ids': '[1]'}
+    args = {'project_id': '1', 'status': 'New', 'file_entry_id': 'a.png', 'issue_id': '1',
+            'subject': 'testSub', 'tracker': 'Bug', 'priority': '1', 'watcher_user_ids': '[1]'}
     with pytest.raises(DemistoException) as e:
         create_issue_command(redmine_client, args)
         create_file_token_request_mock.assert_called_with({}, 'a.png')
@@ -153,21 +169,24 @@ def test_create_issue_command_with_file(mocker, redmine_client):
     create_file_token_request_mock = mocker.patch.object(redmine_client, 'create_file_token_request')
     create_file_token_request_mock.return_value = {'upload': {'token': 'token123'}}
     args = {'project_id': '1', 'file_entry_id': 'a.png', 'issue_id': '1', 'subject': 'testSub', 'tracker': 'Bug',
-            'watcher_user_ids': '[1]'}
+            'watcher_user_ids': '[1]', 'status': '1', 'priority': '1'}
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
-        mock_get_integration_context.return_value = {'trackers': {
-            'bug': '1'
-        }}
+        mock_get_integration_context.return_value = {'trackers': {'bug': '1'},
+                                                     'priorities': {'high': '1'},
+                                                     'statuses': {'New': '1'}}
         create_issue_command(redmine_client, args=args)
         create_file_token_request_mock.assert_called_with({}, 'a.png')
-        http_request.assert_called_with('POST', '/issues.json', params={}, json_data={'issue': {'issue_id': '1',
-                                                                                                'subject': 'testSub',
-                                                                                                'uploads': [
-                                                                                                    {'token': 'token123'}
-                                                                                                ],
-                                                                                                'tracker_id': '1',
-                                                                                                'watcher_user_ids': [1],
-                                                                                                'project_id': '1'}},
+        http_request.assert_called_with('POST', '/issues.json',
+                                        params={},
+                                        json_data={'issue':
+                                            {'issue_id': '1',
+                                             'subject': 'testSub',
+                                             'uploads': [{'token': 'token123'}],
+                                             'tracker_id': '1',
+                                             'status_id': '1',
+                                             'priority_id': '1',
+                                             'project_id': '1',
+                                             'watcher_user_ids': [1]}},
                                         headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True})
 
 
@@ -186,7 +205,9 @@ def test_create_issue_command_with_file_response(mocker, redmine_client):
         'subject': 'testResponse',
         'tracker': 'Bug',
         'file_entry_id': '139i401hivnaflkm',
-        'file_name': 'test file response'
+        'file_name': 'test file response',
+        'status': '1',
+        'priority': '1',
     }
     create_file_token_request_mock = mocker.patch.object(redmine_client, 'create_file_token_request')
     create_file_token_request_mock.return_value = {'upload': {'token': '111111'}}
@@ -196,9 +217,9 @@ def test_create_issue_command_with_file_response(mocker, redmine_client):
                                                         }
                                               }
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
-        mock_get_integration_context.return_value = {'trackers': {
-            'bug': '1'
-        }}
+        mock_get_integration_context.return_value = {'trackers': {'bug': '1'},
+                                                     'statuses': {'new': '1'},
+                                                     'priority': {'High': '1'}}
         result = create_issue_command(redmine_client, args)
         assert args.get('uploads', {})[0].get('token') == '111111'
         assert args.get('uploads', {})[0].get('filename') == 'test file response'
@@ -222,7 +243,9 @@ def test_create_issue_command_with_file_invalid_token_response(mocker, redmine_c
         'subject': 'testResponse',
         'tracker': 'Bug',
         'file_entry_id': '139i401hivnaflkm',
-        'file_name': 'test file response'
+        'file_name': 'test file response',
+        'status': '1',
+        'priority': '1',
     }
     create_file_token_request_mock = mocker.patch.object(redmine_client, 'create_file_token_request')
     create_file_token_request_mock.return_value = {'upload': {'tokens': '111111'}}
@@ -242,14 +265,18 @@ def test_update_issue_command(mocker, redmine_client):
     """
     from Redmine import update_issue_command
     http_request = mocker.patch.object(redmine_client, '_http_request')
-    args = {'issue_id': '1', 'subject': 'changeFromCode', 'tracker': 'Bug', 'watcher_user_ids': '[1]'}
+    args = {'issue_id': '1', 'subject': 'changeFromCode', 'tracker': 'Bug', 'status': 'new', 'priority': '1',
+            'watcher_user_ids': '[1]'}
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
-        mock_get_integration_context.return_value = {'trackers': {
-            'bug': '1'
-        }}
+        mock_get_integration_context.return_value = {'trackers': {'bug': '1'},
+                                                     'statuses': {'new': '1'},
+                                                     'priority': {'high', '1'}}
         update_issue_command(redmine_client, args=args)
-        http_request.assert_called_with('PUT', '/issues/1.json', json_data={'issue': {'subject': 'changeFromCode',
-                                                                                      'tracker_id': '1', 'watcher_user_ids': [1]}},
+        http_request.assert_called_with('PUT', '/issues/1.json',
+                                        json_data={'issue':
+                                            {'subject': 'changeFromCode',
+                                             'tracker_id': '1', 'status_id': '1',
+                                             'priority_id': '1', 'watcher_user_ids': [1]}},
                                         headers={'Content-Type': 'application/json', 'X-Redmine-API-Key': True},
                                         empty_valid_codes=[204], return_empty_response=True)
 
@@ -266,12 +293,13 @@ def test_update_issue_command_response(mocker, redmine_client):
     from Redmine import update_issue_command
     update_issue_request_mock = mocker.patch.object(redmine_client, 'update_issue_request')
     args = {'issue_id': '1', 'subject': 'changefortest', 'tracker': 'Bug',
-            'watcher_user_ids': '[1]', 'custom_fields': '1:https://test:appear'}
+            'status': '1', 'priority': '1', 'watcher_user_ids': '[1]',
+            'custom_fields': '1:https://test:appear'}
     update_issue_request_mock.return_value = {}
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
-        mock_get_integration_context.return_value = {'trackers': {
-            'bug': '1'
-        }}
+        mock_get_integration_context.return_value = {'trackers': {'bug': '1'},
+                                                     'status': {'high': '1'},
+                                                     'priority': {''}}
         result = update_issue_command(redmine_client, args=args)
         assert result.readable_output == 'Issue with id 1 was successfully updated.'
 
@@ -288,11 +316,10 @@ def test_update_issue_command_invalid_custom_fields(redmine_client):
     from Redmine import update_issue_command
     from CommonServerPython import DemistoException
     args = {'custom_fields': 'jnlnj', 'issue_id': '1', 'subject': 'testSub', 'tracker': 'Bug', 'watcher_user_ids': '[1]',
-            'status_id': 'New', 'priority_id': 'High'}
+            'status': 'New', 'priority_id': 'High'}
     with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
-        mock_get_integration_context.return_value = {'trackers': {
-            'bug': '1'
-        }}
+        mock_get_integration_context.return_value = {'trackers': {'bug': '1'},
+                                                     'statuses': {'new': '1'}}
         update_issue_command(redmine_client, args)
         assert e.value.message == "Custom fields not in format, please follow the instructions"
 
@@ -310,12 +337,12 @@ def test_update_issue_command_no_token_created_for_file(mocker, redmine_client):
     from CommonServerPython import DemistoException
     create_file_token_request_mock = mocker.patch.object(redmine_client, 'create_file_token_request')
     create_file_token_request_mock.return_value = {'token': 'token123'}
-    args = {'status_id': 'New', 'file_entry_id': 'a.png', 'issue_id': '1',
-            'subject': 'testSub', 'tracker': 'Bug', 'watcher_user_ids': '[1]'}
+    args = {'status': 'New', 'file_entry_id': 'a.png', 'issue_id': '1',
+            'subject': 'testSub', 'tracker': 'Bug', 'priority': '1', 'watcher_user_ids': '[1]'}
     with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
-        mock_get_integration_context.return_value = {'trackers': {
-            'bug': '1'
-        }}
+        mock_get_integration_context.return_value = {'trackers': {'bug': '1'},
+                                                     'statuses': {'new': '1'},
+                                                     'priorities': {'high': '1'}}
         update_issue_command(redmine_client, args)
         create_file_token_request_mock.assert_called_with({}, 'a.png')
         assert e.value.message == ("Could not upload file with entry id a.png, please try again.")
@@ -381,6 +408,35 @@ def test_get_tracker_and_id_dict_request_invalid_response(mocker, redmine_client
         redmine_client.get_tracker_and_id_dict_request()
     assert e.value.message == "Failed to retrieve tracker IDs due to a parsing error."
 
+def test_get_status_and_id_dict_request_called_with(mocker, redmine_client):
+    """
+    Given:
+        - None
+    When:
+        - get_status_and_id_dict_request func is being called
+    Then:
+        - The http request is called with the right arguments
+    """
+    http_request = mocker.patch.object(redmine_client, '_http_request')
+    http_request.return_value = {'issue_statuses': [{'high': '1'}]}
+    redmine_client.get_status_and_id_dict_request()
+    http_request.assert_called_with('GET', '/issue_statuses.json', headers={'X-Redmine-API-Key': True})
+
+def test_get_status_and_id_dict_request_invalid_response(mocker, redmine_client):
+    """
+    Given:
+        - None
+    When:
+        - get_status_and_id_dict_request func is being called
+    Then:
+        - The http request returns the expected response
+    """
+    from CommonServerPython import DemistoException
+    http_request = mocker.patch.object(redmine_client, '_http_request')
+    http_request.return_value = {'issue_statusess': [{'high': '1'}]}
+    with pytest.raises(DemistoException) as e:
+        redmine_client.get_status_and_id_dict_request()
+    assert e.value.message == "Failed to retrieve status IDs due to a parsing error."
 
 def test_get_issues_list_command(mocker, redmine_client):
     """
@@ -452,7 +508,7 @@ def test_get_issues_list_command_invalid_response(mocker, redmine_client):
     assert e.value.message == "The request succeeded, but a parse error occurred."
 
 
-def test_get_issues_list_command_invalid_custom_field(mocker, redmine_client):
+def test_get_issues_list_command_invalid_custom_field(redmine_client):
     """
     Given:
         - All relevant arguments for the command that is executed
@@ -485,7 +541,7 @@ def test_get_issues_list_command_use_both_exclude_subproject(redmine_client):
     assert e.value.message == "Specify only one of the following, subproject_id or exclude."
 
 
-def test_get_issues_list_command_invalid_status(redmine_client):
+def test_get_issues_list_command_invalid_status_using_request(mocker, redmine_client):
     """
     Given:
         - All relevant arguments for the command that is executed
@@ -496,10 +552,35 @@ def test_get_issues_list_command_invalid_status(redmine_client):
     """
     from Redmine import get_issues_list_command
     from CommonServerPython import DemistoException
-    with pytest.raises(DemistoException) as e:
-        get_issues_list_command(redmine_client, {'status_id': 'hhjuhkk'})
-    assert e.value.message == "Invalid status ID, please use only predefined values."
+    with pytest.raises(DemistoException) as e, patch('Redmine.get_integration_context') as mock_get_integration_context:
+        mock_get_integration_context.return_value = {}
+        mocker.patch.object(redmine_client, '_http_request', return_value={'issue_statuses': [
+            {'id': '1', 'name': 'New'},
+            {'id': '2', 'name': 'Feedback'}
+        ]})
+        get_issues_list_command(redmine_client, {'status': 'hhjuhkk'})
+    assert e.value.message == "Could not find hhjuhkk in your statuses list, please make sure using an existing status name."
 
+def test_get_issues_list_command_invalid_status_using_request_with_number(mocker, redmine_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - redmine-issue-list command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from Redmine import get_issues_list_command
+    from CommonServerPython import DemistoException
+    with pytest.raises(DemistoException) as e, patch('Redmine.get_integration_context') as mock_get_integration_context:
+        mock_get_integration_context.return_value = {'statuses': {'new': '1',
+                                                                  'feedback': '2'}}
+        mocker.patch.object(redmine_client, '_http_request', return_value={'issue_statuses': [
+            {'id': '1', 'name': 'New'},
+            {'id': '2', 'name': 'Feedback'}
+        ]})
+        get_issues_list_command(redmine_client, {'status': '5'})
+    assert e.value.message == "Status id 5 not found, please make sure this status exists."
 
 def test_get_issue_by_id_command(mocker, redmine_client):
     """
@@ -517,7 +598,6 @@ def test_get_issue_by_id_command(mocker, redmine_client):
     get_issue_by_id_command(redmine_client, args)
     http_request.assert_called_with('GET', '/issues/1.json',
                                     params={'include': 'watchers,attachments'}, headers={'X-Redmine-API-Key': True})
-
 
 def test_get_issue_by_id_command_response(mocker, redmine_client):
     """
@@ -998,33 +1078,46 @@ def test_convert_args_to_request_format(redmine_client):
         - The key or value is being converted
     """
     from Redmine import convert_args_to_request_format
-    args = {'tracker': 'Bug'}
+    args = {'tracker': 'Bug', 'status': 'New', 'priority': 'high'}
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
-        mock_get_integration_context.return_value = {'trackers': {
-            'bug': '1'
-        }}
+        mock_get_integration_context.return_value = {'trackers': {'bug': '1'},
+                                                     'statuses': {'new': '1'},
+                                                     'priorities': {'high': '1'}}
         convert_args_to_request_format(redmine_client, args)
         assert args['tracker_id'] == '1'
+        assert args['status_id'] == '1'
+        assert args['priority_id'] == '1'
 
 
-def test_convert_args_to_request_format_invalid(redmine_client):
+def test_handle_convert_priority_invalid_name(mocker, redmine_client):
     """
     Given:
-        - All relevant arguments for the command that is executed
+        - priority name
     When:
-        - convert_args_to_request_format command is executed
+        - handle_convert_priority command is executed
     Then:
-        - raises prriority_id is invalid
+        - raises priority_id is not found error
     """
     from CommonServerPython import DemistoException
-    from Redmine import convert_args_to_request_format
-    args = {'priority_id': 'lknljkl'}
-    with pytest.raises(DemistoException) as e:
-        convert_args_to_request_format(redmine_client, args)
-    assert e.value.message == "Predefined value for priority_id is not in format."
+    from Redmine import handle_convert_priority
+    with pytest.raises(DemistoException) as e, patch('Redmine.get_integration_context') as mock_get_integration_context:
+        mock_get_integration_context.return_value = {}
+        http_request = mocker.patch.object(redmine_client, '_http_request')
+        http_request.return_value = {'issue_priorities': {}}
+        handle_convert_priority(redmine_client, 'jhiwyygue')
+    assert e.value.message == ("Could not find jhiwyygue in your priorities list, please make sure using an existing priority "
+                               "name.")
 
 
 def test_handle_convert_tracker_from_id(redmine_client):
+    """
+    Given:
+        - tracker id
+    When:
+        - handle_convert_tracker command is executed
+    Then:
+        - checks handle_convert_tracker returns the right value
+    """
     from Redmine import handle_convert_tracker
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
         mock_get_integration_context.return_value = {'trackers': {
@@ -1032,8 +1125,47 @@ def test_handle_convert_tracker_from_id(redmine_client):
         }}
         assert handle_convert_tracker(redmine_client, '1') == '1'
 
+def test_handle_convert_status_from_id(redmine_client):
+    """
+    Given:
+        - status id
+    When:
+        - handle_convert_status command is executed
+    Then:
+        - checks handle_convert_status returns the right value
+    """
+    from Redmine import handle_convert_status
+    with patch('Redmine.get_integration_context') as mock_get_integration_context:
+        mock_get_integration_context.return_value = {'statuses': {
+            'new': '1'
+        }}
+        assert handle_convert_status(redmine_client, '1') == '1'
+
+def test_handle_convert_priority_from_id(redmine_client):
+    """
+    Given:
+        - priority id
+    When:
+        - handle_convert_priority command is executed
+    Then:
+        - checks handle_convert_priority returns the right value
+    """
+    from Redmine import handle_convert_priority
+    with patch('Redmine.get_integration_context') as mock_get_integration_context:
+        mock_get_integration_context.return_value = {'statuses': {
+            'high': '1'
+        }}
+        assert handle_convert_priority(redmine_client, '1') == '1'
 
 def test_handle_convert_tracker_from_name(redmine_client):
+    """
+    Given:
+        - tracker name
+    When:
+        - handle_convert_tracker command is executed
+    Then:
+        - checks handle_convert_tracker returns the right value
+    """
     from Redmine import handle_convert_tracker
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
         mock_get_integration_context.return_value = {'trackers': {
@@ -1041,8 +1173,47 @@ def test_handle_convert_tracker_from_name(redmine_client):
         }}
         assert handle_convert_tracker(redmine_client, 'bug') == '1'
 
+def test_handle_convert_status_from_name(redmine_client):
+    """
+    Given:
+        - status name
+    When:
+        - handle_convert_status command is executed
+    Then:
+        - checks handle_convert_status returns the right value
+    """
+    from Redmine import handle_convert_status
+    with patch('Redmine.get_integration_context') as mock_get_integration_context:
+        mock_get_integration_context.return_value = {'statuses': {
+            'new': '1'
+        }}
+        assert handle_convert_status(redmine_client, 'new') == '1'
+
+def test_handle_convert_priority_from_name(redmine_client):
+    """
+    Given:
+        - status name
+    When:
+        - handle_convert_priority command is executed
+    Then:
+        - checks handle_convert_priority returns the right value
+    """
+    from Redmine import handle_convert_priority
+    with patch('Redmine.get_integration_context') as mock_get_integration_context:
+        mock_get_integration_context.return_value = {'priorities': {
+            'high': '1'
+        }}
+        assert handle_convert_priority(redmine_client, 'High') == '1'
 
 def test_handle_convert_tracker_from_name_capital_letter(redmine_client):
+    """
+    Given:
+        - tracker name
+    When:
+        - handle_convert_tracker command is executed
+    Then:
+        - checks handle_convert_tracker returns the right value
+    """
     from Redmine import handle_convert_tracker
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
         mock_get_integration_context.return_value = {'trackers': {
@@ -1050,15 +1221,89 @@ def test_handle_convert_tracker_from_name_capital_letter(redmine_client):
         }}
         assert handle_convert_tracker(redmine_client, 'Bug') == '1'
 
+def test_handle_convert_status_from_name_capital_letter(redmine_client):
+    """
+    Given:
+        - status name with Capital letter
+    When:
+        - handle_convert_status command is executed
+    Then:
+        - checks handle_convert_status returns the right value
+    """
+    from Redmine import handle_convert_status
+    with patch('Redmine.get_integration_context') as mock_get_integration_context:
+        mock_get_integration_context.return_value = {'statuses': {
+            'new': '1'
+        }}
+        assert handle_convert_status(redmine_client, 'New') == '1'
+
+def test_handle_convert_priority_from_name_capital_letter(redmine_client):
+    """
+    Given:
+        - priority name with Capital letter
+    When:
+        - handle_convert_priority command is executed
+    Then:
+        - checks handle_convert_priority returns the right value
+    """
+    from Redmine import handle_convert_priority
+    with patch('Redmine.get_integration_context') as mock_get_integration_context:
+        mock_get_integration_context.return_value = {'priorities': {
+            'high': '1'
+        }}
+        assert handle_convert_priority(redmine_client, 'High') == '1'
 
 def test_handle_convert_tracker_from_id_with_request(redmine_client):
+    """
+    Given:
+        - tracker id
+    When:
+        - handle_convert_tracker command is executed
+    Then:
+        - checks handle_convert_tracker returns the right value
+    """
     from Redmine import handle_convert_tracker
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
         mock_get_integration_context.return_value = {}
         assert handle_convert_tracker(redmine_client, '1') == '1'
 
+def test_handle_convert_status_from_id_with_request(redmine_client):
+    """
+    Given:
+        - status id
+    When:
+        - handle_convert_status command is executed
+    Then:
+        - checks handle_convert_status returns the right value
+    """
+    from Redmine import handle_convert_status
+    with patch('Redmine.get_integration_context') as mock_get_integration_context:
+        mock_get_integration_context.return_value = {}
+        assert handle_convert_status(redmine_client, '1') == '1'
+
+def test_handle_convert_priority_from_id_with_request(redmine_client):
+    """
+    Given:
+        - priority id
+    When:
+        - handle_convert_priority command is executed
+    Then:
+        - checks handle_convert_priority returns the right value
+    """
+    from Redmine import handle_convert_priority
+    with patch('Redmine.get_integration_context') as mock_get_integration_context:
+        mock_get_integration_context.return_value = {}
+        assert handle_convert_priority(redmine_client, '1') == '1'
 
 def test_handle_convert_tracker_from_name_with_request(mocker, redmine_client):
+    """
+    Given:
+        - tracker name
+    When:
+        - handle_convert_tracker command is executed
+    Then:
+        - checks handle_convert_tracker converts from name to id and returns the right value
+    """
     from Redmine import handle_convert_tracker
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
         mocker.patch.object(redmine_client, '_http_request', return_value={'trackers': [
@@ -1068,8 +1313,111 @@ def test_handle_convert_tracker_from_name_with_request(mocker, redmine_client):
         mock_get_integration_context.return_value = {}
         assert handle_convert_tracker(redmine_client, 'Bug') == '1'
 
+def test_handle_convert_status_from_name_with_request(mocker, redmine_client):
+    """
+    Given:
+        - status name
+    When:
+        - handle_convert_status command is executed
+    Then:
+        - checks handle_convert_status converts from name to id and returns the right value
+    """
+    from Redmine import handle_convert_status
+    with patch('Redmine.get_integration_context') as mock_get_integration_context:
+        mocker.patch.object(redmine_client, '_http_request', return_value={'issue_statuses': [
+            {'id': '1', 'name': 'New'},
+            {'id': '2', 'name': 'Task'}
+        ]})
+        mock_get_integration_context.return_value = {}
+        assert handle_convert_status(redmine_client, 'New') == '1'
+
+def test_handle_convert_priority_from_name_with_request(mocker, redmine_client):
+    """
+    Given:
+        - priority name
+    When:
+        - handle_convert_priority command is executed
+    Then:
+        - checks handle_convert_priority converts from name to id and returns the right value
+    """
+    from Redmine import handle_convert_status
+    with patch('Redmine.get_integration_context') as mock_get_integration_context:
+        mocker.patch.object(redmine_client, '_http_request', return_value={'issue_statuses': [
+            {'id': '1', 'name': 'High'},
+            {'id': '2', 'name': 'Low'}
+        ]})
+        mock_get_integration_context.return_value = {}
+        assert handle_convert_status(redmine_client, 'Low') == '2'
+
+def test_handle_convert_status_from_name_with_request_invalid_response(mocker, redmine_client):
+    """
+    Given:
+        - status name
+    When:
+        - handle_convert_status command is executed
+    Then:
+        - handle_convert_status raises an error for invalid status name
+    """
+    from Redmine import handle_convert_status
+    from CommonServerPython import DemistoException
+    with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
+        mocker.patch.object(redmine_client, '_http_request', return_value={'help': [
+            {'id': '1', 'name': 'New'},
+            {'id': '2', 'name': 'Rejected'}
+        ]})
+        mock_get_integration_context.return_value = {}
+        handle_convert_status(redmine_client, 'New')
+    assert e.value.message == "Failed to retrieve status IDs due to a parsing error."
+
+def test_handle_convert_tracker_from_name_with_request_invalid_response(mocker, redmine_client):
+    """
+    Given:
+        - tracker name
+    When:
+        - handle_convert_tracker command is executed
+    Then:
+        - handle_convert_tracker raises an error for invalid tracker name
+    """
+    from Redmine import handle_convert_tracker
+    from CommonServerPython import DemistoException
+    with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
+        mocker.patch.object(redmine_client, '_http_request', return_value={'help': [
+            {'id': '1', 'name': 'Bug'},
+            {'id': '2', 'name': 'Task'}
+        ]})
+        mock_get_integration_context.return_value = {}
+        handle_convert_tracker(redmine_client, 'fail')
+    assert e.value.message == "Failed to retrieve tracker IDs due to a parsing error."
+
+def test_handle_convert_priority_from_name_with_request_invalid_response(mocker, redmine_client):
+    """
+    Given:
+        - priority name
+    When:
+        - handle_convert_priority command is executed
+    Then:
+        - handle_convert_priority raises an error for invalid priority name
+    """
+    from Redmine import handle_convert_priority
+    from CommonServerPython import DemistoException
+    with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
+        mocker.patch.object(redmine_client, '_http_request', return_value={'help': [
+            {'id': '1', 'name': 'High'},
+            {'id': '2', 'name': 'Low'}
+        ]})
+        mock_get_integration_context.return_value = {}
+        handle_convert_priority(redmine_client, 'fail')
+    assert e.value.message == "Failed to retrieve priority IDs due to a parsing error."
 
 def test_handle_convert_tracker_from_name_with_request_id_fail(mocker, redmine_client):
+    """
+    Given:
+        - tracker id
+    When:
+        - handle_convert_tracker command is executed
+    Then:
+        - handle_convert_tracker raises an error for invalid tracker id
+    """
     from Redmine import handle_convert_tracker
     from CommonServerPython import DemistoException
     with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
@@ -1080,10 +1428,59 @@ def test_handle_convert_tracker_from_name_with_request_id_fail(mocker, redmine_c
         mock_get_integration_context.return_value = {'trackers': {'bug': '1',
                                                                   'task': '2'}}
         handle_convert_tracker(redmine_client, '5')
-    assert e.value.message == "Tracker_id 5 not found, please make sure this tracker_id exists."
+    assert e.value.message == "Tracker id 5 not found, please make sure this tracker id exists."
 
+def test_handle_convert_status_from_name_with_request_id_fail(mocker, redmine_client):
+    """
+    Given:
+        - status id
+    When:
+        - handle_convert_status command is executed
+    Then:
+        - handle_convert_status raises an error for invalid status id
+    """
+    from Redmine import handle_convert_status
+    from CommonServerPython import DemistoException
+    with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
+        mocker.patch.object(redmine_client, '_http_request', return_value={'issue_statuses': [
+            {'id': '1', 'name': 'New'},
+            {'id': '2', 'name': 'In progress'}
+        ]})
+        mock_get_integration_context.return_value = {'statuses': {'new': '1',
+                                                                  'in progress': '2'}}
+        handle_convert_status(redmine_client, '5')
+    assert e.value.message == "Status id 5 not found, please make sure this status id exists."
+
+def test_handle_convert_priority_from_name_with_request_id_fail(mocker, redmine_client):
+    """
+    Given:
+        - priority id
+    When:
+        - handle_convert_priority command is executed
+    Then:
+        - handle_convert_priority raises an error for invalid priority id
+    """
+    from Redmine import handle_convert_priority
+    from CommonServerPython import DemistoException
+    with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
+        mocker.patch.object(redmine_client, '_http_request', return_value={'issue_priorities': [
+            {'id': '1', 'name': 'New'},
+            {'id': '2', 'name': 'In progress'}
+        ]})
+        mock_get_integration_context.return_value = {'priorities': {'high': '1',
+                                                                  'low': '2'}}
+        handle_convert_priority(redmine_client, '5')
+    assert e.value.message == "Priority id 5 not found, please make sure this priority id exists."
 
 def test_handle_convert_tracker_from_name_with_request_fail(mocker, redmine_client):
+    """
+    Given:
+        - tracker name
+    When:
+        - handle_convert_tracker command is executed
+    Then:
+        - handle_convert_tracker raises an error for invalid tracker name
+    """
     from Redmine import handle_convert_tracker
     from CommonServerPython import DemistoException
     with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
@@ -1094,3 +1491,43 @@ def test_handle_convert_tracker_from_name_with_request_fail(mocker, redmine_clie
         mock_get_integration_context.return_value = {}
         handle_convert_tracker(redmine_client, 'aaa')
     assert e.value.message == "Could not find aaa in your trackers list, please make sure using an existing tracker name."
+
+def test_handle_convert_status_from_name_with_request_fail(mocker, redmine_client):
+    """
+    Given:
+        - status name
+    When:
+        - handle_convert_status command is executed
+    Then:
+        - handle_convert_status raises an error for invalid status name
+    """
+    from Redmine import handle_convert_status
+    from CommonServerPython import DemistoException
+    with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
+        mocker.patch.object(redmine_client, '_http_request', return_value={'issue_statuses': [
+            {'id': '1', 'name': 'New'},
+            {'id': '2', 'name': 'In progress'}
+        ]})
+        mock_get_integration_context.return_value = {}
+        handle_convert_status(redmine_client, 'aaa')
+    assert e.value.message == "Could not find aaa in your statuses list, please make sure using an existing status name."
+
+def test_handle_convert_priority_from_name_with_request_fail(mocker, redmine_client):
+    """
+    Given:
+        - priority name
+    When:
+        - handle_convert_tracker command is executed
+    Then:
+        - handle_convert_tracker raises an error for invalid priority name
+    """
+    from Redmine import handle_convert_priority
+    from CommonServerPython import DemistoException
+    with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
+        mocker.patch.object(redmine_client, '_http_request', return_value={'issue_priorities': [
+            {'id': '1', 'name': 'High'},
+            {'id': '2', 'name': 'Low'}
+        ]})
+        mock_get_integration_context.return_value = {}
+        handle_convert_priority(redmine_client, 'aaa')
+    assert e.value.message == "Could not find aaa in your priorities list, please make sure using an existing priority name."

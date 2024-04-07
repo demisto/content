@@ -24,29 +24,11 @@ USER_STATUS_DICT = {
     'Locked': '3',
 }
 
-ISSUE_STATUS_DICT = {
-    'New': '1',
-    'In progress': '2',
-    'Resolved': '3',
-    'Feedback': '4',
-    'Closed': '5',
-    'Rejected': '6',
-}
-
 ISSUE_STATUS_FOR_LIST_COMMAND = {
     'Open': 'open',
     'Closed': 'closed',
     'All': '*'
 }
-
-ISSUE_PRIORITY_DICT = {
-    'Low': '1',
-    'Normal': '2',
-    'High': '3',
-    'Urgent': '4',
-    'Immediate': '5'
-}
-
 
 ''' CLIENT CLASS '''
 
@@ -142,6 +124,30 @@ class Client(BaseClient):
             set_integration_context(integration_context)
 
 
+    def get_status_and_id_dict_request(self):
+        integration_context = get_integration_context()
+        if not integration_context.get('statuses'):
+            response = self._http_request('GET', '/issue_statuses.json', headers=self._get_header)
+            if 'issue_statuses' not in response:
+                raise DemistoException("Failed to retrieve status IDs due to a parsing error.")
+            integration_context['statuses'] = {}
+            for status in response['issue_statuses']:
+                if status.get("id") and status.get("name"):
+                    integration_context['statuses'][status.get("name").lower()] = str(status.get("id"))
+            set_integration_context(integration_context)
+
+    def get_priority_and_id_dict_request(self):
+        integration_context = get_integration_context()
+        if not integration_context.get('priorities'):
+            response = self._http_request('GET', '/enumerations/issue_priorities.json', headers=self._get_header)
+            if 'issue_priorities' not in response:
+                raise DemistoException("Failed to retrieve priority IDs due to a parsing error.")
+            integration_context['priorities'] = {}
+            for priority in response['issue_priorities']:
+                if priority.get("id") and priority.get("name"):
+                    integration_context['priorities'][priority.get("name").lower()] = str(priority.get("id"))
+            set_integration_context(integration_context)
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -182,14 +188,12 @@ def convert_args_to_request_format(client: Client, args: Dict[str, Any]):
     if tracker := args.pop('tracker', None):
         tracker_id = handle_convert_tracker(client, tracker)
         args['tracker_id'] = tracker_id
-    if status_id := args.pop('status_id', None):
-        if status_id not in ISSUE_STATUS_DICT:
-            raise DemistoException("Predefined value for status_id is not in format.")
-        args['status_id'] = ISSUE_STATUS_DICT[status_id]
-    if priority_id := args.pop('priority_id', None):
-        if priority_id not in ISSUE_PRIORITY_DICT:
-            raise DemistoException("Predefined value for priority_id is not in format.")
-        args['priority_id'] = ISSUE_PRIORITY_DICT[priority_id]
+    if status := args.pop('status', None):
+        status_id = handle_convert_status(client, status)
+        args['status_id'] = status_id
+    if priority := args.pop('priority', None):
+        priority_id = handle_convert_priority(client, priority)
+        args['priority_id'] = priority_id
     if custom_fields := args.pop('custom_fields', None):
         custom_fields = argToList(custom_fields)
         try:
@@ -200,13 +204,12 @@ def convert_args_to_request_format(client: Client, args: Dict[str, Any]):
                 raise DemistoException("Custom fields not in format, please follow the instructions")
             raise
 
-
 def handle_convert_tracker(client, tracker: str):
     try:
         integration_context = get_integration_context().get('trackers', {})
         tracker_id = arg_to_number(tracker)
         if integration_context and tracker not in integration_context.values():
-            raise DemistoException(f"Tracker_id {tracker_id} not found, please make sure this tracker_id exists.")
+            raise DemistoException(f"Tracker id {tracker_id} not found, please make sure this tracker id exists.")
         return tracker
     except ValueError:
         client.get_tracker_and_id_dict_request()
@@ -218,8 +221,43 @@ def handle_convert_tracker(client, tracker: str):
         return tracker_id
     except DemistoException:
         raise
+    
+def handle_convert_status(client, status: str):
+    try:
+        integration_context = get_integration_context().get('statuses', {})
+        status_id = arg_to_number(status)
+        if integration_context and status not in integration_context.values():
+            raise DemistoException(f"Status id {status_id} not found, please make sure this status id exists.")
+        return status
+    except ValueError:
+        client.get_status_and_id_dict_request()
+        integration_context = get_integration_context().get('statuses', {})
+        status_id = integration_context.get(status.lower())
+        if not status_id:
+            raise DemistoException(f"Could not find {status} in your statuses list, please make sure using an existing"
+                                   " status name.")
+        return status_id
+    except DemistoException:
+        raise
 
-
+def handle_convert_priority(client, priority: str):
+    try:
+        integration_context = get_integration_context().get('priorities', {})
+        priority_id = arg_to_number(priority)
+        if integration_context and priority not in integration_context.values():
+            raise DemistoException(f"Priority id {priority_id} not found, please make sure this priority id exists.")
+        return priority
+    except ValueError:
+        client.get_priority_and_id_dict_request()
+        integration_context = get_integration_context().get('priorities', {})
+        priority_id = integration_context.get(priority.lower())
+        if not priority_id:
+            raise DemistoException(f"Could not find {priority} in your priorities list, please make sure using an existing"
+                                   " priority name.")
+        return priority_id
+    except DemistoException:
+        raise
+        
 def get_file_content(entry_id: str) -> bytes:
     """Returns the XSOAR file entry's content.
 
@@ -352,13 +390,14 @@ def update_issue_command(client: Client, args: dict[str, Any]):
 
 
 def get_issues_list_command(client: Client, args: dict[str, Any]):
-    def check_args_validity_and_convert_to_id(status_id: str, tracker: str, custom_field: str):
+    def check_args_validity_and_convert_to_id(status: str, tracker: str, custom_field: str):
         tracker_id = None
-        if status_id:
-            if status_id in ISSUE_STATUS_FOR_LIST_COMMAND:
-                status_id = ISSUE_STATUS_FOR_LIST_COMMAND[status_id]
+        status_id = None
+        if status:
+            if status in ISSUE_STATUS_FOR_LIST_COMMAND:
+                status_id = ISSUE_STATUS_FOR_LIST_COMMAND[status]
             else:
-                raise DemistoException("Invalid status ID, please use only predefined values.")
+                status_id = handle_convert_status(client, status)
         if tracker:
             tracker_id = handle_convert_tracker(client, tracker)
         if custom_field:
@@ -375,7 +414,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
     page_size = args.pop('page_size', None)
     limit = args.pop('limit', None)
     offset_to_dict, limit_to_dict, page_number_for_header = adjust_paging_to_request(page_number, page_size, limit)
-    status_id = args.pop('status_id', 'Open')
+    status_id = args.pop('status', 'Open')
     tracker = args.pop('tracker', None)
     custom_field = args.pop('custom_field', None)
     status_id, tracker_id = check_args_validity_and_convert_to_id(status_id, tracker, custom_field)
