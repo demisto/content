@@ -16,13 +16,13 @@ configuration:
 - display: API Key ID
   name: apikey_id
   type: 4
-  hidden: false
+  hidden: true
   required: false
 - display: API Key
   name: apikey
   type: 4
-  hidden: false
   required: false
+  hidden: true
 - display: API Key ID
   name: credentials
   defaultvalue: ""
