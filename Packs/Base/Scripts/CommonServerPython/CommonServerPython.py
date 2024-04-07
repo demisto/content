@@ -11918,7 +11918,7 @@ class ManagedSleep:
         Initializes the sleeper with the given TTL in seconds.
 
         """
-        self.run_duration = demisto.getRunDuration()
+        self.run_duration = demisto.callingContext.get('context', {}).get('runDuration', 5) * 60
         self.start_time = time.time()
 
     def sleep(self, duration_seconds):

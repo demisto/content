@@ -9642,7 +9642,7 @@ def test_logger_write__censor_request_logs_has_been_called(mocker, request_log):
 @pytest.fixture
 def managed_sleep(mocker):
     """Fixture to create a ManagedSleep object with mocked run_duration"""
-    mocker.patch.object(demisto, 'getRunDuration', return_value=100)
+    mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
     mocker.patch('time.time', return_value=1711453263.0)
     yield CommonServerPython.ManagedSleep()
 
@@ -9657,7 +9657,7 @@ def test_init(managed_sleep):
     - The `run_duration` attribute should be set to the value returned by the mocked `demisto.getRunDuration`.
     - The `start_time` attribute should be a float representing the current time.
   """
-    assert managed_sleep.run_duration == 100
+    assert managed_sleep.run_duration == 300
     assert isinstance(managed_sleep.start_time, float)
 
 
@@ -9672,8 +9672,8 @@ def test_sleep_exceeds_ttl(mocker, managed_sleep):
   """
     mocker.patch('time.time', return_value=managed_sleep.start_time + 10)
     with pytest.raises(ValueError) as excinfo:
-        managed_sleep.sleep(duration_seconds=150)
-    assert str(excinfo.value) == "Requested sleep of 150 seconds exceeds TTL of 100 seconds."
+        managed_sleep.sleep(duration_seconds=350)
+    assert str(excinfo.value) == "Requested sleep of 350 seconds exceeds TTL of 300 seconds."
 
 
 def test_sleep_mocked_time(mocker, managed_sleep):
