@@ -136,12 +136,13 @@ class TestPrepareForValidation:
     - `prepare_content_pack_for_validation`
     """
 
-    def _setup(self, tmp_path: Path):
+    def _setup(self, tmp_path: Path, mocker: MockerFixture):
 
         Path(tmp_path, PACKS_FOLDER, BASE_PACK).mkdir(parents=True)
         Path(tmp_path, PACKS_FOLDER, BASE_PACK, PACKS_PACK_META_FILE_NAME).touch()
+        mocker.patch.dict(os.environ, {"DEMISTO_SDK_CONTENT_PATH": str(tmp_path.absolute())})
 
-    def test_valid_script(self, tmp_path: Path):
+    def test_valid_script(self, tmp_path: Path, mocker: MockerFixture):
         """
         Test a valid script preparation.
 
@@ -156,7 +157,7 @@ class TestPrepareForValidation:
         - The input script file is removed.
         """
 
-        self._setup(tmp_path)
+        self._setup(tmp_path, mocker)
 
         script_name = "ValidAutomation"
         input_filename = CommonTestResources.valid_script_path.name
@@ -175,7 +176,7 @@ class TestPrepareForValidation:
         assert Path(actual_output_path, SCRIPTS_README_FILE_NAME).exists()
         assert not Path(tmp_path, input_filename).exists()
 
-    def test_invalid_script(self, tmp_path: Path):
+    def test_invalid_script(self, tmp_path: Path, mocker: MockerFixture):
         """
         Test an invalid script preparation.
 
@@ -190,7 +191,7 @@ class TestPrepareForValidation:
         - The input script file is removed.
         """
 
-        self._setup(tmp_path)
+        self._setup(tmp_path, mocker)
 
         script_name = "Automationwitherrors"
         input_filename = CommonTestResources.invalid_script_path.name
@@ -209,7 +210,7 @@ class TestPrepareForValidation:
         assert Path(actual_output_path, SCRIPTS_README_FILE_NAME).exists()
         assert not Path(tmp_path, input_filename).exists()
 
-    def test_invalid_yml_script(self, tmp_path: Path):
+    def test_invalid_yml_script(self, tmp_path: Path, mocker: MockerFixture):
         """
         Test an invalid script preparation.
 
@@ -223,7 +224,7 @@ class TestPrepareForValidation:
         - A `ValueError` is raised.
         """
 
-        self._setup(tmp_path)
+        self._setup(tmp_path, mocker)
 
         input_filename = CommonTestResources.invalid_yml_script_path.name
         input_bytes = CommonTestResources.invalid_yml_script_path.read_bytes()
@@ -238,7 +239,7 @@ class TestPrepareForValidation:
                 tmp_directory=str(tmp_path)
             )
 
-    def test_valid_playbook(self, tmp_path: Path):
+    def test_valid_playbook(self, tmp_path: Path, mocker: MockerFixture):
         """
         Test a valid playbook preparation.
 
@@ -252,7 +253,7 @@ class TestPrepareForValidation:
         - A `NotImplementedError` is raised.
         """
 
-        self._setup(tmp_path)
+        self._setup(tmp_path, mocker)
 
         input_filename = CommonTestResources.valid_playbook_path.name
         input_bytes = CommonTestResources.valid_playbook_path.read_bytes()
