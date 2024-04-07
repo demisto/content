@@ -12,7 +12,6 @@ The integration supports two types of authorization:
 
 #### OAuth 2.0 Authorization
 To use OAuth 2.0 authorization follow the next steps:
-1. Login to your ServiceNow instance and create an endpoint for XSOAR to access your instance (please see [Snow OAuth](https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/security/task/t_CreateEndpointforExternalClients.html) for more information). 
+1. Login to your ServiceNow instance and create an endpoint for XSIAM to access your instance (please see [Snow OAuth](https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/security/task/t_CreateEndpointforExternalClients.html) for more information). 
 2. Copy the `Client Id` and `Client Secret` (press the lock next to the client secret to reveal it) that were automatically generated when creating the endpoint into the `ClientID` and `Client Secret` fields of the instance configuration.
 3. Select the `Use OAuth Login` checkbox and click the `Done` button.
-4. (Optional) Test the created instance by running the `!servicenow-oauth-test` command.
