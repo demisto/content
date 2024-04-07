@@ -949,28 +949,23 @@ def get_remote_data_command(client, args):
 
 
 def update_remote_system_command(client, args):
-    demisto.debug("fun to debug hiiiii")
     remote_args = UpdateRemoteSystemArgs(args)
     demisto.debug(f"{remote_args=}")
     incident_id = remote_args.remote_incident_id
-    demisto.debug(f"check_the_incident_that_was_changed {incident_id=}")
     demisto.debug(f"update_remote_system_command {incident_id=} {remote_args=}")
 
     if remote_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
                       f'incident {remote_args.remote_incident_id}')
-        demisto.debug(f'The delta {remote_args.delta=}')
+        demisto.debug(f'{remote_args.delta=}')
     try:
         if remote_args.incident_changed:
             demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
             update_args = get_update_args(remote_args)
-            demisto.debug(f"{remote_args}, {update_args=}")
             update_args['incident_id'] = remote_args.remote_incident_id
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
-            demisto.debug("help taklll!!!!!!")
             demisto.debug(f"{update_args=}")
             update_incident_command(client, update_args)
-            
             close_alerts_in_xdr = client._params.get("close_alerts_in_xdr", False)
             is_closed = update_args.get('close_reason')
             if close_alerts_in_xdr and is_closed:
@@ -987,7 +982,7 @@ def update_remote_system_command(client, args):
                     for alert in alerts_array:
                         if 'alert_id' in alert:
                             related_alerts_ids_array.append(alert['alert_id'])
-                    demisto.debug(f"hi this is the alert to update: {related_alerts_ids_array}")
+                    demisto.debug(f"{related_alerts_ids_array=}")
                     related_alerts_ids_string = ','.join(related_alerts_ids_array)
                     args_for_command = {'alert_ids': related_alerts_ids_string, 'status': new_status, 'comment': comment}
                     update_alerts_in_xdr_command(client, args_for_command)
