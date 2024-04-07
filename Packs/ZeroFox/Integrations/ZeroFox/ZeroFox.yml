@@ -1462,7 +1462,7 @@ script:
     - contextPath: ZeroFox.Exploits.URLs
       description: URLs associated to the threat separated by commas.
       type: string
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.10.14.91134
   isfetch: true
   longRunning: false
   longRunningPort: false
