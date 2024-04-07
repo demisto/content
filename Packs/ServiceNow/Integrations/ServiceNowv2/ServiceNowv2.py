@@ -2390,7 +2390,9 @@ def fetch_incidents(client: Client) -> list:
         occurred = datetime.strptime(ticket.get('occurred'), DATE_FORMAT).isoformat()  # type: ignore[arg-type]
         ticket['occurred'] = f"{occurred}Z"
 
-    store_ids_for_first_mirroring(incidents)
+    if demisto.params().get("mirror_notes_for_new_incidents", False):
+        store_ids_for_first_mirroring(incidents)
+
     demisto.setLastRun(last_run)
     return incidents
 
@@ -2582,6 +2584,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     ticket_type = client.ticket_type
     result = client.get(ticket_type, ticket_id, use_display_value=client.use_display_value)
 
+    is_new_ticket_id = is_new_incident(ticket_id)
     if not result or 'result' not in result:
         return f'Ticket {ticket_id=} was not found.'
 
@@ -2604,7 +2607,6 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         required=False
     )
 
-    is_new_ticket_id = is_new_incident(ticket_id)
     demisto.debug(f'ticket_last_update of {ticket_id=} is {ticket_last_update}')
     is_fetch = demisto.params().get('isFetch')
     if is_fetch and last_update > ticket_last_update and not is_new_ticket_id:

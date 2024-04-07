@@ -621,6 +621,7 @@ def test_fetch_incidents(mocker):
         'CommonServerPython.get_fetch_run_time_range', return_value=('2022-05-01 01:05:07', '2022-05-01 12:08:29')
     )
     mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
+    mocker.patch.object(demisto, 'params', return_value={"mirror_notes_for_new_incidents": True})
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', '2 days', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number')

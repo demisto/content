@@ -216,6 +216,12 @@ configuration:
   hidden: true
   required: false
 - defaultvalue: 'false'
+  additionalinfo: Select this checkbox to retrieve existing comments and work notes for new fetched incidents. Enabling this involves adding API calls on the machine to execute, which may cause overload in case of many incidents.
+  display: Mirror Existing Notes For New Fetched Incidents
+  name: mirror_notes_for_new_incidents
+  type: 8
+  required: false
+- defaultvalue: 'false'
   display: 'Use system proxy settings'
   name: proxy
   type: 8
