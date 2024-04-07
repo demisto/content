@@ -27,7 +27,7 @@ configuration:
   type: 0
   required: false
   section: Connect
-- additionalinfo: Select this checkbox if to use OAuth 2.0 authentication. See (?) for more information.
+- additionalinfo: Select this checkbox to use OAuth 2.0 authentication.
   display: Use OAuth Login
   name: use_oauth
   type: 8

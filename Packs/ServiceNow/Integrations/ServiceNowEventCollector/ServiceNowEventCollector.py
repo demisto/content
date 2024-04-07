@@ -134,7 +134,7 @@ def get_audit_logs_command(client: Client, args: dict) -> tuple[list, CommandRes
     audit_logs = client.get_audit_logs(from_time=from_date, limit=limit, offset=offset)
     add_time_field(audit_logs)  # Add the _time field to the events
 
-    demisto.info(f"Got a total of {len(audit_logs)} events created after {from_date}")
+    demisto.debug(f"Got a total of {len(audit_logs)} events created after {from_date}")
 
     readable_output = tableToMarkdown(
         "Audit Logs List:",
@@ -274,7 +274,7 @@ def main() -> None:  # pragma: no cover
                 send_events_to_xsiam(audit_logs, vendor=VENDOR, product=PRODUCT)
                 if new_last_run:
                     # saves next_run for the time fetch-events is invoked
-                    demisto.info(f"Setting new last_run to {new_last_run}")
+                    demisto.debug(f"Setting new last_run to {new_last_run}")
                     demisto.setLastRun(new_last_run)
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
