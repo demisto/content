@@ -986,7 +986,7 @@ def update_remote_system_command(client, args):
                     demisto.debug(f"{related_alerts_ids_array=}")
                     related_alerts_ids_string = ','.join(related_alerts_ids_array)
                     args_for_command = {'alert_ids': related_alerts_ids_string, 'status': new_status, 'comment': comment}
-                    update_alerts_in_xdr_command(client, args_for_command)
+                    response = update_alerts_in_xdr_command(client, args_for_command)
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
