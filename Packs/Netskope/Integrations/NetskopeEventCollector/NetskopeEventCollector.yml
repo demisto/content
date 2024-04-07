@@ -24,6 +24,14 @@ configuration:
   section: Collect
   type: 0
   required: false
+- section: Collect
+  advanced: true
+  display: Events Fetch Interval
+  additionalinfo: default fetch interval (This collector has an optimization feature that enables it to bring events as soon as possible if they exist).
+  name: eventFetchInterval
+  defaultvalue: "5"
+  type: 19
+  required: false
 - display: Event Types To Fetch
   section: Collect
   name: event_types_to_fetch
