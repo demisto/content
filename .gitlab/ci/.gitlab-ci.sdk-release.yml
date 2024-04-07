@@ -71,25 +71,6 @@ trigger-demisto-sdk-nightly:
     - echo $CI_PROJECT_URL"/-/pipelines/"$SDK_PIPELINE_ID
     - section_end "Trigger sdk nightly build"
 
-wait-for-content-private-nightly:
-  stage: wait-for-build-to-finish
-  extends:
-    - .release-sdk
-    - .default-job-settings
-  allow_failure: true
-  artifacts:
-    expire_in: 48 hrs
-    paths:
-      - ${CI_PROJECT_DIR}/artifacts/*
-  timeout: 6 hours
-  variables:
-    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
-    GITHUB_TOKEN: $GITHUB_TOKEN
-  script:
-    - section_start "Wait for content-private nightly build" --collapsed
-    - python3 ./Utils/get_private_build_status.py --github-token "${GITHUB_TOKEN}" --artifacts-folder "${ARTIFACTS_FOLDER}"
-    - section_end "Wait for content-private nightly build"
-
 wait-for-content-internal-dist-nightly:
   stage: wait-for-build-to-finish
   extends:
@@ -140,7 +121,6 @@ slack-notify:
   allow_failure: true
   needs:
     - wait-for-demisto-sdk-nightly
-    - wait-for-content-private-nightly
     - wait-for-content-internal-dist-nightly
   timeout: 6 hours
   variables:
