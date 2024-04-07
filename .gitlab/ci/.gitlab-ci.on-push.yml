@@ -139,7 +139,6 @@ run-validations-new-validate-flow:
   rules:
     - if: '$NIGHTLY'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  allow_failure: true
 
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
