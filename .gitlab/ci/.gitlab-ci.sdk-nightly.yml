@@ -106,7 +106,6 @@ demisto-sdk-nightly:run-validations-new-validate-flow:
   extends:
     - .run-validations-new-validate-flow
     - .sdk-nightly-schedule-rule
-  allow_failure: true
 
 demisto_sdk_nightly:check_idset_dependent_commands:
   tags:

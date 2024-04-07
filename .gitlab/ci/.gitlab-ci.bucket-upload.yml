@@ -62,7 +62,6 @@ run-validations-upload-flow-new-validate-flow:
   extends:
     - .run-validations-new-validate-flow
     - .bucket-upload-rule
-  allow_failure: true
 
 run-unittests-and-lint-upload-flow:
   cache:
