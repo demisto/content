@@ -2,9 +2,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 register_module_line('DownloadAndArchivePythonLibrary', 'start', __line__)
 
+from pathlib import Path
 import shutil
 import shlex
-import os
 import subprocess
 from tempfile import mkdtemp
 from subprocess import Popen, PIPE
