@@ -789,10 +789,7 @@ def build_where_clause(args: dict) -> str:
 
     if args.get('rule'):
         rules_list = argToList(args.pop('rule'))
-        where_clause += f' rule_matched="{rules_list[0]}"'
-        del rules_list[0]
-        for rule in rules_list:
-            where_clause += f' OR rule_matched="{rule}"'
+        where_clause += '(' + ' OR '.join(f'rule_matched = "{rule}"' for rule in rules_list) + ')'
         if any(args.get(key) for key in args_dict):
             where_clause += ' AND '
 
