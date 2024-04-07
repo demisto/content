@@ -66,6 +66,10 @@
             "instance_names": "active_directory_80k"
         },
         {
+            "integrations": "JsonWhoIsButMoreCrazy",
+            "playbookID": "JsonWhoIsButMoreCrazy-Test"
+        },
+        {
             "integrations": "ThreatConnect v3",
             "playbookID": "test-threatConnectv3",
             "is_mockable": false
