@@ -1,7 +1,7 @@
 id: Rubrik File Context Analysis - Rubrik Polaris
 version: -1
 name: Rubrik File Context Analysis - Rubrik Polaris
-description: This playbook fetches file context information for the provided file/folder/fileshare name and the object ID to get the policy hits.
+description: This playbook fetches file context information for the provided file, folder, or file share name and the object ID to get the policy hits.
 starttaskid: "0"
 tasks:
   "0":
