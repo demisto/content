@@ -51,9 +51,14 @@ Version.fullname = our_fullname
 
 
 class exchangelibSSLAdapter(SSLAdapter):  # pragma: no cover
+    
     def cert_verify(self, conn, url, verify, cert):
         # We're overriding a method, so we have to keep the signature, although verify is unused
-        del verify
+        ctx = ssl.create_default_context()
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
+        # Apply the SSL context to the connection
+        conn.ssl_context = ctx
         super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
 
 
@@ -210,11 +215,12 @@ def prepare_context(credentials):  # pragma: no cover
 
 
 def prepare():  # pragma: no cover
+    global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     if NON_SECURE:
-        BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
+        
+        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter
     else:
         BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
-    global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     AUTO_DISCOVERY = not EWS_SERVER
     if AUTO_DISCOVERY:
         credentials = Credentials(username=USERNAME, password=PASSWORD)
@@ -232,7 +238,6 @@ def prepare():  # pragma: no cover
                 AUTH_METHOD_STR = 'ntlm'
             if not VERSION_STR:
                 return_error('Exchange Server Version is required for on-premise Exchange Servers.')
-
         version = get_version(VERSION_STR)
         credentials = Credentials(username=USERNAME, password=PASSWORD)
         config_args = {
