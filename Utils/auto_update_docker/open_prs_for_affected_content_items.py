@@ -151,25 +151,31 @@ def comma_list(raw_data: str) -> list[str]:
 
 @app.command()
 def open_prs_for_content_items(
-    affected_content_items_file: str = typer.Argument(
+    affected_content_items_file: str = typer.Option(
         # default="Utils/auto_update_docker/affected_content_items.json",
         help="The affected content items that will have their image tags updated, supplied as a json",
     ),
-    staging_branch: str = typer.Argument(
+    staging_branch: str = typer.Option(
         default="auto_update_docker_staging_branch",
         help="The staging branch, that will act as the base branch for the PRs",
     ),
-    prs_limit: str = typer.Argument(
+    batch_index: int = typer.Option(
+        help="The batch index",
+    ),
+    flow_index: int = typer.Option(
+        help="The flow index",
+    ),
+    prs_limit: str = typer.Option(
         # TODO Change to 50 later
         default="2",
         help="The maximum number of content items to open in one PR",
     ),
-    pr_assignees: list = typer.Argument(
+    pr_assignees: list = typer.Option(
         default="",
         help="The PR assignees",
         parser=comma_list,
     ),
-    pr_reviewers: list = typer.Argument(
+    pr_reviewers: list = typer.Option(
         default="",
         help="The PR reviewers",
         parser=comma_list,

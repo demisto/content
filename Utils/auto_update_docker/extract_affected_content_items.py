@@ -85,6 +85,7 @@ def filter_content_items_to_run_on(
         "content_items": affected_content_items,
         "pr_labels": batch_config.get("pr_labels", []),
         "target_tag": target_docker_tag,
+        "coverage": f"{min}-{max}"
     } if affected_content_items else {}
 
 def get_docker_image_tag(docker_image: str, images_tag: dict[str, str]) -> str:
@@ -277,30 +278,34 @@ def get_content_items_by_docker_image() -> dict[str, list[dict[str, Any]]]:
 
 @app.command()
 def get_affected_content_items(
-    config_path: str = typer.Argument(
+    config_path: str = typer.Option(
         # default="Utils/auto_update_docker/auto_update_docker_config.json",
         help="The config file that holds all the configuration of the batches and docker images",
     ),
-    docker_images_arg: str = typer.Argument(
+    coverage_report: str = typer.Option(
+        # default="Utils/auto_update_docker/coverage_report.json",
+        help="The coverage report from last nightly",
+    ),
+    docker_images_arg: str = typer.Option(
         default="ALL",
         help=("The docker images that should be affected by the auto update, either a comma"
         " separated list, the string 'ALL', or 'ALL/docker1,docker2',"
         " where the last option will exclude the stated docker images"),
     ),
-    batch_index: int = typer.Argument(
+    batch_index: int = typer.Option(
         default="0",
         help="The batch index",
     ),
-    coverage_report: str = typer.Argument(
-        # default="Utils/auto_update_docker/coverage_report.json",
-        help="The coverage report from last nightly",
+    flow_index: int = typer.Option(
+        default="0",
+        help="The flow index",
     ),
-    docker_images_target_tags_path: str = typer.Argument(
+    docker_images_target_tags_path: str = typer.Option(
         default="",
         help=("The file that contains the docker images tag, if given an empty string,"
               " will retrieve them latest tags from DockerHub"),
     ),
-    dir: str = typer.Argument(
+    auto_update_dir: str = typer.Option(
         default="",
         help=("The directory that will hold the output files. The default will be the current working directory"),
     ),
@@ -313,13 +318,15 @@ def get_affected_content_items(
     # TODO Will need to delete later
     # dir = f"{CWD}/Utils/auto_update_docker"
 
-    path_dir = Path(dir) if dir else Path(CWD)
+    path_dir = Path(auto_update_dir) if dir else Path(CWD)
+    if not path_dir.exists():
+        raise Exception(f"{path_dir = } was not found, aborting")
 
     tests_conf = load_json('Tests/conf.json')
     # Get nightly packs from tests conf
     nightly_packs: list[str] = tests_conf.get('nightly_packs', [])
 
-    
+
     images_tag: dict[str, str] = {}
     if docker_images_target_tags_path:
         images_tag = load_json(docker_images_target_tags_path)
@@ -357,12 +364,20 @@ def get_affected_content_items(
     
     current_time_str = time.strftime("%Y-%m-%d-%H:%M:%S")
 
+    # Creates flow directory if it does not exist, else it does nothing
+    flow_dir = auto_update_dir / Path(f"flow_{flow_index}")
+    flow_dir.mkdir(exist_ok=True)
+
+    # Create current batch directory if it does not exist, else it does nothing
+    batch_dir = flow_dir / Path(f"batch_{batch_index}")
+    batch_dir.mkdir(exist_ok=True)
+
     # Output the docker images tags that were gathered in the batch
-    with open(f"{path_dir}/images_tag_output_{current_time_str}.json", "w") as images_tag_output:
+    with open(f"{batch_dir}/images_tag.json", "w") as images_tag_output:
         json.dump(docker_images_target_tag, images_tag_output)
 
     # Output the affected content items
-    with open(f"{path_dir}/affected_content_items_{current_time_str}.json", "w") as affected_content_items:
+    with open(f"{batch_dir}/affected_content_items.json", "w") as affected_content_items:
         json.dump(affected_content_items_by_docker_image, affected_content_items)
 
 def main():
