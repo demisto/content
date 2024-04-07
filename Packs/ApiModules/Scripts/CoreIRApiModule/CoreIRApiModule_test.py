@@ -3908,3 +3908,17 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
 
         assert remote_args.delta.get('status')
         assert remote_args.delta['status'] == expected_resolved_status[i]
+
+
+def test_http_request():
+    """
+    Given:
+        - The build number.
+        - request
+    When
+        - Running the http_request command.
+    Then
+        - make sure the correct http_request is being called.
+    """
+    from CoreIRApiModule import CoreClient
+    
