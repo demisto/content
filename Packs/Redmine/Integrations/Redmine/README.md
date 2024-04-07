@@ -42,10 +42,10 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The project ID for this issue. If not specified, the value from integration configuration will be taken. | Optional | 
-| tracker_id | The tracker ID for this issue. Possible values are: Bug, Feature, Support. | Required | 
-| status_id | The status ID for this issue. Possible values are: New, In progress, Resolved, Feedback, Closed, Rejected. | Required | 
-| priority_id | The priority ID for this issue. Possible values are: Low, Normal, High, Urgent, Immediate. | Required | 
+| project_id | The project ID for this issue. If not specified, the value from the integration configuration will be used. | Optional | 
+| tracker | Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task). | Required | 
+| status | - Enter a status ID (e.g 1,2,3) or a status name (e.g New/Closed). <br/>- By default Redmine API will create issues as new- use redmine-issue-update to update to the correct status. | Required | 
+| priority | Enter a priority ID (e.g 1,2,3) or a priority name (e.g Low/High). | Required | 
 | subject | The subject for this issue. | Required | 
 | description | A description for this issue. | Optional | 
 | category_id | The category ID for this issue. | Optional | 
@@ -73,7 +73,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 | Redmine.Issue.subject | str | The subject of the issue. | 
 
 #### Command example
-```!redmine-issue-create priority_id=High status_id=Closed subject=helloExample tracker_id=Bug project_id=1 watcher_user_ids=5,6 custom_fields=1:helloCustom```
+```!redmine-issue-create priority_id=High status=New subject=helloExample tracker=Bug project_id=1 watcher_user_ids=5,6 custom_fields=1:helloCustom priority=1```
 #### Context Example
 ```json
 {
@@ -84,7 +84,7 @@ After you successfully execute a command, a DBot message appears in the War Room
                 "name": "Integration Test"
             },
             "closed_on": null,
-            "created_on": "2024-03-11T09:16:47Z",
+            "created_on": "2024-04-07T11:59:34Z",
             "custom_fields": [
                 {
                     "id": 1,
@@ -96,17 +96,17 @@ After you successfully execute a command, a DBot message appears in the War Room
             "done_ratio": 0,
             "due_date": null,
             "estimated_hours": null,
-            "id": "130",
+            "id": "167",
             "is_private": false,
             "priority": {
-                "id": 3,
-                "name": "High"
+                "id": 1,
+                "name": "Low"
             },
             "project": {
                 "id": 1,
                 "name": "Cortex XSOAR"
             },
-            "start_date": "2024-03-11",
+            "start_date": "2024-04-07",
             "status": {
                 "id": 1,
                 "is_closed": false,
@@ -118,7 +118,7 @@ After you successfully execute a command, a DBot message appears in the War Room
                 "id": 1,
                 "name": "Bug"
             },
-            "updated_on": "2024-03-11T09:16:47Z"
+            "updated_on": "2024-04-07T11:59:34Z"
         }
     }
 }
@@ -127,9 +127,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 #### Human Readable Output
 
 >### The issue you created:
->|ID|Project|Tracker|Status| Priority|Author|Created On|Subject|Start Date|Custom Fields|
+>|Id|Project|Tracker|Status|Priority|Author|Created On|Subject|Start Date|Custom Fields|
 >|---|---|---|---|---|---|---|---|---|---|
->| 130 | Cortex XSOAR | Bug | New | High | Integration Test | 2024-03-11T09:16:47Z | helloExample | 2024-03-11 | **-**	***name***: Team_of_workers<br/>	***value***: helloCustom |
+>| 167 | Cortex XSOAR | Bug | New | Low | Integration Test | 2024-04-07T11:59:34Z | helloExample | 2024-04-07 | **-**	***name***: Team_of_workers<br/>	***value***: helloCustom |
 
 
 ### redmine-issue-list
@@ -153,8 +153,8 @@ Display a list of issues
 | issue_id | An array of issue IDs to display -&gt; 1,2,3. | Optional | 
 | project_id | Aa project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed. | Optional | 
 | subproject_id | A subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!name_of_subproject" to exclude subprojects). | Optional | 
-| tracker_id | A tracker ID to display issues of this tracker ID. Possible values are: Bug, Feature, Support. | Optional | 
-| status_id | A status ID to display issues of this status ID (* means all). Possible values are: open, closed, *. | Optional | 
+| tracker | Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task). | Optional | 
+| status | - The status to display issues related to this status.</br> - You can use Open/Closed/All from the predefined values or use any of your custom status ids (e.g 1)/ status names(e.g New). | Optional | 
 | assigned_to_id | An assigned-to ID to display issues assigned to this user ID. | Optional | 
 | parent_id | A parent ID to display issues that are under this parent ID. | Optional | 
 | custom_field | - The custom field to filter by. The format is costumFieldID:Value.<br/>- To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  <br/>- You can only filter one custom field at a time. <br/>- Make sure the custom field ID you entered is valid, or the request won't fail but will not be filtered correctly.   <br/>| Optional | 
@@ -291,9 +291,9 @@ Update an existing issue. When attaching a file to an issue, include the entry I
 | --- | --- | --- |
 | issue_id | The ID of the issue to be updated. | Required | 
 | project_id | The ID of the project to associate with the issue. If not specified, the value from integration configuration will be taken if specified. | Optional | 
-| tracker_id | The ID of the tracker type. Possible values are: Bug, Feature, Support. | Optional | 
-| status_id | The ID of the status to set for the issue. Possible values are: New, In progress, Resolved, Feedback, Closed, Rejected. | Optional | 
-| priority_id | The ID of the priority level for the issue. Possible values are: Low, Normal, High, Urgent, Immediate. | Optional | 
+| tracker | Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task). | Optional | 
+| status | Enter a status ID (e.g 1,2,3) or a status name (e.g New/Closed). | Optional | 
+| priority | Enter a priority ID (e.g 1,2,3) or a priority name (e.g Low/High). | Optional | 
 | subject | The subject of the issue. | Optional | 
 | description | The description of the issue. | Optional | 
 | category_id | The ID of the category to assign to the issue. | Optional | 
@@ -732,4 +732,3 @@ There are no input arguments for this command.
 >| 5 | admin | True | admin | tests | admin@redmine-test.local | 2024-02-28T19:47:56Z | 2024-02-29T10:25:08Z |
 >| 6 | demiadmin | True | Integration | Test | demiadmin@redmine-test.local | 2024-02-29T10:27:31Z | 2024-02-29T10:55:25Z |
 >| 1 | user | True | UserName | LastName | user@example.com | 2024-02-28T18:34:10Z | 2024-02-29T09:50:10Z |
-
