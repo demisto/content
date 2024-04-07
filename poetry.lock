@@ -4297,6 +4297,17 @@ files = [
 ]
 
 [[package]]
+name = "types-markdown"
+version = "3.6.0.20240316"
+description = "Typing stubs for Markdown"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "types-Markdown-3.6.0.20240316.tar.gz", hash = "sha256:de9fb84860b55b647b170ca576895fcca61b934a6ecdc65c31932c6795b440b8"},
+    {file = "types_Markdown-3.6.0.20240316-py3-none-any.whl", hash = "sha256:d3ecd26a940781787c7b57a0e3c9d77c150db64e12989ef687059edc83dfd78a"},
+]
+
+[[package]]
 name = "types-paramiko"
 version = "2.12.0.1"
 description = "Typing stubs for paramiko"
@@ -4312,13 +4323,24 @@ types-cryptography = "*"
 
 [[package]]
 name = "types-protobuf"
-version = "4.24.0.4"
+version = "4.24.0.20240311"
 description = "Typing stubs for protobuf"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.8"
 files = [
-    {file = "types-protobuf-4.24.0.4.tar.gz", hash = "sha256:57ab42cb171dfdba2c74bb5b50c250478538cc3c5ed95b8b368929ad0c9f90a5"},
-    {file = "types_protobuf-4.24.0.4-py3-none-any.whl", hash = "sha256:131ab7d0cbc9e444bc89c994141327dcce7bcaeded72b1acb72a94827eb9c7af"},
+    {file = "types-protobuf-4.24.0.20240311.tar.gz", hash = "sha256:c80426f9fb9b21aee514691e96ab32a5cd694a82e2ac07964b352c3e7e0182bc"},
+    {file = "types_protobuf-4.24.0.20240311-py3-none-any.whl", hash = "sha256:8e039486df058141cb221ab99f88c5878c08cca4376db1d84f63279860aa09cd"},
+]
+
+[[package]]
+name = "types-pymysql"
+version = "1.1.0.1"
+description = "Typing stubs for PyMySQL"
+optional = false
+python-versions = "*"
+files = [
+    {file = "types-PyMySQL-1.1.0.1.tar.gz", hash = "sha256:72bdaecb88de4a30bc3e1842e1d4522ceb3c4b2e883a6a2a7a7162775dd27b93"},
+    {file = "types_PyMySQL-1.1.0.1-py3-none-any.whl", hash = "sha256:9aec9ee0453314d477ef26e5832b4a992bc4cc3557358d62b0fe4af760a7728f"},
 ]
 
 [[package]]
@@ -4388,6 +4410,28 @@ python-versions = ">=3.8"
 files = [
     {file = "types-setuptools-69.2.0.20240317.tar.gz", hash = "sha256:b607c4c48842ef3ee49dc0c7fe9c1bad75700b071e1018bb4d7e3ac492d47048"},
     {file = "types_setuptools-69.2.0.20240317-py3-none-any.whl", hash = "sha256:cf91ff7c87ab7bf0625c3f0d4d90427c9da68561f3b0feab77977aaf0bbf7531"},
+]
+
+[[package]]
+name = "types-six"
+version = "1.16.21.20240311"
+description = "Typing stubs for six"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "types-six-1.16.21.20240311.tar.gz", hash = "sha256:b5a117193ba0dc7a66507925e95e140b2af52731402cdd71ef9f2a4348e01f60"},
+    {file = "types_six-1.16.21.20240311-py3-none-any.whl", hash = "sha256:abc0377990d38e9b37b3333dd115ec960ca9788d78f3d9c7eb3f778cfc6c925c"},
+]
+
+[[package]]
+name = "types-tabulate"
+version = "0.9.0.20240106"
+description = "Typing stubs for tabulate"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "types-tabulate-0.9.0.20240106.tar.gz", hash = "sha256:c9b6db10dd7fcf55bd1712dd3537f86ddce72a08fd62bb1af4338c7096ce947e"},
+    {file = "types_tabulate-0.9.0.20240106-py3-none-any.whl", hash = "sha256:0378b7b6fe0ccb4986299496d027a6d4c218298ecad67199bbd0e2d7e9d335a1"},
 ]
 
 [[package]]
@@ -4734,4 +4778,4 @@ pyyaml = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "432f3b5bbf600dbe142044661216a8739af3b8474fb5da6ed1a997f01faac855"
+content-hash = "7d9791dddf260c9a0fafe7776be4418dede218bff0ece49b93b45762758468e4"

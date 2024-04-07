@@ -53,7 +53,7 @@ boto3-stubs = { extras = [
     "ssm",
     "wafv2",
 ], version = "^1.28.31" }
-types-protobuf = "^4.24.0.4"
+types-protobuf = "^4.24.0.20240311"
 types-dateparser = "^1.1.4.20240106"
 types-pytz = "^2024.1.0.20240203"
 types-pyyaml = "^6.0.12.20240311"
@@ -62,6 +62,10 @@ types-ujson = "^5.9.0.0"
 types-paramiko ="^2.11.0"
 types-requests = "^2.31.0.20240311"
 types-emoji = "^2.1.0.3"
+types-pymysql = "^1.1.0.1"
+types-six = "^1.16.21.20240311"
+types-markdown = "^3.6.0.20240316"
+types-tabulate = "^0.9.0.20240106"
 
 [tool.poetry.group.ci]
 optional = true
