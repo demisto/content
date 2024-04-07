@@ -1,7 +1,7 @@
-id: DeleteContext-test-playbook
-version: 1
-vcShouldKeepItemLegacyProdMachine: false
-name: DeleteContext-auto-subplaybook-test
+id: DeleteContext-test
+version: -1
+name: DeleteContext-test
+description: 'Testing DeleteContext automation'
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -678,6 +679,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -714,4 +716,5 @@ view: |-
   }
 inputs: []
 outputs: []
-dirtyInputs: true
+fromversion: 6.10.0
+
