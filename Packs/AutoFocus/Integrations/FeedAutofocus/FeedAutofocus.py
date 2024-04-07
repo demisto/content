@@ -443,7 +443,7 @@ def module_test_command(client: Client, args: dict, feed_tags: list, tlp_color: 
                                   "\nCheck your instance configuration and your connection to AutoFocus.")
 
     if len(exception_list) > 0:
-        raise Exception("\n".join(exception_list))
+        raise Exception(exception_list)
 
     return 'ok', {}, {}
 
@@ -534,7 +534,12 @@ def main():
                                                                        feed_tags, tlp_color)  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        raise Exception(f'Error in {SOURCE_NAME} Integration [{e}]')
+        msg = ''
+        error_obj = e.args[0]
+        if isinstance(error_obj, list):
+            msg = '\n- ' + "\n- ".join(str(err) for err, _ in error_obj)
+
+        raise return_error(f'Error in {SOURCE_NAME} Integration: {msg}', e)
 
 
 if __name__ == '__builtin__' or __name__ == 'builtins':
