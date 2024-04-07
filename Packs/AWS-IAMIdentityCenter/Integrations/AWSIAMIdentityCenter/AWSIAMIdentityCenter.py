@@ -11,18 +11,22 @@ SERVICE = 'identitystore'
 IDENTITYSTOREID = args.get('IdentityStoreId') or params.get('IdentityStoreId')
 
 
-    
 def create_user(args, client):  # pragma: no cover
     username = args.get('userName')
     familyName = args.get('familyName')
     givenName = args.get('givenName')
     userEmail = args.get('userEmailAddress')
     userDisplayName = args.get('displayName')
-    userType=args.get('userType')
-    profileUrl= args.get('profileUrl')
-    title= args.get('title')
+    userType = args.get('userType')
+    profileUrl = args.get('profileUrl')
+    title = args.get('title')
     region = args.get('region')
-    
+    primaryEmail = args.get('userEmailAddressPrimary')
+    emailData = {}
+    if userEmail:
+        emailData['Value'] = userEmail
+        emailData['Primary'] = argToBoolean(primaryEmail)
+        emailData['Type'] = 'work'
     response = client.create_user(
         IdentityStoreId=f'{IDENTITYSTOREID}',
         UserName=f'{username}',
@@ -31,16 +35,12 @@ def create_user(args, client):  # pragma: no cover
             'GivenName': f'{givenName}'
         },
         Emails=[
-            {
-                'Value': f'{userEmail}',
-                'Type': 'work',
-                'Primary': True
-            }
+            emailData
         ],
         DisplayName=f'{userDisplayName}',
         UserType=f'{userType}',
-        ProfileUrl= f'{profileUrl}',
-        Title= f'{title}',
+        ProfileUrl=f'{profileUrl}',
+        Title=f'{title}',
         Addresses=[
             {
                 'Region': f'{region}',
@@ -76,8 +76,7 @@ def delete_user(args, client):
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(f'The User {userId} has been removed')
-    
-    
+
 
 def get_user(args, client):  # pragma: no cover
     response_id = get_userId_by_username(args, client)
@@ -90,8 +89,9 @@ def get_user(args, client):  # pragma: no cover
         'UserId': response.get('UserId'),
         'UserName': response.get('UserName'),
         'DisplayName': response.get('DisplayName'),
-        'Emails': response.get('Emails')
     }
+    if response.get('Emails'):
+        hr_data['Emails'] = response.get('Emails')[0]['Value']
     ec = {'AWS.IAMIdentityCenter.Users(val.UserId === obj.UserId)': response}
     human_readable = tableToMarkdown('AWS IAM Users', hr_data, removeNull=True)
     result = CommandResults(
@@ -144,11 +144,12 @@ def list_users(args, client):  # pragma: no cover
             'UserId': user['UserId'],
             'UserName': user['UserName'],
             'DisplayName': user['DisplayName'],
-            'Emails': user['Emails']
         }
+        if user.get('Emails'):
+            user_details['Emails'] = user.get('Emails')[0]['Value']
         hr_data.append(user_details)
     outputs = {'AWS.IAMIdentityCenter.Users(val.UserId === obj.UserId)': context_data,
-          'AWS.IAMIdentityCenter(true)': {'UserNextToken': response.get('NextToken')}}
+               'AWS.IAMIdentityCenter(true)': {'UserNextToken': response.get('NextToken')}}
     human_readable = tableToMarkdown('AWS IAM Identity Center Users', hr_data, removeNull=True)
     result = CommandResults(
         readable_output=human_readable,
@@ -156,7 +157,7 @@ def list_users(args, client):  # pragma: no cover
         outputs=outputs
     )
     return_results(result)
-  
+
 
 def list_groups(args, client):  # pragma: no cover
     context_data = []
@@ -189,9 +190,9 @@ def list_groups(args, client):  # pragma: no cover
 
 def create_group(args, client):
     kwargs = {
-        'IdentityStoreId':f'{IDENTITYSTOREID}',
-        'DisplayName':args.get('displayName'),
-        'Description':args.get('description')
+        'IdentityStoreId': f'{IDENTITYSTOREID}',
+        'DisplayName': args.get('displayName'),
+        'Description': args.get('description')
     }
     kwargs = remove_empty_elements(kwargs)
     response = client.create_group(**kwargs)
@@ -208,8 +209,7 @@ def delete_group(args, client):
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(f'The Group {groupId} has been removed')
-    
-    
+
 
 def get_groupId_by_displayName(args, client):
     groupName = args.get('displayName') or args.get('groupName')
@@ -223,7 +223,7 @@ def get_groupId_by_displayName(args, client):
         }
     )
     return response_id
-    
+
 
 def get_group(args, client):  # pragma: no cover
     response_id = get_groupId_by_displayName(args, client)
@@ -246,14 +246,13 @@ def get_group(args, client):  # pragma: no cover
     return_results(result)
 
 
-
 def list_groups_for_user(args, client):  # pragma: no cover
     context_data = []
     hr_data = []
     userID = get_userId_by_username(args, client)['UserId']
     kwargs = {
-        'IdentityStoreId':f'{IDENTITYSTOREID}',
-        'MemberId':{
+        'IdentityStoreId': f'{IDENTITYSTOREID}',
+        'MemberId': {
             'UserId': f'{userID}'
         },
         'MaxResults': arg_to_number(args.get('limit') or params.get('limit')),
@@ -269,7 +268,7 @@ def list_groups_for_user(args, client):  # pragma: no cover
         }
         context_data.append(group)
         hr_data.append(group_details)
-        
+
     outputs = {'AWS.IAMIdentityCenter.User(val.UserName === obj.UserName).Groups': context_data,
                'AWS.IAMIdentityCenter(true)': {'GroupsUserNextToken': response.get('NextToken')}}
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
@@ -296,6 +295,35 @@ def add_user_to_group(args, client):  # pragma: no cover
         demisto.results(f'The membership id {membershipId} has been successfully created.')
 
 
+def delete_group_membership(args, client):
+    membershipsToDelete = []
+    if args.get('membershipId'):
+        membershipsToDelete = args.get('membershipId')
+    elif args.get('userName'):
+        userID = get_userId_by_username(args, client)['UserId']
+        kwargs = {
+            'IdentityStoreId': f'{IDENTITYSTOREID}',
+            'MemberId': {
+                'UserId': f'{userID}'
+            }
+        }
+        kwargs = remove_empty_elements(kwargs)
+        groups_response = client.list_group_memberships_for_member(**kwargs)
+        user_groups = groups_response.get('GroupMemberships')
+        for group in user_groups:
+            membershipsToDelete.append(group['MembershipId'])
+    else:
+        return_error("One of the arguments userName and membershipId should be entered.")
+    if membershipsToDelete != []:
+        for member in membershipsToDelete:
+            response = client.delete_group_membership(
+                IdentityStoreId=f'{IDENTITYSTOREID}',
+                MembershipId=f'{member}'
+            )
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results(f'The membership with ids {membershipsToDelete} have been deleted.')
+
+
 def remove_user_from_groups(args, client):  # pragma: no cover
     membershipID = list_groups_for_user(args, client)
     response = client.delete_group_membership(
@@ -304,8 +332,8 @@ def remove_user_from_groups(args, client):  # pragma: no cover
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(
-            "The User {0} has been removed from the group {1}".format(args.get('userName'),
-                                                                      args.get('groupName')))
+            "The User {} has been removed from the group {}".format(args.get('userName'),
+                                                                    args.get('groupName')))
 
 
 def test_function(args, client):
@@ -324,7 +352,7 @@ def main():     # pragma: no cover
     aws_default_region = params.get('defaultRegion')
     aws_role_arn = params.get('roleArn')
     aws_role_session_name = params.get('roleSessionName')
-    aws_role_session_duration = params.get('sessionDuration') ##### check if changing because IAM does work this way!
+    aws_role_session_duration = params.get('sessionDuration')  # check if changing because IAM does work this way!
     # aws_default_region = args.get('region') or params.get('defaultRegion')
     # aws_role_arn = args.get('roleArn') or params.get('roleArn')
     # aws_role_session_name = args.get('roleSessionName') or params.get('roleSessionName')
@@ -344,21 +372,20 @@ def main():     # pragma: no cover
     aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
                            aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                            retries)
-   
+
     command = demisto.command()
     args = demisto.args()
-    
-    
+
     client = aws_client.aws_session(
         service=SERVICE,
-        #region=args.get('region'), ### should i add it? it appears in AWS-Athena
+        region=args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
     )
 
     try:
-        demisto.debug('Command being called is {command}'.format(command=command))
+        demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
             test_function(args, client)
         elif command == 'aws-iam-identitycenter-create-user':
@@ -385,6 +412,8 @@ def main():     # pragma: no cover
             create_group(args, client)
         elif command == 'aws-iam-identitycenter-delete-group':
             delete_group(args, client)
+        elif command == 'aws-iam-identitycenter-delete-group-membership':
+            delete_group_membership(args, client)
 
     except Exception as e:
         return_error('Error has occurred in the AWS IAM Integration: {code}\n {message}'.format(
