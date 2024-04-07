@@ -154,7 +154,7 @@ Display a list of issues
 | project_id | Aa project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed. | Optional | 
 | subproject_id | A subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!name_of_subproject" to exclude subprojects). | Optional | 
 | tracker | Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task). | Optional | 
-| status | - The status to display issues related to this status.  </br>- You can use Open/Closed/All from the predefined values or use any of your custom status ids (e.g 1)/ status names(e.g New). | Optional | 
+| status | - The status to display issues related to this status.  <br/>- You can use Open/Closed/All from the predefined values or use any of your custom status ids (e.g 1)/ status names(e.g New). | Optional | 
 | assigned_to_id | An assigned-to ID to display issues assigned to this user ID. | Optional | 
 | parent_id | A parent ID to display issues that are under this parent ID. | Optional | 
 | custom_field | - The custom field to filter by. The format is costumFieldID:Value.<br/>- To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  <br/>- You can only filter one custom field at a time. <br/>- Make sure the custom field ID you entered is valid, or the request won't fail but will not be filtered correctly.   <br/>| Optional | 
