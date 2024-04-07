@@ -1,5 +1,3 @@
-// pack version: 1.14.17
-
 LINE_SEPARATOR = '\n';
 
 function errorEntry(text) {
