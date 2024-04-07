@@ -79,8 +79,7 @@ def handle_contribution_prs(args, github_issues: PaginatedList[Issue], gitlab_pr
             # get the GitLab branch object corresponding to the GitHub branch
             if branch := gitlab_project.branches.get(github_branch_name):
                 logging.info(
-                    f"Trigger contribution build for PR: {pull_request.number}, \
-                        with base branch: {pull_request.base.ref}, contrib branch: {pull_request.head.label}"
+                    f"Trigger build for PR {pull_request.number}|base: {pull_request.base.ref}|contrib: {pull_request.head.label}"
                 )
 
                 cancel_active_pipelines(gitlab_project, branch)
