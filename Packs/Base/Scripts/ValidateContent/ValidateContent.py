@@ -55,50 +55,6 @@ def get_pack_name(zip_fp: str) -> str:
     return metadata.get('name', 'ServerSidePackValidationDefaultName')
 
 
-def adjust_linter_row_and_col(
-        error_output: dict, code_fp_to_row_offset: dict | None = None,
-        row_offset: int = 2, row_start: int = 1, col_offset: int = 1, col_start: int = 0
-) -> None:
-    """Update the linter errors row and column numbering
-
-    Accounts for lines inserted during demisto-sdk extract, and that row numbering starts with one. We
-    take the max between the adjusted vector number and the vector start because the lowest the adjusted
-    vector number should be is its associated vector start number. e.g. the adjusted column number should
-    never be less than the column start number aka zero - so if the adjusted column number is -1, we set
-    it to the column start number instead, aka zero.
-
-    Args:
-        error_output (dict): A single validation result dictionary (validate and lint) from the total list
-        code_fp_to_row_offset (Optional[dict]): Mapping of file paths to the row offset for that code file
-        row_offset (int): The number of rows to adjust by
-        row_start (int): The lowest allowable number for rows
-        col_offset (int): The number of columns to adjust by
-        col_start (int): The lowest allowable number for columns
-    """
-    row, col = 'row', 'col'
-    vector_details = [
-        (row, row_offset, row_start),
-        (col, col_offset, col_start)
-    ]
-    try:
-        for vector, offset, start in vector_details:
-            if vector in error_output:
-                # grab and set the row offset from the file to row offset mapping if it exists and we are
-                # operating on 'row'
-                if code_fp_to_row_offset and vector == row:
-                    filepath = error_output.get('filePath', '')
-                    if filepath in code_fp_to_row_offset:
-                        offset_for_file = code_fp_to_row_offset.get(filepath)
-                        if isinstance(offset_for_file, int):
-                            offset = offset_for_file
-                original_vector_value: Any | None = error_output.get(vector)
-                if original_vector_value:
-                    error_output[vector] = str(max(int(original_vector_value) - offset, start))
-    except ValueError as e:
-        demisto.debug(f'Failed adjusting "{vector}" on validation result {error_output}'
-                      f'\n{e}')
-
-
 def get_files_to_validate(file_path: str) -> str:
     """
     Returns the files to validate.
@@ -178,26 +134,39 @@ def run_lint(file_path: str, json_output_file: str) -> None:
     )
 
 
-def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_directory: str) -> tuple[str, dict]:
-    # write zip file data to file system
-    zip_path = os.path.abspath(os.path.join(tmp_directory, filename))
-    with open(zip_path, 'wb') as fp:
-        fp.write(data)
+def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_directory: str) -> Path:
+    """
+    Helper function to convert the contribution zip into a pack format.
 
-    pack_name = get_pack_name(zip_path)
-    contrib_converter = ContributionConverter(name=pack_name, contribution=zip_path, base_dir=tmp_directory)
-    # FIXME convert_contribution_to_pack doesn't return anything
-    code_fp_to_row_offset = contrib_converter.convert_contribution_to_pack()
-    # Call the standalone function and get the raw response
-    os.remove(zip_path)
-    return contrib_converter.pack_dir_path, code_fp_to_row_offset
+    Args:
+    - `filename` (``str``): The path to the content item file to validate.
+    - `data` (``bytes``): The byte content of the file to validate.
+    - `tmp_directory` (``str``): The path to the temporary directory where the file is saved.
+
+    Returns:
+    - `Path` to the content item to validate.
+    """
+
+    # TODO check if we can create it instead of raising an exception
+    if not Path(tmp_directory).exists():
+        raise FileNotFoundError(f"The directory '{tmp_directory}' doesn't exist")
+
+    tmp_path_zip = Path(tmp_directory, filename)
+    tmp_path_zip.touch()
+    tmp_path_zip.write_bytes(data)
+
+    pack_name = get_pack_name(str(tmp_path_zip))
+    contrib_converter = ContributionConverter(name=pack_name, contribution=str(tmp_path_zip), base_dir=tmp_directory)
+    contrib_converter.convert_contribution_to_pack()
+    tmp_path_zip.unlink()
+    return contrib_converter.pack_dir_path
 
 
 def prepare_single_content_item_for_validation(
     filename: str,
     data: bytes,
     tmp_directory: str
-) -> tuple[Path, dict]:
+) -> Path:
     """
     Helper function to convert the content item
     into a pack format.
@@ -210,6 +179,9 @@ def prepare_single_content_item_for_validation(
     - `filename` (``str``): The path to the content item file to validate.
     - `data` (``bytes``): The byte content of the file to validate.
     - `tmp_directory` (``str``): The path to the temporary directory where the file is saved.
+
+    Returns:
+    - `Path` to the content item to validate.
     """
 
     # TODO check if we can create it instead of raising an exception
@@ -241,8 +213,7 @@ def prepare_single_content_item_for_validation(
         )
         tmp_path_file_to_validate.unlink()
         extractor.extract_to_package_format()
-        code_fp_to_row_offset = {get_extracted_code_filepath(extractor): extractor.lines_inserted_at_code_start}
-        return extractor.get_output_path(), code_fp_to_row_offset
+        return extractor.get_output_path()
     elif not file_type:
         raise ValueError(f"Could not parse file type from file '{tmp_path_file_to_validate}'")
     else:
@@ -263,11 +234,11 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> list:
         )
 
         if filename.endswith('.zip'):
-            path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
+            path_to_validate = prepare_content_pack_for_validation(
                 filename, data, tmp_directory
             )
         else:
-            path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
+            path_to_validate = prepare_single_content_item_for_validation(
                 filename, data, tmp_directory
             )
 

@@ -82,44 +82,6 @@ def test_get_content_modules(tmp_path, requests_mock, monkeypatch):
     shutil.rmtree(content_tmp_dir)
 
 
-row_and_column_adjustment_test_data = [
-    (
-        {'message': 'blah'}, {'message': 'blah'}
-    ),
-    (
-        {'message': 'blah', 'row': '1'}, {'message': 'blah', 'row': '1'}
-    ),
-    (
-        {'message': 'blah', 'row': '2'}, {'message': 'blah', 'row': '1'}
-    ),
-    (
-        {'message': 'blah', 'col': '0'}, {'message': 'blah', 'col': '0'}
-    ),
-    (
-        {'message': 'blah', 'col': '1'}, {'message': 'blah', 'col': '0'}
-    ),
-    (
-        {'message': 'blah', 'row': '456'}, {'message': 'blah', 'row': '454'}
-    ),
-    (
-        {'message': 'blah', 'col': '50'}, {'message': 'blah', 'col': '49'}
-    ),
-    (
-        {'message': 'blah', 'row': '30', 'col': '30'}, {'message': 'blah', 'row': '28', 'col': '29'}
-    )
-]
-
-
-@pytest.mark.parametrize('original_validation_result,expected_output', row_and_column_adjustment_test_data)
-def test_adjust_linter_row_and_col(original_validation_result, expected_output):
-
-    from ValidateContent import adjust_linter_row_and_col
-
-    adjust_linter_row_and_col(original_validation_result)
-    # after adjustment, the original validation result should match the expected
-    assert original_validation_result == expected_output
-
-
 class CommonTestResources:
     valid_script_path = Path(__file__).parent.resolve() / "test_data" / "valid_automation.yml"
     invalid_script_path = Path(__file__).parent.resolve() / "test_data" / "automationwitherrors.yml"
@@ -166,7 +128,7 @@ class TestPrepareForValidation:
         input_filename = CommonTestResources.valid_script_path.name
         input_bytes = CommonTestResources.valid_script_path.read_bytes()
 
-        actual_output_path, _ = prepare_single_content_item_for_validation(
+        actual_output_path = prepare_single_content_item_for_validation(
             filename=input_filename,
             data=input_bytes,
             tmp_directory=str(tmp_path)
@@ -200,7 +162,7 @@ class TestPrepareForValidation:
         input_filename = CommonTestResources.invalid_script_path.name
         input_bytes = CommonTestResources.invalid_script_path.read_bytes()
 
-        actual_output_path, _ = prepare_single_content_item_for_validation(
+        actual_output_path = prepare_single_content_item_for_validation(
             filename=input_filename,
             data=input_bytes,
             tmp_directory=str(tmp_path)
@@ -314,19 +276,45 @@ class TestPrepareForValidation:
         Then:
         - The output path of the contribution
         """
-        
+
         self._setup(tmp_path, mocker)
 
         filename = CommonTestResources.existing_pack_add_integration_cmd_path.name
         bytes = CommonTestResources.existing_pack_add_integration_cmd_path.read_bytes()
 
-        actual_path, _ = prepare_content_pack_for_validation(
+        actual_path = prepare_content_pack_for_validation(
             filename=filename,
             data=bytes,
             tmp_directory=str(tmp_path)
         )
 
         assert actual_path == tmp_path / PACKS_FOLDER / "HelloWorldCopy"
+
+    def test_invalid_contrib_zip(self, tmp_path: Path, mocker: MockerFixture):
+        """
+        Test scenario when a contribution zip is prepared for validation
+        is invalid.
+
+        Given:
+        - A contribution zip.
+
+        When:
+        - The contribution zip is invalid (doesn't include a metadata.json file).
+
+        Then:
+        - The output path of the contribution
+        """
+
+        self._setup(tmp_path, mocker)
+
+        filename = CommonTestResources.contrib_zip_path.name
+        bytes = CommonTestResources.contrib_zip_path.read_bytes()
+
+        actual_path = prepare_content_pack_for_validation(
+            filename=filename,
+            data=bytes,
+            tmp_directory=str(tmp_path)
+        )
 
 
 class TestFilenameContents:
