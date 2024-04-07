@@ -959,7 +959,7 @@ script:
   runonce: false
   script: '-'
   type: powershell
-  dockerimage: demisto/powershell-ubuntu:7.2.2.29705
+  dockerimage: demisto/powershell-ubuntu:7.4.1.86201
 fromversion: 6.0.0
 tests:
 - No Test

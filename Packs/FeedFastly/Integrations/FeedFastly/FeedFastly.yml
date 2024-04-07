@@ -92,7 +92,7 @@ script:
       name: limit
     description: Fetches indicators from the feed.
     name: fastly-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.47433
+  dockerimage: demisto/py3-tools:1.0.0.91504
   feed: true
   runonce: false
   script: '-'

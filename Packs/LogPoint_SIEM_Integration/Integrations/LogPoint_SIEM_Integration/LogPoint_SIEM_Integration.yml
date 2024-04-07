@@ -719,7 +719,7 @@ script:
     - contextPath: LogPoint.SearchLogs
       description: Search results.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.90585
   isfetch: true
   runonce: false
   script: '-'
