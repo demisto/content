@@ -6,6 +6,7 @@ from pytest_mock import MockerFixture
 import demistomock as demisto
 from base64 import b64decode, b64encode
 from ValidateContent import (
+    prepare_content_pack_for_validation,
     prepare_single_content_item_for_validation,
 )
 from demisto_sdk.commands.common.constants import (
@@ -127,6 +128,8 @@ class CommonTestResources:
     valid_playbook_path = Path(__file__).parent.resolve() / "test_data" / "valid_pb.yml"
     contrib_zip_path = Path(__file__).parent.resolve() / "test_data" / \
         "contentpack-6ade7368-803c-4c4b-873c-4a0555c6ca03-Test.zip"
+    existing_pack_add_integration_cmd_path = Path(__file__).parent.resolve() / \
+        "test_data" / "existing_pack_add_integration_cmd.zip"
 
 
 class TestPrepareForValidation:
@@ -296,6 +299,34 @@ class TestPrepareForValidation:
                 data=input_bytes,
                 tmp_directory=input_dir
             )
+
+    def test_valid_contrib_zip(self, tmp_path: Path, mocker: MockerFixture):
+        """
+        Test scenario when a contribution zip is prepared for validation.
+
+        Given:
+        - A contribution zip.
+
+        When:
+        - The contribution zip is valid and includes an added integration
+        command to HelloWorld.
+
+        Then:
+        - The output path of the contribution
+        """
+        
+        self._setup(tmp_path, mocker)
+
+        filename = CommonTestResources.existing_pack_add_integration_cmd_path.name
+        bytes = CommonTestResources.existing_pack_add_integration_cmd_path.read_bytes()
+
+        actual_path, _ = prepare_content_pack_for_validation(
+            filename=filename,
+            data=bytes,
+            tmp_directory=str(tmp_path)
+        )
+
+        assert actual_path == tmp_path / PACKS_FOLDER / "HelloWorldCopy"
 
 
 class TestFilenameContents:
