@@ -1109,6 +1109,7 @@ def main():
 
     command = demisto.command()
     client = Client(base_url, username, password, domain, api_token=api_token, verify=use_ssl, proxy=proxy)
+    handle_proxy()
     demisto.info(f'Command being called is {command}')
 
     commands = {
