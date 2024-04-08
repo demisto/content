@@ -342,11 +342,9 @@ class EWSClient:
             account = self.get_account()
         # handle exchange folder id
         if len(path) == FOLDER_ID_LEN:
-            additional_fields = {FieldPath(field=BaseFolder.get_field_by_fieldname('_id'))}
-            for f in FolderCollection(account, folders=[account.root]).find_folders(depth='Deep',
-                                                                                    additional_fields=additional_fields):
-                if f._id.id == path:
-                    return f
+            folders_map = account.root._folders_map
+            if path in folders_map:
+                return account.root._folders_map[path]
 
         root = account.public_folders_root if is_public else account.root
         folder = root if path == 'AllItems' else root.tois
