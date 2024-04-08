@@ -44,8 +44,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The project ID for this issue. If not specified, the value from the integration configuration will be used. | Optional | 
-| tracker | - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).</br> - This argument is case sensitive. | Required | 
-| priority | - Enter a priority ID (e.g., 1,2,3) or a priority name (e.g., Low/High).</br> - This argument is case sensitive.| Required | 
+| tracker | - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).<br/> - This argument is case sensitive. | Required | 
+| priority | - Enter a priority ID (e.g., 1,2,3) or a priority name (e.g., Low/High).<br/> - This argument is case sensitive.| Required | 
 | subject | The subject for this issue. | Required | 
 | description | A description for this issue. | Optional | 
 | category_id | The category ID for this issue. | Optional | 
@@ -154,7 +154,7 @@ Display a list of issues
 | project_id | Aa project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed. | Optional | 
 | subproject_id | A subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!name_of_subproject" to exclude subprojects). | Optional | 
 | tracker | - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).<br/> - This argument is case sensitive. | Optional | 
-| status | - The status to display issues related to this status.  <br/>- You can use Open/Closed/All from the predefined values or use any of your custom status ids (e.g., 1)/ status names(e.g., New).</br> - This argument is case sensitive. | Optional | 
+| status | - The status to display issues related to this status.  <br/>- You can use Open/Closed/All from the predefined values or use any of your custom status ids (e.g., 1)/ status names(e.g., New).<br/> - This argument is case sensitive. | Optional | 
 | assigned_to_id | An assigned-to ID to display issues assigned to this user ID. | Optional | 
 | parent_id | A parent ID to display issues that are under this parent ID. | Optional | 
 | custom_field | - The custom field to filter by. The format is costumFieldID:Value.<br/>- To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  <br/>- You can only filter one custom field at a time. <br/>- Make sure the custom field ID you entered is valid, or the request won't fail but will not be filtered correctly.   <br/>| Optional | 
@@ -291,9 +291,9 @@ Update an existing issue. When attaching a file to an issue, include the entry I
 | --- | --- | --- |
 | issue_id | The ID of the issue to be updated. | Required | 
 | project_id | The ID of the project to associate with the issue. If not specified, the value from integration configuration will be taken if specified. | Optional | 
-| tracker | - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).</br> - This argument is case sensitive. | Optional | 
-| status | - Enter a status ID (e.g., 1,2,3) or a status name (e.g., New/Closed).</br> - This argument is case sensitive. | Optional | 
-| priority | - Enter a priority ID (e.g., 1,2,3) or a priority name (e.g., Low/High).</br> - This argument is case sensitive. | Optional | 
+| tracker | - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).<br/> - This argument is case sensitive. | Optional | 
+| status | - Enter a status ID (e.g., 1,2,3) or a status name (e.g., New/Closed).<br/> - This argument is case sensitive. | Optional | 
+| priority | - Enter a priority ID (e.g., 1,2,3) or a priority name (e.g., Low/High).<br/> - This argument is case sensitive. | Optional | 
 | subject | The subject of the issue. | Optional | 
 | description | The description of the issue. | Optional | 
 | category_id | The ID of the category to assign to the issue. | Optional | 
