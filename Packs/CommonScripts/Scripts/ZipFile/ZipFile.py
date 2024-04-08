@@ -8,6 +8,7 @@ import zipfile
 import pyminizip
 from os.path import isfile
 
+
 ESCAPE_CHARACTERS = r'[/\<>"|?*]'
 
 
