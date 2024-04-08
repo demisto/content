@@ -1,6 +1,6 @@
-id: Prisma Cloud - Network, API and Anomaly Incidents
+id: Prisma Cloud - Network API and Anomaly Incidents
 version: -1
-name: Prisma Cloud - Network, API and Anomaly Incidents
+name: Prisma Cloud - Network API and Anomaly Incidents
 description: |-
   This playbook handles incidents of internet exposed services and detect potential risky configurations that can make your cloud environment vulnerable to attacks, and
   incidents of unusual network and user activity for all users, and are especially critical for privileged users and assumed roles where detecting unusual activity may indicate the first steps in a potential misuse or account compromise.
