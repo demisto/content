@@ -311,7 +311,7 @@ def test_module(client: Client) -> str:
 def generate_report_command(client: Client, args: dict[str, Any]):
     client.generate_access_token_request()
     config_file_from_user = args.get('entry_id')
-    requester_email = args.get('requester_email')
+    requester_email = args.get('requester_email', 'NoEmail')
     requester_name = args.get('requester_name')
     export_as_file = argToBoolean(args.get('export_as_file', True))
     show_in_context = argToBoolean(args.get('show_in_context', False))
