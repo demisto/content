@@ -537,11 +537,10 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
-  trigger:
-    include:
-      - file: "/.gitlab/ci/test-include.yml"
-        ref: test_include
-        project: "${CI_PROJECT_NAMESPACE}/infra"
+  include:
+    - file: "/.gitlab/ci/test-include.yml"
+      ref: test_include
+      project: "${CI_PROJECT_NAMESPACE}/infra"
   script:
     - section_start "TEST"
     - echo "this is test"
