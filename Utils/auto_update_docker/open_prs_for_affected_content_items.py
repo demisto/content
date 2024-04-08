@@ -27,6 +27,7 @@ def create_remote_pr(
     head_branch: str,
     remote_content_repo: Repository.Repository,
     updated_content_items: list[str],
+    coverage: str,
     pr_labels: list[str] = [],
     pr_assignees: list[str] = [],
     pr_reviewers: list[str] = [],
@@ -48,7 +49,7 @@ def create_remote_pr(
     """
     joined_content_items = "\n".join(updated_content_items)
     body = f"Auto updated docker tags for the following content items:\n{joined_content_items}"
-    title = f"Auto update docker for {docker_image}:{target_tag}. PR batch #{current_batch}/{number_of_batches}"
+    title = f"{docker_image}:{target_tag} | {coverage} | PR batch #{current_batch}/{number_of_batches}"
     pr = remote_content_repo.create_pull(
         title=title,
         body=body,
@@ -74,6 +75,7 @@ def update_content_items_docker_images_and_push(
     docker_image: str,
     content_items: list[str],
     target_tag: str,
+    coverage: str,
     pr_labels: list[str],
     current_batch: int,
     number_of_batches: int,
@@ -143,7 +145,8 @@ def update_content_items_docker_images_and_push(
         pr_labels=pr_labels,
         updated_content_items=updated_content_items,
         pr_assignees=pr_assignees,
-        pr_reviewers=pr_reviewers
+        pr_reviewers=pr_reviewers,
+        coverage=coverage
     )
 
 def comma_list(raw_data: str) -> list[str]:
@@ -152,22 +155,14 @@ def comma_list(raw_data: str) -> list[str]:
 @app.command()
 def open_prs_for_content_items(
     affected_content_items_file: str = typer.Option(
-        # default="Utils/auto_update_docker/affected_content_items.json",
         help="The affected content items that will have their image tags updated, supplied as a json",
     ),
     staging_branch: str = typer.Option(
         default="auto_update_docker_staging_branch",
         help="The staging branch, that will act as the base branch for the PRs",
     ),
-    batch_index: int = typer.Option(
-        help="The batch index",
-    ),
-    flow_index: int = typer.Option(
-        help="The flow index",
-    ),
     prs_limit: str = typer.Option(
-        # TODO Change to 50 later
-        default="2",
+        default="10",
         help="The maximum number of content items to open in one PR",
     ),
     pr_assignees: list = typer.Option(
@@ -238,6 +233,7 @@ def open_prs_for_content_items(
                         content_items=content_items_for_batch,
                         pr_labels=image_config["pr_labels"],
                         target_tag=image_config["target_tag"],
+                        coverage=image_config["coverage"],
                         pr_assignees=pr_assignees,
                         pr_reviewers=pr_reviewers
                     )

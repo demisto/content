@@ -85,7 +85,7 @@ def filter_content_items_to_run_on(
         "content_items": affected_content_items,
         "pr_labels": batch_config.get("pr_labels", []),
         "target_tag": target_docker_tag,
-        "coverage": f"{min}-{max}"
+        "coverage": f"{min_cov}-{max_cov}"
     } if affected_content_items else {}
 
 def get_docker_image_tag(docker_image: str, images_tag: dict[str, str]) -> str:
@@ -206,7 +206,7 @@ def calculate_affected_docker_images(
     images_without_excluded_ones = set(all_docker_images) - set(images_to_exclude)
     if docker_images_arg == "ALL":
         return list(images_without_excluded_ones)
-    images_args = docker_images_arg.split("/")
+    images_args = docker_images_arg.split("-")
     if len(images_args) == 1:
         # Comma separated list case
         specific_images = images_args[0].split(",")
@@ -279,11 +279,9 @@ def get_content_items_by_docker_image() -> dict[str, list[dict[str, Any]]]:
 @app.command()
 def get_affected_content_items(
     config_path: str = typer.Option(
-        # default="Utils/auto_update_docker/auto_update_docker_config.json",
         help="The config file that holds all the configuration of the batches and docker images",
     ),
     coverage_report: str = typer.Option(
-        # default="Utils/auto_update_docker/coverage_report.json",
         help="The coverage report from last nightly",
     ),
     docker_images_arg: str = typer.Option(
@@ -312,11 +310,6 @@ def get_affected_content_items(
 ):
     # IMPORTANT - "demisto-sdk create-content-graph" must be ran before
     # Entry point of code
-    # TODO Will need to delete later, and add default value for the argument docker_images_target_tags_path
-    # docker_images_target_tags_path = f"{CWD}/Utils/auto_update_docker/images_tag.json"
-
-    # TODO Will need to delete later
-    # dir = f"{CWD}/Utils/auto_update_docker"
 
     path_dir = Path(auto_update_dir) if dir else Path(CWD)
     if not path_dir.exists():
@@ -365,7 +358,7 @@ def get_affected_content_items(
     current_time_str = time.strftime("%Y-%m-%d-%H:%M:%S")
 
     # Creates flow directory if it does not exist, else it does nothing
-    flow_dir = auto_update_dir / Path(f"flow_{flow_index}")
+    flow_dir = path_dir / Path(f"flow_{flow_index}")
     flow_dir.mkdir(exist_ok=True)
 
     # Create current batch directory if it does not exist, else it does nothing
