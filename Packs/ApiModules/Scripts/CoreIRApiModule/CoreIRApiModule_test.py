@@ -3909,10 +3909,10 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
         assert remote_args.delta.get('status')
         assert remote_args.delta['status'] == expected_resolved_status[i]
 
-
-@pytest.mark.parametrize('is_demisto_version_ge_value, class_name, function', [(True, demisto,"_apiCall"),
-                                                                          (False, BaseClient,"_http_request")])
-def test_http_request_demisto_call(mocker, is_demisto_version_ge_value, class_name, function):
+HTTP_CALL_TEST = [(True, demisto,"_apiCall", {'data':'{"reply":[{"container": ["1.1.1.1"]}]}'}),
+                  (False, BaseClient,"_http_request", {'data':{"reply":[{"container": ["1.1.1.1"]}]}})]
+@pytest.mark.parametrize('is_demisto_version_ge_value, class_name, function, res', HTTP_CALL_TEST)
+def test_http_request_demisto_call(mocker, is_demisto_version_ge_value, class_name, function, res):
     """
     Given:
         - The build number.
@@ -3928,11 +3928,8 @@ def test_http_request_demisto_call(mocker, is_demisto_version_ge_value, class_na
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
     mocker.patch.object(CoreIRApiModule, 'is_demisto_version_ge', return_value=is_demisto_version_ge_value)
-    mocker.patch.object(class_name, function ,return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
-                                         'status': 200,
-                                         'data':'{"reply":[{"container": ["1.1.1.1"]}]}'})
+    mocker.patch.object(class_name, function ,return_value=res)
     res = client._http_request(method = "POST",
                                 url_suffix="/distributions/get_versions/")
-    assert res['status'] == 200
-    assert res['name'] == '/api/webapp/public_api/v1/distributions/get_versions/'
+    assert res['data'] == {"reply":[{"container": ["1.1.1.1"]}]}
     
