@@ -33,8 +33,7 @@ def rcs_scan_set_context(scan_id: str, demisto: Any):
         args_set_scan = {"key": "RCSScanId", "value": scan_id}
         demisto.executeCommand("Set", args_set_scan)
         return "Updated RCSScanId Key Value"
-    else:
-        return "RCSScanId remains unchanged"
+    return "RCSScanId remains unchanged"
 
 
 def rcs_scan_start(args: Dict[str, Any], demisto: Any):
