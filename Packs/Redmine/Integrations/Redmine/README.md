@@ -153,7 +153,7 @@ Display a list of issues
 | issue_id | An array of issue IDs to display -&gt; 1,2,3. | Optional | 
 | project_id | Aa project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed. | Optional | 
 | subproject_id | A subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!name_of_subproject" to exclude subprojects). | Optional | 
-| tracker | - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).</br> - This argument is case sensitive. | Optional | 
+| tracker | - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).<br/> - This argument is case sensitive. | Optional | 
 | status | - The status to display issues related to this status.  <br/>- You can use Open/Closed/All from the predefined values or use any of your custom status ids (e.g., 1)/ status names(e.g., New).</br> - This argument is case sensitive. | Optional | 
 | assigned_to_id | An assigned-to ID to display issues assigned to this user ID. | Optional | 
 | parent_id | A parent ID to display issues that are under this parent ID. | Optional | 
