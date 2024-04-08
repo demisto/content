@@ -26,12 +26,16 @@ def test_pids():
 def test_fd_limits():
     assert check_fd_limits(100, 200)
 
+
 a = 1
+
+
 def test_check_cpus(mocker):
     import DockerHardeningCheck
+
     def intensive_calc(i):
         global a
-        time.sleep(a*0.1)
+        time.sleep(a * 0.1)
         a += 1
     mocker.patch.object(DockerHardeningCheck, "intensive_calc", side_effect=intensive_calc)
     assert "CPU processing power increased significantly" in check_cpus(1)
