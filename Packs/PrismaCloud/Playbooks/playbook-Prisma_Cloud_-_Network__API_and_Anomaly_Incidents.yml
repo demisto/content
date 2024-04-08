@@ -371,7 +371,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "44"
     scriptarguments:
       AwsTimeSearchFrom:
         simple: "1"
@@ -420,7 +420,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 30,
           "y": 1770
         }
       }
@@ -536,7 +536,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 30,
           "y": 1640
         }
       }
@@ -599,7 +599,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2210
+          "y": 2270
         }
       }
     note: false
@@ -643,7 +643,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2510
+          "y": 2570
         }
       }
     note: false
@@ -674,7 +674,7 @@ tasks:
       {
         "position": {
           "x": 840,
-          "y": 2720
+          "y": 2780
         }
       }
     note: false
@@ -771,7 +771,7 @@ tasks:
       {
         "position": {
           "x": 840,
-          "y": 3030
+          "y": 3090
         }
       }
     note: false
@@ -815,7 +815,7 @@ tasks:
       {
         "position": {
           "x": 840,
-          "y": 2860
+          "y": 2920
         }
       }
     note: false
@@ -860,7 +860,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3550
+          "y": 3610
         }
       }
     note: false
@@ -891,7 +891,7 @@ tasks:
       {
         "position": {
           "x": 690,
-          "y": 3720
+          "y": 3780
         }
       }
     note: false
@@ -919,7 +919,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3900
+          "y": 3960
         }
       }
     note: false
@@ -1085,7 +1085,7 @@ tasks:
       {
         "position": {
           "x": 690,
-          "y": 3380
+          "y": 3440
         }
       }
     note: false
@@ -1130,7 +1130,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 3210
+          "y": 3270
         }
       }
     note: false
@@ -1160,7 +1160,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
+          "x": 450,
           "y": 1640
         }
       }
@@ -1195,7 +1195,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 10,
+          "x": 450,
           "y": 1770
         }
       }
@@ -1442,6 +1442,10 @@ tasks:
                         "return": "Suspicious"
                       },
                       {
+                        "condition": "#{alert.useranomalycount} > '0'",
+                        "return": "Suspicious"
+                      },
+                      {
                         "condition": "#{alert.ipreputation} == '3'",
                         "return": "Malicious"
                       },
@@ -1459,7 +1463,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 2350
+          "y": 2410
         }
       }
     note: false
@@ -1679,6 +1683,101 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 2aec9d38-f06a-4694-869f-60f8daa27e8e
+    type: condition
+    task:
+      id: 2aec9d38-f06a-4694-869f-60f8daa27e8e
+      version: -1
+      name: Has Results?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AwsSuspiciousActivitiesCount
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: GcpAnomalousNetworkTraffic
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: CountAzureEvents.AzureAnomaliesCount
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 7837fc50-fa9d-489a-89af-977c5c4100b2
+    type: regular
+    task:
+      id: 7837fc50-fa9d-489a-89af-977c5c4100b2
+      version: -1
+      name: Set User Investigation Results
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      useranomalycount:
+        complex:
+          root: CountAzureEvents
+          accessor: AzureAnomaliesCount
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: AwsSuspiciousActivitiesCount
+                iscontext: true
+          - operator: SumList
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1686,7 +1785,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4395,
+        "height": 4455,
         "width": 1960,
         "x": -260,
         "y": -430
@@ -1694,24 +1793,6 @@ view: |-
     }
   }
 inputs:
-- key: EarlyContainment
-  value:
-    simple: "True"
-  required: false
-  description: ""
-  playbookInputQuery:
-- key: StopForRecommendations
-  value:
-    simple: "True"
-  required: false
-  description: ""
-  playbookInputQuery:
-- key: CreateTicket
-  value:
-    simple: "False"
-  required: false
-  description: Whether to create a ticket in ZenDesk or ServiceNow. Insert True or False
-  playbookInputQuery:
 - key: serviceNowShortDescription
   value: {}
   required: false
@@ -1792,13 +1873,25 @@ inputs:
   required: false
   description: The ticket description.
   playbookInputQuery:
+- key: CreateTicket
+  value:
+    simple: "False"
+  required: false
+  description: Whether to create a ticket in ZenDesk or ServiceNow. Insert True or False
+  playbookInputQuery:
+- key: StopForRecommendations
+  value:
+    simple: "True"
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: EarlyContainment
+  value:
+    simple: "True"
+  required: false
+  description: ""
+  playbookInputQuery:
 inputSections:
-- inputs:
-  - EarlyContainment
-  - StopForRecommendations
-  - CreateTicket
-  name: General (Inputs group)
-  description: Generic group for inputs
 - inputs:
   - serviceNowShortDescription
   - serviceNowImpact
@@ -1820,6 +1913,15 @@ inputSections:
   - ZendeskCollaborators
   - ZenDeskDescription
   name: Incident Management - ZenDesk
+  description: ""
+- inputs:
+  - CreateTicket
+  - StopForRecommendations
+  name: Incident Management
+  description: ""
+- inputs:
+  - EarlyContainment
+  name: Remediation
   description: ""
 outputSections:
 - outputs: []
