@@ -43,13 +43,13 @@ script:
       required: false
     - name: tracker
       description: |-
-        - Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task).
+        - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).
         - This argument is case sensitive.
       required: true
     - name: priority
       required: true
       description: |-
-        - Enter a priority ID (e.g 1,2,3) or a priority name (e.g Low/High).
+        - Enter a priority ID (e.g., 1,2,3) or a priority name (e.g., Low/High).
         - This argument is case sensitive.
     - name: subject
       required: true
@@ -138,13 +138,13 @@ script:
       description: A subproject ID to exclude from the list (you can't use both subproject_id and exclude), you need to add a project_id for this field to be included.
     - name: tracker
       description: |-
-        - Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task).
+        - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).
         - This argument is case sensitive.
     - name: status
       auto: PREDEFINED
       description: |-
         - The status to display issues related to this status.
-        - You can use Open/Closed/All from the predefined values or use any of your custom status id (e.g 1)/ status name(e.g New).
+        - You can use Open/Closed/All from the predefined values or use any of your custom status ID (e.g., 1)/ status name(e.g., New).
         - This argument is case sensitive.
       defaultValue: Open
       predefined:
@@ -176,15 +176,15 @@ script:
       description: The ID of the project to associate with the issue. If not specified, the value from the integration configuration will be used if specified.
     - name: tracker
       description: |-
-        - Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task).
+        - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).
         - This argument is case sensitive.
     - name: status
       description: |-
-        - Enter a status ID (e.g 1,2,3) or a status name (e.g New/Closed).
+        - Enter a status ID (e.g., 1,2,3) or a status name (e.g., New/Closed).
         - This argument is case sensitive.
     - name: priority
       description: |-
-        - Enter a priority ID (e.g 1,2,3) or a priority name (e.g Low/High).
+        - Enter a priority ID (e.g., 1,2,3) or a priority name (e.g., Low/High).
         - This argument is case sensitive.
     - name: subject
       description: The subject of the issue.
