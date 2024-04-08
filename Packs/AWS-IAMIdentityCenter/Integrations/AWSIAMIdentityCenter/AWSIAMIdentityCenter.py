@@ -198,7 +198,10 @@ def create_group(args, client):
     response = client.create_group(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         group_id = response.get('GroupId')
-        demisto.results(f'Group {group_id} has been successfully created')
+        del response['ResponseMetadata']
+        ec = {'AWS.IAMIdentityCenter.Groups': response}
+        human_readable = f'Group {group_id} has been successfully created'
+        return_outputs(human_readable, ec)
 
 
 def delete_group(args, client):
@@ -294,46 +297,73 @@ def add_user_to_group(args, client):  # pragma: no cover
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results(f'The membership id {membershipId} has been successfully created.')
 
+def get_group_memberships_for_member(args,client):
+    membershipsOfMember = []
+    userID = get_userId_by_username(args, client)['UserId']
+    kwargs = {
+        'IdentityStoreId': f'{IDENTITYSTOREID}',
+        'MemberId': {
+            'UserId': f'{userID}'
+        }
+    }
+    kwargs = remove_empty_elements(kwargs)
+    groups_response = client.list_group_memberships_for_member(**kwargs)
+    user_groups = groups_response.get('GroupMemberships')
+    for group in user_groups:
+        membershipsOfMember.append(group['MembershipId'])
+    return membershipsOfMember
 
 def delete_group_membership(args, client):
     membershipsToDelete = []
-    if args.get('membershipId'):
-        membershipsToDelete = args.get('membershipId')
+    if args.get('membershipId') and args.get('userName'):
+        return_error("Please provide one of userName and membershipId.")
+    elif args.get('membershipId'):
+        membershipsToDelete = argToList(args.get('membershipId'))
     elif args.get('userName'):
-        userID = get_userId_by_username(args, client)['UserId']
-        kwargs = {
-            'IdentityStoreId': f'{IDENTITYSTOREID}',
-            'MemberId': {
-                'UserId': f'{userID}'
-            }
-        }
-        kwargs = remove_empty_elements(kwargs)
-        groups_response = client.list_group_memberships_for_member(**kwargs)
-        user_groups = groups_response.get('GroupMemberships')
-        for group in user_groups:
-            membershipsToDelete.append(group['MembershipId'])
+        membershipsToDelete = get_group_memberships_for_member(args, client)
+        if membershipsToDelete == []:
+            demisto.results('User is not member of any group.')
     else:
-        return_error("One of the arguments userName and membershipId should be entered.")
+        return_error("userName or membershipId must be provided.")
     if membershipsToDelete != []:
         for member in membershipsToDelete:
             response = client.delete_group_membership(
                 IdentityStoreId=f'{IDENTITYSTOREID}',
                 MembershipId=f'{member}'
             )
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results(f'The membership with ids {membershipsToDelete} have been deleted.')
+        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            demisto.results(f'The membership with ids {membershipsToDelete} have been deleted.')
 
 
-def remove_user_from_groups(args, client):  # pragma: no cover
-    membershipID = list_groups_for_user(args, client)
-    response = client.delete_group_membership(
-        IdentityStoreId=f'{IDENTITYSTOREID}',
-        MembershipId=f'{membershipID}'
+def list_group_memberships(args, client):
+    hr_data = []
+    context_data = []
+    groupId = get_groupId_by_displayName(args, client).get('GroupId')
+    kwargs = {
+        'IdentityStoreId': IDENTITYSTOREID,
+        'GroupId': groupId,
+        'MaxResults': arg_to_number(args.get('limit') or params.get('limit')),
+        'NextToken': args.get('nextToken')
+    }
+    kwargs = remove_empty_elements(kwargs)
+    response = client.list_group_memberships(**kwargs)
+    for membership in response.get('GroupMemberships'):
+        member_details = {
+            'MembershipId': membership['MembershipId'],
+            'GroupId': groupId,
+            'UserId': membership.get('MemberId')['UserId']
+        }
+        hr_data.append(member_details)
+        context_data.append(membership)
+    outputs = {'AWS.IAMIdentityCenter.GroupMembership': context_data,
+               'AWS.IAMIdentityCenter(true)': {'GroupMembershipNextToken': response.get('NextToken')}}
+    human_readable = tableToMarkdown('AWS IAM Identity Center groups', hr_data, removeNull=True)
+    result = CommandResults(
+        readable_output=human_readable,
+        outputs=outputs
     )
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results(
-            "The User {} has been removed from the group {}".format(args.get('userName'),
-                                                                    args.get('groupName')))
+    return_results(result)
+    
 
 
 def test_function(args, client):
@@ -404,8 +434,6 @@ def main():     # pragma: no cover
             list_groups_for_user(args, client)
         elif command == 'aws-iam-identitycenter-add-user-to-group':
             add_user_to_group(args, client)
-        elif command == 'aws-iam-identitycenter-remove-user-from-all-groups':
-            remove_user_from_groups(args, client)
         elif command == 'aws-iam-identitycenter-delete-user':
             delete_user(args, client)
         elif command == 'aws-iam-identitycenter-create-group':
@@ -414,6 +442,8 @@ def main():     # pragma: no cover
             delete_group(args, client)
         elif command == 'aws-iam-identitycenter-delete-group-membership':
             delete_group_membership(args, client)
+        elif command == 'aws-iam-identitycenter-list-memberships':
+            list_group_memberships(args, client)
 
     except Exception as e:
         return_error('Error has occurred in the AWS IAM Integration: {code}\n {message}'.format(
