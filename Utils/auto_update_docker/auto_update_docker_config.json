@@ -5,23 +5,23 @@
                 {
                     "min": 0,
                     "max": 100,
-                    "pr_labels": [],
+                    "pr_labels": ["auto-update-docker"],
                     "only_nightly": false
                 },
                 {
                     "min": 50,
                     "max": 70,
-                    "pr_labels": []
+                    "pr_labels": ["auto-update-docker"]
                 },
                 {
                     "min": 30,
                     "max": 50,
-                    "pr_labels": []
+                    "pr_labels": ["auto-update-docker"]
                 },
                 {
                     "min": 0,
                     "max": 30,
-                    "pr_labels": []
+                    "pr_labels": ["auto-update-docker"]
                 }
             ]
         },
