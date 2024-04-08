@@ -120,7 +120,7 @@ class Client(BaseClient):
             integration_context['trackers'] = {}
             for tracker in response['trackers']:
                 if tracker.get("id") and tracker.get("name"):
-                    integration_context['trackers'][tracker.get("name").lower()] = str(tracker.get("id"))
+                    integration_context['trackers'][tracker.get("name")] = str(tracker.get("id"))
             set_integration_context(integration_context)
 
     def get_status_and_id_dict_request(self):
@@ -132,7 +132,7 @@ class Client(BaseClient):
             integration_context['statuses'] = {}
             for status in response['issue_statuses']:
                 if status.get("id") and status.get("name"):
-                    integration_context['statuses'][status.get("name").lower()] = str(status.get("id"))
+                    integration_context['statuses'][status.get("name")] = str(status.get("id"))
             set_integration_context(integration_context)
 
     def get_priority_and_id_dict_request(self):
@@ -144,7 +144,7 @@ class Client(BaseClient):
             integration_context['priorities'] = {}
             for priority in response['issue_priorities']:
                 if priority.get("id") and priority.get("name"):
-                    integration_context['priorities'][priority.get("name").lower()] = str(priority.get("id"))
+                    integration_context['priorities'][priority.get("name")] = str(priority.get("id"))
             set_integration_context(integration_context)
 
 
@@ -215,7 +215,7 @@ def handle_convert_tracker(client, tracker: str):
     except ValueError:
         client.get_tracker_and_id_dict_request()
         integration_context = get_integration_context().get('trackers', {})
-        tracker_id = integration_context.get(tracker.lower())
+        tracker_id = integration_context.get(tracker)
         if not tracker_id:
             raise DemistoException(f"Could not find {tracker} in your trackers list, please make sure using an existing"
                                    " tracker name.")
@@ -234,7 +234,7 @@ def handle_convert_status(client, status: str):
     except ValueError:
         client.get_status_and_id_dict_request()
         integration_context = get_integration_context().get('statuses', {})
-        status_id = integration_context.get(status.lower())
+        status_id = integration_context.get(status)
         if not status_id:
             raise DemistoException(f"Could not find {status} in your statuses list, please make sure using an existing"
                                    " status name.")
@@ -253,7 +253,7 @@ def handle_convert_priority(client, priority: str):
     except ValueError:
         client.get_priority_and_id_dict_request()
         integration_context = get_integration_context().get('priorities', {})
-        priority_id = integration_context.get(priority.lower())
+        priority_id = integration_context.get(priority)
         if not priority_id:
             raise DemistoException(f"Could not find {priority} in your priorities list, please make sure using an existing"
                                    " priority name.")

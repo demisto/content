@@ -29,6 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ***
 - Create a new issue
+- By default, the status of the newly created issue will be set to the status identified by ID=1 from the custom statuses list (from the Redmine instance)
 - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
 - To create a custom field, navigate to the server URL with administrative privileges, click **Administration** (located at the top left), select **Custom fields**, and then proceed to create a new custom field. Once created, you can add values as needed
 - To create a category/version, navigate to the server URL > click **Settings** (top bar) > **Versions** tab and **Issue categories** tab.
@@ -44,7 +45,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 | --- | --- | --- |
 | project_id | The project ID for this issue. If not specified, the value from the integration configuration will be used. | Optional | 
 | tracker | Enter a tracker ID (e.g 1,2,3) or a tracker name (e.g Bug/Task). | Required | 
-| status | - Enter a status ID (e.g 1,2,3) or a status name (e.g New/Closed). <br/>- By default Redmine API will create issues as new- use redmine-issue-update to update to the correct status. | Required | 
 | priority | Enter a priority ID (e.g 1,2,3) or a priority name (e.g Low/High). | Required | 
 | subject | The subject for this issue. | Required | 
 | description | A description for this issue. | Optional | 
