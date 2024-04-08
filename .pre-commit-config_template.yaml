@@ -41,6 +41,7 @@ repos:
   rev: v0.0.272
   hooks:
   - id: ruff
+    parallel: false
     min_py_version: '3.7'
     args:
     - --fix
