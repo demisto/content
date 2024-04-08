@@ -53,7 +53,7 @@ def get_pr_files(pr_number: str, github_token: str) -> Iterable[str]:
         response.raise_for_status()
         files = response.json()
         # to prevent another empty request, also check if the length of `files` is less than the value of per_page.
-        if not files and (len(list(files)) <= int(PER_PAGE)):
+        if (not files) or (len(list(files)) <= int(PER_PAGE)):
             break
         for pr_file in files:
             if pr_file['filename'].startswith('Packs/'):
