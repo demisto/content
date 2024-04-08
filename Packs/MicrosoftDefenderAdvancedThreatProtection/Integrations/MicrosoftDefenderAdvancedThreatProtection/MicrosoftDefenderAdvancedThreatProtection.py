@@ -1985,10 +1985,10 @@ class MsClient:
                                                overwrite_rate_limit_retry=overwrite_rate_limit_retry)
         return response
 
-    def create_action(self, machine_id, request_body, overwrite_rate_limit_retry=False):
+    def create_action(self, machine_id, request_body, overwrite_rate_limit_retry=False, response_type="json", ok_codes=None):
         cmd_url = f'machines/{machine_id}/runliveresponse'
         response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body,
-                                               overwrite_rate_limit_retry=overwrite_rate_limit_retry)
+                                               overwrite_rate_limit_retry=overwrite_rate_limit_retry, resp_type=response_type, ok_codes=ok_codes)
         return response
 
     def download_file(self, url_link):
@@ -5404,12 +5404,35 @@ def get_live_response_file_action(client, args):
     }
 
     # create action:
-    res = client.create_action(machine_id, request_body, overwrite_rate_limit_retry=True)
-    md = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
+    response = client.create_action(
+        machine_id,
+        request_body,
+        overwrite_rate_limit_retry=True,
+        response_type="response",
+        ok_codes=(200, 201, 202, 204, 206, 400, 404)
+    )
+    json_response = response.json()
+    if response.status_code == 400:
+        error = json_response.get("error")
+        code = error.get("code")
+        if code == "ActiveRequestAlreadyExists":
+            uuid_pattern = r'\b[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\b'  # action-id is a uuid
+            if match := re.search(uuid_pattern, error.get("message")):
+                action_id = match.group()
+                demisto.debug(f'There is an action-id {action_id} that is already running')
+            else:
+                demisto.error(f'Could not get action-ID from {error} following ActiveRequestAlreadyExists')
+                response.raise_for_status()
+        else:
+            response.raise_for_status()
+    else:
+        action_id = json_response['id']
+
+    md = tableToMarkdown('Processing action. This may take a few minutes.', action_id, headers=['id'])
 
     return CommandResults(
         outputs_prefix='MicrosoftATP.LiveResponseAction',
-        outputs={'action_id': res['id']},
+        outputs={'action_id': action_id},
         readable_output=md)
 
 
