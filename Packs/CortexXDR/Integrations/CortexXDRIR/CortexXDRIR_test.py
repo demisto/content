@@ -1283,11 +1283,12 @@ def test_update_alerts_in_xdr_command_expected_result(mocker):
     from CortexXDRIR import update_alerts_in_xdr_command, Client
     xdrIr_client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
     http_request = mocker.patch.object(xdrIr_client, '_http_request')
-    http_request.return_value = {"reply": {"alerts_ids": ['1','2','3']}}
+    http_request.return_value = {"reply": {"alerts_ids": ['1', '2', '3']}}
     args = {"alert_ids": "1,2,3", "severity": "high", "status": "resolved_threat_handled", "comment": "fixed from test"}
     res = update_alerts_in_xdr_command(xdrIr_client, args)
     assert res.readable_output == "Alerts with IDs 1,2,3 have been updated successfully."
-    
+
+
 def test_update_alerts_in_xdr_command_invalid_response_no_reply(mocker):
     """
     Given:
@@ -1301,11 +1302,12 @@ def test_update_alerts_in_xdr_command_invalid_response_no_reply(mocker):
     from CortexXDRIR import update_alerts_in_xdr_command, Client
     xdrIr_client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
     http_request = mocker.patch.object(xdrIr_client, '_http_request')
-    http_request.return_value = {"alerts_ids": ['1','2','3']}
+    http_request.return_value = {"alerts_ids": ['1', '2', '3']}
     args = {"alert_ids": "1,2,3", "severity": "high", "status": "resolved_threat_handled", "comment": "fixed from test"}
     with pytest.raises(DemistoException) as e:
         update_alerts_in_xdr_command(xdrIr_client, args)
     assert e.value.message == "Parse Error. Response not in format, can't find reply key."
+
 
 def test_update_alerts_in_xdr_command_invalid_response_no_alerts_ids(mocker):
     """
@@ -1320,11 +1322,12 @@ def test_update_alerts_in_xdr_command_invalid_response_no_alerts_ids(mocker):
     from CortexXDRIR import update_alerts_in_xdr_command, Client
     xdrIr_client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
     http_request = mocker.patch.object(xdrIr_client, '_http_request')
-    http_request.return_value = {"reply": ['1','2','3']}
+    http_request.return_value = {"reply": ['1', '2', '3']}
     args = {"alert_ids": "1,2,3", "severity": "high", "status": "resolved_threat_handled", "comment": "fixed from test"}
     with pytest.raises(DemistoException) as e:
         update_alerts_in_xdr_command(xdrIr_client, args)
     assert e.value.message == "Parse Error. Response not in format, can't find reply key."
+
 
 @pytest.mark.parametrize('incident_changed, delta',
                          [(True, {'CortexXDRIRstatus': 'resolved', "close_reason": "False Positive"}),
@@ -1356,6 +1359,7 @@ def test_update_remote_system_command_update_alerts(mocker, incident_changed, de
         http_request_mock.return_value = '1,2,3'
         update_remote_system_command(client, args)
 
+
 def test_update_alerts_in_xdr_request_called_with():
     """
     Given:
@@ -1379,27 +1383,28 @@ def test_update_alerts_in_xdr_request_called_with():
                 "alerts_ids": alerts_ids
             }
         }
-        get_headers_mock.return_value= {
-        "x-xdr-timestamp": 123,
-        "x-xdr-nonce": 456,
-        "x-xdr-auth-id": str(678),
-        "Authorization": 123,
-    }
+        get_headers_mock.return_value = {
+            "x-xdr-timestamp": 123,
+            "x-xdr-nonce": 456,
+            "x-xdr-auth-id": str(678),
+            "Authorization": 123,
+        }
         client.update_alerts_in_xdr_request(alerts_ids, severity, status, comment)
         mock_http_request.assert_called_once_with(method='POST',
                                                   url_suffix='/alerts/update_alerts',
                                                   json_data={'request_data':
-                                                      {'alert_id_list': '1,2,3',
-                                                       'update_data':
-                                                           {'severity': 'High', 'status': 'resolved', 'comment': 'i am a test'}
-                                                        }
-                                                      },
+                                                             {'alert_id_list': '1,2,3',
+                                                              'update_data':
+                                                              {'severity': 'High', 'status': 'resolved', 'comment': 'i am a test'}
+                                                              }
+                                                             },
                                                   headers={
                                                       'x-xdr-timestamp': 123,
                                                       'x-xdr-nonce': 456,
                                                       'x-xdr-auth-id': '678',
                                                       'Authorization': 123},
                                                   timeout=120)
+
 
 def test_update_alerts_in_xdr_request_invalid_response():
     """
@@ -1419,17 +1424,17 @@ def test_update_alerts_in_xdr_request_invalid_response():
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False, params={'close_alerts_in_xdr': True})
     with patch.object(client, '_http_request') as mock_http_request, patch("CortexXDRIR.get_headers") as get_headers_mock, \
-        pytest.raises(DemistoException) as e:
+            pytest.raises(DemistoException) as e:
         mock_http_request.return_value = {
             "replys": {
                 "alerts_ids": alerts_ids
             }
         }
-        get_headers_mock.return_value= {
-        "x-xdr-timestamp": 123,
-        "x-xdr-nonce": 456,
-        "x-xdr-auth-id": str(678),
-        "Authorization": 123,
-    }
+        get_headers_mock.return_value = {
+            "x-xdr-timestamp": 123,
+            "x-xdr-nonce": 456,
+            "x-xdr-auth-id": str(678),
+            "Authorization": 123,
+        }
         client.update_alerts_in_xdr_request(alerts_ids, severity, status, comment)
     assert e.value.message == "Parse Error. Response not in format, can't find reply key."

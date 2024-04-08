@@ -435,13 +435,13 @@ class Client(CoreClient):
             "alert_id_list": alerts_ids,
         }}
         if severity or status or comment:
-            request_data["request_data"]["update_data"] = {} # type: ignore
+            request_data["request_data"]["update_data"] = {}  # type: ignore
         if severity:
-            request_data["request_data"]["update_data"]["severity"] = severity # type: ignore
+            request_data["request_data"]["update_data"]["severity"] = severity  # type: ignore
         if status:
-            request_data["request_data"]["update_data"]["status"] = status # type: ignore
+            request_data["request_data"]["update_data"]["status"] = status  # type: ignore
         if comment:
-            request_data["request_data"]["update_data"]["comment"] = comment # type: ignore
+            request_data["request_data"]["update_data"]["comment"] = comment  # type: ignore
 
         response = self._http_request(
             method='POST',
@@ -962,7 +962,7 @@ def update_remote_system_command(client, args):
         if remote_args.incident_changed:
             demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
             update_args = get_update_args(remote_args)
-            
+
             update_args['incident_id'] = remote_args.remote_incident_id
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
             demisto.debug(f"{update_args=}")
@@ -986,7 +986,7 @@ def update_remote_system_command(client, args):
                     demisto.debug(f"{related_alerts_ids_array=}")
                     related_alerts_ids_string = ','.join(related_alerts_ids_array)
                     args_for_command = {'alert_ids': related_alerts_ids_string, 'status': new_status, 'comment': comment}
-                    response = update_alerts_in_xdr_command(client, args_for_command)
+                    update_alerts_in_xdr_command(client, args_for_command)
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
@@ -1208,12 +1208,12 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
     status = args.get('status')
     comment = args.get('comment')
     for index in range(0, len(alerts_list), 100):
-        alerts_sublist = alerts_list[index:index+100]
+        alerts_sublist = alerts_list[index:index + 100]
         demisto.debug(f'{alerts_sublist=}, {severity=}, {status=}, {comment=}')
         array_of_sublist_ids = client.update_alerts_in_xdr_request(alerts_sublist, severity, status, comment)
         array_of_all_ids += array_of_sublist_ids
     return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids))
-                            )
+                          )
 
 
 def main():  # pragma: no cover
@@ -1640,10 +1640,10 @@ def main():  # pragma: no cover
 
         elif command in ('xdr-set-user-role', 'xdr-remove-user-role'):
             return_results(change_user_role_command(client, args))
-            
+
         elif command == 'xdr-update-alert':
             return_results(update_alerts_in_xdr_command(client, args))
-   
+
     except Exception as err:
         return_error(str(err))
 
