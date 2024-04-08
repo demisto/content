@@ -4,7 +4,7 @@ commonfields:
 name: SlashNext Phishing Incident Response
 display: SlashNext Phishing Incident Response
 category: Data Enrichment & Threat Intelligence
-description: "SlashNext Phishing Incident Response integration allows Cortex XSOAR users to fully automate analysis of suspicious URLs. For example, IR teams responsible for abuse inbox management can extract links or domains out of suspicious emails and automatically analyze them with the SlashNext SEER threat detection cloud to get definitive, binary verdicts (malicious or benign) along with IOCs, screen shots, and more. Automating URL analysis can save IR teams hundreds of hours versus manually triaging these emails or checking URLs and domains against less accurate phishing databases and domain reputation services."
+description: SlashNext Phishing Incident Response integration allows Cortex XSOAR users to fully automate analysis of suspicious URLs. For example, IR teams responsible for abuse inbox management can extract links or domains out of suspicious emails and automatically analyze them with the SlashNext SEER threat detection cloud to get definitive, binary verdicts (malicious or benign) along with IOCs, screen shots, and more. Automating URL analysis can save IR teams hundreds of hours versus manually triaging these emails or checking URLs and domains against less accurate phishing databases and domain reputation services.
 configuration:
 - display: SlashNext API Base URL
   name: apiurl
@@ -13,7 +13,7 @@ configuration:
   required: true
 - display: SlashNext API Key
   name: apikey
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   required: true
 - display: Trust any certificate (not secure)
@@ -54,7 +54,7 @@ configuration:
   type: 1
   required: false
 script:
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.91134
   type: python
   subtype: python3
   script: '-'
@@ -425,7 +425,7 @@ script:
       description: The host to look up in the SlashNext Threat Intelligence database, for which to return a list of associated URLs. Can be either a domain name or an IPv4 address.
     - name: limit
       description: The maximum number of URL records to fetch. Default is "10".
-      defaultValue: "10"
+      defaultValue: '10'
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -604,7 +604,7 @@ script:
       description: The URL to scan.
     - name: extended_info
       description: Whether to download forensics data, such as screenshot, HTML, and rendered text. If "true", forensics data will be returned. If "false" (or empty) forensics data will not be returned. Default is "false".
-      defaultValue: "false"
+      defaultValue: 'false'
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -698,10 +698,10 @@ script:
       description: The URL to scan.
     - name: timeout
       description: A timeout value in seconds. If the system is unable to complete a scan within the specified timeout, a timeout error will be returned. You can run the command again with a different timeout. If no timeout value is specified, a default timeout value is 60 seconds.
-      defaultValue: "60"
+      defaultValue: '60'
     - name: extended_info
       description: Whether to download forensics data, such as screenshot, HTML, and rendered text. If "true", forensics data will be returned. If "false" (or empty) forensics data will not be returned. Default is "false".
-      defaultValue: "false"
+      defaultValue: 'false'
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -795,7 +795,7 @@ script:
       description: Scan ID of the scan for which to get the report. Can be retrieved from the "slashnext-url-scan" command or "slashnext-url-scan-sync" command.
     - name: extended_info
       description: Whether to download forensics data, such as screenshot, HTML, and rendered text. If "true", forensics data will be returned. If "false" (or empty) forensics data will not be returned. Default is "false".
-      defaultValue: "false"
+      defaultValue: 'false'
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -889,7 +889,7 @@ script:
       description: Scan ID. Can be retrieved from the "slashnext-url-scan" command or the "slashnext-url-scan-sync" command.
     - name: resolution
       description: Resolution of the web page screenshot. Can be "high" or "medium". Default is "high".
-      defaultValue: "high"
+      defaultValue: high
     description: Downloads a screenshot of a web page against a previous URL scan request.
   - name: slashnext-download-html
     arguments:
