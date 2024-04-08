@@ -1222,7 +1222,7 @@ tasks:
       script: '|||prisma-cloud-alert-get-details'
       type: regular
       iscommand: true
-      brand: PrismaCloud v2
+      brand: ""
     nexttasks:
       '#none#':
       - "35"
