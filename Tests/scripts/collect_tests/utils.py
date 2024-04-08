@@ -141,6 +141,7 @@ class DictBased:
 
         if MarketplaceVersions.XSOAR_ON_PREM in pack_marketplaces:
             pack_marketplaces.add(MarketplaceVersions.XSOAR)
+            pack_marketplaces.remove(MarketplaceVersions.XSOAR_ON_PREM)
 
         return tuple(pack_marketplaces)
 

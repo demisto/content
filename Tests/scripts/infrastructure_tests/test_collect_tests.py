@@ -778,7 +778,7 @@ def test_upload_all_packs(mocker, monkeypatch, case_mocker, expected_tests: set[
                          [(['xsoar'], {MarketplaceVersions.XSOAR,
                                        MarketplaceVersions.XSOAR_SAAS}),
                           (['xsoar_saas'], {MarketplaceVersions.XSOAR_SAAS}),
-                          (['xsoar_on_prem'], {MarketplaceVersions.XSOAR_ON_PREM, MarketplaceVersions.XSOAR}),
+                          (['xsoar_on_prem'], {MarketplaceVersions.XSOAR}),
                           (['marketplacev2', 'xsoar'], {MarketplaceVersions.XSOAR,
                            MarketplaceVersions.XSOAR_SAAS, MarketplaceVersions.MarketplaceV2})])
 def test_handle_xsoar_marketplces(marketplaces, expected_results):
