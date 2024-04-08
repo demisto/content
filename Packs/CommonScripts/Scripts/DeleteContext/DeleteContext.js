@@ -145,7 +145,7 @@ if (shouldDeleteAll) {
 
 } else {
     // Supporting comma separated list of keys to be deleted.
-    var keysToDelete = (typeof keysToDelete === "string") ? args.key.split(',') : [args.key]
+    var keysToDelete = (typeof args.key === "string") ? args.key.split(',') : [args.key]
 
     var message = deleteKeys(keysToDelete, isSubPlaybookKey)
     return {

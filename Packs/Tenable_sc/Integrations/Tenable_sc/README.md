@@ -28,7 +28,7 @@ This integration was integrated and tested with Tenable.sc v5.7.0.
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | The timestamp to start the fetch from. | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | The timestamp to start the fetch from. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

@@ -2,9 +2,10 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: Main playbook to upload submissions to FortiSandbox, poll for verdict
+description: Main playbook to upload submissions to FortiSandbox, poll for verdict. Deprecated. Use `fortisandbox-submission-file-upload` instead.
   and retrieve report
 id: Detonate File - FortiSandbox
+deprecated: true
 inputs:
 - description: |
     Select Files to upload (Provide File objects from upper playbook only if using this as a sub-playbook). Change FileUploadLoop-FSBX to use ${inputs.File.EntryID} instead of ${File.EntryID}

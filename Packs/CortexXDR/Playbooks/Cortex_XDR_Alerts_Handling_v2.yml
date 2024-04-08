@@ -59,14 +59,14 @@ tasks:
       - "14"
       Identity Analytics:
       - "19"
+      Large Upload:
+      - "20"
       Malware:
       - "9"
       Port Scan:
       - "8"
       RDP Brute-Force:
       - "13"
-      Large Upload:
-      - "20"
     separatecontext: false
     conditions:
     - label: Malware
@@ -319,7 +319,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - "21"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -448,7 +448,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 480,
           "y": 405
         }
       }
@@ -480,7 +480,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "21"
     scriptarguments:
       endpoint_id:
         complex:
@@ -585,7 +585,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 1800,
           "y": 405
         }
       }
@@ -675,7 +675,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1330,
+          "x": -1580,
           "y": 750
         }
       }
@@ -732,7 +732,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1330,
+          "x": -1580,
           "y": 405
         }
       }
@@ -757,7 +757,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+      - "22"
       Cryptojacking:
       - "10"
       Data Exfiltration:
@@ -984,7 +984,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1330,
+          "x": -1580,
           "y": 560
         }
       }
@@ -1261,7 +1261,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -430,
+          "x": -400,
           "y": 405
         }
       }
@@ -1326,7 +1326,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2170,
+          "x": -2420,
           "y": 750
         }
       }
@@ -1421,7 +1421,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1750,
+          "x": -2000,
           "y": 750
         }
       }
@@ -1472,7 +1472,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2590,
+          "x": -2840,
           "y": 750
         }
       }
@@ -1552,7 +1552,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
+          "x": 920,
           "y": 405
         }
       }
@@ -1665,7 +1665,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -870,
+          "x": -840,
           "y": 405
         }
       }
@@ -1736,7 +1736,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1790,
+          "x": 1360,
           "y": 405
         }
       }
@@ -1747,6 +1747,84 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 173fd476-12f1-403c-839d-8087028dbf73
+    type: regular
+    task:
+      id: 173fd476-12f1-403c-839d-8087028dbf73
+      version: -1
+      name: Set Alert ID to continue with the investigation and response
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ContinueResponseForAlerts
+      value:
+        simple: ${inputs.alert_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2230,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: b9efc9da-9971-4e94-885f-ad668b030f3c
+    type: regular
+    task:
+      id: b9efc9da-9971-4e94-885f-ad668b030f3c
+      version: -1
+      name: Set Alert ID to continue with the investigation and response
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: ContinueResponseForAlerts
+      value:
+        simple: ${inputs.alert_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1160,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1754,17 +1832,17 @@ view: |-
       "12_16_Token Theft": 0.58,
       "1_11_Cloud": 0.9,
       "1_14_First SSO Access": 0.86,
-      "1_18_ Remote PsExec with LOLBIN command": 0.8,
+      "1_18_ Remote PsExec with LOLBIN command": 0.67,
       "1_19_Identity Analytics": 0.9,
-      "1_20_Large Upload": 0.9,
+      "1_20_Large Upload": 0.89,
       "1_7_#default#": 0.9,
-      "1_9_Malware": 0.65
+      "1_9_Malware": 0.9
     },
     "paper": {
       "dimensions": {
         "height": 925,
-        "width": 5200,
-        "x": -2590,
+        "width": 5450,
+        "x": -2840,
         "y": 70
       }
     }

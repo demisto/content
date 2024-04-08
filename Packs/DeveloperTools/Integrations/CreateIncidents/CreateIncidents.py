@@ -1,3 +1,4 @@
+import base64
 import json
 
 import demistomock as demisto  # noqa: F401
@@ -68,7 +69,13 @@ def fetch_incidents_command(client):
         if 'attachment' in incident:
             _add_attachments(client, incident)
         if 'entry_id_attachment' in incident:
-            incident.setdefault('attachment', []).extend(incident['entry_id_attachment'])
+            for attachment_entry_id in incident['entry_id_attachment']:
+                file = fileResult(attachment_entry_id['name'], base64.b64decode(attachment_entry_id['content'].encode('utf-8')))
+                incident.setdefault('attachment', []).append({
+                    'path': file['FileID'],
+                    'name': attachment_entry_id['name']
+                })
+            incident.pop('entry_id_attachment')
 
     # clear the integration contex from already seen incidents
     set_integration_context({'incidents': []})
@@ -117,7 +124,6 @@ def create_test_incident_from_json_command(args):
     incidents_json = args.get('incident_raw_json')
     if (not incidents_entry_id and not incidents_json) or (incidents_entry_id and incidents_json):
         raise DemistoException('Please insert entry_id or incident_raw_json, and not both')
-
     if incidents_entry_id:
         incidents_file_path = demisto.getFilePath(incidents_entry_id)
         with open(incidents_file_path['path'], 'rb') as incidents_file:
@@ -179,10 +185,15 @@ def parse_incidents(incidents: List[dict],
             parsed_incident['attachment'] = attachment_path
 
         if attachment_entry_ids:
+            parsed_incident['entry_id_attachment'] = []
             for attachment_entry_id in attachment_entry_ids:
                 attachment = demisto.getFilePath(attachment_entry_id)
-                parsed_incident.setdefault('entry_id_attachment', []).append({'path': attachment.get('file'),
-                                                                              'name': attachment.get('name')})
+                with open(attachment['path'], 'rb') as f:
+                    attachment_content = f.read()
+                    parsed_incident['entry_id_attachment'].append({
+                        'content': base64.b64encode(attachment_content).decode('utf-8'),
+                        'name': attachment['name']
+                    })
 
         ready_incidents.append(parsed_incident)
     return ready_incidents
