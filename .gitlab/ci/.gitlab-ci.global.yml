@@ -535,6 +535,8 @@
 
 .test-include-from-infra:
   stage: unittests-and-validations
+  extends:
+    - .default-job-settings
   trigger:
     include:
       - file: "/.gitlab/ci/test-include.yml"
