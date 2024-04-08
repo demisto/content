@@ -6,7 +6,8 @@ from urllib.parse import urljoin
 
 import requests
 
-PER_PAGE = "100" # value of `per_page` request parameter
+PER_PAGE = "100"  # value of `per_page` request parameter
+
 
 def main():
     parser = argparse.ArgumentParser(description='Deploy a pack from a contribution PR to a branch')
