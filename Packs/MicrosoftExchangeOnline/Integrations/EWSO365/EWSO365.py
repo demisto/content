@@ -1220,7 +1220,7 @@ def search_items_in_mailbox(
         is_public = client.is_default_folder(folder_path, is_public)
         folders = [client.get_folder_by_path(folder_path, account, is_public)]
     else:
-        folders = account.inbox.parent.walk() # pylint: disable=E1101
+        folders = account.inbox.parent.walk()  # pylint: disable=E1101
 
     items = []  # type: ignore
     selected_all_fields = selected_fields == "all"
