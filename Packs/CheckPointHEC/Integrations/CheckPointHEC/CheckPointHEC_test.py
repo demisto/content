@@ -3,12 +3,39 @@ import json
 import demistomock as demisto
 from CheckPointHEC import (Client, fetch_incidents, checkpointhec_get_entity, checkpointhec_get_events,
                            checkpointhec_get_scan_info, checkpointhec_search_emails, checkpointhec_send_action,
-                           checkpointhec_get_action_result, checkpointhec_send_notification, test_module as check_module)
+                           checkpointhec_get_action_result, checkpointhec_send_notification,
+                           test_module as check_module)
 
 
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def test_generate_infinity_token(mocker):
+    client = Client(
+        base_url='https://smart-api-example-1-us.avanan-example.net',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    _token = 'infinity token'
+    _inf_token = {
+        'data': {
+            'token': _token,
+            'expiresIn': 1000
+        }
+    }
+    mocker.patch.object(
+        Client,
+        '_http_request',
+        return_value=_inf_token
+    )
+
+    assert client._generate_infinity_token() == _token
+    assert client.token == _token
 
 
 def test_generate_signature_with_request_string():
@@ -61,6 +88,24 @@ def test_token_header(mocker):
     get_token.assert_called_once()
 
 
+def test_infinity_token_header(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    get_token = mocker.patch.object(
+        Client,
+        '_generate_infinity_token'
+    )
+
+    client._get_headers()
+    get_token.assert_called_once()
+
+
 def test_get_token_empty(mocker):
     client = Client(
         base_url='https://smart-api-example-1-us.avanan-example.net',
@@ -102,6 +147,71 @@ def test_get_token_existing(mocker):
     assert token != _token
 
 
+def test_call_smart_api(mocker):
+    client = Client(
+        base_url='https://smart-api-example-1-us.avanan-example.net',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    get_headers = mocker.patch.object(
+        Client,
+        '_get_headers',
+        return_value={}
+    )
+
+    http_request = mocker.patch.object(
+        Client,
+        '_http_request'
+    )
+
+    method = 'GET'
+    url_suffix = 'soar/test'
+    path = '/'.join([client.api_version, url_suffix])
+    request_string = f'/{path}'
+
+    client._call_api(method, url_suffix)
+    get_headers.assert_called_with(request_string)
+    http_request.assert_called_with(method, url_suffix=path, headers={}, params=None, json_data=None)
+
+    params = {'param1': 'value1'}
+    request_string += '?param1=value1'
+    client._call_api(method, url_suffix, params=params)
+    get_headers.assert_called_with(request_string)
+    http_request.assert_called_with(method, url_suffix=path, headers={}, params=params, json_data=None)
+
+
+def test_call_infinity_api(mocker):
+    client = Client(
+        base_url='https://cloudinfra-gw.example.checkpoint-example.com',
+        client_id='****',
+        client_secret='****',
+        verify=False,
+        proxy=False
+    )
+
+    get_headers = mocker.patch.object(
+        Client,
+        '_get_headers',
+        return_value={}
+    )
+
+    http_request = mocker.patch.object(
+        Client,
+        '_http_request'
+    )
+
+    method = 'GET'
+    url_suffix = 'soar/test'
+    path = '/'.join(['app', 'hec-api', client.api_version, url_suffix])
+
+    client._call_api(method, url_suffix)
+    get_headers.assert_called_with(None)
+    http_request.assert_called_with(method, url_suffix=path, headers={}, params=None, json_data=None)
+
+
 def test_test_module(mocker):
     client = Client(
         base_url='https://smart-api-example-1-us.avanan-example.net',
@@ -138,6 +248,8 @@ def test_fetch_incidents(mocker):
         '_call_api',
         return_value=mock_response,
     )
+
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last_fetch': '2023-06-30T00:00:00'})
     demisto_incidents = mocker.patch.object(demisto, 'incidents')
 
     fetch_incidents(client, '1 day', ['office365_emails'], [], [], [], 10)
@@ -203,7 +315,7 @@ def test_checkpointhec_get_events_success(mocker):
         return_value=mock_response,
     )
 
-    result = checkpointhec_get_events(client, '2023-11-01 00:00:00')
+    result = checkpointhec_get_events(client, '2023-11-01 00:00:00', None, ['office365_emails'], ['New'], [5], ['DLP'])
     call_api.assert_called_once()
     assert result.outputs == mock_response['responseData']
 
