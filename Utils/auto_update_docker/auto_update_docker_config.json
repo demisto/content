@@ -3,10 +3,10 @@
         "default": {
             "batches": [
                 {
-                    "min": 70,
+                    "min": 0,
                     "max": 100,
                     "pr_labels": [],
-                    "only_nightly": true
+                    "only_nightly": false
                 },
                 {
                     "min": 50,
