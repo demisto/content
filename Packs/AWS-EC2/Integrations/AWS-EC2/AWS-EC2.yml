@@ -75,7 +75,7 @@ configuration:
 - display: Retries
   name: retries
   defaultvalue: 5
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  additionalinfo: 'The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.'
   type: 0
   section: Connect
   advanced: true
@@ -93,7 +93,7 @@ configuration:
   advanced: true
   required: false
 - display: AWS STS Regional Endpoints
-  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  additionalinfo: "Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to \u201Clegacy\u201D in AWS. Leave empty if the environment variable is already set using server configuration."
   name: sts_regional_endpoint
   options:
   - legacy
@@ -2341,29 +2341,29 @@ script:
       name: IpPermissionsToPort
     - description: The IPv4 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv4 address, use the /32 prefix length.
       name: IpRangesCidrIp
-    - description: |-
-        A description for the security group rule that references this IPv4 address range.
+    - description: 'A description for the security group rule that references this IPv4 address range.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
+
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!'
       name: IpRangesDesc
     - description: The IPv6 CIDR range. You can either specify a CIDR range or a source security group, not both. To specify a single IPv6 address, use the /128 prefix length.
       name: Ipv6RangesCidrIp
-    - description: |-
-        A description for the security group rule that references this IPv6 address range.
+    - description: 'A description for the security group rule that references this IPv6 address range.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
+
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!'
       name: Ipv6RangesDesc
     - description: The ID of the prefix.
       name: PrefixListId
-    - description: |-
-        A description for the security group rule that references this prefix list ID.
+    - description: 'A description for the security group rule that references this prefix list ID.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
+
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!'
       name: PrefixListIdDesc
-    - description: |-
-        A description for the security group rule that references this user ID group pair.
+    - description: 'A description for the security group rule that references this user ID group pair.
 
-        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!
+
+        Constraints: Up to 255 characters in length. Allowed characters are a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=;{}$*!'
       name: UserIdGroupPairsDescription
     - description: The ID of the security group.
       name: UserIdGroupPairsGroupId
@@ -3947,8 +3947,8 @@ script:
       required: true
     - auto: PREDEFINED
       predefined:
-      - 'add'
-      - 'remove'
+      - add
+      - remove
       description: The operation type, add or remove.
       name: operationType
       required: true
@@ -4079,16 +4079,16 @@ script:
       isArray: false
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - description: The type of endpoint.
       name: vpcEndpointType
       isArray: false
       auto: PREDEFINED
       predefined:
-      - "Interface"
-      - "Gateway"
-      - "GatewayLoadBalancer"
+      - Interface
+      - Gateway
+      - GatewayLoadBalancer
     - description: A policy document to attach to the endpoint. A JSON policy document that controls access to the service from the endpoint.
       name: policyDocument
     - description: One or more route table IDs.
@@ -4100,8 +4100,8 @@ script:
       name: private-dns-enabled
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - description: One or more tags to associate with the endpoint. Should be Json string of key-value tags.
       name: tagSpecifications
     - description: The AWS Region, if not specified the default region will be used.
@@ -4130,7 +4130,7 @@ script:
       type: String
     description: Creates a VPC endpoint.
     name: aws-ec2-create-vpc-endpoint
-  dockerimage: demisto/boto3py3:1.0.0.91323
+  dockerimage: demisto/boto3py3:1.0.0.91746
   runonce: false
   script: '-'
   subtype: python3

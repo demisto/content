@@ -54,7 +54,7 @@ configuration:
   hidden: true
   required: false
 - display: AWS STS Regional Endpoints
-  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  additionalinfo: "Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to \u201Clegacy\u201D in AWS. Leave empty if the environment variable is already set using server configuration."
   name: sts_regional_endpoint
   options:
   - legacy
@@ -89,7 +89,7 @@ script:
     - description: "A map of one or more table names and, for each table, a map that describes one or more items to retrieve from that table. Each table name can be used only once per BatchGetItem request. Each element in the map of items to retrieve consists of the following:  *   ConsistentRead - If true, a strongly consistent read is used; if false (the default), an eventually consistent read is used. \n *   ExpressionAttributeNames - One or more substitution tokens for attribute names in the ProjectionExpression parameter. The following are some use cases for using ExpressionAttributeNames: \n\t +  To access an attribute whose name conflicts with a DynamoDB reserved word. \n\t +  To create a placeholder for repeating occurrences of an attribute name in an expression. \n\t +  To prevent special characters in an attribute name from being misinterpreted in an expression. \n\t  Use the **#** character in an expression to dereference an attribute name. For example, consider the following attribute name: \n\t +   Percentile  \n\t  The name of this attribute conflicts with a reserved word, so it cannot be used directly in an expression. (For the complete list of reserved words, see Reserved Words in the *Amazon DynamoDB Developer Guide*). To work around this, you could specify the following for ExpressionAttributeNames: \n\t +   {\"#P\":\"Percentile\"}  \n\t  You could then use this substitution in an expression, as in this example: \n\t +   #P = :val  \n\t   Tokens that begin with the **:** character are *expression attribute values*, which are placeholders for the actual value at runtime.  For more information about expression attribute names, see Accessing Item Attributes in the *Amazon DynamoDB Developer Guide*. \n *   Keys - An array of primary key attribute values that define specific items in the table. For each primary key, you must provide *all* of the key attributes. For example, with a simple primary key, you only need to provide the partition key value. For a composite key, you must provide *both* the partition key value and the sort key value. \n *   ProjectionExpression - A string that identifies one or more attributes to retrieve from the table. These attributes can include scalars, sets, or elements of a JSON document. The attributes in the expression must be separated by commas. If no attribute names are specified, then all attributes are returned. If any of the requested attributes are not found, they do not appear in the result. For more information, see Accessing Item Attributes in the *Amazon DynamoDB Developer Guide*. \n *   AttributesToGet - This is a legacy parameter. Use ProjectionExpression instead. For more information, see AttributesToGet in the *Amazon DynamoDB Developer Guide*.  \n "
       name: request_items
     - auto: PREDEFINED
-      description: 'A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.'
+      description: A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -138,7 +138,7 @@ script:
     - description: "A map of one or more table names and, for each table, a list of operations to be performed (DeleteRequest or PutRequest). Each element in the map consists of the following:  *   DeleteRequest - Perform a DeleteItem operation on the specified item. The item to be deleted is identified by a Key subelement: \n\t +   Key - A map of primary key attribute values that uniquely identify the item. Each entry in this map consists of an attribute name and an attribute value. For each primary key, you must provide *all* of the key attributes. For example, with a simple primary key, you only need to provide a value for the partition key. For a composite primary key, you must provide values for *both* the partition key and the sort key. \n\t  \n *   PutRequest - Perform a PutItem operation on the specified item. The item to be put is identified by an Item subelement: \n\t +   Item - A map of attributes and their values. Each entry in this map consists of an attribute name and an attribute value. Attribute values must not be null; string and binary type attributes must have lengths greater than zero; and set type attributes must not be empty. Requests that contain empty values are rejected with a ValidationException exception. If you specify any attributes that are part of an index key, then the data types for those attributes must match those of the schema in the table's attribute definition. \n\t  \n "
       name: request_items
     - auto: PREDEFINED
-      description: 'A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.'
+      description: A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -624,7 +624,7 @@ script:
       - ALL_NEW
       - UPDATED_NEW
     - auto: PREDEFINED
-      description: 'A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.'
+      description: A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -1358,7 +1358,7 @@ script:
     - contextPath: AWS-DynamoDB.TimeToLiveDescription.AttributeName
       description: ' The name of the TTL attribute for items in the table.'
     - contextPath: AWS-DynamoDB.TimeToLiveDescription
-      description: 'Time to Live settings on the table when the backup was created.'
+      description: Time to Live settings on the table when the backup was created.
   - arguments:
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -1383,7 +1383,7 @@ script:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: 'A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.'
+      description: A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -1571,7 +1571,7 @@ script:
       - ALL_NEW
       - UPDATED_NEW
     - auto: PREDEFINED
-      description: 'A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.'
+      description: A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -1678,7 +1678,7 @@ script:
     - description: The primary key of the first item that this operation will evaluate. Use the value that was returned for LastEvaluatedKey in the previous operation. The data type for ExclusiveStartKey must be String, Number, or Binary. No set data types are allowed.
       name: exclusive_start_key
     - auto: PREDEFINED
-      description: 'A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.'
+      description: A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -2143,7 +2143,7 @@ script:
     - description: The primary key of the first item that this operation will evaluate. Use the value that was returned for LastEvaluatedKey in the previous operation. The data type for ExclusiveStartKey must be String, Number or Binary. No set data types are allowed. In a parallel scan, a Scan request that includes ExclusiveStartKey must specify the same segment whose previous Scan returned the corresponding value of LastEvaluatedKey.
       name: exclusive_start_key
     - auto: PREDEFINED
-      description: 'A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.'
+      description: A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -2350,7 +2350,7 @@ script:
       - ALL_OLD
       - NONE
     - auto: PREDEFINED
-      description: 'A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.'
+      description: A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -2364,7 +2364,7 @@ script:
       - NONE
     - description: Providing a ClientRequestToken makes the call to TransactWriteItems idempotent, meaning that multiple identical calls have the same effect as one single call. Although multiple identical calls using the same client request token produce the same result on the server (no side effects), the responses to the calls might not be the same. If the ReturnConsumedCapacity> parameter is set, then the initial TransactWriteItems call returns the amount of write capacity units consumed in making the changes. Subsequent TransactWriteItems calls with the same client token return the number of read capacity units consumed in reading the item. A client request token is valid for 10 minutes after the first request that uses it is completed. After 10 minutes, any request with the same client token is treated as a new request. Do not resubmit the same request with the same client token for more than 10 minutes, or the result might not be idempotent. If you submit a request with the same client token but a change in other parameters within the 10-minute idempotency window, DynamoDB returns an IdempotentParameterMismatch exception.
       name: client_request_token
-    description: " TransactWriteItems is a synchronous write operation that groups up to 25 action requests. These actions can target items in different tables, but not in different AWS accounts or Regions, and no two actions can target the same item. For example, you cannot both ConditionCheck and Update the same item. The aggregate size of the items in the transaction cannot exceed 4 MB. The actions are completed atomically so that either all of them succeed, or all of them fail. They are defined by the following objects:  *   Put — Initiates a PutItem operation to write a new item. This structure specifies the primary key of the item to be written, the name of the table to write it in, an optional condition expression that must be satisfied for the write to succeed, a list of the item's attributes, and a field indicating whether to retrieve the item's attributes if the condition is not met. \n *   Update — Initiates an UpdateItem operation to update an existing item. This structure specifies the primary key of the item to be updated, the name of the table where it resides, an optional condition expression that must be satisfied for the update to succeed, an expression that defines one or more attributes to be updated, and a field indicating whether to retrieve the item's attributes if the condition is not met. \n *   Delete — Initiates a DeleteItem operation to delete an existing item. This structure specifies the primary key of the item to be deleted, the name of the table where it resides, an optional condition expression that must be satisfied for the deletion to succeed, and a field indicating whether to retrieve the item's attributes if the condition is not met. \n *   ConditionCheck — Applies a condition to an item that is not being modified by the transaction. This structure specifies the primary key of the item to be checked, the name of the table where it resides, a condition expression that must be satisfied for the transaction to succeed, and a field indicating whether to retrieve the item's attributes if the condition is not met. \n  DynamoDB rejects the entire TransactWriteItems request if any of the following is true:  *  A condition in one of the condition expressions is not met. \n *  An ongoing operation is in the process of updating the same item. \n *  There is insufficient provisioned capacity for the transaction to be completed. \n *  An item size becomes too large (bigger than 400 KB), a local secondary index (LSI) becomes too large, or a similar validation error occurs because of changes made by the transaction. \n *  The aggregate size of the items in the transaction exceeds 4 MB. \n *  There is a user error, such as an invalid data format. \n "
+    description: " TransactWriteItems is a synchronous write operation that groups up to 25 action requests. These actions can target items in different tables, but not in different AWS accounts or Regions, and no two actions can target the same item. For example, you cannot both ConditionCheck and Update the same item. The aggregate size of the items in the transaction cannot exceed 4 MB. The actions are completed atomically so that either all of them succeed, or all of them fail. They are defined by the following objects:  *   Put \u2014 Initiates a PutItem operation to write a new item. This structure specifies the primary key of the item to be written, the name of the table to write it in, an optional condition expression that must be satisfied for the write to succeed, a list of the item's attributes, and a field indicating whether to retrieve the item's attributes if the condition is not met. \n *   Update \u2014 Initiates an UpdateItem operation to update an existing item. This structure specifies the primary key of the item to be updated, the name of the table where it resides, an optional condition expression that must be satisfied for the update to succeed, an expression that defines one or more attributes to be updated, and a field indicating whether to retrieve the item's attributes if the condition is not met. \n *   Delete \u2014 Initiates a DeleteItem operation to delete an existing item. This structure specifies the primary key of the item to be deleted, the name of the table where it resides, an optional condition expression that must be satisfied for the deletion to succeed, and a field indicating whether to retrieve the item's attributes if the condition is not met. \n *   ConditionCheck \u2014 Applies a condition to an item that is not being modified by the transaction. This structure specifies the primary key of the item to be checked, the name of the table where it resides, a condition expression that must be satisfied for the transaction to succeed, and a field indicating whether to retrieve the item's attributes if the condition is not met. \n  DynamoDB rejects the entire TransactWriteItems request if any of the following is true:  *  A condition in one of the condition expressions is not met. \n *  An ongoing operation is in the process of updating the same item. \n *  There is insufficient provisioned capacity for the transaction to be completed. \n *  An item size becomes too large (bigger than 400 KB), a local secondary index (LSI) becomes too large, or a similar validation error occurs because of changes made by the transaction. \n *  The aggregate size of the items in the transaction exceeds 4 MB. \n *  There is a user error, such as an invalid data format. \n "
     name: aws-dynamodb-transact-write-items
     outputs:
     - contextPath: AWS-DynamoDB.TableName
@@ -2695,7 +2695,7 @@ script:
       - ALL_NEW
       - UPDATED_NEW
     - auto: PREDEFINED
-      description: 'A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.'
+      description: A value of TOTAL causes consumed capacity information to be returned, and a value of NONE prevents that information from being returned. No other value is valid.
       name: return_consumed_capacity
       predefined:
       - INDEXES
@@ -2998,7 +2998,7 @@ script:
       description: The name of the TTL attribute used to store the expiration time for items in the table.
     - contextPath: AWS-DynamoDB.TimeToLiveSpecification
       description: Represents the output of an UpdateTimeToLive operation.
-  dockerimage: demisto/boto3py3:1.0.0.87655
+  dockerimage: demisto/boto3py3:1.0.0.91746
   script: ''
   subtype: python3
   type: python
