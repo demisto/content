@@ -73,6 +73,15 @@ configuration:
   - Auto-Resolved
   required: false
   type: 15
+- additionalinfo: 'Choose the direction to mirror the incident: Outgoing (from Cortex XSOAR to Varonis SaaS).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Outgoing
+  type: 15
+  required: false
 description: Streamline alerts and related forensic information from Varonis SaaS.
 display: Varonis SaaS
 name: VaronisSaaS
@@ -568,6 +577,9 @@ script:
   dockerimage: demisto/python3:3.10.13.88772
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: false
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false

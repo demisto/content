@@ -131,6 +131,27 @@ MAX_DAYS_BACK = 180
 THREAT_MODEL_ENUM_ID = 5821
 ALERT_STATUSES = {'new': 1, 'under investigation': 2, 'closed': 3, 'action required': 4, 'auto-resolved': 5}
 ALERT_SEVERITIES = {'high': 0, 'medium': 1, 'low': 2}
+INCIDENT_FIELDS = [
+    "ID",
+    "Category",
+    "Name",
+    "Status",
+    "IPThreatTypes",
+    "CloseReason",
+    "NumOfAlertedEvents",
+    "ContainsFlaggedData",
+    "ContainMaliciousExternalIP",
+    "ContainsSensitiveData",
+    "Locations",
+    "Devices",
+    "Users"
+]
+MIRROR_DIRECTION_MAPPING = {
+    "None": None,
+    "Incoming": "In",
+    "Outgoing": "Out",
+    "Incoming And Outgoing": "Both",
+}
 
 
 class Client(BaseClient):
@@ -405,10 +426,9 @@ class Client(BaseClient):
 
         search_request = SearchRequest()\
             .set_query(
-            Query()
-            .set_entity_name("Event")
-            .set_filter(Filters().set_filter_operator(0))
-        )\
+                Query()
+                .set_entity_name("Event")
+                .set_filter(Filters().set_filter_operator(0)))\
             .set_rows(Rows().set_grouping(""))\
             .set_request_params(RequestParams().set_search_source(1).set_search_source_name("MainTab"))
 
@@ -1704,6 +1724,7 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
     """
 
     threat_model_names = argToList(threat_model)
+    params = demisto.params()
 
     incidents: List[Dict[str, Any]] = []
 
@@ -1760,6 +1781,8 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
             'rawJSON': json.dumps(alert_converted),
             'type': 'Varonis SaaS Incident',
             'severity': convert_to_demisto_severity(alert_converted[AlertAttributes.Alert_Rule_Severity_Name]),
+            'mirror_direction': MIRROR_DIRECTION_MAPPING.get(params.get('mirror_direction')),
+            'mirror_instance': demisto.integrationInstance()
         }
 
         incidents.append(incident)
@@ -2021,6 +2044,68 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
     return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'], argToList(args.get('alert_id')), note)
 
 
+def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
+    """update-remote-system command: pushes local changes to the remote system
+
+    :type client: ``Client``
+    :param client: XSOAR client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['data']`` the data to send to the remote system
+        ``args['entries']`` the entries to send to the remote system
+        ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
+        ``args['remoteId']`` the remote incident id
+
+    :return:
+        ``str`` containing the remote incident id - really important if the incident is newly created remotely
+
+    :rtype: ``str``
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    if parsed_args.delta:
+        demisto.debug(f'Got the following delta keys {list(parsed_args.delta)}.')
+        
+    demisto.debug(f'Sending incident with remote ID [{parsed_args.remote_incident_id}] to remote system.')
+    parsed_args = UpdateRemoteSystemArgs(args)
+
+    alert_id = parsed_args.remote_incident_id
+
+    if alert_id\
+          and (parsed_args.inc_status == IncidentStatus.DONE
+               or parsed_args.delta and parsed_args.delta.get('Status') == 'closed'):
+        demisto.debug(f'Closing remote incident {alert_id}')
+        note = 'Closed from XSOAR'
+        varonis_update_alert(client, CLOSE_REASONS['none'], ALERT_STATUSES['closed'], argToList(alert_id), note)
+
+    return alert_id
+
+
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    """
+    Returns the list of fields for an incident type.
+    Args:
+        client: XSOAR client to use
+
+    Returns: Dictionary with keys as field names
+
+    """
+    demisto.debug(f'Start getting SchemeTypeMapping.')
+    incident_type_scheme = SchemeTypeMapping(type_name='Varonis SaaS Incident')
+    demisto.debug(f'Collecting incident mapping.')
+
+    # If the type is sn_si_incident then add it specific fields else use the snow args as is.
+    out_fields = INCIDENT_FIELDS
+    for field in out_fields:
+        incident_type_scheme.add_field(field)
+
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(incident_type_scheme)
+
+    return mapping_response
+
+
 '''' MAIN FUNCTION '''
 
 
@@ -2080,6 +2165,12 @@ def main() -> None:
 
         elif command == 'varonis-close-alert':
             return_results(varonis_close_alert_command(client, args))
+
+        elif command == 'update-remote-system':
+            return_results(update_remote_system_command(client, args))
+
+        elif demisto.command() == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
 
         elif command == 'fetch-incidents':
             alert_status = params.get('status')
