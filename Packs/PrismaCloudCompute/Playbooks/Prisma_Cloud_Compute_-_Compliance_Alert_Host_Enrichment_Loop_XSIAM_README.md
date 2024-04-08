@@ -51,4 +51,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Prisma Cloud Compute - Compliance Alert Host Enrichment Loop](../doc_files/Prisma_Cloud_Compute_-_Compliance_Alert_Host_Enrichment_Loop.png)
+![Prisma Cloud Compute - Compliance Alert Host Enrichment Loop](../doc_files/Prisma_Cloud_Compute_-_Compliance_Alert_Host_Enrichment_Loop_XSIAM_XSOAR8.png)
