@@ -538,7 +538,7 @@
   extends:
     - .default-job-settings
   script:
-    - ehco "hello"
+    - echo "hello"
   allow_failure: true
 
 .run-validations:
