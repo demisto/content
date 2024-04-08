@@ -36,7 +36,9 @@ def rcs_scan_set_context(scan_id: str, demisto: Any):
     return "RCSScanId remains unchanged"
 
 
-def rcs_scan_start(service_id: str, attack_surface_rule_id: str, alert_internal_id: str, demisto: Any):
+def rcs_scan_start(
+    service_id: str, attack_surface_rule_id: str, alert_internal_id: str, demisto: Any
+):
     """
     Main command that kicks off a RCS confirmation scan and gets the status of the scan.
 
@@ -70,12 +72,18 @@ def rcs_scan_start(service_id: str, attack_surface_rule_id: str, alert_internal_
 
 def main():
     args = demisto.args()
-    service_id = args.get("service_id")
-    attack_surface_rule_id = args.get("attack_surface_rule_id")
-    alert_internal_id = args.get("alert_internal_id")
+    service_id, attack_surface_rule_id, alert_internal_id = \
+        args.get("service_id"), args.get("attack_surface_rule_id"), args.get("alert_internal_id")
 
-    if not all([service_id, attack_surface_rule_id, alert_internal_id]):
-        raise ValueError("All the required arguments needs to be specified")
+    if not service_id:
+        raise ValueError("service_id argument need to be specified")
+
+    if not attack_surface_rule_id:
+        raise ValueError("attack_surface_rule_id argument needs to be specified")
+
+    if not alert_internal_id:
+        raise ValueError("alert_internal_id argument needs to be specified")
+
     try:
         return_results(
             rcs_scan_start(
