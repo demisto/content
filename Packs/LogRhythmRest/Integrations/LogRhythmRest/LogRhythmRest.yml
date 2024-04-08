@@ -1629,10 +1629,10 @@ script:
       name: ip_address
     - description: Maximum number of log message to query.
       name: max_massage
-      defaultValue: "10"
+      defaultValue: '10'
     - description: The query timeout in seconds.
       name: query_timeout
-      defaultValue: "60"
+      defaultValue: '60'
     description: Execute search query to LogRhythm log database.
     name: lr-execute-search-query
     outputs:
@@ -1645,7 +1645,7 @@ script:
       description: The LogRhythm user ID.
     - name: count
       description: Number of users to return.
-      defaultValue: "30"
+      defaultValue: '30'
     outputs:
     - contextPath: Logrhythm.User.ID
       description: LogRhythm user ID
@@ -1684,7 +1684,7 @@ script:
       description: The LogRhythm user ID.
     - name: count
       description: Number of logins to return.
-      defaultValue: "30"
+      defaultValue: '30'
     outputs:
     - contextPath: Logrhythm.Login.Login
       description: The login username
@@ -1718,10 +1718,10 @@ script:
       description: The LogRhythm user ID
     - name: offset
       description: 'The position to start at '
-      defaultValue: "0"
+      defaultValue: '0'
     - name: count
       description: Number of privileges to return
-      defaultValue: "30"
+      defaultValue: '30'
     outputs:
     - contextPath: Logrhythm.Privileges.ID
       description: The LogRhythm user ID
@@ -1736,7 +1736,7 @@ script:
       description: The LogRhythm profile ID
     - name: count
       description: Number of profiles to return
-      defaultValue: "30"
+      defaultValue: '30'
     outputs:
     - contextPath: Logrhythm.Profile.ID
       description: ID of the LogRhythm user profile
@@ -1848,7 +1848,7 @@ script:
       description: 'Password for the user. '
     - name: entity_id
       description: ID of the entity to associate with the login. Defaults to 1.
-      defaultValue: "1"
+      defaultValue: '1'
     outputs:
     - contextPath: Logrhythm.Login.Login
       description: The login username
@@ -1880,7 +1880,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.91134
 tests:
 - LogRhythm REST test
 fromversion: 5.0.0
