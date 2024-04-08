@@ -20,14 +20,13 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorNameResolutionNoResults, RateLimitError,
                                 ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
 from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol, Protocol
+from exchangelib.protocol import NoVerifyHTTPAdapter,BaseProtocol, Protocol
 from exchangelib.services import EWSService
 from exchangelib.services.common import EWSAccountService
 from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
                                  EXCHANGE_2010_SP2, EXCHANGE_2013,
                                  EXCHANGE_2016, EXCHANGE_2019)
-from exchangelib.protocol import NoVerifyHTTPAdapter  # noqa: E402
 
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
@@ -50,18 +49,17 @@ def our_fullname(self):  # pragma: no cover
 Version.fullname = our_fullname
 
 
-class exchangelibSSLAdapter(SSLAdapter):  # pragma: no cover
+class ExchangelibSSLAdapter(SSLAdapter):  # pragma: no cover
     
     def cert_verify(self, conn, url, verify, cert):
         # We're overriding a method, so we have to keep the signature, although verify is unused
         del verify
-
         ctx = ssl.create_default_context()
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE
         # Apply the SSL context to the connection
         conn.ssl_context = ctx
-        super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
+        super().cert_verify(conn=conn, url=url, verify=False, cert=None)
 
 
 # Ignore warnings print to stdout
@@ -220,7 +218,7 @@ def prepare():  # pragma: no cover
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     if NON_SECURE:
         
-        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter
+        BaseProtocol.HTTP_ADAPTER_CLS = ExchangelibSSLAdapter
     else:
         BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
     AUTO_DISCOVERY = not EWS_SERVER
