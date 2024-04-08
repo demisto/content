@@ -1,3 +1,4 @@
+import base64
 from io import BytesIO
 from pathlib import Path
 from zipfile import ZipFile
@@ -6,7 +7,7 @@ import typer
 from urllib3 import disable_warnings
 
 from Tests.scripts.utils.log_util import install_logging
-from Tests.scripts.utils import logging_wrapper
+from Tests.scripts.utils import logging_wrapper as logger
 
 
 ORG_NAME = "demisto"
@@ -15,9 +16,13 @@ SDK_REPO_NAME = "demisto-sdk"
 
 disable_warnings()
 
-install_logging("create_sdk_pr.log", logger=logging_wrapper)
+install_logging("update_validate_docs.log", logger=logger)
 
 REPOS_API_PREFIX = "https://api.github.com/repos"
+
+
+def decode_base64(b64: str) -> str:
+    return base64.b64decode(b64).decode("utf-8")
 
 
 class CannotFindWorkflowError(ValueError): ...
@@ -37,7 +42,7 @@ class GitHubClient:
     ) -> None:
         self.organization = organization
         self.repo = repo
-        self.branch_name = branch_name
+        self.branch = branch_name
         self.is_draft = is_draft
         self.headers = {
             "Authorization": f"Bearer {github_token}",
@@ -49,20 +54,19 @@ class GitHubClient:
         return f"{REPOS_API_PREFIX}/{self.organization}/{self.repo}"
 
     def get_file(self, path: Path) -> dict:
-        res = requests.get(
-            url=f"https://raw.githubusercontent.com/{ORG_NAME}/{DOCS_REPO_NAME}/{self.branch_name}/{path!s}",
-            headers=self.headers,
-        )
+        res = requests.get(f"{self.base_url}/contents/{path!s}", headers=self.headers)
         res.raise_for_status()
         return res.json()
 
     def commit_file(self, path_in_repo: Path, content: str, commit_message: str):
         res = requests.put(
             url=f"{self.base_url}/contents/{path_in_repo!s}",
-            params={
+            json={
                 "message": commit_message,
-                "content": content,
-                "branch": self.branch_name,
+                "content": base64.b64encode(bytes(content, encoding="utf8")).decode(
+                    "utf-8"
+                ),
+                "branch": self.branch,
                 "sha": self.get_file(path_in_repo)["sha"],
             },
             headers=self.headers,
@@ -74,7 +78,7 @@ class GitHubClient:
             url=f"{self.base_url}/pulls",
             json={
                 "base": "master",
-                "head": self.branch_name,
+                "head": self.branch,
                 "title": title,
                 "body": body,
                 "draft": self.is_draft,
@@ -93,13 +97,12 @@ class GitHubClient:
     def get_most_recent_workflow_run_id(self, workflow_name: str) -> int:
         res = requests.get(
             url=f"{self.base_url}/actions/runs",
-            params={"branch": self.branch_name},
-            verify=False,  # TODO remove
+            params={"branch": self.branch},
         )
         res.raise_for_status()
         if res.json()["total_count"] == 0:
             raise CannotFindWorkflowError(
-                f"Could not find workflows with {workflow_name=} for {self.branch_name=}"
+                f"Could not find workflows with {workflow_name=} for {self.branch=}"
             )
 
         if not (
@@ -113,7 +116,7 @@ class GitHubClient:
             )
         ):
             raise ValueError(
-                f"Could not find workflows with {workflow_name=} in {self.branch_name=}"
+                f"Could not find workflows with {workflow_name=} in {self.branch=}"
             )
 
         return matching_name[-1]["id"]
@@ -123,7 +126,6 @@ class GitHubClient:
     ) -> ZipFile:
         res = requests.get(
             url=f"{self.base_url}/actions/runs/{workflow_id}/artifacts",
-            verify=False,  # TODO remove
         )
         res.raise_for_status()
         if not res.json()["total_count"]:
@@ -137,14 +139,8 @@ class GitHubClient:
         ]
         if not matching_name:
             raise CannotFindArtifactError
-        if len(matching_name) != 1:
-            raise CannotFindArtifactError(
-                f"expected only one artifact with {artifact_name=}, found {len(matching_name)}"
-            )
         file = requests.get(
-            url=matching_name[0]["archive_download_url"],
-            headers=self.headers,
-            verify=False,  # TODO remove verify=false
+            url=matching_name[0]["archive_download_url"], headers=self.headers
         )
         file.raise_for_status()
         return ZipFile(BytesIO(file.content))
@@ -187,7 +183,11 @@ def main(
             ),
         )
     except CannotFindArtifactError:
-        raise typer.Exit(0)  # TODO log
+        logger.warning(
+            "Cannot find the artifact containing validation docs. "
+            "This is OK when validations don't change between SDK releases."
+        )
+        raise typer.Exit(0)
 
     # Commit to content-docs
     docs_client = GitHubClient(
@@ -201,12 +201,13 @@ def main(
     docs_client.commit_file(
         path_in_repo=Path("docs/concepts/demisto-sdk-validate.md"),
         content=compile_validate_docs(
-            readme_markdown=sdk_client.get_file(
-                Path("demisto_sdk/commands/validate/README.md")
-            )["content"],
+            readme_markdown=decode_base64(
+                sdk_client.get_file(Path("demisto_sdk/commands/validate/README.md"))[
+                    "content"
+                ]
+            ),
             checks_markdown=str(
-                checks_markdown_artifact_zip.read("validation_docs.md"),
-                encoding="utf-8",
+                checks_markdown_artifact_zip.read("validation_docs.md")
             ),
         ),
         commit_message=f"SDK v{branch_name} Validate docs",
