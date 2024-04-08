@@ -55,19 +55,14 @@ class Client(BaseClient):
         """
 
         url = f'{self._base_url}/jizo_get_protocols'
-        if args:
-            keys=list(args.keys())
-            #add first argument
-            url=f"{url}?{keys[0]}={args[keys[0]]}"
-        if len(args)>1:
-            # dlete first argument since it's already added
-            args.pop(keys[0])
-            for key, value in zip(args.keys(),args.values()):
-                url=f"{url}&{key}={value}"
+
         response = requests.get(
-            url, headers=self._headers, verify=False
+            url, params=args,headers=self._headers, verify=False
         )
-        return response
+        if response.status_code==200:
+            return response.json()
+        else:
+            raise DemistoException(response.text, response.status_code, response.reason)
 
     def get_peers(self,args:Dict[str,Any]):
         """
@@ -75,14 +70,17 @@ class Client(BaseClient):
         You can filter also by timestamp or probe name or probe Ip
 
         """
+        
+        url = f'{self._base_url}/jizo_get_peers'
 
-        response=self._http_request(
-            method='GET',
-            url_suffix='/jizo_get_peers',
-            params=args,
-            )
+        response = requests.get(
+            url, params=args,headers=self._headers, verify=False
+        )
+        if response.status_code==200:
+            return response.json()
+        else:
+            raise DemistoException(response.text, response.status_code, response.reason)
 
-        return response
 
 
     def get_query_records(self,args:Dict[str,Any]):
@@ -91,27 +89,32 @@ class Client(BaseClient):
         You can filter also by timestamp or probe name
 
         """
+        url = f'{self._base_url}/jizo_query_records'
 
-        response=self._http_request(
-            method='GET',
-            url_suffix='/jizo_query_records',
-            params=args,
-            )
-
-        return response
-
+        response = requests.get(
+            url, params=args,headers=self._headers, verify=False
+        )
+        if response.status_code==200:
+            return response.json()
+        else:
+            raise DemistoException(response.text, response.status_code, response.reason)
+        
+        
     def get_alert_rules(self, args:Dict[str,Any]):
         """
         Get jizo alert rules
 
         """
-        response=self._http_request(
-            method='GET',
-            url_suffix='/jizo_get_alert_rules',
-            params=args,
-            )
+        url = f'{self._base_url}/jizo_get_alert_rules'
 
-        return response
+        response = requests.get(
+            url, params=args,headers=self._headers, verify=False
+        )
+        if response.status_code==200:
+            return response.json()
+        else:
+            raise DemistoException(response.text, response.status_code, response.reason)
+        
 
     def get_device_records(self,args:Dict[str,Any]):
         """
@@ -119,13 +122,15 @@ class Client(BaseClient):
         One of this params is mandatory. You can filter also by timestamp or probe name
 
         """
-        response=self._http_request(
-            method='GET',
-            url_suffix='/jizo_device_records',
-            params=args,
-            )
+        url = f'{self._base_url}/jizo_device_records'
 
-        return response
+        response = requests.get(
+            url, params=args,headers=self._headers, verify=False
+        )
+        if response.status_code==200:
+            return response.json()
+        else:
+            raise DemistoException(response.text, response.status_code, response.reason)
 
     def get_device_alerts(self,args:Dict[str,Any]):
         """
@@ -133,15 +138,15 @@ class Client(BaseClient):
         One of this params is mandatory. You can filter also by timestamp or probe name
 
         """
+        url = f'{self._base_url}/jizo_get_devicealerts'
 
-        response=self._http_request(
-            method='GET',
-            url_suffix='/jizo_get_devicealerts',
-            params=args,
-            )
-
-        return response
-
+        response = requests.get(
+            url, params=args,headers=self._headers, verify=False
+        )
+        if response.status_code==200:
+            return response.json()
+        else:
+            raise DemistoException(response.text, response.status_code, response.reason)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -272,7 +277,6 @@ def get_device_alerts_command(client: Client,args:Dict[str,Any]) -> CommandResul
 
 ''' MAIN FUNCTION '''
 
-
 def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
@@ -304,7 +308,7 @@ def main() -> None:  # pragma: no cover
             base_url=base_url,
             auth=(username, password),
             headers=headers,
-            verify=False,
+            verify=verify_certificate,
             proxy=proxy)
 
         # get token
