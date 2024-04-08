@@ -985,7 +985,7 @@ def update_remote_system_command(client, args):
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
             demisto.debug(f"{update_args=}")
             update_incident_command(client, update_args)
-            close_alerts_in_xdr = client._params.get("close_alerts_in_xdr", False)
+            close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
             is_closed = update_args.get('close_reason')
             if close_alerts_in_xdr and is_closed:
                 new_status = update_args.get('status')
