@@ -1309,6 +1309,7 @@ def test_update_alerts_in_xdr_command_expected_result(mocker):
     res = update_alerts_in_xdr_command(xdrIr_client, args)
     assert res.readable_output == "Alerts with IDs 1,2,3 have been updated successfully."
 
+
 def test_update_alerts_in_xdr_command_fail_to_update(mocker):
     """
     Given:
@@ -1327,6 +1328,8 @@ def test_update_alerts_in_xdr_command_fail_to_update(mocker):
     with pytest.raises(DemistoException) as e:
         update_alerts_in_xdr_command(xdrIr_client, args)
     assert e.value.message == "Could not find alerts to update, please make sure you used a valid alert IDs."
+
+
 def test_update_alerts_in_xdr_command_invalid_response_no_reply(mocker):
     """
     Given:
