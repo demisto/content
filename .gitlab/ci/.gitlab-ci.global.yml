@@ -537,6 +537,8 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
+  script:
+    - ehco "hello"
   allow_failure: true
 
 .run-validations:
