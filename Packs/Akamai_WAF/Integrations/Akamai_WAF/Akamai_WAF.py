@@ -23,7 +23,7 @@ Attributes:
 
     INTEGRATION_COMMAND_NAME:
         Command names should be written in all lower-case letters,
-        and each word separated with a hyphen, for example: msgraph-user.
+        and each word separated with a hyphen, for example: msgraph-use r.
 
     INTEGRATION_CONTEXT_NAME:
         Context output names should be written in camel case, for example: MSGraphUser.
