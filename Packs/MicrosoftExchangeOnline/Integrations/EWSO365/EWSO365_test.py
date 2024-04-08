@@ -101,7 +101,6 @@ class TestNormalCommands:
         def get_folder_by_path(self, path, account=None, is_public=False):
             return ""
 
-
     def test_ews_find_folders(self, mocker):
         """
         This test checks the following normal_command:

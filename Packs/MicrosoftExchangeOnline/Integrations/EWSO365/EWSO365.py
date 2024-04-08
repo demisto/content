@@ -28,7 +28,6 @@ from exchangelib import (
     ExtendedProperty,
     FileAttachment,
     Folder,
-    FolderCollection,
     HTMLBody,
     Identity,
     ItemAttachment,
@@ -46,8 +45,6 @@ from exchangelib.errors import (
     RateLimitError,
     ResponseMessageError,
 )
-from exchangelib.fields import FieldPath
-from exchangelib.folders import BaseFolder
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 from exchangelib.services.common import EWSAccountService, EWSService
@@ -1223,7 +1220,7 @@ def search_items_in_mailbox(
         is_public = client.is_default_folder(folder_path, is_public)
         folders = [client.get_folder_by_path(folder_path, account, is_public)]
     else:
-        folders = account.index.parent.walk()  #pylint: disable=E1101
+        folders = account.index.parent.walk()  # pylint: disable=E1101
 
     items = []  # type: ignore
     selected_all_fields = selected_fields == "all"
@@ -1446,7 +1443,7 @@ def find_folders(client: EWSClient, target_mailbox=None):
     for f in root.walk():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
         folders.append(folder)
-    folders_tree = root.tree() # pylint: disable=E1101
+    folders_tree = root.tree()  # pylint: disable=E1101
     readable_output = folders_tree
     output = {"EWS.Folders(val.id == obj.id)": folders}
     return readable_output, output, folders
