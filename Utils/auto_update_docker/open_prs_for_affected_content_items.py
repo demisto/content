@@ -1,3 +1,4 @@
+from collections import defaultdict
 from dotenv import load_dotenv
 from typing import Any
 from git import Repo, Git, Remote  # pip install GitPython
@@ -32,7 +33,7 @@ def create_remote_pr(
     pr_assignees: list[str] = [],
     pr_reviewers: list[str] = [],
     base_branch: str = "master",
-):
+) -> str:
     """Create the PR with the changes in the docker tag on the remote repo.
 
     Args:
@@ -46,6 +47,9 @@ def create_remote_pr(
         pr_assignees (list[str], optional): PR assignee/s. Defaults to [].
         pr_reviewers (list[str], optional): PR reviewer/s. Defaults to [].
         base_branch (str, optional): The base branch. Defaults to "master".
+    
+    Returns:
+        The PR URL link.
     """
     joined_content_items = "\n".join(updated_content_items)
     body = f"Auto updated docker tags for the following content items:\n{joined_content_items}"
@@ -57,7 +61,7 @@ def create_remote_pr(
         head=head_branch,
         draft=True,
     )
-    
+
     if(pr_reviewers):
         pr.create_review_request(reviewers=pr_reviewers)
         logging.info(f'Requested review from {",".join(sorted(pr_reviewers))}')
@@ -69,7 +73,7 @@ def create_remote_pr(
     if(pr_labels):
         pr.set_labels(*pr_labels)
         logging.info(f'Set labels to {",".join(sorted(pr_labels))}')
-
+    return pr.html_url
 
 def update_content_items_docker_images_and_push(
     docker_image: str,
@@ -85,7 +89,7 @@ def update_content_items_docker_images_and_push(
     origin: Remote,
     pr_assignees: list[str],
     pr_reviewers: list[str]
-):
+) -> dict[str, Any]:
     """Updates the content items' docker tags, and pushes the changes to a remote branch.
 
     Args:
@@ -134,7 +138,7 @@ def update_content_items_docker_images_and_push(
     push_changes_to_remote_pr = origin.push(f"+refs/heads/{current_batch_branch_name}:refs/heads/{current_batch_branch_name}")
     logging.info(f"Created remote branch {current_batch_branch_name}")
     push_changes_to_remote_pr.raise_if_error()
-    create_remote_pr(
+    pr_link = create_remote_pr(
         remote_content_repo=remote_content_repo,
         docker_image=docker_image,
         current_batch=current_batch,
@@ -148,6 +152,10 @@ def update_content_items_docker_images_and_push(
         pr_reviewers=pr_reviewers,
         coverage=coverage
     )
+    return {
+        "content_items": updated_content_items,
+        "pr_link": pr_link
+    }
 
 def comma_list(raw_data: str) -> list[str]:
     return raw_data.split(",") if raw_data else []
@@ -161,8 +169,13 @@ def open_prs_for_content_items(
         default="auto_update_docker_staging_branch",
         help="The staging branch, that will act as the base branch for the PRs",
     ),
+    batch_dir: str = typer.Option(
+        default="",
+        help="The batch directory, that will hold the outputs of the opened PRs",
+    ),
     prs_limit: str = typer.Option(
-        default="10",
+        # TODO Change to 10 later
+        default="2",
         help="The maximum number of content items to open in one PR",
     ),
     pr_assignees: list = typer.Option(
@@ -212,6 +225,7 @@ def open_prs_for_content_items(
                 raise github_exception
 
     try:
+        docker_images_prs_output: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for docker_image in affected_content_items:
             image_config = affected_content_items[docker_image]
             if content_items := image_config["content_items"]:
@@ -222,7 +236,7 @@ def open_prs_for_content_items(
                 for current_batch in range(1, number_of_batches + 1):
                     logging.info(f"{current_batch=}")
                     content_items_for_batch = content_items[pr_batch_start:pr_batch_end]
-                    update_content_items_docker_images_and_push(
+                    pr_content = update_content_items_docker_images_and_push(
                         current_batch=current_batch,
                         number_of_batches=number_of_batches,
                         docker_image=docker_image,
@@ -237,8 +251,13 @@ def open_prs_for_content_items(
                         pr_assignees=pr_assignees,
                         pr_reviewers=pr_reviewers
                     )
+                    docker_images_prs_output[docker_image].append(pr_content)
                     pr_batch_start = pr_batch_end
                     pr_batch_end = pr_batch_start + prs_limit_int
+        if batch_dir:
+            # Output the content items and PRs
+            with open(f"{batch_dir}/docker_images_prs_output.json", "w") as images_prs_output:
+                json.dump(docker_images_prs_output, images_prs_output)
 
     except Exception as e:
         logging.error(f"Got error when opening PRs {e}")

@@ -301,7 +301,8 @@ def get_affected_content_items(
     docker_images_target_tags_path: str = typer.Option(
         default="",
         help=("The file that contains the docker images tag, if given an empty string,"
-              " will retrieve them latest tags from DockerHub"),
+              " will retrieve the latest tags from DockerHub. Docker images and their tags will be added"
+              " to this file"),
     ),
     auto_update_dir: str = typer.Option(
         default="",
@@ -354,7 +355,7 @@ def get_affected_content_items(
 
     docker_images_target_tag = {docker_image: affected_items["target_tag"] for docker_image, affected_items in
                                 affected_content_items_by_docker_image.items()}
-    
+    # Output docker_images_target_tag | images_tag
     current_time_str = time.strftime("%Y-%m-%d-%H:%M:%S")
 
     # Creates flow directory if it does not exist, else it does nothing
@@ -365,9 +366,9 @@ def get_affected_content_items(
     batch_dir = flow_dir / Path(f"batch_{batch_index}")
     batch_dir.mkdir(exist_ok=True)
 
-    # Output the docker images tags that were gathered in the batch
-    with open(f"{batch_dir}/images_tag.json", "w") as images_tag_output:
-        json.dump(docker_images_target_tag, images_tag_output)
+    target_tags_path = docker_images_target_tags_path if docker_images_target_tags_path else f"{flow_dir}/images_tag.json"
+    with open(f"{target_tags_path}", "w") as images_tag_output:
+        json.dump(docker_images_target_tag | images_tag, images_tag_output)
 
     # Output the affected content items
     with open(f"{batch_dir}/affected_content_items.json", "w") as affected_content_items:
