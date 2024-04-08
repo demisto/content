@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Default
-description: This playbook executes when no other playbook is associated with an incident. It enriches indicators in an incident using one or more integrations.
+description: XSOAR SAAS OLD. This playbook executes when no other playbook is associated with an incident. It enriches indicators in an incident using one or more integrations.
 starttaskid: "0"
 tasks:
   "0":
