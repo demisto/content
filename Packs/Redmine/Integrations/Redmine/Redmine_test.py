@@ -1209,7 +1209,7 @@ def test_handle_convert_priority_from_name(redmine_client):
         mock_get_integration_context.return_value = {'priorities': {
             'high': '1'
         }}
-        assert handle_convert_priority(redmine_client, 'High') == '1'
+        assert handle_convert_priority(redmine_client, 'high') == '1'
 
 
 def test_handle_convert_tracker_from_name_capital_letter_fails(redmine_client):
@@ -1249,6 +1249,7 @@ def test_handle_convert_status_from_name_capital_letter_fails(redmine_client):
         handle_convert_status(redmine_client, 'New')
     assert e.value.message == "Could not find New in your statuses list, please make sure using an existing status name."
 
+
 def test_handle_convert_priority_from_name_capital_letter_fails(redmine_client):
     """
     Given:
@@ -1266,6 +1267,7 @@ def test_handle_convert_priority_from_name_capital_letter_fails(redmine_client):
         }}
         handle_convert_priority(redmine_client, 'High')
     assert e.value.message == "Could not find High in your priorities list, please make sure using an existing priority name."
+
 
 def test_handle_convert_tracker_from_id_with_request(redmine_client):
     """
