@@ -7,18 +7,18 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cloud User Investigation - Generic
+* Ticket Management - Generic
 * Cloud Enrichment - Generic
+* Cloud User Investigation - Generic
 * Block IP - Generic v3
 * Cloud Response - Generic
-* Ticket Management - Generic
 
 ### Integrations
 
-* PrismaCloudIAM
-* RedLock
 * PrismaCloud v2
 * PrismaCloudV2
+* PrismaCloudIAM
+* RedLock
 
 ### Scripts
 
@@ -27,11 +27,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * prisma-cloud-host-finding-list
+* core-list-risky-users
+* setAlert
+* ip
 * cve
 * prisma-cloud-alert-get-details
-* core-list-risky-users
-* ip
-* setAlert
 
 ## Playbook Inputs
 
@@ -39,9 +39,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| EarlyContainment |  | True | Optional |
-| StopForRecommendations |  | True | Optional |
-| CreateTicket | Whether to create a ticket in ZenDesk or ServiceNow. Insert True or False | False | Optional |
 | serviceNowShortDescription | A short description of the ticket. |  | Optional |
 | serviceNowImpact | The impact for the new ticket. Leave empty for ServiceNow default impact. |  | Optional |
 | serviceNowUrgency | The urgency of the new ticket. Leave empty for ServiceNow default urgency. |  | Optional |
@@ -58,6 +55,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
 | ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
 | ZenDeskDescription | The ticket description. |  | Optional |
+| CreateTicket | Whether to create a ticket in ZenDesk or ServiceNow. Insert True or False | False | Optional |
+| StopForRecommendations |  | True | Optional |
+| EarlyContainment |  | True | Optional |
 
 ## Playbook Outputs
 
@@ -68,4 +68,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Prisma Cloud - Network, API and Anomaly Incidents](../doc_files/Prisma_Cloud_-_Network,_API_and_Anomaly_Incidents.png)
+![Prisma Cloud - Network API and Anomaly Incidents](../doc_files/Prisma_Cloud_-_Network_API_and_Anomaly_Incidents.png)
