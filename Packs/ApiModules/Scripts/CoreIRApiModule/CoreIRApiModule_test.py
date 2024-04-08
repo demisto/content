@@ -8,7 +8,7 @@ from pytest_mock import MockerFixture
 import pytest
 
 import demistomock as demisto
-from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
+from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException, BaseClient
 from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure, XSOAR_RESOLVED_STATUS_TO_XDR
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command, list_user_groups_command, parse_user_groups, list_users_command, list_roles_command, \
@@ -3910,8 +3910,9 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
         assert remote_args.delta['status'] == expected_resolved_status[i]
 
 
-@pytest.mark.parametrize('is_demisto_version_ge_value', [True, False])
-def test_http_request_demisto_call(mocker, is_demisto_version_ge_value):
+@pytest.mark.parametrize('is_demisto_version_ge_value, class_name, function', [(True, demisto,"_apiCall"),
+                                                                          (False, BaseClient,"_http_request")])
+def test_http_request_demisto_call(mocker, is_demisto_version_ge_value, class_name, function):
     """
     Given:
         - The build number.
@@ -3922,15 +3923,16 @@ def test_http_request_demisto_call(mocker, is_demisto_version_ge_value):
         - make sure the correct http_request is being called.
     """
     from CoreIRApiModule import CoreClient
-    import CommonServerPython
-    mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=is_demisto_version_ge_value)
+    import CoreIRApiModule
     client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
-    mocker.patch.object(demisto, "_apiCall" ,return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
+    mocker.patch.object(CoreIRApiModule, 'is_demisto_version_ge', return_value=is_demisto_version_ge_value)
+    mocker.patch.object(class_name, function ,return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
                                          'status': 200,
-                                         'data': '{"reply":[{"container": ["1.1.1.1"]}]'})
+                                         'data':'{"reply":[{"container": ["1.1.1.1"]}]}'})
     res = client._http_request(method = "POST",
                                 url_suffix="/distributions/get_versions/")
-    assert res['url']
+    assert res['status'] == 200
+    assert res['name'] == '/api/webapp/public_api/v1/distributions/get_versions/'
     
