@@ -17,12 +17,12 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
+  defaultvalue: 'false'
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: "false"
+  defaultvalue: 'false'
   type: 8
   required: false
 - display: Fetch incidents
@@ -40,7 +40,7 @@ configuration:
   required: false
 - display: Maximum number of incidents per fetch
   name: max_fetch
-  defaultvalue: "25"
+  defaultvalue: '25'
   type: 0
   required: false
 script:
@@ -52,12 +52,12 @@ script:
     - name: page
       required: true
       description: Page No
-      defaultValue: "1"
+      defaultValue: '1'
     - name: max
       required: true
       default: true
       description: Per page record count
-      defaultValue: "25"
+      defaultValue: '25'
     outputs:
     - contextPath: Gra.Users.firstName
       description: First Name
@@ -107,12 +107,12 @@ script:
     - name: page
       required: true
       description: Page No
-      defaultValue: "1"
+      defaultValue: '1'
     - name: max
       required: true
       default: true
       description: Per page record count
-      defaultValue: "25"
+      defaultValue: '25'
     outputs:
     - contextPath: Gra.Accounts.id
       description: Id
@@ -163,12 +163,12 @@ script:
     - name: page
       required: true
       description: Page No
-      defaultValue: "1"
+      defaultValue: '1'
     - name: max
       required: true
       default: true
       description: Per page record count
-      defaultValue: "25"
+      defaultValue: '25'
     outputs:
     - contextPath: Gra.Active.Resource.Accounts.id
       description: ID
@@ -218,12 +218,12 @@ script:
     - name: page
       required: true
       description: Page No
-      defaultValue: "1"
+      defaultValue: '1'
     - name: max
       required: true
       default: true
       description: Per page record count
-      defaultValue: "25"
+      defaultValue: '25'
     outputs:
     - contextPath: Gra.User.Accounts.id
       description: Id
@@ -274,12 +274,12 @@ script:
     - name: page
       required: true
       description: Page No
-      defaultValue: "1"
+      defaultValue: '1'
     - name: max
       required: true
       default: true
       description: Per page record count
-      defaultValue: "25"
+      defaultValue: '25'
     outputs:
     - contextPath: Gra.Resource.Highrisk.Accounts.id
       description: Id
@@ -326,12 +326,12 @@ script:
     - name: page
       required: true
       description: Page No
-      defaultValue: "1"
+      defaultValue: '1'
     - name: max
       required: true
       default: true
       description: Per page record count
-      defaultValue: "25"
+      defaultValue: '25'
     outputs:
     - contextPath: Gra.Hpa.id
       description: Id
@@ -382,12 +382,12 @@ script:
     - name: page
       required: true
       description: Page No
-      defaultValue: "1"
+      defaultValue: '1'
     - name: max
       required: true
       default: true
       description: Per page record count
-      defaultValue: "25"
+      defaultValue: '25'
     outputs:
     - contextPath: Gra.Resource.Hpa.id
       description: Id
@@ -434,12 +434,12 @@ script:
     - name: page
       required: true
       description: Page No
-      defaultValue: "1"
+      defaultValue: '1'
     - name: max
       required: true
       default: true
       description: Per page record count
-      defaultValue: "25"
+      defaultValue: '25'
     outputs:
     - contextPath: Gra.Orphan.Accounts.id
       description: Id
@@ -491,11 +491,11 @@ script:
       required: true
       default: true
       description: Page No
-      defaultValue: "1"
+      defaultValue: '1'
     - name: max
       required: true
       description: Per page record count
-      defaultValue: "25"
+      defaultValue: '25'
     outputs:
     - contextPath: Gra.Resource.Orphan.Accounts.id
       description: Id
@@ -545,12 +545,12 @@ script:
     - name: page
       required: true
       description: Page No
-      defaultValue: "1"
+      defaultValue: '1'
     - name: max
       required: true
       default: true
       description: Per page record count
-      defaultValue: "25"
+      defaultValue: '25'
     outputs:
     - contextPath: Gra.User.Activity.employee_id
       description: Employee Id
@@ -628,7 +628,7 @@ script:
     - name: page
       required: true
       description: Page No
-      defaultValue: "1"
+      defaultValue: '1'
     - name: max
       required: true
       default: true
@@ -727,11 +727,11 @@ script:
     - name: page
       required: true
       description: Page No
-      defaultValue: "1"
+      defaultValue: '1'
     - name: max
       required: true
       description: Per page record count
-      defaultValue: "25"
+      defaultValue: '25'
     outputs:
     - contextPath: Gra.Cases.entityId
       description: EntityId
@@ -775,11 +775,11 @@ script:
     - name: page
       required: true
       description: Page No
-      defaultValue: "1"
+      defaultValue: '1'
     - name: max
       required: true
       description: Per page record count
-      defaultValue: "25"
+      defaultValue: '25'
     outputs:
     - contextPath: Gra.User.Anomalies.anomaly_name
       description: Anomaly Name
@@ -814,7 +814,7 @@ script:
       required: true
       description: Case Comment
     - name: riskAcceptDate
-      description: Risk Accept Date in ‘yyyy-MM-dd’ format. (applicable only in case of closing a case as Risk Managed)
+      description: "Risk Accept Date in \u2018yyyy-MM-dd\u2019 format. (applicable only in case of closing a case as Risk Managed)"
     outputs:
     - contextPath: Gra.Case.Action.Message
       description: Message
@@ -852,7 +852,7 @@ script:
       required: true
       description: Case Comment
     - name: riskAcceptDate
-      description: Risk Accept Date in ‘yyyy-MM-dd’ format. (applicable only in case of closing anomalies as Risk Accepted)
+      description: "Risk Accept Date in \u2018yyyy-MM-dd\u2019 format. (applicable only in case of closing anomalies as Risk Accepted)"
     outputs:
     - contextPath: Gra.Case.Action.Anomaly.Message
       description: Message
@@ -978,7 +978,7 @@ script:
       description: Current status of anomaly
       type: String
     description: Retrieve anomalies for specified case id.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.91134
   isfetch: true
   subtype: python3
 fromversion: 5.0.0
