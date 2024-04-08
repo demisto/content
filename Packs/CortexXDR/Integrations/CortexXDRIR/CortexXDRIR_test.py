@@ -1,5 +1,6 @@
 import copy
 import json
+from unittest.mock import patch
 
 import pytest
 from freezegun import freeze_time
@@ -1323,4 +1324,112 @@ def test_update_alerts_in_xdr_command_invalid_response_no_alerts_ids(mocker):
     args = {"alert_ids": "1,2,3", "severity": "high", "status": "resolved_threat_handled", "comment": "fixed from test"}
     with pytest.raises(DemistoException) as e:
         update_alerts_in_xdr_command(xdrIr_client, args)
+    assert e.value.message == "Parse Error. Response not in format, can't find reply key."
+
+@pytest.mark.parametrize('incident_changed, delta',
+                         [(True, {'CortexXDRIRstatus': 'resolved', "close_reason": "False Positive"}),
+                          (False, {})])
+def test_update_remote_system_command_update_alerts(mocker, incident_changed, delta):
+    """
+    Given:
+        - an XDR client
+        - arguments (incident fields)
+    When
+        - update_remote_system_command which triggers Running update_alerts_in_xdr_command
+    Then
+        - Verify alerts related to incident have been changed when closing the incident
+    """
+    from CortexXDRIR import update_remote_system_command, Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False, params={'close_alerts_in_xdr': True})
+    data = {'CortexXDRIRstatus': 'resolved', 'status': 'test'}
+    expected_remote_id = 'remote_id'
+    args = {'remoteId': expected_remote_id, 'data': data, 'entries': [], 'incidentChanged': incident_changed,
+            'delta': delta,
+            'status': 2,
+            }
+    with patch("CortexXDRIR.update_incident_command") as mock_update_incident_command:
+        get_incident_extra_data_mock = mocker.patch.object(client, 'get_incident_extra_data')
+        get_incident_extra_data_mock.return_value = {'alerts': {'data': [{'alert_id': '123'}]}}
+        mock_update_incident_command.return_value = {}
+        http_request_mock = mocker.patch.object(client, 'update_alerts_in_xdr_request')
+        http_request_mock.return_value = '1,2,3'
+        update_remote_system_command(client, args)
+
+def test_update_alerts_in_xdr_request_called_with():
+    """
+    Given:
+        - an XDR client
+        - arguments (incident fields)
+    When
+        - update_alerts_in_xdr_request is called
+    Then
+        - the http request is called with the right args
+    """
+    alerts_ids = '1,2,3'
+    severity = 'High'
+    status = 'resolved'
+    comment = 'i am a test'
+    from CortexXDRIR import Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False, params={'close_alerts_in_xdr': True})
+    with patch.object(client, '_http_request') as mock_http_request, patch("CortexXDRIR.get_headers") as get_headers_mock:
+        mock_http_request.return_value = {
+            "reply": {
+                "alerts_ids": alerts_ids
+            }
+        }
+        get_headers_mock.return_value= {
+        "x-xdr-timestamp": 123,
+        "x-xdr-nonce": 456,
+        "x-xdr-auth-id": str(678),
+        "Authorization": 123,
+    }
+        client.update_alerts_in_xdr_request(alerts_ids, severity, status, comment)
+        mock_http_request.assert_called_once_with(method='POST',
+                                                  url_suffix='/alerts/update_alerts',
+                                                  json_data={'request_data':
+                                                      {'alert_id_list': '1,2,3',
+                                                       'update_data':
+                                                           {'severity': 'High', 'status': 'resolved', 'comment': 'i am a test'}
+                                                        }
+                                                      },
+                                                  headers={
+                                                      'x-xdr-timestamp': 123,
+                                                      'x-xdr-nonce': 456,
+                                                      'x-xdr-auth-id': '678',
+                                                      'Authorization': 123},
+                                                  timeout=120)
+
+def test_update_alerts_in_xdr_request_invalid_response():
+    """
+    Given:
+        - an XDR client
+        - arguments (incident fields)
+    When
+        - update_alerts_in_xdr_request is called
+    Then
+        - response is not in format-  raise an error
+    """
+    alerts_ids = '1,2,3'
+    severity = 'High'
+    status = 'resolved'
+    comment = 'i am a test'
+    from CortexXDRIR import Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False, params={'close_alerts_in_xdr': True})
+    with patch.object(client, '_http_request') as mock_http_request, patch("CortexXDRIR.get_headers") as get_headers_mock, \
+        pytest.raises(DemistoException) as e:
+        mock_http_request.return_value = {
+            "replys": {
+                "alerts_ids": alerts_ids
+            }
+        }
+        get_headers_mock.return_value= {
+        "x-xdr-timestamp": 123,
+        "x-xdr-nonce": 456,
+        "x-xdr-auth-id": str(678),
+        "Authorization": 123,
+    }
+        client.update_alerts_in_xdr_request(alerts_ids, severity, status, comment)
     assert e.value.message == "Parse Error. Response not in format, can't find reply key."
