@@ -532,6 +532,15 @@
     - job-done
     - exit $PRE_COMMIT_SUCCESS
 
+.test-include-from-infra:
+  stage: unittests-and-validations
+  script:
+    - section_start "TEST"
+    - echo "this is test"
+    - section_end "TEST"
+    - job-done
+  allow_failure: true
+
 .run-validations:
   stage: unittests-and-validations
   extends:

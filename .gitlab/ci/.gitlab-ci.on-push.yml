@@ -124,6 +124,13 @@ run-pre-commit:
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
+test-include-from-infra:
+  extends:
+    - .test-include-from-infra
+  rules:
+    - if: '$NIGHTLY'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
 # runs in gitlab for the on-push flow (except for contributors)
 run-validations:
   extends:
