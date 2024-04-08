@@ -330,7 +330,9 @@ def get_affected_content_items(
     batch_dir = flow_dir / Path(f"batch_{batch_index}")
     batch_dir.mkdir(exist_ok=True)
 
-
+    # TODO Make images tag automatic, with respect to flow:
+    # If images tag in flow dir is not found, then create,
+    # if it exists, then take it
     # images_tags_path = flow_dir / Path("images_tag.json")
     # images_tags_path.touch(exist_ok=True)
     
