@@ -44,12 +44,12 @@ class TestRCSScan(unittest.TestCase):
         demisto.executeCommand.return_value = [
             {"Type": None, "Contents": {"reply": {"scanId": "12345"}}}
         ]
-        args = {
-            "service_id": "1",
-            "attack_surface_rule_id": "2",
-            "alert_internal_id": "3",
-        }
-        result = rcs_scan_start(args, demisto)
+        service_id = "1"
+        attack_surface_rule_id = "2"
+        alert_internal_id = "3"
+        result = rcs_scan_start(
+            service_id, attack_surface_rule_id, alert_internal_id, demisto
+        )
         self.assertEqual(result, "RCSScanId Key Value set")
 
 
