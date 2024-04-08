@@ -1229,6 +1229,8 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
         demisto.debug(f'{alerts_sublist=}, {severity=}, {status=}, {comment=}')
         array_of_sublist_ids = client.update_alerts_in_xdr_request(alerts_sublist, severity, status, comment)
         array_of_all_ids += array_of_sublist_ids
+    if not array_of_all_ids:
+        raise DemistoException("Could not find alerts to update, please make sure you used a valid alert IDs.")
     return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids))
                           )
 

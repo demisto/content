@@ -1299,7 +1299,7 @@ def test_update_alerts_in_xdr_command_expected_result(mocker):
     When
         - Running update_alerts_in_xdr_command
     Then
-        - Verify that if the incident id is not found, it returns an error.
+        - Verify update alerts
     """
     from CortexXDRIR import update_alerts_in_xdr_command, Client
     xdrIr_client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
@@ -1309,7 +1309,24 @@ def test_update_alerts_in_xdr_command_expected_result(mocker):
     res = update_alerts_in_xdr_command(xdrIr_client, args)
     assert res.readable_output == "Alerts with IDs 1,2,3 have been updated successfully."
 
-
+def test_update_alerts_in_xdr_command_fail_to_update(mocker):
+    """
+    Given:
+        -  an XDR client
+        - arguments (incident_id)
+    When
+        - Running update_alerts_in_xdr_command
+    Then
+        - Did not find alerts to update - raise an error
+    """
+    from CortexXDRIR import update_alerts_in_xdr_command, Client
+    xdrIr_client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
+    http_request = mocker.patch.object(xdrIr_client, '_http_request')
+    http_request.return_value = {"reply": {"alerts_ids": []}}
+    args = {"alert_ids": "1,2,3", "severity": "high", "status": "resolved_threat_handled", "comment": "fixed from test"}
+    with pytest.raises(DemistoException) as e:
+        update_alerts_in_xdr_command(xdrIr_client, args)
+    assert e.value.message == "Could not find alerts to update, please make sure you used a valid alert IDs."
 def test_update_alerts_in_xdr_command_invalid_response_no_reply(mocker):
     """
     Given:
