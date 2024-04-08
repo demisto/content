@@ -123,7 +123,7 @@ class Client:
 
         for event in file_events:
             event.eventType = EventType.FILE
-            event._time = event.event.inserted
+            event._time = event.timestamp
 
         return [event.dict() for event in file_events]
 
@@ -289,8 +289,6 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
     """
     file_events, file_events_last_run = fetch_file_events(client, last_run=last_run, max_fetch_file_events=max_fetch_file_events)
     if file_events:
-        file_events_last_run["nextTrigger"] = "0"
-    else:
         file_events_last_run["nextTrigger"] = "30"
 
     last_run.update(file_events_last_run)
@@ -307,8 +305,6 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
         log.pop("id", None)
 
     if file_events or audit_logs:
-        audit_logs_last_run["nextTrigger"] = "0"
-    else:
         audit_logs_last_run["nextTrigger"] = "30"
 
     last_run.update(audit_logs_last_run)
