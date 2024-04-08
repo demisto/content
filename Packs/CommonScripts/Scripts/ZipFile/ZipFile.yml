@@ -15,7 +15,7 @@ enabled: true
 name: ZipFile
 outputs:
 - contextPath: ZipFile.ZippedFile
-  description: The zipped file
+  description: The zipped file.
   type: string
 - contextPath: File.Name
   description: The full file name (including file extension).
