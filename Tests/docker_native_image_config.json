@@ -108,6 +108,15 @@
             ]
         },
         {
+            "id":"EWSO365",
+            "reason":"issue: CIAC-10245 - microsoft broke their aoi, and fix it in an newer version of exchangelib package",
+            "ignored_native_images":[
+                "native:8.6",
+                "native:dev",
+                "native:candidate"
+            ]
+        },
+        {
             "id":"FetchIndicatorsFromFile",
             "reason":"issue: CIAC-5243 - ElementTree object (xml) in python3.9 has getiterator attribute while in python 3.10 this attribute does not exist - causing unit tests failures.",
             "ignored_native_images":[
