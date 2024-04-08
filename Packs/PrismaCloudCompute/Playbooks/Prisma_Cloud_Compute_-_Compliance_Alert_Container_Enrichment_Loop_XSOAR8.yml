@@ -782,4 +782,4 @@ tests:
 - No tests (auto formatted)
 fromversion: 8.0.0
 marketplaces:
-- xsoar
+- xsoar_saas
