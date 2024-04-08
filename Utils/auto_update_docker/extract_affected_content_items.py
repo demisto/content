@@ -206,7 +206,8 @@ def calculate_affected_docker_images(
     images_without_excluded_ones = set(all_docker_images) - set(images_to_exclude)
     if docker_images_arg == "ALL":
         return list(images_without_excluded_ones)
-    images_args = docker_images_arg.split("-")
+    # TODO Update to @ in Confluence and Jira ticket
+    images_args = docker_images_arg.split("@")
     if len(images_args) == 1:
         # Comma separated list case
         specific_images = images_args[0].split(",")
@@ -321,6 +322,19 @@ def get_affected_content_items(
     nightly_packs: list[str] = tests_conf.get('nightly_packs', [])
 
 
+    # Creates flow directory if it does not exist, else it does nothing
+    flow_dir = path_dir / Path(f"flow_{flow_index}")
+    flow_dir.mkdir(exist_ok=True)
+
+    # Create current batch directory if it does not exist, else it does nothing
+    batch_dir = flow_dir / Path(f"batch_{batch_index}")
+    batch_dir.mkdir(exist_ok=True)
+
+
+    # images_tags_path = flow_dir / Path("images_tag.json")
+    # images_tags_path.touch(exist_ok=True)
+    
+
     images_tag: dict[str, str] = {}
     if docker_images_target_tags_path:
         images_tag = load_json(docker_images_target_tags_path)
@@ -357,14 +371,6 @@ def get_affected_content_items(
                                 affected_content_items_by_docker_image.items()}
     # Output docker_images_target_tag | images_tag
     current_time_str = time.strftime("%Y-%m-%d-%H:%M:%S")
-
-    # Creates flow directory if it does not exist, else it does nothing
-    flow_dir = path_dir / Path(f"flow_{flow_index}")
-    flow_dir.mkdir(exist_ok=True)
-
-    # Create current batch directory if it does not exist, else it does nothing
-    batch_dir = flow_dir / Path(f"batch_{batch_index}")
-    batch_dir.mkdir(exist_ok=True)
 
     target_tags_path = docker_images_target_tags_path if docker_images_target_tags_path else f"{flow_dir}/images_tag.json"
     with open(f"{target_tags_path}", "w") as images_tag_output:
