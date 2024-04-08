@@ -14,7 +14,7 @@ from demisto_sdk.commands.common.constants import (
     PACKS_FOLDER,
     BASE_PACK,
     SCRIPTS_DIR,
-    SCRIPTS_README_FILE_NAME
+    PACKS_README_FILE_NAME
 )
 
 
@@ -138,7 +138,7 @@ class TestPrepareForValidation:
         assert actual_output_path.exists()
         assert Path(actual_output_path, f"{script_name}.yml").exists()
         assert Path(actual_output_path, f"{script_name}.py").exists()
-        assert Path(actual_output_path, SCRIPTS_README_FILE_NAME).exists()
+        assert Path(actual_output_path, PACKS_README_FILE_NAME).exists()
         assert not Path(tmp_path, input_filename).exists()
 
     def test_invalid_script(self, tmp_path: Path, mocker: MockerFixture):
@@ -172,7 +172,7 @@ class TestPrepareForValidation:
         assert actual_output_path.exists()
         assert Path(actual_output_path, f"{script_name}.yml").exists()
         assert Path(actual_output_path, f"{script_name}.py").exists()
-        assert Path(actual_output_path, SCRIPTS_README_FILE_NAME).exists()
+        assert Path(actual_output_path, PACKS_README_FILE_NAME).exists()
         assert not Path(tmp_path, input_filename).exists()
 
     def test_invalid_yml_script(self, tmp_path: Path, mocker: MockerFixture):
@@ -310,7 +310,10 @@ class TestPrepareForValidation:
         filename = CommonTestResources.contrib_zip_path.name
         bytes = CommonTestResources.contrib_zip_path.read_bytes()
 
-        with pytest.raises(FileNotFoundError, match=f"The zip '{os.path.join(str(tmp_path), filename)}' doesn't contain a 'metadata.json' file"):
+        with pytest.raises(
+            FileNotFoundError,
+            match=f"The zip '{os.path.join(str(tmp_path), filename)}' doesn't contain a 'metadata.json' file"
+        ):
             prepare_content_pack_for_validation(
                 filename=filename,
                 data=bytes,
