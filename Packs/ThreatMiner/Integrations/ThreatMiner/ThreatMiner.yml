@@ -8,7 +8,7 @@ description: Data Mining for Threat Intelligence
 configuration:
 - display: Maximum results per query, enter 'all' to get unlimited results
   name: limit_results
-  defaultvalue: "30"
+  defaultvalue: '30'
   type: 0
   required: false
 - additionalinfo: Reliability of the source providing the intelligence data.
@@ -204,7 +204,7 @@ script:
       isArray: true
     - name: threshold
       description: If ThreatScore is greater or equal than the threshold, then file will be considered malicious
-      defaultValue: "10"
+      defaultValue: '10'
     outputs:
     - contextPath: ThreatMiner.File.MD5
       description: File MD5 hash.
@@ -292,7 +292,7 @@ script:
       type: string
     description: Retrieves data from ThreatMiner about a specified file.
   runonce: false
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.91134
 tests:
 - ThreatMiner-Test
 fromversion: 5.0.0
