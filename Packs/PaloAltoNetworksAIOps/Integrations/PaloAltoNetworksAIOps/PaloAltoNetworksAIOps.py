@@ -316,6 +316,8 @@ def generate_report_command(client: Client, args: dict[str, Any]):
     export_as_file = argToBoolean(args.get('export_as_file', True))
     show_in_context = argToBoolean(args.get('show_in_context', False))
     # Get info about device - system info
+    if "@" not in requester_email:
+        raise DemistoException(f"Invalid email {requester_email}, please make sure it is a valid email.")
     system_info_xml = client.get_info_about_device_request()
     tags = ['family', 'model', 'serial', 'sw-version']
     xml_tags_values = get_values_from_xml(system_info_xml, tags)

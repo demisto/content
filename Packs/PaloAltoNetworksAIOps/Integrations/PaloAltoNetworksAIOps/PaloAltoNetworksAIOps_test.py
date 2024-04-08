@@ -693,6 +693,15 @@ def test_convert_config_to_bytes_converted_with_exception():
 
 
 def test_create_readable_output_checks_result():
+    """
+    Given:
+        - response dict
+    When:
+        - Calling convert_response_for_hr
+
+    Then:
+        - convert response to the right format
+    """
     from PaloAltoNetworksAIOps import convert_response_for_hr
     bpa_dict = {
         'best_practices': {
@@ -728,6 +737,15 @@ def test_create_readable_output_checks_result():
 
 
 def test_create_markdown():
+    """
+    Given:
+        - response array
+    When:
+        - Calling create_markdown
+
+    Then:
+        - Create an HR from the response
+    """
     from PaloAltoNetworksAIOps import create_markdown
     response_array = [{'check_id': 1, 'check_message': 'Warning message 1', 'check_type': 'warning', 'check_feature': 'feature1',
                        'check_category': 'device'},
@@ -746,6 +764,36 @@ def test_create_markdown():
 
 
 def test_create_markdown_empty_array():
+    """
+    Given:
+        - response empty array
+    When:
+        - Calling create_markdown
+
+    Then:
+        - Create an HR from the response- no entries
+    """
     from PaloAltoNetworksAIOps import create_markdown
     response_array = []
     assert create_markdown(response_array) == '### BPA results:\n**No entries.**\n'
+
+
+def test_generate_report_command_email_invalid(mocker, AIOps_client):
+    """
+    Given:
+        - args with email invalid
+    When:
+        - Calling generate_report_command
+
+    Then:
+        - raise an error
+    """
+    from PaloAltoNetworksAIOps import generate_report_command
+    from CommonServerPython import DemistoException
+    args = {'entry_id': '1234', 'requester_email': 'testgmail.com', 'requester_name': 'test', 'export_as_file': 'false',
+        'show_in_context': 'false'}
+    generate_access_token_request_mock = mocker.patch.object(AIOps_client, 'generate_access_token_request')
+    generate_access_token_request_mock.return_value = {}
+    with pytest.raises(DemistoException) as e:
+        generate_report_command(AIOps_client, args)
+    assert e.value.message == "Invalid email testgmail.com, please make sure it is a valid email."
