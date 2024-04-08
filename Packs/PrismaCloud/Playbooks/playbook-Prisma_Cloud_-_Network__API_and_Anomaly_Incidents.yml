@@ -1219,7 +1219,7 @@ tasks:
       version: -1
       name: Prisma Enrichment
       description: Gets the details of an alert based on the alert ID.
-      script: PrismaCloud v2|||prisma-cloud-alert-get-details
+      script: '|||prisma-cloud-alert-get-details'
       type: regular
       iscommand: true
       brand: PrismaCloud v2
