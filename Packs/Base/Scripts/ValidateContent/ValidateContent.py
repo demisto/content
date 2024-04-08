@@ -11,7 +11,6 @@ from datetime import datetime
 from pathlib import Path
 from shutil import copy
 from tempfile import TemporaryDirectory, TemporaryFile
-from typing import Any
 import logging
 
 import git
@@ -38,6 +37,25 @@ CACHED_MODULES_DIR = '/tmp/cached_modules'
 yaml = YAML_Handler()
 
 
+def has_metadata_file(zip_file_path: Union[str, Path]) -> bool:
+    """
+    Check if a given zip file contains a file named 'metadata.json'.
+
+    Args:
+        zip_file_path (Union[str, Path]): Path to the zip file.
+
+    Returns:
+        bool: True if the zip file contains 'metadata.json', False otherwise.
+    """
+    try:
+        with zipfile.ZipFile(zip_file_path, 'r') as zip_ref:
+            # Check if 'metadata.json' is in the list of files in the zip
+            return 'metadata.json' in zip_ref.namelist()
+    except (zipfile.BadZipFile, FileNotFoundError):
+        # Handle the case where the file is not a valid zip file or not found
+        return False
+
+
 def get_extracted_code_filepath(extractor: YmlSplitter) -> str:
     output_path = extractor.get_output_path()
     base_name = os.path.basename(output_path) if not extractor.base_name else extractor.base_name
@@ -55,7 +73,7 @@ def get_pack_name(zip_fp: str) -> str:
     return metadata.get('name', 'ServerSidePackValidationDefaultName')
 
 
-def get_files_to_validate(file_path: str) -> str:
+def get_files_to_validate(file_path: Path) -> str:
     """
     Returns the files to validate.
 
@@ -68,11 +86,11 @@ def get_files_to_validate(file_path: str) -> str:
     it will return a comma-separated list of them.
     """
 
-    if not Path(file_path).is_dir():
-        return file_path
+    if not file_path.is_dir():
+        return str(file_path)
 
     # Get all files in the directory
-    files = [str(file) for file in Path(file_path).iterdir() if file.is_file()]
+    files = [str(file) for file in file_path.iterdir() if file.is_file()]
 
     # Join the files into a comma-separated string
     files_csv = ','.join(files)
@@ -80,7 +98,7 @@ def get_files_to_validate(file_path: str) -> str:
     return files_csv
 
 
-def run_validate(file_path: str, json_output_file: str) -> None:
+def run_validate(file_path: Path, json_output_file: str) -> None:
     os.environ['DEMISTO_SDK_SKIP_VERSION_CHECK'] = '1'
     tests_dir = 'Tests'
     if not os.path.exists(tests_dir):
@@ -117,7 +135,7 @@ def run_validate(file_path: str, json_output_file: str) -> None:
     v_manager.run_validation()
 
 
-def run_lint(file_path: str, json_output_file: str) -> None:
+def run_lint(file_path: Path, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
     lint_manager = LintManager(
         input=str(file_path),
@@ -154,6 +172,9 @@ def prepare_content_pack_for_validation(filename: str, data: bytes, tmp_director
     tmp_path_zip = Path(tmp_directory, filename)
     tmp_path_zip.touch()
     tmp_path_zip.write_bytes(data)
+
+    if not has_metadata_file(tmp_path_zip):
+        raise FileNotFoundError(f"The zip '{tmp_path_zip}' doesn't contain a 'metadata.json' file")
 
     pack_name = get_pack_name(str(tmp_path_zip))
     contrib_converter = ContributionConverter(name=pack_name, contribution=str(tmp_path_zip), base_dir=tmp_directory)
@@ -259,8 +280,6 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> list:
             outputs_as_json = json.load(json_outputs)
             if outputs_as_json:
                 if isinstance(outputs_as_json, list):
-                    for validation in outputs_as_json:
-                        adjust_linter_row_and_col(validation, code_fp_to_row_offset)
                     all_outputs.extend(outputs_as_json)
                 else:
                     all_outputs.append(outputs_as_json)

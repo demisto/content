@@ -302,7 +302,7 @@ class TestPrepareForValidation:
         - The contribution zip is invalid (doesn't include a metadata.json file).
 
         Then:
-        - The output path of the contribution
+        - `FileNotFoundError` is thrown.
         """
 
         self._setup(tmp_path, mocker)
@@ -310,11 +310,12 @@ class TestPrepareForValidation:
         filename = CommonTestResources.contrib_zip_path.name
         bytes = CommonTestResources.contrib_zip_path.read_bytes()
 
-        actual_path = prepare_content_pack_for_validation(
-            filename=filename,
-            data=bytes,
-            tmp_directory=str(tmp_path)
-        )
+        with pytest.raises(FileNotFoundError, match=f"The zip '{os.path.join(str(tmp_path), filename)}' doesn't contain a 'metadata.json' file"):
+            prepare_content_pack_for_validation(
+                filename=filename,
+                data=bytes,
+                tmp_directory=str(tmp_path)
+            )
 
 
 class TestFilenameContents:
@@ -415,19 +416,20 @@ class TestFilenameContents:
         """
 
         from ValidateContent import get_file_name_and_contents
+        entry_id = "1337"
+        input_filename = expected_filename = CommonTestResources.valid_script_path.name
+        input_data = b64encode(CommonTestResources.valid_script_path.read_bytes())
 
         mocker.patch.object(demisto, "getFilePath", return_value={
             "path": CommonTestResources.valid_script_b64_path.absolute(),
             "name": CommonTestResources.valid_script_b64_path.name,
-            "id": "1337"
+            "id": entry_id
         })
-        input_filename = expected_filename = CommonTestResources.valid_script_path.name
-        input_data = b64encode(CommonTestResources.valid_script_path.read_bytes())
 
         actual_filename, actual_decoded_data = get_file_name_and_contents(
             filename=input_filename,
             data=input_data,
-            entry_id="1337"
+            entry_id=entry_id
         )
 
         assert actual_filename == expected_filename
