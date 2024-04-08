@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: Skyhigh Security
+  id: Skyhigh Security Debug
   version: -1
 configuration:
 - defaultvalue: https://www.myshn.net
@@ -39,8 +39,8 @@ configuration:
   type: 8
   required: false
 description: Skyhigh Security is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
-display: Skyhigh Security
-name: Skyhigh Security
+display: Skyhigh Security Debug
+name: Skyhigh Security Debug
 script:
   commands:
   - arguments:

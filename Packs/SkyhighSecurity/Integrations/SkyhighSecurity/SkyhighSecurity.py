@@ -57,7 +57,9 @@ class Client(BaseClient):
     def anomaly_activity_list(self, incident_id: Optional[int]) -> Dict[str, str]:
         url_suffix = '/external/api/v1/queryActivities'
         data = {"incident_id": incident_id}
-        return self._http_request('POST', url_suffix, json_data=data)
+        activities = self._http_request('POST', url_suffix, json_data=data, resp_type='response')
+        demisto.debug(f'This is the results from the activity list: {activities}')
+        return activities
 
     def policy_dictionary_list(self) -> List[Dict]:
         url_suffix = '/dlp/dictionary'
