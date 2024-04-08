@@ -16,4 +16,3 @@ dockerimage: demisto/python3:3.10.13.78960
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
-x
