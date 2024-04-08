@@ -537,11 +537,8 @@
   stage: unittests-and-validations
   extends:
     - .default-job-settings
-  trigger:
-    include:
-      - file: "/.gitlab/ci/test-include.yml"
-        ref: test_include
-        project: "${CI_PROJECT_NAMESPACE}/infra"
+  include:
+    - remote: 'https://gitlab.com/${CI_PROJECT_NAMESPACE}/-/raw/test_include/.gitlab/ci/test-include.yml'
   allow_failure: true
 
 .run-validations:
