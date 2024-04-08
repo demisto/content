@@ -330,6 +330,10 @@ repos:
     - '100'
     needs:
     - pytest-in-docker
+    exclude_support_level:ci:
+    - community
+    exclude_support_level:nightly:
+    - community
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.6.0
   hooks:
