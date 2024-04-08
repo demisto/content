@@ -65,7 +65,6 @@ configuration:
   name: mapper_out
   required: true
   type: 0
-
 description: Integrate with Atlassian's services to execute CRUD operations for employee lifecycle processes.
 display: Atlassian IAM
 name: Atlassian IAM
@@ -238,7 +237,7 @@ script:
       type: String
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.91134
   ismappable: true
   isremotesyncout: true
   script: '-'

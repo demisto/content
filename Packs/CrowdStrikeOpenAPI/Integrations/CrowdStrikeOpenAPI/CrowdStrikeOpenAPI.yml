@@ -20,7 +20,7 @@ configuration:
   type: 9
 - display: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
   name: timeout
-  defaultvalue: "10"
+  defaultvalue: '10'
   type: 0
   required: false
 - display: Use system proxy settings
@@ -19522,7 +19522,7 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'Possible order by fields:.'
+    - description: Possible order by fields:.
       name: sort
     - description: 'FQL query specifying the filter  meters. Filter term criteria: enabled, platform, name, description, etc TODO. Filter range criteria: created_on, modified_on; use any common date format, such as ''2010-05-15T14:55:21.892315096Z''.'
       name: filter_
@@ -19798,7 +19798,7 @@ script:
   - arguments:
     - description: The ID of the policy container within which to query.
       name: id_
-    - description: 'Possible order by fields:.'
+    - description: Possible order by fields:.
       name: sort
     - description: 'FQL query specifying the filter  meters. Filter term criteria: enabled, platform, name, description, etc TODO. Filter range criteria: created_on, modified_on; use any common date format, such as ''2010-05-15T14:55:21.892315096Z''.'
       name: filter_
@@ -19910,7 +19910,7 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'Possible order by fields:.'
+    - description: Possible order by fields:.
       name: sort
     - description: 'FQL query specifying the filter  meters. Filter term criteria: enabled, platform, name, description, etc TODO. Filter range criteria: created_on, modified_on; use any common date format, such as ''2010-05-15T14:55:21.892315096Z''.'
       name: filter_
@@ -20026,7 +20026,7 @@ script:
       description: ''
       type: String
   - arguments:
-    - description: 'Possible order by fields:.'
+    - description: Possible order by fields:.
       name: sort
     - description: 'FQL query specifying the filter  meters. Filter term criteria: enabled, platform, name, description, etc TODO. Filter range criteria: created_on, modified_on; use any common date format, such as ''2010-05-15T14:55:21.892315096Z''.'
       name: filter_
@@ -21264,7 +21264,7 @@ script:
       name: limit
     - description: 'Sort by spec. Ex: ''date_created|asc''.'
       name: sort
-    - description: "Optional filter criteria in the form of an FQL query. For more information about FQL queries, see our [FQL documentation in Falcon](https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-feature-guide). “user_id” can accept a special value ‘@me’ which will restrict results to records with current user’s ID."
+    - description: "Optional filter criteria in the form of an FQL query. For more information about FQL queries, see our [FQL documentation in Falcon](https://falcon.crowdstrike.com/support/documentation/45/falcon-query-language-feature-guide).\_\u201Cuser_id\u201D can accept a special value \u2018@me\u2019 which will restrict results to records with current user\u2019s ID."
       name: filter_
     description: Get a list of session_ids.
     name: cs-rtr-list-all-sessions
@@ -25717,7 +25717,7 @@ script:
     - contextPath: CrowdStrike.deviceNetworkHistory.resources.history.timestamp
       description: ''
       type: String
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.91134
   runonce: false
   script: '-'
   subtype: python3
