@@ -150,7 +150,8 @@ class CoreClient(BaseClient):
         self.timeout = timeout
     
     def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
-                params=None, data=None, timeout=None, raise_on_status=False):
+                params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
+                error_handler=None, with_metrics=False, resp_type='json'):
         '''
         """A wrapper for requests lib to send our requests and handle requests and responses better.
 
@@ -203,6 +204,8 @@ class CoreClient(BaseClient):
                         headers=self._headers,
                         timeout=timeout
                     )
+            if not self._is_status_code_valid(res, ok_codes):
+                    self._handle_error(error_handler, res, with_metrics)
             return json.loads(res.get('data'))
         except requests.exceptions.ConnectTimeout as exception:
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
