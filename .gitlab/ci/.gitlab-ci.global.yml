@@ -502,6 +502,8 @@
 .run-pre-commit:
   extends:
     - .unittests-and-lint-settings
+  variables:
+    INSTALL_DEMISTO_SDK: "false"
   script:
     - section_start "Revoking GCP Auth and Configure Docker"
     # we need to configure the docker with the registry in order to be able to pull the images
