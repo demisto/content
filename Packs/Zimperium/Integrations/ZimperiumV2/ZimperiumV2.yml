@@ -310,16 +310,16 @@ script:
       description: Whether the endpoint's device is jailbroken or not.
       type: Boolean
   - arguments:
-    - description:  The ID of the app version for which to get a JSON report. Can be retrieved using the zimperium-app-version-list command, in the field "Zimperium.AppVersion.id".
+    - description: The ID of the app version for which to get a JSON report. Can be retrieved using the zimperium-app-version-list command, in the field "Zimperium.AppVersion.id".
       name: app_version_id
       required: true
     - defaultValue: 'High'
       auto: PREDEFINED
       predefined:
-        - Low
-        - Medium
-        - High
-        - All
+      - Low
+      - Medium
+      - High
+      - All
       description: The importance of the threat.
       name: importance
     description: Gets a report.
@@ -482,7 +482,7 @@ script:
       description: The jailbreak reasons for the threat.
       type: String
     - contextPath: Zimperium.Threat.generalInfo.ssid
-      description: The service set identifier (SSID) for the threat. 
+      description: The service set identifier (SSID) for the threat.
       type: String
     - contextPath: Zimperium.Threat.generalInfo.timeInterval
       description: The time interval for a threat.
@@ -1342,7 +1342,7 @@ script:
     - contextPath: Zimperium.PolicyDeviceInactivity.teamId
       description: The team ID for the policy device inactivity.
       type: String
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.13.90168
   isfetch: true
   runonce: false
   script: '-'

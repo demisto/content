@@ -83,13 +83,13 @@ tasks:
       - "4"
     scriptarguments:
       filename:
-        simple: "# test.pdf"
+        simple: "# script.py"
       method:
         simple: GET
       saveAsFile:
         simple: "yes"
       url:
-        simple: http://www.pdf995.com/samples/pdf.pdf
+        simple: https://raw.githubusercontent.com/demisto/content/3ef746414beb35924fd5ce4c74bf646867ccbba6/Packs/CrowdStrikeFalconX/Integrations/CrowdStrikeFalconX/CrowdStrikeFalconX.py
     separatecontext: false
     view: |-
       {

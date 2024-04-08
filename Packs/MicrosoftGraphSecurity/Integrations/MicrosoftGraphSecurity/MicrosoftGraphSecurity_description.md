@@ -1,13 +1,5 @@
 # Authentication
 You can authenticate either by Azure Active Directory applications or by Azure Managed Identities.
-### Important
-1. eDiscovery commands only support the `Delegated (work or school account)` (Authorization Code Flow) permission type.
-2. When using Authorization Code Flow, the connection should be tested using the `!msg-auth-test` command.
-
-## Authentication Using the Authorization Code Flow(recommended)
-
-For instructions on how to do this, see [here](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#authorize-on-behalf-of-a-user).
-
 
 ### Authentication Based on Azure Active Directory Applications
 
@@ -20,9 +12,13 @@ There are two application authentication methods available:
 
 Depending on the authentication method that you use, the integration parameters might change.
 
-To allow us to access to Microsoft Graph Security, an admin has to approve our app using an admin consent flow, by clicking this [link](https://oproxy.demisto.ninja/ms-graph-security).
+To use the **Cortex XSOAR application** and allow Cortex XSOAR access to Microsoft Graph Security an administrator has to approve our app using an admin consent flow by clicking this **[link](https://oproxy.demisto.ninja/ms-graph-security)**.
 After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
 If you previously had an API V1 configured based on the credentials obtained from this method, refer to the link above to gain new credentials with the relevant permissions.
+
+### Important
+1. The ***eDiscovery*** and ***Threat Assessment*** commands are only supported when using the `Authorization Code flow` with `Delegated (work or school account)` permission type.
+2. When using `Authorization Code flow`, the connection should be tested using the ***!msg-auth-test*** command.
 
 ### Authentication Based on Azure Managed Identities
 ##### Note: This option is relevant only if the integration is running on Azure VM.

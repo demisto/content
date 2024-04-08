@@ -700,7 +700,7 @@ class Client:
         cleanBody = ''
         lastIndex = 0
         for i, m in enumerate(
-                re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I)):
+                re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I | re.S)):
             maintype, subtype = m.group(2).split('/', 1)
             name = f"image{i}.{subtype}"
             att = {

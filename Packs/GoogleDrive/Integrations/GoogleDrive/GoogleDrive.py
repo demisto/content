@@ -1087,6 +1087,10 @@ def file_get_parents(client: 'GSuiteClient', args: dict[str, str]) -> CommandRes
             file_id = parent.get('id', '')
             break
 
+        # break loop if no items
+        if len(response.get('items', [])) == 0:
+            break
+
     outputs: dict = {
         OUTPUT_PREFIX['PARENTS']: parents
     }
@@ -1226,6 +1230,8 @@ def file_upload_command(client: 'GSuiteClient', args: dict[str, str]) -> Command
     file_path = demisto.getFilePath(file_entry_id)
 
     user_id = args.get('user_id') or client.user_id
+    supports_all_drives = argToBoolean(args.get('supports_all_drives', False))
+
     client.set_authorized_http(scopes=COMMAND_SCOPES['FILES'], subject=user_id)
     drive_service = discovery.build(serviceName=SERVICE_NAME, version=API_VERSION, http=client.authorized_http)
     body: dict[str, str] = assign_params(
@@ -1238,6 +1244,7 @@ def file_upload_command(client: 'GSuiteClient', args: dict[str, str]) -> Command
     media = MediaFileUpload(file_path['path'])
     file = drive_service.files().create(body=body,
                                         media_body=media,
+                                        supportsAllDrives=supports_all_drives,
                                         fields='*'
                                         ).execute()
     return handle_response_file_single(file, args)

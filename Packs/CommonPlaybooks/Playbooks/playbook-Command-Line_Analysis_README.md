@@ -11,7 +11,7 @@ At the end of the playbook, it sets a possible verdict for the command line, bas
 5. Indication of network activity
 6. Indication of suspicious LOLBIN execution
 
-Note: In case you are wishing to run this playbook with a list of command lines, set this playbook to be running in a loop. To do so, navigate to the 'Loop'  and check "For Each Input".
+Note: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check "For Each Input".
 
 ## Dependencies
 
@@ -27,10 +27,10 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Base64Decode
 * Set
 * MatchRegexV2
 * DeleteContext
+* Base64Decode
 
 ### Commands
 

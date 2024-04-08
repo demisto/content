@@ -2,7 +2,7 @@ id: Palo Alto Networks - Hunting And Threat Detection
 version: -1
 fromversion: 5.0.0
 name: Palo Alto Networks - Hunting And Threat Detection
-description: "This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. \nWith the received indicators, the playbook leverages data received by PANW products including, Strata Logging Service, Autofocus and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe output provided by the playbook facilitates pivoting searches for possibly affected IP addresses or users."
+description: "This is a multipurpose playbook used for hunting and threat detection. The playbook receives inputs based on hashes, IP addresses, or domain names provided manually or from outputs by other playbooks. \nThe playbook leverages data received by PANW products including, Strata Logging Service, Autofocus and Pan-OS to search for IP addresses, host names and users related to the provided indicators.\nThe output provided by the playbook enables you to find possibly affected IP addresses, users, and endpoints."
 starttaskid: "0"
 tasks:
   "0":
@@ -58,6 +58,7 @@ tasks:
       - "96"
       - "108"
       - "109"
+      - "175"
     scriptarguments:
       MD5:
         complex:
@@ -84,7 +85,7 @@ tasks:
       {
         "position": {
           "x": 670,
-          "y": 740
+          "y": 640
         }
       }
     note: false
@@ -196,6 +197,7 @@ tasks:
       - "112"
       - "90"
       - "113"
+      - "184"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -205,6 +207,9 @@ tasks:
             value:
               simple: inputs.IPAddresses
             iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -217,7 +222,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "10":
@@ -251,8 +255,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1930,
-          "y": 360
+          "x": 2440,
+          "y": 400
         }
       }
     note: false
@@ -388,7 +392,7 @@ tasks:
       {
         "position": {
           "x": -940,
-          "y": 2630
+          "y": 2780
         }
       }
     note: false
@@ -524,7 +528,7 @@ tasks:
       id: 60d10a58-cb8c-4fa9-8f9c-b6caf57bbb24
       version: -1
       name: Set detected IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -573,7 +577,7 @@ tasks:
       id: ddbf993a-2930-4958-89bd-3fbeb535c1cc
       version: -1
       name: Set detected users
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -623,7 +627,7 @@ tasks:
       id: 7e4d2773-3226-4789-8463-0107cea679d4
       version: -1
       name: Search in Strata Logging Service Traffic logs
-      description: Searches the Strata Logging Service traffic table. Traffic logs contain entries for the end of each network session
+      description: Searches the Strata Logging Service traffic table. Traffic logs contain entries for the end of each network session.
       script: '|||cdl-query-traffic-logs'
       type: regular
       iscommand: true
@@ -826,7 +830,7 @@ tasks:
       {
         "position": {
           "x": 590,
-          "y": 1600
+          "y": 1610
         }
       }
     note: false
@@ -913,7 +917,7 @@ tasks:
       {
         "position": {
           "x": 1220,
-          "y": 1565
+          "y": 1610
         }
       }
     note: false
@@ -943,8 +947,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1930,
-          "y": 2650
+          "x": 2440,
+          "y": 2715
         }
       }
     note: false
@@ -983,8 +987,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3670,
-          "y": 1600
+          "x": 4210,
+          "y": 1360
         }
       }
     note: false
@@ -1007,7 +1011,7 @@ tasks:
       id: bbc9bcbd-fbd1-4c23-8fea-a582c9ea7a4b
       version: -1
       name: Set detected IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1036,8 +1040,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3670,
-          "y": 2090
+          "x": 4050,
+          "y": 1930
         }
       }
     note: false
@@ -1056,7 +1060,7 @@ tasks:
       id: 940cb3ab-a2ab-462f-8b23-e4d5d84bd262
       version: -1
       name: Set detected users
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1085,8 +1089,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3670,
-          "y": 2460
+          "x": 4050,
+          "y": 2300
         }
       }
     note: false
@@ -1144,8 +1148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5110,
-          "y": 1080
+          "x": -3820,
+          "y": 1095
         }
       }
     note: false
@@ -1203,8 +1207,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2220,
-          "y": 1120
+          "x": 3310,
+          "y": 1190
         }
       }
     note: false
@@ -1321,8 +1325,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5020,
-          "y": 1300
+          "x": 4710,
+          "y": 1170
         }
       }
     note: false
@@ -1460,7 +1464,7 @@ tasks:
       id: 38938eae-d197-4b34-8ad1-835b8ac3c77f
       version: -1
       name: Set detected IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1509,7 +1513,7 @@ tasks:
       id: 02bdd4c9-a777-4aac-8309-87825430c2aa
       version: -1
       name: Set detected users
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1561,7 +1565,7 @@ tasks:
       id: 8ca7216e-47f5-4f0a-8104-e8d3b486d356
       version: -1
       name: Set detected IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1649,6 +1653,9 @@ tasks:
                       iscontext: true
                 - operator: uniq
             iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -1661,7 +1668,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "83":
@@ -1672,7 +1678,7 @@ tasks:
       id: f57f5c5b-d440-4847-85cf-996b9bbbaad7
       version: -1
       name: Set detected IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1701,8 +1707,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5020,
-          "y": 2460
+          "x": 5270,
+          "y": 1825
         }
       }
     note: false
@@ -1747,8 +1753,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5020,
-          "y": 1900
+          "x": 4990,
+          "y": 1610
         }
       }
     note: false
@@ -1788,8 +1794,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3670,
-          "y": 1745
+          "x": 4050,
+          "y": 1610
         }
       }
     note: false
@@ -1808,7 +1814,7 @@ tasks:
       id: f3a9c2a6-45f0-421c-8cb4-71042f5f134a
       version: -1
       name: Set detected IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1921,8 +1927,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3670,
-          "y": 1255
+          "x": 4050,
+          "y": 1170
         }
       }
     note: false
@@ -1952,8 +1958,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3670,
-          "y": 985
+          "x": 4050,
+          "y": 1025
         }
       }
     note: false
@@ -1972,7 +1978,7 @@ tasks:
       id: 059eba21-9993-490a-8c2a-8e1a08aaca2c
       version: -1
       name: Set detected IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2052,7 +2058,7 @@ tasks:
       id: 20ea7647-9e20-42ca-8452-1631b2c9d24e
       version: -1
       name: Set detected users
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2101,11 +2107,14 @@ tasks:
       id: c537fc45-5e32-4933-8e7a-bd8f11b78b77
       version: -1
       name: Autofocus Query Samples, Sessions and Tags
+      description: |-
+        This playbook is used for querying the PANW threat intelligence Autofocus system. The playbook accepts indicators such as IPs, hashes, and domains to run basic queries or advanced queries that can leverage several query parameters. To run advanced queries, we recommend first using the Autofocus UI https://autofocus.paloaltonetworks.com/#/dashboard/organization to create a query and than use the export search button. The result can be used as a playbook input.
+
+        The playbook supports searching both the Samples API and the Sessions API.
       playbookName: Autofocus Query Samples, Sessions and Tags
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -2233,8 +2242,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5020,
-          "y": 1695
+          "x": 4990,
+          "y": 1360
         }
       }
     note: false
@@ -2253,7 +2262,7 @@ tasks:
       id: 0875678b-51fb-4d3c-8882-37861c5120dd
       version: -1
       name: Are there Pan-OS search results?
-      description: Are there relevant IP's
+      description: Are there relevant IPs
       type: condition
       iscommand: false
       brand: ""
@@ -2276,8 +2285,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2280,
-          "y": 1665
+          "x": 3370,
+          "y": 1735
         }
       }
     note: false
@@ -2296,7 +2305,7 @@ tasks:
       id: f6eaa5f8-c04a-4a24-8ed5-6c76ee2c8f39
       version: -1
       name: Set detected IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2325,8 +2334,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2280,
-          "y": 2185
+          "x": 3370,
+          "y": 2060
         }
       }
     note: false
@@ -2345,7 +2354,7 @@ tasks:
       id: ed78b99c-85e3-4659-87dc-9440b3d2dfbf
       version: -1
       name: Set detected users
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2467,8 +2476,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5020,
-          "y": 985
+          "x": 4710,
+          "y": 1025
         }
       }
     note: false
@@ -2498,8 +2507,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2220,
-          "y": 985
+          "x": 3310,
+          "y": 1025
         }
       }
     note: false
@@ -2560,7 +2569,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5110,
+          "x": -3820,
           "y": 910
         }
       }
@@ -2600,6 +2609,8 @@ tasks:
                 root: Panorama
                 accessor: Monitor.Logs.DestinationAddress
             iscontext: true
+          right:
+            value: {}
         - operator: isNotEmpty
           left:
             value:
@@ -2607,11 +2618,12 @@ tasks:
                 root: Panorama
                 accessor: Monitor.Logs.SourceAddress
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -5110,
-          "y": 1650
+          "x": -4060,
+          "y": 1695
         }
       }
     note: false
@@ -2619,7 +2631,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "132":
@@ -2630,7 +2641,7 @@ tasks:
       id: aebbada3-8599-4fab-868d-d30c1792cdf9
       version: -1
       name: Set detected users
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2659,8 +2670,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5110,
-          "y": 2430
+          "x": -4260,
+          "y": 2360
         }
       }
     note: false
@@ -2679,7 +2690,7 @@ tasks:
       id: 13f7fc7e-1933-456d-8153-eedac64f8e2a
       version: -1
       name: Set detected IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2708,8 +2719,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5110,
-          "y": 2015
+          "x": -4260,
+          "y": 2005
         }
       }
     note: false
@@ -2756,8 +2767,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -5110,
-          "y": 1425
+          "x": -4060,
+          "y": 1350
         }
       }
     note: false
@@ -2853,8 +2864,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2280,
-          "y": 1460
+          "x": 3370,
+          "y": 1530
         }
       }
     note: false
@@ -2885,8 +2896,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 2860
+          "x": 900,
+          "y": 3090
         }
       }
     note: false
@@ -2926,8 +2937,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 3140
+          "x": 1250,
+          "y": 3370
         }
       }
     note: false
@@ -2957,8 +2968,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 4015
+          "x": 1250,
+          "y": 4245
         }
       }
     note: false
@@ -2994,8 +3005,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": 3310
+          "x": 1490,
+          "y": 3540
         }
       }
     note: false
@@ -3014,7 +3025,7 @@ tasks:
       id: 81e6910a-e975-4c4e-8a56-e1e696fe617d
       version: -1
       name: Set detected IP addresses as internal
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3046,8 +3057,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": 3560
+          "x": 1490,
+          "y": 3790
         }
       }
     note: false
@@ -3066,7 +3077,7 @@ tasks:
       id: 5c171b1f-1edc-4404-831d-f029dcd9e57f
       version: -1
       name: Set detected IP addresses as external
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3098,8 +3109,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": 3780
+          "x": 1490,
+          "y": 4010
         }
       }
     note: false
@@ -3118,7 +3129,7 @@ tasks:
       id: 8636b5c9-c31e-465b-87ab-d36980dc2b49
       version: -1
       name: Set detected IPs
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3167,7 +3178,7 @@ tasks:
       id: 5def5f66-3f4a-4f80-8fbe-d2897f117050
       version: -1
       name: Set detected users
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3217,7 +3228,7 @@ tasks:
       id: 41a69d1b-1b4b-45fb-871f-089026fa2888
       version: -1
       name: Set detected hosts
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3266,7 +3277,7 @@ tasks:
       id: 84a23cb9-81d6-439a-84ee-a260e82ad5a8
       version: -1
       name: Set detected hosts
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3315,7 +3326,7 @@ tasks:
       id: 0a357f18-a20e-4707-8655-c6f1abf070bf
       version: -1
       name: Set detected hosts
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3364,7 +3375,7 @@ tasks:
       id: ed9a77e6-32a8-4ee4-89bc-2e66f6bd0698
       version: -1
       name: Set detected hosts
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3393,8 +3404,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3670,
-          "y": 2265
+          "x": 4050,
+          "y": 2105
         }
       }
     note: false
@@ -3434,8 +3445,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": 3140
+          "x": 570,
+          "y": 3370
         }
       }
     note: false
@@ -3465,8 +3476,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1240,
-          "y": 3000
+          "x": 1250,
+          "y": 3230
         }
       }
     note: false
@@ -3496,8 +3507,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": 3000
+          "x": 570,
+          "y": 3230
         }
       }
     note: false
@@ -3527,8 +3538,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
-          "y": 4015
+          "x": 570,
+          "y": 4245
         }
       }
     note: false
@@ -3555,8 +3566,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 4170
+          "x": 920,
+          "y": 4400
         }
       }
     note: false
@@ -3598,8 +3609,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -110,
-          "y": 3520
+          "x": -100,
+          "y": 3750
         }
       }
     note: false
@@ -3618,7 +3629,7 @@ tasks:
       id: b36c2d2e-e655-42cd-882e-1b94360f88a8
       version: -1
       name: Set detected host names as internal
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3650,8 +3661,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -110,
-          "y": 3665
+          "x": -100,
+          "y": 3895
         }
       }
     note: false
@@ -3670,7 +3681,7 @@ tasks:
       id: 38f7b2e5-2e9f-4497-88b0-deb234b95eed
       version: -1
       name: Set detected host names as external
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3702,8 +3713,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -110,
-          "y": 3840
+          "x": -100,
+          "y": 4070
         }
       }
     note: false
@@ -3743,8 +3754,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 3310
+          "x": 330,
+          "y": 3540
         }
       }
     note: false
@@ -3763,7 +3774,7 @@ tasks:
       id: 9c90d795-19b6-42a6-8dc4-5792e7af2e0e
       version: -1
       name: Set detected host names as internal
-      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -3782,8 +3793,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 320,
-          "y": 3520
+          "x": 330,
+          "y": 3750
         }
       }
     note: false
@@ -3791,26 +3802,431 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "175":
+    id: "175"
+    taskid: 90434b05-2785-4f62-8592-969be678a1dc
+    type: title
+    task:
+      id: 90434b05-2785-4f62-8592-969be678a1dc
+      version: -1
+      name: Cortex XDR hash search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "182"
+    separatecontext: false
     continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "177":
+    id: "177"
+    taskid: 2661d1f8-17f1-4fcd-8729-13d47ba43311
+    type: regular
+    task:
+      id: 2661d1f8-17f1-4fcd-8729-13d47ba43311
+      version: -1
+      name: Search for the hash in alerts
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \nMultiple filter arguments are concatenated using the AND operator, while arguments that support a comma-separated list of values use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "178"
+    scriptarguments:
+      actor_process_image_sha256:
+        complex:
+          root: inputs.SHA256
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1940,
+          "y": 1285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "178":
+    id: "178"
+    taskid: b7b37a2f-a6ac-4c05-8588-daee3fc696b5
+    type: condition
+    task:
+      id: b7b37a2f-a6ac-4c05-8588-daee3fc696b5
+      version: -1
+      name: Is the hash detected by Cortex XDR?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "179"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Alert
+                accessor: internal_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1940,
+          "y": 1505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "179":
+    id: "179"
+    taskid: d352ae69-ed2f-40c7-87e8-b8b33e48bbb4
+    type: regular
+    task:
+      id: d352ae69-ed2f-40c7-87e8-b8b33e48bbb4
+      version: -1
+      name: Set Cortex XDR agent detected IP's
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't run.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Scripts
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedIPs
+      value:
+        complex:
+          root: PaloAltoNetworksXDR.Alert
+          accessor: agent_ip_addresses
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2200,
+          "y": 1695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "182":
+    id: "182"
+    taskid: 5a14ea5b-907d-4925-8e96-b1a9430e15ab
+    type: condition
+    task:
+      id: 5a14ea5b-907d-4925-8e96-b1a9430e15ab
+      version: -1
+      name: Is Cortex XDR is enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "177"
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "184":
+    id: "184"
+    taskid: b9ed484d-e2db-48bd-8e42-9b5d5aaf1180
+    type: title
+    task:
+      id: b9ed484d-e2db-48bd-8e42-9b5d5aaf1180
+      version: -1
+      name: Prisma Cloud IP search
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "185"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4690,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "185":
+    id: "185"
+    taskid: 1581d291-9a38-483e-842a-91aa3a4b7953
+    type: condition
+    task:
+      id: 1581d291-9a38-483e-842a-91aa3a4b7953
+      version: -1
+      name: Is Prisma Cloud enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "186"
+    scriptarguments:
+      brandname:
+        simple: PrismaCloud v2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4690,
+          "y": 1075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "186":
+    id: "186"
+    taskid: 468b88d6-259c-4857-8f97-aa65a5589357
+    type: regular
+    task:
+      id: 468b88d6-259c-4857-8f97-aa65a5589357
+      version: -1
+      name: Prisma Cloud search IP
+      description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, the default time range is all times. To limit the results returned, use "limit search records to" at the end of the RQL query, followed by one of these values: 1, 10, 100, 1000, or 10,000.'
+      script: '|||prisma-cloud-network-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "187"
+    scriptarguments:
+      query:
+        simple: network from vpc.flow_record where source.ip=${inputs.IPAddresses}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4690,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "187":
+    id: "187"
+    taskid: 14629675-a0f1-460b-8f0f-e9d91acead33
+    type: condition
+    task:
+      id: 14629675-a0f1-460b-8f0f-e9d91acead33
+      version: -1
+      name: Are there any relevant IP's?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "188"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PrismaCloud.Network.Node.ipAddr
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4690,
+          "y": 1585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "188":
+    id: "188"
+    taskid: 5d9a51d2-a163-42c0-815c-cee12e656fcb
+    type: regular
+    task:
+      id: 5d9a51d2-a163-42c0-815c-cee12e656fcb
+      version: -1
+      name: Set detected IPs
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't run.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: PANWHunting.DetectedIPs
+      value:
+        complex:
+          root: PrismaCloud.Network.Node
+          accessor: ipAddr
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -5050,
+          "y": 2025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
+      "104_55_#default#": 0.19,
+      "10_110_yes": 0.85,
       "10_55_#default#": 0.19,
-      "26_23_#default#": 0.81,
-      "3_4_#default#": 0.82,
-      "43_4_#default#": 0.61,
-      "48_4_#default#": 0.8,
-      "5_23_#default#": 0.79,
-      "84_55_#default#": 0.81,
-      "92_55_#default#": 0.79
+      "129_23_#default#": 0.12,
+      "178_4_#default#": 0.1,
+      "182_4_#default#": 0.1,
+      "185_23_#default#": 0.1,
+      "187_188_yes": 0.46,
+      "187_23_#default#": 0.1,
+      "18_100_yes": 0.41,
+      "18_23_#default#": 0.15,
+      "21_23_#default#": 0.32,
+      "21_86_yes": 0.41,
+      "26_23_#default#": 0.11,
+      "31_23_#default#": 0.12,
+      "35_4_#default#": 0.42,
+      "3_2_yes": 0.4,
+      "3_4_#default#": 0.25,
+      "43_4_#default#": 0.19,
+      "48_4_#default#": 0.24,
+      "5_112_yes": 0.49,
+      "5_184_yes": 0.85,
+      "5_23_#default#": 0.24,
+      "66_23_#default#": 0.1,
+      "67_55_#default#": 0.25,
+      "68_4_#default#": 0.1,
+      "69_55_#default#": 0.18,
+      "70_23_#default#": 0.29,
+      "82_4_#default#": 0.26,
+      "84_55_#default#": 0.1,
+      "85_55_#default#": 0.23,
+      "92_55_#default#": 0.11
     },
     "paper": {
       "dimensions": {
-        "height": 4225,
-        "width": 10510,
-        "x": -5110,
+        "height": 4455,
+        "width": 10700,
+        "x": -5050,
         "y": 10
       }
     }
@@ -3842,9 +4258,28 @@ inputs:
   description: List of domains or urls.
   playbookInputQuery:
 - key: InternalRange
-  value: {}
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexExtractAll
+        args:
+          error_if_no_match: {}
+          ignore_case: {}
+          multi_line: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+          unpack_matches: {}
+      - operator: join
+        args:
+          separator:
+            value:
+              simple: ','
   required: false
-  description: 'A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes). If a list is not provided, will use default list provided in the IsIPInRanges script (the known IPv4 private address ranges).'
+  description: 'A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" (without quotes).'
   playbookInputQuery:
 - key: InternalDomainName
   value: {}
@@ -3854,7 +4289,7 @@ inputs:
 - key: InternalHostRegex
   value: {}
   required: false
-  description: This is provided for the script IsInternalHostName that checks if the detected host names are internal or external. If the hosts match the organization's naming convention. For example the host testpc1 will have the following regex \w{6}\d{1}
+  description: This is provided for the script IsInternalHostName that checks if the detected host names are internal or external. Checks if the hosts match the organization's naming convention. For example, the host testpc1 has the following regex \w{6}\d{1}
   playbookInputQuery:
 outputs:
 - contextPath: PANWHunting.DetectedUsers

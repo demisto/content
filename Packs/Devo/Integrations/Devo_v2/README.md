@@ -353,10 +353,9 @@ Using unsupported formats will result in an error.
 | Devo.MultiResults | unknown | A list of dictionary results. |
 
 
-#### Command Example
-
-```text
-!devo-multi-table-query tables='["siem.logtrust.web.activity", "siem.logtrust.web.navigation"]' searchToken="john@doe.com" from=1576845233.193244 to=1576845293.193244 items_per_page=1000
+##### Command Example
+```
+!devo-multi-table-query tables="[siem.logtrust.alert.info, siem.logtrust.web.navigation]" searchToken="parag@metronlabs.com" from=1707416980 to=1707805927
 ```
 
 #### Human Readable Output
@@ -391,11 +390,11 @@ A Cortex XSOAR instance configured with the correct write JSON credentials
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| tableName | The name of the table to write to. | Required | 
-| records | Records to write to the specified table. | Required | 
-| linqLinkBase | Overrides the global Devo base domain for linq linking. | Optional | 
+| **Argument Name** | **Description**                                                 | **Required** |
+|-------------------|-----------------------------------------------------------------|--------------|
+| tableName         | Table name to write to                                          | Required     |
+| records           | Records written to specified Devo table.                        | Required     |
+| linqLinkBase      | Overrides the global link base so is able to be set at run time | Optional     |
 
 #### Context Output
 
@@ -406,24 +405,34 @@ A Cortex XSOAR instance configured with the correct write JSON credentials
 | Devo.QueryLink | unknown | The link to the Devo table for the executed query. | 
 
 
-#### Command Example
-
-```text
-!devo-write-to-table tableName="my.app.test.test" records='[{"hello": "world"}, {"hello": "world"}]'
+##### Command Example
+```
+!devo-write-to-table tableName="my.app.test.test" records=`[ "This is my first event", "This is my second log", {"hello": "world"}, {"hello": "friend"}, ["a", "b", "c"], ["1", "2", "3"], 1234, true ]`
 ```
 
-#### Human Readable Output
+##### Human Readable Output
+Total Records Sent: 8.
+Total Bytes Sent: 196.
 
->### Entries to load into Devo
->| hello |
->| --- |
->| world |
->| world |
+##### Entries to load into Devo
 
->### Link to Devo Query
->|DevoTableLink|
->|---|
->|[Devo Direct Link](https://us.devo.com/welcome#/verticalApp?path=apps/custom/dsQueryForwarder&targetQuery=blah==)|
+|eventdate|format|cluster|instance|message|
+|---|---|---|---|---|
+|2024-02-12 17:51:51.277|test|-|-|This is my first event|
+|2024-02-12 17:51:51.277|test|-|-|This is my second log|
+|2024-02-12 17:51:51.277|test|-|-|{"hello": "world"}|
+|2024-02-12 17:51:51.277|test|-|-|{"hello": "friend"}|
+|2024-02-12 17:51:51.277|test|-|-|["a", "b", "c"]|
+|2024-02-12 17:51:51.277|test|-|-|["1", "2", "3"]|
+|2024-02-12 17:51:51.277|test|-|-|1234|
+|2024-02-12 17:51:51.277|test|-|-|True|
+
+
+##### Link to Devo Query
+
+|DevoTableLink|
+|---|
+|[Devo Direct Link](https://us.devo.com/welcome#/verticalApp?path=apps/custom/dsQueryForwarder&targetQuery=blah==)|
 
 
 ### 5. devo-write-to-lookup-table
@@ -459,19 +468,31 @@ A Cortex XSOAR instance configured with the correct write JSON credentials.
 | Devo.RecordsWritten | unknown | Lookup records written to the lookup table. | 
 
 
-#### Command Example
-
-```text
-!devo-write-to-lookup-table lookupTableName="lookup123" headers='["foo", "bar", "baz"]' records='[{"key": "foo1", "values": ["foo1", "bar1", "baz1"]}]'
+##### Command Example
+```
+!devo-write-to-lookup-table lookupTableName="lookup123" headers=`{"headers": ["foo", "bar", "baz"], "key_index": 0, "action": "FULL"}` records=`[{"fields": ["foo1", "bar1", "baz1"], "delete": false}, {"fields": ["foo2", "bar2", "baz2"]}, {"fields": ["foo3", "bar3", "baz3"]}]`
 ```
 
-#### Human Readable Output
+##### Human Readable Output
+Lookup Table Name: lookup123.
+Total Records Sent: 3.
+Total Bytes Sent: 125.
 
->| foo  | bar  | baz  |
->| ---- | ---- | ---- |
->| foo1 | bar1 | baz1 |
+##### Entries to load into Devo
+The headers of headers array is written into the my.lookup.control table.
 
+|eventdate|lookup|lookupId|lookupOp|type|lookupFields|
+|---|---|---|---|---|---|
+|2024-02-13 10:57:14.238|lookup123|1707802034.0032315_lookup123|FULL|START|[{"foo":{"type":"str","key":true}},{"bar":{"type":"str"}},{"baz":{"type":"str"}}]|
+|2024-02-13 10:57:24.246|lookup123|1707802034.0032315_lookup123|FULL|END|[{"foo":{"type":"str","key":true}},{"bar":{"type":"str"}},{"baz":{"type":"str"}}]|
 
+The fields of records array is written into the my.lookup.data table.
+
+|eventdate|lookup|lookupId|lookupOp|rawData|
+|---|---|---|---|---|
+|2024-02-13 10:57:19.239|lookup123|1707802034.0032315_lookup123|null|"foo1", "bar1", "baz1"|
+|2024-02-13 10:57:19.240|lookup123|1707802034.0032315_lookup123|null|"foo2", "bar2", "baz2"|
+|2024-02-13 10:57:19.240|lookup123|1707802034.0032315_lookup123|null|"foo3", "bar3", "baz3"|
 
 #### Youtube Video Demo (Click Image, Will redirect to youtube)
 
