@@ -18,7 +18,7 @@ jobs:
       - name: Check if files under .gitlab directory are changed
         id: check-changes
         run: |
-          CHANGED_FILES=$(git diff --name-only origin/master origin/${{ github.head_ref || github.ref_name }})
+          CHANGED_FILES=$(git diff --name-only origin/master...origin/${{ github.head_ref || github.ref_name }})
           echo "All changed files:"
           echo "${CHANGED_FILES}"
           GITLAB_CHANGED_FILES=$( [[ $CHANGED_FILES == *".gitlab/ci"* ]] && echo true || echo false)
