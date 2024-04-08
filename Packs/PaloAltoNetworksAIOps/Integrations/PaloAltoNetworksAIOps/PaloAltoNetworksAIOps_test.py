@@ -791,7 +791,7 @@ def test_generate_report_command_email_invalid(mocker, AIOps_client):
     from PaloAltoNetworksAIOps import generate_report_command
     from CommonServerPython import DemistoException
     args = {'entry_id': '1234', 'requester_email': 'testgmail.com', 'requester_name': 'test', 'export_as_file': 'false',
-        'show_in_context': 'false'}
+            'show_in_context': 'false'}
     generate_access_token_request_mock = mocker.patch.object(AIOps_client, 'generate_access_token_request')
     generate_access_token_request_mock.return_value = {}
     with pytest.raises(DemistoException) as e:
