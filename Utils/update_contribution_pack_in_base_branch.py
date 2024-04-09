@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 
 import requests
 
-PER_PAGE = "100"  # value of `per_page` request parameter
+PER_PAGE = 100  # value of `per_page` request parameter
 
 
 def main():
@@ -47,13 +47,13 @@ def get_pr_files(pr_number: str, github_token: str) -> Iterable[str]:
     while True:
         response = requests.get(
             f"https://api.github.com/repos/demisto/content/pulls/{pr_number}/files",
-            params={"page": str(page), "per_page": PER_PAGE},
+            params={"page": str(page), "per_page": str(PER_PAGE)},
             headers={"Authorization": f"Bearer {github_token}"},
         )
         response.raise_for_status()
         files = response.json()
         # to prevent another empty request, also check if the length of `files` is less than the value of per_page.
-        if (not files) or (len(list(files)) <= int(PER_PAGE)):
+        if (not files) or (len(list(files)) < PER_PAGE):
             break
         for pr_file in files:
             if pr_file['filename'].startswith('Packs/'):
