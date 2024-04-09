@@ -7,6 +7,7 @@ alter
         message_type_lower = lowercase(arrayindex(regextract(_raw_log,"\:\s\w+\s\w+\s(\w+)\s"),0))
 
 | alter
+
         xdm.observer.name = arrayindex(regextract(_raw_log,"(\S+)\s\S+-\S+-\S+\s:"),0),
         xdm.event.type = concat(feature, " - ", message_type),
         xdm.event.id = arrayindex(regextract(_raw_log,"\:\s\w+\s\w+\s\w+\s(\d+)\s"),0),
