@@ -25,10 +25,12 @@ def decode_base64(b64: str) -> str:
     return base64.b64decode(b64).decode("utf-8")
 
 
-class CannotFindWorkflowError(ValueError): ...
+class CannotFindWorkflowError(ValueError):
+    ...
 
 
-class CannotFindArtifactError(ValueError): ...
+class CannotFindArtifactError(ValueError):
+    ...
 
 
 class GitHubClient:
@@ -54,9 +56,32 @@ class GitHubClient:
         return f"{REPOS_API_PREFIX}/{self.organization}/{self.repo}"
 
     def get_file(self, path: Path) -> dict:
-        res = requests.get(f"{self.base_url}/contents/{path!s}", headers=self.headers)
+        res = requests.get(
+            f"{self.base_url}/contents/{path!s}",
+            headers=self.headers,
+        )
         res.raise_for_status()
         return res.json()
+
+    def create_branch(self) -> None:
+        sha = requests.get(
+            f"{self.base_url}/branches/master",
+            headers=self.headers,
+        ).json()["commit"]["sha"]
+
+        try:
+            res = requests.post(
+                f"{self.base_url}/git/refs",
+                headers=self.headers,
+                json={"ref": f"refs/heads/{self.branch}", "sha": sha},
+            )
+            res.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            if (
+                res.status_code == 422
+                and res.json()["message"] == "Reference alreay exists"
+            ):
+                raise ValueError("branch alredy exists") from e
 
     def commit_file(self, path_in_repo: Path, content: str, commit_message: str):
         res = requests.put(
@@ -91,6 +116,7 @@ class GitHubClient:
         assign_res = requests.post(
             f"{self.base_url}/pulls/{pr_number}/requested_reviewers",
             json={"reviewers": [reviewer]},
+            headers=self.headers,
         )
         assign_res.raise_for_status()
 
@@ -140,7 +166,8 @@ class GitHubClient:
         if not matching_name:
             raise CannotFindArtifactError
         file = requests.get(
-            url=matching_name[0]["archive_download_url"], headers=self.headers
+            url=matching_name[0]["archive_download_url"],
+            headers=self.headers,
         )
         file.raise_for_status()
         return ZipFile(BytesIO(file.content))
@@ -157,7 +184,9 @@ def compile_validate_docs(readme_markdown: str, checks_markdown: str) -> str:
     )
 
     return (
-        "\n\n".join((document_header, readme_markdown, checks_markdown))
+        "\n\n".join(
+            (document_header, readme_markdown, checks_markdown.replace("\\n", "\n"))
+        )
         .replace("<", "&lt;")
         .replace(">", "&gt;")
     )  # required for docusaurus
@@ -197,7 +226,7 @@ def main(
         is_draft=is_draft,
         github_token=github_token,
     )
-
+    docs_client.create_branch()
     docs_client.commit_file(
         path_in_repo=Path("docs/concepts/demisto-sdk-validate.md"),
         content=compile_validate_docs(
