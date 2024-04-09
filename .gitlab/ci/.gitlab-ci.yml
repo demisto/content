@@ -1,12 +1,13 @@
 .before_script_test:
-  - |
-    if curl --head --silent --fail "${CI_SERVER_URL}/api/v4/projects/${CI_PROJECT_NAMESPACE}/repository/branches/$CI_COMMIT_BRANCH"; then
-      echo "Branch exists in the other repository. Setting variable to include from branch."
-      export INCLUDE_FROM_BRANCH="true"
-    else
-      echo "Branch does not exist in the other repository. Setting variable to include from master."
-      export INCLUDE_FROM_BRANCH="false"
-    fi
+  script:
+    - |
+      if curl --head --silent --fail "${CI_SERVER_URL}/api/v4/projects/${CI_PROJECT_NAMESPACE}/repository/branches/$CI_COMMIT_BRANCH"; then
+        echo "Branch exists in the other repository. Setting variable to include from branch."
+        export INCLUDE_FROM_BRANCH="true"
+      else
+        echo "Branch does not exist in the other repository. Setting variable to include from master."
+        export INCLUDE_FROM_BRANCH="false"
+      fi
 
 extends:
   - .before_script_test
