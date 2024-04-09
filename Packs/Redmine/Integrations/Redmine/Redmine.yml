@@ -346,6 +346,11 @@ script:
       description: A list of users last name.
     - contextPath: Redmine.Users.mail
       description: A list of users mails.
+  - name: reset-redmine_settings
+    description: |-
+      - When using issue-create/issue-update/issue-list commands we save the custom settings in a local database
+      - Use this command to reset the local database in cases of changing the tracker/priority/status in your Redmine instance after your previous instance initialization
+      - This way, XSOAR will be able to use your new definitions of those fields
   dockerimage: demisto/python3:3.10.14.91134
   isfetch: false
   runonce: false

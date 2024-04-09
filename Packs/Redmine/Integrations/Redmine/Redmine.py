@@ -663,6 +663,20 @@ def get_users_command(client: Client, args: dict[str, Any]):
     return command_results
 
 
+def reset_redmine_settings_context():
+    """
+    This command resets the integration context.
+    After running the command, the integration context is clear and can be updated with the settings changes
+    (tracker,priority,status) of the Redmine instance.
+    :return: Message about resetting the integration context
+    """
+    demisto.debug(f"Reset integration-context, context before resetting {get_integration_context()=}")
+    set_integration_context({})
+    return CommandResults(readable_output='Dict of tracker name - tracker id,  '
+                          'priority name - priority id, status name - status id was reset successfully. Now the new Redmine '
+                          'custom setting can be update in XSOAR.')
+
+
 def main() -> None:
     params = demisto.params()
     args = demisto.args()
@@ -696,6 +710,8 @@ def main() -> None:
 
         if command == 'test-module':
             return_results(test_module(client))
+        if command == 'reset-redmine_settings':
+            return_results(reset_redmine_settings_context())
         elif command in commands:
             return_results(commands[command](client, args))
         else:

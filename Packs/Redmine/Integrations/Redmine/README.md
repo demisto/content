@@ -732,3 +732,22 @@ There are no input arguments for this command.
 >| 5 | admin | True | admin | tests | admin@redmine-test.local | 2024-02-28T19:47:56Z | 2024-02-29T10:25:08Z |
 >| 6 | demiadmin | True | Integration | Test | demiadmin@redmine-test.local | 2024-02-29T10:27:31Z | 2024-02-29T10:55:25Z |
 >| 1 | user | True | UserName | LastName | user@example.com | 2024-02-28T18:34:10Z | 2024-02-29T09:50:10Z |
+
+### reset-redmine_settings
+
+***
+- When using issue-create/issue-update/issue-list commands we save the custom settings in a local database
+- Use this command to reset the local database in cases of changing the tracker/priority/status in your Redmine instance after your previous instance initialization
+- This way, XSOAR will be able to use your new definitions of those fields
+
+#### Base Command
+
+`reset-redmine_settings`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
