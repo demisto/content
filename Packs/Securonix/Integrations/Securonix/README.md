@@ -180,7 +180,7 @@ The following are tips for handling issues with mirroring incidents between Secu
 
 2. If the `query` arguments contain the special characters, then check and follow the below steps:
    1. Use the XSOAR automation browser to run the command.
-   2. Don't add the extra backslashes for the `*`, `?` and `\` characters. This is handled by the command itself.
+   2. Don't add the extra backslashes for the `*`, `?` and `\` characters. This is handled by the command itself. Before upgrading, revert any temporary backslash solutions that may have been provided.
 3. If the `Securonix Violation Spotter Query` incident field is used as a `query` argument, then also pass the `policy_type` argument. The value for the `policy_type` argument should be the same as the value for the `Securonix Policy Type` incident field.
 
 
@@ -192,7 +192,7 @@ The following are tips for handling issues with mirroring incidents between Secu
 
 2. If the `query` arguments contain the special characters, then check and follow the below steps:
    1. Use the XSOAR automation browser to run the command.
-   2. Don't add the extra backslashes for the `*`, `?` and `\` characters. This is handled by the command itself.
+   2. Don't add the extra backslashes for the `*`, `?` and `\` characters. This is handled by the command itself. Before upgrading, revert any temporary backslash solutions that may have been provided.
 
 
 ### The command HR or war-room entries are having special characters, or it is breaking the table view
