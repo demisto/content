@@ -19,7 +19,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "YARA ruleid"
+        "YARA Rule"
     ],
     "associatedToAll": false,
     "unmapped": false,
