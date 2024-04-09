@@ -543,6 +543,13 @@
     - job-done
     - exit $PRE_COMMIT_SUCCESS
 
+.test-slack-notify:
+  stage: unittests-and-validations
+  extends:
+    - .default-before-script-no-sdk
+  script:
+    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "test" --allow-failure "${SLACK_ALLOW_FAILURE}" -ch "dmst-build-test"
+
 .run-validations:
   stage: unittests-and-validations
   extends:
