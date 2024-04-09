@@ -1,13 +1,14 @@
-before_script:
-  - |
-    git ls-remote --exit-code --quiet --heads "https://${CI_SERVER_URL}/${CI_PROJECT_NAMESPACE}/infra.git" "refs/heads/${CI_COMMIT_BRANCH}" 1>/dev/null 2>&1
-    local branch_exists=$?
+job_1:
+  before_script:
+    - |
+      git ls-remote --exit-code --quiet --heads "https://${CI_SERVER_URL}/${CI_PROJECT_NAMESPACE}/infra.git" "refs/heads/${CI_COMMIT_BRANCH}" 1>/dev/null 2>&1
+      local branch_exists=$?
 
-    if [ "${branch_exists}" -eq 0 ]; then
-      export INCLUDE_FROM_BRANCH="true"
-    else
-      export INCLUDE_FROM_BRANCH="false"
-    fi
+      if [ "${branch_exists}" -eq 0 ]; then
+        export INCLUDE_FROM_BRANCH="true"
+      else
+        export INCLUDE_FROM_BRANCH="false"
+      fi
 
 
 include:
