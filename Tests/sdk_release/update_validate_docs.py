@@ -236,7 +236,7 @@ def main(
                 ]
             ),
             checks_markdown=str(
-                checks_markdown_artifact_zip.read("validation_docs.md")
+                checks_markdown_artifact_zip.read("validation_docs.md").decode("utf-8")
             ),
         ),
         commit_message=f"SDK v{branch_name} Validate docs",
