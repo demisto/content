@@ -49,8 +49,8 @@ XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
-
-SECRET_REPLACEMENT_STRING = '<XX_REPLACED>'
+MASK = '<XX_REPLACED>'
+SEND_PREFIX = "send: b'"
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -350,6 +350,18 @@ class EntryFormat(object):
         )
 
 
+class FileAttachmentType(object):
+    """
+    Enum: contains the file attachment types,
+          Used to add metadata to the description of the attachment
+          whether the file content is expected to be inline or attached as a file
+
+    :return:: The file attachment type
+    :rtype: ``str``
+    """
+    ATTACHED = "attached_file"
+
+
 brands = {
     'xfe': 'xfe',
     'vt': 'virustotal',
@@ -538,6 +550,7 @@ class FeedIndicatorType(object):
     Identity = "Identity"
     Location = "Location"
     Software = "Software"
+    X509 = "X509 Certificate"
 
     @staticmethod
     def is_valid_type(_type):
@@ -561,7 +574,8 @@ class FeedIndicatorType(object):
             FeedIndicatorType.Malware,
             FeedIndicatorType.Identity,
             FeedIndicatorType.Location,
-            FeedIndicatorType.Software
+            FeedIndicatorType.Software,
+            FeedIndicatorType.X509,
         )
 
     @staticmethod
@@ -1632,7 +1646,7 @@ class IntegrationLogger(object):
             else:
                 res = "Failed encoding message with error: {}".format(exception)
         for s in self.replace_strs:
-            res = res.replace(s, SECRET_REPLACEMENT_STRING)
+            res = res.replace(s, MASK)
         return res
 
     def __call__(self, message):
@@ -1701,7 +1715,7 @@ class IntegrationLogger(object):
         :rtype: ``None``
         """
         http_methods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
-        data = text.split("send: b'")[1]
+        data = text.split(SEND_PREFIX)[1]
         if data and data[0] in {'{', '<'}:
             # it is the request url query params/post body - will always come after we already have the url and headers
             # `<` is for xml body
@@ -1711,7 +1725,6 @@ class IntegrationLogger(object):
             url = ''
             headers = []
             headers_to_skip = ['Content-Length', 'User-Agent', 'Accept-Encoding', 'Connection']
-            headers_to_sanitize = ['Authorization', 'Cookie']
             request_parts = repr(data).split('\\\\r\\\\n')  # splitting lines on repr since data is a bytes-string
             for line, part in enumerate(request_parts):
                 if line == 0:
@@ -1722,9 +1735,6 @@ class IntegrationLogger(object):
                         url = 'https://{}{}'.format(host, url)
                     else:
                         if any(header_to_skip in part for header_to_skip in headers_to_skip):
-                            continue
-                        if any(header_to_sanitize in part for header_to_sanitize in headers_to_sanitize):
-                            headers.append(part.split(' ')[0] + " " + SECRET_REPLACEMENT_STRING)
                             continue
                         headers.append(part)
             curl_headers = ''
@@ -1757,12 +1767,18 @@ class IntegrationLogger(object):
             if self.buffering:
                 self.messages.append(text)
             else:
+                if is_debug_mode():
+                    if text.startswith(('send:', 'header:')):
+                        try:
+                            text = censor_request_logs(text)
+                        except Exception as e:  # should fail silently
+                            demisto.debug('Failed censoring request logs - {}'.format(str(e)))
+                    if text.startswith('send:'):
+                        try:
+                            self.build_curl(text)
+                        except Exception as e:  # should fail silently
+                            demisto.debug('Failed generating curl - {}'.format(str(e)))
                 demisto.info(text)
-                if is_debug_mode() and text.startswith('send:'):
-                    try:
-                        self.build_curl(text)
-                    except Exception as e:  # should fail silently
-                        demisto.debug('Failed generating curl - {}'.format(str(e)))
             self.write_buf = []
 
     def print_override(self, *args, **kwargs):
@@ -8387,6 +8403,41 @@ class DemistoHandler(logging.Handler):
             pass
 
 
+def censor_request_logs(request_log):
+    """
+    Censors the request logs generated from the urllib library directly by replacing sensitive information such as tokens and cookies with a mask. 
+    In most cases, the sensitive value is the first word after the keyword, but in some cases, it is the second one.
+    :param request_log: The request log to censor
+    :type request_log: ``str``
+
+    :return: The censored request log
+    :rtype: ``str``
+    """
+    keywords_to_censor = ['Authorization:', 'Cookie', "Token"]
+    lower_keywords_to_censor = [word.lower() for word in keywords_to_censor]
+
+    trimed_request_log = request_log.lstrip(SEND_PREFIX)
+    request_log_with_spaces = trimed_request_log.replace("\\r\\n", " \\r\\n")
+    request_log_lst = request_log_with_spaces.split()
+
+    for i, word in enumerate(request_log_lst):
+        # Check if the word is a keyword or contains a keyword (e.g "Cookies" containes "Cookie")
+        if any(keyword in word.lower() for keyword in lower_keywords_to_censor):
+            next_word = request_log_lst[i + 1] if i + 1 < len(request_log_lst) else None
+            if next_word:
+                # If the next word is "Bearer" or "Basic" then we replace the word after it since thats the token
+                if next_word.lower() in ["bearer", "basic"] and i + 2 < len(request_log_lst):
+                    request_log_lst[i + 2] = MASK
+                else:
+                    request_log_lst[i + 1] = MASK
+
+    # Rebuild the request log so that the only change is the masked information.
+    censored_string = SEND_PREFIX + \
+        ' '.join(request_log_lst) if request_log.startswith(SEND_PREFIX) else ' '.join(request_log_lst)
+    censored_string = censored_string.replace(" \\r\\n", "\\r\\n")
+    return censored_string
+
+
 class DebugLogger(object):
     """
         Wrapper to initiate logging at logging.DEBUG level.
@@ -9042,11 +9093,16 @@ if 'requests' in sys.modules:
                 # Get originating Exception in Exception chain
                 error_class = str(exception.__class__)
                 err_type = '<' + error_class[error_class.find('\'') + 1: error_class.rfind('\'')] + '>'
+
                 err_msg = 'Verify that the server URL parameter' \
-                          ' is correct and that you have access to the server from your host.' \
-                          '\nError Type: {}\nError Number: [{}]\nMessage: {}\n' \
-                    .format(err_type, exception.errno, exception.strerror)
+                    ' is correct and that you have access to the server from your host.' \
+                    '\nError Type: {}'.format(err_type)
+                if exception.errno and exception.strerror:
+                    err_msg += '\nError Number: [{}]\nMessage: {}\n'.format(exception.errno, exception.strerror)
+                else:
+                    err_msg += '\n{}'.format(str(exception))
                 raise DemistoException(err_msg, exception)
+
             except requests.exceptions.RetryError as exception:
                 if with_metrics:
                     self.execution_metrics.retry_error += 1
@@ -11464,7 +11520,8 @@ def split_data_to_chunks(data, target_chunk_size):
 
 
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True):
+                         chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
+                         add_proxy_to_request=False):
     """
     Send the fetched events into the XDR data-collector private api.
 
@@ -11495,6 +11552,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type should_update_health_module: ``bool``
     :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
 
+    :type add_proxy_to_request :``bool``
+    :param add_proxy_to_request: whether to add proxy to the send evnets request.
+
     :return: None
     :rtype: ``None``
     """
@@ -11507,7 +11567,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         num_of_attempts,
         chunk_size,
         data_type="events",
-        should_update_health_module=should_update_health_module
+        should_update_health_module=should_update_health_module,
+        add_proxy_to_request=add_proxy_to_request,
     )
 
 
@@ -11618,7 +11679,8 @@ def has_passed_time_threshold(timestamp_str, seconds_threshold):
 
 
 def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
-                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True):
+                       chunk_size=XSIAM_EVENT_CHUNK_SIZE, data_type=EVENTS, should_update_health_module=True,
+                       add_proxy_to_request=False):
     """
     Send the supported fetched data types into the XDR data-collector private api.
 
@@ -11652,6 +11714,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type should_update_health_module: ``bool``
     :param should_update_health_module: whether to trigger the health module showing how many events were sent to xsiam
         This can be useful when using send_data_to_xsiam in batches for the same fetch.
+
+    :type add_proxy_to_request: ``bool``
+    :param add_proxy_to_request: whether to add proxy to the send evnets request.
 
     :return: None
     :rtype: ``None``
@@ -11736,7 +11801,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
 
-    client = BaseClient(base_url=xsiam_url)
+    client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
     for data_chunk in data_chunks:
         data_size += len(data_chunk)

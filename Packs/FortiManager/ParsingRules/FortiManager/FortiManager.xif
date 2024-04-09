@@ -1,0 +1,9 @@
+[INGEST:vendor="fortinet", product="fortimanager", target_dataset="fortinet_fortimanager_raw", no_hit = keep]
+filter _raw_log ~= "\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\stz=\"?[-+]\d{4}\"?"
+
+|alter tmp_date = arrayindex(regextract(_raw_log, "\d{4}-\d{2}-\d{2}"), 0),
+    tmp_time = arrayindex(regextract(_raw_log,"\d{2}:\d{2}:\d{2}"),0),
+    tmp_timezone = arrayindex(regextract(_raw_log ,"tz=\"?([-+]\d+)"), 0)
+| alter tmp_concat_string = concat(tmp_date, " ",tmp_time , " ",tmp_timezone )
+| alter _time = parse_timestamp("%F %X %z", tmp_concat_string  ) 
+|fields -tmp_* ;

@@ -1062,7 +1062,7 @@ def createIndicators(indicators_batch, noUpdate=False):
 
 
 def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None,
-                     populateFields=None):
+                     populateFields=None, **kwargs):
     """Searches for indicators according to given query.
     If using Elasticsearch with Cortex XSOAR 6.1 or later,
     the searchAfter argument must be used instead of the page argument.

@@ -1,0 +1,19 @@
+{
+    "id": "14",
+    "ver": "2.5",
+    "result": {
+        "url": "/scan/result/urlrating",
+        "status": {
+            "code": 0,
+            "message": "OK"
+        },
+        "data": [
+            {
+                "url": "https://www.charizard.com"
+            },
+            {
+                "url": "http://squirtle.com"
+            }
+        ]
+    }
+}

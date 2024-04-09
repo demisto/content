@@ -9,7 +9,7 @@ Supported integrations:
 - AWS IAM
 - Cortex XDR (account enrichment and reputation)
 
-Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations. For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
+Also, the playbook supports the generic command 'iam-get-user' (implemented in IAM integrations). For more information, visit https://xsoar.pan.dev/docs/integrations/iam-integrations.
 
 ## Dependencies
 
@@ -25,22 +25,22 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
 * IsIntegrationAvailable
 * SetAndHandleEmpty
+* Set
 
 ### Commands
 
 * iam-get-user
 * identityiq-search-identities
-* msgraph-user-get-manager
-* okta-get-user
+* ad-get-user
 * xdr-list-risky-users
 * aws-iam-get-user
-* msgraph-user-get
 * identitynow-get-accounts
-* ad-get-user
 * pingone-get-user
+* msgraph-user-get-manager
+* msgraph-user-get
+* okta-get-user
 
 ## Playbook Inputs
 

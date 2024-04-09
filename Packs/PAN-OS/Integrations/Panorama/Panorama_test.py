@@ -7312,3 +7312,126 @@ def test_list_device_groups_names(mocker):
 
     assert result.outputs == ['Test-Device', 'Test-Device-2']
     assert result.readable_output == '### Device Group Names:\n|Group Name|\n|---|\n| Test-Device |\n| Test-Device-2 |\n'
+
+
+def test_panorama_list_security_profile_group_command(mocker):
+    """
+    Given:
+        - A Panorama instance with security profile groups.
+    When:
+        - Running the pan_os_list_security_profile_group_command.
+    Then:
+        - Ensure the returned security profile groups list output and HR table is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = ''
+
+    tags_response_xml = """<response status="success" code="19"><result total-count="2" count="2">
+    <entry name="test1" loc="">
+        <virus><member>default</member></virus><spyware><member>default</member></spyware>
+        <vulnerability><member>default</member></vulnerability><url-filtering><member>default</member></url-filtering>
+    </entry>
+    <entry name="test2" loc="">
+        <virus><member>default</member></virus><spyware><member>default</member></spyware>
+        <vulnerability><member>default</member></vulnerability><url-filtering><member>default</member></url-filtering>
+        <wildfire-analysis><member>test wildfire analysis</member></wildfire-analysis><file-blocking>
+        <member>basic file blocking</member></file-blocking><data-filtering><member>test data filtering</member></data-filtering>
+    </entry>
+    </result></response>"""
+
+    mock_response = MockedResponse(text=tags_response_xml, status_code=200)
+    mocker.patch.object(requests, 'request', return_value=mock_response)
+
+    expected_outputs_tags_list = [{'virus': 'default', 'spyware': 'default', 'vulnerability': 'default',
+                                   'url-filtering': 'default', 'name': 'test1', 'location': ''},
+                                  {'virus': 'default', 'spyware': 'default', 'vulnerability': 'default',
+                                   'url-filtering': 'default', 'wildfire-analysis': 'test wildfire analysis',
+                                   'file-blocking': 'basic file blocking', 'data-filtering': 'test data filtering',
+                                   'name': 'test2', 'location': ''}]
+
+    expected_hr_result = '### Security Profile Groups:\n|Name|Location|Antivirus Profile|Anti-Spyware Profile|Vulnerability ' \
+                         'Protection Profile|URL Filtering Profile|File Blocking Profile|Data Filtering Profile|WildFire ' \
+                         'Analysis Profile|\n|---|---|---|---|---|---|---|---|---|\n| test1 |  | default | default | default | ' \
+                         'default |  |  |  |\n| test2 |  | default | default | default | default | basic file blocking | test '\
+                         'data filtering | test wildfire analysis |\n'
+
+    command_results = Panorama.pan_os_list_security_profile_groups_command({})
+
+    assert command_results.outputs == expected_outputs_tags_list
+    assert command_results.readable_output == expected_hr_result
+
+
+def test_pan_os_create_security_profile_group_command(mocker):
+    """
+    Given:
+        - The security profile groups name to create.
+    When:
+        - Running the pan_os_create_security_profile_group_command.
+    Then:
+        - Ensure the returned response and readable outputs is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+
+    mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    mocker.patch.object(requests, 'request', return_value=mock_response)
+
+    command_results = Panorama.pan_os_create_security_profile_group_command({"group_name": "test_spg"})
+
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == 'Successfully created Security Profile Group: "test_spg"'
+
+
+def test_pan_os_edit_security_profile_group_command(mocker):
+    """
+    Given:
+        - The profile_to_change and the value arguments to edit in the security profile groups.
+    When:
+        - Running the pan_os_edit_security_profile_group_command.
+    Then:
+        - Ensure the returned response and readable outputs is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+
+    mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    mocker.patch.object(requests, 'request', return_value=mock_response)
+
+    command_results = Panorama.pan_os_edit_security_profile_group_command({"group_name": "test_spg"})
+
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == 'Successfully edited Security Profile Group: "test_spg"'
+
+
+def test_pan_os_delete_security_profile_group_command(mocker):
+    """
+    Given:
+        - The security profile groups name to delete.
+    When:
+        - Running the pan_os_delete_security_profile_group_command.
+    Then:
+        - Ensure the returned response and readable outputs is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = 'somedevice'
+
+    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+
+    mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    mocker.patch.object(requests, 'request', return_value=mock_response)
+
+    command_results = Panorama.pan_os_delete_security_profile_group_command({"group_name": "test_spg"})
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == 'Successfully deleted Security Profile Group: "test_spg"'
