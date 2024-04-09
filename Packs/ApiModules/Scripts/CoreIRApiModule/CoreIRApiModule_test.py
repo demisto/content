@@ -3926,6 +3926,8 @@ def test_http_request_demisto_call(mocker, class_name, function, res):
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
     mocker.patch.object(CoreIRApiModule, 'is_demisto_version_ge', return_value=True)
+    mocker.patch.object(CoreIRApiModule, 'is_xsiam', return_value=True)
+    
     mocker.patch.object(demisto, "_apiCall" ,return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
                                          'status': 200,
                                          'data': '{"reply":[{"container": ["1.1.1.1"]}]'})
@@ -3950,6 +3952,7 @@ def test_http_request_base_client(mocker):
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
     mocker.patch.object(CoreIRApiModule, 'is_demisto_version_ge', return_value=False)
+    mocker.patch.object(CoreIRApiModule, 'is_xsiam', return_value=True)
     mocker.patch.object(BaseClient, "_http_request" ,return_value={'data':{"reply":[{"container": ["1.1.1.1"]}]}})
     res = client._http_request(method = "POST",
                                 url_suffix="/distributions/get_versions/")
