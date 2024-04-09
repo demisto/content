@@ -801,6 +801,8 @@ def get_raw_file_command(client: Client, args: dict[str, Any]) -> list:
     ref = args.get('ref', 'main')
     file_path = args.get('file_path', '')
     headers = ['path', 'reference', 'content']
+    if file_path:
+        file_path = urllib.parse.quote(file_path, safe='')
     response = client.get_raw_file_request(file_path, ref)
     outputs = {'path': file_path, 'content': response, 'ref': ref}
     human_readable = tableToMarkdown('Raw file', outputs, headers=headers)
@@ -902,6 +904,8 @@ def file_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     branch = args.get('ref', 'master')
     file_path = args.get('file_path', '')
     headers = ['FileName', 'FilePath', 'Ref', 'ContentSha', 'CommitId', 'LastCommitId', 'Size']
+    if file_path:
+        file_path = urllib.parse.quote(file_path, safe='')
     response = client.file_get_request(file_path, branch)
     human_readable_dict = {'FileName': response.get('file_name', ''),
                            'FilePath': response.get('file_path', ''),
