@@ -16,10 +16,8 @@ include:
     project: "${CI_PROJECT_NAMESPACE}/infra"
     rules:
       - if: '$INCLUDE_FROM_BRANCH == "true"'
-      # - if: '$CI_COMMIT_BRANCH == "test_move_all_ci_content"'
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
     ref: master
     project: "${CI_PROJECT_NAMESPACE}/infra"
     rules:
       - if: '$INCLUDE_FROM_BRANCH == "false"'
-      # - if: '$CI_COMMIT_BRANCH != "test_move_all_ci_content"'
