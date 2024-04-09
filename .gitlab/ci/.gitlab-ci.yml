@@ -1,21 +1,23 @@
-before_script:
-  - |
-    if curl --head --silent --fail "${CI_SERVER_URL}/api/v4/projects/${CI_PROJECT_NAMESPACE}/infra/branches/$CI_COMMIT_BRANCH"; then
-      echo "Branch exists in the other repository. Setting variable to include from branch."
-      export INCLUDE_FROM_BRANCH="true"
-    else
-      echo "Branch does not exist in the other repository. Setting variable to include from master."
-      export INCLUDE_FROM_BRANCH="false"
-    fi
+# before_script:
+#   - |
+#     if curl --head --silent --fail "${CI_SERVER_URL}/api/v4/projects/${CI_PROJECT_NAMESPACE}/infra/branches/$CI_COMMIT_BRANCH"; then
+#       echo "Branch exists in the other repository. Setting variable to include from branch."
+#       export INCLUDE_FROM_BRANCH="true"
+#     else
+#       echo "Branch does not exist in the other repository. Setting variable to include from master."
+#       export INCLUDE_FROM_BRANCH="false"
+#     fi
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: CI_COMMIT_BRANCH
+    ref: test_move_all_ci_content
     project: "${CI_PROJECT_NAMESPACE}/infra"
     rules:
-      - if: '$INCLUDE_FROM_BRANCH == "true"'
+      # - if: '$INCLUDE_FROM_BRANCH == "true"'
+      - if: '$CI_COMMIT_BRANCH == "test_move_all_ci_content"'
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
     ref: master
     project: "${CI_PROJECT_NAMESPACE}/infra"
     rules:
-      - if: '$INCLUDE_FROM_BRANCH == "false"'
+      # - if: '$INCLUDE_FROM_BRANCH == "false"'
+      - if: '$CI_COMMIT_BRANCH != "test_move_all_ci_content"'
