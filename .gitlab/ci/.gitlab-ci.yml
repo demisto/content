@@ -2,10 +2,3 @@ include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
     ref: $CI_COMMIT_BRANCH
     project: "${CI_PROJECT_NAMESPACE}/infra"
-    rules:
-      - if: "$CI_COMMIT_BRANCH =~ /^test.*$/"
-  - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: master
-    project: "${CI_PROJECT_NAMESPACE}/infra"
-    rules:
-      - if: "${CI_COMMIT_BRANCH} !~ /^test.*$/"
