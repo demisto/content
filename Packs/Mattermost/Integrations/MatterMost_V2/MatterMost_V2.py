@@ -44,6 +44,7 @@ WEBSOCKET_URL: str
 MAX_SAMPLES = 10
 INCIDENT_TYPE: str
 ALLOW_INCIDENTS: bool
+PORT: int
 MESSAGE_FOOTER = '\n**From MatterMost**'
 MIRROR_TYPE = 'mirrorEntry'
 OBJECTS_TO_KEYS = {
@@ -388,7 +389,7 @@ async def check_and_handle_entitlement(text: str, message_id: str, user_name: st
     return reply
 
 
-def run_long_running(port):
+def run_long_running(port): # pragma: no cover
     """
     Starts the long running thread.
     """
@@ -401,7 +402,7 @@ def run_long_running(port):
         private_key_path = ''
         try:
             # websocket
-            
+
             websocket_thread = Thread(target=start_listening)
             websocket_thread.start()
             # asyncio.run(start_listening())
@@ -918,7 +919,7 @@ async def handle_dm(user_id: str, text: str, channel_id: str, client: HTTPClient
         Text to return to the user
     """
     message: str = text.lower()
-    user_details = CLIENT.get_user_request(user_id)
+    user_details = client.get_user_request(user_id)
     user_name = user_details.get('username', '')
     user_email = user_details.get('email', '')
     if message.find('incident') != -1 and (message.find('create') != -1
@@ -1060,7 +1061,7 @@ async def create_incidents(incidents: list, user_name: str, user_email: str, use
     return data
 
 
-def update_integration_context_samples(incidents: list, max_samples: int = MAX_SAMPLES):
+def update_integration_context_samples(incidents: list, max_samples: int = MAX_SAMPLES):  # pragma: no cover
     """
     Updates the integration context samples with the newly created incident.
     If the size of the samples has reached `MAX_SAMPLES`, will pop out the latest sample.
@@ -1120,7 +1121,7 @@ Bot Access Token""")
 
     if client.notification_channel and client.team_name:
         channel_details = client.get_channel_by_name_and_team_name_request(client.team_name, client.notification_channel)
-        client.send_notification_request(channel_details.get('id', ''), 'Hi there! This is a test message.')
+        client.send_notification_request(channel_details.get('id', ''), 'Hi there! This is a test message from XSOAR.')
 
     return 'ok'
 
@@ -1199,8 +1200,10 @@ def create_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandR
                 hr = f"Channel {channel_display_name} already exists."
             except Exception as e:
                 if 'Channel does not exist.' in str(e):
-                    hr = 'Could not create a new channel. An archived channel with the same name may exist in the provided team.'
-                    channel_details = {}
+                    hr = 'Could not create a new channel. An archived channel with the same name may exist in the provided team. Please choose a different name.'  # noqa: E501
+                    raise DemistoException(hr)
+                else:
+                    raise e
         else:
             raise e
 
@@ -1257,7 +1260,7 @@ def close_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandRe
             return CommandResults(readable_output=hr)
         else:
             raise e
-    
+
     mirror = find_mirror_by_investigation()
     integration_context = get_integration_context(SYNC_CONTEXT)
     if mirror:
@@ -1283,7 +1286,7 @@ def close_channel_command(client: HTTPClient, args: dict[str, Any]) -> CommandRe
             hr = f'The channel {channel_name} was already deleted.'
         else:
             raise e
-    
+
     return CommandResults(
         readable_output=hr
     )
@@ -1489,9 +1492,9 @@ def send_notification(client, **args):
     poll = {}
 
     if (to and channel_name):
-        raise DemistoException("Too many arguments")
+        raise DemistoException("Cannot use both to and channel_name arguments")
     if not to and not channel_name:
-        raise DemistoException("Missing arguments")
+        raise DemistoException("Missing arguments, provide channel name or to aregument.")
 
     if entry_object:
         investigation_id = entry_object.get('investigationId')  # From server, available from demisto v6.1 and above
@@ -1544,7 +1547,7 @@ def create_poll(message: str, option_1: str = 'option 1', option_2: str = 'optio
                     {
                         "name": option_1,
                         "integration": {
-                            "url": WEBSOCKET_URL,
+                            "url": DEMISTO_URL,
                             "context": {
                                 "action": "vote",
                                 "vote": option_1,
@@ -1553,7 +1556,7 @@ def create_poll(message: str, option_1: str = 'option 1', option_2: str = 'optio
                     }, {
                         "name": option_2,
                         "integration": {
-                            "url": WEBSOCKET_URL,
+                            "url": DEMISTO_URL,
                             "context": {
                                 "action": "vote",
                                 "vote": option_2,
@@ -1629,30 +1632,27 @@ async def handle_mm_response(request: Request, credentials: HTTPBasicCredentials
 ''' MAIN FUNCTION '''
 
 
-def main():  # pragma: no cover
-    params = demisto.params()
-    args = demisto.args()
+def handle_global_parameters(params: dict):  # pragma: no cover
+    """Initializing the global parameters
+    """
     url = params.get('url', '')
     bot_access_token = params.get('bot_access_token', {}).get('password')
     personal_access_token = params.get('personal_access_token', {}).get('password')
-    team_name = params.get('team_name')
-    notification_channel = params.get('notification_channel')
-    verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
     # Initializing global variables
     global SECRET_TOKEN, LONG_RUNNING, MIRRORING_ENABLED, CACHE_EXPIRY, CACHED_INTEGRATION_CONTEXT, DEMISTO_URL
     global BASE_URL, PROXY, SSL_CONTEXT, VERIFY_CERT, PROXIES, ALLOW_INCIDENTS, INCIDENT_TYPE, PROXY_URL
-    global WEBSOCKET_URL
+    global WEBSOCKET_URL, PORT
     LONG_RUNNING = params.get('longRunning', False)
     MIRRORING_ENABLED = params.get('mirroring', False)
     SECRET_TOKEN = personal_access_token
     BASE_URL = url
     PROXY = proxy
     demisto_urls = demisto.demistoUrls()
-    DEMISTO_URL = demisto_urls.get('server')
+    DEMISTO_URL = demisto_urls.get('server', '')
     PROXIES, _ = handle_proxy_for_long_running()
-    PROXY_URL = PROXIES.get('http')  # aiohttp only supports http proxy
+    PROXY_URL = PROXIES.get('http', '')  # aiohttp only supports http proxy
     ALLOW_INCIDENTS = params.get('allow_incidents', True)
     INCIDENT_TYPE = params.get('incidentType', 'Unclassified')
     VERIFY_CERT = not params.get('insecure', False)
@@ -1683,9 +1683,21 @@ the mattermost-bot following parameters:
 Bot Access Token""")
     if LONG_RUNNING:
         try:
-            port = int(params.get('longRunningPort'))
+            PORT = int(params.get('longRunningPort'))
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
+
+
+def main():  # pragma: no cover
+    params = demisto.params()
+    args = demisto.args()
+    url = params.get('url', '')
+    bot_access_token = params.get('bot_access_token', {}).get('password')
+    personal_access_token = params.get('personal_access_token', {}).get('password')
+    team_name = params.get('team_name')
+    notification_channel = params.get('notification_channel')
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     command = demisto.command()
     # this is to avoid BC. because some of the arguments given as <a-b>, i.e "user-list"
@@ -1714,7 +1726,7 @@ Bot Access Token""")
         elif command == 'send-notification':
             return_results(send_notification(client, **args))
         if command == 'long-running-execution':
-            run_long_running(port)
+            run_long_running(PORT)
         elif command == 'mattermost-get-team':
             return_results(get_team_command(client, args))
         elif command == 'mattermost-list-channels':

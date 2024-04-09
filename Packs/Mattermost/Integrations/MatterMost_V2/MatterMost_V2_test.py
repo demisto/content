@@ -2,14 +2,17 @@ import json
 from MatterMost_V2 import (get_team_command, list_channels_command, create_channel_command, add_channel_member_command,
                            remove_channel_member_command, list_users_command, close_channel_command, send_file_command,
                            get_channel_id_to_send_notif, event_handler, handle_text_received_from_mm, get_channel_id_from_context,
-                           extract_entitlement, answer_question, handle_posts)
+                           extract_entitlement, answer_question, handle_posts, create_incidents)
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
 from freezegun import freeze_time
+
+
 def util_load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
+
 
 def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dict = {},
               data: dict = {}, files: dict = {}, json_data: dict = {}, headers: dict = {}):
@@ -19,7 +22,7 @@ def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dic
             return util_load_json('test_data/get_bot_response.json')
         if url_suffix == '/api/v4/posts':
             return util_load_json("test_data/create_post_response.json")
-    
+
     if url_suffix == "/api/v4/teams/name/team_name":
         return util_load_json("test_data/get_team_response.json")
     elif url_suffix == '/api/v4/teams/team_id/channels' or url_suffix == '/api/v4/teams/team_id/channels/private':
@@ -33,7 +36,7 @@ def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dic
     elif url_suffix == '/api/v4/users/email/user_email' or url_suffix == '/api/v4/users/username/username' or url_suffix == '/api/v4/users/me':
         return util_load_json("test_data/list_users_response.json")[0]
     elif url_suffix == '/api/v4/channels/direct':
-        channel =  util_load_json("test_data/create_channel_response.json")
+        channel = util_load_json("test_data/create_channel_response.json")
         channel["type"] = 'D'
         return channel
     else:
@@ -51,6 +54,7 @@ def ws_client(mocker):
         token='personal_access_token',
     )
 
+
 @pytest.fixture(autouse=True)
 def http_client(mocker):
     from MatterMost_V2 import HTTPClient
@@ -67,6 +71,7 @@ def http_client(mocker):
         team_name='team_name',
         notification_channel='notification_channel',
     )
+
 
 def test_get_team_command(http_client):
     """
@@ -185,6 +190,7 @@ def test_get_channel_id_to_send_notif(http_client, mocker):
     results = get_channel_id_to_send_notif(http_client, 'username', 'channel_name', 'investigation_id')
     assert results == 'id'
 
+
 def test_get_channel_id_from_context(mocker):
     """
     Given: A mock MatterMost client.
@@ -206,7 +212,16 @@ def test_get_channel_id_from_context(mocker):
     results = get_channel_id_from_context('Channel1', 'Incident123')
     assert results
 
+
 def test_save_entitlement():
+    """
+    Given:
+    - arguments.
+    When:
+    - Calling the save_entitlement function.
+    Then:
+    - Validate that the mocked functions were called with the expected arguments
+    """
     # Define test inputs
     entitlement = "Test Entitlement"
     message_id = "123"
@@ -250,6 +265,7 @@ def test_save_entitlement():
         mock_get_integration_context.assert_called_once_with(SYNC_CONTEXT)
         mock_set_integration_context.assert_called_once_with(expected_data, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
+
 @pytest.mark.parametrize("entitlement, expected_result", [
     ("guid123@incident456|task789", ("guid123", "incident456", "task789")),  # Scenario 1: Full entitlement
     ("guid123@incident456", ("guid123", "incident456", "")),  # Scenario 2: No task ID
@@ -270,24 +286,85 @@ def test_extract_entitlement(entitlement, expected_result):
     # Assert the result against the expected outcome
     assert result == expected_result
 
-def test_handle_posts(mocker):
-    """
-    Test the extract_entitlement function.
-    Given:
-    - Input entitlement string.
-    When:
-    - Calling the extract_entitlement function with the given input entitlement.
-    Then:
-    - Validate that the function correctly extracts the entitlement components: guid, incident_id, and task_id.
-    """
-    payload = {}
-    
-    
+
+# def test_mirror_investigation_create_new_channel(http_client, mocker):
+#     """
+#     Given a mock client and relevant arguments,
+#     When calling the mirror_investigation function to create a new channel,
+#     Then validate that the function returns the expected CommandResults.
+#     """
+#     import MatterMost_V2
+#     MatterMost_V2.MIRRORING_ENABLED = True
+#     MatterMost_V2.LONG_RUNNING = True
+
+#     mocker.patch.object(http_client, 'send_notification')
+#     # mocker.patch.object(Zoom, 'get_admin_user_id_from_token', return_value='mock_user_id')
+#     # mocker.patch.object(Zoom, 'zoom_create_channel_command',
+#     #                     return_value=CommandResults(outputs={"jid": "mock_jid", "id": "mock_id"}))
+#     mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'mock_server_url'})
+#     # mocker.patch.object(client, 'botJid', return_value='bot_jid_mock')
+
+#     # Test data
+#     args = {
+#         'type': 'all',
+#         'direction': 'Both',
+#         'channelName': 'mirror-channel',
+#         'autoclose': True,
+#     }
+
+#     # Call the function
+#     result = mirror_investigation(http_client, **args)
+
+#     # Assert the result
+#     assert 'Investigation mirrored successfully' in result.readable_output
+
 ######### async tests #########
 
 @pytest.mark.asyncio
+async def test_handle_posts_regular_post(mocker):
+    """
+    Given:
+    - Post payload.
+    When:
+    - Calling the handle_posts function.
+    Then:
+    - Validate that the mirror investigation func was called.
+    """
+    payload = util_load_json("test_data/posted_data_user.json")
+    mock_integration_context = {
+        'mirrors': json.dumps([
+            {'channel_name': 'Channel1', 'team_id': 'team_id', 'channel_id': 'ID1',
+             'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True},
+            {'channel_name': 'Channel2', 'team_id': 'team_id', 'channel_id': 'ID2',
+             'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True},
+        ])
+    }
+    investigation_id = 'Incident123'
+    mirrorType = 'both'
+    auto_close = True
+    mocker.patch('MatterMost_V2.get_integration_context', return_value=mock_integration_context)
+    mocker.patch('MatterMost_V2.handle_text_received_from_mm', return_value=None)
+
+    with patch('MatterMost_V2.demisto') as mock_demisto:
+        await handle_posts(payload)
+        mock_demisto.mirrorInvestigation.assert_called_once_with(
+            id=investigation_id,
+            mirrorType=mirrorType,
+            auto_close=auto_close
+        )
+
+
+@pytest.mark.asyncio
 async def test_handle_text(mocker):
-    # Create mock arguments
+    """
+    Given:
+    - arguments.
+    When:
+    - Calling the handle_text_received_from_mm function.
+    Then:
+    - Validate that the `demisto.addEntry` method was called with the expected arguments
+    """
+
     investigation_id = "123"
     text = "Hello, this is a test message"
     operator_email = "test@example.com"
@@ -295,64 +372,76 @@ async def test_handle_text(mocker):
     MESSAGE_FOOTER = '\n**From MatterMost**'
 
     with patch('MatterMost_V2.demisto') as mock_demisto:
-        # Call the function
         await handle_text_received_from_mm(investigation_id, text, operator_email, operator_name)
-        # Assert that the `demisto.addEntry` method was called with the expected arguments
         mock_demisto.addEntry.assert_called_once_with(
             id=investigation_id,
             entry=text,
             username=operator_name,
             email=operator_email,
-            footer=MESSAGE_FOOTER  # Assuming MESSAGE_FOOTER is defined in your module
+            footer=MESSAGE_FOOTER
         )
-
-
-# @pytest.mark.asyncio
-# async def test_close_channel(client, mocker):
-#     """
-#     Test the close_channel function
-#     Given:
-#     - Mocked input parameters.
-#     When:
-#     - Calling the close_channel function.
-#     Then:
-#     - Ensure that the function successfully closes the channel.
-#     """
-#     mock_integration_context = {
-#         'mirrors': json.dumps([
-#             {'channel_name': 'Channel1', 'channel_jid': 'JID1', 'channel_id': 'ID1',
-#              'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True},
-#             {'channel_name': 'Channel2', 'channel_jid': 'JID2', 'channel_id': 'ID2',
-#              'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True},
-#         ])
-#     }
-
-#     mocker.patch.object(demisto, 'mirrorInvestigation')
-#     mocker.patch.object(Zoom, 'get_integration_context', return_value=mock_integration_context)
-#     mocker.patch.object(Zoom, 'set_to_integration_context_with_retries')
-#     mocker.patch.object(Zoom, 'get_admin_user_id_from_token', return_value='mock_user_id')
-#     mocker.patch.object(Zoom, 'find_mirror_by_investigation', return_value={'channel_id': 'ID1'})
-
-#     from Zoom import close_channel
-#     result = close_channel(client)
-
-#     assert result == 'Channel successfully deleted.'
 
 
 @pytest.mark.asyncio
 async def test_event_handler_error(ws_client, mocker):
+    """
+    Given:
+    - Error post payload.
+    When:
+    - Calling the handle_posts function.
+    Then:
+    - Validate that the demisto.error func was called.
+    """
     error_payload = {"status": "FAIL",
                      "seq_reply": 2,
                      "error": {"id": "some.error.id.here", "message": "Some error message here"
                                }
-                    }
+                     }
     error_mock = mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'updateModuleHealth')
 
     await event_handler(ws_client, error_payload)
 
     assert error_mock.call_count == 1
-    
+
+
+@pytest.mark.asyncio
+async def test_event_handler_bot_message(ws_client, mocker):
+    """
+    Given:
+    - Bot post payload.
+    When:
+    - Calling the handle_posts function.
+    Then:
+    - Validate that the demisto.debug func was called.
+    """
+    bot_payload = util_load_json("test_data/posted_data_bot.json")
+    mocker.patch.object(demisto, 'updateModuleHealth')
+
+    with patch('MatterMost_V2.demisto') as mock_demisto:
+        # Call the function
+        await handle_posts(bot_payload)
+        # Assert that the `demisto.addEntry` method was called with the expected arguments
+        mock_demisto.debug.assert_called_once_with(
+            msg="MM: Got a bot message. Will not mirror."
+        )
+
+
+@pytest.mark.asyncio
+async def test_event_handler_direct_message(ws_client, mocker):
+    payload = util_load_json("test_data/posted_data_user.json")
+    payload["data"]["channel_type"] = "D"
+    mocker.patch.object(demisto, 'updateModuleHealth')
+
+    with patch('MatterMost_V2.demisto') as mock_demisto:
+        # Call the function
+        await handle_posts(payload)
+        # Assert that the `demisto.addEntry` method was called with the expected arguments
+        mock_demisto.debug.assert_called_once_with(
+            msg="MM: Got a bot message. Will not mirror."
+        )
+
+
 @pytest.mark.asyncio
 async def test_answer_question(http_client, mocker):
     """
@@ -364,13 +453,45 @@ async def test_answer_question(http_client, mocker):
     Then:
     - Validate that the function correctly handles the entitlement and returns the incident_id.
     """
+    import MatterMost_V2
     MatterMost_V2.CLIENT = http_client
     mock_question = {
         'entitlement': 'guid123@incident456|task789',
         'to_id': '123'
     }
-    
+
     mocker.patch('MatterMost_V2.process_entitlement_reply')
 
     result = await answer_question("Answer123", mock_question, "user@example.com")
     assert result == 'incident456'
+
+
+@pytest.mark.asyncio
+async def test_create_incidents(mocker):
+    """
+    Given:
+    - Incidents
+    When:
+    - Calling the create_incidents function.
+    Then:
+    - Validate that the demisto.createIncidents func was called.
+    """
+
+    mocker.patch.object(demisto, 'createIncidents', return_value='nice')
+
+    incidents = [{"name": "xyz", "details": "1.1.1.1,8.8.8.8"}]
+
+    incidents_with_labels = [{'name': 'xyz', 'details': '1.1.1.1,8.8.8.8',
+                              'labels': [{'type': 'Reporter', 'value': 'spengler'},
+                                         {'type': 'ReporterEmail', 'value': 'spengler@ghostbusters.example.com'},
+                                         {'type': 'Source', 'value': 'Slack'}]}]
+
+
+    data = await create_incidents(incidents, 'spengler', 'spengler@ghostbusters.example.com', 'demisto_user')
+
+    incident_arg = demisto.createIncidents.call_args[0][0]
+    user_arg = demisto.createIncidents.call_args[1]['userID']
+
+    assert incident_arg == incidents_with_labels
+    assert user_arg == 'demisto_user'
+    assert data == 'nice'
