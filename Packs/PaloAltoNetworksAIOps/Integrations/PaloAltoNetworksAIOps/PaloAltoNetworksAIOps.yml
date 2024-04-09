@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Palo Alto Networks AIOps
+  id: PaloAltoNetworksAIOps
   version: -1
 configuration:
 - section: Connect
