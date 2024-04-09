@@ -55,6 +55,7 @@ FETCH_INDEX = param.get('fetch_index', '')
 FETCH_QUERY_PARM = param.get('fetch_query', '')
 RAW_QUERY = param.get('raw_query', '')
 FETCH_TIME = param.get('fetch_time', '3 days')
+LOOK_BACK = arg_to_number(param.get('look_back') or 1)
 FETCH_SIZE = int(param.get('fetch_size', 50))
 INSECURE = not param.get('insecure', False)
 TIME_METHOD = param.get('time_method', 'Simple-Date')
@@ -708,10 +709,16 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
 
 def fetch_incidents(proxies):
     last_run = demisto.getLastRun()
-    last_fetch = last_run.get('time') or FETCH_TIME
+    # last_fetch = last_run.get('time') or FETCH_TIME
+    start_time, end_time = get_fetch_run_time_range(
+        last_run=last_run,
+        first_fetch=FETCH_TIME,
+        look_back=LOOK_BACK,
+        date_format=PYTHON_DEFAULT_DATETIME_FORMAT,
+    )
 
     es = elasticsearch_builder(proxies)
-    time_range_dict = get_time_range(time_range_start=last_fetch)
+    time_range_dict = get_time_range(time_range_start=start_time, time_range_end=end_time)
 
     if RAW_QUERY:
         response = execute_raw_query(es, RAW_QUERY)
@@ -727,14 +734,35 @@ def fetch_incidents(proxies):
 
     if total_results > 0:
         if 'Timestamp' in TIME_METHOD:
-            incidents, last_fetch = results_to_incidents_timestamp(response, last_fetch)
-            demisto.setLastRun({'time': last_fetch})
+            incidents, _ = results_to_incidents_timestamp(response, start_time)
 
         else:
-            incidents, last_fetch = results_to_incidents_datetime(response, last_fetch or FETCH_TIME)
-            demisto.setLastRun({'time': str(last_fetch)})
+            incidents, _ = results_to_incidents_datetime(response, start_time or FETCH_TIME)
 
-        demisto.info(f'extracted {len(incidents)} incidents')
+        demisto.debug(f'Got {total_results} incidents from the API, before filtering')
+        filtered_incidents = filter_incidents_by_duplicates_and_limit(
+            incidents_res=incidents,
+            last_run=last_run,
+            fetch_limit=FETCH_SIZE,
+            id_field='dbotMirrorId'
+        )
+        demisto.debug(f'After filtering, there are {len(filtered_incidents)} incidents')
+
+        last_run = update_last_run_object(
+            last_run=last_run,
+            incidents=filtered_incidents,
+            fetch_limit=FETCH_SIZE,
+            start_fetch_time=start_time,
+            end_fetch_time=end_time,
+            look_back=LOOK_BACK,
+            created_time_field=TIME_FIELD,
+            id_field='dbotMirrorId',
+            date_format=PYTHON_DEFAULT_DATETIME_FORMAT,
+            increase_last_run_time=False
+        )
+        demisto.debug(f"Last run after the fetch run: {last_run}")
+        demisto.setLastRun(last_run)
+
     demisto.incidents(incidents)
 
 

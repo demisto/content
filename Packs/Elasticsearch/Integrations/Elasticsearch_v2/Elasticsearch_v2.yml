@@ -90,6 +90,13 @@ configuration:
   type: 0
   section: Collect
   required: false
+- display: 'Advanced: Minutes to look back when fetching'
+  name: look_back
+  type: 0
+  required: false
+  defaultvalue: '1'
+  additionalinfo: Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created.
+  section: Collect
 - defaultvalue: '50'
   display: The maximum number of results to return per fetch.
   name: fetch_size
