@@ -51,6 +51,7 @@ artifacts/*
 .hypothesis
 .demisto-sdk-report
 .env
+.env.docker
 .envrc
 Packs/**/report_pytest.json
 Packs/**/Integrations/**/Pipfile
