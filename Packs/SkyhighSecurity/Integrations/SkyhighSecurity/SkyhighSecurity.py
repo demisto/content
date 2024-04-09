@@ -27,6 +27,17 @@ CategoryToIncidentType = {
 
 ''' CLIENT CLASS '''
 
+def csv2json(csv_data: str):
+    """ Converts data from csv to json
+    Args:
+        csv_data: data in csv format
+    Returns:
+        the same data in json formal
+    """
+    reader = csv.DictReader(io.StringIO(csv_data))
+    json_data = list(reader)
+    return json_data
+
 
 class Client(BaseClient):
     def test(self):
@@ -57,7 +68,8 @@ class Client(BaseClient):
     def anomaly_activity_list(self, incident_id: Optional[int]) -> Dict[str, str]:
         url_suffix = '/external/api/v1/queryActivities'
         data = {"incident_id": incident_id}
-        activities = self._http_request('POST', url_suffix, json_data=data, resp_type='response')
+        results = self._http_request('POST', url_suffix, json_data=data)
+        activities = results.content
         demisto.debug(f'This is the results from the activity list: {activities}')
         return activities
 

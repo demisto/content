@@ -1,5 +1,4 @@
 import json
-import io
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
@@ -7,8 +6,13 @@ from SkyhighSecurity import main
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def util_load_text(path: str) -> str:
+    with open(path) as f:
+        return f.read()
 
 
 def test_incident_query_command(mocker):
@@ -71,11 +75,10 @@ def test_anomaly_activity_list_command(mocker):
     mocker.patch.object(demisto, 'args', return_value={'anomaly_id': '1111'})
     mocker.patch.object(demisto, 'command', return_value='skyhigh-security-anomaly-activity-list')
     response = mocker.patch.object(demisto, 'results')
-
     with requests_mock.Mocker() as m:
-        m.post('https://www.example.com/shnapi/rest/external/api/v1/queryActivities', json={})
+        m.post('https://www.example.com/shnapi/rest/external/api/v1/queryActivities', status_code=200)
         main()
-
+    # print(response.call_args)
     assert response.call_args[0][0].get('HumanReadable') == '**No entries.**\n'
 
 
@@ -161,3 +164,11 @@ def test_fetch_incidents(mocker):
     last_run, incidents = fetch_incidents(client, params)
 
     assert len(incidents) == 0
+
+# def test(mocker):
+#     from SkyhighSecurity import Client, anomaly_activity_list_command
+#     client = Client(base_url='https://www.example.com/', verify=False)
+#     args = {'anomaly_id': '1111'}
+#     # mocker.patch.object(client, "anomaly_activity_list", return_value=util_load_text('test_data/activities.txt'))
+#     response = anomaly_activity_list_command(client, args)
+#     print(response.outputs)
