@@ -37,9 +37,23 @@ args:
 - defaultValue: 1-49151
   description: Default server port numbers by which to decide the direction.
   name: server_ports
-- comment: |-
-    Extract payloads of each stream from a pcap.
-    - incoming_base64
+comment: |-
+  Extract payloads of each stream from a pcap.
+  The payloads will be retrieved with an array of dictionaries of these keys:
+  - protocol
+  - client_ip
+  - client_port
+  - server_ip
+  - server_port
+  - stream_size
+  - stream_text
+  - stream_base64
+  - outgoing_size
+  - outgoing_text
+  - outgoing_base64
+  - incoming_size
+  - incoming_text
+  - incoming_base64
 commonfields:
   id: PcapExtractStreams
   version: -1
