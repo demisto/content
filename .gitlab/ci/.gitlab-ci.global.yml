@@ -276,7 +276,6 @@
     done
 
 .default-before-script-no-sdk:
-  before_script:
     - source .gitlab/helper_functions.sh
     - *setup-network-certs
     - *setup-artifactory
