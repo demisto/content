@@ -66,10 +66,18 @@ class TestRCSScan(unittest.TestCase):
         service_id = "8"
         attack_surface_rule_id = "5"
         alert_internal_id = "7"
-        result = rcs_scan_start(
-            service_id, attack_surface_rule_id, alert_internal_id, demisto
-        )
-        self.assertEqual(result, "Failed to execute RCSScanStatus. Check input values.")
+        demisto.executeCommand.side_effect = Exception("An error occurred.")
+
+        exception_raised = False
+
+        try:
+            rcs_scan_start(
+                service_id, attack_surface_rule_id, alert_internal_id, demisto
+            )
+        except Exception:
+            exception_raised = True
+
+        self.assertTrue(exception_raised)
 
     def test_main_exception_handling(self):
         """
