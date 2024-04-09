@@ -635,7 +635,7 @@ RESPONSE_LIST_VIOLATION_6_4 = {
     "inputParams": {
         "generationtime_from": "01/17/2022 00:00:00",
         "max": "50",
-        "query": f"index = violation and policy=\"Response-Account-\\\\\\{'\\'}?{'\\'}*AutoPlay\"",
+        "query": f"index = violation and policy=\"Response-Account-\\\\\\{chr(92)}?{chr(92)}*AutoPlay\"",
         "generationtime_to": "01/17/2023 00:00:20"
     },
     "index": "violation",
@@ -702,7 +702,7 @@ RESPONSE_LIST_ACTIVITY = {
     "applicationTz": "WEB",
     "inputParams": {
         "eventtime_from": "01/12/2024 10:00:00",
-        "query": f"index = activity and hostname = \"HOST\\\\{'\\'}?{'\\'}*.com\"",
+        "query": f"index = activity and hostname = \"HOST\\\\{chr(92)}?{chr(92)}*.com\"",
         "eventtime_to": "01/15/2024 12:01:00",
     },
     "index": "activity",
