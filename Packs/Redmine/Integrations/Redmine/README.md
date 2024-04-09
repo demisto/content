@@ -29,7 +29,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 ***
 - Create a new issue
-- By default, the status of the newly created issue will be set to the status identified by ID=1 from the custom statuses list (from the Redmine instance)
+- By default, the status of the newly created issue will be set to the status the user set in the Redmine instance as default.
 - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
 - To create a custom field, navigate to the server URL with administrative privileges, click **Administration** (located at the top left), select **Custom fields**, and then proceed to create a new custom field. Once created, you can add values as needed
 - To create a category/version, navigate to the server URL > click **Settings** (top bar) > **Versions** tab and **Issue categories** tab.
@@ -742,7 +742,7 @@ There are no input arguments for this command.
 
 #### Base Command
 
-`reset-redmine-settings`
+`redmine-reset-settings`
 
 #### Input
 

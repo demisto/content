@@ -33,8 +33,8 @@ script:
   - name: redmine-issue-create
     description: |-
       - Create a new Issue
-      - By default, the status of the newly created issue will be set to the status identified by ID=1 from the custom statuses list (from the Redmine instance)
-      - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
+      - By default, the status of the newly created issue will be set to the status the user set in the Redmine instance as default.
+      - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created.
       - To create a custom field, navigate to the server URL with administrative privileges, click **Administration** (located at the top left), select **Custom fields**,' and then proceed to create a new custom field. Once created, you  can add values as needed.
       - To create a category/version, navigate to the server URL -> Click on the Settings (top bar) -> Versions tab and Issue categories tab.
     arguments:
@@ -346,7 +346,7 @@ script:
       description: A list of users last name.
     - contextPath: Redmine.Users.mail
       description: A list of users mails.
-  - name: reset-redmine-settings
+  - name: redmine-reset-settings
     description: |-
       - When using issue-create/issue-update/issue-list commands we save the custom settings in a local database
       - Use this command to reset the local database in cases of changing the tracker/priority/status in your Redmine instance after your previous instance initialization

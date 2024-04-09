@@ -710,7 +710,7 @@ def main() -> None:
 
         if command == 'test-module':
             return_results(test_module(client))
-        if command == 'reset-redmine-settings':
+        if command == 'redmine-reset-settings':
             return_results(reset_redmine_settings_context())
         elif command in commands:
             return_results(commands[command](client, args))
