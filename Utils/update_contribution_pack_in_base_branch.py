@@ -45,6 +45,7 @@ def get_pr_files(pr_number: str, github_token: str) -> Iterable[str]:
 
     page = 1
     while True:
+        print('### try to send request')
         response = requests.get(
             f"https://api.github.com/repos/demisto/content/pulls/{pr_number}/files",
             params={"page": str(page), "per_page": str(PER_PAGE)},
