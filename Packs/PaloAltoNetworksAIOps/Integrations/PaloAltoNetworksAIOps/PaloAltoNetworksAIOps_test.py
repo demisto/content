@@ -480,7 +480,9 @@ def test_download_bpa_request_called_with(mocker, AIOps_client):
     report_id = "123456789"
     AIOps_client.download_bpa_request(report_id)
     http_request_mock.assert_called_once_with(method='GET',
-                                              full_url='https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/reports/123456789',
+                                              full_url=(
+                                                  'https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/reports/123456789'
+                                              ),
                                               headers={'Accept': 'application/json', 'Authorization': 'Bearer None'})
 
 
