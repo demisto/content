@@ -330,12 +330,8 @@ def get_affected_content_items(
     batch_dir = flow_dir / Path(f"batch_{batch_index}")
     batch_dir.mkdir(exist_ok=True)
 
-    # TODO Make images tag automatic, with respect to flow:
-    # If images tag in flow dir is not found, then create,
-    # if it exists, then take it
+    # Get images tags of the flow, if they exist
     images_tags_path = flow_dir / Path("images_tag.json")
-
-
     images_tag: dict[str, str] = {}
     if images_tags_path.exists():
         images_tag = load_json(str(images_tags_path))
@@ -370,22 +366,15 @@ def get_affected_content_items(
 
     docker_images_target_tag = {docker_image: affected_items["target_tag"] for docker_image, affected_items in
                                 affected_content_items_by_docker_image.items()}
-    # Output docker_images_target_tag | images_tag
-    current_time_str = time.strftime("%Y-%m-%d-%H:%M:%S")
 
+    # Output docker_images_target_tag | images_tag
     images_tags_path.touch(exist_ok=True)
     images_tags_path.write_text(json.dumps(docker_images_target_tag | images_tag))
-
-    # with open(f"{images_tags_path}", "w") as images_tag_output:
-    #     json.dump(docker_images_target_tag | images_tag, images_tag_output)
 
     # Output the affected content items
     affected_content_items_path = batch_dir / Path("affected_content_items.json")
     affected_content_items_path.touch(exist_ok=True)
     affected_content_items_path.write_text(json.dumps(affected_content_items_by_docker_image))
-
-    # with open(f"{batch_dir}/affected_content_items.json", "w") as affected_content_items:
-    #     json.dump(affected_content_items_by_docker_image, affected_content_items)
 
 def main():
     app()
