@@ -50,6 +50,7 @@ def get_pr_files(pr_number: str, github_token: str) -> Iterable[str]:
             params={"page": str(page), "per_page": str(PER_PAGE)},
             headers={"Authorization": f"Bearer {github_token}"},
         )
+        print('### request sent')
         response.raise_for_status()
         files = response.json()
         # to prevent another empty request, also check if the length of `files` is less than the value of per_page.
