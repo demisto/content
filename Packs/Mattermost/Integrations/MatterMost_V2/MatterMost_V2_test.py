@@ -33,7 +33,7 @@ def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dic
         return util_load_json("test_data/list_users_response.json")
     elif url_suffix == '/api/v4/files':
         return util_load_json("test_data/send_file_response.json")
-    elif url_suffix == '/api/v4/users/email/user_email' or url_suffix == '/api/v4/users/username/username' or url_suffix == '/api/v4/users/me':
+    elif url_suffix == '/api/v4/users/email/user_email' or url_suffix == '/api/v4/users/username/username' or url_suffix == '/api/v4/users/me' or url_suffix == '/api/v4/users/user_id':
         return util_load_json("test_data/list_users_response.json")[0]
     elif url_suffix == '/api/v4/channels/direct':
         channel = util_load_json("test_data/create_channel_response.json")
@@ -415,6 +415,8 @@ async def test_event_handler_bot_message(ws_client, mocker):
     Then:
     - Validate that the demisto.debug func was called.
     """
+    import MatterMost_V2
+    MatterMost_V2.CLIENT = http_client
     bot_payload = util_load_json("test_data/posted_data_bot.json")
     mocker.patch.object(demisto, 'updateModuleHealth')
 
@@ -429,16 +431,30 @@ async def test_event_handler_bot_message(ws_client, mocker):
 
 @pytest.mark.asyncio
 async def test_event_handler_direct_message(ws_client, mocker):
+    """
+    Given:
+    - dm post payload.
+    When:
+    - Calling the handle_posts function.
+    Then:
+    - Validate that the demisto.debug func was called.
+    """
+    import MatterMost_V2
+    MatterMost_V2.CLIENT = http_client
+    MatterMost_V2.ALLOW_INCIDENTS = True
+
     payload = util_load_json("test_data/posted_data_user.json")
     payload["data"]["channel_type"] = "D"
     mocker.patch.object(demisto, 'updateModuleHealth')
+    mocker.patch.object(demisto, 'directMessage', return_value={})
 
     with patch('MatterMost_V2.demisto') as mock_demisto:
+        mocker.patch.object(mock_demisto, 'directMessage', return_value={})
         # Call the function
         await handle_posts(payload)
         # Assert that the `demisto.addEntry` method was called with the expected arguments
-        mock_demisto.debug.assert_called_once_with(
-            msg="MM: Got a bot message. Will not mirror."
+        mock_demisto.directMessage.assert_called_once_with(
+            "message", "user_id", "email", True
         )
 
 

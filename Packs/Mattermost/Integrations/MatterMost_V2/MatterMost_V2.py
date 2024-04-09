@@ -780,7 +780,7 @@ async def answer_question(text: str, question: dict, email: str = ''):
     return incident_id
 
 
-async def send_notification_async(client, channel_id, message, root_id=''):
+async def send_notification_async(client: HTTPClient, channel_id, message, root_id=''):
     client.send_notification_request(channel_id, message, root_id=root_id)
 
 
@@ -1698,6 +1698,8 @@ def main():  # pragma: no cover
     notification_channel = params.get('notification_channel')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    
+    handle_global_parameters(params)
 
     command = demisto.command()
     # this is to avoid BC. because some of the arguments given as <a-b>, i.e "user-list"

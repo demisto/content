@@ -136,8 +136,8 @@ script:
       name: include_private_channels
       required: false
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
       auto: PREDEFINED
     - description: The page number to retrieve. Default value is 0.
       name: page
