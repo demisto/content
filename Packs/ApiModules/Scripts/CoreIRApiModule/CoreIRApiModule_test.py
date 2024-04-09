@@ -3909,10 +3909,8 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
         assert remote_args.delta.get('status')
         assert remote_args.delta['status'] == expected_resolved_status[i]
 
-HTTP_CALL_TEST = [(True, demisto,"_apiCall", {'data':'{"reply":[{"container": ["1.1.1.1"]}]}'}),
-                  (False, BaseClient,"_http_request", {'data':{"reply":[{"container": ["1.1.1.1"]}]}})]
-@pytest.mark.parametrize('is_demisto_version_ge_value, class_name, function, res', HTTP_CALL_TEST)
-def test_http_request_demisto_call(mocker, is_demisto_version_ge_value, class_name, function, res):
+
+def test_http_request_demisto_call(mocker, class_name, function, res):
     """
     Given:
         - The build number.
@@ -3927,8 +3925,32 @@ def test_http_request_demisto_call(mocker, is_demisto_version_ge_value, class_na
     client = CoreClient(
             base_url=f'{Core_URL}/public_api/v1', headers={}
         )
-    mocker.patch.object(CoreIRApiModule, 'is_demisto_version_ge', return_value=is_demisto_version_ge_value)
-    mocker.patch.object(class_name, function ,return_value=res)
+    mocker.patch.object(CoreIRApiModule, 'is_demisto_version_ge', return_value=True)
+    mocker.patch.object(demisto, "_apiCall" ,return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
+                                         'status': 200,
+                                         'data': '{"reply":[{"container": ["1.1.1.1"]}]'})
+    res = client._http_request(method = "POST",
+                                url_suffix="/distributions/get_versions/")
+    assert res['data'] == {"reply":[{"container": ["1.1.1.1"]}]}
+
+
+def test_http_request_base_client(mocker):
+    """
+    Given:
+        - The build number.
+        - request
+    When
+        - Running the http_request command.
+    Then
+        - make sure the correct http_request is being called.
+    """
+    from CoreIRApiModule import CoreClient
+    import CoreIRApiModule
+    client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+    mocker.patch.object(CoreIRApiModule, 'is_demisto_version_ge', return_value=False)
+    mocker.patch.object(BaseClient, "_http_request" ,return_value={'data':{"reply":[{"container": ["1.1.1.1"]}]}})
     res = client._http_request(method = "POST",
                                 url_suffix="/distributions/get_versions/")
     assert res['data'] == {"reply":[{"container": ["1.1.1.1"]}]}
