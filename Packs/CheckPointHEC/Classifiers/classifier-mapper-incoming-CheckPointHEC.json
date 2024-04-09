@@ -1,7 +1,7 @@
 {
-    "description": "Check Point HEC Incoming Mapper",
+    "description": "CheckPointHEC Incoming Mapper",
     "feed": false,
-    "id": "CP HEC Incoming Mapper",
+    "id": "CheckPointHEC Incoming Mapper",
     "mapping": {
         "CheckPointHEC Security Event": {
             "dontMapEventToLabels": true,
@@ -33,7 +33,7 @@
             }
         }
     },
-    "name": "CP HEC Incoming Mapper",
+    "name": "CheckPointHEC Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.9.0"

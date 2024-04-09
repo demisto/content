@@ -1,7 +1,7 @@
 {
-    "description": "Check Point HEC Classifier to CheckPointHEC Security Event Type",
+    "description": "CheckPointHEC Classifier to CheckPointHEC Security Event Type",
     "feed": false,
-    "id": "CP HEC Classifier",
+    "id": "CheckPointHEC Classifier",
     "keyTypeMap": {
         "anomaly": "CheckPointHEC Security Event",
         "alert": "CheckPointHEC Security Event",
@@ -15,7 +15,7 @@
         "suspicious_malware": "CheckPointHEC Security Event",
         "spam": "CheckPointHEC Security Event"
     },
-    "name": "CP HEC Classifier",
+    "name": "CheckPointHEC Classifier",
     "propagationLabels": [
         "all"
     ],
