@@ -67,6 +67,7 @@ CONTENT_COMMON_JOBS = [
     'run-validations-new-validate-flow',
     'test-upload-flow',
     'validate-content-conf',
+    'test-slack-notify',
     'mpv2-prepare-testing-bucket',
     'xpanse-prepare-testing-bucket',
     'xsoar-prepare-testing-bucket',

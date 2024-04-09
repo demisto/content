@@ -469,6 +469,7 @@ jobs-done-check-on-push:
     - stop-running-pipelines
     - test-upload-flow
     - validate-content-conf
+    - test-slack-notify
     - mpv2-prepare-testing-bucket
     - xpanse-prepare-testing-bucket
     - xsoar-prepare-testing-bucket
@@ -511,6 +512,7 @@ jobs-done-check-on-merge:
     - run-validations
     - test-upload-flow
     - validate-content-conf
+    - test-slack-notify
     - mpv2-prepare-testing-bucket
     - xpanse-prepare-testing-bucket
     - xsoar-prepare-testing-bucket

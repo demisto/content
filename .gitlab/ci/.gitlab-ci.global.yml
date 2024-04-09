@@ -562,7 +562,7 @@
     - job-done
     - exit $PRE_COMMIT_SUCCESS
 
-.test-slack-notify:
+test-slack-notify:
   stage: unittests-and-validations
   extends:
     - .default-job-settings-no-sdk
