@@ -161,9 +161,13 @@
   - poetry lock --check
   - npm ci --cache .npm --prefer-offline | tee --append "${ARTIFACTS_FOLDER}/logs/installations.log"
   - source ./.venv/bin/activate
+  - python3 --version | tee -a "${ARTIFACTS_FOLDER}/logs/installed_python_libraries.log"
+  - python3 -m pip list | tee -a "${ARTIFACTS_FOLDER}/logs/installed_python_libraries.log"
+  - section_end "Installing Virtualenv"
+
+.install_demisto_sdk: &install_demisto_sdk
+  - section_start "Installing Demisto-sdk" --collapsed
   - |
-    echo "@#@#@#@#@#@#"
-    echo "${INSTALL_DEMISTO_SDK}"
     if [[ -n "${DEMISTO_SDK_NIGHTLY}" || -n "${OVERRIDE_SDK_REF}" ]]; then
       echo "Installing SDK from ${SDK_REF}" | tee --append "${ARTIFACTS_FOLDER}/logs/installations.log"
       pip3 uninstall -y demisto-sdk | tee --append "${ARTIFACTS_FOLDER}/logs/installations.log"
@@ -172,9 +176,7 @@
       echo "Using SDK from pyproject.toml" | tee --append "${ARTIFACTS_FOLDER}/logs/installations.log"
     fi
   - |
-      python3 --version | tee -a "${ARTIFACTS_FOLDER}/logs/installed_python_libraries.log"
-      python3 -m pip list | tee -a "${ARTIFACTS_FOLDER}/logs/installed_python_libraries.log"
-  - section_end "Installing Virtualenv"
+  - section_end "Installing Demisto-sdk"
 
 .ssh-config-setup:
   - section_start "SSH config setup" --collapsed
@@ -273,7 +275,7 @@
       break
     done
 
-.default-before-script:
+.default-before-script-no-sdk:
   before_script:
     - source .gitlab/helper_functions.sh
     - *setup-network-certs
@@ -291,12 +293,26 @@
     - *build_parameters
     - *gitlab_ci_build_parameters
     - *checkout-upload-commit-content-nightly
+
+.default-before-script:
+  before_script:
+    - .default-before-script-no-sdk
+    - *install_demisto_sdk
+    - *get_contribution_pack
+    - *get_last_upload_commit
+    - *install_ssh_keys
+    - *neo4j-setup
+    - *build_parameters
+    - *gitlab_ci_build_parameters
+    - *checkout-upload-commit-content-nightly
+    -
 .default-after-script:
   - source .gitlab/helper_functions.sh
   - *setup-network-certs
   - *setup-artifactory
   - *install_node_modules
   - *install_venv
+  - *install_demisto_sdk
 
 .add-content-production-to-artifacts:
   - section_start "Clone production content and add it to artifacts" --collapsed
@@ -502,8 +518,6 @@
 .run-pre-commit:
   extends:
     - .unittests-and-lint-settings
-  variables:
-    INSTALL_DEMISTO_SDK: "false"
   script:
     - section_start "Revoking GCP Auth and Configure Docker"
     # we need to configure the docker with the registry in order to be able to pull the images
