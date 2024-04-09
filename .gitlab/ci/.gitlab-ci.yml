@@ -7,6 +7,10 @@
 #       echo "Branch does not exist in the other repository. Setting variable to include from master."
 #       export INCLUDE_FROM_BRANCH="false"
 #     fi
+dummy_job:
+  script:
+    - echo "This is a dummy job to satisfy GitLab CI/CD requirement."
+
 
 before_script:
   - |
