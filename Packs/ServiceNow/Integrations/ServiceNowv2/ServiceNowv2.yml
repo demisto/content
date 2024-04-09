@@ -83,7 +83,7 @@ configuration:
   name: use_display_value
   type: 8
   required: false
-- additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration.'
+- additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format (full form) `HH:mm:ss` with support to `a` notation for AM/PM.'
   defaultvalue: None
   display: Instance Date Format
   name: display_date_format
@@ -214,6 +214,12 @@ configuration:
   type: 8
   additionalinfo: When selected, closing the XSOAR incident is mirrored in ServiceNow.
   hidden: true
+  required: false
+- defaultvalue: 'false'
+  additionalinfo: 'When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present.'
+  display: Mirror Existing Notes For New Fetched Incidents
+  name: mirror_notes_for_new_incidents
+  type: 8
   required: false
 - defaultvalue: 'false'
   display: 'Use system proxy settings'
