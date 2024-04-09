@@ -1,11 +1,11 @@
 [
   {
-    "name": "Akamai SIEM: 50170",
+    "name": "Akamai SIEM: 50170 - 3fbce3e",
     "occurred": "2019-12-10T18:28:27Z",
     "rawJSON": {"type":"akamai_siem","format":"json","version":"1.0","attackData":{"configId":"50170","policyId":"1234","clientIP":"8.8.8.8","rules":"","ruleVersions":"","ruleMessages":"","ruleTags":"","ruleData":"","ruleSelectors":"","ruleActions":""},"httpMessage":{"requestId":"3fbce3e","start":"1576002507","protocol":"HTTP/1.1","method":"HEAD","host":"google.com","port":"80","path":"index","requestHeaders":"Test","status":"403","bytes":"0","responseHeaders":"Server"},"geo":{"continent":"NA","country":"US","city":"LOSANGELES","regionCode":"CA","asn":"5650"}}
   },
   {
-    "name": "Akamai SIEM: 50170",
+    "name": "Akamai SIEM: 50170 - 3fbd757",
     "occurred": "2019-12-10T18:28:26Z",
     "rawJSON": {"type":"akamai_siem","format":"json","version":"1.0","attackData":{"configId":"50170","policyId":"1234","clientIP":"8.8.8.8","rules":"","ruleVersions":"","ruleMessages":"","ruleTags":"","ruleData":"","ruleSelectors":"","ruleActions":""},"httpMessage":{"requestId":"3fbd757","start":"1576002506","protocol":"HTTP/1.1","method":"HEAD","host":"google.com","port":"80","path":"index","requestHeaders":"Test","status":"403","bytes":"0","responseHeaders":"Server"},"geo":{"continent":"NA","country":"US","city":"LOSANGELES","regionCode":"CA","asn":"5650"}}
   }
