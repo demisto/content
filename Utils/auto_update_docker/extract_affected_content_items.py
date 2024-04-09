@@ -310,7 +310,7 @@ def get_affected_content_items(
         help=("The directory that will hold the output files. The default will be the current working directory"),
     ),
 ):
-    # IMPORTANT - "demisto-sdk create-content-graph" must be ran before
+    # IMPORTANT - "demisto-sdk graph create" must be ran before
     # Entry point of code
 
     path_dir = Path(auto_update_dir) if dir else Path(CWD)
