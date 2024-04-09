@@ -285,25 +285,17 @@ def get_affected_content_items(
     coverage_report: str = typer.Option(
         help="The coverage report from last nightly",
     ),
+    batch_index: int = typer.Option(
+        help="The batch index",
+    ),
+    flow_index: int = typer.Option(
+        help="The flow index",
+    ),
     docker_images_arg: str = typer.Option(
         default="ALL",
         help=("The docker images that should be affected by the auto update, either a comma"
         " separated list, the string 'ALL', or 'ALL/docker1,docker2',"
         " where the last option will exclude the stated docker images"),
-    ),
-    batch_index: int = typer.Option(
-        default="0",
-        help="The batch index",
-    ),
-    flow_index: int = typer.Option(
-        default="0",
-        help="The flow index",
-    ),
-    docker_images_target_tags_path: str = typer.Option(
-        default="",
-        help=("The file that contains the docker images tag, if given an empty string,"
-              " will retrieve the latest tags from DockerHub. Docker images and their tags will be added"
-              " to this file"),
     ),
     auto_update_dir: str = typer.Option(
         default="",
