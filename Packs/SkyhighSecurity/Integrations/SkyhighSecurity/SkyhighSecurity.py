@@ -69,8 +69,10 @@ class Client(BaseClient):
         url_suffix = '/external/api/v1/queryActivities'
         data = {"incident_id": incident_id}
         results = self._http_request('POST', url_suffix, json_data=data, resp_type='response')
+        demisto.debug(f'This is the results from the activity list: {results}')
+
         activities = results.content
-        demisto.debug(f'This is the results from the activity list: {activities}')
+        demisto.debug(f'This is the content from the activity list: {activities}')
         return activities
 
     def policy_dictionary_list(self) -> List[Dict]:

@@ -164,7 +164,17 @@ def test_fetch_incidents(mocker):
 
     assert len(incidents) == 0
 
-# def test(mocker):
+def test(mocker):
+    mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
+    mocker.patch.object(demisto, 'args', return_value={'anomaly_id': '1111'})
+    mocker.patch.object(demisto, 'command', return_value='skyhigh-security-anomaly-activity-list')
+    response = mocker.patch.object(demisto, 'results')
+    with requests_mock.Mocker() as m:
+        m.post('https://www.example.com/shnapi/rest/external/api/v1/queryActivities', util_load_text('test_data/activities.txt'),
+               status_code=200)
+        main()
+    print(response)
+    assert response.call_args[0][0].get('HumanReadable') == 'No activities found for anomaly ID 1111'
 #     from SkyhighSecurity import Client, anomaly_activity_list_command
 #     client = Client(base_url='https://www.example.com/', verify=False)
 #     args = {'anomaly_id': '1111'}
