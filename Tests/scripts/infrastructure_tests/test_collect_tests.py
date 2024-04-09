@@ -806,12 +806,34 @@ def test_sort_packs_to_upload(mocker):
     from Tests.scripts.collect_tests.collect_tests import PACK_MANAGER
 
     input_files = {Path("Packs/myPack/pack_metadata.json"),
-                   Path("Packs/myPack2/ReleaseNotes/1_0_0.md"),
+                   Path("Packs/myPack2/ReleaseNotes/1_0_1.md"),
                    Path("Packs/myPack2/pack_metadata.json")}
 
     mocker.patch.object(GitUtil, "_get_all_changed_files", return_value=input_files)
-    mocker.patch.object(PACK_MANAGER, "get_current_version", return_value="1.0.0")
+    mocker.patch.object(GitUtil, "added_files", return_value={})
+    mocker.patch.object(PACK_MANAGER, "get_current_version", return_value="1.0.1")
     packs_to_upload, packs_to_update_metadata = sort_packs_to_upload({"myPack", "myPack2"})
 
     assert packs_to_upload == ["myPack2"], "myPack should be marked for hard upload"
     assert packs_to_update_metadata == ["myPack"], "myPack should be marked for metadata update"
+
+
+def test_sort_packs_to_upload_new_pack(mocker):
+    """
+    given: Mocked GitUtil with simulated changed files
+    when:  Calling sort_packs_to_upload function
+    then:  Ensure packs_to_upload contains the new pack
+    """
+    from demisto_sdk.commands.common.git_util import GitUtil
+    from Tests.scripts.collect_tests.collect_tests import PACK_MANAGER
+
+    input_files = {Path("Packs/myPack/pack_metadata.json")}
+    added_files = {Path("Packs/myPack/pack_metadata.json")}
+
+    mocker.patch.object(GitUtil, "_get_all_changed_files", return_value=input_files)
+    mocker.patch.object(GitUtil, "added_files", return_value=added_files)
+    mocker.patch.object(PACK_MANAGER, "get_current_version", return_value="1.0.0")
+    packs_to_upload, packs_to_update_metadata = sort_packs_to_upload({"myPack"})
+
+    assert packs_to_upload == ["myPack"], "myPack should be marked for hard upload"
+    assert packs_to_update_metadata == [], "myPack should not be marked for metadata update"
