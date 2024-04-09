@@ -175,6 +175,27 @@ slack-notify:
     - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "All nightlies builds has been finished, please check their status and continue with the release" --allow-failure "${SLACK_ALLOW_FAILURE}" -gt "${GITLAB_API_TOKEN}" -gu "${REVIEWER}" -ch "${SLACK_CHANNEL}"
     - section_end "Slack notify"
 
+update-validation-docs:
+  stage: release-flow
+  extends:
+    - .release-sdk
+    - .default-job-settings
+  needs:
+    - slack-notify
+  when: manual
+  variables:
+    RELEASE_VERSION: $RELEASE_VERSION
+    GITHUB_TOKEN: $GITHUB_TOKEN
+    IS_DRAFT: $IS_DRAFT
+    REVIEWER: $REVIEWER
+    SLACK_CHANNEL: $SLACK_CHANNEL
+    ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
+  script:
+    - section_start "Update validation docs" --collapsed
+    - python3 ./Tests/sdk_release/validate_update_docs.py -t "${GITHUB_TOKEN}" -b "${RELEASE_VERSION}" -r "${REVIEWER}" -d "${IS_DRAFT}"
+    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" --allow-failure "true" -gt "${GITLAB_API_TOKEN}" -gu "${REVIEWER}" -ch "${SLACK_CHANNEL}" -f "${ARTIFACTS_FOLDER}/validate_release_notes_message.txt"
+    - section_end "Update validation docs"
+
 create-release-pull-request:
   stage: release-flow
   extends:

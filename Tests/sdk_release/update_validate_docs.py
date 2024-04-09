@@ -1,6 +1,7 @@
 import base64
 from io import BytesIO
 from pathlib import Path
+from typing import Annotated
 from zipfile import ZipFile
 import requests
 import typer
@@ -25,12 +26,10 @@ def decode_base64(b64: str) -> str:
     return base64.b64decode(b64).decode("utf-8")
 
 
-class CannotFindWorkflowError(ValueError):
-    ...
+class CannotFindWorkflowError(ValueError): ...
 
 
-class CannotFindArtifactError(ValueError):
-    ...
+class CannotFindArtifactError(ValueError): ...
 
 
 class GitHubClient:
@@ -98,7 +97,7 @@ class GitHubClient:
         )
         res.raise_for_status()
 
-    def create_pr(self, title: str, body: str, reviewer: str):
+    def create_pr(self, title: str, body: str, reviewer: str) -> int:
         create_res = requests.post(
             url=f"{self.base_url}/pulls",
             json={
@@ -119,6 +118,7 @@ class GitHubClient:
             headers=self.headers,
         )
         assign_res.raise_for_status()
+        return pr_number
 
     def get_most_recent_workflow_run_id(self, workflow_name: str) -> int:
         res = requests.get(
@@ -193,7 +193,11 @@ def compile_validate_docs(readme_markdown: str, checks_markdown: str) -> str:
 
 
 def main(
-    github_token: str, branch_name: str, release_owner: str, is_draft: bool
+    github_token: Annotated[str, typer.Option("-t", "--github-token")],
+    branch_name: Annotated[str, typer.Option("-b", "--branch-name")],
+    release_owner: Annotated[str, typer.Option("-r", "--reviewer")],
+    is_draft: Annotated[bool, typer.Option("-d", "--draft")],
+    artifact_folder: Annotated[Path, typer.Option("-f", "--artifact-folder")],
 ) -> None:
     # Get generated `validate` docs from the branch workflow
     sdk_client = GitHubClient(
@@ -217,7 +221,9 @@ def main(
             "This is OK when validations don't change between SDK releases."
         )
         raise typer.Exit(0)
-
+    checks_markdown = checks_markdown_artifact_zip.read("validation_docs.md").decode(
+        "utf-8"
+    )
     # Commit to content-docs
     docs_client = GitHubClient(
         organization=ORG_NAME,
@@ -235,16 +241,18 @@ def main(
                     "content"
                 ]
             ),
-            checks_markdown=str(
-                checks_markdown_artifact_zip.read("validation_docs.md").decode("utf-8")
-            ),
+            checks_markdown=checks_markdown,
         ),
         commit_message=f"SDK v{branch_name} Validate docs",
     )
-    docs_client.create_pr(
+    pr_number = docs_client.create_pr(
         title=f"SDK Validate docs: {branch_name}",
         body="Automated update of SDK validate docs",
         reviewer=release_owner,
+    )
+
+    (artifact_folder / "validate_release_notes_message.txt").write_text(
+        f"SDK-Validate docs have changed, review [the content-docs PR](https://github.com/{ORG_NAME}/{DOCS_REPO_NAME}/pulls/{pr_number})"
     )
 
 
