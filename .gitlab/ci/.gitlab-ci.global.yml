@@ -276,7 +276,6 @@
     done
 
 .default-before-script-no-sdk:
-  script:
     - source .gitlab/helper_functions.sh
     - *setup-network-certs
     - *setup-artifactory
@@ -326,6 +325,15 @@
   extends:
     - .default-cache
     - .default-before-script
+  needs:
+    - job: cloning-content-repo-last-upload-commit
+      optional: true
+
+.default-job-settings-no-sdk:
+  interruptible: true
+  extends:
+    - .default-cache
+    - .default-before-script-no-sdk
   needs:
     - job: cloning-content-repo-last-upload-commit
       optional: true
@@ -547,7 +555,7 @@
 .test-slack-notify:
   stage: unittests-and-validations
   extends:
-    - .default-before-script-no-sdk
+    - .default-job-settings-no-sdk
   script:
     - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "test" --allow-failure "${SLACK_ALLOW_FAILURE}" -ch "dmst-build-test"
 
