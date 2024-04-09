@@ -1225,7 +1225,8 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
     status = args.get('status')
     comment = args.get('comment')
     if not severity and not status and not comment:
-        raise DemistoException(f"Can not find a field to update for alerts {alerts_list}, please fill in severity/status/comment.")
+        raise DemistoException(
+            f"Can not find a field to update for alerts {alerts_list}, please fill in severity/status/comment.")
     for index in range(0, len(alerts_list), 100):
         alerts_sublist = alerts_list[index:index + 100]
         demisto.debug(f'{alerts_sublist=}, {severity=}, {status=}, {comment=}')

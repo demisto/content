@@ -1480,6 +1480,7 @@ def test_update_alerts_in_xdr_request_invalid_response():
         client.update_alerts_in_xdr_request(alerts_ids, severity, status, comment)
     assert e.value.message == "Parse Error. Response not in format, can't find reply key."
 
+
 def test_update_alerts_in_xdr_command():
     """
     Given:
@@ -1495,7 +1496,7 @@ def test_update_alerts_in_xdr_command():
     args = {'alert_ids': '1'}
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False, params={'close_alerts_in_xdr': True}
-        )
+    )
     with pytest.raises(DemistoException) as e:
         update_alerts_in_xdr_command(client, args)
     assert e.value.message == "Can not find a field to update for alerts ['1'], please fill in severity/status/comment."
