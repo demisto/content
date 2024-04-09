@@ -5417,9 +5417,11 @@ def get_live_response_file_action(client, args):
         code = error.get("code")
         if code == "ActiveRequestAlreadyExists":
             uuid_pattern = r'\b[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\b'  # action-id is a uuid
+            cancel_action_command(client, )
             if match := re.search(uuid_pattern, error.get("message")):
                 action_id = match.group()
-                demisto.debug(f'There is an action-id {action_id} that is already running')
+                demisto.debug(f'There is an action-id {action_id} that is already running, cancelling the current action id {action_id}')
+                client.cancel_action(action_id, {"Comment": f"Canceled action ID {action_id}"})
             else:
                 demisto.error(f'Could not get action-ID from {error} following ActiveRequestAlreadyExists')
                 response.raise_for_status()
