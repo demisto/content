@@ -1506,8 +1506,7 @@ def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[list, list]:
         current_version = PACK_MANAGER.get_current_version(pack_id) or ""
         rn_path = Path(f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
         pack_metadata_path = Path(f"Packs/{pack_id}/pack_metadata.json")
-        if pack_metadata_path in git_util.added_files():
-            logger.info(f'git_util.added_files() = {git_util.added_files()}')
+        if pack_metadata_path in git_util.added_files(): # first version
             continue
         if rn_path not in changed_files and pack_metadata_path in changed_files:
             packs_to_update_metadata.add(pack_id)
