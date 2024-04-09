@@ -78,8 +78,7 @@ def test_anomaly_activity_list_command(mocker):
     with requests_mock.Mocker() as m:
         m.post('https://www.example.com/shnapi/rest/external/api/v1/queryActivities', status_code=200)
         main()
-    # print(response.call_args)
-    assert response.call_args[0][0].get('HumanReadable') == '**No entries.**\n'
+    assert response.call_args[0][0].get('HumanReadable') == 'No activities found for anomaly ID 1111'
 
 
 def test_policy_dictionary_list_command(mocker):

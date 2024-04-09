@@ -68,7 +68,7 @@ class Client(BaseClient):
     def anomaly_activity_list(self, incident_id: Optional[int]) -> Dict[str, str]:
         url_suffix = '/external/api/v1/queryActivities'
         data = {"incident_id": incident_id}
-        results = self._http_request('POST', url_suffix, json_data=data)
+        results = self._http_request('POST', url_suffix, json_data=data, resp_type='response')
         activities = results.content
         demisto.debug(f'This is the results from the activity list: {activities}')
         return activities
@@ -258,6 +258,9 @@ def anomaly_activity_list_command(client: Client, args: Dict) -> CommandResults:
     anomaly_id = arg_to_number(args.get('anomaly_id'))
 
     result = client.anomaly_activity_list(anomaly_id)
+    if not result:
+        return CommandResults(
+            readable_output="No activities found for anomaly ID " + str(anomaly_id))
 
     return CommandResults(
         outputs=result,
