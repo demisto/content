@@ -206,7 +206,7 @@ class CoreClient(BaseClient):
                     )
             if not self._is_status_code_valid(res, ok_codes):
                     self._handle_error(error_handler, res, with_metrics)
-            return json.loads(res.get('data'))
+            return json.loads(res['data'])
         except requests.exceptions.ConnectTimeout as exception:
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
