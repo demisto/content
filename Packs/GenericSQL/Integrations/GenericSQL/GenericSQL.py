@@ -13,6 +13,7 @@ from sqlalchemy.engine.url import URL
 from urllib.parse import parse_qsl
 import dateparser
 
+# TRIGGER TEST PLAYBOOK
 TERADATA = "Teradata"
 ORACLE = "Oracle"
 POSTGRES_SQL = "PostgreSQL"
