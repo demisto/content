@@ -531,7 +531,7 @@ def test_tc_add_indicator_command_with_description(mocker):
     mocker.patch.object(ThreatConnectV3, 'create_context', return_value=([], []))
     tc_add_indicator_command(client, {'tags': [], 'indicator': '1.1.1.1',
                                       'indicatorType': 'Address',
-                                      'description_attribute': 'description'})
+                                      'description': 'description'})
     # Verifying if the client.make_request method was called with the expected arguments
     call_args = json.loads(res.call_args[1]["payload"])
     assert {"type": "Description", "value": "description", "default": True} in call_args["attributes"]
