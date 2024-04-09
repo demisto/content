@@ -1,17 +1,3 @@
-# before_script:
-#   - |
-#     if curl --head --silent --fail "${CI_SERVER_URL}/api/v4/projects/${CI_PROJECT_NAMESPACE}/repository/branches/$CI_COMMIT_BRANCH"; then
-#       echo "Branch exists in the other repository. Setting variable to include from branch."
-#       export INCLUDE_FROM_BRANCH="true"
-#     else
-#       echo "Branch does not exist in the other repository. Setting variable to include from master."
-#       export INCLUDE_FROM_BRANCH="false"
-#     fi
-dummy_job:
-  script:
-    - echo "This is a dummy job to satisfy GitLab CI/CD requirement."
-
-
 before_script:
   - |
     git ls-remote --exit-code --quiet --heads "https://${CI_SERVER_URL}/${CI_PROJECT_NAMESPACE}/infra.git" "refs/heads/${CI_COMMIT_BRANCH}" 1>/dev/null 2>&1
