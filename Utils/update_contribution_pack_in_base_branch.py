@@ -25,6 +25,8 @@ def main():
     if args.github_token:
         print('>>>>>>>> args.github_token exists')
         github_token = args.github_token
+    else:
+        github_token = ''
 
     packs_dir_names = get_files_from_github(
         username, branch, pr_number, repo, github_token
