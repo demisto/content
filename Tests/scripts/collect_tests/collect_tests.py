@@ -109,7 +109,7 @@ class CollectionResult:
             testing, e.g. PackName/ModelingRules/MyModelingRule
         :param pack: pack name to install
         :param reason: CollectionReason explaining the collection
-        :param version_range: XSOAR versions on which the content should be tested, matching the from/toversion fields.
+        :param version_range: XSOAR versions on which the content should be tested, matching the from/toversion fields. # TODO
         :param reason_description: free text elaborating on the collection, e.g. path of the changed file.
         :param conf: a ConfJson object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
         :param id_set: an IdSet object. It may be None only when reason in VALIDATION_BYPASSING_REASONS.
@@ -263,7 +263,7 @@ class CollectionResult:
             if test in conf.private_tests:  # type: ignore[union-attr]
                 raise PrivateTestException(test)
 
-        if is_nightly:
+        if is_nightly: # TODO
             if test and test in conf.non_api_tests:  # type: ignore[union-attr]
                 return
 
@@ -328,7 +328,7 @@ class TestCollector(ABC):
                 conf=self.conf,
                 id_set=self.id_set,
                 is_sanity=True,
-                only_to_install=True,
+                only_to_install=True,#todo
             )
             for test in self._sanity_test_names
         ))
@@ -340,7 +340,7 @@ class TestCollector(ABC):
             CollectionResult(test=None, modeling_rule_to_test=None, pack=pack,
                              reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
                              version_range=None, reason_description=pack, conf=None, id_set=None, is_sanity=True,
-                             only_to_install=True)
+                             only_to_install=True) # TODO
             for pack in always_installed_packs_list)
         )
 
@@ -399,10 +399,10 @@ class TestCollector(ABC):
             result.append(self._collect_pack(
                 pack_id=pack_id,  # type: ignore[arg-type]
                 reason=CollectionReason.PACK_TEST_DEPENDS_ON,
-                reason_description=f'test {test_id} is saved under pack {pack_id}',
+                reason_descripti on=f'test {test_id} is saved under pack {pack_id}',
                 content_item_range=test_object.version_range,
                 allow_incompatible_marketplace=True,  # allow xsoar&xsiam packs
-                only_to_install=True
+                only_to_install=True # TODO
             ))
 
             # collect integrations used in the test
@@ -447,7 +447,7 @@ class TestCollector(ABC):
             reason_description=f'test {test_id} depends on {dependency_type} {dependency_name} from {pack_id}',
             conf=self.conf,
             id_set=self.id_set,
-            only_to_install=True,
+            only_to_install=True, # TODO
         )
 
     def _collect_all_marketplace_compatible_packs(self, is_nightly) -> CollectionResult | None:
@@ -1406,7 +1406,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
                 conf=self.conf,
                 id_set=self.id_set,
                 is_sanity=True,
-                only_to_install=True
+                only_to_install=True # TODO
             )
             for test in self.conf['test_marketplacev2']
         ))  # type: ignore[return-value]
@@ -1455,7 +1455,7 @@ class E2ETestCollector(TestCollector, ABC):
                     reason_description="e2e tests",
                     conf=None,
                     id_set=None,
-                    only_to_install=True
+                    only_to_install=True # todo
                 ) for pack in self.get_e2e_packs()
             ]
         )
@@ -1481,7 +1481,7 @@ class SDKNightlyTestCollector(TestCollector):
             conf=self.conf,
             id_set=self.id_set,
             is_sanity=True,
-            only_to_install=True,
+            only_to_install=True, #TODO
         )
 
     def _collect(self) -> CollectionResult | None:
@@ -1506,7 +1506,8 @@ def sort_packs_to_upload(packs_to_upload: set[str]) -> tuple[list, list]:
         current_version = PACK_MANAGER.get_current_version(pack_id) or ""
         rn_path = Path(f"Packs/{pack_id}/ReleaseNotes/{current_version.replace('.', '_')}.md")
         pack_metadata_path = Path(f"Packs/{pack_id}/pack_metadata.json")
-
+        if pack_metadata_path in git_util.added_files():
+            continue
         if rn_path not in changed_files and pack_metadata_path in changed_files:
             packs_to_update_metadata.add(pack_id)
 
