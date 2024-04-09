@@ -455,6 +455,16 @@ tasks:
           right:
             value:
               simple: Automated remediation by creating empty S3 bucket
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmdatacollection
+                accessor: selected
+            iscontext: true
+          right:
+            value:
+              simple: Automated remediation by creating empty S3 bucket
     - label: Manual remediation
       condition:
       - - operator: isEqualString
@@ -2488,7 +2498,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -690,
+          "x": -700,
           "y": 1860
         }
       }
@@ -2542,7 +2552,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -690,
+          "x": -700,
           "y": 2210
         }
       }
