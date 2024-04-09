@@ -346,7 +346,7 @@ script:
       description: A list of users last name.
     - contextPath: Redmine.Users.mail
       description: A list of users mails.
-  - name: reset-redmine_settings
+  - name: reset-redmine-settings
     description: |-
       - When using issue-create/issue-update/issue-list commands we save the custom settings in a local database
       - Use this command to reset the local database in cases of changing the tracker/priority/status in your Redmine instance after your previous instance initialization

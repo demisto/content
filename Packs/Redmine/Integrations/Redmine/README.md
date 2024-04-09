@@ -742,7 +742,7 @@ There are no input arguments for this command.
 
 #### Base Command
 
-`reset-redmine_settings`
+`reset-redmine-settings`
 
 #### Input
 
