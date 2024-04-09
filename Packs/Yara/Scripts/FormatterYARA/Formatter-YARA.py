@@ -12,17 +12,19 @@ def main():
         
         # Otherwise assumes it's already an array
         for item in the_input:
-            rule_name = rule_name_regex.search(item).group("name")
-            
-            if not item:
-                input_entry = ''
-            else:
+            rule_name = rule_name_regex.search(item)
+
+            if item and rule_name:
+                rule_name = rule_name.group("name")
                 input_entry = {
                     "Type": entryTypes["note"],
                     "ContentsFormat": formats["json"],
                     "Contents": [rule_name],
                     "EntryContext": {"YARA": rule_name}
                 }
+                
+            else:
+                input_entry = ''
             
             entries_list.append(input_entry)
         
