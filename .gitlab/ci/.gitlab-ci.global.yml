@@ -285,13 +285,6 @@
     - *check_build_files_are_up_to_date
     - *install_node_modules
     - *install_venv
-    - *get_contribution_pack
-    - *get_last_upload_commit
-    - *install_ssh_keys
-    - *neo4j-setup
-    - *build_parameters
-    - *gitlab_ci_build_parameters
-    - *checkout-upload-commit-content-nightly
 
 .default-before-script:
   before_script:
