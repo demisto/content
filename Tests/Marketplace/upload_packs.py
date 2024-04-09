@@ -49,6 +49,38 @@ def get_packs_ids_to_upload(packs_to_upload: str) -> set:
         sys.exit(1)
 
 
+def get_packs_ids_to_upload_and_update(packs_to_upload: str) -> tuple[set, set]:
+    """Returns a tuple of sets containing pack's names to upload and update metadata.
+
+    Args:
+        packs_to_upload (str): JSON string containing pack names to upload.
+
+    Returns:
+        tuple: tuple of sets containing packs names to upload and update metadata.
+    """
+    if packs_to_upload and isinstance(packs_to_upload, str):
+        try:
+            packs_json = json.loads(packs_to_upload)
+            packs_to_upload = packs_json.get('packs_to_upload', [])
+            packs_to_update_metadata = packs_json.get('packs_to_update_metadata', [])
+
+            packs_upload = {p.strip() for p in packs_to_upload if p not in IGNORED_FILES}
+            logging.info(f"Collected {len(packs_upload)} content packs to upload: {list(packs_upload)}")
+
+            packs_metadata_update = {p.strip() for p in packs_to_update_metadata if p not in IGNORED_FILES}
+            logging.info(f"Collected {len(packs_metadata_update)} content packs to update metadata: "
+                         f"{list(packs_metadata_update)}")
+
+            return packs_upload, packs_metadata_update
+
+        except json.decoder.JSONDecodeError as e:
+            logging.critical(f"Invalid JSON format. Please check the content of the JSON file, error:\n{e}")
+            sys.exit(1)
+    else:
+        logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
+        sys.exit(1)
+
+
 def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path: str):
     """Extracts all packs from content pack artifact zip.
 
@@ -60,6 +92,36 @@ def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path:
     with ZipFile(packs_artifacts_path) as packs_artifacts:
         packs_artifacts.extractall(extract_destination_path)
     logging.debug("Finished extracting packs artifacts")
+
+
+def download_and_extract_pack(pack_id, pack_version, storage_bucket: Any,
+                              extract_destination_path: str,
+                              storage_base_path: str) -> str | bool:
+    """
+    Downloads and extracts the pack.zip folder of the current pack version from the storage bucket.
+
+    Args:
+        pack_id (str): The pack ID.
+        pack_version (str): The version of the pack to download and extract.
+        storage_bucket (google.cloud.storage.bucket.Bucket): The storage bucket object from which to download the pack.
+        extract_destination_path (str): The full path to the directory where the pack will be extracted.
+        storage_base_path (str): The base path in the storage bucket where packs are stored.
+
+    Returns:
+        bool: False if the pack was not found in the bucket, otherwise true.
+    """
+    logging.debug(f'Start of download_and_extract_pack, {pack_id}, version {pack_version}')
+    pack_path = os.path.join(storage_base_path, pack_id, pack_version, f"{pack_id}.zip")
+    pack = storage_bucket.blob(pack_path)
+    if pack.exists():
+        download_pack_path = os.path.join(extract_destination_path, f"{pack_id}.zip")
+        pack.download_to_filename(download_pack_path)
+        with ZipFile(download_pack_path, 'r') as pack_zip:
+            pack_zip.extractall(os.path.join(extract_destination_path, pack_id))
+        return os.path.join(extract_destination_path, pack_id)
+    else:
+        logging.warning(f'{pack_id} pack of version {pack_version} was not found in the bucket. {pack_path=}')
+        return False
 
 
 def download_and_extract_index(storage_bucket: Any, extract_destination_path: str, storage_base_path: str) \
@@ -157,11 +219,11 @@ def update_index_folder(index_folder_path: str, pack: Pack, is_private_pack: boo
             logging.debug(f"Created '{pack.name}' pack folder in {GCPConfig.INDEX_NAME}")
 
         if not pack.is_modified and not is_private_pack:
-            logging.debug(f"Updating metadata only with statistics because {pack.name=} {pack.is_modified=}")
-            json_write(os.path.join(index_pack_path, "metadata.json"), pack.statistics_metadata, update=True)
+
+            json_write(os.path.join(index_pack_path, "metadata.json"), pack.update_metadata, update=True)
 
             if os.path.exists(os.path.join(index_pack_path, f"metadata-{pack.current_version}.json")):
-                json_write(os.path.join(index_pack_path, f"metadata-{pack.current_version}.json"), pack.statistics_metadata,
+                json_write(os.path.join(index_pack_path, f"metadata-{pack.current_version}.json"), pack.update_metadata,
                            update=True)
             else:
                 shutil.copy(os.path.join(index_pack_path, "metadata.json"),
@@ -1072,7 +1134,7 @@ def main():
     extract_destination_path = option.extract_path
     storage_bucket_name = option.bucket_name
     service_account = option.service_account
-    pack_ids_to_upload = get_packs_ids_to_upload(option.pack_names or "")
+    pack_ids_to_upload, pack_ids_to_update_metadata = get_packs_ids_to_upload_and_update(option.pack_names or "")
     upload_specific_pack = option.upload_specific_pack
     build_number = option.ci_build_number if option.ci_build_number else str(uuid.uuid4())
     override_all_packs = option.override_all_packs
@@ -1115,12 +1177,13 @@ def main():
 
     # list of packs to iterate on over and upload/update them in bucket
     all_packs_objects_list = [Pack(pack_id, os.path.join(extract_destination_path, pack_id),
-                                   is_modified=pack_id in pack_ids_to_upload)
+                                   is_modified=pack_id in pack_ids_to_upload,
+                                   is_metadata_updated=pack_id in pack_ids_to_update_metadata)
                               for pack_id in os.listdir(extract_destination_path) if pack_id not in IGNORED_FILES]
 
     # if it's not a regular upload-flow, then upload only collected/modified packs
     packs_objects_list = all_packs_objects_list if is_regular_upload_flow \
-        else [p for p in all_packs_objects_list if p.is_modified]
+        else [p for p in all_packs_objects_list if p.is_modified or p.is_metadata_updated]
     logging.info(f"Packs list is: {[p.name for p in packs_objects_list]}")
 
     # taking care of private packs
@@ -1189,6 +1252,27 @@ def main():
                 pack.status = PackStatus.FAILED_UPLOADING_PACK.name  # type: ignore[misc]
                 pack.cleanup()
                 continue
+
+        elif pack.is_metadata_updated:
+            if not download_and_extract_pack(pack.name, pack.current_version, storage_bucket,
+                                             extract_destination_path, storage_base_path):
+                pack.status = PackStatus.FAILED_DOWNLOADING_PACK_FOLDER.name  # type: ignore[misc]
+                pack.cleanup()
+                continue
+
+            if not pack.format_metadata():
+                pack.status = PackStatus.FAILED_UPDATING_PACK_FOLDER_METADATA.name  # type: ignore[misc]
+                pack.cleanup()
+                continue
+
+            if not pack.sign_and_zip_pack(signature_key, uploaded_packs_dir):
+                continue
+
+            if not pack.upload_to_storage(pack.zip_path, storage_bucket, storage_base_path):
+                pack.status = PackStatus.FAILED_UPLOADING_PACK.name  # type: ignore[misc]
+                pack.cleanup()
+                continue
+
         else:
             # Signs and zips non-modified packs for the upload_with_dependencies phase
             if not pack.sign_and_zip_pack(signature_key, uploaded_packs_dir):
@@ -1200,7 +1284,7 @@ def main():
             continue
 
         logging.debug(f"Finished iterating over pack '{pack.name}'")
-        if not pack.is_modified:
+        if not pack.is_modified and not pack.is_metadata_updated:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name  # type: ignore[misc]
             pack.cleanup()
             continue
