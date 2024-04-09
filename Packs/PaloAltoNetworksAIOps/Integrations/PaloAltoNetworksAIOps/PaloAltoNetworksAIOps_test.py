@@ -451,7 +451,8 @@ def test_check_upload_status_request_called_with(mocker, AIOps_client):
     http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
     report_id = "123456789"
     AIOps_client.check_upload_status_request(report_id)
-    http_request_mock.assert_called_once_with(method='GET', full_url='https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/jobs/123456789',
+    http_request_mock.assert_called_once_with(method='GET',
+                                              full_url='https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/jobs/123456789',
                                               headers={'Accept': '*/*', 'Authorization': 'Bearer None'})
 
 
@@ -477,7 +478,8 @@ def test_download_bpa_request_called_with(mocker, AIOps_client):
     http_request_mock = mocker.patch.object(AIOps_client, '_http_request')
     report_id = "123456789"
     AIOps_client.download_bpa_request(report_id)
-    http_request_mock.assert_called_once_with(method='GET', full_url='https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/reports/123456789',
+    http_request_mock.assert_called_once_with(method='GET',
+                                              full_url='https://api.stratacloud.paloaltonetworks.com/aiops/bpa/v1/reports/123456789',
                                               headers={'Accept': 'application/json', 'Authorization': 'Bearer None'})
 
 
