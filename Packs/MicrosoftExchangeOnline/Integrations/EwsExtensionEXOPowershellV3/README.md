@@ -465,9 +465,9 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 #### Human Readable Output
 
 >### Results of ews-new-tenant-allow-block-list-items
-| Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-| Block | d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo= |  | \{"value":"2022\-06\-15T19:34:01.2028448Z","DateTime":"Wednesday, June 15, 2022 7:34:01 PM"\} | RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO\-QI\-xRP9AAAAAAEVAAA02rlnO0nOR5RO\-QI\-xRP9AAADfzPiAAAA0 | \{"value":"2022\-05\-16T19:34:01.2652934Z","DateTime":"Monday, May 16, 2022 7:34:01 PM"\} | Tenant |  | Email observed in a phishing campaign. | New | outlook.office365.com | false | \{"value":"8f736b87\-f951\-4b6b\-aa21\-e358720c44e3","Guid":"8f736b87\-f951\-4b6b\-aa21\-e358720c44e3"\} |  | false | attacker@phishingsite.com
+>| Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| Block | d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo= |  | \{"value":"2022\-06\-15T19:34:01.2028448Z","DateTime":"Wednesday, June 15, 2022 7:34:01 PM"\} | RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO\-QI\-xRP9AAAAAAEVAAA02rlnO0nOR5RO\-QI\-xRP9AAADfzPiAAAA0 | \{"value":"2022\-05\-16T19:34:01.2652934Z","DateTime":"Monday, May 16, 2022 7:34:01 PM"\} | Tenant |  | Email observed in a phishing campaign. | New | outlook.office365.com | false | \{"value":"8f736b87\-f951\-4b6b\-aa21\-e358720c44e3","Guid":"8f736b87\-f951\-4b6b\-aa21\-e358720c44e3"\} |  | false | attacker@phishingsite.com
 
 
 
@@ -543,10 +543,10 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 ```
 
 #### Human Readable Output
-### Results of ews-get-tenant-allow-block-list-items
-| Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-| Block | d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo= |  | \{"value":"2022\-06\-15T19:34:01.2028448Z","DateTime":"Wednesday, June 15, 2022 7:34:01 PM"\} | RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO\-QI\-xRP9AAAAAAEVAAA02rlnO0nOR5RO\-QI\-xRP9AAADfzPiAAAA0 | \{"value":"2022\-05\-16T19:34:01.2652934Z","DateTime":"Monday, May 16, 2022 7:34:01 PM"\} | Tenant |  | Email observed in a phishing campaign. | Unchanged | outlook.office365.com | false | \{"value":"feada07c\-99b7\-48e9\-a562\-a755073522ff","Guid":"feada07c\-99b7\-48e9\-a562\-a755073522ff"\} |  | false | attacker@phishingsite.com
+>### Results of ews-get-tenant-allow-block-list-items
+>| Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| Block | d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo= |  | \{"value":"2022\-06\-15T19:34:01.2028448Z","DateTime":"Wednesday, June 15, 2022 7:34:01 PM"\} | RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO\-QI\-xRP9AAAAAAEVAAA02rlnO0nOR5RO\-QI\-xRP9AAADfzPiAAAA0 | \{"value":"2022\-05\-16T19:34:01.2652934Z","DateTime":"Monday, May 16, 2022 7:34:01 PM"\} | Tenant |  | Email observed in a phishing campaign. | Unchanged | outlook.office365.com | false | \{"value":"feada07c\-99b7\-48e9\-a562\-a755073522ff","Guid":"feada07c\-99b7\-48e9\-a562\-a755073522ff"\} |  | false | attacker@phishingsite.com
 
 
 ### ews-get-tenant-allow-block-list-count
@@ -589,10 +589,10 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 ```
 
 #### Human Readable Output
-### Results of ews-get-tenant-allow-block-list-count
-| Count | ListSubType | ListType
-| --- | --- | ---
-| 2 | Tenant | sender
+>### Results of ews-get-tenant-allow-block-list-count
+>| Count | ListSubType | ListType
+>| --- | --- | ---
+>| 2 | Tenant | sender
 
 
 ### ews-remove-tenant-allow-block-list-items
@@ -662,10 +662,10 @@ Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us
 ```
 
 #### Human Readable Output
-### Results of ews-remove-tenant-allow-block-list-items
-| Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
-| 0 |  |  |  |  |  |  |  |  | Deleted | outlook.office365.com | false | \{"value":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c","Guid":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c"\} |  |  | attacker@phishingsite.com
+>### Results of ews-remove-tenant-allow-block-list-items
+>| Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
+>| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+>| 0 |  |  |  |  |  |  |  |  | Deleted | outlook.office365.com | false | \{"value":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c","Guid":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c"\} |  |  | attacker@phishingsite.com
 
 
 ### ews-junk-rules-get
