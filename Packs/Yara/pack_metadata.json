@@ -2,17 +2,20 @@
     "name": "Yara",
     "description": "The pattern matching swiss knife for malware researchers.",
     "support": "xsoar",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-06-01T14:21:44Z",
     "categories": [
-        "Utilities"
+        "Utilities",
+        "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "YARA"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
