@@ -289,7 +289,16 @@
 
 .default-before-script:
   before_script:
-    - !reference [.default-before-script-no-sdk]
+    - source .gitlab/helper_functions.sh
+    - *setup-network-certs
+    - *setup-artifactory
+    - *stop_contrib_external_build
+    - *create_artifacts_and_server_type_instance_folders
+    - *clone_and_export_variables
+    - *check_build_files_are_up_to_date
+    - *install_node_modules
+    - *install_venv
+#    - !reference [.default-before-script-no-sdk]
     - *install_demisto_sdk
     - *get_contribution_pack
     - *get_last_upload_commit
