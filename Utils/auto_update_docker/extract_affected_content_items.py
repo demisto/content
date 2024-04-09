@@ -333,13 +333,12 @@ def get_affected_content_items(
     # TODO Make images tag automatic, with respect to flow:
     # If images tag in flow dir is not found, then create,
     # if it exists, then take it
-    # images_tags_path = flow_dir / Path("images_tag.json")
-    # images_tags_path.touch(exist_ok=True)
-    
+    images_tags_path = flow_dir / Path("images_tag.json")
+
 
     images_tag: dict[str, str] = {}
-    if docker_images_target_tags_path:
-        images_tag = load_json(docker_images_target_tags_path)
+    if images_tags_path.exists():
+        images_tag = load_json(str(images_tags_path))
 
     coverage_report_dict: dict[str, Any] = load_json(coverage_report)
     # The content items and their coverage are found under the key "files"
@@ -374,13 +373,19 @@ def get_affected_content_items(
     # Output docker_images_target_tag | images_tag
     current_time_str = time.strftime("%Y-%m-%d-%H:%M:%S")
 
-    target_tags_path = docker_images_target_tags_path if docker_images_target_tags_path else f"{flow_dir}/images_tag.json"
-    with open(f"{target_tags_path}", "w") as images_tag_output:
-        json.dump(docker_images_target_tag | images_tag, images_tag_output)
+    images_tags_path.touch(exist_ok=True)
+    images_tags_path.write_text(json.dumps(docker_images_target_tag | images_tag))
+
+    # with open(f"{images_tags_path}", "w") as images_tag_output:
+    #     json.dump(docker_images_target_tag | images_tag, images_tag_output)
 
     # Output the affected content items
-    with open(f"{batch_dir}/affected_content_items.json", "w") as affected_content_items:
-        json.dump(affected_content_items_by_docker_image, affected_content_items)
+    affected_content_items_path = batch_dir / Path("affected_content_items.json")
+    affected_content_items_path.touch(exist_ok=True)
+    affected_content_items_path.write_text(json.dumps(affected_content_items_by_docker_image))
+
+    # with open(f"{batch_dir}/affected_content_items.json", "w") as affected_content_items:
+    #     json.dump(affected_content_items_by_docker_image, affected_content_items)
 
 def main():
     app()
