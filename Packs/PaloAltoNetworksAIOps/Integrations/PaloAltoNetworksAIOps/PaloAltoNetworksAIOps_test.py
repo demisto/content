@@ -143,6 +143,7 @@ def test_polling_until_upload_report_command_completed_with_success(mocker, AIOp
     args = {'report_id': '123456789', 'show_in_context': 'true', 'export_as_file': 'true'}
     generate_access_token_request_mock = mocker.patch.object(AIOps_client, 'generate_access_token_request')
     generate_access_token_request_mock.return_value = {}
+    mocker.patch('PaloAltoNetworksAIOps.fileResult', return_value={'File': 'report-id-123456789.md'})
     result = polling_until_upload_report_command(args, AIOps_client)
     assert not result[0].scheduled_command
     assert result[0].readable_output == ('### BPA results:\n|Check Id|Check Category|Check Feature|Check Message|Check Type|\n'
