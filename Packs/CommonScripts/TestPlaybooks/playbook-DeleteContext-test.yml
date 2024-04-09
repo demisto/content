@@ -1,8 +1,7 @@
 id: DeleteContext-test
-version: 2
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: DeleteContext-test
-description: Testing DeleteContext automation
+description: 'Testing DeleteContext automation.'
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -680,6 +680,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -716,4 +717,4 @@ view: |-
   }
 inputs: []
 outputs: []
-dirtyInputs: true
+fromversion: 6.10.0
