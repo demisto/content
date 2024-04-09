@@ -62,7 +62,7 @@ def rcs_scan_start(
     if output_scan_start[0].get("Type") and "Failed to execute" in output_scan_start[
         0
     ].get("Contents"):
-        return_error("Failed to execute RCSScanStatus. Check input values.")
+        return "Failed to execute RCSScanStatus. Check input values."
 
     scan_id = output_scan_start[0].get("Contents").get("reply").get("scanId")
 

@@ -52,6 +52,20 @@ class TestRCSScan(unittest.TestCase):
         )
         self.assertEqual(result, "RCSScanId Key Value set")
 
+    def test_rcs_scan_start_error_response(self):
+        """
+        Test the behavior of rcs_scan_start when the asm-start-remediation-confirmation-scan command returns an error response.
+        """
+        demisto = MagicMock()
+        demisto.executeCommand.return_value = [{'Type': 4, 'Contents': 'Failed to execute RCSScanStatus. Check input values.'}]
+        service_id = "8"
+        attack_surface_rule_id = "5"
+        alert_internal_id = "7"
+        result = rcs_scan_start(
+            service_id, attack_surface_rule_id, alert_internal_id, demisto
+        )
+        self.assertEqual(result, "Failed to execute RCSScanStatus. Check input values.")
+
 
 if __name__ == "__main__":
     unittest.main()
