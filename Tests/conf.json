@@ -5980,7 +5980,8 @@
         "PhishLabs IOC EIR": "No instance, CRTX-91214",
         "fortimail": "No instance",
         "JoeSecurityV2": "CIAC-9872",
-        "Aha": "No instance"
+        "Aha": "No instance",
+        "VMWare Test": "CIAC-10276"
     },
     "nightly_packs": [
         "CommonScripts",
