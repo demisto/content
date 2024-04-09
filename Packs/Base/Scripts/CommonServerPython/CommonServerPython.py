@@ -350,6 +350,18 @@ class EntryFormat(object):
         )
 
 
+class FileAttachmentType(object):
+    """
+    Enum: contains the file attachment types,
+          Used to add metadata to the description of the attachment
+          whether the file content is expected to be inline or attached as a file
+
+    :return:: The file attachment type
+    :rtype: ``str``
+    """
+    ATTACHED = "attached_file"
+
+
 brands = {
     'xfe': 'xfe',
     'vt': 'virustotal',
@@ -538,6 +550,7 @@ class FeedIndicatorType(object):
     Identity = "Identity"
     Location = "Location"
     Software = "Software"
+    X509 = "X509 Certificate"
 
     @staticmethod
     def is_valid_type(_type):
@@ -561,7 +574,8 @@ class FeedIndicatorType(object):
             FeedIndicatorType.Malware,
             FeedIndicatorType.Identity,
             FeedIndicatorType.Location,
-            FeedIndicatorType.Software
+            FeedIndicatorType.Software,
+            FeedIndicatorType.X509,
         )
 
     @staticmethod

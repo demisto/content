@@ -1000,7 +1000,8 @@ Creates an Lambda layer from a ZIP archive.
 | s3-key | The Amazon S3 key of the layer archive.  | Optional | 
 | s3-object-version | For versioned objects, the version of the layer archive object to use.  | Optional | 
 | zip-file | Entry ID of the base64-encoded contents of the layer archive.  | Optional | 
-| compatible-runtimes |  The name of the method within your code that Lambda calls to execute your function.  | Optional | 
+| compatible-runtimes |  The name of the method within your code that Lambda calls to execute your function.  | Optional |
+| compatible-architectures |  A list of compatible architectures.  | Optional |
 | region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
@@ -1016,6 +1017,7 @@ Creates an Lambda layer from a ZIP archive.
 | AWS.Lambda.Layers.CreatedDate | string | The date that the layer version was created, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
 | AWS.Lambda.Layers.Version | number | The version number. | 
 | AWS.Lambda.Layers.CompatibleRuntimes | list | The layer’s compatible runtimes. | 
+| AWS.Lambda.Layers.CompatibleArchitectures | list | The layer’s compatible architectures. | 
 
 #### Command example
 ```!aws-lambda-publish-layer-version layer-name=test zip-file=entry_id description=test-layer-3

@@ -16,7 +16,7 @@ if [[ $CI_COMMIT_BRANCH = master ]] || [[ -n "${NIGHTLY}" ]] || [[ -n "${BUCKET_
         else
             PREV_VER="origin/master"
         fi
-        python3 -m demisto_sdk validate -a --skip-old-validate --prev-ver $PREV_VER --config-path validation_config.toml
+        python3 -m demisto_sdk validate -a --prev-ver $PREV_VER --config-path validation_config.toml
     fi
 else
     python3 -m demisto_sdk validate -g --post-commit --config-path validation_config.toml
