@@ -922,9 +922,8 @@
         ]
     },
     "fromVersion": "6.10.0",
-    "toVersion": "6.99.99",
     "marketplaces": [
-        "xsoar"
+        "xsoar_on_prem"
     ],
     "description": ""
 }

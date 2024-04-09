@@ -708,7 +708,7 @@
     "system": false,
     "version": -1,
     "marketplaces": [
-        "xsoar"
+        "xsoar_saas"
     ],
     "fromVersion": "8.0.0",
     "description": ""
