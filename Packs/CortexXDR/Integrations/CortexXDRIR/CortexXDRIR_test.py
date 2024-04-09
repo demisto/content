@@ -94,8 +94,8 @@ def test_fetch_incidents_filtered_by_status(requests_mock, mocker):
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     incident_extra_data_under_investigation = load_test_data('./test_data/get_incident_extra_data_host_id_array.json')\
-        .get('reply', {}).get('incidents')[0]
-    incident_extra_data_new = load_test_data('./test_data/get_incident_extra_data_new_status.json').get('reply')
+        .get('reply', {}).get('incidents')
+    incident_extra_data_new = load_test_data('./test_data/get_incident_extra_data_new_status.json').get('reply').get('incidents')
     mocker.patch.object(Client, 'get_multiple_incidents_extra_data', side_effect=[incident_extra_data_under_investigation,
                                                                                   incident_extra_data_new])
     mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
@@ -724,7 +724,7 @@ def test_fetch_incidents_extra_data(requests_mock, mocker):
     """
     from CortexXDRIR import fetch_incidents, Client
     raw_multiple_extra_data = load_test_data('./test_data/get_multiple_incidents_extra_data.json')
-    raw_all_alerts_incident_2 = load_test_data('./test_data/get_extra_data_all_alerts.json').get('reply', {}).get('incidents', [])
+    raw_all_alerts_incident_2 = load_test_data('./test_data/get_extra_data_all_alerts.json').get('reply', {})
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
@@ -1267,3 +1267,24 @@ def test_get_incident_extra_data_incident_not_exist(mocker):
     with pytest.raises(DemistoException) as e:
         _, outputs, raw_incident = get_incident_extra_data_command(client, args)
     assert str(e.value) == 'Incident 1 is not found'
+
+
+def test_sort_all_incident_data_fields_fetch_case_get_multiple_incidents_extra_data_format(mocker):
+    """
+    Given:
+        -  raw incident in get_incident_extra_data format- alerts and artifacts not in
+        incident data information
+    When
+        - Running sort_all_list_incident_fields
+    Then
+        - Verify that alerts and artifacts are found.
+    """
+    from CortexXDRIR import sort_incident_data, sort_all_list_incident_fields
+    incident_case_get_multiple_incidents_extra_data = load_test_data('./test_data/get_multiple_incidents_extra_data.json')\
+        .get('reply').get('incidents')[0]
+    incident_data = sort_incident_data(incident_case_get_multiple_incidents_extra_data)
+    sort_all_list_incident_fields(incident_data)
+    assert incident_data.get('alerts')
+    assert incident_data.get('incident_sources') == ['XDR Agent']
+    assert incident_data.get('status') == 'new'
+    assert len(incident_data.get('file_artifacts')) == 1

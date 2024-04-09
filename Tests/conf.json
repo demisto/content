@@ -863,7 +863,8 @@
         },
         {
             "integrations": "AlienVault OTX v2",
-            "playbookID": "Alienvault_OTX_v2 - Test"
+            "playbookID": "Alienvault_OTX_v2 - Test",
+            "memory_threshold": 130
         },
         {
             "integrations": "AWS - CloudWatchLogs",
@@ -3297,7 +3298,8 @@
         {
             "integrations": "Unit42v2 Feed",
             "playbookID": "unit42_atoms",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "memory_threshold": 115
         },
         {
             "integrations": "QRadar v3",
@@ -5978,8 +5980,7 @@
         "PhishLabs IOC EIR": "No instance, CRTX-91214",
         "fortimail": "No instance",
         "JoeSecurityV2": "CIAC-9872",
-        "Aha": "No instance",
-        "MongoDB": "CIAC-10102"
+        "Aha": "No instance"
     },
     "nightly_packs": [
         "CommonScripts",
