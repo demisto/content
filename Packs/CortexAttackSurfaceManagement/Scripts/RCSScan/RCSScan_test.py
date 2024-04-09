@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock
-from RCSScan import rcs_scan_set_context, rcs_scan_start
+from RCSScan import rcs_scan_set_context, rcs_scan_start, main
 
 
 class TestRCSScan(unittest.TestCase):
@@ -57,7 +57,12 @@ class TestRCSScan(unittest.TestCase):
         Test the behavior of rcs_scan_start when the asm-start-remediation-confirmation-scan command returns an error response.
         """
         demisto = MagicMock()
-        demisto.executeCommand.return_value = [{'Type': 4, 'Contents': 'Failed to execute RCSScanStatus. Check input values.'}]
+        demisto.executeCommand.return_value = [
+            {
+                "Type": 4,
+                "Contents": "Failed to execute RCSScanStatus. Check input values.",
+            }
+        ]
         service_id = "8"
         attack_surface_rule_id = "5"
         alert_internal_id = "7"
@@ -65,6 +70,27 @@ class TestRCSScan(unittest.TestCase):
             service_id, attack_surface_rule_id, alert_internal_id, demisto
         )
         self.assertEqual(result, "Failed to execute RCSScanStatus. Check input values.")
+
+    def test_main_exception_handling(self):
+        """
+        Test the exception handling in the main function.
+        """
+        demisto = MagicMock()
+        demisto.args.return_value = {
+            "service_id": "1",
+            "attack_surface_rule_id": "2",
+            "alert_internal_id": "3",
+        }
+        demisto.executeCommand.side_effect = Exception("An error occurred.")
+
+        exception_raised = False
+
+        try:
+            main()
+        except Exception:
+            exception_raised = True
+
+        self.assertTrue(exception_raised)
 
 
 if __name__ == "__main__":
