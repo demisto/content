@@ -73,6 +73,8 @@ OUTCOME_CATEGORIES = {
 }
 ASSIGNMENT_ENTITY_TYPES = ('account', 'host')
 
+BACK_IN_TIME_SEARCH_IN_HOURS = 1
+
 # ####     #### #
 # ## GLOBALS ## #
 global_UI_URL: Optional[str] = None
@@ -1336,7 +1338,8 @@ def get_last_run_details(integration_params: Dict) -> Dict:
                 last_id = 0
                 output_last_run[entity_type] = {
                     'last_timestamp': last_timestamp,
-                    'id': last_id
+                    'id': last_id,
+                    'last_created_events': []
                 }
                 demisto.debug(f"New last run for {entity_type}, {output_last_run[entity_type]}")
             else:
@@ -1349,7 +1352,7 @@ def get_last_run_details(integration_params: Dict) -> Dict:
     return output_last_run
 
 
-def iso_date_to_vectra_start_time(iso_date: str):
+def iso_date_to_vectra_start_time(iso_date: str, backward_search: bool = False):
     """
     Converts an iso date into a Vectra timestamp used in search query
 
@@ -1363,12 +1366,21 @@ def iso_date_to_vectra_start_time(iso_date: str):
 
     if date:
         # We should return time in YYYY-MM-DDTHHMM format for Vectra Lucene query search ...
-        start_time = date.strftime('%Y-%m-%dT%H%M')
-        demisto.debug(f'Start time is : {start_time}')
+        start_datetime = date.strftime(r'%Y-%m-%dT%H%M')
+        demisto.debug(f'Start datetime is : {start_datetime}')
+
+        if backward_search:
+            # Manipulate the date if we need to search backward
+            date = date - timedelta(hours=BACK_IN_TIME_SEARCH_IN_HOURS)  # Timedelta is imported from CommonServerPython
+            backward_start_datetime = date.strftime('%Y-%m-%dT%H%M')
+            demisto.debug((f'Manipulated time as backward search. '
+                           f'Start datetime changed from : {start_datetime} to : {backward_start_datetime}'))
+            start_datetime = backward_start_datetime
+
     else:
         raise SystemError('Invalid ISO date')
 
-    return start_time
+    return start_datetime
 
 
 def unify_severity(severity: Optional[str]) -> str:
@@ -1533,12 +1545,16 @@ def fetch_incidents(client: Client, integration_params: Dict):
         else:
             last_fetched_timestamp = previous_last_run[entity_type]['last_timestamp']
             last_fetched_id = previous_last_run[entity_type]['id']
+            # Forced to use "get" as this field wasn't present in the first version of this integration
+            last_created_events = previous_last_run[entity_type].get('last_created_events', [])  # Retro-compat
 
             demisto.debug(f"{entity_type} - Last fetched incident"
                           f"last_timestamp : {last_fetched_timestamp} / ID : {last_fetched_id}")
 
-            start_time = iso_date_to_vectra_start_time(last_fetched_timestamp)
+            start_time = iso_date_to_vectra_start_time(last_fetched_timestamp, backward_search=True)
 
+            new_last_run[entity_type] = {}
+            new_last_run[entity_type]['last_created_events'] = []
             if entity_type == 'Accounts':
                 api_response = client.search_accounts(
                     last_timestamp=start_time,
@@ -1563,37 +1579,11 @@ def fetch_incidents(client: Client, integration_params: Dict):
             elif api_response.get('count', 0) > 0:
                 demisto.debug(f"{entity_type} - {api_response.get('count')} objects fetched from Vectra")
 
-                # To avoid duplicates, find if in this batch is present the last fetched event
-                # If yes, start ingesting incident after it
-                # This has to be done in two pass
-                last_fetched_incident_found = False
-
-                # 1st pass
                 if api_response.get('results') is None:
                     raise VectraException("API issue - Response is empty or invalid")
 
+                # Due to backward search we need to avoid creating incidents of already ingested events
                 api_results = api_response.get('results', {})
-                for event in api_results:
-                    incident_last_run = None
-                    if entity_type == 'Accounts':
-                        incident, incident_last_run = account_to_incident(event)
-                    elif entity_type == 'Hosts':
-                        incident, incident_last_run = host_to_incident(event)
-                    elif entity_type == 'Detections':
-                        incident, incident_last_run = detection_to_incident(event)
-
-                    if (incident_last_run is not None) \
-                            and (incident_last_run.get('last_timestamp') == last_fetched_timestamp) \
-                            and (incident_last_run.get('id') == last_fetched_id):
-                        demisto.debug(f"{entity_type} - Object with timestamp : "
-                                      f"{last_fetched_timestamp} and ID : {last_fetched_id} "
-                                      f"was already fetched during previous run.")
-                        last_fetched_incident_found = True
-                        break
-
-                # 2nd pass
-                start_ingesting_incident = False
-
                 for event in api_results:
                     if len(entity_incidents) >= max_created_incidents:
                         demisto.info(f"{entity_type} - Maximum created incidents has been reached ({max_created_incidents}). "
@@ -1608,23 +1598,26 @@ def fetch_incidents(client: Client, integration_params: Dict):
                     elif entity_type == 'Detections':
                         incident, incident_last_run = detection_to_incident(event)
 
-                    if (incident_last_run is not None) \
-                            and (incident_last_run.get('last_timestamp') == last_fetched_timestamp) \
-                            and (incident_last_run.get('id') == last_fetched_id):
-                        # Start creating incidents after this one as already fetched during last run
-                        start_ingesting_incident = True
-                        continue
+                    # Search this incident in the last_run, if it's in, skip it, if not create it
+                    # Create incident UID and search for it
+                    if incident_last_run is not None:
+                        incident_uid = f"{entity_type}_{incident_last_run.get('id')}_{incident_last_run.get('last_timestamp')}"
+                        if incident_uid in last_created_events:
+                            demisto.debug(f"{entity_type} - Skipping object "
+                                          f"last_timestamp : {incident_last_run.get('last_timestamp')} "
+                                          f"/ ID : {incident_last_run.get('id')}")
+                            # We keep this event in the list, as still part of the search output
+                            new_last_run[entity_type]['last_created_events'].append(incident_uid)
+                            continue
 
-                    if last_fetched_incident_found and not start_ingesting_incident:
-                        demisto.debug(f"{entity_type} - Skipping object "
-                                      f"last_timestamp : {incident_last_run.get('last_timestamp')} "
-                                      f"/ ID : {incident_last_run.get('id')}")
-                    else:
                         demisto.debug(f"{entity_type} - New incident from object "
                                       f"last_timestamp : {incident_last_run.get('last_timestamp')} "
                                       f"/ ID : {incident_last_run.get('id')}")
                         entity_incidents.append(incident)
-                        new_last_run[entity_type] = incident_last_run
+                        new_last_run[entity_type]['last_timestamp'] = incident_last_run.get('last_timestamp')
+                        new_last_run[entity_type]['id'] = incident_last_run.get('id')
+                        # We add this event in the list, as that's a new event we need to remember for next run
+                        new_last_run[entity_type]['last_created_events'].append(incident_uid)
 
             if len(entity_incidents) > 0:
                 demisto.info(f"{entity_type} - {len(entity_incidents)} incident(s) to create")
