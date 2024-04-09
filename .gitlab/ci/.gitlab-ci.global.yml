@@ -276,6 +276,7 @@
     done
 
 .default-before-script-no-sdk:
+  before_script:
     - source .gitlab/helper_functions.sh
     - *setup-network-certs
     - *setup-artifactory
@@ -295,7 +296,6 @@
 
 .default-before-script:
   before_script:
-    - .default-before-script-no-sdk
     - *install_demisto_sdk
     - *get_contribution_pack
     - *get_last_upload_commit
