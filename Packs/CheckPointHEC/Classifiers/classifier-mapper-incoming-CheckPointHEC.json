@@ -22,7 +22,7 @@
                     "simple": "eventId"
                 },
                 "External Link": {
-					"simple": "entityLink"
+                    "simple": "entityLink"
                 },
                 "details": {
                     "simple": "description"
