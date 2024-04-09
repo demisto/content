@@ -304,7 +304,7 @@
     - *build_parameters
     - *gitlab_ci_build_parameters
     - *checkout-upload-commit-content-nightly
-    -
+
 .default-after-script:
   - source .gitlab/helper_functions.sh
   - *setup-network-certs
