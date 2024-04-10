@@ -53,7 +53,7 @@ CI_COMMIT_SHA = os.getenv('CI_COMMIT_SHA', '')
 CI_SERVER_HOST = os.getenv('CI_SERVER_HOST', '')
 DEFAULT_BRANCH = 'master'
 ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS = ' (All failures were converted to Jira tickets)'
-LOOK_BACK_HOURS = 72
+LOOK_BACK_HOURS = 48
 UPLOAD_BUCKETS = [
     (ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE, "XSOAR", True),
     (ARTIFACTS_FOLDER_XSOAR_SAAS_SERVER_TYPE, "XSOAR SAAS", True),
@@ -643,7 +643,7 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
-    if True:
+    if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
         computed_slack_channel = "dmst-build-test"
         # Check if the current commit's pipeline differs from the previous one. If the previous pipeline is still running,
         # compare the next build. For commits without pipelines, compare the current one to the nearest commit with a
@@ -657,8 +657,8 @@ def main():
             # If the current commit is the last commit in the list, there is no previous commit,
             # since commits are in ascending order
             # or if we already sent a shame message for newer commits, we don't want to send another one for older commits.
-            if (current_commit_index != len(list_of_commits) - 1):
-                    #and not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)):
+            if (current_commit_index != len(list_of_commits) - 1
+                    and not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)):
                 current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
 
                 # looking backwards until we find a commit with a pipeline to compare with
@@ -670,7 +670,7 @@ def main():
                     pipeline_changed_status = is_pivot(current_pipeline=current_pipeline,
                                                        pipeline_to_compare=previous_pipeline)
 
-                    pipeline_changed_status = True
+
                     if pipeline_changed_status is None and current_commit_index > 0:
                         # looking_forward until we find a commit with a pipeline to compare with
                         next_pipeline, suspicious_commits = get_nearest_newer_commit_with_pipeline(
@@ -701,7 +701,7 @@ def main():
         logging.info(f'Successfully wrote Slack message to {output_file}')
     for channel in channels_to_send_msg(computed_slack_channel):
         try:
-            response = slack_client.chat_postMessage(
+            response = slack_client.chat_postMessage(text="",
                 channel=channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
             )
 
@@ -710,7 +710,7 @@ def main():
                 thread_ts: str = data['ts']
                 for slack_msg in threaded_messages:
                     slack_msg = [slack_msg] if not isinstance(slack_msg, list) else slack_msg
-                    slack_client.chat_postMessage(
+                    slack_client.chat_postMessage(text="",
                         channel=channel, attachments=slack_msg, username=SLACK_USERNAME,
                         thread_ts=thread_ts
                     )
