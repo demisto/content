@@ -1,6 +1,6 @@
 {
   "rule_id": "Prisma_Cloud_Network_API_and_Anomaly",
-  "layout_id": "Prisma Cloud - Network Incident Layout",
+  "layout_id": "Prisma Cloud - Network API and Anomaly Incident Layout",
   "description": "display for Prisma Cloud Network API and Anomaly alerts.",
   "rule_name": "Prisma Cloud Network API and Anomaly",
   "alerts_filter": {
