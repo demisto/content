@@ -12,7 +12,8 @@ from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
 from demisto_sdk.commands.content_graph.objects.integration import Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
 from random import randint
-
+import requests
+import sys
 
 from Utils.github_workflow_scripts.utils import (
     get_env_var,
@@ -278,8 +279,37 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
     return False
 
 
+def get_pr_comments(pr_number: str) -> str:
+    """
+    Get the comments URL for a PR. If the PR contains a comment about an instance test (for contrib PRs),
+    it will use that comment.
+    Args:
+        pr_number: The pull request number
+
+    Returns:
+        The comments URL for the PR.
+    """
+    pr_url = f'https://api.github.com/repos/demisto/content/pulls/{pr_number}'
+    response = requests.get(pr_url)
+    response.raise_for_status()
+    pr = response.json()
+    if not pr:
+        print('Could not find the pull request to reply on.')
+        sys.exit(1)
+    comments_url = pr['comments_url']
+    response = requests.get(comments_url, params={'page': str(page)})
+    response.raise_for_status()
+    comments = response.json()
+    if not comments:
+        break
+
+    return comments
+
+
 def get_user_from_ui_pr(pr):
-    print(pr.comments)
+    comments = get_pr_comments(pr)
+    print("Comments in the PR are:\n")
+    print(comments)
 
 
 def main():
