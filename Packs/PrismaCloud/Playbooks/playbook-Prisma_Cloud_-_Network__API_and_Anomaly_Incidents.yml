@@ -1207,7 +1207,7 @@ tasks:
     fieldMapping:
     - incidentfield: User Risk Level
       output:
-        simple: ${Core.RiskyUser.score}
+        simple: ${Core.RiskyUser.risk_level}
     skipunavailable: false
     quietmode: 0
     isoversize: false
