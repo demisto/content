@@ -454,7 +454,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Automated remediation by creating empty S3 bucket
+              simple: Automated remediation by isolating the endpoint on the network
         - operator: isEqualString
           left:
             value:
