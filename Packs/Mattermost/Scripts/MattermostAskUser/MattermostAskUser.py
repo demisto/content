@@ -34,7 +34,9 @@ def main():
         'to': demisto.get(demisto.args(), 'user'),
         'message': message,
         'ignoreAddURL': 'true',
-        'using-brand': 'mattermost'
+        'using-brand': 'mattermost',
+        'mattermost_ask': True,
+        'entitlement': entitlementString
     }))
 
 

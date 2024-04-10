@@ -72,7 +72,7 @@ configuration:
   required: false
   section: Connect - Advanced
 description: Mattermost is an open-source, self-hostable online chat service with file sharing, search, and integrations. It is designed as an internal chat for organisations and companies.
-display: MatterMost_V2
+display: MatterMost v2
 name: MatterMost_V2
 script:
   commands:
@@ -204,7 +204,6 @@ script:
       - Private
       auto: PREDEFINED
       required: false
-      defaultvalue: Public
     - description: The purpose of the channel to create.
       name: purpose
       required: false
@@ -298,7 +297,7 @@ script:
     - description: The size of the page to retrieve. Should be provided with the page argument.
       name: page_size
       required: false
-    - description: How many results to retrieve. Default value is 50.
+    - description: How many results to retrieve. Default value is 50. If provided, overrides the page and page_size arguments.
       name: limit
       required: false
     description: Lists users.
@@ -362,7 +361,7 @@ script:
     - description: The entry_id of the file.
       name: entry_id
       required: true
-    description: Deletes a channel.
+    description: Sends a file.
     name: mattermost-send-file
     outputs: []
   - arguments:
@@ -372,7 +371,7 @@ script:
     - description: The channel name to send the notification to. Default value is the channel config parameter.
       name: channel
       required: false
-    - description: The entry id of the file to upload with the message.
+    - description: An entry ID to send as a link.
       name: entry
       required: false
     - description: The username or email of the user to send the message to.
@@ -381,7 +380,10 @@ script:
     - description: Adds the warroom link to the message.
       name: ignoreAddURL
       required: false
-      defaultvalue: false
+      predefined:
+      - 'true'
+      - 'false'
+      auto: PREDEFINED
     description: Send a message using a chatbot app.
     name: send-notification
     outputs: []
@@ -401,8 +403,8 @@ script:
       required: false
     - description: The channel name of the channel to delete.
       name: channel_name
-      required: true
-    description: Deletes a mirrored MatterMost channel.
+      required: false
+    description: Deletes a mirrored MatterMost channel. If not provided, the mirrored investigation channel is archived (if the channel exists).
     name: close-channel
     outputs: []
   - arguments:
@@ -441,6 +443,6 @@ script:
   type: python
   subtype: python3
   dockerimage: devdemisto/mattermost:1.0.0.91765
-fromversion: 5.5.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
