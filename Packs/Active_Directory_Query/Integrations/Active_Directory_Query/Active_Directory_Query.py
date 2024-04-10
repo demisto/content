@@ -282,11 +282,11 @@ def group_entry(group_object, custom_attributes):
     return group
 
 
-def base_dn_verified(base_dn):
+def base_dn_verified(base_dn, base_dn_query="(objectClass=user)"):
     # search AD with a simple query to test base DN is configured correctly
     try:
         search(
-            "(objectClass=user)",
+            base_dn_query,
             base_dn,
             size_limit=1
         )
@@ -1844,6 +1844,7 @@ def main():
     username = params.get('credentials')['identifier']
     password = params.get('credentials')['password']
     default_base_dn = params.get('base_dn')
+    base_dn_query = params.get('base_dn_query') or "(objectClass=user)"
     secure_connection = params.get('secure_connection')
     ssl_version = params.get('ssl_version', 'None')
     default_page_size = int(params.get('page_size'))
@@ -1900,7 +1901,7 @@ def main():
 
         demisto.info(f'Established connection with AD LDAP server.\nLDAP Connection Details: {connection}')
 
-        if not base_dn_verified(default_base_dn):
+        if not base_dn_verified(default_base_dn, base_dn_query):
             message = (f"Failed to verify the base DN configured for the instance.\n"
                        f"Last connection result: {json.dumps(connection.result)}\n"
                        f"Last error from LDAP server: {json.dumps(connection.last_error)}")
