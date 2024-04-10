@@ -5664,7 +5664,7 @@
             "playbookID": "Redmine-Test"
         },
         {
-            "integrations": "Palo Alto Networks AIOps",
+            "integrations": "PaloAltoNetworksAIOps",
             "playbookID": "PaloAltoNetworksAIOps-Test"
         }
     ],
