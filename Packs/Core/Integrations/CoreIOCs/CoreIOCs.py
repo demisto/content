@@ -9,9 +9,12 @@ from dateparser import parse
 from urllib3 import disable_warnings
 from math import ceil
 from google.cloud import storage
+from CoreIRApiModule import *
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
+USING_CORE_CLIENT_HTTP_REQUEST = is_xsiam() or is_demisto_version_ge(version='8.6.0',build_number='924770')
+
 core_types_to_demisto: Dict = {
     "DOMAIN_NAME": 'Domain',
     "HASH": 'File',
@@ -29,7 +32,9 @@ demisto_score_to_core: Dict[int, str] = {
 }
 
 
-class Client:
+
+
+class Client(CoreClient):
     severity: str = ''
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
     tag = 'Cortex Core'
@@ -54,6 +59,9 @@ class Client:
         handle_proxy()
 
     def http_request(self, url_suffix: str, requests_kwargs=None) -> Dict:
+        if USING_CORE_CLIENT_HTTP_REQUEST:
+            url: str = urljoin("/api/webapp/", '/public_api/v1/indicators/')
+            return CoreClient._http_request(self, method='POST', url_suffix=url, data=requests_kwargs)
         if requests_kwargs is None:
             requests_kwargs = dict()
         res = requests.post(url=self._base_url + url_suffix,
