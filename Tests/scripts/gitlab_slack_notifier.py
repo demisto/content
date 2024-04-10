@@ -704,7 +704,11 @@ def main():
             response = slack_client.chat_postMessage(text="",
                 channel=channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
             )
-
+            #adding the thread_ts to the artifacts folder
+            thread_ts: dict = {"thread_ts":response.data['ts']} # type: ignore[assignment]
+            with open(output_file, 'a') as f:
+                f.write("\n" + json.dumps(thread_ts))
+            
             if threaded_messages:
                 data: dict = response.data  # type: ignore[assignment]
                 thread_ts: str = data['ts']
