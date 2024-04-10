@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: PaloAltoNetworksAIOps
+  id: Palo Alto Networks AIOps
   version: -1
 configuration:
 - section: Connect
@@ -37,7 +37,7 @@ configuration:
   required: false
 description: Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.
 display: Palo Alto Networks AIOps
-name: PaloAltoNetworksAIOps
+name: Palo Alto Networks AIOps
 script:
   commands:
   - name: aiops-bpa-report-generate
@@ -46,6 +46,7 @@ script:
       description: |-
         - Optional: Use this argument if you prefer to upload a configuration file instead of generating the report from Panorama/PAN-OS.
         - Entry_id from Cortex XSOAR War Room after uploading a file - should be a config file in xml format.
+        - Ensure that the XML file begins with the '<?xml version="XX"?>' tag and all tags are valid.
         - If you used this argument and the process failed or reached a timeout, make sure the config file is in xml format and with correct tags.
     - name: requester_email
       required: true
@@ -75,7 +76,8 @@ script:
       - 'true'
       - 'false'
     description: |- 
-      Generates a bpa report. Steps:
+      Generates a bpa report.
+      Steps:
       - Get configuration file of Pan-OS/Panorama. If the user provided an entry_id to a config file this step is skipped.
       - Use the information retrieved above to generate a BPA report.
       - During this process the API also generates a report_id.
