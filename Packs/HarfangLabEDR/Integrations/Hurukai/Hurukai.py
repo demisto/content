@@ -1186,6 +1186,7 @@ def fetch_incidents(
 
     # need to be explicitly convert to int
     # default value is hardcoded (check the value in 'Hurukai.yml' definition)
+    # zero will be automatically converted to the default value
     max_fetch = int(max_fetch or 200)
 
     mirror_instance: str = demisto.integrationInstance()
@@ -1220,10 +1221,10 @@ def fetch_incidents(
             f"expected one of {typing.get_args(AlertStatus)}, get '{alert_status}'"
         )
 
-    if max_fetch < 0:
+    if max_fetch <= 0:
         raise ValueError(
             f"Invalid value for 'max_fetch' argument: "
-            f"expected a positive integer, get '{max_fetch}'"
+            f"expected a strict positive integer, get '{max_fetch}'"
         )
 
     # how many past days should be fetched (on first fetch only)
