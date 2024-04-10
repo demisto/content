@@ -1,9 +1,11 @@
-id: Prisma Cloud - Network API and Anomaly Incidents
+id: Prisma Cloud - Network API and Anomaly Alerts
 version: -1
-name: Prisma Cloud - Network API and Anomaly Incidents
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma Cloud - Network API and Anomaly Alerts
 description: |-
-  This playbook handles incidents of internet exposed services and detect potential risky configurations that can make your cloud environment vulnerable to attacks, and
-  incidents of unusual network and user activity for all users, and are especially critical for privileged users and assumed roles where detecting unusual activity may indicate the first steps in a potential misuse or account compromise.
+  This playbook handles alerts of internet exposed services and detect potential risky configurations that can make your cloud environment vulnerable to attacks, and
+  alerts of unusual network and user activity for all users, and are especially critical for privileged users and assumed roles where detecting unusual activity may indicate the first steps in a potential misuse or account compromise.
 starttaskid: "0"
 tasks:
   "0":
@@ -159,16 +161,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 23f631fe-952d-4904-8bdf-d69285021fa3
+    taskid: 5ee6005a-9c73-4963-8b71-83016b2c8cb0
     type: condition
     task:
-      id: 23f631fe-952d-4904-8bdf-d69285021fa3
+      id: 5ee6005a-9c73-4963-8b71-83016b2c8cb0
       version: -1
       name: Does IP is malicious?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "8"
@@ -226,7 +227,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "9"
@@ -611,16 +611,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: bd3672c0-2ab6-4835-8cca-3fdc2b1d2af7
+    taskid: 97bdc027-ff20-4c19-808f-65765aabbc58
     type: condition
     task:
-      id: bd3672c0-2ab6-4835-8cca-3fdc2b1d2af7
+      id: 97bdc027-ff20-4c19-808f-65765aabbc58
       version: -1
       name: Does response needed?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "27"
@@ -784,16 +783,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 6c693e4e-ede1-46b2-8edf-2e90906e2664
+    taskid: 5beff06c-12f3-494b-8a3e-f62bb0469a6d
     type: condition
     task:
-      id: 6c693e4e-ede1-46b2-8edf-2e90906e2664
+      id: 5beff06c-12f3-494b-8a3e-f62bb0469a6d
       version: -1
       name: Perform Cloud Response?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "27"
@@ -838,7 +836,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "24"
@@ -883,7 +880,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -1108,7 +1104,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "22"
@@ -1175,10 +1170,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: a57b5f12-570d-463f-8e3e-6e20a7dcbb18
+    taskid: 796f437e-dfd0-42d1-8a1d-0c7342836458
     type: regular
     task:
-      id: a57b5f12-570d-463f-8e3e-6e20a7dcbb18
+      id: 796f437e-dfd0-42d1-8a1d-0c7342836458
       version: -1
       name: Check if user is risky by XDR
       description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
@@ -1214,10 +1209,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: d0cf5850-da44-4de5-8a7e-d8fde47fd66c
+    taskid: b40f80c4-5d33-4b2f-8b1a-e602f4b7cbe6
     type: regular
     task:
-      id: d0cf5850-da44-4de5-8a7e-d8fde47fd66c
+      id: b40f80c4-5d33-4b2f-8b1a-e602f4b7cbe6
       version: -1
       name: Prisma alert enrichment
       description: Gets the details of an alert based on the alert ID.
@@ -1301,7 +1296,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -1333,16 +1327,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 7265dfe6-a8a7-4b86-8066-c118ba872dbe
+    taskid: c0673dce-c337-45d8-8318-573fed5e05b1
     type: condition
     task:
-      id: 7265dfe6-a8a7-4b86-8066-c118ba872dbe
+      id: c0673dce-c337-45d8-8318-573fed5e05b1
       version: -1
       name: Has host RRN?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -1523,7 +1516,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "41"
@@ -1646,16 +1638,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 47f296ff-d425-4a5d-8fec-5ec90f8dc250
+    taskid: 17a52902-6faa-4814-839c-ceb9a4963722
     type: condition
     task:
-      id: 47f296ff-d425-4a5d-8fec-5ec90f8dc250
+      id: 17a52902-6faa-4814-839c-ceb9a4963722
       version: -1
       name: Has related CVE?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "15"
@@ -1698,7 +1689,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "15"
@@ -1979,5 +1969,3 @@ outputSections:
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2"]
-fromversion: 6.10.0
