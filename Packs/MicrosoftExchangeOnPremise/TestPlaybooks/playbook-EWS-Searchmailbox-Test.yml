@@ -2,7 +2,7 @@ id: EWS search-mailbox test
 version: -1
 name: EWS search-mailbox test
 deprecated: true
-description: Deprecated. Playbook is broken.
+description: test test.
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -42,9 +43,7 @@ tasks:
       id: 0eacd260-0182-4c45-8f13-acdf8f793f34
       version: -1
       name: Search Item In All Directories
-      description: Searches for items in the specified mailbox. Specific permissions
-        are needed for this operation to search in a target mailbox other than the
-        default.
+      description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
       script: '|||ews-search-mailbox'
       type: regular
       iscommand: true
@@ -133,6 +132,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -247,9 +247,7 @@ tasks:
       id: eea5b310-ad37-46aa-85f7-a467d33f7577
       version: -1
       name: Search Item In Inbox (ews 0365)
-      description: Searches for items in the specified mailbox. Specific permissions
-        are needed for this operation to search in a target mailbox other than the
-        default.
+      description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
       script: EWSO365|||ews-search-mailbox
       type: regular
       iscommand: true
@@ -491,9 +489,7 @@ tasks:
       id: a6b685f9-671b-4db0-826c-2f4deb148ba8
       version: -1
       name: Search Item In Mailbox (ews v2)
-      description: Searches for items in the specified mailbox. Specific permissions
-        are needed for this operation to search in a target mailbox other than the
-        default.
+      description: Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
       script: EWS v2|||ews-search-mailbox
       type: regular
       iscommand: true

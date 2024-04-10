@@ -1,7 +1,7 @@
 id: ExifReadTest
 version: -1
 name: ExifReadTest
-description: Test ExifRead Script
+description: test test.
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"

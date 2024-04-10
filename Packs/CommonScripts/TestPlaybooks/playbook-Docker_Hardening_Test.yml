@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -301,4 +302,5 @@ inputs: []
 outputs: []
 fromversion: 5.0.0
 marketplaces:
-  - xsoar
+- xsoar
+description: test test.

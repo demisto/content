@@ -1,6 +1,5 @@
 id: Field polling test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Field polling test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -43,6 +43,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -70,6 +71,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -94,8 +96,7 @@ tasks:
       id: a7392a6d-ecdf-4036-867c-4f2a8c061269
       version: -1
       name: Wait for "details"
-      description: This playbook will poll a field for whether a value exists and
-        whether it contains a specific value.
+      description: This playbook will poll a field for whether a value exists and whether it contains a specific value.
       playbookName: Field Polling - Generic
       type: playbook
       iscommand: false
@@ -138,8 +139,7 @@ tasks:
       id: 384c2bd0-c361-4959-8815-5dcfa7043b9c
       version: -1
       name: Wait for name to change
-      description: This playbook will poll a field for whether a value exists and
-        whether it contains a specific value.
+      description: This playbook will poll a field for whether a value exists and whether it contains a specific value.
       playbookName: Field Polling - Generic
       type: playbook
       iscommand: false
@@ -185,6 +185,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -212,6 +213,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -863,3 +865,4 @@ view: |-
 fromversion: 5.0.0
 inputs: []
 outputs: []
+description: test test.
