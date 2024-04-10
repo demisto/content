@@ -290,15 +290,10 @@ def get_pr_body(pr_number: str) -> str:
         The comments URL for the PR.
     """
     pr_url = f'https://api.github.com/repos/demisto/content/pulls/{pr_number}'
-    print(f'the pr url is: "{pr_url}')
     response = requests.get(pr_url)
-    print(f'the pr is: {response.json()}')
     pr = response.json()
     body = pr['body']
-
-
-
-    return comments
+    return body
 
 
 def get_user_from_ui_pr(pr, pr_number):
