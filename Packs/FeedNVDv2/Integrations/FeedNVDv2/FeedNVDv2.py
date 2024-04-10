@@ -45,16 +45,15 @@ class Client(BaseClient):
             'apiKey': self.api_key
         }
 
-        full_url = self._base_url + path
-
         try:
-            resp = self._http_request('GET', full_url=full_url, headers=headers, params=params, resp_type='json', timeout=300)
+            resp = self._http_request('GET', url_suffix=path, headers=headers, params=params, resp_type='json', timeout=300)
+            
         except Exception as e:
             demisto.debug(e)
 
         return resp
 
-def build_indicators(client: Client, raw_cves: List):
+def build_indicators(client: Client, raw_cves: List[str]):
     """
     Iteratively processes the retrieved CVEs from retrieve_cves function
     and parses the returned JSON into the required XSOAR data structure
@@ -300,8 +299,7 @@ def retrieve_cves(client, first_fetch: Any, end_date: Any, test_run: bool):
 
     """
     url_suffix = "/rest/json/cves/2.0/?noRejected"
-    param = {}
-    param['start_index'] = 0
+    param = {'start_index': 0}
     results_per_page = 2000
     raw_cves = []  # type: ignore
 
@@ -321,14 +319,7 @@ def retrieve_cves(client, first_fetch: Any, end_date: Any, test_run: bool):
     # Collect all the indicators together
     while more_to_process:
         try:
-            if not test_run:
-                res = client.get_cves(url_suffix, param)
-            else:
-                with open('./Packs/FeedNVDv2/Integrations/FeedNVDv2/test_data/test_cve_data.json', encoding='utf-8') as f:
-                    res = json.loads(f.read())
-                    more_to_process = False
-            if "error" in res:
-                return_error(res.get('error'))
+            res = client.get_cves(url_suffix, param)
             total_results = res.get('totalResults', 0)
 
             if total_results:
@@ -366,10 +357,13 @@ def fetch_indicators_command(client: Client, test_run: bool):
     command = demisto.command()
 
     s_date = client.first_fetch
+    
     try:
         date.fromisoformat(s_date)
+        
     except ValueError:
         return_error("Incorrect date format specified. Should be in the format of YYYY-MM-DD")
+        
     first_fetch = datetime.strptime(s_date, "%Y-%m-%d")
 
     last_run_data = demisto.getLastRun()
