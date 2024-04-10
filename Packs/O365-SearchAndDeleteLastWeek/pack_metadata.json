@@ -1,0 +1,21 @@
+{
+    "name": "O365 - Search and Delete Last Week",
+    "description": "Test Contribution branch 'local-dev-setup'. Invoked from script.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Kobbi Gal",
+    "url": "",
+    "email": "",
+    "created": "2024-04-10T07:16:33Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "djangelic"
+    ]
+}
