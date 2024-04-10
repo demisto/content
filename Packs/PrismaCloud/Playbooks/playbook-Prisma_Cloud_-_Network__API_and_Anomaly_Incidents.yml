@@ -86,7 +86,7 @@ tasks:
       - "3"
     scriptarguments:
       ip:
-        simple: ${IP.Address}
+        simple: ${alert.remoteip}
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -739,16 +739,16 @@ tasks:
               flags: {}
       sourceIP:
         complex:
-          root: DBotScore
+          root: DBotScore.Indicator
           filters:
-          - - operator: greaterThanOrEqual
+          - - operator: isEqualString
               left:
                 value:
                   simple: DBotScore.Score
                 iscontext: true
               right:
                 value:
-                  simple: "2"
+                  simple: "3"
           - - operator: isEqualString
               left:
                 value:
@@ -758,7 +758,15 @@ tasks:
                 value:
                   simple: ip
               ignorecase: true
-          accessor: Indicator
+          - - operator: in
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: alert.remoteip
+                iscontext: true
       username:
         simple: ${alert.usernames}
     separatecontext: true
@@ -956,7 +964,7 @@ tasks:
         simple: Shared
       IP:
         complex:
-          root: DBotScore
+          root: DBotScore.Indicator
           filters:
           - - operator: isEqualString
               left:
@@ -975,7 +983,15 @@ tasks:
               right:
                 value:
                   simple: "3"
-          accessor: Indicator
+          - - operator: in
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: alert.remoteip
+                iscontext: true
       InputEnrichment:
         simple: "False"
       InternalRange:
