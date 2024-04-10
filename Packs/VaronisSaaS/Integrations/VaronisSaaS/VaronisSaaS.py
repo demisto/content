@@ -153,6 +153,7 @@ class Client(BaseClient):
         self.headers: Dict[str, Any] = {}
         self.headers["authorization"] = None
         self.headers["content-type"] = 'application/json'
+        self.headers["varonis-integration"] = 'XSOAR Cortex'
 
     def varonis_authenticate(self, apiKey: str) -> Dict[str, Any]:
         headers = {
@@ -1232,9 +1233,6 @@ class ThreatModelItem:
     def __init__(self):
         self.ID: Optional[str] = None
         self.Name: Optional[List[str]] = None
-        self.Category: Optional[str] = None
-        self.Severity: Optional[str] = None
-        self.Source: Optional[str] = None
 
     def __getitem__(self, key: str) -> Any:
         if hasattr(self, key):
@@ -1257,12 +1255,8 @@ class ThreatModelObjectMapper(BaseMapper):
 
     def map_item(self, row: dict) -> ThreatModelItem:
         threat_model_item = ThreatModelItem()
-        threat_model_item.ID = row[ThreatModelAttributes.Id]
-        threat_model_item.Name = row[ThreatModelAttributes.Name]
-        threat_model_item.Category = row[ThreatModelAttributes.Category]
-        threat_model_item.Source = row[ThreatModelAttributes.Source]
-        threat_model_item.Severity = row[ThreatModelAttributes.Severity]
-
+        threat_model_item.ID = row.get(ThreatModelAttributes.Id, row.get('dataField'))
+        threat_model_item.Name = row.get(ThreatModelAttributes.Name, row.get('displayField'))
         return threat_model_item
 
 
@@ -1278,17 +1272,14 @@ THREAT_MODEL_ENUM_ID = 5821
 ALERT_STATUSES = {'new': 1, 'under investigation': 2, 'closed': 3, 'action required': 4, 'auto-resolved': 5}
 ALERT_SEVERITIES = {'high': 0, 'medium': 1, 'low': 2}
 CLOSE_REASONS = {
-    'none': 0,
-    'resolved': 1,
-    'misconfiguration': 2,
-    'threat model disabled or deleted': 3,
-    'account misclassification': 4,
-    'legitimate activity': 5,
-    'other': 6
+    'other': 1,
+    'benign activity': 2,
+    'true positive': 3,
+    'environment misconfiguration': 4,
+    'alert recently customized': 5,
+    'inaccurate alert logic': 6,
+    'authorized activity': 7
 }
-DISPLAY_NAME_KEY = 'DisplayName'
-SAM_ACCOUNT_NAME_KEY = 'SAMAccountName'
-EMAIL_KEY = 'Email'
 
 
 def convert_to_demisto_severity(severity: Optional[str]) -> int:
@@ -1421,7 +1412,7 @@ def get_rule_ids(client: Client, values: List[str]) -> List[int]:
     return ruleIds
 
 
-def varonis_update_alert(client: Client, close_reason_id: int, status_id: Optional[int], alert_ids: list, note) -> bool:
+def varonis_update_alert(client: Client, close_reason_id: Optional[int], status_id: Optional[int], alert_ids: list, note) -> bool:
     """Update Varonis alert. It creates request and pass it to http client
 
     :type client: ``Client``
@@ -1588,11 +1579,7 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
     :type args: ``Dict[str, Any]``
     :param args:
         all command arguments, usually passed from ``demisto.args()``.
-        ``args['id'] = None  # List of requested threat model ids
         ``args['name'] = None  # List of requested threat model names
-        ``args['category'] = None  # List of requested threat model categories
-        ``args['severity'] = None  # List of requested threat model severities
-        ``args['source'] = None  # List of requested threat model sources
 
     :return:
         A ``CommandResults`` object
@@ -1600,21 +1587,7 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
     :rtype: ``CommandResults``
     """
 
-    id = argToList(args.get('id'))
-    name = argToList(args.get('name'))
-    category = argToList(args.get('category'))
-    severity = argToList(args.get('severity'))
-    source = argToList(args.get('source'))
-
-    id_int = []
-    if id:
-        for id_item in id:
-            value = try_convert(
-                id_item,
-                lambda x: int(x),
-                ValueError(f'id should be integer, but it is {id_item}.')
-            )
-            id_int.append(value)
+    name = argToList(args.get('name'), separator='|')
 
     threat_models = client.varonis_get_enum(THREAT_MODEL_ENUM_ID)
     mapper = ThreatModelObjectMapper()
@@ -1631,7 +1604,7 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
                 criteria_match = False
                 if criteria[key] and len(criteria[key]) > 0:
                     for value in criteria[key]:
-                        if isinstance(value, str) and value in str(item[key]) or value == item[key]:
+                        if isinstance(value, str) and fnmatch.filter([str(item[key])], value):
                             criteria_match = True
                             break
                     if not criteria_match:
@@ -1643,18 +1616,13 @@ def varonis_get_threat_models_command(client: Client, args: Dict[str, Any]) -> C
         return filtered_items
 
     filtered_items = filter_threat_model_items(mapped_items, {
-        'ID': id_int,
-        'Name': name,
-        'Category': category,
-        'Severity': severity,
-        'Source': source
+        'Name': name
     })
 
     outputs = dict()
     outputs['ThreatModel'] = filtered_items
 
-    readable_output = tableToMarkdown('Varonis Threat Models', filtered_items, headers=[
-                                      'ID', 'Name', 'Category', 'Severity', 'Source'])
+    readable_output = tableToMarkdown('Varonis Threat Models', filtered_items, headers=['ID', 'Name'])
 
     return CommandResults(
         readable_output=readable_output,
@@ -1703,7 +1671,7 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
 
     """
 
-    threat_model_names = argToList(threat_model)
+    threat_model_names = argToList(threat_model, separator='|')
 
     incidents: List[Dict[str, Any]] = []
 
@@ -1820,11 +1788,11 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
         if last_days <= 0:
             raise ValueError('last_days cannot be less then 1')
 
-    alert_severities = try_convert(alert_severities, lambda x: argToList(x))
-    device_names = try_convert(device_names, lambda x: argToList(x))
-    threat_model_names = try_convert(threat_model_names, lambda x: argToList(x))
-    user_names = try_convert(user_names, lambda x: argToList(x))
-    extra_fields = try_convert(extra_fields, lambda x: argToList(x))
+    alert_severities = try_convert(alert_severities, lambda x: argToList(x, separator='|'))
+    device_names = try_convert(device_names, lambda x: argToList(x, separator='|'))
+    threat_model_names = try_convert(threat_model_names, lambda x: argToList(x, separator='|'))
+    user_names = try_convert(user_names, lambda x: argToList(x, separator='|'))
+    extra_fields = try_convert(extra_fields, lambda x: argToList(x, separator='|'))
 
     start_time = try_convert(
         start_time,
@@ -1848,7 +1816,7 @@ def varonis_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandR
         ValueError(f'ingest_time_to should be in iso format, but it is {ingest_time_to}.')
     )
 
-    alert_statuses = try_convert(alert_statuses, lambda x: argToList(x))
+    alert_statuses = try_convert(alert_statuses, lambda x: argToList(x, separator='|'))
 
     if alert_severities:
         for severity in alert_severities:
@@ -1910,7 +1878,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     last_days = args.get('last_days')
     descending_order = argToBoolean(args.get('descending_order', 'True'))
 
-    alertIds = try_convert(args.get('alert_id'), lambda x: argToList(x))
+    alertIds = try_convert(args.get('alert_id'), lambda x: argToList(x, separator='|'))
     start_time = try_convert(
         start_time,
         lambda x: datetime.fromisoformat(x),
@@ -1921,7 +1889,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
         lambda x: datetime.fromisoformat(x),
         ValueError(f'end_time should be in iso format, but it is {end_time}.')
     )
-    extra_fields = try_convert(args.get('extra_fields'), lambda x: argToList(x))
+    extra_fields = try_convert(args.get('extra_fields'), lambda x: argToList(x, separator='|'))
 
     events = client.varonis_get_alerted_events(alertIds=alertIds, start_time=start_time, end_time=end_time,
                                                last_days=last_days,
@@ -1959,7 +1927,8 @@ def varonis_alert_add_note_command(client: Client, args: Dict[str, Any]) -> bool
     """
     note = str(args.get('note'))
 
-    return varonis_update_alert(client, CLOSE_REASONS['none'], status_id=None, alert_ids=argToList(args.get('alert_id')),
+    return varonis_update_alert(client, close_reason_id=None, status_id=None,
+                                alert_ids=argToList(args.get('alert_id'), separator='|'),
                                 note=note)
 
 
@@ -1991,7 +1960,9 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
 
     note = args.get('note')
 
-    return varonis_update_alert(client, CLOSE_REASONS['none'], status_id, argToList(args.get('alert_id')), note)
+    return varonis_update_alert(client, close_reason_id=None, status_id=status_id,
+                                alert_ids=argToList(args.get('alert_id'), separator='|'),
+                                note=note)
 
 
 def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
@@ -2011,14 +1982,14 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
     :rtype: ``bool``
 
     """
-    close_reason = str(args.get('close_reason'))
-    close_reasons = list(filter(lambda name: not strEqual(name, 'none'), CLOSE_REASONS.keys()))
-    if close_reason.lower() not in close_reasons:
-        raise ValueError(f'close reason must be one of {close_reasons}')
+    close_reason = str(args.get('close_reason')).lower()
+    close_reason_id = CLOSE_REASONS.get(close_reason)
+    if not close_reason_id:
+        raise ValueError(f'Close reason must be one of {list(CLOSE_REASONS.keys())}')
 
-    close_reason_id = CLOSE_REASONS[close_reason.lower()]
     note = args.get('note')
-    return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'], argToList(args.get('alert_id')), note)
+    return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'],
+                                argToList(args.get('alert_id'), separator='|'), note)
 
 
 '''' MAIN FUNCTION '''
