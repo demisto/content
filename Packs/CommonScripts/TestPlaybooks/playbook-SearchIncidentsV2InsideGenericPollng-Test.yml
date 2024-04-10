@@ -1,6 +1,5 @@
 id: playbook-SearchIncidentsV2InsideGenericPollng-Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: playbook-SearchIncidentsV2InsideGenericPollng-Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -443,6 +443,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -610,3 +611,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: test test.
