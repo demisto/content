@@ -2,9 +2,7 @@ id: Mail Sender (New) Test
 version: -1
 name: Mail Sender (New) Test
 description: |-
-  Email sender - python.
-  Tested against googleapps mail.
-  Sends mail to user -> verify info against the client's mail.
+  test test.
 starttaskid: "0"
 tasks:
   "0":
@@ -1672,7 +1670,7 @@ tasks:
       key:
         simple: eml_data
       value:
-        simple: "©\U0001F978"
+        simple: "©🥸"
     separatecontext: false
     continueonerrortype: ""
     view: |-

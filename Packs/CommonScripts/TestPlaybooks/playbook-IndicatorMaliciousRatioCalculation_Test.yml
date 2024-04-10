@@ -1,6 +1,5 @@
 id: IndicatorMaliciousRatioCalculation_test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: IndicatorMaliciousRatioCalculation_test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -40,8 +40,7 @@ tasks:
       id: f7947f6e-3575-4fac-8f59-4bc913d610f9
       version: -1
       name: run-script
-      description: Return indicators appears in resolved incidents, and resolved incident
-        ids.
+      description: Return indicators appears in resolved incidents, and resolved incident ids.
       scriptName: IndicatorMaliciousRatioCalculation
       type: regular
       iscommand: false
@@ -75,6 +74,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -105,3 +105,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: test test.

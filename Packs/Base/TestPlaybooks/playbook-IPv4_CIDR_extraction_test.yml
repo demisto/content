@@ -1,7 +1,7 @@
 id: IPv4 CIDR extraction test
 version: -1
 name: IPv4 CIDR extraction test
-description: Test the extraction flow of an IPv4 CIDR in XSOAR
+description: test test.
 starttaskid: "0"
 tasks:
   "0":

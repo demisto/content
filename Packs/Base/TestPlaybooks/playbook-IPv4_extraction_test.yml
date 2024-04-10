@@ -1,7 +1,7 @@
 id: IPv4 extraction test
 version: -1
 name: IPv4 extraction test
-description: Test extraction flow of IPv4 in XSOAR
+description: test test.
 starttaskid: "0"
 tasks:
   "0":
