@@ -1964,8 +1964,8 @@ inputSections:
   - serviceNowTicketType
   - serviceNowCategory
   - serviceNowAssignmentGroup
-  name: Incident Management - ServiceNow
-  description: ""
+  name: Ticket Management- ServiceNow
+  description: Ticket management settings and data for ServiceNow
 - inputs:
   - ZendeskPriority
   - ZendeskRequester
@@ -1976,18 +1976,19 @@ inputSections:
   - ZendeskAssigne
   - ZendeskCollaborators
   - ZenDeskDescription
-  name: Incident Management - ZenDesk
-  description: ""
+  name: Ticket Management - ZenDesk
+  description: Ticket management settings and data for ZenDesk
 - inputs:
   - CreateTicket
   - StopForRecommendations
-  name: Incident Management
-  description: ""
+  name: Alert Management
+  description: |
+    Alert management settings and data,
 - inputs:
   - EarlyContainment
   - CloudResponse
   name: Remediation
-  description: ""
+  description: Remediation settings and data, including containment, eradication, and recovery.
 outputSections:
 - outputs: []
   name: General (Outputs group)
