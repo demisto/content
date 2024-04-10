@@ -25,12 +25,14 @@ configuration:
   type: 8
   required: false
   section: Connect
-- display: I have access to Censys premium features.
+- display: Labels premium feature available
   name: premium_access
   type: 8
   required: false
   section: Connect
-  description: Censys API provides reputation data exclusively to paying customers.
+  additionalinfo: |-
+    Censys API provides reputation data exclusively to paying customers. 
+    When set to True, the integration will try to use labels to classify IOC reputation. 
 - display: IP and Domain Malicious labels
   name: malicious_labels
   type: 16
@@ -53,7 +55,10 @@ configuration:
   - scada
   - voip
   - web.control-panel.hosting
-  additionalinfo: IP and Domain Malicious labels Free text, array, separated by comma.
+  additionalinfo: |-
+    Used when `Labels premium feature available` is set. 
+    Labels to classify IP and Domain as Malicious. 
+    Input can be in array or comma-separated values.
   section: Collect-  advanced
 - display: IP and Domain Suspicious labels
   name: suspicious_labels
@@ -77,19 +82,22 @@ configuration:
   - scada
   - voip
   - web.control-panel.hosting
-  additionalinfo: IP and Domain Suspicious labels Free text, array, separated by comma.
+  additionalinfo: |-
+    Used when `Labels premium feature available` is set.
+    Labels to classify IP and Domain as Suspicious.
+    Input can be in array or comma-separated values.
   section: Collect-  advanced
 - display: Malicious labels threshold
   name: malicious_labels_threshold
   type: 0
   required: false
-  additionalinfo: IP and domain Malicious labels Threshold. Minimum of labels returned
+  additionalinfo: Determines the minimum number of labels returned that are classified as malicious for IP and Domain.
     that are classified as malicious.
 - display: Suspicious labels threshold
   name: suspicious_labels_threshold
   type: 0
   required: false
-  additionalinfo: IP and domain Suspicious labels Threshold. Minimum of labels returned 
+  additionalinfo: Determines the minimum number of labels returned that are classified as suspicious for IP and Domain.
     that are classified as suspicious.
 - display: Source Reliability
   name: integration_reliability

@@ -58,13 +58,19 @@ class Client(BaseClient):
         res = self._http_request('GET', url_suffix, params=params)
         return res
 
-    def ip_reputation_request(self, ip):
-        url_suffix = f"/api/v2/hosts/search?q=labels: * and ip={ip} or ip={ip}"
+    def ip_reputation_request(self, ip: str, fields: list| None):
+        url_suffix = f"/api/v2/hosts/search?q=ip={ip}"
+        if fields:
+            url_suffix += f"&fields={','.join(fields)}"
+
         res = self._http_request('GET', url_suffix)
         return res
 
-    def domain_reputation_request(self, domain):
-        url_suffix = f"/api/v2/hosts/search?q=labels: * and dns.names={domain} or dns.names={domain}"
+    def domain_reputation_request(self, domain: str, fields: list| None):
+        url_suffix = f"/api/v2/hosts/search?q=dns.names={domain}"
+        if fields:
+            url_suffix += f"&fields={','.join(fields)}"
+
         res = self._http_request('GET', url_suffix)
         return res
 
@@ -74,7 +80,7 @@ class Client(BaseClient):
 
 def test_module(client: Client, params: dict[str, Any]) -> str:
     if not params.get('premium_access') and (params.get('malicious_labels') or params.get('suspicious_labels')):
-        raise DemistoException("The reputation labels feature only works with Censys premium access.")
+        raise DemistoException("The reputation labels feature only works with Censys premium access. if you have premium access select the 'Labels premium feature available' option to utilize this functionality")
     client.censys_view_request('ipv4', '8.8.8.8')
     return 'ok'
 
@@ -254,98 +260,113 @@ def censys_host_history_command(client: Client, args: dict[str, Any]) -> Command
     )
 
 
-def ip_command(client: Client, args: dict):
+def ip_command(client: Client, args: dict, params: dict):
+    fields = ["labels","autonomous_system.asn", "location.country", 'location.coordinates.latitude',
+              'location.coordinates.longitude', 'services.port', 'last_updated_at'] if params.get('premium_access') else None
     ips: list = argToList(args.get('ip'))
     results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
 
     for ip in ips:
         try:
-            raw_response = client.ip_reputation_request(ip).get('result', {}).get('hits')
-            if not raw_response or not isinstance(raw_response, list):
+            raw_response = client.ip_reputation_request(ip, fields)
+            response = raw_response.get('result', {}).get('hits')
+            if not response or not isinstance(response, list):
                 error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {raw_response}"
                 raise DemistoException(error_msg)
-            res = raw_response[0]
+            
+            hit = response[0]
             dbot_score = Common.DBotScore(
                 indicator=ip,
                 indicator_type=DBotScoreType.IP,
                 integration_name="Censys",
-                score=get_dbot_score(args, res),
-                reliability=args.get('reliability')
+                score=get_dbot_score(params, hit.get('labels', [])),
+                reliability=params.get('reliability')
             )
             content = {
-                'ip': ip,
-                'asn': res.get("autonomous_system", {}).get('asn'),
-                'region': res.get('location', {}).get('country'),
-                'updated_date': res.get('last_updated_at'),
-                'geo_latitude': res.get('location', {}).get('coordinates', {}).get('latitude'),
-                'geo_longitude': res.get('location', {}).get('coordinates', {}).get('longitude'),
-                'geo_country': res.get('location', {}).get('country'),
-                'port': ', '.join([service.get('port') for service in res.get('services', [])]),
+                'ip': hit.get('ip'),
+                'asn': hit.get("autonomous_system", {}).get('asn'),
+                'updated_date': hit.get('last_updated_at'),
+                'geo_latitude': hit.get('location', {}).get('coordinates', {}).get('latitude'),
+                'geo_longitude': hit.get('location', {}).get('coordinates', {}).get('longitude'),
+                'geo_country': hit.get('location', {}).get('country'),
+                'port': ', '.join([str(service.get('port')) for service in hit.get('services', [])]),
             }
             indicator = Common.IP(dbot_score=dbot_score, **content)
+
             results.append(CommandResults(
                 outputs_prefix='Censys.IP',
                 outputs_key_field='IP',
                 readable_output=tableToMarkdown(f'censys results for IP: {ip}', content, headerTransform=string_to_table_header),
-                outputs=res,
-                raw_response=res,
+                outputs=hit,
+                raw_response=raw_response,
                 indicator=indicator,
             ))
 
             execution_metrics.success += 1
-        except RequestException as e:
+        except Exception as e:
             should_break = handle_exceptions(e, results, execution_metrics, ip)
             if should_break:
                 break
 
     if execution_metrics.metrics:
         results.append(execution_metrics.metrics)
-        
+
     return results
 
 
-def domain_command(client: Client, args: dict):
+def domain_command(client: Client, args: dict, params: dict):
+    fields = ['labels', 'autonomous_system.description', 'last_updated_at', 'dns.reverse_dns.names',
+              'location.country', 'services.port'] if params.get('premium_access') else None
     domains: list = argToList(args.get('domain'))
     results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
 
     for domain in domains:
         try:
-            raw_response = client.domain_reputation_request(domain).get('result', {}).get('hits')
-            if not raw_response or not isinstance(raw_response, list):
-                error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {raw_response}"
+            response = client.domain_reputation_request(domain, fields).get('result', {})
+            hits = response.get('hits')
+            if not hits or not isinstance(hits, list):
+                error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {response}"
                 raise DemistoException(error_msg)
-            res = raw_response[0]
+            
+            indicators = []
+            ip_content = []
+            for hit in hits:
+                dbot_score = Common.DBotScore(
+                    indicator=hit.get('ip'),
+                    indicator_type=DBotScoreType.IP,
+                    integration_name="Censys",
+                    score=get_dbot_score(params, hit.get('labels', [])),
+                    reliability=params.get('reliability')
+                )
 
-            dbot_score = Common.DBotScore(
-                indicator=domain,
-                indicator_type=DBotScoreType.DOMAIN,
-                integration_name="Censys",
-                score=get_dbot_score(args, res),
-                reliability=args.get('reliability')
-            )
-            content = {
-                'domain': domain,
-                'description': res.get('autonomous_system', {}).get('description'),
-                'updated_date': res.get('last_updated_at'),
-                'geo_country': res.get('location', {}).get('country'),
-                'port': ', '.join([service.get('port') for service in res.get('services', [])]),
-            }
-            indicator = Common.Domain(dbot_score=dbot_score, **content)
+                content = {
+                    'domain': domain,
+                    # 'ip': hit.get('ip'),
+                    'description': hit.get('autonomous_system', {}).get('description'),
+                    'updated_date': hit.get('last_updated_at'),
+                    # 'dns': hit.get('dns', {}).get('reverse_dns', {}).get('names'),
+                    'geo_country': hit.get('location', {}).get('country'),
+                    'port': ', '.join([str(service.get('port')) for service in hit.get('services', [])]),
+                }
+                indicator = Common.Domain(dbot_score=dbot_score, **content)
+                ip_content.append(content)
+                indicators.append(indicator)
+
             results.append(CommandResults(
                 outputs_prefix='Censys.Domain',
                 outputs_key_field='Domain',
                 readable_output=tableToMarkdown(
                     f'Censys results for Domain: {domain}',
-                    content, headerTransform=string_to_table_header),
-                outputs=res,
-                raw_response=res,
-                indicator=indicator,
+                    ip_content, headerTransform=string_to_table_header),
+                outputs=hits,
+                raw_response=response,
+                indicators=indicators,
             ))
 
             execution_metrics.success += 1
-        except RequestException as e:
+        except Exception as e:
             should_break = handle_exceptions(e, results, execution_metrics, domain)
             if should_break:
                 break
@@ -359,28 +380,37 @@ def domain_command(client: Client, args: dict):
 ''' HELPER FUNCTIONS '''
 
 
-def handle_exceptions(e: RequestException, results, execution_metrics, item):
-    if e.response.status_code == 403 and 'quota' in e.response.json().get('error'):
-        # Handle quota exceeded error
-        execution_metrics.quota_error += 1
-        results.append(CommandResults(readable_output=f"Quota exceeded. {e.response.json()}"))
-        return True
-    if e.response.status_code == 401:
-        # Raise unauthorized access error
-        raise e
-    # Handle general error
-    execution_metrics.general_error += 1
-    error_msg = f"An error occurred for item: {item}. Error: {e.response.json()}"
-    results.append(CommandResults(readable_output=error_msg))
-    return False
+def handle_exceptions(e: Exception, results: list[CommandResults], execution_metrics: ExecutionMetrics, item: str):
+        # Handle RequestException with response
+    if isinstance(e, RequestException) and e.response:
+        status_code = e.response.status_code
+        if status_code == 403 and 'quota' in e.response.json().get('error'):
+            # Handle quota exceeded error
+            execution_metrics.quota_error += 1
+            results.append(CommandResults(readable_output=f"Quota exceeded. {e.response.json()}"))
+            return True
+        elif status_code == 401:
+            # Handle unauthorized access error
+           raise e
+        else:
+            # Handle general error
+            execution_metrics.general_error += 1
+            error_msg = f"An error occurred for item: {item}. Error: {str(e)}"
+            results.append(CommandResults(readable_output=error_msg))
+            return False
+    else:
+        # Handle other exceptions
+        execution_metrics.general_error += 1
+        error_msg = f"An error occurred for item: {item}. Error: {str(e)}"
+        results.append(CommandResults(readable_output=error_msg))
+        return False
 
 
-def get_dbot_score(args, result_labels):
-    malicious_labels = set(args.get("malicious_labels", []))
-    suspicious_labels = set(args.get("suspicious_labels", []))
-    malicious_threshold = args.get("malicious_labels_threshold", 0)
-    suspicious_threshold = args.get("suspicious_labels_threshold", 0)
-
+def get_dbot_score(params: dict, result_labels: list):
+    malicious_labels = set(params.get("malicious_labels", []))
+    suspicious_labels = set(params.get("suspicious_labels", []))
+    malicious_threshold = arg_to_number(params.get("malicious_labels_threshold")) or 0
+    suspicious_threshold = arg_to_number(params.get("suspicious_labels_threshold")) or 0
     num_malicious = len(malicious_labels.intersection(result_labels))
     if num_malicious >= malicious_threshold and num_malicious > 0:
         return Common.DBotScore.BAD
@@ -399,7 +429,8 @@ def main() -> None:
     params = demisto.params()
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
-    verify_certificate = not params.get('insecure', False)
+    # verify_certificate = not params.get('insecure', False)
+    verify_certificate = False
     proxy = params.get('proxy', False)
     base_url = params.get("server_url") or 'https://search.censys.io'
 
@@ -423,9 +454,9 @@ def main() -> None:
         elif command == 'cen-host-history':
             return_results(censys_host_history_command(client, demisto.args()))
         elif command == 'ip':
-            return_results(ip_command(client, demisto.args()))
+            return_results(ip_command(client, demisto.args(), params))
         elif command == 'domain':
-            return_results(domain_command(client, demisto.args()))
+            return_results(domain_command(client, demisto.args(), params))
 
     # Log exceptions and return errors
     except Exception as e:
