@@ -2519,7 +2519,7 @@ def get_indicators_paginated_with_update_id(client: Client, url: str, **kwargs) 
     """The recommended way to get paginated results for over 10,000 records. """
     i = 1
     user_limit = kwargs["limit"]
-    kwargs["limit"] = 1000  # the maximal value possible
+    del kwargs["limit"]  # will return up to 1000 per page
 
     kwargs["update_id__gt"] = 0
     kwargs["order_by"] = "update_id"
