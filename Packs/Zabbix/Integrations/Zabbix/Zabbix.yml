@@ -13,7 +13,7 @@ configuration:
   required: true
 - display: Credentials
   name: credentials
-  defaultvalue: ""
+  defaultvalue: ''
   type: 9
   required: true
 script:
@@ -455,7 +455,7 @@ script:
       description: Whether the event is suppressed.
       type: number
     description: Get events.
-  dockerimage: demisto/py3-tools:1.0.0.87415
+  dockerimage: demisto/py3-tools:1.0.0.91908
   runonce: false
   script: '-'
   type: python
