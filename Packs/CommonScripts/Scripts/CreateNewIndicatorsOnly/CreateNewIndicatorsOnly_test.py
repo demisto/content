@@ -423,3 +423,40 @@ def test_findIndicators_called_with_escaped_quotes(mocker):
     result = add_new_indicator(indicator_value, {})
     assert result == {'id': '0', 'value': '(External):Test "test2 test (unsigned)"',
                       'score': 0, 'indicator_type': 'Unknown', 'CreationStatus': 'existing'}
+
+
+def test_add_new_indicator(mocker):
+    """
+    Given:
+        - An indicator that was not indexed in the system the first time associateIndicatorToIncident is called.
+    When:
+        - Running add_new_indicator
+    Then:
+        - Assert 'add_new_indicator' returns the indicator.
+    """
+    from CreateNewIndicatorsOnly import add_new_indicator
+    indicator_value = "test"
+    new_indicator = {'id': '0', 'value': 'test', 'score': 0, 'indicator_type': 'Unknown', 'CreationStatus': 'new'}
+    global tries
+    tries = 1
+
+    def __execute_command(cmd, args) -> Any:
+        global tries
+        if cmd == 'findIndicators':
+            assert args == {'value': indicator_value}
+            return None
+        if cmd == 'createNewIndicator':
+            return new_indicator
+        elif cmd == 'associateIndicatorToIncident':
+            if tries == 1:
+                tries += 1
+                raise Exception("For associateIndicatorToIncident found no indicatores with value: %s")
+            else:
+                return 'done'
+
+        return None
+
+    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
+
+    result = add_new_indicator(indicator_value, {})
+    assert result == new_indicator
