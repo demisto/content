@@ -1,4 +1,5 @@
-description: Test playbook for firewall toplogy commands
+description: test test
+fromversion: 5.0.0
 id: PAN-OS-firewall-topology-test-pb
 inputs: []
 name: PAN-OS-firewall-topology-test-pb
@@ -26,13 +27,7 @@ tasks:
     taskid: 5ce87c0a-493a-4945-886c-5e2ba3212c0f
     timertriggers: []
     type: start
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
   '1':
     id: '1'
     ignoreworker: false
@@ -57,197 +52,7 @@ tasks:
     taskid: 369b136c-52dd-4cb7-8e7f-39f7cb13e20c
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 350
-        }
-      }
-  '2':
-    id: '2'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '1'
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: yes
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      id: da927c8b-0250-4361-866f-0f78915f1581
-      iscommand: false
-      name: Delete Context
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: da927c8b-0250-4361-866f-0f78915f1581
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 180
-        }
-      }
-  '3':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.ShowSystemInfo.Summary.hostid
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.ShowSystemInfo.Summary.ip_address
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.ShowSystemInfo.Result.netmask
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.ShowSystemInfo.Summary.uptime
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.ShowSystemInfo.Summary.hostname
-          operator: isNotEmpty
-      label: yes
-    id: '3'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      yes:
-      - '4'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: db20855d-5a57-4590-850e-4f7f15f8066d
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: db20855d-5a57-4590-850e-4f7f15f8066d
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 530
-        }
-      }
-  '4':
-    id: '4'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '5'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Gets all ARP tables from all firewalls in the topology.
-      id: ef02e7a9-805c-4cc1-8019-75a5c0ece0d6
-      iscommand: true
-      name: pan-os-platform-get-arp-tables
-      script: '|||pan-os-platform-get-arp-tables'
-      type: regular
-      version: -1
-    taskid: ef02e7a9-805c-4cc1-8019-75a5c0ece0d6
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 710
-        }
-      }
-  '5':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.ShowArp.Summary.hostid
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.ShowArp.Summary.max
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.ShowArp.Summary.total
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.ShowArp.Summary.timeout
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.ShowArp.Summary.dp
-          operator: isNotEmpty
-      label: yes
-    id: '5'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      yes:
-      - '10'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 0214820f-4c29-400a-81a4-e82a2a8d7004
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: 0214820f-4c29-400a-81a4-e82a2a8d7004
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 890
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 350\n  }\n}"
   '10':
     id: '10'
     ignoreworker: false
@@ -272,13 +77,7 @@ tasks:
     taskid: f6aafb81-14e5-4212-8b3c-0e26a4f1f5fb
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1080
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1080\n  }\n}"
   '11':
     conditions:
     - condition:
@@ -312,13 +111,13 @@ tasks:
             value:
               simple: PANOS.ShowRoute.Result.route_table
           operator: isNotEmpty
-      label: yes
+      label: true
     id: '11'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '12'
     note: false
     quietmode: 0
@@ -334,13 +133,7 @@ tasks:
     taskid: 0ab5fd10-bb19-42a6-86c2-82720b70e570
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1260
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1260\n  }\n}"
   '12':
     id: '12'
     ignoreworker: false
@@ -365,13 +158,7 @@ tasks:
     taskid: 13633863-228c-409a-8ef1-c07617dcd0b4
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1450
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1450\n  }\n}"
   '13':
     conditions:
     - condition:
@@ -395,13 +182,13 @@ tasks:
             value:
               simple: PANOS.ShowRouteSummary.Summary.active
           operator: isNotEmpty
-      label: yes
+      label: true
     id: '13'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '15'
     note: false
     quietmode: 0
@@ -417,13 +204,7 @@ tasks:
     taskid: b00c8ee0-e109-4e12-848f-e20f8ea196db
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 1630
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 1630\n  }\n}"
   '14':
     id: '14'
     ignoreworker: false
@@ -443,13 +224,7 @@ tasks:
     taskid: c5ab2726-22c3-4f59-81cb-42dc48d8b172
     timertriggers: []
     type: title
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 7920
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 7920\n  }\n}"
   '15':
     id: '15'
     ignoreworker: false
@@ -464,7 +239,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Gets global counter information from all the PAN-OS firewalls in the topology
+      description: Gets global counter information from all the PAN-OS firewalls in
+        the topology
       id: 0a53accc-3720-420c-8e6b-e28e97a479f0
       iscommand: true
       name: pan-os-platform-get-global-counters
@@ -474,13 +250,7 @@ tasks:
     taskid: 0a53accc-3720-420c-8e6b-e28e97a479f0
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 1820
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 1820\n  }\n}"
   '16':
     conditions:
     - condition:
@@ -554,13 +324,13 @@ tasks:
             value:
               simple: PANOS.ShowCounters.Result.severity
           operator: isNotEmpty
-      label: yes
+      label: true
     id: '16'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '19'
     note: false
     quietmode: 0
@@ -576,13 +346,7 @@ tasks:
     taskid: 6d98b8b7-f6ad-448f-8270-e9e50c1e0d1b
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 2020
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 2020\n  }\n}"
   '19':
     id: '19'
     ignoreworker: false
@@ -607,13 +371,43 @@ tasks:
     taskid: 878da059-7385-4c18-8eb4-cc548a826a6a
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 2220
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 2220\n  }\n}"
+  '2':
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: true
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Delete field from context.
+
+
+        This automation runs using the default Limited User role, unless you explicitly
+        change the permissions.
+
+        For more information, see the section about permissions here:
+
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations'
+      id: da927c8b-0250-4361-866f-0f78915f1581
+      iscommand: false
+      name: Delete Context
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: da927c8b-0250-4361-866f-0f78915f1581
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 180\n  }\n}"
   '20':
     conditions:
     - condition:
@@ -667,13 +461,13 @@ tasks:
             value:
               simple: PANOS.SoftwareVersions.Summary.uploaded
           operator: isExists
-      label: yes
+      label: true
     id: '20'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '21'
     note: false
     quietmode: 0
@@ -689,13 +483,7 @@ tasks:
     taskid: fd601fa1-efa6-4e65-8715-c3b8762e6fa9
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 2430
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 2430\n  }\n}"
   '21':
     id: '21'
     ignoreworker: false
@@ -710,7 +498,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Get the HA state and assocaited details from the given device and any other details.
+      description: Get the HA state and assocaited details from the given device and
+        any other details.
       id: 72d8c6f8-a1f4-489c-88cd-622d6a113747
       iscommand: true
       name: pan-os-platform-get-ha-state
@@ -720,13 +509,7 @@ tasks:
     taskid: 72d8c6f8-a1f4-489c-88cd-622d6a113747
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 2630
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 2630\n  }\n}"
   '22':
     conditions:
     - condition:
@@ -750,13 +533,13 @@ tasks:
             value:
               simple: PANOS.HAState.peer
           operator: isExists
-      label: yes
+      label: true
     id: '22'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '23'
     note: false
     quietmode: 0
@@ -772,13 +555,7 @@ tasks:
     taskid: 3c78e256-c1af-4b0c-8061-8ca2b5060eb9
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 2820
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 2820\n  }\n}"
   '23':
     id: '23'
     ignoreworker: false
@@ -793,7 +570,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Get all the jobs from the devices in the environment, or a single job when ID is specified.
+      description: Get all the jobs from the devices in the environment, or a single
+        job when ID is specified.
       id: 2c9ac109-50df-4813-88d3-daf63d970c2e
       iscommand: true
       name: pan-os-platform-get-jobs
@@ -803,13 +581,7 @@ tasks:
     taskid: 2c9ac109-50df-4813-88d3-daf63d970c2e
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3020
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 3020\n  }\n}"
   '24':
     conditions:
     - condition:
@@ -863,13 +635,13 @@ tasks:
             value:
               simple: PANOS.JobStatus.progress
           operator: isNotEmpty
-      label: yes
+      label: true
     id: '24'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '27'
     note: false
     quietmode: 0
@@ -885,13 +657,7 @@ tasks:
     taskid: 9576f3b7-3128-4521-891b-69166a242b30
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3210
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 3210\n  }\n}"
   '27':
     id: '27'
     ignoreworker: false
@@ -915,7 +681,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Checks the status of the given device, checking whether it's up or down and the operational mode normal
+      description: Checks the status of the given device, checking whether it's up
+        or down and the operational mode normal
       id: 8dbcf8b5-0a0a-4642-89b1-2606c468416f
       iscommand: true
       name: pan-os-platform-get-system-status
@@ -925,13 +692,7 @@ tasks:
     taskid: 8dbcf8b5-0a0a-4642-89b1-2606c468416f
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3410
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 3410\n  }\n}"
   '28':
     conditions:
     - condition:
@@ -945,13 +706,13 @@ tasks:
             value:
               simple: PANOS.SystemStatus.up
           operator: isNotEmpty
-      label: yes
+      label: true
     id: '28'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '29'
     note: false
     quietmode: 0
@@ -967,13 +728,7 @@ tasks:
     taskid: 4a13654c-b96a-4751-8441-41da35e617d3
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3590
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 3590\n  }\n}"
   '29':
     id: '29'
     ignoreworker: false
@@ -997,13 +752,58 @@ tasks:
     taskid: 0d391c5b-9bb6-422e-81e2-37a5a978dde8
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3780
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 3780\n  }\n}"
+  '3':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ShowSystemInfo.Summary.hostid
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ShowSystemInfo.Summary.ip_address
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ShowSystemInfo.Result.netmask
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ShowSystemInfo.Summary.uptime
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ShowSystemInfo.Summary.hostname
+          operator: isNotEmpty
+      label: true
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      true:
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: db20855d-5a57-4590-850e-4f7f15f8066d
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: db20855d-5a57-4590-850e-4f7f15f8066d
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 530\n  }\n}"
   '30':
     conditions:
     - condition:
@@ -1042,13 +842,13 @@ tasks:
             value:
               simple: PANOS.ConfigurationHygiene.Result.description
           operator: isNotEmpty
-      label: yes
+      label: true
     id: '30'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '31'
     note: false
     quietmode: 0
@@ -1064,13 +864,7 @@ tasks:
     taskid: e67ce4c4-df42-49da-8d31-3db636a3fae5
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 3990
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 3990\n  }\n}"
   '31':
     id: '31'
     ignoreworker: false
@@ -1085,7 +879,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Checks the configured Vulnerability profiles to ensure at least one meets best practices.
+      description: Checks the configured Vulnerability profiles to ensure at least
+        one meets best practices.
       id: 2cb040a5-4803-413d-86ea-96de61fb14fe
       iscommand: true
       name: pan-os-hygiene-check-vulnerability-profiles
@@ -1095,13 +890,7 @@ tasks:
     taskid: 2cb040a5-4803-413d-86ea-96de61fb14fe
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 4180
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 4180\n  }\n}"
   '32':
     conditions:
     - condition:
@@ -1125,13 +914,13 @@ tasks:
             value:
               simple: PANOS.ConfigurationHygiene.Summary.issue_count
           operator: isNotEmpty
-      label: yes
+      label: true
     id: '32'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '33'
     note: false
     quietmode: 0
@@ -1147,13 +936,7 @@ tasks:
     taskid: 7d4c0343-4b31-49e4-8933-4a78071bc605
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 4370
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 460,\n    \"y\": 4370\n  }\n}"
   '33':
     id: '33'
     ignoreworker: false
@@ -1168,7 +951,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Checks that at least one log forwarding profile is configured according to best practices.
+      description: Checks that at least one log forwarding profile is configured according
+        to best practices.
       id: ae3efc6d-2b7e-4ae0-8019-3954cd4613cd
       iscommand: true
       name: pan-os-hygiene-check-log-forwarding
@@ -1178,13 +962,7 @@ tasks:
     taskid: ae3efc6d-2b7e-4ae0-8019-3954cd4613cd
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 4610
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 4610\n  }\n}"
   '34':
     conditions:
     - condition:
@@ -1233,13 +1011,13 @@ tasks:
             value:
               simple: PANOS.ConfigurationHygiene.Result.name
           operator: isExists
-      label: yes
+      label: true
     id: '34'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '35'
     note: false
     quietmode: 0
@@ -1255,13 +1033,7 @@ tasks:
     taskid: cbbe2bef-de9e-4d97-8c45-e6e2b12cee0f
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 4810
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 4810\n  }\n}"
   '35':
     id: '35'
     ignoreworker: false
@@ -1276,7 +1048,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Checks the configured vulnerability profiles to ensure at least one meets best practices.
+      description: Checks the configured vulnerability profiles to ensure at least
+        one meets best practices.
       id: 6ee0b8b0-52ba-47c9-8fdb-6523cc3a4600
       iscommand: true
       name: pan-os-hygiene-check-vulnerability-profiles
@@ -1286,13 +1059,7 @@ tasks:
     taskid: 6ee0b8b0-52ba-47c9-8fdb-6523cc3a4600
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 5010
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 5010\n  }\n}"
   '36':
     conditions:
     - condition:
@@ -1316,13 +1083,13 @@ tasks:
             value:
               simple: PANOS.ConfigurationHygiene.Summary.issue_count
           operator: isNotEmpty
-      label: yes
+      label: true
     id: '36'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '37'
     note: false
     quietmode: 0
@@ -1338,13 +1105,7 @@ tasks:
     taskid: c153f727-6245-4870-8d54-dd29b998d51f
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 5210
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 5210\n  }\n}"
   '37':
     id: '37'
     ignoreworker: false
@@ -1359,7 +1120,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Checks the configured Anti-spyware profiles to ensure at least one meets best practices.
+      description: Checks the configured Anti-spyware profiles to ensure at least
+        one meets best practices.
       id: fe965b99-6780-4665-8929-3a64bea800fa
       iscommand: true
       name: pan-os-hygiene-check-spyware-profiles
@@ -1369,13 +1131,7 @@ tasks:
     taskid: fe965b99-6780-4665-8929-3a64bea800fa
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 5410
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 5410\n  }\n}"
   '38':
     conditions:
     - condition:
@@ -1399,13 +1155,13 @@ tasks:
             value:
               simple: PANOS.ConfigurationHygiene.Summary.issue_count
           operator: isNotEmpty
-      label: yes
+      label: true
     id: '38'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '39'
     note: false
     quietmode: 0
@@ -1421,13 +1177,7 @@ tasks:
     taskid: 902b1266-ba06-442e-899c-85e598de9c15
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 5610
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 5610\n  }\n}"
   '39':
     id: '39'
     ignoreworker: false
@@ -1442,7 +1192,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Checks the configured URL Filtering profiles to ensure at least one meets best practices.
+      description: Checks the configured URL Filtering profiles to ensure at least
+        one meets best practices.
       id: 60ef5aa0-f29f-46e4-8d2c-c19f314d8933
       iscommand: true
       name: pan-os-hygiene-check-url-filtering-profiles
@@ -1452,13 +1203,32 @@ tasks:
     taskid: 60ef5aa0-f29f-46e4-8d2c-c19f314d8933
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 5810
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 5810\n  }\n}"
+  '4':
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Gets all ARP tables from all firewalls in the topology.
+      id: ef02e7a9-805c-4cc1-8019-75a5c0ece0d6
+      iscommand: true
+      name: pan-os-platform-get-arp-tables
+      script: '|||pan-os-platform-get-arp-tables'
+      type: regular
+      version: -1
+    taskid: ef02e7a9-805c-4cc1-8019-75a5c0ece0d6
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 710\n  }\n}"
   '40':
     conditions:
     - condition:
@@ -1482,13 +1252,13 @@ tasks:
             value:
               simple: PANOS.ConfigurationHygiene.Summary.issue_count
           operator: isNotEmpty
-      label: yes
+      label: true
     id: '40'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '41'
     note: false
     quietmode: 0
@@ -1504,13 +1274,7 @@ tasks:
     taskid: 112cc1a1-c258-4324-807b-5cd01122ac4a
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 6010
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 6010\n  }\n}"
   '41':
     id: '41'
     ignoreworker: false
@@ -1525,7 +1289,8 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Returns a list of existing PANOS URL filtering objects that conform to best practices.
+      description: Returns a list of existing PANOS URL filtering objects that conform
+        to best practices.
       id: 83ab79bc-b94a-4d2d-8b13-c17c15868ab0
       iscommand: true
       name: pan-os-hygiene-conforming-url-filtering-profiles
@@ -1535,13 +1300,7 @@ tasks:
     taskid: 83ab79bc-b94a-4d2d-8b13-c17c15868ab0
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 6210
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 6210\n  }\n}"
   '43':
     id: '43'
     ignoreworker: false
@@ -1566,13 +1325,7 @@ tasks:
     taskid: 4b506408-b943-42ad-8734-69cb303aee41
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 6390
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 6390\n  }\n}"
   '45':
     id: '45'
     ignoreworker: false
@@ -1597,13 +1350,7 @@ tasks:
     taskid: b08dfc5e-2b05-4277-8310-2f4bb585607f
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 6580
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 6580\n  }\n}"
   '47':
     id: '47'
     ignoreworker: false
@@ -1628,13 +1375,7 @@ tasks:
     taskid: c94e517d-0c4e-4d7c-89e8-6ea9c5473773
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 6770
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 6770\n  }\n}"
   '48':
     conditions:
     - condition:
@@ -1683,13 +1424,13 @@ tasks:
             value:
               simple: PANOS.ConfigurationHygiene.Result.name
           operator: isNotEmpty
-      label: yes
+      label: true
     id: '48'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '49'
     note: false
     quietmode: 0
@@ -1705,13 +1446,7 @@ tasks:
     taskid: 2ae52307-6c06-4ca3-828e-e3471ab615e4
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 6950
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 6950\n  }\n}"
   '49':
     id: '49'
     ignoreworker: false
@@ -1736,13 +1471,58 @@ tasks:
     taskid: 22d5e109-8bda-4ba6-86e6-cdd74bae79b2
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 7160
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 7160\n  }\n}"
+  '5':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ShowArp.Summary.hostid
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ShowArp.Summary.max
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ShowArp.Summary.total
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ShowArp.Summary.timeout
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.ShowArp.Summary.dp
+          operator: isNotEmpty
+      label: true
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      true:
+      - '10'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 0214820f-4c29-400a-81a4-e82a2a8d7004
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 0214820f-4c29-400a-81a4-e82a2a8d7004
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 890\n  }\n}"
   '50':
     conditions:
     - condition:
@@ -1791,13 +1571,13 @@ tasks:
             value:
               simple: PANOS.ConfigurationHygiene.Result.name
           operator: isNotEmpty
-      label: yes
+      label: true
     id: '50'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '51'
     note: false
     quietmode: 0
@@ -1813,13 +1593,7 @@ tasks:
     taskid: a6859ebc-cf3b-4ac8-86ba-4bd67fc1d0f7
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 7360
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 7360\n  }\n}"
   '51':
     id: '51'
     ignoreworker: false
@@ -1837,7 +1611,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Searches and returns a reference for the given object type and name. If no name is provided, all objects of the given type will be returned. Note this ONLY returns the object name and it's location in the configuration hierachy, not the entire object.
+      description: Searches and returns a reference for the given object type and
+        name. If no name is provided, all objects of the given type will be returned.
+        Note this ONLY returns the object name and it's location in the configuration
+        hierachy, not the entire object.
       id: 7bf6ad85-f96c-4570-8629-032ec083f239
       iscommand: true
       name: pan-os-config-get-object
@@ -1847,13 +1624,7 @@ tasks:
     taskid: 7bf6ad85-f96c-4570-8629-032ec083f239
     timertriggers: []
     type: regular
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 7540
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 7540\n  }\n}"
   '52':
     conditions:
     - condition:
@@ -1877,13 +1648,13 @@ tasks:
             value:
               simple: PANOS.PanosObject.object_type
           operator: isExists
-      label: yes
+      label: true
     id: '52'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      yes:
+      true:
       - '14'
     note: false
     quietmode: 0
@@ -1899,24 +1670,8 @@ tasks:
     taskid: 1f6cfc9f-7b4a-4954-8658-facc79165865
     timertriggers: []
     type: condition
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 7720
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 7720\n  }\n}"
 version: -1
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 7935,
-        "width": 400,
-        "x": 450,
-        "y": 50
-      }
-    }
-  }
-fromversion: 5.0.0
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 7935,\n      \"width\": 400,\n      \"x\": 450,\n      \"y\":\
+  \ 50\n    }\n  }\n}"

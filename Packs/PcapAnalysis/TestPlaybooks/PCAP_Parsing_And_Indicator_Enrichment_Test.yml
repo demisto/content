@@ -2,7 +2,7 @@ id: PCAP Parsing And Indicator Enrichment Test
 version: -1
 fromversion: 5.0.0
 name: PCAP Parsing And Indicator Enrichment Test
-description: Test playbook
+description: test test.
 starttaskid: "0"
 tasks:
   "0":

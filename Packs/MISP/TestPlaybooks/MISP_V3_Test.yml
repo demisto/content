@@ -1,8 +1,7 @@
 id: MISP V3 Test
-version: 5
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: MISP V3 Test
-description: Test playbook for MISP V3 integration
+description: test test.
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -1583,8 +1583,7 @@ tasks:
       - "57"
     scriptarguments:
       attributes:
-        simple: '{''description'': ''Manager Ferrari'', ''make'': ''Ferrari'', ''model'':
-          ''308 GTS''}'
+        simple: '{''description'': ''Manager Ferrari'', ''make'': ''Ferrari'', ''model'': ''308 GTS''}'
       event_id:
         simple: ${MISP.Event.ID}
       template:
@@ -1731,6 +1730,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2244,6 +2244,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -2274,6 +2275,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "15"
@@ -2339,6 +2341,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "53"

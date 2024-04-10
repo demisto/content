@@ -1,7 +1,7 @@
 id: Ping Test Playbook
 version: -1
 name: Ping Test Playbook
-description: Test Ping command with various scenarios
+description: test test.
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"

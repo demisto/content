@@ -1,6 +1,6 @@
 id: MicrosoftGraphMail-Test_dev_no_oproxy
 version: -1
-name: MicrosoftGraphMail-Test_dev_no_oproxy
+name: MicrosoftGraphMail-Test_no_oproxy
 starttaskid: "0"
 tasks:
   "0":
@@ -78,4 +78,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: ''
+description: 'test test.'

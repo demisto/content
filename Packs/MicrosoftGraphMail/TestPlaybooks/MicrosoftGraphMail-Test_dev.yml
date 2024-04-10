@@ -1,6 +1,6 @@
 id: MicrosoftGraphMail-Test_dev
 version: -1
-name: MicrosoftGraphMail-Test_dev
+name: MicrosoftGraphMail-Test
 starttaskid: "0"
 tasks:
   "0":
@@ -78,4 +78,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: ''
+description: 'test test.'
