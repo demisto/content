@@ -19,14 +19,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Entity Enrichment - Generic v3
+* Search and Compare Process Executions - Generic
+* Threat Hunting - Generic
 * TIM - Indicator Relationships Analysis
 * Block Indicators - Generic v3
-* User Investigation - Generic
 * Command-Line Analysis
-* Threat Hunting - Generic
-* Search and Compare Process Executions - Generic
 * Endpoint Investigation Plan
+* Entity Enrichment - Generic v3
+* User Investigation - Generic
 
 ### Integrations
 

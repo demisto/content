@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 110117ac-7b0a-441a-82af-04e2e9242c83
+    taskid: 2cd32c3d-b158-43fd-8121-958becfc6b39
     type: regular
     task:
-      id: 110117ac-7b0a-441a-82af-04e2e9242c83
+      id: 2cd32c3d-b158-43fd-8121-958becfc6b39
       version: -1
       name: Find Similar Alerts
       description: |-
@@ -111,7 +111,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1434,10 +1434,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 6ea3a67e-44a8-4c50-8a29-c491354ee1f9
+    taskid: 36b833c7-86b0-4a2f-8107-3fa9b3c7fdb7
     type: playbook
     task:
-      id: 6ea3a67e-44a8-4c50-8a29-c491354ee1f9
+      id: 36b833c7-86b0-4a2f-8107-3fa9b3c7fdb7
       version: -1
       name: TIM - Indicator Relationships Analysis
       description: |-
@@ -1480,7 +1480,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
