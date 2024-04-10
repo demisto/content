@@ -49,7 +49,7 @@ def create_user(args, client):  # pragma: no cover
     )
     del response['ResponseMetadata']
     response = remove_empty_elements(response)
-    ec = {'AWS.IAMIdentityCenter.Users': response}
+    ec = {'AWS.IAMIdentityCenter.User': response}
     human_readable = tableToMarkdown('AWS IAM Identity Center Users', response)
     return_outputs(human_readable, ec)
 
@@ -92,7 +92,7 @@ def get_user(args, client):  # pragma: no cover
     }
     if response.get('Emails'):
         hr_data['Emails'] = response.get('Emails')[0]['Value']
-    ec = {'AWS.IAMIdentityCenter.Users(val.UserId === obj.UserId)': response}
+    ec = {'AWS.IAMIdentityCenter.User(val.UserId === obj.UserId)': response}
     human_readable = tableToMarkdown('AWS IAM Users', hr_data, removeNull=True)
     result = CommandResults(
         readable_output=human_readable,
@@ -109,7 +109,7 @@ def get_user_by_email(args, client):  # pragma: no cover
     )
     for user in response.get('Users'):
         userEmail = user.get('Emails')
-        if len(userEmail) > 0 and userEmail[0]['Value'] == emailArg:
+        if userEmail and userEmail[0]['Value'] == emailArg:
             user_details = {
                 'UserName': user['UserName'],
                 'UserId': user['UserId'],
@@ -118,15 +118,17 @@ def get_user_by_email(args, client):  # pragma: no cover
             }
             hr_data = user_details
             context_data = user
-    ec = {'AWS.IAMIdentityCenter.Users(val.UserId === obj.UserId)': context_data}
+    # ec = {'AWS.IAMIdentityCenter.User': context_data}
     human_readable = tableToMarkdown('AWS IAM Users ', hr_data, removeNull=True)
     result = CommandResults(
+        outputs_prefix='AWS.IAMIdentityCenter.User',
         readable_output=human_readable,
         outputs_key_field='UserId',
-        outputs=ec
+        outputs=context_data
     )
     return_results(result)
 
+# (val.UserId === obj.UserId)
 
 def list_users(args, client):  # pragma: no cover
     context_data = []
@@ -148,10 +150,11 @@ def list_users(args, client):  # pragma: no cover
         if user.get('Emails'):
             user_details['Emails'] = user.get('Emails')[0]['Value']
         hr_data.append(user_details)
-    outputs = {'AWS.IAMIdentityCenter.Users(val.UserId === obj.UserId)': context_data,
+    outputs = {'AWS.IAMIdentityCenter.User(val.UserId === obj.UserId)': context_data,
                'AWS.IAMIdentityCenter(true)': {'UserNextToken': response.get('NextToken')}}
     human_readable = tableToMarkdown('AWS IAM Identity Center Users', hr_data, removeNull=True)
     result = CommandResults(
+        # outputs_prefix='AWS.IAMIdentityCenter.User',
         readable_output=human_readable,
         outputs_key_field='UserId',
         outputs=outputs
@@ -177,7 +180,7 @@ def list_groups(args, client):  # pragma: no cover
         }
         hr_data.append(group_details)
         context_data.append(group)
-    outputs = {'AWS.IAMIdentityCenter.Groups(val.GroupId === obj.GroupId)': context_data,
+    outputs = {'AWS.IAMIdentityCenter.Group(val.GroupId === obj.GroupId)': context_data,
                'AWS.IAMIdentityCenter(true)': {'GroupNextToken': response.get('NextToken')}}
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
     result = CommandResults(
@@ -199,7 +202,7 @@ def create_group(args, client):
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         group_id = response.get('GroupId')
         del response['ResponseMetadata']
-        ec = {'AWS.IAMIdentityCenter.Groups': response}
+        ec = {'AWS.IAMIdentityCenter.Group': response}
         human_readable = f'Group {group_id} has been successfully created'
         return_outputs(human_readable, ec)
 
@@ -239,7 +242,7 @@ def get_group(args, client):  # pragma: no cover
         'GroupId': response['GroupId']
     }
     del response['ResponseMetadata']
-    ec = {'AWS.IAMIdentityCenter.Groups(val.GroupId == obj.GroupId)': response}
+    ec = {'AWS.IAMIdentityCenter.Group(val.GroupId == obj.GroupId)': response}
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
     result = CommandResults(
         readable_output=human_readable,
@@ -250,8 +253,8 @@ def get_group(args, client):  # pragma: no cover
 
 
 def list_groups_for_user(args, client):  # pragma: no cover
-    context_data = []
     hr_data = []
+    context_data = {}
     userID = get_userId_by_username(args, client)['UserId']
     kwargs = {
         'IdentityStoreId': f'{IDENTITYSTOREID}',
@@ -263,21 +266,25 @@ def list_groups_for_user(args, client):  # pragma: no cover
     }
     kwargs = remove_empty_elements(kwargs)
     response = client.list_group_memberships_for_member(**kwargs)
+    groups = []
     for group in response.get('GroupMemberships'):
-        group_details = {
+        hr_data.append({
             'UserID': group['MemberId']['UserId'],
             'GroupID': group['GroupId'],
             'MembershipID': group['MembershipId']
-        }
-        context_data.append(group)
-        hr_data.append(group_details)
-
-    outputs = {'AWS.IAMIdentityCenter.User(val.UserName === obj.UserName).Groups': context_data,
+        })
+        groups.append({
+            'GroupId': group['GroupId'],
+            'MembershipId': group['MembershipId']
+        })
+    context_data['UserId'] = userID
+    context_data['Groups'] = groups
+    outputs = {'AWS.IAMIdentityCenter.User(val.UserId === obj.UserId)': context_data,
                'AWS.IAMIdentityCenter(true)': {'GroupsUserNextToken': response.get('NextToken')}}
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
     result = CommandResults(
         readable_output=human_readable,
-        outputs_key_field='UserId',
+        # outputs_key_field='UserId',
         outputs=outputs
     )
     return_results(result)
@@ -313,6 +320,7 @@ def get_group_memberships_for_member(args,client):
         membershipsOfMember.append(group['MembershipId'])
     return membershipsOfMember
 
+
 def delete_group_membership(args, client):
     membershipsToDelete = []
     if args.get('membershipId') and args.get('userName'):
@@ -337,7 +345,7 @@ def delete_group_membership(args, client):
 
 def list_group_memberships(args, client):
     hr_data = []
-    context_data = []
+    context_data = {}
     groupId = get_groupId_by_displayName(args, client).get('GroupId')
     kwargs = {
         'IdentityStoreId': IDENTITYSTOREID,
@@ -347,6 +355,7 @@ def list_group_memberships(args, client):
     }
     kwargs = remove_empty_elements(kwargs)
     response = client.list_group_memberships(**kwargs)
+    memberships = []
     for membership in response.get('GroupMemberships'):
         member_details = {
             'MembershipId': membership['MembershipId'],
@@ -354,12 +363,18 @@ def list_group_memberships(args, client):
             'UserId': membership.get('MemberId')['UserId']
         }
         hr_data.append(member_details)
-        context_data.append(membership)
-    outputs = {'AWS.IAMIdentityCenter.GroupMembership': context_data,
+        memberships.append({
+            'MembershipId': membership['MembershipId'],
+            'UserId': membership.get('MemberId')['UserId']
+        })
+    context_data['GroupId'] = groupId
+    context_data['GroupMemberships'] = memberships
+    outputs = {'AWS.IAMIdentityCenter.Group(val.GroupId === obj.GroupId)': context_data,
                'AWS.IAMIdentityCenter(true)': {'GroupMembershipNextToken': response.get('NextToken')}}
     human_readable = tableToMarkdown('AWS IAM Identity Center groups', hr_data, removeNull=True)
     result = CommandResults(
         readable_output=human_readable,
+        # outputs_key_field='GroupId',
         outputs=outputs
     )
     return_results(result)
