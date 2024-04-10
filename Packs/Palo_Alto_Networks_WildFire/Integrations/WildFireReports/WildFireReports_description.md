@@ -2,7 +2,7 @@ This integration is set up by default on Cortex XSOAR versions with the Threat I
 
 #### How to retrieve a Palo Alto Networks WildFire Reports API key
 
-Note: If you have a TIM license that is up-to-date and are running Cortex XSOAR version 6.5, you do not need to set up an API key.
+Note: If you have a TIM license that is up-to-date and are running Cortex XSOAR 6.5, you do not need to set up an API key.
 The required information is automatically retrieved from your Cortex XSOAR TIM license. 
 This API key is used in the *API Key* field in the integration configuration.
 
