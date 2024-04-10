@@ -501,7 +501,6 @@ def update_incident_command(client, args):
     add_comment = args.get('add_comment')
     resolve_alerts = argToBoolean(args.get('resolve_alerts', False))
     
-    demisto.debug('help!!!!')
     client.update_incident(
         incident_id=incident_id,
         assigned_user_mail=assigned_user_mail,
@@ -512,9 +511,9 @@ def update_incident_command(client, args):
         resolve_comment=resolve_comment,
         add_comment=add_comment,
     )
-    is_closed = resolve_comment or (status and argToList(status, '_')[0] == 'RESOLVED')
+    is_closed = resolve_comment or (status and argToList(status, '_')[0] == 'resolved')
     if resolve_alerts and is_closed:
-        args = {}
+        args['status'] = args['status'].lower()
         update_related_alerts(client, args)
 
     return f'Incident {incident_id} has been updated', None, None
@@ -973,14 +972,12 @@ def get_remote_data_command(client, args):
 
 def update_remote_system_command(client, args):
     remote_args = UpdateRemoteSystemArgs(args)
-    demisto.debug(f"{remote_args=}")
     incident_id = remote_args.remote_incident_id
     demisto.debug(f"update_remote_system_command {incident_id=} {remote_args=}")
 
     if remote_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
                       f'incident {remote_args.remote_incident_id}')
-        demisto.debug(f'{remote_args.delta=}')
     try:
         if remote_args.incident_changed:
             demisto.debug(f"update_remote_system_command {incident_id=} {remote_args.incident_changed=}")
@@ -996,9 +993,7 @@ def update_remote_system_command(client, args):
             close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
             is_closed = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
                          or update_args.get('resolve_comment') or update_args.get('closingUserId'))
-            demisto.debug(f"please print args {args} !!!")
-            demisto.debug(f"{close_alerts_in_xdr=}, {update_args.get('close_reason')=}, {update_args.get('closeReason')},"
-                          f"{update_args.get('closeNotes')}, {update_args.get('resolve_comment')}, {update_args.get('closingUserId')}")
+            demisto.debug(f"Should close related alert {is_closed=} {close_alerts_in_xdr=}")
             if close_alerts_in_xdr and is_closed:
                 update_related_alerts(client, update_args)
 
@@ -1028,7 +1023,7 @@ def update_related_alerts(client: Client, args: dict):
             related_alerts_ids_array = [str(alert['alert_id']) for alert in alerts_array if 'alert_id' in alert]
             demisto.debug(f"{related_alerts_ids_array=}")
             args_for_command = {'alert_ids': related_alerts_ids_array, 'status': new_status, 'comment': comment}
-            update_alerts_in_xdr_command(client, args_for_command)
+            return_results(update_alerts_in_xdr_command(client, args_for_command))
 
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
                     statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
