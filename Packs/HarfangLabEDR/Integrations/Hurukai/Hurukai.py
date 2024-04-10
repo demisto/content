@@ -890,11 +890,13 @@ def _fetch_security_event_incidents(
         fetch_history.last_fetch = first_fetch_timestamp
 
     max_fetch = _adjust_max_fetch_value(max_fetch, len(incidents))
+    exclude_fetched_from_last_fetch_filter = {}
 
-    # exclude every security events that has been already fetched
-    exclude_fetched_from_last_fetch_filter = {
-        "id__exact!": ",".join(fetched_from_last_fetch)
-    }
+    if fetched_from_last_fetch:
+        # exclude every security events that has been already fetched
+        exclude_fetched_from_last_fetch_filter["id__exact!"] = ",".join(
+            fetched_from_last_fetch
+        )
 
     fetching_cursor: datetime = _get_fetching_cursor(fetch_history)
 
