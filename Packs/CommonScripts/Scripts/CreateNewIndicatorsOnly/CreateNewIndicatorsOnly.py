@@ -11,6 +11,7 @@ STATUS_UNAVAILABLE = 'unavailable'
 KEY_CREATION_STATUS = 'CreationStatus'
 
 MAX_FIND_INDICATOR_RETRIES = 2
+SLEEP_TIME = 2
 
 
 def associate_indicator_to_incident(indicator_value: Any) -> None:
@@ -40,7 +41,8 @@ def associate_indicator_to_incident(indicator_value: Any) -> None:
             # else log and continue with retries after sleeping
             demisto.debug(f"Failed to find indicator {indicator_value} in the system.")
             if retry_num != MAX_FIND_INDICATOR_RETRIES:
-                time.sleep(2)
+                time.sleep(SLEEP_TIME)  # pylint: disable=E9003
+            retry_num += 1
 
     if res != 'done':
         raise Exception(f"Failed to associate {indicator_value} with incident {incident_id}")

@@ -1,5 +1,3 @@
-import unittest
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
 import CreateNewIndicatorsOnly
@@ -495,9 +493,10 @@ class TestAssociateFailures:
         mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
         mocker.patch.object(time, 'sleep', return_value=None)
         CreateNewIndicatorsOnly.MAX_FIND_INDICATOR_RETRIES = 2
+        CreateNewIndicatorsOnly.SLEEP_TIME = 0
         mocker.patch.object(demisto, 'incidents', return_value=[{'id': '1'}])
 
         with pytest.raises(Exception) as err:
-            CreateNewIndicatorsOnly.add_new_indicator(indicator_value, {})
+            CreateNewIndicatorsOnly.add_new_indicator(indicator_value, {}, True)
 
-        assert f"Failed to associate test with incident 1" in str(err)
+        assert "Failed to associate test with incident 1" in str(err)
