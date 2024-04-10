@@ -9,7 +9,7 @@ import pytest
 
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
-from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure, XSOAR_RESOLVED_STATUS_TO_XDR
+from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure, XSOAR_RESOLVED_STATUS_TO_XDR, resolve_xdr_close_reason
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command, list_user_groups_command, parse_user_groups, list_users_command, list_roles_command, \
     change_user_role_command, list_risky_users_or_host_command, enrich_error_message_id_group_role, get_incidents_command
@@ -79,7 +79,7 @@ def test_get_endpoints(requests_mock):
 
     res = get_endpoints_command(client, args)
     assert get_endpoints_response.get('reply').get('endpoints') == \
-        res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
+           res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
@@ -3850,30 +3850,33 @@ def test_handle_outgoing_issue_closure(args, expected_delta):
                          [
                              ("Other=Other,Duplicate=Other,False Positive=False Positive,Resolved=True Positive",
                               ["resolved_other", "resolved_other", "resolved_false_positive", "resolved_true_positive",
-                               "resolved_security_testing"]),
+                               "resolved_security_testing", "resolved_other"]),
 
                              ("Other=True Positive,Duplicate=Other,False Positive=False Positive,Resolved=True Positive",
                               ["resolved_true_positive", "resolved_other", "resolved_false_positive",
-                               "resolved_true_positive", "resolved_security_testing"]),
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              ("Duplicate=Other", ["resolved_other", "resolved_other", "resolved_false_positive",
-                                                  "resolved_true_positive", "resolved_security_testing"]),
+                                                  "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used when no mapping provided.
-                             ("", list(XSOAR_RESOLVED_STATUS_TO_XDR.values())),
+                             ("", list(XSOAR_RESOLVED_STATUS_TO_XDR.values()) + ["resolved_other"]),
 
                              # Expecting default mapping to be used when improper mapping is provided.
-                             ("Duplicate=RANDOM1, Other=Random2", list(XSOAR_RESOLVED_STATUS_TO_XDR.values())),
+                             ("Duplicate=RANDOM1, Other=Random2",
+                              list(XSOAR_RESOLVED_STATUS_TO_XDR.values()) + ["resolved_other"]),
 
-                             ("Random1=Duplicate Incident", list(XSOAR_RESOLVED_STATUS_TO_XDR.values())),
+                             ("Random1=Duplicate Incident",
+                              list(XSOAR_RESOLVED_STATUS_TO_XDR.values()) + ["resolved_other"]),
 
                              # Expecting default mapping to be used when improper mapping *format* is provided.
-                             ("Duplicate=Other False Positive=Other", list(XSOAR_RESOLVED_STATUS_TO_XDR.values())),
+                             ("Duplicate=Other False Positive=Other",
+                              list(XSOAR_RESOLVED_STATUS_TO_XDR.values()) + ["resolved_other"]),
 
                              # Expecting default mapping to be used for when improper key-value pair *format* is provided.
                              ("Duplicate=Other, False Positive=Other True Positive=Other, Other=True Positive",
                               ["resolved_true_positive", "resolved_other", "resolved_false_positive",
-                               "resolved_true_positive", "resolved_security_testing"]),
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                          ],
                          ids=["case-1", "case-2", "case-3", "empty-case", "improper-input-case-1", "improper-input-case-2",
@@ -3895,8 +3898,8 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
     mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
                                                          "custom_xsoar_to_xdr_close_reason_mapping": custom_mapping})
 
-    all_xsoar_close_reasons = XSOAR_RESOLVED_STATUS_TO_XDR.keys()
-    for i, close_reason in enumerate(all_xsoar_close_reasons):
+    possible_xsoar_close_reasons = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + ["CUSTOM_CLOSE_REASON"]
+    for i, close_reason in enumerate(possible_xsoar_close_reasons):
         remote_args = UpdateRemoteSystemArgs({'delta': {'closeReason': close_reason},
                                               'status': 2,
                                               'inc_status': 2,
