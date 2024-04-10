@@ -176,7 +176,6 @@ def send_google_chat_custom_card_command(client: Client, blocks: dict, threadNam
         markdown += tableToMarkdown('Custom Card Webhook', result)
         # Add the card details to context after formatting md
         result.update({'Cards': res.get('cardsV2')}),
-        res_thread_name = res.get('thread').get('name')
         results = CommandResults(
             readable_output=markdown,
             outputs_prefix='GoogleChatWebhook.CustomCard',
