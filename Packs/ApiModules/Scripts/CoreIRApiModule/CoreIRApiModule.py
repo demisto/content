@@ -13,7 +13,7 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Other': 'resolved_other',
-    'Duplicate': 'resolved_duplicate_incident',
+    'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive',
     'Resolved': 'resolved_true_positive',
     'Security Testing': 'resolved_security_testing',

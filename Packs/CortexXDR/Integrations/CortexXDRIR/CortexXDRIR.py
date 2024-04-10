@@ -499,8 +499,9 @@ def update_incident_command(client, args):
     unassign_user = args.get('unassign_user') == 'true'
     resolve_comment = args.get('resolve_comment')
     add_comment = args.get('add_comment')
-    resolve_alerts = argToBoolean(args.get('resolve_alerts'))
-
+    resolve_alerts = argToBoolean(args.get('resolve_alerts', False))
+    
+    demisto.debug('help!!!!')
     client.update_incident(
         incident_id=incident_id,
         assigned_user_mail=assigned_user_mail,
@@ -511,7 +512,7 @@ def update_incident_command(client, args):
         resolve_comment=resolve_comment,
         add_comment=add_comment,
     )
-    is_closed = resolve_comment or argToList(status, '_')[0] == 'RESOLVED'
+    is_closed = resolve_comment or (status and argToList(status, '_')[0] == 'RESOLVED')
     if resolve_alerts and is_closed:
         args = {}
         update_related_alerts(client, args)
@@ -986,16 +987,18 @@ def update_remote_system_command(client, args):
             update_args = get_update_args(remote_args)
 
             update_args['incident_id'] = remote_args.remote_incident_id
+            if update_args.get('closingUserId'):
+                update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
             demisto.debug(f"{update_args=}")
             update_incident_command(client, update_args)
 
             close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
-            is_closed = (args.get('close_reason') or args.get('closeReason') or args.get('closeNotes')
-                         or args.get('resolve_comment') or args.get('closingUserId'))
+            is_closed = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
+                         or update_args.get('resolve_comment') or update_args.get('closingUserId'))
             demisto.debug(f"please print args {args} !!!")
-            demisto.debug(f"{close_alerts_in_xdr=}, {args.get('close_reason')=}, {args.get('closeReason')},"
-                          f"{args.get('closeNotes')}, {args.get('resolve_comment')}, {args.get('closingUserId')}")
+            demisto.debug(f"{close_alerts_in_xdr=}, {update_args.get('close_reason')=}, {update_args.get('closeReason')},"
+                          f"{update_args.get('closeNotes')}, {update_args.get('resolve_comment')}, {update_args.get('closingUserId')}")
             if close_alerts_in_xdr and is_closed:
                 update_related_alerts(client, update_args)
 
@@ -1012,7 +1015,6 @@ def update_remote_system_command(client, args):
         return remote_args.remote_incident_id
 
 def update_related_alerts(client: Client, args: dict):
-        #TODO+ if closing without args check the code!!
         new_status = args.get('status')
         comment = args.get('resolve_comment')
         incident_id = args.get('incident_id')
