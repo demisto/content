@@ -534,4 +534,4 @@ def test_tc_add_indicator_command_with_description(mocker):
                                       'description': 'description'})
     # Verifying if the client.make_request method was called with the expected arguments
     call_args = json.loads(res.call_args[1]["payload"])
-    assert {"type": "Description", "value": "description", "default": True} in call_args["attributes"]
+    assert {"type": "Description", "value": "description", "default": True} in call_args["attributes"]["data"]

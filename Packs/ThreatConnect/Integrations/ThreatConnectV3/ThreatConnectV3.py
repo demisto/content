@@ -1188,12 +1188,12 @@ def tc_add_indicator_command(client: Client, args: dict, rating: str = '0', indi
         "summary": indicator,
     }
     if description:
-        payload['attributes'] = [
+        payload['attributes'] = {"data":[
             {"type": "Description",
              "value": description,
              "default": True
              }
-        ]
+        ]}
     if indicator_type == 'Host':
         payload['hostName'] = indicator
     if indicator_type == 'Address':
