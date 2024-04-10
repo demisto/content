@@ -284,7 +284,7 @@ def list_groups_for_user(args, client):  # pragma: no cover
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
     result = CommandResults(
         readable_output=human_readable,
-        # outputs_key_field='UserId',
+        outputs_key_field='UserId',
         outputs=outputs
     )
     return_results(result)
