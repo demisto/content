@@ -1244,6 +1244,7 @@ def fetch_incidents(
         case None:
             status_to_fetch = None
         case _:
+            # unreachable code - only here for semantic purpose
             raise ValueError(
                 f"Invalid value for 'alert_status': "
                 f"expected 'ACTIVE', 'CLOSED' or None, get '{alert_status}'"
