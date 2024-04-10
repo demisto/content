@@ -101,14 +101,6 @@ class TestNormalCommands:
         def get_folder_by_path(self, path, account=None, is_public=False):
             return ""
 
-    class MockFolderCollection:
-
-        def __init__(self, res):
-            self.find_folders_res = res
-
-        def find_folders(self):
-            return self.find_folders_res
-
     def test_ews_find_folders(self, mocker):
         """
         This test checks the following normal_command:
@@ -126,10 +118,9 @@ class TestNormalCommands:
         """
         command_name = "ews-find-folders"
         raw_response = RAW_RESPONSES[command_name]
-        mocker.patch('EWSO365.FolderCollection', return_value=self.MockFolderCollection(raw_response))
         expected = COMMAND_OUTPUTS[command_name]
         client = self.MockClient()
-
+        client.account.walk_res = raw_response
         res = find_folders(client)
         actual_ec = res[1]
         assert expected == actual_ec

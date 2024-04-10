@@ -28,7 +28,6 @@ from exchangelib import (
     ExtendedProperty,
     FileAttachment,
     Folder,
-    FolderCollection,
     HTMLBody,
     Identity,
     ItemAttachment,
@@ -46,8 +45,6 @@ from exchangelib.errors import (
     RateLimitError,
     ResponseMessageError,
 )
-from exchangelib.fields import FieldPath
-from exchangelib.folders import BaseFolder
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
 from exchangelib.services.common import EWSAccountService, EWSService
@@ -342,11 +339,9 @@ class EWSClient:
             account = self.get_account()
         # handle exchange folder id
         if len(path) == FOLDER_ID_LEN:
-            additional_fields = {FieldPath(field=BaseFolder.get_field_by_fieldname('_id'))}
-            for f in FolderCollection(account, folders=[account.root]).find_folders(depth='Deep',
-                                                                                    additional_fields=additional_fields):
-                if f._id.id == path:
-                    return f
+            folders_map = account.root._folders_map
+            if path in folders_map:
+                return account.root._folders_map[path]
 
         root = account.public_folders_root if is_public else account.root
         folder = root if path == 'AllItems' else root.tois
@@ -1225,7 +1220,7 @@ def search_items_in_mailbox(
         is_public = client.is_default_folder(folder_path, is_public)
         folders = [client.get_folder_by_path(folder_path, account, is_public)]
     else:
-        folders = FolderCollection(account=account, folders=[account.root.tois]).find_folders()
+        folders = account.inbox.parent.walk()  # pylint: disable=E1101
 
     items = []  # type: ignore
     selected_all_fields = selected_fields == "all"
@@ -1440,15 +1435,16 @@ def find_folders(client: EWSClient, target_mailbox=None):
     :return: Output tuple
     """
     account = client.get_account(target_mailbox)
-    root_collection = FolderCollection(account=account, folders=[account.root])
+    root = account.root
 
     if client.is_public_folder:
-        root_collection = FolderCollection(account=account, folders=[account.public_folders_root])
+        root = account.public_folders_root
     folders = []
-    for f in root_collection.find_folders():  # pylint: disable=E1101
+    for f in root.walk():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
         folders.append(folder)
-    readable_output = tableToMarkdown(t=folders, name='Available folders')
+    folders_tree = root.tree()  # pylint: disable=E1101
+    readable_output = folders_tree
     output = {"EWS.Folders(val.id == obj.id)": folders}
     return readable_output, output, folders
 
