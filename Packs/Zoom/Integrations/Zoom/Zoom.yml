@@ -926,7 +926,7 @@ script:
     - name: reply_main_message_id
       description: The reply message's ID. This field only returns if the message is a reply message.
       type: string
-    - name: to_channel_test
+    - name: to_channel
       description: The channel ID of the channel to send a message.
       type: string
     - name: to_contact
