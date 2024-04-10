@@ -1624,7 +1624,7 @@
                 "DeleteContext"
             ],
             "playbookID": "DeleteContext-test",
-            "fromversion": "6.10.0"
+            "fromversion": "6.9.0"
         },
         {
             "playbookID": "DeleteContext-auto-test"
