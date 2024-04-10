@@ -1,0 +1,167 @@
+{
+  "EnrichedComplianceIssue": {
+    "cause": "",
+    "cri": true,
+    "cve": "",
+    "cvss": 0,
+    "description": "The container's root filesystem should be treated as a 'golden image' by using pods with\n\t\t\treadOnlyRootFilesystem option. This prevents any writes to the container's root filesystem at\ncontainer runtime and enforces the principle of immutable infrastructure",
+    "discovered": "0001-01-01T00:00:00Z",
+    "exploit": "",
+    "fixDate": 0,
+    "functionLayer": "",
+    "id": 1337,
+    "layerTime": 0,
+    "link": "",
+    "packageName": "",
+    "packageVersion": "",
+    "published": 0,
+    "riskFactors": null,
+    "secret": {},
+    "severity": "high",
+    "status": "",
+    "templates": null,
+    "text": "",
+    "title": "title",
+    "twistlock": false,
+    "type": "custom",
+    "vecStr": "",
+    "wildfireMalware": {}
+  },
+  "PrismaCloudCompute": {
+    "ContainersScanResults": [{
+      "_id": "some_id1",
+      "agentless": true,
+      "agentlessScanID": 902,
+      "collections": [
+        "Some Collection 1",
+        "All"
+      ],
+      "csa": false,
+      "firewallProtection": {
+        "enabled": false,
+        "outOfBandMode": "",
+        "supported": false
+      },
+      "hostname": "some_hostname",
+      "info": {
+        "allCompliance": {},
+        "app": "sleep 123456",
+        "cloudMetadata": {
+          "accountID": "some_account_id",
+          "image": "some_image",
+          "labels": [
+            {
+              "key": "some_label_key1",
+              "sourceName": "some_source_name1",
+              "sourceType": "some_source_type1",
+              "timestamp": "2024-01-08T10:52:12.1Z",
+              "value": "some_value1"
+            },
+            {
+              "key": "some_label_key2",
+              "sourceName": "some_source_name2",
+              "sourceType": "some_source_type2",
+              "timestamp": "2024-01-08T10:52:12.1Z",
+              "value": "some_value2"
+            }
+          ],
+          "provider": "some_provider",
+          "region": "sa-east-1",
+          "resourceID": "some_resource_id",
+          "type": "some_type",
+          "vmImageID": "some_vm_image_id"
+        },
+        "cluster": "some_cluster",
+        "clusterType": "EKS",
+        "complianceDistribution": {
+          "critical": 2,
+          "high": 6,
+          "low": 0,
+          "medium": 0,
+          "total": 8
+        },
+        "complianceIssues": [
+          {
+            "cause": "",
+            "cri": true,
+            "cve": "",
+            "cvss": 0,
+            "description": "The container's root filesystem should be treated as a 'golden image' by using pods with\n\t\t\treadOnlyRootFilesystem option. This prevents any writes to the container's root filesystem at\ncontainer runtime and enforces the principle of immutable infrastructure",
+            "discovered": "0001-01-01T00:00:00Z",
+            "exploit": "",
+            "fixDate": 0,
+            "functionLayer": "",
+            "id": 5512,
+            "layerTime": 0,
+            "link": "",
+            "packageName": "",
+            "packageVersion": "",
+            "published": 0,
+            "riskFactors": null,
+            "secret": {},
+            "severity": "high",
+            "status": "",
+            "templates": null,
+            "text": "",
+            "title": "Mount container's root filesystem as read only",
+            "twistlock": false,
+            "type": "container",
+            "vecStr": "",
+            "wildfireMalware": {}
+          },
+          {
+            "cause": "",
+            "cri": true,
+            "cve": "",
+            "cvss": 0,
+            "description": "Seccomp filtering provides a means for a process to specify a filter for incoming system\ncalls. The default CRI seccomp profile works on whitelist basis and allows specified default system\ncalls blocking all others. It should not be disabled unless it hinders your container\napplication usage",
+            "discovered": "0001-01-01T00:00:00Z",
+            "exploit": "",
+            "fixDate": 0,
+            "functionLayer": "",
+            "id": 5521,
+            "layerTime": 0,
+            "link": "",
+            "packageName": "",
+            "packageVersion": "",
+            "published": 0,
+            "riskFactors": null,
+            "secret": {},
+            "severity": "critical",
+            "status": "",
+            "templates": null,
+            "text": "",
+            "title": "Do not disable default seccomp profile",
+            "twistlock": false,
+            "type": "container",
+            "vecStr": "",
+            "wildfireMalware": {}
+          }
+        ],
+        "complianceIssuesCount": 2,
+        "complianceRiskScore": 2060000,
+        "id": "some_container_id",
+        "image": "some_docker_image",
+        "imageID": "some_docker_image_id",
+        "imageName": "some_docker_image_name",
+        "infra": false,
+        "installedProducts": {
+          "crio": true
+        },
+        "labels": [
+            "some_label1",
+            "some_label2"
+        ],
+        "name": "some_name_info",
+        "namespace": "default",
+        "network": {
+          "ports": []
+        },
+        "processes": [],
+        "profileID": "some_profile_id",
+        "startTime": "2024-01-07T08:46:44.593Z"
+      },
+      "scanTime": "2024-01-08T10:58:06.247Z"
+    }]
+  }
+}

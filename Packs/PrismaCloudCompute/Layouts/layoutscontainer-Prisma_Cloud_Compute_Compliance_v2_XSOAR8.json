@@ -1,0 +1,715 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "summary",
+                "name": "Legacy Summary",
+                "type": "summary"
+            },
+            {
+                "id": "caseinfoid",
+                "name": "Incident Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "isVisible": true,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "incident-type-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "incident-severity-field",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "incident-owner-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotsource",
+                                "height": 22,
+                                "id": "incident-source-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "incident-sourceBrand-field",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "incident-sourceInstance-field",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "incident-playbookId-field",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Team Members",
+                        "static": false,
+                        "type": "team",
+                        "w": 1,
+                        "x": 2,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "items": [
+                            {
+                                "endCol": 1,
+                                "fieldId": "occurred",
+                                "height": 24,
+                                "id": "incident-occurred-field",
+                                "index": 0,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 1,
+                                "fieldId": "dbotmodified",
+                                "height": 24,
+                                "id": "incident-modified-field",
+                                "index": 1,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 24,
+                                "id": "incident-dueDate-field",
+                                "index": 2,
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 24,
+                                "id": "incident-created-field",
+                                "index": 0,
+                                "startCol": 1
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 24,
+                                "id": "incident-closed-field",
+                                "index": 1,
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2
+                    },
+                    {
+                        "description": "Enrich data related to compliance issues retrieved from Prisma Cloud and display the enriched results within dedicated tabs, organized by the type of compliance issue, in a structured table format.\n\n- Host Compliance Information\n- Container Compliance Information\n- Image Compliance Information\n\nIt's important to acknowledge that the duration to populate the compliance issues table is subject to variability based on the size of the environment and the quantity of compliance issues.\n\nUpon the successful execution of the playbook, as evidenced under the \"Work Plan\" tab, the presented data transitions into a static state, delivering users a comprehensive and definitive overview of not only the enriched compliance data but also detailed information about each specific resource, whether host, container, or image, tailored to the incident type.",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-071d8150-d3f0-11ee-8026-0786347337f1",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Compliance Use Case Description",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "evidenceBoard",
+                "name": "Evidence Board",
+                "type": "evidenceBoard"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            },
+            {
+                "id": "canvas",
+                "name": "Canvas",
+                "type": "canvas"
+            },
+            {
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "prismacloudcomputeshowcompliancetab"
+                                }
+                            },
+                            "operator": "containsGeneral",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "host"
+                                }
+                            },
+                            "type": "shortText"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "golgtolmvy",
+                "name": "Host Compliance Information",
+                "sections": [
+                    {
+                        "description": "Buttons description:\n- **Enrich Host Compliance Issues** - provide further details like issue cause and description for a specific host. You also have the option to input specific compliance IDs. Once the results are fetched, they will be displayed in a new tab named \"Detailed Compliance Issues.\"\n- **Send Compliance Issues via Email** - Send the enriched compliance issues table via email in html format or in XLSX attachment.",
+                        "displayType": "CARD",
+                        "h": 8,
+                        "hideName": false,
+                        "i": "caseinfoid-golgtolmvy-field-changed-golgtolmvy-caseinfoid-golgtolmvy-caseinfoid-5be896c0-b51e-11ee-953e-756485313d90",
+                        "items": [
+                            {
+                                "args": {
+                                    "ComplianceIDs": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "compliance_ids": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "e49c5410-c2df-11ee-ab9b-1fe3c1ce7b17",
+                                "index": 0,
+                                "listId": "caseinfoid-5be896c0-b51e-11ee-953e-756485313d90",
+                                "name": "Enrich Host Compliance Issues",
+                                "scriptId": "PCComputeHostComplianceIssuesButton",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "renderedhtml",
+                                "height": 44,
+                                "id": "edb03fb0-ef5a-11ee-93bc-2f9991eb8c88",
+                                "index": 1,
+                                "listId": "caseinfoid-golgtolmvy-field-changed-golgtolmvy-caseinfoid-golgtolmvy-caseinfoid-5be896c0-b51e-11ee-953e-756485313d90",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "desired_resources": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "desired_severities": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "resource_type": {
+                                        "simple": "host"
+                                    },
+                                    "table": {
+                                        "simple": "${incident.prismacloudcomputehostcomplianceissues}"
+                                    },
+                                    "title": {
+                                        "simple": "Prisma Cloud - Hosts Compliance Issues"
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "endCol": 4,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "98819060-d3ea-11ee-8ff5-2b0c5e4bbbdf",
+                                "index": 0,
+                                "name": "Send Compliance Issues via Email",
+                                "scriptId": "CreatePrismaCloudComputeResourceComplianceReportButton",
+                                "sectionItemType": "button",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Host compliance issues",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "prismacloudcomputeshowcompliancetab"
+                                }
+                            },
+                            "operator": "containsGeneral",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "container"
+                                }
+                            },
+                            "type": "shortText"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "z89meilzzr",
+                "name": "Container Compliance Information",
+                "sections": [
+                    {
+                        "description": "Buttons description:\n- **Enrich Container Compliance Issues** - provide further details like issue cause and description for a specific container. You also have the option to input specific compliance IDs. Once the results are fetched, they will be displayed in a new tab named \"Detailed Compliance Issues.\"\n- **Send Compliance Issues via Email** - Send the enriched compliance issues table via email in html format or in XLSX attachment.",
+                        "displayType": "CARD",
+                        "h": 8,
+                        "hideName": false,
+                        "i": "caseinfoid-27c35970-c112-11ee-bda4-e12716dd436c",
+                        "items": [
+                            {
+                                "args": {
+                                    "compliance_ids": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "0dd68370-c356-11ee-a52b-1f1bb5e9d0be",
+                                "index": 0,
+                                "listId": "caseinfoid-27c35970-c112-11ee-bda4-e12716dd436c",
+                                "name": "Enrich Container Compliance Issue",
+                                "scriptId": "PCComputeContainerComplianceIssuesButton",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "renderedhtml",
+                                "height": 44,
+                                "id": "002c26e0-ef5b-11ee-93bc-2f9991eb8c88",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "desired_resources": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "desired_severities": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "resource_type": {
+                                        "simple": "container"
+                                    },
+                                    "table": {
+                                        "simple": "${incident.prismacloudcomputecontainercomplianceissues}"
+                                    },
+                                    "title": {
+                                        "simple": "Prisma Cloud - Containers Compliance Issues"
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "endCol": 4,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "53ea7ed0-d3cc-11ee-a07b-65cce8bb8474",
+                                "index": 0,
+                                "name": "Send Compliance Issues via Email",
+                                "scriptId": "CreatePrismaCloudComputeResourceComplianceReportButton",
+                                "sectionItemType": "button",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Container compliance issues",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "prismacloudcomputeshowcompliancetab"
+                                }
+                            },
+                            "operator": "containsGeneral",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "image"
+                                }
+                            },
+                            "type": "shortText"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "g6zyzr3vyg",
+                "name": "Image Compliance Information",
+                "sections": [
+                    {
+                        "description": "Buttons description:\n- **Enrich Image Compliance Issues** - provide further details like issue cause and description for a specific image. You also have the option to input specific compliance IDs. Once the results are fetched, they will be displayed in a new tab named \"Detailed Compliance Issues.\"\n- **Send Compliance Issues via Email** - Send the enriched compliance issues table via email in html format or in XLSX attachment.",
+                        "displayType": "CARD",
+                        "h": 8,
+                        "hideName": false,
+                        "i": "caseinfoid-g6zyzr3vyg-caseinfoid-b606f0e0-c2c8-11ee-ade5-b3726450e5e4",
+                        "items": [
+                            {
+                                "args": {
+                                    "ComplianceIDs": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "compliance_ids": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "7080dbe0-c2e0-11ee-ab9b-1fe3c1ce7b17",
+                                "index": 0,
+                                "listId": "caseinfoid-b606f0e0-c2c8-11ee-ade5-b3726450e5e4",
+                                "name": "Enrich Image Compliance Issues",
+                                "scriptId": "PCComputeImageComplianceIssuesButton",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "renderedhtml",
+                                "height": 44,
+                                "id": "09bc6cb0-ef5b-11ee-93bc-2f9991eb8c88",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "desired_resources": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "desired_severities": {
+                                        "simple": "",
+                                        "userMarkedRequired": true
+                                    },
+                                    "resource_type": {
+                                        "simple": "image"
+                                    },
+                                    "table": {
+                                        "simple": "${incident.prismacloudcomputeimagecomplianceissues}"
+                                    },
+                                    "title": {
+                                        "simple": "Prisma Cloud - Images Compliance Issues"
+                                    }
+                                },
+                                "buttonClass": "success",
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "d1cb9720-d3eb-11ee-8026-0786347337f1",
+                                "index": 0,
+                                "listId": "caseinfoid-g6zyzr3vyg-caseinfoid-b606f0e0-c2c8-11ee-ade5-b3726450e5e4",
+                                "name": "Send Compliance Issues via Email",
+                                "scriptId": "CreatePrismaCloudComputeResourceComplianceReportButton",
+                                "sectionItemType": "button",
+                                "startCol": 2
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "image compliance issues",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "prismacloudcomputeshowcompliancetab"
+                                }
+                            },
+                            "operator": "containsGeneral",
+                            "right": {
+                                "isContext": false,
+                                "value": {
+                                    "simple": "detailed"
+                                }
+                            },
+                            "type": "shortText"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "xqjynytkqj",
+                "name": "Detailed Compliance Issues",
+                "sections": [
+                    {
+                        "h": 8,
+                        "i": "caseinfoid-xqjynytkqj-g6zyzr3vyg-caseinfoid-f8625c90-c2e1-11ee-ab9b-1fe3c1ce7b17",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Compliance Issues Results",
+                        "query": {
+                            "tags": [
+                                "ComplianceIssuesResults"
+                            ]
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "filters": [
+                    [
+                        {
+                            "ignoreCase": false,
+                            "left": {
+                                "isContext": true,
+                                "value": {
+                                    "simple": "ticketnumber"
+                                }
+                            },
+                            "operator": "isNotEmpty",
+                            "right": null,
+                            "type": "shortText"
+                        }
+                    ]
+                ],
+                "hidden": false,
+                "id": "vjeehikhn4",
+                "name": "Ticketing Information",
+                "sections": [
+                    {
+                        "columns": [
+                            {
+                                "displayName": "Ticketing System",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "ticketingsystem",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 196
+                            },
+                            {
+                                "displayName": "Ticket ID",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "ticketid",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 232
+                            },
+                            {
+                                "displayName": "Ticket Number",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "ticketnumber",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 172
+                            },
+                            {
+                                "displayName": "Action",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "action",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 245
+                            },
+                            {
+                                "displayName": "Title",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "title",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 150
+                            }
+                        ],
+                        "displayType": "ROW",
+                        "h": 7,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "caseinfoid-7b3bd030-e478-11ee-b58e-03c58d3ab8bd",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "prismacloudcomputeticketsinfo",
+                                "height": 106,
+                                "id": "85528410-e478-11ee-b58e-03c58d3ab8bd",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "External Ticketing Info",
+                        "static": false,
+                        "w": 3,
+                        "wrapLabels": false,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Prisma Cloud Compute Compliance Incident v2",
+    "name": "Prisma Cloud Compute Compliance Incident v2",
+    "system": false,
+    "version": -1,
+    "marketplaces": [
+        "xsoar_saas"
+    ],
+    "fromVersion": "8.0.0",
+    "description": ""
+}
