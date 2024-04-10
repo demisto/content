@@ -38,9 +38,6 @@ def installLibrary(dir_path: Path, library_name: str) -> str:
     except Exception as e:
         return_error(f"An error occurred: {str(e)}")
 
-    finally:
-        shutil.rmtree(dir_path)
-
 def main():
     args = demisto.args()
     library_name = args.get('library_name')
