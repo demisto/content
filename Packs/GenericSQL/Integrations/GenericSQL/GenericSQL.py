@@ -347,16 +347,13 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
     return msg if msg else 'ok', {}, []
 
 
-def result_to_list_of_dicts(client: Client, result: list[dict], headers: list[str]) -> list[dict]:
+def result_to_list_of_dicts(result: list[dict]) -> list[dict]:
     """
     This function pre-processes the query's result to a list of dictionaries.
     """
-    if client.dialect == TERADATA:
-        # binding the headers with the columns
-        converted_table = [dict(zip(headers, row)) for row in result]
-    else:
-        # converting a sqlalchemy object to a table
-        converted_table = [dict(row) for row in result]
+
+    # converting a sqlalchemy object to a table
+    converted_table = [dict(row) for row in result]
 
     # converting b'' and datetime objects to readable ones
     table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
@@ -381,7 +378,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit)
 
-        table = result_to_list_of_dicts(client, result, headers)
+        table = result_to_list_of_dicts(result)
         table = table[skip:skip + limit]
 
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers,

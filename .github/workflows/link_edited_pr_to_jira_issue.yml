@@ -1,7 +1,7 @@
 name: Add PR link to Related Jira Issue
 on:
   pull_request:
-    types: [ opened, edited ]
+    types: [opened, edited]
 
 permissions:
   pull-requests: read
@@ -14,11 +14,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v8
+        uses: Gr1N/setup-poetry@v9
       - uses: actions/cache@v2
         with:
           path: .venv
