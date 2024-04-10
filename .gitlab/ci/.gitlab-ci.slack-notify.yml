@@ -17,12 +17,11 @@ include:
 slack-notify:
   tags:
     - gke
-  stage: unittests-and-validations
-  extends: .default-before-script-no-sdk
+  stage: notify
+  extends: .default-job-settings
   script:
     - !reference [.download-demisto-conf]
-    - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" -t "test" --allow-failure "${SLACK_ALLOW_FAILURE}" -ch "dmst-build-test"
-#    - python3 ./Tests/scripts/gitlab_slack_notifier.py -p "${PIPELINE_TO_QUERY}" -s "${SLACK_TOKEN}" -c "${GITLAB_STATUS_TOKEN}" -ch "${SLACK_CHANNEL}" --triggering-workflow "${WORKFLOW}" --allow-failure "${SLACK_ALLOW_FAILURE}" --name-mapping_path "${CI_PROJECT_DIR}/name_mapping.json"
+    - python3 ./Tests/scripts/gitlab_slack_notifier.py -p "${PIPELINE_TO_QUERY}" -s "${SLACK_TOKEN}" -c "${GITLAB_STATUS_TOKEN}" -ch "${SLACK_CHANNEL}" --triggering-workflow "${WORKFLOW}" --allow-failure "${SLACK_ALLOW_FAILURE}" --name-mapping_path "${CI_PROJECT_DIR}/name_mapping.json"
   retry:
     max: 2
   needs:
