@@ -50,7 +50,7 @@ def get_pr_files(pr_number: str, github_token: str) -> Iterable[str]:
         )
         response.raise_for_status()
         files = response.json()
-        if (not files) or (len(list(files)) < PER_PAGE):
+        if not files:
             break
         for pr_file in files:
             if pr_file['filename'].startswith('Packs/'):
