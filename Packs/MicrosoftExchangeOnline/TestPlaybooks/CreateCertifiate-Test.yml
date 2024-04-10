@@ -1,6 +1,5 @@
 id: CreateCertificate-Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: CreateCertificate-Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -39,9 +39,7 @@ tasks:
       id: afce03dd-087a-41f0-8f47-d0b2179cfaf1
       version: -1
       name: Run CreateCertificate
-      description: Creates a public key (.cer file), a private key (.pfx) file, and
-        a Base64 encoded private key to use to authenticate the EWS Extension Online
-        Powershell v2 integration.
+      description: Creates a public key (.cer file), a private key (.pfx) file, and a Base64 encoded private key to use to authenticate the EWS Extension Online Powershell v2 integration.
       scriptName: CreateCertificate
       type: regular
       iscommand: false
@@ -176,6 +174,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -205,3 +204,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.5.0
+description: test test.

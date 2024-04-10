@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -161,6 +162,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -182,8 +184,7 @@ tasks:
       id: 33ae6a41-19ed-498e-887a-8bd1f5929437
       version: -1
       name: Load Automation's Docker
-      description: Predict phishing incidents using the out-of-the-box pretrained
-        model.
+      description: Predict phishing incidents using the out-of-the-box pretrained model.
       scriptName: DBotPredictOutOfTheBox
       type: regular
       iscommand: false
@@ -255,8 +256,7 @@ tasks:
       id: bf5571cb-b2c2-46c5-8a85-49c3cbb4c841
       version: -1
       name: 'Load Automation''s Docker #2'
-      description: Predict phishing incidents using the out-of-the-box pretrained
-        model.
+      description: Predict phishing incidents using the out-of-the-box pretrained model.
       scriptName: DBotPredictOutOfTheBox
       type: regular
       iscommand: false
@@ -336,3 +336,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: test test.

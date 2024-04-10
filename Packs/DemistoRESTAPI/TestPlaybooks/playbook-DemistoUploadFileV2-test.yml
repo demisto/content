@@ -1,7 +1,7 @@
 id: DemistoUploadFileV2 Test
 version: -1
 name: DemistoUploadFileV2 Test
-description: Test file uploading to incident with and without comments.
+description: test test.
 starttaskid: "0"
 tasks:
   "0":

@@ -471,9 +471,7 @@ tasks:
       - "5"
     scriptarguments:
       message:
-        simple: Either IP range was not determined, or the email
-          hasn't been enriched by ThreatQ v2. This is probably a problem with the
-          integration, the API quota or the IsIPInRanges script.
+        simple: Either IP range was not determined, or the email hasn't been enriched by ThreatQ v2. This is probably a problem with the integration, the API quota or the IsIPInRanges script.
     reputationcalc: 1
     separatecontext: false
     view: |-
@@ -539,3 +537,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: test test.

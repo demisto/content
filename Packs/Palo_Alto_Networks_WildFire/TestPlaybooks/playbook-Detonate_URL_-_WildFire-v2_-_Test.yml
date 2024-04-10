@@ -2,8 +2,7 @@ id: Detonate URL - WildFire-v2 - Test
 version: -1
 name: Detonate URL - WildFire-v2 - Test
 description: |-
-  test pb of:
-  Detonate URL - WildFire-v2
+  test test.
 starttaskid: "0"
 tasks:
   "0":
@@ -16,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -227,6 +227,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {

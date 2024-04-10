@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -39,8 +40,7 @@ tasks:
       id: b853ff42-4f93-4657-8732-cc129984906d
       version: -1
       name: cs-reports
-      description: The Falcon Intel Reports API allows to query CrowdStrike intelligence
-        publications.
+      description: The Falcon Intel Reports API allows to query CrowdStrike intelligence publications.
       script: '|||cs-reports'
       type: regular
       iscommand: true
@@ -529,6 +529,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -1093,4 +1094,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: Test playbook for Crowdstrike Falcon Intel v2
+description: test test.

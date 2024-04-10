@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -88,12 +89,7 @@ tasks:
         simple: 'Re: PO# OP848784204'
       emailBodyHTML: {}
       emailSubject:
-        simple: 'Dear office, Kindly find attached our new order (Po# OP848784204)
-          and the attached letter for the bank payment. Please sign, stamp and resend.   Kindly
-          ship our order by using the service DHL EXPRESS WORLDWIDE. Our DHL account
-          number is: 950389383   Thanks  Best Regards,  Cristina Cadano Marketing
-          Officer - Procurement Officer Marketing@trustm.tv Tel. +974 4431 3336 Fax
-          +974 4435 3336 P.O. Box 10536 Doha,'
+        simple: 'Dear office, Kindly find attached our new order (Po# OP848784204) and the attached letter for the bank payment. Please sign, stamp and resend.   Kindly ship our order by using the service DHL EXPRESS WORLDWIDE. Our DHL account number is: 950389383   Thanks  Best Regards,  Cristina Cadano Marketing Officer - Procurement Officer Marketing@trustm.tv Tel. +974 4431 3336 Fax +974 4435 3336 P.O. Box 10536 Doha,'
       labelProbabilityThreshold: {}
       minTextLength: {}
       returnError: {}
@@ -169,6 +165,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -190,8 +187,7 @@ tasks:
       id: 45bfa561-25d8-4438-8780-de8166abd545
       version: -1
       name: Load Automation's Docker
-      description: Predict phishing incidents using the out-of-the-box pretrained
-        model.
+      description: Predict phishing incidents using the out-of-the-box pretrained model.
       scriptName: DBotPredictOutOfTheBoxV2
       type: regular
       iscommand: false
@@ -263,8 +259,7 @@ tasks:
       id: 309a9ea9-16a6-4529-83cb-ac798529290b
       version: -1
       name: Load Automation's Docker
-      description: Predict phishing incidents using the out-of-the-box pretrained
-        model.
+      description: Predict phishing incidents using the out-of-the-box pretrained model.
       scriptName: DBotPredictOutOfTheBoxV2
       type: regular
       iscommand: false
@@ -343,3 +338,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.5.0
+description: test test.
