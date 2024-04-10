@@ -197,16 +197,17 @@ class CoreClient(BaseClient):
             address = full_url if full_url else urljoin(self._base_url, url_suffix)
             headers = headers if headers else self._headers
             data = json.dumps(json_data) if json_data else data
-            res = demisto._apiCall(
+            response = demisto._apiCall(
                         method=method,
                         path=address,
                         data=data,
                         headers=self._headers,
                         timeout=timeout
                     )
-            if not self._is_status_code_valid(res, ok_codes):
-                    self._handle_error(error_handler, res, with_metrics)
-            return json.loads(res['data'])
+            demisto.debug(f'res: {response}')
+            if ok_codes and response.get('status') not in ok_codes:
+                    self._handle_error(error_handler, response, with_metrics)
+            return json.loads(response['data'])
         except requests.exceptions.ConnectTimeout as exception:
                 err_msg = 'Connection Timeout Error - potential reasons might be that the Server URL parameter' \
                           ' is incorrect or that the Server is not accessible from your host.'
