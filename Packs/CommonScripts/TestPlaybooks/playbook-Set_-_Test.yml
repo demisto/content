@@ -1,735 +1,609 @@
-description: A test for the Set command. Tests the Stringify parameter too.
+description: test test
+fromversion: 5.0.0
 id: Set - Test
 inputs: []
 name: Set - Test
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 2cf02b47-e47f-4e2b-8c3e-ea0e6940bbca
-    type: start
-    task:
-      id: 2cf02b47-e47f-4e2b-8c3e-ea0e6940bbca
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 50
-        }
-      }
-    note: false
-    timertriggers: []
+  '0':
+    continueonerrortype: ''
+    id: '0'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: a08ada0a-294d-4913-844d-abbb55466baa
-    type: regular
-    task:
-      id: a08ada0a-294d-4913-844d-abbb55466baa
-      version: -1
-      name: Set number as number
-      description: Sets a value into the context with the given context key
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - '7'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 2cf02b47-e47f-4e2b-8c3e-ea0e6940bbca
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 2cf02b47-e47f-4e2b-8c3e-ea0e6940bbca
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    reputationcalc: 1
     scriptarguments:
       key:
         simple: NumberSavedAsNumber
       value:
-        simple: "14444444444444444444"
-    reputationcalc: 1
+        simple: '14444444444444444444'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1160,
-          "y": 350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 5c3a99c1-8b8f-49ac-8308-f5b7808c74e3
-    type: regular
     task:
-      id: 5c3a99c1-8b8f-49ac-8308-f5b7808c74e3
-      version: -1
-      name: Set number as string
+      brand: ''
       description: Sets a value into the context with the given context key
+      id: a08ada0a-294d-4913-844d-abbb55466baa
+      iscommand: false
+      name: Set number as number
       scriptName: Set
       type: regular
+      version: -1
+    taskid: a08ada0a-294d-4913-844d-abbb55466baa
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 1160,\n    \"y\": 350\n  }\n}"
+  '10':
+    continueonerrortype: ''
+    id: '10'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Context was not set as expected to test_value
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints an error entry with a given message
+      id: 46df44e3-8391-4d83-8d07-a8eff2ebf33f
       iscommand: false
-      brand: ""
+      name: Fail
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 46df44e3-8391-4d83-8d07-a8eff2ebf33f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 960,\n    \"y\": 1610\n  }\n}"
+  '11':
+    continueonerrortype: ''
+    id: '11'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '12'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: 'true'
+      key:
+        simple: Data(val.ID == obj.ID)
+      value:
+        simple: '{"ID": "test_id", "Value": "test_val2"}'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 59836edb-a29e-40ac-82c9-9159edf4ccdc
+      iscommand: false
+      name: Set - Update Object
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 59836edb-a29e-40ac-82c9-9159edf4ccdc
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1630\n  }\n}"
+  '12':
+    continueonerrortype: ''
+    id: '12'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      'no':
+      - '13'
+      'yes':
+      - '14'
+    note: false
+    quietmode: 0
+    results:
+    - AreValuesEqual
+    scriptarguments:
+      left:
+        simple: ${Data.Value}
+      right:
+        simple: test_val2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Check whether the values provided in arguments are equal. If either
+        of the arguments are missing, no is returned.
+      id: dc69dffc-68c8-4f08-8093-86afb3ff9677
+      iscommand: false
+      name: Verify Context
+      scriptName: AreValuesEqual
+      type: condition
+      version: -1
+    taskid: dc69dffc-68c8-4f08-8093-86afb3ff9677
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1830\n  }\n}"
+  '13':
+    continueonerrortype: ''
+    id: '13'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Failed verifying context value of test_val2
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Prints an error entry with a given message
+      id: 6a049e8f-3718-4f48-83b5-2611600949d7
+      iscommand: false
+      name: Fail
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 6a049e8f-3718-4f48-83b5-2611600949d7
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 880,\n    \"y\": 2030\n  }\n}"
+  '14':
+    continueonerrortype: ''
+    id: '14'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 0f055861-68f5-4080-8e23-7a05a8f25de1
+      iscommand: false
+      name: All Good
+      type: title
+      version: -1
+    taskid: 0f055861-68f5-4080-8e23-7a05a8f25de1
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 2050\n  }\n}"
+  '15':
+    continueonerrortype: ''
+    id: '15'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '16'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: LargeNumber
+      value:
+        simple: '1234567890123456789012345'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: ff62230d-fe4f-4134-8051-a1cac5547c8f
+      iscommand: false
+      name: Set large number
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: ff62230d-fe4f-4134-8051-a1cac5547c8f
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 360\n  }\n}"
+  '16':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: LargeNumber
+          operator: isEqualNumber
+          right:
+            value:
+              simple: '1234567890123456789012345'
+      label: 'yes'
+    continueonerrortype: ''
+    id: '16'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 3d0f60f1-5c8c-4a47-859f-85748efc75d2
+      iscommand: false
+      name: Was the large number saved?
+      type: condition
+      version: -1
+    taskid: 3d0f60f1-5c8c-4a47-859f-85748efc75d2
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 170,\n    \"y\": 510\n  }\n}"
+  '17':
+    continueonerrortype: ''
+    id: '17'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '18'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: DecimalNumber
+      value:
+        simple: '12345.6789'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 52bca13e-34cd-42a5-81cd-ad9d58db2fa8
+      iscommand: false
+      name: Set decimal number
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 52bca13e-34cd-42a5-81cd-ad9d58db2fa8
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 740,\n    \"y\": 360\n  }\n}"
+  '18':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: DecimalNumber
+          operator: isEqualNumber
+          right:
+            value:
+              simple: '12345.6789'
+      label: 'yes'
+    continueonerrortype: ''
+    id: '18'
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '4'
+    separatecontext: false
+    task:
+      brand: ''
+      id: 319a9b4f-062e-48fa-8173-33d24136973c
+      iscommand: false
+      name: Was the decimal number saved?
+      type: condition
+      version: -1
+    taskid: 319a9b4f-062e-48fa-8173-33d24136973c
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 740,\n    \"y\": 530\n  }\n}"
+  '2':
+    continueonerrortype: ''
+    id: '2'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    reputationcalc: 1
     scriptarguments:
       key:
         simple: NumberSavedAsString
       stringify:
-        simple: "true"
+        simple: 'true'
       value:
-        simple: "14444444444444444444"
-    reputationcalc: 1
+        simple: '14444444444444444444'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -350,
-          "y": 350
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 84e845bf-0441-407f-89e6-c68c7ce0a6e7
-    type: condition
     task:
-      id: 84e845bf-0441-407f-89e6-c68c7ce0a6e7
-      version: -1
-      name: Was the number saved as string?
-      type: condition
+      brand: ''
+      description: Sets a value into the context with the given context key
+      id: 5c3a99c1-8b8f-49ac-8308-f5b7808c74e3
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "4"
-    separatecontext: false
+      name: Set number as string
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 5c3a99c1-8b8f-49ac-8308-f5b7808c74e3
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": -350,\n    \"y\": 350\n  }\n}"
+  '3':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
                 root: NumberSavedAsString
-            iscontext: true
+          operator: isEqualString
           right:
             value:
-              simple: "14444444444444444444"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -350,
-          "y": 550
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '14444444444444444444'
+      label: 'yes'
+    continueonerrortype: ''
+    id: '3'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: be26e01a-5cf7-4605-80bd-5212fd91ce41
-    type: title
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '5'
+      'yes':
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: be26e01a-5cf7-4605-80bd-5212fd91ce41
+      brand: ''
+      id: 84e845bf-0441-407f-89e6-c68c7ce0a6e7
+      iscommand: false
+      name: Was the number saved as string?
+      type: condition
       version: -1
+    taskid: 84e845bf-0441-407f-89e6-c68c7ce0a6e7
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": -350,\n    \"y\": 550\n  }\n}"
+  '4':
+    continueonerrortype: ''
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: be26e01a-5cf7-4605-80bd-5212fd91ce41
+      iscommand: false
       name: Test DT
       type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1090
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: d19c74d8-c2c1-4153-89c0-b0531fbe099a
-    type: regular
-    task:
-      id: d19c74d8-c2c1-4153-89c0-b0531fbe099a
       version: -1
-      name: Fail the playbook
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
+    taskid: be26e01a-5cf7-4605-80bd-5212fd91ce41
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1090\n  }\n}"
+  '5':
+    continueonerrortype: ''
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
+    quietmode: 0
+    reputationcalc: 1
     scriptarguments:
       message:
         simple: The number was not saved as string, or the number was saved as string
           instead of a number. Does your PR change the Stringify parameter of the
           Set command? Or was Demisto suddenly able to save the number 14444444444444444444
           as the actual number it is?
-    reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 7ad9f973-49ca-4c4a-8dd5-78b5fe883e2f
-    type: condition
     task:
-      id: 7ad9f973-49ca-4c4a-8dd5-78b5fe883e2f
-      version: -1
-      name: Was the number saved as number?
-      type: condition
+      brand: ''
+      description: Prints an error entry with a given message
+      id: d19c74d8-c2c1-4153-89c0-b0531fbe099a
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "Yes":
-      - "4"
-    separatecontext: false
+      name: Fail the playbook
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: d19c74d8-c2c1-4153-89c0-b0531fbe099a
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 750\n  }\n}"
+  '6':
     conditions:
-    - label: "Yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
                 root: NumberSavedAsNumber
-            iscontext: true
+          operator: isEqualNumber
           right:
             value:
-              simple: "14444444444444444444"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1160,
-          "y": 540
-        }
-      }
-    note: false
-    timertriggers: []
+              simple: '14444444444444444444'
+      label: 'Yes'
+    continueonerrortype: ''
+    id: '6'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 695f15b7-3249-4cd3-88e5-4d83744b08ae
-    type: regular
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '5'
+      'Yes':
+      - '4'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 695f15b7-3249-4cd3-88e5-4d83744b08ae
-      version: -1
-      name: Clear the context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
+      brand: ''
+      id: 7ad9f973-49ca-4c4a-8dd5-78b5fe883e2f
       iscommand: false
-      brand: ""
+      name: Was the number saved as number?
+      type: condition
+      version: -1
+    taskid: 7ad9f973-49ca-4c4a-8dd5-78b5fe883e2f
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 1160,\n    \"y\": 540\n  }\n}"
+  '7':
+    continueonerrortype: ''
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "1"
-      - "2"
-      - "15"
-      - "17"
+      - '1'
+      - '2'
+      - '15'
+      - '17'
+    note: false
+    quietmode: 0
+    reputationcalc: 1
     scriptarguments:
       all:
-        simple: "yes"
-    reputationcalc: 1
+        simple: 'yes'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 180
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 033e6ecd-c3fa-40d0-8857-a26e6fe0ac71
-    type: regular
     task:
-      id: 033e6ecd-c3fa-40d0-8857-a26e6fe0ac71
-      version: -1
-      name: Set Object
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
+      brand: ''
+      description: Delete field from context
+      id: 695f15b7-3249-4cd3-88e5-4d83744b08ae
       iscommand: false
-      brand: ""
+      name: Clear the context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 695f15b7-3249-4cd3-88e5-4d83744b08ae
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 180\n  }\n}"
+  '8':
+    continueonerrortype: ''
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
+    note: false
+    quietmode: 0
     scriptarguments:
       append:
-        simple: "true"
+        simple: 'true'
       key:
         simple: Data
       value:
         simple: '{"ID": "test_id", "Value": "test_value"}'
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1230
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
-    taskid: 36c3c8c1-1fb9-4508-8080-1f2f3573b285
-    type: condition
     task:
-      id: 36c3c8c1-1fb9-4508-8080-1f2f3573b285
-      version: -1
-      name: Verify Context
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
-      scriptName: AreValuesEqual
-      type: condition
+      brand: ''
+      description: Set a value in context under the key you entered.
+      id: 033e6ecd-c3fa-40d0-8857-a26e6fe0ac71
       iscommand: false
-      brand: ""
+      name: Set Object
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 033e6ecd-c3fa-40d0-8857-a26e6fe0ac71
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1230\n  }\n}"
+  '9':
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
-      "no":
-      - "10"
-      "yes":
-      - "11"
+      'no':
+      - '10'
+      'yes':
+      - '11'
+    note: false
+    quietmode: 0
+    results:
+    - AreValuesEqual
     scriptarguments:
       left:
         simple: ${Data.Value}
       right:
         simple: test_value
-    results:
-    - AreValuesEqual
     separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: 46df44e3-8391-4d83-8d07-a8eff2ebf33f
-    type: regular
     task:
-      id: 46df44e3-8391-4d83-8d07-a8eff2ebf33f
-      version: -1
-      name: Fail
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Context was not set as expected to test_value
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 960,
-          "y": 1610
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: 59836edb-a29e-40ac-82c9-9159edf4ccdc
-    type: regular
-    task:
-      id: 59836edb-a29e-40ac-82c9-9159edf4ccdc
-      version: -1
-      name: Set - Update Object
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      append:
-        simple: "true"
-      key:
-        simple: Data(val.ID == obj.ID)
-      value:
-        simple: '{"ID": "test_id", "Value": "test_val2"}'
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1630
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: dc69dffc-68c8-4f08-8093-86afb3ff9677
-    type: condition
-    task:
-      id: dc69dffc-68c8-4f08-8093-86afb3ff9677
-      version: -1
-      name: Verify Context
+      brand: ''
       description: Check whether the values provided in arguments are equal. If either
         of the arguments are missing, no is returned.
+      id: 36c3c8c1-1fb9-4508-8080-1f2f3573b285
+      iscommand: false
+      name: Verify Context
       scriptName: AreValuesEqual
       type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "no":
-      - "13"
-      "yes":
-      - "14"
-    scriptarguments:
-      left:
-        simple: ${Data.Value}
-      right:
-        simple: test_val2
-    results:
-    - AreValuesEqual
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1830
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "13":
-    id: "13"
-    taskid: 6a049e8f-3718-4f48-83b5-2611600949d7
-    type: regular
-    task:
-      id: 6a049e8f-3718-4f48-83b5-2611600949d7
       version: -1
-      name: Fail
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Failed verifying context value of test_val2
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 880,
-          "y": 2030
-        }
-      }
-    note: false
+    taskid: 36c3c8c1-1fb9-4508-8080-1f2f3573b285
     timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "14":
-    id: "14"
-    taskid: 0f055861-68f5-4080-8e23-7a05a8f25de1
-    type: title
-    task:
-      id: 0f055861-68f5-4080-8e23-7a05a8f25de1
-      version: -1
-      name: All Good
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 2050
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: ff62230d-fe4f-4134-8051-a1cac5547c8f
-    type: regular
-    task:
-      id: ff62230d-fe4f-4134-8051-a1cac5547c8f
-      version: -1
-      name: Set large number
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      key:
-        simple: LargeNumber
-      value:
-        simple: "1234567890123456789012345"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 170,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 3d0f60f1-5c8c-4a47-859f-85748efc75d2
     type: condition
-    task:
-      id: 3d0f60f1-5c8c-4a47-859f-85748efc75d2
-      version: -1
-      name: Was the large number saved?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              complex:
-                root: LargeNumber
-            iscontext: true
-          right:
-            value:
-              simple: "1234567890123456789012345"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 170,
-          "y": 510
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: 52bca13e-34cd-42a5-81cd-ad9d58db2fa8
-    type: regular
-    task:
-      id: 52bca13e-34cd-42a5-81cd-ad9d58db2fa8
-      version: -1
-      name: Set decimal number
-      description: Set a value in context under the key you entered.
-      scriptName: Set
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      key:
-        simple: DecimalNumber
-      value:
-        simple: "12345.6789"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 740,
-          "y": 360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "18":
-    id: "18"
-    taskid: 319a9b4f-062e-48fa-8173-33d24136973c
-    type: condition
-    task:
-      id: 319a9b4f-062e-48fa-8173-33d24136973c
-      version: -1
-      name: Was the decimal number saved?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "5"
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualNumber
-          left:
-            value:
-              complex:
-                root: DecimalNumber
-            iscontext: true
-          right:
-            value:
-              simple: "12345.6789"
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 740,
-          "y": 530
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 440,\n    \"y\": 1400\n  }\n}"
 version: -1
-view: |-
-  {
-    "linkLabelsPosition": {
-      "3_4_yes": 0.12,
-      "6_4_Yes": 0.12
-    },
-    "paper": {
-      "dimensions": {
-        "height": 2075,
-        "width": 1190,
-        "x": 150,
-        "y": 50
-      }
-    }
-  }
-fromversion: 5.0.0
+view: "{\n  \"linkLabelsPosition\": {\n    \"3_4_yes\": 0.12,\n    \"6_4_Yes\": 0.12\n\
+  \  },\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 2075,\n      \"\
+  width\": 1190,\n      \"x\": 150,\n      \"y\": 50\n    }\n  }\n}"
