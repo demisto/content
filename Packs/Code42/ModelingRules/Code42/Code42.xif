@@ -1,0 +1,117 @@
+[MODEL:dataset="code42_code42_raw"]
+filter eventType = "file"
+// extract event type field,
+| alter event_type = eventType ,
+// extract event fields,
+     event_action = event -> action,
+     event_id = event -> id,
+     event_observer = event -> observer,
+// extract file fields,
+     file_name = file ->name,
+     file_directory = file -> directory,
+     file_origin_directory = file -> originalDirectory,
+     file_hash_md5 = file -> hash.md5,
+     file_hash_sha256 = file -> hash.sha256,
+     file_size = file -> sizeInBytes,
+     file_original_name = file -> originalName,
+     file_category = file -> category,
+     file_category_by_extension = file -> categoryByExtension,
+// extract process fields,
+     process_exe = process -> executable,
+     process_browser = process -> extension.browser,
+// extract risk fields,
+     risk_severity = risk -> severity,
+     risk_indicators = risk -> indicators[],
+// extract user fields,
+     user_email = user -> email,
+     user_id = user -> id,
+// extract source fields,
+     source_category = source -> category,
+     source_ip = source -> ip,
+     source_name = source -> name,
+     source_os = source -> operatingSystem,
+     source_email_from = source -> email.from,
+     source_email_sender = source -> email.sender,
+     source_domain = source -> domain,
+     source_private_ip = source -> privateIp[],
+// extract destination fields
+     destination_category = destination -> category,
+     destination_domains = destination -> domains[],
+     destination_ip = destination -> ip,
+     destination_private_ip = destination -> privateIp[],
+     destination_name = destination -> name,
+     destination_os = destination -> operatingSystem,
+     destination_recipients = split(arraystring(destination -> email.recipients[], ","),","),
+     destination_subject = destination -> email.subject
+
+// extract ipv4 and ipv6
+| alter source_ipv4 = if(source_ip ~= "\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}", source_ip )
+| alter source_ipv6 = if(source_ip ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", source_ip )
+| alter destination_ipv4 = if(source_ip ~= "\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}", destination_ip )
+| alter destination_ipv6 = if(source_ip ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", destination_ip )
+
+// Map,
+| alter xdm.event.type = event_type ,
+     xdm.event.operation = event_action ,
+     xdm.event.id = event_id ,
+     xdm.observer.type = event_observer ,
+     xdm.target.file.filename = file_name ,
+     xdm.target.file.directory = file_directory ,
+     xdm.target.file.path = file_directory ,
+     xdm.target.file_before.directory = file_origin_directory ,
+     xdm.target.file.md5 = file_hash_md5 ,
+     xdm.target.file.sha256 = file_hash_sha256 ,
+     xdm.target.file.size = to_integer(file_size),
+     xdm.target.file_before.filename = file_original_name ,
+     xdm.target.file.file_type = file_category ,
+     xdm.target.file.extension = file_category_by_extension ,
+     xdm.target.process.executable.filename = process_exe ,
+     xdm.network.http.browser = process_browser ,
+     xdm.alert.severity = risk_severity ,
+     xdm.alert.risks = risk_indicators ,
+     xdm.source.user.username = user_email ,
+     xdm.source.user.identifier = user_id ,
+     xdm.source.host.device_category = source_category ,
+     xdm.source.ipv4 = source_ipv4 ,
+     xdm.source.ipv6 = source_ipv6,
+     xdm.source.host.ipv4_addresses = source_private_ip ,
+     xdm.source.host.hostname = source_name ,
+     xdm.source.host.os = source_os ,
+     xdm.source.user.domain = source_domain ,
+     xdm.email.sender = source_email_from ,
+     xdm.email.return_path = source_email_sender ,
+     xdm.target.host.device_category = destination_category ,
+     xdm.target.host.fqdn = arraystring(destination_domains,","),
+     xdm.target.ipv4 = destination_ipv4,
+     xdm.target.ipv6 = destination_ipv6,
+     xdm.target.host.ipv4_addresses = destination_private_ip,
+     xdm.target.host.hostname = destination_name ,
+     xdm.target.host.os = destination_os ,
+     xdm.email.recipients = destination_recipients,
+     xdm.email.subject = destination_subject;
+
+
+// Audit Events
+filter eventType = "audit"
+| alter temporary_type = regextract(type_, "audit_log::(\w+)"),
+    event_type = eventType ,
+    actor_agent = actorAgent ,
+    actor_id = actorId ,
+    actor_ip_address = actorIpAddress,
+    actor_name = actorName ,
+    actor_type = actorType,
+    is_success = success 
+| alter type_tmp = temporary_type
+| alter source_ipv4 = if(actor_ip_address ~= "\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}", actor_ip_address )
+| alter source_ipv6 = if(actor_ip_address ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", actor_ip_address )
+
+// Map
+| alter xdm.event.type = event_type ,
+    xdm.source.user_agent = actor_agent ,
+    xdm.source.user.identifier = actor_id ,
+    xdm.source.host.ipv4_addresses = arraycreate(source_ipv4),
+    xdm.source.host.ipv6_addresses = arraycreate(source_ipv6),
+    xdm.source.user.username = actor_name ,
+    xdm.source.user.user_type = actor_type ,
+    xdm.event.outcome = is_success ,
+    xdm.event.original_event_type = arraystring(type_tmp, ",") ;
