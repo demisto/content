@@ -51,7 +51,11 @@ def create_user(args, client):  # pragma: no cover
     response = remove_empty_elements(response)
     ec = {'AWS.IAMIdentityCenter.User': response}
     human_readable = tableToMarkdown('AWS IAM Identity Center Users', response)
-    return_outputs(human_readable, ec)
+    result = CommandResults(
+        readable_output=human_readable,
+        outputs=ec
+    )
+    return_results(result)
 
 
 def get_userId_by_username(args, client):
