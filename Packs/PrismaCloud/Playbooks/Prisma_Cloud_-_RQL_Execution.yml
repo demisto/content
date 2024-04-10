@@ -160,7 +160,7 @@ tasks:
     task:
       id: 6eeec754-6ff9-4b4e-810b-2b853ea93f52
       version: -1
-      name: Chosen type is
+      name: Prisma Cloud Search Type
       type: condition
       iscommand: false
       brand: ""
@@ -309,7 +309,7 @@ tasks:
     task:
       id: 27b8410b-e99b-40dc-8573-2f34f649b0eb
       version: -1
-      name: Set Results
+      name: Prisma Cloud Search Results
       description: Accepts a json object and returns a markdown.
       scriptName: JsonToTable
       type: regular
