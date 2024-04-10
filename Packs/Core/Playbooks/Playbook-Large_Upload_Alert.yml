@@ -3955,5 +3955,4 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.10.0
 marketplaces: ["marketplacev2"]
