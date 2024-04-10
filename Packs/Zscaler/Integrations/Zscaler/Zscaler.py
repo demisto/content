@@ -116,7 +116,7 @@ def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
                                    client_headers=DEFAULT_HEADERS,
                                    headers=headers,
                                    url_suffix=url_suffix,
-                                   data=data,
+                                   data=data or {},
                                    ok_codes=(200, 204),
                                    error_handler=error_handler,
                                    retries=10,

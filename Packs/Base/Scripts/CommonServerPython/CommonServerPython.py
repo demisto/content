@@ -9297,9 +9297,8 @@ def generic_http_request(method,
                          status_list_to_retry=None
                          ):
     """
-        Performs a generic HTTP request to the specified server URL.
-
-        This method provides a flexible way to make various HTTP requests for integrations that do not implement BaseClient.
+        A wrapper for the BaseClient._http_request() method, that allows performing HTTP requests without initiating a BaseClient object.
+        Note: Avoid using this method if unnecessary. It is more recommended to use the BaseClient class.
 
         Args:
             method (str): HTTP request method (e.g., GET, POST, PUT, DELETE).
@@ -11933,7 +11932,7 @@ class ManagedSleep:
         """
         time_left = self.run_duration - (time.time() - self.start_time)
         if duration_seconds > time_left:
-            raise ValueError("Requested sleep of {} seconds exceeds TTL of {} seconds.".format(duration_seconds,
+            raise DemistoException("Requested a sleep of {} seconds, but time left until docker timeout is {} seconds".format(duration_seconds,
                                                                                                self.run_duration))
         time.sleep(duration_seconds)
 
