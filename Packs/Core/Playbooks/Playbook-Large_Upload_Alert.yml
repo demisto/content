@@ -67,21 +67,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 2cd32c3d-b158-43fd-8121-958becfc6b39
+    taskid: be76e8b9-ae9a-4c30-88e0-c6e65c30f47d
     type: regular
     task:
-      id: 2cd32c3d-b158-43fd-8121-958becfc6b39
+      id: be76e8b9-ae9a-4c30-88e0-c6e65c30f47d
       version: -1
       name: Find Similar Alerts
       description: |-
-        Finds similar alerts by common alert keys, labels, custom fields or context keys.
-        It's highly recommended to use alert keys if possible (e.g., "type" for the same alert type).
+        Finds similar incidents by common incident keys, labels, custom fields or context keys.
+        It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
         For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: FindSimilarAlerts
+      scriptName: FindSimilarIncidents
       type: regular
       iscommand: false
       brand: ""
