@@ -182,7 +182,6 @@ update-validation-docs:
     - .default-job-settings
   needs:
     - slack-notify
-  when: manual
   variables:
     RELEASE_VERSION: $RELEASE_VERSION
     GITHUB_TOKEN: $GITHUB_TOKEN
