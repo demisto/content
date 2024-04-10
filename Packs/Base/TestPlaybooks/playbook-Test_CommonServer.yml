@@ -13,9 +13,10 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-        - "1"
+      - "1"
     separatecontext: false
     view: |-
       {
@@ -45,7 +46,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "2"
+      - "2"
     separatecontext: false
     view: |-
       {
@@ -102,3 +103,4 @@ view: |-
   }
 inputs: []
 fromversion: 5.0.0
+description: test test.

@@ -1,6 +1,5 @@
 id: Test XDR Playbook retrieve file command
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Test XDR Playbook retrieve file command
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -77,11 +77,7 @@ tasks:
       id: 985048a2-3720-4975-8284-f05cc93775cd
       version: -1
       name: xdr-retrieve-files
-      description: Retrieves files from selected endpoints. You can retrieve up to
-        20 files, from no more than 10 endpoints. At least one endpoint ID and one
-        file path are necessary in order to run the command. After running this command,
-        you can use the xdr-action-status-get command with returned action_id, to
-        check the action status.
+      description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
       script: '|||xdr-file-retrieve'
       type: regular
       iscommand: true
@@ -118,8 +114,7 @@ tasks:
       id: 06520682-d7fe-43c4-89c9-7780b86843bb
       version: -1
       name: Cortex XDR - Check Action Status
-      description: Checks the action status of an action ID. \nEnter the action ID
-        of the action whose status you want to know.
+      description: Checks the action status of an action ID. \nEnter the action ID of the action whose status you want to know.
       playbookName: Cortex XDR - Check Action Status
       type: playbook
       iscommand: false
@@ -284,6 +279,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -316,3 +312,4 @@ inputs: []
 outputs: []
 quiet: false
 fromversion: 5.0.0
+description: test test.

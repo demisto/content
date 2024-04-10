@@ -2,11 +2,7 @@ id: Test Playbook - MDE SIEM ingestion - Get Incident Data
 version: -1
 name: Test Playbook - MDE SIEM ingestion - Get Incident Data
 description: |-
-  This playbook tests the ‘MDE SIEM ingestion - Get Incident Data’ playbook which is part of the ‘Malware Investigation and Response’ pack.
-
-  The following tests are conducted in the playbook:
-  1- Confirm that incident fields were populated correctly by the custom output mapping rules.
-  3- Ensure that the context data was properly extracted.
+  test test.
 starttaskid: "0"
 tasks:
   "0":

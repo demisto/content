@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -968,6 +969,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1184,6 +1186,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -1379,8 +1382,7 @@ tasks:
       key:
         simple: Bug
       value:
-        simple: '[{"hello": "world", "name": "john"}, {"hello": "kitty", "name": "john
-          b"}]'
+        simple: '[{"hello": "world", "name": "john"}, {"hello": "kitty", "name": "john b"}]'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1450,6 +1452,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "47"
@@ -1602,6 +1605,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -1632,6 +1636,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "40"
@@ -1663,6 +1668,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "49"
@@ -1702,8 +1708,7 @@ tasks:
       key:
         simple: Case2
       value:
-        simple: '[{"hello": "world", "name": "john"}, {"hello": "kitty", "name": "john
-          b"}]'
+        simple: '[{"hello": "world", "name": "john"}, {"hello": "kitty", "name": "john b"}]'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1848,6 +1853,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -1881,3 +1887,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: test test.

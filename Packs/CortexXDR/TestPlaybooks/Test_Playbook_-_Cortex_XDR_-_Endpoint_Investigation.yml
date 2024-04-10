@@ -2,12 +2,7 @@ id: Test Playbook - Cortex XDR - Endpoint Investigation
 version: -1
 name: Test Playbook - Cortex XDR - Endpoint Investigation
 description: |-
-  This playbook tests the ‘Cortex XDR - Endpoint Investigation’ playbook which is part of the ‘Malware Investigation and Response’ pack.
-
-  The following tests are conducted in the playbook:
-  1- Verifies the presence of the incident evidence.
-  2- Ensures proper extraction of context data.
-  3- Validates the playbook outputs.
+  test test.
 starttaskid: "0"
 tasks:
   "0":

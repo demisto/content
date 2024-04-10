@@ -2,7 +2,7 @@ id: Test Convert file hash to corresponding hashes
 version: -1
 name: Test Convert file hash to corresponding hashes
 fromversion: 5.0.0
-description: Test playbook for the "Convert file hash to corresponding hashes" playbook
+description: test test.
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -88,6 +89,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {

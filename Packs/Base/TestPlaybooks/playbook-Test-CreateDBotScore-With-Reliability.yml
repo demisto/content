@@ -1,8 +1,7 @@
 id: Test-CreateDBotScore-With-Reliability
 version: -1
 description: |-
-  This is a test playbook for creating a DBotScore entry with the Reliability field.
-  It tests if the indicator's reputation score is being calculated by the most reliable source.
+  test test.
 name: Test-CreateDBotScore-With-Reliability
 starttaskid: "0"
 tasks:
@@ -16,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -347,6 +347,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -374,6 +375,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -401,6 +403,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -542,6 +545,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -721,6 +725,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {

@@ -2,12 +2,7 @@ id: Test Playbook - CrowdStrike Falcon - Retrieve File
 version: -1
 name: Test Playbook - CrowdStrike Falcon - Retrieve File
 description: |-
-  This playbook tests the 'CrowdStrike Falcon - Retrieve File' playbook which is part of the 'Malware Investigation and Response' pack.
-
-  The following tests are conducted in the playbook:
-  1- Ensure all context data was extracted properly.
-  2- Review and validate the playbook's output.
-  3 - Ensure that the retrieved files were unzipped using the 'UnzipFile' command.
+  test test.
 starttaskid: "0"
 tasks:
   "0":

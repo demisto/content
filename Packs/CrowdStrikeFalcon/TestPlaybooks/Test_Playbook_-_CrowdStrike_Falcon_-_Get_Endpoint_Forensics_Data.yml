@@ -1,7 +1,7 @@
 id: Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data
 version: -1
 name: Test Playbook - CrowdStrike Falcon - Get Endpoint Forensics Data
-description: "This playbook tests the 'CrowdStrike Falcon - Get Endpoint Forensics Data' playbook which is part of the 'Malware Investigation and Response' pack.\nBy examining the context data of the playbook, the 'CrowdStrike Falcon - Get Endpoint Forensics Data' playbook outputs are tested. "
+description: "test test."
 starttaskid: "0"
 tasks:
   "0":

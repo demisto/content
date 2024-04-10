@@ -1,7 +1,7 @@
 id: Test Playbook - Cortex XDR - Retrieve File by sha256
 version: -1
 name: Test Playbook - Cortex XDR - Retrieve File by sha256
-description: "This playbook tests the ‘Cortex XDR - Retrieve File by sha256’ playbook which is part of the ‘Malware Investigation and Response’ pack.\nFollowing are the tests conducted in the playbook:\n1- Ensure that an error message is printed if the 'Cortex XDR - Get File Path from Alerts by Hash' sub-playbook fails to retrieve a file path. \n2- Ensure all context data was extracted properly.\n3- Review and validate the playbook's outputs.\n4- Ensure the 'xdr-file-retrieve' command was successfully executed. \n5 - Ensure that the retrieved files were unzipped using the 'UnzipFile' command "
+description: "test test."
 starttaskid: "0"
 tasks:
   "0":

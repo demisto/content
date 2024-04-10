@@ -1,7 +1,7 @@
 id: Test Playbook - CrowdStrike Falcon - Get Detections by Incident
 version: -1
 name: Test Playbook - CrowdStrike Falcon - Get Detections by Incident
-description: "Develop a test playbook for the ‘CrowdStrike Falcon - Get Detections by Incident’ playbook, which is part of the malware investigation and response pack.\n\nThe playbook includes the following tests:\n1- Confirm that incident fields were populated correctly by the custom output mapping rules.\n2- Ensure that the context data was properly extracted. \n3- Validate the playbook outputs."
+description: "test test."
 starttaskid: "0"
 tasks:
   "0":

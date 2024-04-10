@@ -1,6 +1,5 @@
 id: Test XDR Playbook execute script commands
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Test XDR Playbook execute script commands
 starttaskid: "0"
 tasks:
@@ -42,8 +41,7 @@ tasks:
       id: 2ba63fa8-112e-4677-8aa6-4b300a044911
       version: -1
       name: Run Script
-      description: Initiate a new endpoint script execution action using a script
-        from the script library.
+      description: Initiate a new endpoint script execution action using a script from the script library.
       script: '|||xdr-run-script'
       type: regular
       iscommand: true
@@ -283,8 +281,7 @@ tasks:
       id: 70795bc4-5071-4641-8d47-38feac652047
       version: -1
       name: Run snippet code script
-      description: Initiate a new endpoint script execution action using provided
-        snippet code.
+      description: Initiate a new endpoint script execution action using provided snippet code.
       script: '|||xdr-snippet-code-script-execute'
       type: regular
       iscommand: true
@@ -360,8 +357,7 @@ tasks:
       id: 7647ef0a-4b82-4e50-8b76-afd04ae22439
       version: -1
       name: Run Script With Empty Params
-      description: Initiate a new endpoint script execution action using a script
-        from the script library.
+      description: Initiate a new endpoint script execution action using a script from the script library.
       script: '|||xdr-run-script'
       type: regular
       iscommand: true
@@ -399,10 +395,8 @@ tasks:
     task:
       id: 0e535412-bce9-47ac-8fb3-d79189d83263
       version: -1
-      name: Adds requested files to block list if they are not already added to the
-        block list or allow list
-      description: Adds requested files to block list if they are not already added
-        to the block list or allow list.
+      name: Adds requested files to block list if they are not already added to the block list or allow list
+      description: Adds requested files to block list if they are not already added to the block list or allow list.
       script: '|||xdr-blocklist-files'
       type: regular
       iscommand: true
@@ -598,11 +592,7 @@ tasks:
       id: b08dca50-ddfb-4ae1-875c-152c5b62c118
       version: -1
       name: xdr-get-endpoints
-      description: Gets a list of endpoints, according to the passed filters. If there
-        are no filters, all endpoints are returned. Filtering by multiple fields will
-        be concatenated using AND condition (OR is not supported). Maximum result
-        set size is 100. Offset is the zero-based number of endpoint from the start
-        of the result set (start by counting from 0).
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
       script: Cortex XDR - IR|||xdr-get-endpoints
       type: regular
       iscommand: true
@@ -1058,3 +1048,4 @@ inputs: []
 outputs: []
 quiet: false
 fromversion: 5.0.0
+description: test test.
