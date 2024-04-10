@@ -1,5 +1,6 @@
 Azure network security groups are used to filter network traffic to and from Azure resources in an Azure virtual network.
 This integration was integrated and tested with version 2022-09-01 of Azure Network Security Groups.
+
 ## Configure Azure Network Security Groups on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
