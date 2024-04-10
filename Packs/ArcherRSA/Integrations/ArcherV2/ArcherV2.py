@@ -13,6 +13,7 @@ urllib3.disable_warnings()
 
 FETCH_PARAM_ID_KEY = "field_time_id"
 LAST_FETCH_TIME_KEY = "last_fetch"
+e = 24
 OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 REQUEST_HEADERS = {
