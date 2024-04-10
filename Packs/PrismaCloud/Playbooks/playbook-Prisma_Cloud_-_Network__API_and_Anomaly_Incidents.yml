@@ -462,30 +462,7 @@ tasks:
       - "3"
     scriptarguments:
       cloudProvider:
-        complex:
-          root: ${
-          accessor: '}'
-          transformers:
-          - operator: If-Elif
-            args:
-              conditions:
-                value:
-                  simple: |-
-                    [
-                      {
-                        "condition": "#{alert.cloudprovider.[0]} == 'AWS'",
-                        "return": "AWS"
-                      },
-                      {
-                        "condition": "#{alert.cloudprovider.[0]} == 'AZURE'",
-                        "return": "AZURE"
-                      },
-                      {
-                        "condition": "#{alert.cloudprovider.[0]} == 'GCP'",
-                        "return": "GCP"
-                      }
-                    ]
-              flags: {}
+        simple: ${alert.cloudprovider.[0]}
       instanceID:
         simple: ${PrismaCloud.Alert.resource.id}
       instanceName:
@@ -712,30 +689,7 @@ tasks:
       - "46"
     scriptarguments:
       cloudProvider:
-        complex:
-          root: ${
-          accessor: '}'
-          transformers:
-          - operator: If-Elif
-            args:
-              conditions:
-                value:
-                  simple: |-
-                    [
-                      {
-                        "condition": "#{alert.cloudprovider} == 'AWS'",
-                        "return": "AWS"
-                      },
-                      {
-                        "condition": "#{alert.cloudprovider} == 'AZURE'",
-                        "return": "AZURE"
-                      },
-                      {
-                        "condition": "#{alert.cloudprovider} == 'GCP'",
-                        "return": "GCP"
-                      }
-                    ]
-              flags: {}
+        simple: ${alert.cloudprovider.[0]}
       sourceIP:
         complex:
           root: DBotScore.Indicator
