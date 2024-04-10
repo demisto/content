@@ -11911,7 +11911,7 @@ def comma_separated_mapping_to_dict(raw_text):
     return mapping_dict
 
 
-class ManagedSleep:
+class SafeSleep:
     def __init__(self,):
         """
         Initializes the sleeper with the given TTL in seconds.
@@ -11933,7 +11933,7 @@ class ManagedSleep:
         time_left = self.run_duration - (time.time() - self.start_time)
         if duration_seconds > time_left:
             raise DemistoException("Requested a sleep of {} seconds, but time left until docker timeout is {} seconds".format(duration_seconds,
-                                                                                               self.run_duration))
+                                                                                                                              self.run_duration))
         time.sleep(duration_seconds)
 
 

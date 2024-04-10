@@ -52,17 +52,16 @@ def http_request(method, url_suffix, params=None, data=None):
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
-    res = generic_http_request(method=method,
-                               server_url=BASE_URL,
-                               verify=USE_SSL,
-                               client_headers=headers,
-                               url_suffix=url_suffix,
-                               data=data,
-                               params=params,
-                               error_handler=error_handler,
-                               status_list_to_retry=[429],
-                               retries=10)
-    return res.json()
+    return generic_http_request(method=method,
+                                server_url=BASE_URL,
+                                verify=USE_SSL,
+                                client_headers=headers,
+                                url_suffix=url_suffix,
+                                data=data,
+                                params=params,
+                                error_handler=error_handler,
+                                status_list_to_retry=[429],
+                                retries=10)
 
 
 def html_description_to_human_readable(breach_description):

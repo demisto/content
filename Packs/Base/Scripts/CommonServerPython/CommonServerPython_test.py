@@ -9640,16 +9640,16 @@ def test_logger_write__censor_request_logs_has_been_called(mocker, request_log):
 
 
 @pytest.fixture
-def managed_sleep(mocker):
+def safe_sleep(mocker):
     """Fixture to create a ManagedSleep object with mocked run_duration"""
     mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
     mocker.patch('time.time', return_value=1711453263.0)
-    yield CommonServerPython.ManagedSleep()
+    yield CommonServerPython.SafeSleep()
 
 
-def test_init(managed_sleep):
+def test_init(safe_sleep):
     """
-    Given: A `ManagedSleep` object is created.
+    Given: A `SafeSleep` object is created.
 
     When:The object is initialized.
 
@@ -9657,28 +9657,29 @@ def test_init(managed_sleep):
     - The `run_duration` attribute should be set to the value returned by the mocked `demisto.getRunDuration`.
     - The `start_time` attribute should be a float representing the current time.
   """
-    assert managed_sleep.run_duration == 300
-    assert isinstance(managed_sleep.start_time, float)
+    assert safe_sleep.run_duration == 300
+    assert isinstance(safe_sleep.start_time, float)
 
 
-def test_sleep_exceeds_ttl(mocker, managed_sleep):
+def test_sleep_exceeds_ttl(mocker, safe_sleep):
     """
-   Given:  A `ManagedSleep` object and a sleep duration exceeding the remaining TTL.
+   Given:  A `SafeSleep` object and a sleep duration exceeding the remaining TTL.
 
     When: The `sleep` method is called with that duration.
 
    Then:
     - A `ValueError` should be raised indicating that the requested sleep exceeds the TTL.
   """
-    mocker.patch('time.time', return_value=managed_sleep.start_time + 10)
-    with pytest.raises(ValueError) as excinfo:
-        managed_sleep.sleep(duration_seconds=350)
-    assert str(excinfo.value) == "Requested sleep of 350 seconds exceeds TTL of 300 seconds."
+    mocker.patch('time.time', return_value=safe_sleep.start_time + 10)
+    with pytest.raises(DemistoException) as excinfo:
+        safe_sleep.sleep(duration_seconds=350)
+
+    assert str(excinfo.value) == "Requested sleep of 350 seconds, but time left until docker timeout is 300 seconds."
 
 
-def test_sleep_mocked_time(mocker, managed_sleep):
+def test_sleep_mocked_time(mocker, safe_sleep):
     """
-    Given:  A `ManagedSleep` object.
+    Given:  A `SafeSleep` object.
 
    When:  The `sleep` method is called with a specific duration.
 
@@ -9687,15 +9688,15 @@ def test_sleep_mocked_time(mocker, managed_sleep):
     - No exception should be raised if the sleep duration is within the remaining TTL based on mocked time.
     """
 
-    mocker.patch('time.time', return_value=managed_sleep.start_time + 10)
+    mocker.patch('time.time', return_value=safe_sleep.start_time + 10)
     sleep_mocker = mocker.patch('time.sleep')
 
     # Simulate start time
-    managed_sleep.sleep(duration_seconds=5)  # Sleep for 5 seconds
+    safe_sleep.sleep(duration_seconds=5)  # Sleep for 5 seconds
 
     # Advance mocked time by the sleep duration
-    mocker.patch('time.time', return_value=managed_sleep.start_time + 15)
-    managed_sleep.sleep(duration_seconds=50)
+    mocker.patch('time.time', return_value=safe_sleep.start_time + 15)
+    safe_sleep.sleep(duration_seconds=50)
 
     # Verify sleep duration based on mocked time difference
     assert sleep_mocker.call_count == 2
