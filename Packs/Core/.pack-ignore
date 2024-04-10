@@ -21,6 +21,3 @@ ignore=BA101
 
 [file:playbook-XCloud_Cryptomining.yml]
 ignore=BA101
-
-[file:Playbook-Large_Upload_Alert.yml]
-ignore=GR101
