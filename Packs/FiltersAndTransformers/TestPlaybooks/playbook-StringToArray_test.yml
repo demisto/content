@@ -1,141 +1,180 @@
-description: test test
-fromversion: 6.0.0
 id: StringToArray_test
-inputs: []
+version: -1
 name: StringToArray_test
-outputs: []
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    ignoreworker: false
-    nexttasks:
-      '#none#':
-      - '1'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: ''
-      id: 16acea27-05e7-46a5-88a3-58b32b0b2212
-      iscommand: false
-      name: ''
-      version: -1
+  "0":
+    id: "0"
     taskid: 16acea27-05e7-46a5-88a3-58b32b0b2212
-    timertriggers: []
     type: start
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 50\n  }\n}"
-  '1':
-    id: '1'
-    ignoreworker: false
+    task:
+      id: 16acea27-05e7-46a5-88a3-58b32b0b2212
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - '3'
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: 'yes'
+      - "1"
     separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: bf0e1745-a4dc-4fe3-8121-279955df1e5f
+    type: regular
     task:
-      brand: ''
-      description: Delete field from context
       id: bf0e1745-a4dc-4fe3-8121-279955df1e5f
-      iscommand: false
+      version: -1
       name: Delete Context
+      description: Delete field from context
       scriptName: DeleteContext
       type: regular
-      version: -1
-    taskid: bf0e1745-a4dc-4fe3-8121-279955df1e5f
-    timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 190\n  }\n}"
-  '3':
-    id: '3'
-    ignoreworker: false
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - '4'
+      - "3"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 190
+        }
+      }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
+  "3":
+    id: "3"
+    taskid: 2415c2b1-2cb0-44ed-85c9-56ed15f6f7b8
+    type: regular
+    task:
+      id: 2415c2b1-2cb0-44ed-85c9-56ed15f6f7b8
+      version: -1
+      name: Set Context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
       key:
         simple: StringToArray
       value:
         simple: http://example.com/?score:1,4,time:55
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Set a value in context under the key you entered.
-      id: 2415c2b1-2cb0-44ed-85c9-56ed15f6f7b8
-      iscommand: false
-      name: Set Context
-      scriptName: Set
-      type: regular
-      version: -1
-    taskid: 2415c2b1-2cb0-44ed-85c9-56ed15f6f7b8
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 390
+        }
+      }
+    note: false
     timertriggers: []
-    type: regular
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 390\n  }\n}"
-  '4':
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 00c9659a-06de-4b8a-8b0b-73044b97cb5f
+    type: condition
+    task:
+      id: 00c9659a-06de-4b8a-8b0b-73044b97cb5f
+      version: -1
+      name: Validate Output
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
     conditions:
-    - condition:
-      - - left:
-            iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
             value:
               complex:
                 root: StringToArray
                 transformers:
                 - operator: StringToArray
-          operator: containsGeneral
+            iscontext: true
           right:
             value:
               simple: '"http://example.com/?score:1,4,time:55"'
-      label: 'yes'
-    id: '4'
-    ignoreworker: false
-    nexttasks:
-      'yes':
-      - '5'
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
     note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 00c9659a-06de-4b8a-8b0b-73044b97cb5f
-      iscommand: false
-      name: Validate Output
-      type: condition
-      version: -1
-    taskid: 00c9659a-06de-4b8a-8b0b-73044b97cb5f
     timertriggers: []
-    type: condition
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 560\n  }\n}"
-  '5':
-    id: '5'
     ignoreworker: false
-    note: false
-    quietmode: 0
-    separatecontext: false
     skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: da6c17bd-f14b-4136-8c1a-c4f37f38cbf5
+    type: title
     task:
-      brand: ''
-      description: ''
       id: da6c17bd-f14b-4136-8c1a-c4f37f38cbf5
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
-    taskid: da6c17bd-f14b-4136-8c1a-c4f37f38cbf5
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 730
+        }
+      }
+    note: false
     timertriggers: []
-    type: title
-    view: "{\n  \"position\": {\n    \"x\": 450,\n    \"y\": 730\n  }\n}"
-version: -1
-view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
-  \     \"height\": 745,\n      \"width\": 380,\n      \"x\": 450,\n      \"y\": 50\n\
-  \    }\n  }\n}"
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 745,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: 'test test.'
