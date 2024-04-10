@@ -2517,18 +2517,29 @@ def get_indicators_paginated_with_next_url(client: Client, url: str, **kwargs) -
 
 def get_indicators_paginated_with_update_id(client: Client, url: str, **kwargs) -> tuple[list, list]:
     """The recommended way to get paginated results for over 10,000 records. """
+    i = 1
+    user_limit = kwargs["limit"]
+    kwargs["limit"] = 1000  # the maximal value possible
+
     kwargs["update_id__gt"] = 0
     kwargs["order_by"] = "update_id"
+
+    demisto.debug(f"[TS] API call no. {i}: {kwargs=}, {url=}")
     res = client.http_request("GET", url, params=kwargs)
     if not (iocs_list := res.get('objects', None)):
         return [], []
+    demisto.debug(f"[TS] returned {len(iocs_list)} results")
     iocs_context = parse_indicators_list(iocs_list)
-    while len(iocs_context) < kwargs["limit"] and iocs_list:
+    while len(iocs_context) < user_limit and iocs_list:
+        i += 1
         kwargs["update_id__gt"] = iocs_list[-1]["update_id"]
+        demisto.debug(f"[TS] API call no. {i}: {kwargs=}")
         res = client.http_request("GET", url, params=kwargs)
         iocs_list = res.get('objects', None)
+        demisto.debug(f"[TS] returned {len(iocs_list)} results")
         if iocs_list:
             iocs_context.extend(parse_indicators_list(iocs_list))
+        demisto.debug(f"[TS] aggregated results count is {len(iocs_context)}")
     return iocs_list, iocs_context
 
 
