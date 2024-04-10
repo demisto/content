@@ -18,7 +18,7 @@ slack-notify:
   tags:
     - gke
   stage: notify
-  extends: .default-job-settings
+  extends: .default-job-settings-no-sdk
   script:
     - !reference [.download-demisto-conf]
     - python3 ./Tests/scripts/gitlab_slack_notifier.py -p "${PIPELINE_TO_QUERY}" -s "${SLACK_TOKEN}" -c "${GITLAB_STATUS_TOKEN}" -ch "${SLACK_CHANNEL}" --triggering-workflow "${WORKFLOW}" --allow-failure "${SLACK_ALLOW_FAILURE}" --name-mapping_path "${CI_PROJECT_DIR}/name_mapping.json"
