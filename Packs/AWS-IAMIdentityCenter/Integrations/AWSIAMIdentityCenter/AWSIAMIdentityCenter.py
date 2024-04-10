@@ -374,7 +374,7 @@ def list_group_memberships(args, client):
     human_readable = tableToMarkdown('AWS IAM Identity Center groups', hr_data, removeNull=True)
     result = CommandResults(
         readable_output=human_readable,
-        # outputs_key_field='GroupId',
+        outputs_key_field='GroupId',
         outputs=outputs
     )
     return_results(result)
