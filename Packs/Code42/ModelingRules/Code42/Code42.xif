@@ -49,6 +49,7 @@ filter eventType = "file"
 | alter source_ipv6 = if(source_ip ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", source_ip )
 | alter destination_ipv4 = if(source_ip ~= "\d{1,3}.\d{1,3}.\d{1,3}.\d{1,3}", destination_ip )
 | alter destination_ipv6 = if(source_ip ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", destination_ip )
+| alter destination_domains_2 = replace(to_string(destination_domains) ,"\'" ,"")
 
 // Map,
 | alter xdm.event.type = event_type ,
@@ -81,7 +82,7 @@ filter eventType = "file"
      xdm.email.sender = source_email_from ,
      xdm.email.return_path = source_email_sender ,
      xdm.target.host.device_category = destination_category ,
-     xdm.target.host.fqdn = arraystring(destination_domains,","),
+     xdm.target.host.fqdn = destination_domains_2,
      xdm.target.ipv4 = destination_ipv4,
      xdm.target.ipv6 = destination_ipv6,
      xdm.target.host.ipv4_addresses = destination_private_ip,
