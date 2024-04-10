@@ -1,14 +1,15 @@
-from collections import defaultdict
-from dotenv import load_dotenv
-from typing import Any
-from git import Repo, Git, Remote  # pip install GitPython
-from github import Github, GithubException, Repository  # pip install PyGithub
-from demisto_sdk.commands.common.handlers import DEFAULT_JSON_HANDLER as json
-import yaml
-import os
 import logging
 import math
+import os
+from collections import defaultdict
+from typing import Any
+
 import typer
+import yaml
+from demisto_sdk.commands.common.handlers import DEFAULT_JSON_HANDLER as json
+from dotenv import load_dotenv
+from git import Git, Remote, Repo  # pip install GitPython
+from github import Github, GithubException, Repository  # pip install PyGithub
 
 logging.basicConfig(level=logging.INFO)
 load_dotenv()
@@ -47,7 +48,7 @@ def create_remote_pr(
         pr_assignees (list[str], optional): PR assignee/s. Defaults to [].
         pr_reviewers (list[str], optional): PR reviewer/s. Defaults to [].
         base_branch (str, optional): The base branch. Defaults to "master".
-    
+
     Returns:
         The PR URL link.
     """
@@ -160,6 +161,7 @@ def update_content_items_docker_images_and_push(
 def comma_list(raw_data: str) -> list[str]:
     return raw_data.split(",") if raw_data else []
 
+
 @app.command()
 def open_prs_for_content_items(
     affected_content_items_file: str = typer.Option(
@@ -175,7 +177,7 @@ def open_prs_for_content_items(
     ),
     prs_limit: str = typer.Option(
         # TODO Change to 10 later
-        default="2",
+        default="10",
         help="The maximum number of content items to open in one PR",
     ),
     pr_assignees: list = typer.Option(
