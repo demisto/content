@@ -1,4 +1,4 @@
-This integration is set up by default on Cortex XSOAR versions 6.5+ with the Threat Intel Module (TIM). It is designed for internal use with the TIM Sample Analysis feature. To run ad hoc CLI commands to generate WildFire reports, use the Palo Alto Networks WildFire v2 integration instead.
+This integration is set up by default on Cortex XSOAR versions with the Threat Intel Module (TIM). It is designed for internal use with the TIM Sample Analysis feature. To run ad hoc CLI commands to generate WildFire reports, use the Palo Alto Networks WildFire v2 integration instead.
 
 #### How to retrieve a Palo Alto Networks WildFire Reports API key
 
