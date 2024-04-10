@@ -278,6 +278,10 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
     return False
 
 
+def get_user_from_ui_pr(pr):
+    print(pr.comments)
+
+
 def main():
     """Handles External PRs (PRs from forks)
 
@@ -358,6 +362,11 @@ def main():
     print(f"Content Reviewers: {','.join(content_reviewers)}")
     print(f"Security Reviewer: {security_reviewer}")
     print(f"TIM Reviewer: {tim_reviewer}")
+
+    #if pr.user.login == "xsoar-bot":
+    get_user_from_ui_pr(pr)
+
+
 
     content_reviewer = determine_reviewer(content_reviewers, content_repo)
     pr.add_to_assignees(content_reviewer)
