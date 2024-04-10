@@ -306,8 +306,8 @@ def get_pr_comments(pr_number: str) -> str:
     return comments
 
 
-def get_user_from_ui_pr(pr):
-    comments = get_pr_comments(pr)
+def get_user_from_ui_pr(pr, pr_number):
+    comments = get_pr_comments(pr_number)
     print("Comments in the PR are:\n")
     print(comments)
 
@@ -394,7 +394,7 @@ def main():
     print(f"TIM Reviewer: {tim_reviewer}")
 
     #if pr.user.login == "xsoar-bot":
-    get_user_from_ui_pr(pr)
+    get_user_from_ui_pr(pr, pr_number)
 
 
 
