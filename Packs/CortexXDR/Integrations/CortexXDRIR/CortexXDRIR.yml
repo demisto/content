@@ -636,6 +636,13 @@ script:
       - 'true'
     - description: Add a comment to the incident.
       name: add_comment
+    - auto: PREDEFINED
+      description: Whether to resolve alerts related to a resolved incident (status arg include RESOLVED or resolve_comment args is used).
+      name: resolve_alerts
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
     description: Updates one or more fields of a specified incident. Missing fields will be ignored. To remove the assignment for an incident, pass a null value in the assignee email argument.
     name: xdr-update-incident
   - arguments:
@@ -3499,12 +3506,12 @@ script:
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
   - arguments:
-    - description: Array of alert-ids (separated with comma).
+    - description: A comma separated list of alert ids.
       name: alert_ids
       required: true
       isArray: true
     - auto: PREDEFINED
-      description: Severity of the incident which was closed.
+      description: Required severity to update alerts to.
       name: severity
       required: false
       predefined:
@@ -3532,7 +3539,8 @@ script:
       name: comment
       required: false
     description: |- 
-      Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored.Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB
+      Update one or more alerts with the provided arguments.
+      Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
     name: xdr-update-alert
   dockerimage: demisto/python3:3.10.14.91134
   isfetch: true

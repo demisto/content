@@ -434,15 +434,14 @@ class Client(CoreClient):
         request_data = {"request_data": {
             "alert_id_list": alerts_ids,
         }}
-        if severity or status or comment:
-            request_data["request_data"]["update_data"] = {}  # type: ignore
+        update_data = {}
         if severity:
-            request_data["request_data"]["update_data"]["severity"] = severity  # type: ignore
+            update_data["severity"] = severity  # type: ignore
         if status:
-            request_data["request_data"]["update_data"]["status"] = status  # type: ignore
+            update_data["status"] = status  # type: ignore
         if comment:
-            request_data["request_data"]["update_data"]["comment"] = comment  # type: ignore
-
+            update_data["comment"] = comment  # type: ignore
+        request_data['request_data']['update_data'] = update_data
         response = self._http_request(
             method='POST',
             url_suffix='/alerts/update_alerts',
@@ -450,10 +449,10 @@ class Client(CoreClient):
             headers=self.headers,
             timeout=self.timeout,
         )
-
         if "reply" not in response or "alerts_ids" not in response["reply"]:
-            raise DemistoException("Parse Error. Response not in format, can't find reply key.")
+            raise DemistoException(f"Parse Error. Response not in format, can't find reply key. The response {response}.")
         return response['reply']['alerts_ids']
+
 
 
 def get_headers(params: dict) -> dict:
@@ -500,6 +499,7 @@ def update_incident_command(client, args):
     unassign_user = args.get('unassign_user') == 'true'
     resolve_comment = args.get('resolve_comment')
     add_comment = args.get('add_comment')
+    resolve_alerts = argToBoolean(args.get('resolve_alerts'))
 
     client.update_incident(
         incident_id=incident_id,
@@ -511,6 +511,10 @@ def update_incident_command(client, args):
         resolve_comment=resolve_comment,
         add_comment=add_comment,
     )
+    is_closed = resolve_comment or argToList(status, '_')[0] == 'RESOLVED'
+    if resolve_alerts and is_closed:
+        args = {}
+        update_related_alerts(client, args)
 
     return f'Incident {incident_id} has been updated', None, None
 
@@ -985,26 +989,15 @@ def update_remote_system_command(client, args):
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
             demisto.debug(f"{update_args=}")
             update_incident_command(client, update_args)
+
             close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
-            is_closed = update_args.get('close_reason')
+            is_closed = (args.get('close_reason') or args.get('closeReason') or args.get('closeNotes')
+                         or args.get('resolve_comment') or args.get('closingUserId'))
+            demisto.debug(f"please print args {args} !!!")
+            demisto.debug(f"{close_alerts_in_xdr=}, {args.get('close_reason')=}, {args.get('closeReason')},"
+                          f"{args.get('closeNotes')}, {args.get('resolve_comment')}, {args.get('closingUserId')}")
             if close_alerts_in_xdr and is_closed:
-                new_status = update_args.get('status')
-                comment = update_args.get('resolve_comment')
-                demisto.debug(f"{close_alerts_in_xdr=}, {is_closed=}, {new_status=}, {comment=}")
-                if not new_status:
-                    raise DemistoException(f"Failed to update alerts related to incident {incident_id},"
-                                           "no status found")
-                incident_extra_data = client.get_incident_extra_data(incident_id)
-                if 'alerts' in incident_extra_data and 'data' in incident_extra_data['alerts']:
-                    alerts_array = incident_extra_data['alerts']['data']
-                    related_alerts_ids_array = []
-                    for alert in alerts_array:
-                        if 'alert_id' in alert:
-                            related_alerts_ids_array.append(alert['alert_id'])
-                    demisto.debug(f"{related_alerts_ids_array=}")
-                    related_alerts_ids_string = ','.join(related_alerts_ids_array)
-                    args_for_command = {'alert_ids': related_alerts_ids_string, 'status': new_status, 'comment': comment}
-                    update_alerts_in_xdr_command(client, args_for_command)
+                update_related_alerts(client, update_args)
 
         else:
             demisto.debug(f'Skipping updating remote incident fields [{remote_args.remote_incident_id}] '
@@ -1018,6 +1011,22 @@ def update_remote_system_command(client, args):
 
         return remote_args.remote_incident_id
 
+def update_related_alerts(client: Client, args: dict):
+        #TODO+ if closing without args check the code!!
+        new_status = args.get('status')
+        comment = args.get('resolve_comment')
+        incident_id = args.get('incident_id')
+        demisto.debug(f"{new_status=}, {comment=}")
+        if not new_status:
+            raise DemistoException(f"Failed to update alerts related to incident {incident_id},"
+                                    "no status found")
+        incident_extra_data = client.get_incident_extra_data(incident_id)
+        if 'alerts' in incident_extra_data and 'data' in incident_extra_data['alerts']:
+            alerts_array = incident_extra_data['alerts']['data']
+            related_alerts_ids_array = [str(alert['alert_id']) for alert in alerts_array if 'alert_id' in alert]
+            demisto.debug(f"{related_alerts_ids_array=}")
+            args_for_command = {'alert_ids': related_alerts_ids_array, 'status': new_status, 'comment': comment}
+            update_alerts_in_xdr_command(client, args_for_command)
 
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
                     statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
@@ -1227,6 +1236,7 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
     if not severity and not status and not comment:
         raise DemistoException(
             f"Can not find a field to update for alerts {alerts_list}, please fill in severity/status/comment.")
+    # API is limited to 100 alerts per request, doing the request in batches of 100.
     for index in range(0, len(alerts_list), 100):
         alerts_sublist = alerts_list[index:index + 100]
         demisto.debug(f'{alerts_sublist=}, {severity=}, {status=}, {comment=}')

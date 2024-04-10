@@ -1363,11 +1363,11 @@ def test_update_alerts_in_xdr_command_invalid_response_no_alerts_ids(mocker):
     from CortexXDRIR import update_alerts_in_xdr_command, Client
     xdrIr_client = Client(base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=10, proxy=False)
     http_request = mocker.patch.object(xdrIr_client, '_http_request')
-    http_request.return_value = {"reply": ['1', '2', '3']}
+    http_request.return_value = {"reply": {'alerts_ids': []}}
     args = {"alert_ids": "1,2,3", "severity": "high", "status": "resolved_threat_handled", "comment": "fixed from test"}
     with pytest.raises(DemistoException) as e:
         update_alerts_in_xdr_command(xdrIr_client, args)
-    assert e.value.message == "Parse Error. Response not in format, can't find reply key."
+    assert e.value.message == "Could not find alerts to update, please make sure you used a valid alert IDs."
 
 
 @pytest.mark.parametrize('incident_changed, delta',
