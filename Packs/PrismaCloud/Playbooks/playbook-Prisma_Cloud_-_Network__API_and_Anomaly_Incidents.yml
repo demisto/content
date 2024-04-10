@@ -1307,7 +1307,7 @@ tasks:
     task:
       id: 7265dfe6-a8a7-4b86-8066-c118ba872dbe
       version: -1
-      name: Has host RRN?
+      name: Host RRN has received from Prisma?
       type: condition
       iscommand: false
       brand: ""
