@@ -442,6 +442,7 @@ def phisher_message_list_command(client: Client, args: dict) -> CommandResults:
     """
     # get parameters
     limit = client.max_fetch
+    a = 1
     query = args.get('query')
     message_id = args.get('id')
     all_events = args.get('include_events')
