@@ -1,8 +1,7 @@
 id: URLEncode-Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: URLEncode-Test
-description: 'Testing output of URLEncode'
+description: 'test test.'
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -83,6 +83,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {

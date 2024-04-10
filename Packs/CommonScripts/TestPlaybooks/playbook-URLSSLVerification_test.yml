@@ -1,9 +1,7 @@
 id: URLSSLVerification_test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: URLSSLVerification_test
-description: This test can only run successfully on a non-local machine (due to SSL
-  verification)
+description: test test.
 starttaskid: "0"
 tasks:
   "0":
@@ -16,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -211,6 +210,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {

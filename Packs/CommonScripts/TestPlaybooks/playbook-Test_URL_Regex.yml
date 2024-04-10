@@ -1,7 +1,7 @@
 id: test_url_regex
 version: -1
 name: Test URL Regex
-description: Test the URL regex
+description: test test.
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -95,6 +96,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {

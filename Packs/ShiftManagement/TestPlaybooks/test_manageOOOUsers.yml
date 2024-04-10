@@ -40,9 +40,7 @@ tasks:
       id: c75d386a-9b6a-457e-8854-8d2ddd0ef0d4
       version: -1
       name: try adding to list
-      description: Adds or removes an analyst from the out-of-office list in XSOAR.
-        When used with the AssignAnalystToIncidentOOO automation, prevents incidents
-        from being assigned to an analyst who is out of office.
+      description: Adds or removes an analyst from the out-of-office list in XSOAR. When used with the AssignAnalystToIncidentOOO automation, prevents incidents from being assigned to an analyst who is out of office.
       scriptName: ManageOOOusers
       type: regular
       iscommand: false
@@ -113,4 +111,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.5.0
-description: Test playbook for the manageOOOUsers script
+description: test test.

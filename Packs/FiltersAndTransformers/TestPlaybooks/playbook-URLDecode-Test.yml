@@ -2,7 +2,7 @@ id: URLDecode-Test
 version: -1
 rolename: []
 name: URLDecode-Test
-description: 'Testing output of URLDecode '
+description: 'test test.'
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -104,6 +105,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {

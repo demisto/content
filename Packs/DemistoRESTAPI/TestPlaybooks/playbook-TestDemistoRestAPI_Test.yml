@@ -41,7 +41,7 @@ tasks:
       - '2'
     scriptarguments:
       all:
-        simple: yes
+        simple: true
     separatecontext: false
     view: '{"position": {"x": 50, "y": 200}}'
     note: false
@@ -94,6 +94,6 @@ tasks:
 view: '{"linkLabelsPosition": {}, "paper": {"dimensions": {"height": 200, "width": 380, "x": 50, "y": 50}}}'
 inputs: []
 outputs: []
-description: ''
+description: 'test test.'
 marketplaces:
 - xsoar
