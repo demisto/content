@@ -227,7 +227,8 @@ def test_auth_code_params(mocker):
         'self_deployed': True,
         'auth_id': 'client_id',
         'grant_type': 'authorization_code',
-        'base_url': 'https://management.azure.com/subscriptions//resourceGroups//providers/Microsoft.Network/networkSecurityGroups',
+        'base_url': 'https://management.azure.com/subscriptions//resourceGroups//providers/Microsoft.Network/'
+                    'networkSecurityGroups',
         'verify': True,
         'proxy': False,
         'scope': 'https://management.azure.com/.default',
