@@ -300,8 +300,6 @@ def get_pr_comments(pr_number: str) -> str:
     response = requests.get(comments_url, params={'page': str(page)})
     response.raise_for_status()
     comments = response.json()
-    if not comments:
-        break
 
     return comments
 
