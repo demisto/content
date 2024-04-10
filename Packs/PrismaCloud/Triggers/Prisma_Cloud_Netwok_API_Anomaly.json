@@ -4,6 +4,7 @@
   "suggestion_reason": "Recommended for Prisma Cloud Network, API and Anomaly alerts",
   "description": "This trigger is responsible for handling  Prisma Cloud Network, API and Anomaly alerts",
   "trigger_name": "Prisma Cloud Network, API and Anomaly alerts",
+  "fromVersion": "6.10.0",
   "alerts_filter": {
     "filter": {
       "AND": [
