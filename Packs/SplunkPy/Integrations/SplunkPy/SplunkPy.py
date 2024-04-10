@@ -386,12 +386,15 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)
     reader = results.JSONResultsReader(oneshotsearch_results)
 
+    error_message = ''
     incidents = []
     notables = []
     incident_ids_to_add = []
     num_of_dropped = 0
     for item in reader:
         if handle_message(item):
+            if 'Error' in str(item.message) or 'error' in str(item.message):
+                error_message = f'{error_message}\n{item.message}'
             continue
         extensive_log(f'[SplunkPy] Incident data before parsing to notable: {item}')
         notable_incident = Notable(data=item)
@@ -409,6 +412,8 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, comment_t
             num_of_dropped += 1
             extensive_log(f'[SplunkPy] - Dropped incident {incident_id} due to duplication.')
 
+    if error_message and not incident_ids_to_add:
+        raise DemistoException(f'Failed to fetch incidents, check the provided query in Splunk web search - {error_message}')
     extensive_log(f'[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {len(last_run_fetched_ids)}')
     for incident_id in incident_ids_to_add:
         last_run_fetched_ids[incident_id] = {'occurred_time': latest_time}
