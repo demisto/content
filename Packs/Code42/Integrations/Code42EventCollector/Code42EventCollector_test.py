@@ -21,8 +21,8 @@ def create_file_events(start_id: int, start_date: str, num_of_file_events: int) 
         {
             "event": {
                 "id": f'{i}',
-                "inserted": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT)
-            }
+            },
+            "@timestamp": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT)
         } for i in range(start_id, start_id + num_of_file_events)
     ]
 
@@ -174,8 +174,6 @@ def test_fetch_events_no_last_run(mocker):
     assert len(audit_logs) == 1
     assert audit_logs[0]["eventType"] == Code42EventCollector.EventType.AUDIT
 
-    assert set_last_run_mocker.call_args_list[1][0][0]["nextTrigger"] == "0"
-
     last_run_expected_keys = {
         Code42EventCollector.FileEventLastRun.FETCHED_IDS,
         Code42EventCollector.FileEventLastRun.TIME,
@@ -237,8 +235,6 @@ def test_fetch_events_no_last_run_max_fetch_lower_than_available_events(mocker):
     for audit_log in audit_logs:
         assert audit_log["eventType"] == Code42EventCollector.EventType.AUDIT
 
-    assert set_last_run_mocker.call_args_list[1][0][0]["nextTrigger"] == "0"
-
     last_run_expected_keys = {
         Code42EventCollector.FileEventLastRun.FETCHED_IDS,
         Code42EventCollector.FileEventLastRun.TIME,
@@ -299,8 +295,6 @@ def test_fetch_events_no_last_run_no_audit_logs_yes_file_events(mocker):
     audit_logs = send_events_mocker.call_args_list[1][0][0]
     assert len(audit_logs) == 0
 
-    assert set_last_run_mocker.call_args_list[1][0][0]["nextTrigger"] == "0"
-
     last_run_expected_keys = {
         Code42EventCollector.FileEventLastRun.FETCHED_IDS,
         Code42EventCollector.FileEventLastRun.TIME,
@@ -359,8 +353,6 @@ def test_fetch_events_no_last_run_yes_audit_logs_no_file_events(mocker):
     for audit_log in audit_logs:
         assert audit_log["eventType"] == Code42EventCollector.EventType.AUDIT
 
-    assert set_last_run_mocker.call_args_list[1][0][0]["nextTrigger"] == "0"
-
     last_run_expected_keys = {
         Code42EventCollector.AuditLogLastRun.FETCHED_IDS,
         Code42EventCollector.AuditLogLastRun.TIME,
@@ -381,7 +373,6 @@ def test_fetch_events_no_last_run_no_events(mocker):
 
     Then:
      - make sure no events were sent
-     - make sure last run is populated with nextTrigger = "30" (seconds)
     """
     import Code42EventCollector
 
@@ -413,8 +404,6 @@ def test_fetch_events_no_last_run_no_events(mocker):
 
     audit_logs = send_events_mocker.call_args_list[1][0][0]
     assert len(audit_logs) == 0
-
-    assert set_last_run_mocker.call_args_list[1][0][0] == {'nextTrigger': '30'}
 
 
 def test_get_events_command(mocker):
