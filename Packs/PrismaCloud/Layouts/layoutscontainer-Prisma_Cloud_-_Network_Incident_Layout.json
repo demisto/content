@@ -206,7 +206,7 @@
                         "moved": false,
                         "name": "Closing Information",
                         "static": false,
-                        "w": 2,
+                        "w": 3,
                         "x": 0,
                         "y": 5
                     },
@@ -231,32 +231,7 @@
                         "w": 2,
                         "x": 0,
                         "y": 2
-                    },
-                    {
-                        "h": 2,
-                        "i": "caseinfoid-128c21a0-d480-11ee-9996-fd1cc96b85a8",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "incident_labels",
-                                "height": 26,
-                                "id": "12836f11-d480-11ee-9996-fd1cc96b85a8",
-                                "index": 0,
-                                "isVisible": true,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Labels",
-                        "static": false,
-                        "type": "labels",
-                        "w": 1,
-                        "x": 2,
-                        "y": 5
-                    }
+                                        }
                 ],
                 "type": "custom"
             },
@@ -289,6 +264,15 @@
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
+{
+                                "endCol": 2,
+                                "fieldId": "userrisklevel",
+                                "height": 26,
+                                "id": "457a0c10-f71e-11ee-9d99-b7538facaeb2",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
                             {
                                 "endCol": 2,
                                 "fieldId": "hostname",
@@ -303,7 +287,7 @@
                                 "fieldId": "remoteip",
                                 "height": 26,
                                 "id": "f762abd0-f0c0-11ee-85e6-d937c0f6c662",
-                                "index": 3,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -607,6 +591,15 @@
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
+{
+                                "endCol": 2,
+                                "fieldId": "userrisklevel",
+                                "height": 26,
+                                "id": "56b005c0-f71e-11ee-9d99-b7538facaeb2",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
                             {
                                 "endCol": 4,
                                 "fieldId": "cveid",
@@ -642,7 +635,7 @@
                                 "fieldId": "cvepublished",
                                 "height": 53,
                                 "id": "a4a4a900-f018-11ee-91a8-4bbcbf7a699c",
-                                "index": 3,
+                                "index": 2,
                                 "listId": "zihqpezlwt-5cf18aa0-d480-11ee-9996-fd1cc96b85a8",
                                 "sectionItemType": "field",
                                 "startCol": 2
@@ -650,9 +643,9 @@
                             {
                                 "endCol": 4,
                                 "fieldId": "vulnerableproduct",
-                                "height": 106,
+                                "height": 53,
                                 "id": "a13747a0-f018-11ee-91a8-4bbcbf7a699c",
-                                "index": 4,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             }
@@ -885,8 +878,8 @@
         ]
     },
     "group": "incident",
-    "id": "Prisma Cloud - Network Incident Layout",
-    "name": "Prisma Cloud - Network Incident Layout",
+    "id": "Prisma Cloud - Network API and Anomaly Incident Layout",
+    "name": "Prisma Cloud - Network API and Anomaly Incident Layout",
     "system": false,
     "version": -1,
     "marketplaces": ["marketplacev2"],
