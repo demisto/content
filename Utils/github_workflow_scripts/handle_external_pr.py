@@ -279,7 +279,7 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
     return False
 
 
-def get_pr_comments(pr_number: str) -> str:
+def get_pr_body(pr_number: str) -> str:
     """
     Get the comments URL for a PR. If the PR contains a comment about an instance test (for contrib PRs),
     it will use that comment.
@@ -294,22 +294,17 @@ def get_pr_comments(pr_number: str) -> str:
     response = requests.get(pr_url)
     print(f'the pr is: {response.json()}')
     pr = response.json()
-    page=1
-    if not pr:
-        print('Could not find the pull request to reply on.')
-        sys.exit(1)
-    comments_url = pr['comments_url']
-    response = requests.get(comments_url, params={'page': str(page)})
-    response.raise_for_status()
-    comments = response.json()
+    body = pr['body']
+
+
 
     return comments
 
 
 def get_user_from_ui_pr(pr, pr_number):
-    comments = get_pr_comments(pr_number)
-    print("Comments in the PR are:\n")
-    print(comments)
+    body = get_pr_body(pr_number)
+    print("Body of the PR are:\n")
+    print(body)
 
 
 def main():
