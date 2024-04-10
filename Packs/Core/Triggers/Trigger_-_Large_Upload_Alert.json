@@ -3,7 +3,7 @@
   "playbook_id": "Large Upload Alert",
   "suggestion_reason": "Recommended for large upload alerts",
   "description": "This trigger is responsible for handling \"core - Large Upload\" alerts",
-  "trigger_name": "Large Upload",
+  "trigger_name": "Large Upload Alert",
   "alerts_filter": {
     "filter": {
       "AND": [
