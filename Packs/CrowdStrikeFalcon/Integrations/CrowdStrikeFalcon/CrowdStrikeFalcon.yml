@@ -30,11 +30,11 @@ configuration:
   hidden: true
   section: Connect
   required: false
-- defaultvalue: 'A+ - 3rd party enrichment'
+- defaultvalue: A+ - 3rd party enrichment
   display: Source Reliability
   name: Reliability
   type: 15
-  additionalinfo: Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command.
+  additionalinfo: "Reliability of the source providing the intelligence data. Currently used for \u201CCVE\u201D reputation  command."
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -49,7 +49,7 @@ configuration:
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
-  defaultvalue: '3 days'
+  defaultvalue: 3 days
   section: Collect
   required: false
 - display: Max incidents per fetch
@@ -89,14 +89,14 @@ configuration:
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "Use the Falcon Query Language. For more information, refer to the integration docs."
+  additionalinfo: Use the Falcon Query Language. For more information, refer to the integration docs.
 - display: IOA fetch query
   name: ioa_fetch_query
   type: 0
   section: Collect
   required: false
   advanced: true
-  additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to the integration docs."
+  additionalinfo: 'In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument ''cloud_provider'' configured. Multiple values for the same parameter is not supported. For more information, refer to the integration docs.'
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -126,14 +126,14 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: 'Use system proxy settings'
+- display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
   required: false
 - defaultvalue: 'false'
-  display: 'Close Mirrored XSOAR Incident'
+  display: Close Mirrored XSOAR Incident
   name: close_incident
   type: 8
   section: Collect
@@ -142,14 +142,14 @@ configuration:
   additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
 - additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
   defaultvalue: 'false'
-  display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
+  display: Close Mirrored CrowdStrike Falcon Incident or Detection
   name: close_in_cs_falcon
   type: 8
   section: Collect
   advanced: true
   required: false
-- defaultvalue: 'Endpoint Detection'
-  display: 'Fetch types'
+- defaultvalue: Endpoint Detection
+  display: Fetch types
   name: fetch_incidents_or_detections
   type: 16
   section: Collect
@@ -164,7 +164,7 @@ configuration:
   - Indicator of Attack
   - Mobile Detection
 - defaultvalue: '1'
-  display: 'Incidents Fetch Interval'
+  display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   section: Collect
@@ -186,8 +186,8 @@ script:
   - arguments:
     - name: extended_data
       predefined:
-      - Yes
-      - No
+      - true
+      - false
       description: Whether or not to get additional data about the device.
       auto: PREDEFINED
     - description: The query to filter the device.
@@ -198,17 +198,17 @@ script:
     - description: The offset to start retrieving records from.
       name: offset
       defaultValue: 0
-    - description: 'A comma-separated list of device IDs to limit the results.'
+    - description: A comma-separated list of device IDs to limit the results.
       name: ids
     - description: 'The status of the device. Possible values are: "Normal", "containment_pending", "contained", and "lift_containment_pending".'
       name: status
       auto: PREDEFINED
       predefined:
-      - 'normal'
+      - normal
       - containment_pending
       - contained
       - lift_containment_pending
-    - description: 'The host name of the device.'
+    - description: The host name of the device.
       name: hostname
       auto: PREDEFINED
       predefined:
@@ -217,10 +217,10 @@ script:
       name: platform_name
       auto: PREDEFINED
       predefined:
-      - 'Windows'
+      - Windows
       - Mac
       - Linux
-    - description: 'The site name of the device.'
+    - description: The site name of the device.
       name: site_name
     - description: The property to sort by (e.g. status.desc or hostname.asc).
       name: sort
@@ -331,17 +331,18 @@ script:
     - description: The IDs of the detections to search. If provided, will override other arguments.
       isArray: true
       name: ids
-    - description: |-
-        Filter detections using a query in Falcon Query Language (FQL).
-        For example, filter="device.hostname:'CS-SE-TG-W7-01'"
-        For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch
+    - description: 'Filter detections using a query in Falcon Query Language (FQL).
+
+        For example, filter="device.hostname:''CS-SE-TG-W7-01''"
+
+        For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch'
       name: filter
     - auto: PREDEFINED
       description: Whether to get additional data such as device and behaviors processed.
       name: extended_data
       predefined:
-      - Yes
-      - No
+      - true
+      - false
     description: Search for details of specific detections, either using a filter query, or by providing the IDs of the detections.
     name: cs-falcon-search-detection
     outputs:
@@ -401,7 +402,7 @@ script:
       name: ids
       required: true
     - auto: PREDEFINED
-      description: 'The status to transition a detection to.'
+      description: The status to transition a detection to.
       name: status
       predefined:
       - new
@@ -421,7 +422,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Username to assign the detections to. (This is usually the user’s email address, but may vary based on your configuration). username and assigned_to_uuid are mutually exclusive.
+    - description: "Username to assign the detections to. (This is usually the user\u2019s email address, but may vary based on your configuration). username and assigned_to_uuid are mutually exclusive."
       name: username
     description: Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place. Note that IDP detections are not supported.
     name: cs-falcon-resolve-detection
@@ -449,7 +450,7 @@ script:
     - description: The type of command to run.
       name: command_type
       required: true
-    - description: 'The full command to run.'
+    - description: The full command to run.
       name: full_command
       required: true
     - auto: PREDEFINED
@@ -462,7 +463,7 @@ script:
       - admin
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
-      defaultValue: "180"
+      defaultValue: '180'
       type: unknown
     - auto: PREDEFINED
       defaultValue: batch
@@ -1392,9 +1393,9 @@ script:
       - ipv4
       - ipv6
       required: true
-    - description: |-
-        A comma separated list of indicators.
-        More than one value can be supplied to upload multiple IOCs of the same type but with different values. Note that the uploaded IOCs will have the same properties (as supplied in other arguments).
+    - description: 'A comma separated list of indicators.
+
+        More than one value can be supplied to upload multiple IOCs of the same type but with different values. Note that the uploaded IOCs will have the same properties (as supplied in other arguments).'
       isArray: true
       name: value
       required: true
@@ -1573,7 +1574,6 @@ script:
     - contextPath: CrowdStrike.IOC.Filename
       description: Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs.
       type: string
-
   - arguments:
     - description: The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs command.
       name: ioc_id
@@ -1684,7 +1684,7 @@ script:
       type: Date
   - arguments:
     - auto: PREDEFINED
-      description: 'The type of indicator.'
+      description: The type of indicator.
       name: type
       predefined:
       - domain
@@ -2421,7 +2421,7 @@ script:
       required: true
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
-      defaultValue: "180"
+      defaultValue: '180'
       type: unknown
     description: Uploads a batch of indicators.
     name: cs-falcon-batch-upload-custom-ioc
@@ -2695,16 +2695,16 @@ script:
     - description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation.
       name: cve_id
       isArray: true
-    - description: "Severity of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE."
+    - description: 'Severity of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE.'
       name: cve_severity
       isArray: true
     - description: Name of a tag assigned to a host. Retrieve tags from Host Tags APIs.
       name: tags
       isArray: true
-    - description: "Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired."
+    - description: 'Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired.'
       name: status
       isArray: true
-    - description: "Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux."
+    - description: 'Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux.'
       name: platform_name
     - description: Unique system-assigned ID of a host group. Retrieve the host group ID from Host Group APIs.
       name: host_group
@@ -2765,13 +2765,13 @@ script:
       description: UTC date and time of the last update made on the vulnerability.
       type: Date
     - contextPath: CrowdStrike.Vulnerability.status
-      description: "Vulnerability's current status. Possible values are: open, closed, reopen, or expired."
+      description: 'Vulnerability''s current status. Possible values are: open, closed, reopen, or expired.'
       type: String
     - contextPath: CrowdStrike.Vulnerability.apps.product_name_version
       description: Name and version of the product associated with the vulnerability.
       type: String
     - contextPath: CrowdStrike.Vulnerability.apps.sub_status
-      description: "Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen."
+      description: 'Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen.'
       type: String
     - contextPath: CrowdStrike.Vulnerability.apps.remediation.ids
       description: Remediation ID of each product associated with the vulnerability.
@@ -2941,13 +2941,13 @@ script:
       description: UTC date and time of the last update made on the vulnerability.
       type: Date
     - contextPath: CrowdStrike.VulnerabilityHost.status
-      description: "Vulnerability's current status. Possible values are: open, closed, reopen, or expired."
+      description: 'Vulnerability''s current status. Possible values are: open, closed, reopen, or expired.'
       type: String
     - contextPath: CrowdStrike.VulnerabilityHost.apps.product_name_version
       description: Name and version of the product associated with the vulnerability.
       type: String
     - contextPath: CrowdStrike.VulnerabilityHost.apps.sub_status
-      description: "Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen."
+      description: 'Status of each product associated with the vulnerability. Possible values are: open, closed, or reopen.'
       type: String
     - contextPath: CrowdStrike.VulnerabilityHost.apps.remediation.ids
       description: Remediation ID of each product associated with the vulnerability.
@@ -3004,7 +3004,7 @@ script:
     - description: Value to match for exclusion.
       name: value
       required: true
-    - description: "A comma-separated list from where to exclude the exclusion. Possible values are: blocking, extraction."
+    - description: 'A comma-separated list from where to exclude the exclusion. Possible values are: blocking, extraction.'
       name: excluded_from
       required: true
       isArray: true
@@ -4344,8 +4344,8 @@ script:
       name: type
       required: true
       predefined:
-      - 'USER'
-      - 'ENDPOINT'
+      - USER
+      - ENDPOINT
       auto: PREDEFINED
     - description: The key to sort by.
       name: sort_key
@@ -4359,8 +4359,8 @@ script:
     - description: The sort order.
       name: sort_order
       predefined:
-      - 'DESCENDING'
-      - 'ASCENDING'
+      - DESCENDING
+      - ASCENDING
       auto: PREDEFINED
       defaultValue: ASCENDING
     - description: Comma separated list of entity IDs to look for.
@@ -4375,16 +4375,16 @@ script:
     - description: The maximum risk score severity to filter by.
       name: max_risk_score_severity
       predefined:
-      - 'NORMAL'
-      - 'MEDIUM'
-      - 'HIGH'
+      - NORMAL
+      - MEDIUM
+      - HIGH
       auto: PREDEFINED
     - description: The minimum risk score severity to filter by.
       name: min_risk_score_severity
       predefined:
-      - 'NORMAL'
-      - 'MEDIUM'
-      - 'HIGH'
+      - NORMAL
+      - MEDIUM
+      - HIGH
       auto: PREDEFINED
     - description: Whether to get only enabled or disabled identity entities.
       name: enabled
@@ -4548,11 +4548,11 @@ script:
       name: policy_id
     - description: The cloud provider.
       name: cloud_platform
-      defaultValue: 'aws'
+      defaultValue: aws
       predefined:
-      - 'aws'
-      - 'gcp'
-      - 'azure'
+      - aws
+      - gcp
+      - azure
       auto: PREDEFINED
     - description: Service type to filter by.
       name: service
@@ -4680,10 +4680,10 @@ script:
     - description: Policy severity value.
       name: severity
       predefined:
-      - 'critical'
-      - 'high'
-      - 'medium'
-      - 'informational'
+      - critical
+      - high
+      - medium
+      - informational
       auto: PREDEFINED
     - description: Tag exclusion flag.
       name: tag_excluded
@@ -4711,10 +4711,10 @@ script:
     - description: Update status of the alert to the specified value.
       name: update_status
       predefined:
-      - 'new'
-      - 'in_progress'
-      - 'closed'
-      - 'reopened'
+      - new
+      - in_progress
+      - closed
+      - reopened
       auto: PREDEFINED
     - description: Whether to unassign any assigned users to the specified detections.
       name: unassign
@@ -4735,7 +4735,7 @@ script:
       name: ids
       isArray: true
       required: true
-    - description: 'Assign the specified detections to a user based on their username.'
+    - description: Assign the specified detections to a user based on their username.
       name: assign_to_name
     - description: Assign the specified detections to a user based on their UUID.
       name: assign_to_uuid
@@ -4748,10 +4748,10 @@ script:
     - description: Update status of the alert to the specified value.
       name: update_status
       predefined:
-      - 'new'
-      - 'in_progress'
-      - 'closed'
-      - 'reopened'
+      - new
+      - in_progress
+      - closed
+      - reopened
       auto: PREDEFINED
     - description: Whether to unassign any assigned users to the specified detections.
       name: unassign
