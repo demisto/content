@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 """ IMPORTS """
 
 import dataclasses
+import collections
 import functools
 import itertools
 import json
@@ -1333,58 +1334,56 @@ def endpoint_search(client, args):
     return data
 
 
-def get_frequent_users(client, args):
-    authentications = {}
+def get_frequent_users(client: Client, args: dict[str, Any]) -> CommandResults:
+
+    authentications: collections.Counter[tuple[str, str]] = collections.Counter()
     output = []
 
-    limit = int(args.get("limit"))
+    # replace 0 with the default value
+    # default value is already hardcoded into the .yml config
+    limit = int(args.get("limit", 0)) or 3
 
-    for class_name in [
-        "TelemetryWindowsAuthentication",
-        "TelemetryLinuxAuthentication",
-        "TelemetryMacosAuthentication",
-    ]:
-        if class_name == "TelemetryWindowsAuthentication":
-            args["logon_type"] = 2
+    for system, class_name in (
+        ("windows", "TelemetryWindowsAuthentication"),
+        ("linux", "TelemetryLinuxAuthentication"),
+        ("macos", "TelemetryMacosAuthentication"),
+    ):
 
-        klass = globals()[class_name]
-        instance = klass()
+        obj = globals()[class_name]()
 
-        data = instance.get_telemetry(client, args)
+        if system == "windows":
+            data = obj.get_telemetry(client, {"logon_type": 2, **args})
+        else:
+            data = obj.get_telemetry(client, args)
 
-        if len(data["results"]) > 0:
-            for authentication in data["results"]:
-                username = authentication["target_username"]
-                if username not in authentications:
-                    authentications[username] = 0
-                authentications[username] += 1
-
-            sorted_authentications = dict(
-                sorted(authentications.items(), key=lambda item: item[1], reverse=True)
+        for auth in data["results"]:
+            authentications.update(
+                [(system, auth["target_username"])],
             )
 
-            for username in sorted_authentications:
-                output.append(
-                    {
-                        "Username": username,
-                        "Authentication attempts": sorted_authentications[username],
-                    }
-                )
-                if limit and len(output) >= limit:
-                    break
+    for (system, username), auth_count in authentications.most_common():
+        output.append(
+            {
+                "Username": username,
+                "System": system,
+                "Authentication attempts": authentications[(system, username)],
+            }
+        )
+        if len(output) >= limit:
+            break
 
-            readable_output = tableToMarkdown(
-                f"Top {limit} authentications",
-                output,
-                headers=["Username", "Authentication attempts"],
-                removeNull=True,
-            )
+    readable_output = tableToMarkdown(
+        f"Top {limit} authentications",
+        output,
+        headers=["Username", "System", "Authentication attempts"],
+        removeNull=True,
+    )
 
-            return CommandResults(
-                readable_output=readable_output,
-                outputs_prefix="Harfanglab.Authentications.Users",
-                outputs=output,
-            )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Harfanglab.Authentications.Users",
+        outputs=output,
+    )
 
 
 def job_create(client, args, parameters=None, can_use_previous_job=True):
