@@ -424,6 +424,8 @@
 
 
 .run-pre-commit:
+  cache:
+    policy: pull-push
   extends:
     - .unittests-and-lint-settings
   script:
