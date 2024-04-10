@@ -1,0 +1,139 @@
+{
+    "code": 200,
+    "status": "OK",
+    "result": {
+      "query": "dns.names=amazon.com",
+      "total": 3,
+      "duration": 239,
+      "hits": [
+        {
+          "location": {
+            "province": "Virginia",
+            "country": "United States",
+            "coordinates": {
+              "longitude": -77.48749,
+              "latitude": 39.04372
+            },
+            "timezone": "America/New_York",
+            "country_code": "US",
+            "continent": "North America",
+            "postal_code": "20147",
+            "city": "Ashburn"
+          },
+          "autonomous_system": {
+            "description": "AMAZON-02",
+            "bgp_prefix": "54.239.16.0/20",
+            "name": "AMAZON-02",
+            "country_code": "US",
+            "asn": 16509
+          },
+          "services": [
+            {
+              "port": 80,
+              "transport_protocol": "TCP",
+              "service_name": "HTTP",
+              "extended_service_name": "HTTP"
+            },
+            {
+              "transport_protocol": "TCP",
+              "certificate": "bb638b53bbde53dff9e8f707b9be32751e84fd865910636281902b204b062a50",
+              "extended_service_name": "HTTPS",
+              "service_name": "HTTP",
+              "port": 443
+            }
+          ],
+          "last_updated_at": "2024-04-06T16:57:13.170Z",
+          "ip": "54.239.28.85"
+        },
+        {
+          "ip": "205.251.242.103",
+          "services": [
+            {
+              "port": 80,
+              "transport_protocol": "TCP",
+              "service_name": "HTTP",
+              "extended_service_name": "HTTP"
+            },
+            {
+              "port": 443,
+              "transport_protocol": "TCP",
+              "extended_service_name": "HTTPS",
+              "service_name": "HTTP",
+              "certificate": "bb638b53bbde53dff9e8f707b9be32751e84fd865910636281902b204b062a50"
+            }
+          ],
+          "dns": {
+            "reverse_dns": {
+              "names": [
+                "s3-console-us-standard.console.aws.amazon.com"
+              ]
+            }
+          },
+          "location": {
+            "province": "Virginia",
+            "postal_code": "20147",
+            "country": "United States",
+            "timezone": "America/New_York",
+            "continent": "North America",
+            "city": "Ashburn",
+            "country_code": "US",
+            "coordinates": {
+              "latitude": 39.04372,
+              "longitude": -77.48749
+            }
+          },
+          "autonomous_system": {
+            "country_code": "US",
+            "bgp_prefix": "205.251.240.0/22",
+            "asn": 16509,
+            "description": "AMAZON-02",
+            "name": "AMAZON-02"
+          },
+          "last_updated_at": "2024-04-06T16:57:13.171Z"
+        },
+        {
+          "location": {
+            "postal_code": "20147",
+            "province": "Virginia",
+            "country_code": "US",
+            "timezone": "America/New_York",
+            "country": "United States",
+            "coordinates": {
+              "longitude": -77.48749,
+              "latitude": 39.04372
+            },
+            "continent": "North America",
+            "city": "Ashburn"
+          },
+          "last_updated_at": "2024-04-06T16:57:13.170Z",
+          "autonomous_system": {
+            "country_code": "US",
+            "asn": 16509,
+            "name": "AMAZON-02",
+            "bgp_prefix": "52.94.224.0/20",
+            "description": "AMAZON-02"
+          },
+          "services": [
+            {
+              "transport_protocol": "TCP",
+              "extended_service_name": "HTTP",
+              "port": 80,
+              "service_name": "HTTP"
+            },
+            {
+              "extended_service_name": "HTTPS",
+              "transport_protocol": "TCP",
+              "certificate": "bb638b53bbde53dff9e8f707b9be32751e84fd865910636281902b204b062a50",
+              "service_name": "HTTP",
+              "port": 443
+            }
+          ],
+          "ip": "52.94.236.248"
+        }
+      ],
+      "links": {
+        "next": "",
+        "prev": ""
+      }
+    }
+  }

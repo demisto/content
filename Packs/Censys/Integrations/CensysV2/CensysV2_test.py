@@ -5,27 +5,16 @@ import pytest
 
 from CommonServerPython import DemistoException
 
-SEARCH_HOST_OUTPUTS = [{
-    'ip': '1.0.0.0',
-    'services': [
-        {'port': 80, 'service_name': 'HTTP', 'transport_protocol': 'TCP'},
-        {'port': 443, 'service_name': 'HTTP', 'transport_protocol': 'TCP'}],
-    'location': {'continent': 'Oceania', 'country': 'Australia', 'country_code': 'AU', 'timezone': 'Australia/Sydney',
-                 'coordinates': {'latitude': -33.494, 'longitude': 143.2104}, 'registered_country': 'Australia',
-                 'registered_country_code': 'AU'},
-    'autonomous_system': {'asn': 13335, 'description': 'CLOUDFLARENET', 'bgp_prefix': '1.0.0.0/24',
-                          'name': 'CLOUDFLARENET', 'country_code': 'US'}}]
-
 
 SEARCH_CERTS_OUTPUTS = [{
-    'parsed':
-        {'fingerprint_sha256': 'f3ade17dffcadd9532aeb2514f10d66e22941393725aa65366ac286df9b41234',
-         'issuer': {'organization': ["Let's Encrypt"]},
-         'issuer_dn': "C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3",
-         'names': ['*.45g4rg43g4fr3434g.gb.net', '45g4rg43g4fr3434g.gb.net'],
-         'subject_dn': 'CN=45g4rg43g4fr3434g.gb.net',
-         'validity': {'end': '2021-01-10T14:46:11Z', 'start': '2020-10-12T14:46:11Z'}}}]
-
+    "names": ["my-house-vtpvbznpmk.dynamic-m.com"],
+    "parsed": {
+      "validity_period": {
+        "not_after": "2024-07-03T13:17:43Z",
+        "not_before": "2024-04-04T13:18:43Z"},
+      "issuer_dn": "C=US, O=IdenTrust, OU=HydrantID Trusted Certificate Service, CN=HydrantID Server CA O1",
+      "subject_dn": "C=US, ST=California, L=San Jose, O=Cisco Systems Inc., CN=my-house-vtpvbznpmk.dynamic-m.com"},
+    "fingerprint_sha256": "ba534c45586595844fc527130c71219c8fdccbf9fb1881fb03ebc1f01f5b7013"}]
 
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
@@ -34,7 +23,7 @@ def util_load_json(path):
 
 @pytest.fixture()
 def client():
-    client = Client(base_url='https://search.censys.io/api/', auth=('test', '1234'), verify=True, proxy=False)
+    client = Client(base_url='https://search.censys.io/', auth=('test', '1234'), verify=True, proxy=False)
     return client
 
 
@@ -57,7 +46,7 @@ def test_censys_host_search(requests_mock, client):
     requests_mock.get('https://search.censys.io/api/v2/hosts/search', json=mock_response)
     response = censys_search_command(client, args)
     assert "### Search results for query \"services.service_name:HTTP\"" in response.readable_output
-    assert response.outputs == SEARCH_HOST_OUTPUTS
+    assert response.outputs == mock_response.get('result', {}).get('hits', [])
 
 
 def test_censys_certs_search(requests_mock, client):
@@ -72,11 +61,12 @@ def test_censys_certs_search(requests_mock, client):
     args = {
         'index': 'certificates',
         'query': "parsed.issuer.common_name: \"Let's Encrypt\"",
-        'fields': ['parsed.fingerprint_sha1', 'validation.apple.valid']
+        'fields': ['parsed.fingerprint_sha1', 'validation.apple.valid'],
+        'limit': 1
     }
 
     mock_response = util_load_json('test_data/search_certs_response.json')
-    requests_mock.post('https://search.censys.io/api/v1/search/certificates', json=mock_response)
+    requests_mock.get('https://search.censys.io/api/v2/certificates/search', json=mock_response)
     response = censys_search_command(client, args)
     history = requests_mock.request_history[0]
     assert json.loads(history.text)['fields'] == ['parsed.fingerprint_sha256', 'parsed.subject_dn',
@@ -144,7 +134,7 @@ def test_censys_view_cert(requests_mock, client):
         'query': "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f661234"
     }
     mock_response = util_load_json('test_data/view_cert_response.json')
-    requests_mock.get('https://search.censys.io/api/v1/view/certificates/9d3b51a6b80daf76e07473'
+    requests_mock.get('https://search.censys.io/api/v2/certificates/9d3b51a6b80daf76e07473'
                       '0f19dc01e643ca0c3127d8f48be64cf3302f661234', json=mock_response)
     response = censys_view_command(client, args)
     assert '### Information for certificate' in response.readable_output
@@ -155,4 +145,67 @@ def test_test_module_valid(requests_mock, client):
     from CensysV2 import test_module
     requests_mock.get(url='https://search.censys.io/api/v2/hosts/8.8.8.8', status_code=200, json="{}")
 
-    assert test_module(client) == 'ok'
+    assert test_module(client, {}) == 'ok'
+
+
+
+def test_test_module_invalid(requests_mock, client):
+    from CensysV2 import test_module
+    requests_mock.get(url='https://search.censys.io/api/v2/hosts/8.8.8.8', status_code=200, json="{}")
+
+    params = {'premium_access':False, 'malicious_labels':True}
+    with pytest.raises(DemistoException):
+        test_module(client, params)
+
+
+def test_censys_host_history_command(requests_mock, client):
+    from CensysV2 import censys_host_history_command
+    mock_response = util_load_json('test_data/host_history_response.json')
+    args = {"ip": '8.8.8.8', 'ip_b': '8.8.4.4'}
+    requests_mock.get('https://search.censys.io/api/v2/hosts/8.8.8.8/diff?ip_b=8.8.4.4', json=mock_response)
+    response = censys_host_history_command(client, args)
+    assert response.outputs == mock_response.get('result')
+
+
+def test_ip_command_multiple_ips(requests_mock, client):
+    from CensysV2 import ip_command
+    mock_response = util_load_json('test_data/ip_command_response.json')
+    args = {'ip': ['8.8.8.8', '8.8.8.8', '0.0.0.0']}
+    requests_mock.get("/api/v2/hosts/search?q=ip=8.8.8.8", json=mock_response)
+    requests_mock.get("/api/v2/hosts/search?q=ip=8.8.8.8", json=mock_response)
+    requests_mock.get("/api/v2/hosts/search?q=ip=0.0.0.0", status_code=404, json={})
+    response = ip_command(client, args, {})
+    assert response[0].outputs == mock_response.get('result', {}).get('hits')[0]
+    assert response[1].outputs == mock_response.get('result', {}).get('hits')[0]
+    assert 'An error occurred for item: 0.0.0.0' in response[2].readable_output
+
+
+def test_ip_command_unauthorized_error(requests_mock, client):
+    from CensysV2 import ip_command
+    args = {'ip': ['8.8.8.8']}
+    requests_mock.get("/api/v2/hosts/search?q=ip=8.8.8.8", status_code=401, json={})
+    with pytest.raises(DemistoException):
+        ip_command(client, args, {})
+
+
+def test_ip_command_malicious_ip(requests_mock, client):
+    from CensysV2 import ip_command
+    mock_response = util_load_json('test_data/ip_command_response.json')
+    args = {"ip": ['8.8.8.8']}
+    params = {'premium_access':True ,'malicious_labels': ['database','email','file-sharing','iot','login-page'], 'malicious_labels_threshold': 1}
+    requests_mock.get("/api/v2/hosts/search?q=ip=8.8.8.8", json=mock_response)
+    response = ip_command(client, args, params)
+    assert response[0].indicator.dbot_score.score == 3
+
+
+def test_domain_command_multiple_domains(requests_mock, client):
+    from CensysV2 import domain_command
+    mock_response = util_load_json('test_data/domain_command_response.json')
+    args = {'domain': ['amazon.com', 'amazon.com', 'example.com']}
+    requests_mock.get("/api/v2/hosts/search?q=dns.names=amazon.com", json=mock_response)
+    requests_mock.get("/api/v2/hosts/search?q=dns.names=amazon.com", json=mock_response)
+    requests_mock.get("/api/v2/hosts/search?q=dns.names=example.com", status_code=404, json={})
+    response = domain_command(client, args, {})
+    assert response[0].outputs == mock_response.get('result', {}).get('hits')
+    assert response[1].outputs == mock_response.get('result', {}).get('hits')
+    assert 'An error occurred for item: example.com' in response[2].readable_output

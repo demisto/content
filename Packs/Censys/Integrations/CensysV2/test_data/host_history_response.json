@@ -1,0 +1,2119 @@
+{
+    "code": 200,
+    "status": "OK",
+    "result": {
+      "a": {
+        
+      },
+      "b": {
+        "ip": "8.8.4.4",
+        "last_updated_at": "2024-04-07T03:33:00.136Z"
+      },
+      "patch": [
+        {
+          "op": "add",
+          "path": "/last_updated_at",
+          "value": "2024-04-07T03:33:00.136Z"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/gt.je"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/cdnssl.imaage.win"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/optelcloud.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/210000.io"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.mollypops.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.21vek-2297.21vek-dev.by"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/auth.rd.miruho.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.forthebestprice.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/help.leadershipnigeria.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/unforgivable.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/prelude.kz"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/windblade.keylinksolutions.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/arbeitskrafte-polen.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/chikhmoulayali.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.muzz.ltd"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/cepbahisgiris.org"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/shawyxu.gq"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/scm.appservice-onprem-arc-5.k4apps-test.io"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/healthlocation.info"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/frequencyextort.info"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/mysql.store.spotix.online"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/cn.leadershipnigeria.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/hound.keylinksolutions.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/21vek-api-447.21vek-dev.by"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.21vek-1540.21vek-dev.by"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/bits-hyderabad.ac.in"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/fabio.nextadv.it"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/razgriz.tk"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/webmail.mimiscaffe.bg"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/wiki.leadershipnigeria.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/21vek-api-1537.21vek-dev.by"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/imap.gododdy.art"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/new.leadershipnigeria.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/uk-voip.ly"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/wydip.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/ezip.com.co"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/ibukito.hjk.jp"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.cdnteste.advendns.org"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/test.leadershipnigeria.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/smartmove.vn"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.go4web.se"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/code.r4b2.de"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/msk.fitness"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/21vek-717.21vek-dev.by"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/360193637.xyz"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.investmentfraudinsurance.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/caopingzxc.ml"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/livepsychichotline.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/owa.leadershipnigeria.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.coloradotimeshares.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/mnfst.me"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/ioh.me"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/m.21vek-04b7e7cf.21vek-dev.by"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/ha.home.smjukebox.uk"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/comistan.synology.me"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.saint-mary.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/charlestest.cdnaaa.net"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.nutrivitamins.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/webmail.leadershipnigeria.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/zuloaga.myds.me"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/lookgood.synology.me"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/unmannedtechs.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/63632k.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/chooftv.ma"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/store.leadershipnigeria.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.successnetwork.in"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.understandingcongress.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/paces-test.dhcs.ca.gov"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/yourserverpromo.de"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/upadmini.people.aws.dev"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/mws-dev.taiceredigion.org.uk"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/owa.mikanetwork.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/mnara.ma"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/dnslog.io"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/mail.dpai.ma"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/dev.rialtic.dev"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/bcele.top"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/fdd528.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/shwu.me"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/prod.rialtic.app"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/21vek-1200.21vek-dev.by"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/test.getgala.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/fdc.nextadv.it"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/shop.leadershipnigeria.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/homeassistant.workstations.dev"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/hotelslosangelesca.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/gr7.sport-wire.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.issaunagoodforyou.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.bundleapps.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/kvvkk.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/verypsychic.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/api.ec-cs.hellolori.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/storagevymuqdzkickslrx.club"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/alucitra.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/www.gelfilters.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/sigmainternacional.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/twitsh.net"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/mejunje.duckdns.org"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/records/0310.fun"
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/dns.google.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-04-06T16:20:41.503921513Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/www.samkupi.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-01-05T14:04:07.582148236Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/liveauthors.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2022-12-11T13:43:15.137529856Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/seosiri.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-18T17:25:10.272489396Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/96775ab.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-07-11T13:26:23.032249489Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/abcapitaldesigns.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-24T13:17:05.664918495Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/benheczema.com.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-10-17T00:27:32.757804113Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/webdisk.galtab.pp.ua",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-08-23T23:01:30.930246255Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/wildcard.fortilab.de",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-27T17:58:13.883052535Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/wask.xyz",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-05-21T23:30:50.159844093Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/benhgut.com.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-05-21T23:23:32.223718724Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/weloveukraine.ie",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-02-14T16:01:41.688610646Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/brun-z.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-04-01T14:41:37.202550377Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/suygiamthinhluc.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-11-04T01:35:21.901857191Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/familienwiese.hamburg",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-04-06T20:32:56.858108019Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/drakhub.eu.org",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-04-01T21:29:47.151461960Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/darkstore.cc",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2022-10-23T12:34:01.198011152Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/saywell.us",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-28T00:27:24.533414258Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/www.daros.center",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-01-16T12:33:17.183156378Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/www.hexa.gg",
+          "value": {
+            "record_type": "CNAME",
+            "resolved_at": "2023-08-14T19:09:08.956271860Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/www.nymo.xyz",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-10-02T22:13:39.707716391Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/auth1.cc1212.net",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-02T20:00:37.019164765Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/console.weirddonkey.com",
+          "value": {
+            "record_type": "CNAME",
+            "resolved_at": "2024-03-23T18:34:06.633186025Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/mail.compafinance.es",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-30T19:13:41.906569662Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/daubungkinh.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-09-23T22:26:22.010324017Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/coolpack.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-26T01:03:52.649570284Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/wendyshowstore.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-04-05T17:58:26.381560676Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/afkbio.de",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-03T18:05:23.936576289Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/griffith-jones.com.au",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-10T12:29:39.655496396Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/test.sfxddns.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-26T17:07:13.627087729Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/subca.fortilab.de",
+          "value": {
+            "record_type": "CNAME",
+            "resolved_at": "2024-04-06T18:56:16.754815796Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/weirddonkey.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-31T17:40:46.523375965Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/publicdns.goog",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-04-01T19:42:51.070345461Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/marina10.it",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-28T19:59:46.526101620Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/sachmuntrungca.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-09-11T23:49:09.282043202Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/32b.synology.me",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-04-06T22:05:20.553333119Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/dieutriutai.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-02-12T23:06:06.107045025Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/dev.looplearning.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-04-06T16:54:57.218417234Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/chaymauchanrang.com.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-09-21T21:58:02.181641152Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/caict.eu.org",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-24T22:13:06.976823357Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/creatingdaisy.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-01-19T13:04:31.407474904Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/zxrwin.tk",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2022-10-09T17:25:53.430733335Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/api.hoangdeai.net",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-01-16T16:41:59.945248341Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/hoatraotay.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-04-13T00:15:37.764156088Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/katillines.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2022-11-23T16:40:06.160941823Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/dns.google",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-10T19:34:12.536618815Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/theprimeinsights.in",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-01-19T14:34:02.304860777Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/icesonic.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-29T00:00:02.009860390Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/oasale.biz",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-02-26T12:19:04.658231700Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/www.xinmingtang.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-04-30T21:44:53.866547529Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/canopyv2.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-31T14:45:53.948737165Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/kayroscortinas.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-27T16:06:50.476958188Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/www.griffith-jones.com.au",
+          "value": {
+            "record_type": "CNAME",
+            "resolved_at": "2024-03-23T12:32:41.633684395Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/r800i.octatile.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-04-05T16:42:00.551013854Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/co2.com.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-26T01:03:46.342287703Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/gisdev.ewe.dk",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-28T19:04:57.037935071Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/www.vernymt.kz",
+          "value": {
+            "record_type": "CNAME",
+            "resolved_at": "2023-07-10T19:07:04.706501135Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/nsfw-market.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-19T17:00:35.720040268Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/www.wendyshowstore.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-30T18:02:46.864222669Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/readonly.ca",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-04-06T13:05:42.593917514Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/blackphoenixark.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-08T14:41:21.810267303Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/hexa.gg",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-08-20T18:35:09.078362024Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/benhbuouco.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-21T00:28:36.125256508Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/okx-safe.biz",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-05-19T01:13:39.905422189Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/google-public-dns-b.google.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-04-06T16:20:55.676806246Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/financefuture.pl",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-04-07T01:22:06.353800992Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/uxotucung.com.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-26T01:04:37.080420970Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/gccc.ml",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-04-08T18:46:18.764318504Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/taoshighspirits.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-09T17:29:33.340093143Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/www.hentaiprincess.de",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-30T18:17:31.563578810Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/littlekiki.xyz",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2022-12-01T10:42:35.599227723Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/thoatvidiadem.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-06-02T23:10:00.670335622Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/1.trovpn.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-20T17:08:01.219905875Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/mail.taoshighspirits.com",
+          "value": {
+            "record_type": "CNAME",
+            "resolved_at": "2024-03-29T17:22:58.401247324Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/samkupi.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2022-12-16T13:51:15.656073430Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/insta-lift.net",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-28T21:49:58.665774418Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/melanomalytics.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2022-11-23T16:17:03.574701483Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/benhdaulung.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-05-24T23:31:09.501834324Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/test.notubes.link",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-01-01T20:22:20.822344685Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/moremesashores.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-04-02T16:14:05.333732441Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/test.simplyswim.io",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-09-08T18:53:25.259514241Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/webmail.clinicasanjosedecucuta.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-29T15:00:59.636386221Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/bmvs.tk",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-01-01T16:37:47.803676963Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/tomatojobs.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-26T17:36:30.405499507Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/www.taoshighspirits.com",
+          "value": {
+            "record_type": "CNAME",
+            "resolved_at": "2024-04-01T17:51:18.659065692Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/guochengming.synology.me",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-05T20:29:26.794173833Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/8888.google",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-23T20:19:46.889249941Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/www.supportcustomer.xyz",
+          "value": {
+            "record_type": "CNAME",
+            "resolved_at": "2022-11-22T18:00:42.284348616Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/mail.mangoldbau.at",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-31T12:25:28.570421720Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/www.sodfa.ma",
+          "value": {
+            "record_type": "CNAME",
+            "resolved_at": "2023-05-29T18:14:30.171669624Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/guongchieuhausonglong.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-03-29T15:47:48.742585369Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/mail.carlocasareo.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-04-01T15:00:20.568990380Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/lazymartin.ml",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-07-15T19:06:01.825433421Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/peoplenews.ml",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2022-12-18T15:10:35.270667673Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/mail.galtab.pp.ua",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-08-18T22:48:10.685943407Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/www.moremesashores.com",
+          "value": {
+            "record_type": "CNAME",
+            "resolved_at": "2024-03-29T16:22:01.039357665Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/shay.rip",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-02-10T18:13:26.470111210Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/viemdacodia.com.vn",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2023-10-14T23:37:29.690384773Z"
+          }
+        },
+        {
+          "op": "add",
+          "path": "/dns/records/tecnototalcr.com",
+          "value": {
+            "record_type": "A",
+            "resolved_at": "2024-04-05T17:39:48.362785708Z"
+          }
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/0",
+          "value": "guongchieuhausonglong.com"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/1",
+          "value": "www.daros.center"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/2",
+          "value": "gccc.ml"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/3",
+          "value": "kayroscortinas.com"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/4",
+          "value": "littlekiki.xyz"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/5",
+          "value": "wask.xyz"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/7"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/6",
+          "value": "theprimeinsights.in"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/8"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/7",
+          "value": "32b.synology.me"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/9"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/8",
+          "value": "benhbuouco.vn"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/10"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/9",
+          "value": "auth1.cc1212.net"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/11"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/10",
+          "value": "benhgut.com.vn"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/12"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/11",
+          "value": "mail.taoshighspirits.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/13"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/12",
+          "value": "daubungkinh.vn"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/14"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/13",
+          "value": "abcapitaldesigns.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/15"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/14",
+          "value": "test.notubes.link"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/16"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/15",
+          "value": "bmvs.tk"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/17"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/16",
+          "value": "tecnototalcr.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/18"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/17",
+          "value": "r800i.octatile.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/19"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/18",
+          "value": "benhdaulung.vn"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/20"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/19",
+          "value": "samkupi.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/21"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/20",
+          "value": "seosiri.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/22"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/21",
+          "value": "test.simplyswim.io"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/23"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/22",
+          "value": "sachmuntrungca.vn"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/24"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/23",
+          "value": "test.sfxddns.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/25"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/24",
+          "value": "mail.compafinance.es"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/26"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/25",
+          "value": "oasale.biz"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/27"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/26",
+          "value": "hoatraotay.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/28"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/27",
+          "value": "96775ab.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/29"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/28",
+          "value": "wildcard.fortilab.de"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/30"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/29",
+          "value": "subca.fortilab.de"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/31"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/30",
+          "value": "katillines.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/32"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/31",
+          "value": "dev.looplearning.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/33"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/32",
+          "value": "webmail.clinicasanjosedecucuta.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/34"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/33",
+          "value": "darkstore.cc"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/35"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/34",
+          "value": "www.samkupi.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/36"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/35",
+          "value": "www.taoshighspirits.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/37"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/36",
+          "value": "afkbio.de"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/38"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/37",
+          "value": "marina10.it"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/39"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/38",
+          "value": "moremesashores.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/40"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/39",
+          "value": "nsfw-market.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/41"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/40",
+          "value": "console.weirddonkey.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/42"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/41",
+          "value": "insta-lift.net"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/43"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/42",
+          "value": "co2.com.vn"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/44"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/43",
+          "value": "coolpack.vn"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/45"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/44",
+          "value": "uxotucung.com.vn"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/46"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/45",
+          "value": "8888.google"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/47"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/46",
+          "value": "caict.eu.org"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/48"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/47",
+          "value": "griffith-jones.com.au"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/49"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/48",
+          "value": "dns.google"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/50"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/49",
+          "value": "www.supportcustomer.xyz"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/51"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/50",
+          "value": "saywell.us"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/52"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/51",
+          "value": "melanomalytics.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/53"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/52",
+          "value": "webdisk.galtab.pp.ua"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/54"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/53",
+          "value": "suygiamthinhluc.vn"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/55"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/54",
+          "value": "icesonic.vn"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/56"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/55",
+          "value": "mail.carlocasareo.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/57"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/56",
+          "value": "liveauthors.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/58"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/57",
+          "value": "taoshighspirits.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/59"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/58",
+          "value": "okx-safe.biz"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/60"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/59",
+          "value": "financefuture.pl"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/61"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/60",
+          "value": "zxrwin.tk"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/62"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/61",
+          "value": "mail.galtab.pp.ua"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/63"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/62",
+          "value": "www.hexa.gg"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/64"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/63",
+          "value": "brun-z.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/65"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/64",
+          "value": "weirddonkey.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/66"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/65",
+          "value": "api.hoangdeai.net"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/67"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/66",
+          "value": "dieutriutai.vn"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/68"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/67",
+          "value": "benheczema.com.vn"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/69"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/68",
+          "value": "weloveukraine.ie"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/70"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/69",
+          "value": "dns.google.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/71"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/70",
+          "value": "publicdns.goog"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/72"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/71",
+          "value": "blackphoenixark.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/73"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/72",
+          "value": "wendyshowstore.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/74"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/73",
+          "value": "www.sodfa.ma"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/75"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/74",
+          "value": "creatingdaisy.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/76"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/75",
+          "value": "www.moremesashores.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/77"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/76",
+          "value": "www.xinmingtang.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/78"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/77",
+          "value": "readonly.ca"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/79"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/78",
+          "value": "tomatojobs.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/80"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/79",
+          "value": "1.trovpn.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/81"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/80",
+          "value": "canopyv2.com"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/82"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/81",
+          "value": "peoplenews.ml"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/83"
+        },
+        {
+          "op": "add",
+          "path": "/dns/names/82",
+          "value": "viemdacodia.com.vn"
+        },
+        {
+          "op": "remove",
+          "path": "/dns/names/84"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/84",
+          "value": "www.nymo.xyz"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/85",
+          "value": "familienwiese.hamburg"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/86",
+          "value": "www.wendyshowstore.com"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/87",
+          "value": "guochengming.synology.me"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/88",
+          "value": "thoatvidiadem.vn"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/89",
+          "value": "hexa.gg"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/90",
+          "value": "www.hentaiprincess.de"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/91",
+          "value": "drakhub.eu.org"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/92",
+          "value": "mail.mangoldbau.at"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/93",
+          "value": "shay.rip"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/94",
+          "value": "www.griffith-jones.com.au"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/95",
+          "value": "google-public-dns-b.google.com"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/96",
+          "value": "www.vernymt.kz"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/97",
+          "value": "lazymartin.ml"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/98",
+          "value": "chaymauchanrang.com.vn"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/names/99",
+          "value": "gisdev.ewe.dk"
+        },
+        {
+          "op": "replace",
+          "path": "/dns/reverse_dns/resolved_at",
+          "value": "2024-03-26T17:49:28.791736943Z"
+        },
+        {
+          "op": "replace",
+          "path": "/autonomous_system_updated_at",
+          "value": "2024-04-01T13:23:53.983689279Z"
+        },
+        {
+          "op": "replace",
+          "path": "/ip",
+          "value": "8.8.4.4"
+        },
+        {
+          "op": "replace",
+          "path": "/services/0/perspective_id",
+          "value": "PERSPECTIVE_NTT"
+        },
+        {
+          "op": "replace",
+          "path": "/services/0/observed_at",
+          "value": "2024-04-03T21:35:04.963445822Z"
+        },
+        {
+          "op": "replace",
+          "path": "/services/0/dns/answers/0/response",
+          "value": "172.253.192.7"
+        },
+        {
+          "op": "replace",
+          "path": "/services/0/dns/answers/1/response",
+          "value": "35.202.119.40"
+        },
+        {
+          "op": "replace",
+          "path": "/services/0/source_ip",
+          "value": "206.168.34.187"
+        },
+        {
+          "op": "replace",
+          "path": "/services/1/perspective_id",
+          "value": "PERSPECTIVE_HE"
+        },
+        {
+          "op": "replace",
+          "path": "/services/1/observed_at",
+          "value": "2024-04-07T03:32:50.378437158Z"
+        },
+        {
+          "op": "replace",
+          "path": "/services/1/jarm/observed_at",
+          "value": "2024-04-01T20:24:07.650553806Z"
+        },
+        {
+          "op": "replace",
+          "path": "/services/1/source_ip",
+          "value": "162.142.125.213"
+        },
+        {
+          "op": "replace",
+          "path": "/services/1/http/request/uri",
+          "value": "https://8.8.4.4/"
+        },
+        {
+          "op": "remove",
+          "path": "/services/2/transport_fingerprint"
+        },
+        {
+          "op": "replace",
+          "path": "/services/2/observed_at",
+          "value": "2024-04-03T23:26:21.595361506Z"
+        },
+        {
+          "op": "replace",
+          "path": "/services/2/source_ip",
+          "value": "206.168.34.183"
+        },
+        {
+          "op": "replace",
+          "path": "/services/3/observed_at",
+          "value": "2024-04-06T22:08:45.038733874Z"
+        },
+        {
+          "op": "replace",
+          "path": "/services/3/jarm/observed_at",
+          "value": "2024-04-02T04:00:53.259164944Z"
+        },
+        {
+          "op": "replace",
+          "path": "/services/3/source_ip",
+          "value": "206.168.34.50"
+        },
+        {
+          "op": "replace",
+          "path": "/location_updated_at",
+          "value": "2024-04-06T17:04:31.814822146Z"
+        },
+        {
+          "op": "replace",
+          "path": "/autonomous_system/bgp_prefix",
+          "value": "8.8.4.0/24"
+        }
+      ]
+    }
+  }
