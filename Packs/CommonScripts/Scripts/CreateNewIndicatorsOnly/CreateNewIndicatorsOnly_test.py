@@ -1,7 +1,10 @@
+import unittest
+
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
 import CreateNewIndicatorsOnly
 from typing import Any
+import pytest
 
 
 def equals_object(obj1, obj2) -> bool:
@@ -425,38 +428,76 @@ def test_findIndicators_called_with_escaped_quotes(mocker):
                       'score': 0, 'indicator_type': 'Unknown', 'CreationStatus': 'existing'}
 
 
-def test_add_new_indicator(mocker):
-    """
-    Given:
-        - An indicator that was not indexed in the system the first time associateIndicatorToIncident is called.
-    When:
-        - Running add_new_indicator
-    Then:
-        - Assert 'add_new_indicator' returns the indicator.
-    """
-    from CreateNewIndicatorsOnly import add_new_indicator
-    indicator_value = "test"
-    new_indicator = {'id': '0', 'value': 'test', 'score': 0, 'indicator_type': 'Unknown', 'CreationStatus': 'new'}
-    global tries
-    tries = 1
+class TestAssociateFailures:
 
-    def __execute_command(cmd, args) -> Any:
+    def test_add_new_indicator_associate_failed_once(self, mocker):
+        """
+        Given:
+            - An indicator that was not indexed in the system the first time associateIndicatorToIncident is called.
+        When:
+            - Running add_new_indicator
+        Then:
+            - Assert 'add_new_indicator' returns the indicator.
+        """
+        from CreateNewIndicatorsOnly import add_new_indicator
+        indicator_value = "test"
+        new_indicator = {'id': '0', 'value': 'test', 'score': 0, 'indicator_type': 'Unknown', 'CreationStatus': 'new'}
         global tries
-        if cmd == 'findIndicators':
-            assert args == {'value': indicator_value}
+        tries = 1
+
+        def __execute_command(cmd, args) -> Any:
+            global tries
+            if cmd == 'findIndicators':
+                assert args == {'value': indicator_value}
+                return None
+            if cmd == 'createNewIndicator':
+                return new_indicator
+            elif cmd == 'associateIndicatorToIncident':
+                if tries == 1:
+                    tries += 1
+                    raise Exception("For associateIndicatorToIncident found no indicatores with value: %s")
+                else:
+                    return 'done'
+
             return None
-        if cmd == 'createNewIndicator':
-            return new_indicator
-        elif cmd == 'associateIndicatorToIncident':
-            if tries == 1:
-                tries += 1
+
+        mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
+        mocker.patch.object(demisto, 'incidents', return_value=[{'id': '1'}])
+        mocker.patch.object(time, 'sleep', return_value=None)
+
+        result = add_new_indicator(indicator_value, {})
+        assert result == new_indicator
+
+    def test_add_new_indicator_associate_failed_always(self, mocker):
+        """
+        Given:
+            - An indicator that is never indexed in the system.
+        When:
+            - Running add_new_indicator with associate_to_incident=true
+        Then:
+            - Assert 'add_new_indicator' returns an error.
+        """
+        import CreateNewIndicatorsOnly
+        indicator_value = "test"
+        new_indicator = {'id': '0', 'value': 'test', 'score': 0, 'indicator_type': 'Unknown', 'CreationStatus': 'new'}
+
+        def __execute_command(cmd, args) -> Any:
+            if cmd == 'findIndicators':
+                assert args == {'value': indicator_value}
+                return None
+            if cmd == 'createNewIndicator':
+                return new_indicator
+            elif cmd == 'associateIndicatorToIncident':
                 raise Exception("For associateIndicatorToIncident found no indicatores with value: %s")
-            else:
-                return 'done'
 
-        return None
+            return None
 
-    mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
+        mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
+        mocker.patch.object(time, 'sleep', return_value=None)
+        CreateNewIndicatorsOnly.MAX_FIND_INDICATOR_RETRIES = 2
+        mocker.patch.object(demisto, 'incidents', return_value=[{'id': '1'}])
 
-    result = add_new_indicator(indicator_value, {})
-    assert result == new_indicator
+        with pytest.raises(Exception) as err:
+            CreateNewIndicatorsOnly.add_new_indicator(indicator_value, {})
+
+        assert f"Failed to associate test with incident 1" in str(err)
