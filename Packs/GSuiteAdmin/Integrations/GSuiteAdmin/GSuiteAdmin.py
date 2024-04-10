@@ -1597,7 +1597,6 @@ def chromebrowser_list_command(client: Client, args: dict[str, str]) -> CommandR
         :return: Command Result.
     '''
     API_LIMIT = 100
-    a = 2
     client.set_authorized_http(scopes=SCOPES['CHROME_BROWSERS'])
     customer_id = return_customer_id(args)
     device_id = args.get('device_id', '')
