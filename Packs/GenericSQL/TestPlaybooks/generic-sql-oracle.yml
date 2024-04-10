@@ -1,13 +1,9 @@
 id: generic-sql-oracle
 version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.0.3
-    fromServerVersion: ""
-    toServerVersion: ""
+  contentitemfields: {}
 name: generic-sql-oracle
-description: The initial state of the table is that in each database there are 4 records.
+description: test test.
 starttaskid: "0"
 tasks:
   "0":

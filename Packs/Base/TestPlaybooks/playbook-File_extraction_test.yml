@@ -1,7 +1,7 @@
 id: File extraction test
 version: -1
 name: File extraction test
-description: Test extraction flow of file indicator in XSOAR
+description: test test.
 starttaskid: "0"
 tasks:
   "0":

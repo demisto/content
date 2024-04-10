@@ -1,7 +1,7 @@
 id: hashIncidentFields-test
-version: 8
+version: -1
 name: hashIncidentFields-test
-description: test playbook for hashIncidentFields
+description: test test.
 starttaskid: "0"
 tasks:
   "0":

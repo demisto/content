@@ -2,7 +2,7 @@ id: GetTasksWithSections SetIRProcedures end to end test
 version: -1
 name: GetTasksWithSections SetIRProcedures end to end test
 starttaskid: "0"
-description: ""
+description: "test test."
 tasks:
   "0":
     id: "0"
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -46,6 +47,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -76,6 +78,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -242,6 +245,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -302,6 +306,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -332,6 +337,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: true
     view: |-
       {
@@ -506,6 +512,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -529,8 +536,7 @@ tasks:
       id: 7b7fc399-6923-4f42-8480-17a240f8843d
       version: -1
       name: SetIrProcedures
-      description: Creates a markdown table based on te info of the GetTasksWithSection
-        command
+      description: Creates a markdown table based on te info of the GetTasksWithSection command
       scriptName: SetIRProceduresMarkdown
       type: regular
       iscommand: false
@@ -632,6 +638,6 @@ view: |-
       }
     }
   }
-inputs: [ ]
-outputs: [ ]
+inputs: []
+outputs: []
 fromversion: 5.0.0

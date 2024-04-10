@@ -1,6 +1,5 @@
 id: Generic Webhook - Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Generic Webhook - Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -332,3 +332,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.5.0
+description: test test.

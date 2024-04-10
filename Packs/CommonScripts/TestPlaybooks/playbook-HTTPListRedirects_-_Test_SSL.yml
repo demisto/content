@@ -1,7 +1,7 @@
 id: HTTPListRedirects - Test SSL
 version: -1
 name: HTTPListRedirects - Test SSL
-description: 'Playbook to test HTTPListRedirects with bad ssl'
+description: 'test test.'
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"

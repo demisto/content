@@ -1,7 +1,7 @@
 id: Get Original Email - Microsoft Graph Mail - test
 version: -1
 name: Get Original Email - Microsoft Graph Mail - test
-description: '"Get Original Email - Microsoft Graph Mail" test playbook.'
+description: 'test test.'
 starttaskid: "0"
 tasks:
   "0":

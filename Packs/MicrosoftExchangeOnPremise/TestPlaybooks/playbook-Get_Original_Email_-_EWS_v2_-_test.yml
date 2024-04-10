@@ -1,7 +1,7 @@
 id: Get Original Email - EWS v2 - test
 version: -1
 name: Get Original Email - EWS v2 - test
-description: '"Get Original Email - EWS v2" test playbook.'
+description: 'test test.'
 starttaskid: "0"
 tasks:
   "0":
