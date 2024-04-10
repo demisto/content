@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from unittest.mock import patch
 import demistomock as demisto
@@ -1059,3 +1060,44 @@ def test_index_document_command(mocker):
     assert command_result.outputs_prefix == 'Elasticsearch.Index'
     assert command_result.raw_response == MOCK_INDEX_RESPONSE
     assert command_result.outputs_key_field == 'id'
+
+
+class MockExecute:
+    def __init__(self, *args, **kwargs):
+        self.call_number = args[0]
+
+    def to_dict(self):
+        if self.call_number == 1:
+            with open('test_data/incidents_first_iteration.json') as f:
+                return json.load(f)
+        elif self.call_number == 2:
+            with open('test_data/incidents_second_iteration.json') as f:
+                return json.load(f)
+        else:
+            return {}
+
+
+def test_fetch_incidents(mocker):
+    """
+    Given
+        - An Elasticsearch instance with alerts to fetch, some of the alerts ane not indexed yet at the first fetch
+
+    When
+        - Executing fetch_incidents command (with look_back).
+
+    Then
+        - Make sure that all alerts are fetched first fetch only two alerts, then add one more alert that was missed in the previous fetch
+    """
+    import Elasticsearch_v2
+    Elasticsearch_v2.TIME_FIELD = '@timestamp'
+    mocker.patch('Elasticsearch_v2.Elasticsearch')
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
+    mock_incidents = mocker.patch.object(demisto, 'incidents')
+
+    mocker.patch('Elasticsearch_v2.Search.execute', return_value=MockExecute(1))
+    Elasticsearch_v2.fetch_incidents(proxies=None)
+    assert len(mock_incidents.call_args[0][0]) == 2
+
+    mocker.patch('Elasticsearch_v2.Search.execute', return_value=MockExecute(2))
+    Elasticsearch_v2.fetch_incidents(proxies=None)
+    assert len(mock_incidents.call_args[0][0]) == 1

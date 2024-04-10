@@ -1,0 +1,43 @@
+{
+    "took": 2,
+    "timed_out": false,
+    "_shards": {
+        "total": 2,
+        "successful": 2,
+        "skipped": 0,
+        "failed": 0
+    },
+    "hits": {
+        "total": {
+            "value": 2,
+            "relation": "eq"
+        },
+        "max_score": 1.0,
+        "hits": [
+            {
+                "_index": "index_001",
+                "_id": "1a2b3c4d",
+                "_score": 1.0,
+                "_source": {
+                    "release_date": "2000-03-15",
+                    "author": "Alastair Reynolds",
+                    "name": "Revelation Space",
+                    "page_count": 585,
+                    "@timestamp": "2024-04-08T13:18:20.111Z"
+                }
+            },
+            {
+                "_index": "index_001",
+                "_id": "1234abcd",
+                "_score": 1.0,
+                "_source": {
+                    "release_date": "1953-10-15",
+                    "author": "Ray Bradbury",
+                    "name": "Fahrenheit 451",
+                    "page_count": 227,
+                    "@timestamp": "2024-04-08T13:18:20.333Z"
+                }
+            }
+        ]
+    }
+}

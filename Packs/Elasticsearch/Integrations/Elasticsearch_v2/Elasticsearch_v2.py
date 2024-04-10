@@ -541,11 +541,11 @@ def incident_label_maker(source):
     return labels
 
 
-def results_to_incidents_timestamp(response, last_fetch):
+def results_to_incidents_timestamp(filtered_incidents, last_fetch):
     """Converts the current results into incidents.
 
     Args:
-        response(dict): the raw search results from Elasticsearch.
+        filtered_incidents(list): Incidents returned from Elasticsearch after filtering.
         last_fetch(num): the date or timestamp of the last fetch before this fetch
         - this will hold the last date of the incident brought by this fetch.
 
@@ -555,11 +555,11 @@ def results_to_incidents_timestamp(response, last_fetch):
     """
     current_fetch = last_fetch
     incidents = []
-    for hit in response.get('hits', {}).get('hits'):
-        if hit.get('_source') is not None and hit.get('_source').get(str(TIME_FIELD)) is not None:
+    for incident in filtered_incidents:
+        if incident.get('_source') is not None and incident.get('_source').get(str(TIME_FIELD)) is not None:
             # if timestamp convert to iso format date and save the timestamp
-            hit_date = timestamp_to_date(str(hit.get('_source')[str(TIME_FIELD)]))
-            hit_timestamp = int(hit.get('_source')[str(TIME_FIELD)])
+            hit_date = timestamp_to_date(str(incident.get('_source')[str(TIME_FIELD)]))
+            hit_timestamp = int(incident.get('_source')[str(TIME_FIELD)])
 
             if hit_timestamp > last_fetch:
                 last_fetch = hit_timestamp
@@ -567,25 +567,25 @@ def results_to_incidents_timestamp(response, last_fetch):
             # avoid duplication due to weak time query
             if hit_timestamp > current_fetch:
                 inc = {
-                    'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
-                    'rawJSON': json.dumps(hit),
+                    'name': 'Elasticsearch: Index: ' + str(incident.get('_index')) + ", ID: " + str(incident.get('_id')),
+                    'rawJSON': json.dumps(incident),
                     'occurred': hit_date.isoformat() + 'Z',
-                    'dbotMirrorId': hit.get('_id')
+                    'dbotMirrorId': incident.get('_id')
                 }
 
                 if MAP_LABELS:
-                    inc['labels'] = incident_label_maker(hit.get('_source'))
+                    inc['labels'] = incident_label_maker(incident.get('_source'))
 
                 incidents.append(inc)
 
     return incidents, last_fetch
 
 
-def results_to_incidents_datetime(response, last_fetch):
+def results_to_incidents_datetime(filtered_incidents, last_fetch):
     """Converts the current results into incidents.
 
     Args:
-        response(dict): the raw search results from Elasticsearch.
+        filtered_incidents(list): Incidents returned from Elasticsearch after filtering.
         last_fetch(datetime): the date or timestamp of the last fetch before this fetch or parameter default fetch time
         - this will hold the last date of the incident brought by this fetch.
 
@@ -598,9 +598,9 @@ def results_to_incidents_datetime(response, last_fetch):
     current_fetch = last_fetch_timestamp
     incidents = []
 
-    for hit in response.get('hits', {}).get('hits'):
-        if hit.get('_source') is not None and hit.get('_source').get(str(TIME_FIELD)) is not None:
-            hit_date = parse(str(hit.get('_source')[str(TIME_FIELD)]))
+    for incident in filtered_incidents:
+        if incident.get('_source') is not None and incident.get('_source').get(str(TIME_FIELD)) is not None:
+            hit_date = parse(str(incident.get('_source')[str(TIME_FIELD)]))
             hit_timestamp = int(hit_date.timestamp() * 1000)
 
             if hit_timestamp > last_fetch_timestamp:
@@ -610,17 +610,17 @@ def results_to_incidents_datetime(response, last_fetch):
             # avoid duplication due to weak time query
             if hit_timestamp > current_fetch:
                 inc = {
-                    'name': 'Elasticsearch: Index: ' + str(hit.get('_index')) + ", ID: " + str(hit.get('_id')),
-                    'rawJSON': json.dumps(hit),
+                    'name': 'Elasticsearch: Index: ' + str(incident.get('_index')) + ", ID: " + str(incident.get('_id')),
+                    'rawJSON': json.dumps(incident),
                     # parse function returns iso format sometimes as YYYY-MM-DDThh:mm:ss+00:00
                     # and sometimes as YYYY-MM-DDThh:mm:ss
                     # we want to return format: YYYY-MM-DDThh:mm:ssZ in our incidents
                     'occurred': format_to_iso(hit_date.isoformat()),
-                    'dbotMirrorId': hit.get('_id')
+                    'dbotMirrorId': incident.get('_id')
                 }
 
                 if MAP_LABELS:
-                    inc['labels'] = incident_label_maker(hit.get('_source'))
+                    inc['labels'] = incident_label_maker(incident.get('_source'))
 
                 incidents.append(inc)
 
@@ -733,31 +733,30 @@ def fetch_incidents(proxies):
     incidents = []  # type: List
 
     if total_results > 0:
-        if 'Timestamp' in TIME_METHOD:
-            incidents, _ = results_to_incidents_timestamp(response, start_time)
-
-        else:
-            incidents, _ = results_to_incidents_datetime(response, start_time or FETCH_TIME)
-
         demisto.debug(f'Got {total_results} incidents from the API, before filtering')
         filtered_incidents = filter_incidents_by_duplicates_and_limit(
-            incidents_res=incidents,
+            incidents_res=demisto.get(response, 'hits.hits') or [],
             last_run=last_run,
             fetch_limit=FETCH_SIZE,
-            id_field='dbotMirrorId'
+            id_field='_id'
         )
         demisto.debug(f'After filtering, there are {len(filtered_incidents)} incidents')
 
+        if 'Timestamp' in TIME_METHOD:
+            incidents, _ = results_to_incidents_timestamp(filtered_incidents, start_time)
+        else:
+            incidents, _ = results_to_incidents_datetime(filtered_incidents, start_time or FETCH_TIME)
+
         last_run = update_last_run_object(
             last_run=last_run,
-            incidents=filtered_incidents,
+            incidents=incidents,
             fetch_limit=FETCH_SIZE,
             start_fetch_time=start_time,
             end_fetch_time=end_time,
             look_back=LOOK_BACK,
-            created_time_field=TIME_FIELD,
+            created_time_field='occurred',
             id_field='dbotMirrorId',
-            date_format=PYTHON_DEFAULT_DATETIME_FORMAT,
+            date_format='%Y-%m-%dT%H:%M:%SZ',
             increase_last_run_time=False
         )
         demisto.debug(f"Last run after the fetch run: {last_run}")
