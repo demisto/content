@@ -2,10 +2,7 @@ id: Block IP - Generic V3_Test
 version: -1
 name: Block IP - Generic V3_Test
 description: |-
-  Test Playbook for the "Block IP - generic V3" playbook.
-  This playbook will attempt to block - 1.1.1.1 IP (which is considered malicious by VT) o the following integrations:
-  * Pan-OS FW
-  * ThreatX
+  test test.
 starttaskid: "0"
 tasks:
   "0":

@@ -1,7 +1,7 @@
 id: CIRCL CVE Search - Test
 version: -1
 name: CIRCL CVE Search - Test
-description: Test playbook for CIRCL CVE Search
+description: test test.
 starttaskid: "0"
 tasks:
   "0":

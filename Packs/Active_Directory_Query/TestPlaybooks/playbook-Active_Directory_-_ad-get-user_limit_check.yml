@@ -1,14 +1,9 @@
 id: Active Directory - ad-get-user limit check
 version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.0.1
-    fromServerVersion: ""
-    toServerVersion: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Active Directory - ad-get-user limit check
-description: Checked the limit in ad-get-user command, in case no limit was added the default is 20.
+description: test test.
 starttaskid: "0"
 tasks:
   "0":
@@ -21,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "21"
@@ -104,6 +100,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {

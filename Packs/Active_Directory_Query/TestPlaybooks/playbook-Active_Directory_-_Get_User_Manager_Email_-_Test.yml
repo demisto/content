@@ -2,7 +2,7 @@ id: Active Directory - Get User Manager Details - Test
 version: -1
 fromversion: 5.0.0
 name: Active Directory - Get User Manager Details - Test
-description: A test playbook for the Active Directory - Get User Manager Email playbook.
+description: test test.
 starttaskid: "0"
 tasks:
   "0":
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -115,6 +116,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {

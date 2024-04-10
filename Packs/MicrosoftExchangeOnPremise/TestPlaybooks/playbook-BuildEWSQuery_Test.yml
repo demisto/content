@@ -2,7 +2,7 @@ id: buildewsquery_test
 version: -1
 name: BuildEWSQuery Test
 starttaskid: "0"
-description: ""
+description: "test test."
 tasks:
   "0":
     id: "0"
@@ -41,14 +41,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-        - "2"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
-      index: { }
-      key: { }
-      keysToKeep: { }
-      subplaybook: { }
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
     separatecontext: false
     view: |-
       {

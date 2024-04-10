@@ -1,8 +1,7 @@
 id: AnyMatch_Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: AnyMatch_Test
-description: Testing the AnyMatch filter.
+description: test test.
 starttaskid: "0"
 tasks:
   "0":

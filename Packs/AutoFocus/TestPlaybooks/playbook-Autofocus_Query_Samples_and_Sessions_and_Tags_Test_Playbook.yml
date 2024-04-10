@@ -3,9 +3,7 @@ version: -1
 name: Autofocus Query Samples, Sessions and Tags Test Playbook
 fromversion: 5.0.0
 description: |-
-  This is a test playbook to the the functionality of the Autofocus Query
-  Samples and Sessions playbook. The test playbook checks for Autofocus query inputs,
-  Direct queries for IP and also tag searches.
+  test test.
 starttaskid: "0"
 tasks:
   "0":
@@ -18,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -107,6 +106,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -171,6 +171,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -296,6 +297,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
