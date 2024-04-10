@@ -26,10 +26,12 @@ def decode_base64(b64: str) -> str:
     return base64.b64decode(b64).decode("utf-8")
 
 
-class CannotFindWorkflowError(ValueError): ...
+class CannotFindWorkflowError(ValueError):
+    ...
 
 
-class CannotFindArtifactError(ValueError): ...
+class CannotFindArtifactError(ValueError):
+    ...
 
 
 class GitHubClient:
@@ -252,7 +254,8 @@ def main(
     )
 
     (artifact_folder / "validate_release_notes_message.txt").write_text(
-        f"SDK-Validate docs have changed, review [the content-docs PR](https://github.com/{ORG_NAME}/{DOCS_REPO_NAME}/pulls/{pr_number})"
+        "SDK-Validate docs have changed, review "
+        f"[the content-docs PR](https://github.com/{ORG_NAME}/{DOCS_REPO_NAME}/pulls/{pr_number})"
     )
 
 
