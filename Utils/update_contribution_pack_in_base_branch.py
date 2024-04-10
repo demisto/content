@@ -9,7 +9,6 @@ PER_PAGE = 100  # value of `per_page` request parameter
 
 
 def main():
-    print('>>>>>>>> main')
     parser = argparse.ArgumentParser(description='Deploy a pack from a contribution PR to a branch')
     parser.add_argument('-p', '--pr_number', help='Contrib PR number')
     parser.add_argument('-b', '--branch', help='The contrib branch')
@@ -22,11 +21,7 @@ def main():
     username = args.username
     repo = args.contrib_repo
     branch = args.branch
-    if args.github_token:
-        print('>>>>>>>> args.github_token exists')
-        github_token = args.github_token
-    else:
-        github_token = ''
+    github_token = args.github_token
 
     packs_dir_names = get_files_from_github(
         username, branch, pr_number, repo, github_token
@@ -46,16 +41,13 @@ def get_pr_files(pr_number: str, github_token: str) -> Iterable[str]:
     Returns:
         A list of changed file names (under the Packs dir), if found.
     """
-    print('>>>>>>>> get_pr_files')
     page = 1
     while True:
-        print(">>>>>>>> try to send request")
         response = requests.get(
             f"https://api.github.com/repos/demisto/content/pulls/{pr_number}/files",
             params={"page": str(page), "per_page": str(PER_PAGE)},
             headers={"Authorization": f"Bearer {github_token}"},
         )
-        print(">>>>>>>> request sent")
         response.raise_for_status()
         files = response.json()
         if (not files) or (len(list(files)) < PER_PAGE):
@@ -79,7 +71,6 @@ def get_files_from_github(
     Returns:
         A list of packs names, if found.
     """
-    print('>>>>>>>> get_files_from_github')
     content_path = os.getcwd()
     files_list = set()
     chunk_size = 1024 * 500     # 500 Kb
