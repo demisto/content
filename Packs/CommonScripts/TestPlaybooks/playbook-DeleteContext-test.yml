@@ -1,7 +1,8 @@
 id: DeleteContext-test
-version: -1
+version: 3
+vcShouldKeepItemLegacyProdMachine: false
 name: DeleteContext-test
-description: 'Testing DeleteContext automation.'
+description: Testing DeleteContext automation
 starttaskid: "0"
 tasks:
   "0":
@@ -14,7 +15,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -111,10 +111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 00c4f368-ee94-4c65-800a-4bd7e2b4ca02
+    taskid: 417ccc9c-3ffd-4cb0-8d30-beff0b508135
     type: condition
     task:
-      id: 00c4f368-ee94-4c65-800a-4bd7e2b4ca02
+      id: 417ccc9c-3ffd-4cb0-8d30-beff0b508135
       version: -1
       name: Check if excluded key exists
       type: condition
@@ -129,14 +129,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: isEqualString
           left:
             value:
               simple: key2.key2_1
             iscontext: true
           right:
             value:
-              simple: '"value2_1" '
+              simple: value2_1
       - - operator: isExists
           left:
             value:
@@ -680,7 +680,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -689,7 +688,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -40,
+          "x": -40,        
           "y": 2005
         }
       }
@@ -717,4 +716,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.10.0
+dirtyInputs: true

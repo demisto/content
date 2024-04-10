@@ -1614,6 +1614,19 @@
             "playbookID": "test_delete_context"
         },
         {
+            "scripts": [
+                "DeleteContext"
+            ],
+            "playbookID": "Delete Context Subplaybook Test"
+        },
+        {
+            "scripts": [
+                "DeleteContext"
+            ],
+            "playbookID": "DeleteContext-test",
+            "fromversion": "6.10.0"
+        },
+        {
             "playbookID": "DeleteContext-auto-test"
         },
         {
