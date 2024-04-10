@@ -388,7 +388,7 @@ def test_fetch_events_no_last_run_no_events(mocker):
             },
         }
     )
-    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'setLastRun')
     mocker.patch.object(demisto, 'getLastRun', return_value={})
     mocker.patch.object(demisto, 'command', return_value='fetch-events')
     mocker.patch.object(
