@@ -292,7 +292,7 @@ def get_pr_comments(pr_number: str) -> str:
     pr_url = f'https://api.github.com/repos/demisto/content/pulls/{pr_number}'
     print(f'the pr url is: "{pr_url}')
     response = requests.get(pr_url)
-    print(f'the response for the pr request{response}')
+    print(f'the response for the pr request{response.json()}')
     #response.raise_for_status()
     pr = response.json()
     if not pr:
