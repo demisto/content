@@ -199,6 +199,7 @@ def main() -> None:
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
     verify_certificate = not params.get('insecure', False)
+    t=6
     proxy = params.get('proxy', False)
 
     base_url = 'https://search.censys.io/api/'
