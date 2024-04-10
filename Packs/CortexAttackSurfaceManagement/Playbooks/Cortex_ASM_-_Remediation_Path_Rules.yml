@@ -255,7 +255,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: RdpServer,InsecureOpenSSH,TelnetServer,UnencryptedFtpServer,OpenSSH,SshServer,SnmpServer,MysqlServer,MongoServer,PostgresServer,ElasticsearchServer
+              simple: remediationattacksurfacerules
+            iscontext: true
       - - operator: inList
           left:
             value:
@@ -628,7 +629,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "50"
+      - "36"
     scriptarguments:
       key:
         simple: AutoRemediationRequirements
@@ -640,7 +641,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": -1195
+          "y": -1210
         }
       }
     note: false
@@ -1730,12 +1731,12 @@ tasks:
     taskid: 42b54db4-31bd-45e0-8d37-b6e83f853688
     type: regular
     task:
-      id: e8c04311-35a4-4a38-832d-b9d29bc149a3
+      id: 42b54db4-31bd-45e0-8d37-b6e83f853688
       version: -1
-      name: Cortex ASM - Remediation Objectives
-      description: Playbook that populates remediation objectives field used to display the remediation actions to the end user
-      playbookName: Cortex ASM - Remediation Objectives
-      type: playbook
+      name: Set Attack Surface Rules list
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
       iscommand: false
       brand: ""
     nexttasks:
