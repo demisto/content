@@ -616,17 +616,17 @@ script:
     - description: Full name of the user assigned to the incident.
       name: assigned_user_pretty_name
     - auto: PREDEFINED
-      description: 'Status of the incident. Valid values are: new, under_investigation, resolved_known_issue, resolved_duplicate, resolved_false_positive, resolved_true_positive, resolved_security_testing, resolved_other.'
+      description: 'Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER.'
       name: status
       predefined:
-      - new
-      - under_investigation
-      - resolved_known_issue
-      - resolved_duplicate
-      - resolved_false_positive
-      - resolved_true_positive
-      - resolved_security_testing
-      - resolved_other
+      - NEW
+      - UNDER_INVESTIGATION
+      - RESOLVED_KNOWN_ISSUE
+      - RESOLVED_DUPLICATE
+      - RESOLVED_FALSE_POSITIVE
+      - RESOLVED_TRUE_POSITIVE
+      - RESOLVED_SECURITY_TESTING
+      - RESOLVED_OTHER
     - description: Comment explaining why the incident was resolved. This should be set when the incident is resolved.
       name: resolve_comment
     - auto: PREDEFINED
