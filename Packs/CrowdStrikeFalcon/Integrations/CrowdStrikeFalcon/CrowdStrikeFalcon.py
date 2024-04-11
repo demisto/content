@@ -371,6 +371,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         if res.status_code not in valid_status_codes:
             res_json = res.json()
             reason = res.reason
+            demisto.debug(f'In http_request, bad status code {res.status_code=} {reason=}')
             resources = res_json.get('resources', {})
             extracted_error_message = ''
             if resources:
@@ -392,8 +393,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 reason=reason
             )
             # try to create a new token
-            if res.status_code in (401, 403) and get_token_flag:
+            if res.status_code in (401, 403, 429) and get_token_flag:
                 LOG(err_msg)
+                demisto.debug(f'Try to create a new token because {res.status_code=}')
                 token = get_token(new_token=True)
                 headers['Authorization'] = f'Bearer {token}'
                 return http_request(
@@ -1241,15 +1243,18 @@ def get_token(new_token=False):
     ctx = demisto.getIntegrationContext()
     if ctx and not new_token:
         passed_mins = get_passed_mins(now, ctx.get('time'))
+        demisto.debug(f'{passed_mins=}')
         if passed_mins >= TOKEN_LIFE_TIME:
             # token expired
             auth_token = get_token_request()
             demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
         else:
             # token hasn't expired
+            demisto.debug("token hasn't expired")
             auth_token = ctx.get('auth_token')
     else:
         # there is no token
+        demisto.debug('there is no token')
         auth_token = get_token_request()
         demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
     return auth_token
@@ -1275,6 +1280,7 @@ def get_token_request():
         err_msg = 'Authorization Error: User has no authorization to create a token. Please make sure you entered the' \
                   ' credentials correctly.'
         raise Exception(err_msg)
+    demisto.debug(f'{token_res.get("expires_in")=}')
     return token_res.get('access_token')
 
 
