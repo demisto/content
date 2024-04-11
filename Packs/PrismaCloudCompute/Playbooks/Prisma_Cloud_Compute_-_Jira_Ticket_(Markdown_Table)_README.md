@@ -51,4 +51,4 @@ This playbook does not use any integrations.
 
 ---
 
-![Prisma Cloud Compute - Jira Ticket (Markdown Table)](../doc_files/Prisma_Cloud_Compute_-_Jira_Ticket_(Markdown_Table).png)
+![Prisma Cloud Compute - Jira Ticket (Markdown Table)](../doc_files/Prisma_Cloud_Compute_-_Jira_Ticket_Markdown_Table.png)
