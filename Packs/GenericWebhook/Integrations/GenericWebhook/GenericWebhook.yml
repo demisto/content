@@ -18,9 +18,10 @@ configuration:
   display: Listen Port
   name: longRunningPort
   type: 0
-  required: true
+  required: false
   section: Connect
-- display: Username
+- additionalinfo: "The username and password is required in XSOAR 8.5 and above"
+  display: Username
   name: credentials
   type: 9
   section: Connect
