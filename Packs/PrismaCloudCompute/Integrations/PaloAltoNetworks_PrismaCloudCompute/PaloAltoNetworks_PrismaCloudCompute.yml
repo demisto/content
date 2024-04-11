@@ -2907,6 +2907,8 @@ script:
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
+defaultmapperin: PaloAltoNetworks_PrismaCloudCompute-mapper
+defaultclassifier: PaloAltoNetworks_PrismaCloudCompute
 sectionOrder:
 - Connect
 - Collect
