@@ -4253,7 +4253,7 @@ class Common(object):
         :return: None
         :rtype: ``None``
         """
-        CONTEXT_PATH = 'Email(val.Address && val.Address == obj.Address)'
+        CONTEXT_PATH = 'Account.Email(val.Address && val.Address == obj.Address)'
 
         def __init__(self, address, dbot_score, domain=None, blocked=None, relationships=None, description=None,
                      internal=None, stix_id=None, tags=None, traffic_light_protocol=None):
