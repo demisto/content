@@ -52,4 +52,4 @@ This playbook does not use any integrations.
 
 ---
 
-![Prisma Cloud Compute - ServiceNow Ticket (XLSX)](../doc_files/Prisma_Cloud_Compute_-_ServiceNow_Ticket_(XLSX).png)
+![Prisma Cloud Compute - ServiceNow Ticket (XLSX)](../doc_files/Prisma_Cloud_Compute_-_ServiceNow_Ticket_XLSX.png)
