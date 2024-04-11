@@ -1,0 +1,35 @@
+[
+    {
+        "fieldname": "DELETED",
+        "reason": "",
+        "sys_id": "1",
+        "newvalue": "DELETED",
+        "sys_created_on": "2024-01-28 13:21:01",
+        "documentkey": "1",
+        "internal_checkpoint": "",
+        "record_checkpoint": "-1",
+        "tablename": "test_table"
+    },
+    {
+        "fieldname": "DELETED",
+        "reason": "",
+        "sys_id": "2",
+        "newvalue": "DELETED",
+        "sys_created_on": "2024-01-28 13:21:30",
+        "documentkey": "2",
+        "internal_checkpoint": "",
+        "record_checkpoint": "-1",
+        "tablename": "test_table"
+    },
+    {
+        "fieldname": "DELETED",
+        "reason": "",
+        "sys_id": "3",
+        "newvalue": "DELETED",
+        "sys_created_on": "2024-01-28 13:21:43",
+        "documentkey": "3",
+        "internal_checkpoint": "",
+        "record_checkpoint": "-1",
+        "tablename": "test_table"
+    }
+]
