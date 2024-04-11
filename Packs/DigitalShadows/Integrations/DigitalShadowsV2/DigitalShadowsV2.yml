@@ -1,0 +1,300 @@
+category: Authentication
+commonfields:
+  id: Digital Shadows V2
+  version: -1
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- additionalinfo: Enter the Digital Shadows SearchLight API URL
+  defaultvalue: https://api.searchlight.app
+  display: DS SearchLight API URL
+  name: searchLightUrl
+  required: true
+  type: 0
+- additionalinfo: Account ID associated with this account.
+  defaultvalue: "291983189783"
+  display: Account ID
+  displaypassword: API Key
+  hiddenusername: true
+  name: accountId
+  required: true
+  type: 0
+- additionalinfo: Enter the API Key for this account.
+  display: API Key
+  name: apiKey
+  required: true
+  type: 9
+- display: API Secret
+  name: apiSecret
+  required: true
+  type: 9
+- defaultvalue: "1"
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 0
+- defaultvalue: "true"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: Remove all if you don't want to select  all risk types, and then select specifically
+  defaultvalue: all
+  display: Risk Types
+  name: riskTypes
+  options:
+  - association-with-malware
+  - custom-risk
+  - evidence-of-adversary-impact
+  - evidence-of-credential-access
+  - evidence-of-initial-access
+  - evidence-of-reconnaissance
+  - evidence-of-resource-development
+  - expired-certificate
+  - exposed-access-key
+  - exposed-cloud-service
+  - exposed-commercial-document
+  - exposed-credential
+  - exposed-customer-account
+  - exposed-device
+  - exposed-employee-pii
+  - exposed-payment-card
+  - exposed-technical-document
+  - impersonating-company-profile
+  - impersonating-domain
+  - impersonating-employee-profile
+  - impersonating-mobile-app
+  - impersonating-subdomain
+  - leaked-sensitive-code
+  - leaked-sensitive-technology
+  - marked-documentmention-by-a-threat-actor
+  - misconfigured-web-server
+  - exposed-port
+  - phishing-report
+  - phishing-webpage
+  - report-of-botnet-activity
+  - report-of-technical-vulnerability
+  - reported-data-breach
+  - revoked-certificate
+  - selling-unauthorized-goods
+  - unauthorized-code-commit
+  - vulnerable-product
+  - vulnerable-service
+  - weak-certificate
+  - all
+  required: true
+  type: 16
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this verdict
+  display: Indicator Verdict
+  name: feedReputation
+  options:
+  - Unknown
+  - None
+  - Benign
+  - Good
+  - Suspicious
+  - Malicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- defaultvalue: indicatorType
+  display: ""
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: "20160"
+  display: ""
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: "240"
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+description: This is digital shadows integration.
+display: Digital Shadows V2 (Partner Contribution)
+name: Digital Shadows V2
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: A comma-separated list of IPs.
+      isArray: true
+      name: ip
+    - defaultValue: "65"
+      description: If the IP has a reputation above the threshold, then the IP is defined as malicious. If a threshold not set, then threshold from the instance configuration is used.
+      name: threshold
+    description: Return IP information and reputation.
+    name: ip
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: HelloWorld.IP.asn
+      description: The autonomous system name for the IP address.
+      type: String
+    - contextPath: HelloWorld.IP.asn_cidr
+      description: The ASN CIDR.
+      type: String
+    - contextPath: HelloWorld.IP.asn_country_code
+      description: The ASN country code.
+      type: String
+    - contextPath: HelloWorld.IP.asn_date
+      description: The date on which the ASN was assigned.
+      type: Date
+    - contextPath: HelloWorld.IP.asn_description
+      description: The ASN description.
+      type: String
+    - contextPath: HelloWorld.IP.asn_registry
+      description: The registry the ASN belongs to.
+      type: String
+    - contextPath: HelloWorld.IP.entities
+      description: Entities associated to the IP.
+      type: String
+    - contextPath: HelloWorld.IP.ip
+      description: The actual IP address.
+      type: String
+    - contextPath: HelloWorld.IP.network.cidr
+      description: Network CIDR for the IP address.
+      type: String
+    - contextPath: HelloWorld.IP.network.country
+      description: The country of the IP address.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.end_address
+      description: The last IP address of the CIDR.
+      type: String
+    - contextPath: HelloWorld.IP.network.events.action
+      description: The action that happened on the event.
+      type: String
+    - contextPath: HelloWorld.IP.network.events.actor
+      description: The actor that performed the action on the event.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.events.timestamp
+      description: The timestamp when the event occurred.
+      type: String
+    - contextPath: HelloWorld.IP.network.handle
+      description: The handle of the network.
+      type: String
+    - contextPath: HelloWorld.IP.network.ip_version
+      description: The IP address version.
+      type: String
+    - contextPath: HelloWorld.IP.network.links
+      description: Links associated to the IP address.
+      type: String
+    - contextPath: HelloWorld.IP.network.name
+      description: The name of the network.
+      type: String
+    - contextPath: HelloWorld.IP.network.notices.description
+      description: The description of the notice.
+      type: String
+    - contextPath: HelloWorld.IP.network.notices.links
+      description: Links associated with the notice.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.notices.title
+      description: Title of the notice.
+      type: String
+    - contextPath: HelloWorld.IP.network.parent_handle
+      description: Handle of the parent network.
+      type: String
+    - contextPath: HelloWorld.IP.network.raw
+      description: Additional raw data for the network.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.remarks
+      description: Additional remarks for the network.
+      type: Unknown
+    - contextPath: HelloWorld.IP.network.start_address
+      description: The first IP address of the CIDR.
+      type: String
+    - contextPath: HelloWorld.IP.network.status
+      description: Status of the network.
+      type: String
+    - contextPath: HelloWorld.IP.network.type
+      description: The type of the network.
+      type: String
+    - contextPath: HelloWorld.IP.query
+      description: IP address that was queried.
+      type: String
+    - contextPath: HelloWorld.IP.raw
+      description: Additional raw data for the IP address.
+      type: Unknown
+    - contextPath: HelloWorld.IP.score
+      description: Reputation score from HelloWorld for this IP (0 to 100, where higher is worse).
+      type: Number
+    - contextPath: IP.Address
+      description: IP address.
+      type: String
+    - contextPath: IP.Malicious.Vendor
+      description: The vendor reporting the IP address as malicious.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: A description explaining why the IP address was reported as malicious.
+      type: String
+    - contextPath: IP.ASN
+      description: The autonomous system name for the IP address.
+      type: String
+    - contextPath: IP.Relationships.EntityA
+      description: The source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityB
+      description: The destination of the relationship.
+      type: string
+    - contextPath: IP.Relationships.Relationship
+      description: The name of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: string
+    - contextPath: IP.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: string
+  dockerimage: demisto/python3:3.10.13.74666
+  feed: true
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
