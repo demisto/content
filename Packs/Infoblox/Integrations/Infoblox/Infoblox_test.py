@@ -682,23 +682,24 @@ class TestIPOperations:
         - A mock response from InfoBlox API.
 
         When:
-        - The response has an attribute that is unknown.
+        - The response has an attribute, lease_state="active" that is unknown.
 
         Then:
-        - `transform_ip_context` doesn't raise an exception.
+        - The context output includes the transformed unknown key "LeaseState".
         """
 
         mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
                          / "get_ipv4_address_from_ip_address.json").read_text()
 
-        res: dict[str, list] = json.loads(mock_response)
-        res["lease_state"] = "active"
-        ip = res.get("result")
+        unknown_key = "lease_state"
+        unknown_key_value = "active"
 
-        try:
-            transform_ip_context(ip)
-        except Exception as e:
-            pytest.fail(f"Function raised an exception: {e}")
+        res: dict[str, list] = json.loads(mock_response)
+        res["result"][0][unknown_key] = unknown_key_value
+        ip = res.get("result")
+        actual = transform_ip_context(ip)
+
+        assert actual[0]["LeaseState"] == unknown_key_value
 
 
 class TestHostRecordsOperations:
