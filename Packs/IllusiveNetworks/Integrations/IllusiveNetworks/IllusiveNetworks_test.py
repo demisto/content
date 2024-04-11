@@ -7,6 +7,8 @@ from IllusiveNetworks import Client, is_deceptive_user_command, is_deceptive_ser
     get_forensics_analyzers_command, get_forensics_triggering_process_info_command, get_forensics_artifacts_command
 
 from CommonServerPython import parse_date_range
+from freezegun import freeze_time
+
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
 
@@ -180,7 +182,7 @@ def test_get_deceptive_servers_command(requests_mock):
     assert outputs == {'Illusive.DeceptiveServer(val.host == obj.host)':
                        {'data': [], 'hostname': 'bbb', 'machineTagAndSubTags': {'tag': 'tag', 'subTag': 'sub'}}}
 
-
+@freeze_time("2024-04-10T11:00:00")
 def test_get_forensics_timeline_command(requests_mock):
     mock_response = [{'IncidentId': "aaa", 'Status': 'Done', 'details': {'date': 'aaa'}}]
     client = Client(base_url='https://server', verify=False)
