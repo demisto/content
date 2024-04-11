@@ -1,7 +1,7 @@
 id: Prisma Cloud Compute - Compliance Alert
 version: -1
 name: Prisma Cloud Compute - Compliance Alert
-description: Deprecated. Use Prisma Cloud Compute - Compliance Alert v2 instead.
+description: Default playbook for parsing Prisma Cloud Compute compliance alerts
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
@@ -72,5 +72,4 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- No tests (deprecated)
-deprecated: true
+- No Test

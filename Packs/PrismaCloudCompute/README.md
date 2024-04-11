@@ -44,11 +44,12 @@ Configure Prisma Cloud Compute to send alerts to Cortex XSIAM by creating an ale
 The integration ships with four default playbooks:
 * **Prisma Cloud Compute - Audit Alert v3**
 * **Prisma Cloud Compute - Cloud Discovery Alert**
-* **Prisma Cloud Compute - Compliance Alert v2**
+* **Prisma Cloud Compute - Compliance Alert**
 * **Prisma Cloud Compute - Vulnerability Alert**
 
-Two of the above playbooks - _Cloud Discovery Alert_ and _Vulnerability Alert_, contain a single script. The script in each playbook encodes the raw JSON alerts into Cortex XSIAM objects that can then be used in the playbooks. The scripts are:
+Three of the above playbooks (all except _Audit Alert v3_) contain a single script. The script in each playbook encode the raw JSON alerts into Cortex XSIAM objects that can then be used in the playbooks. The scripts are:
 
+* **PrismaCloudComputeParseComplianceAlert**
 * **PrismaCloudComputeParseVulnerabilityAlert**
 * **PrismaCloudComputeParseCloudDiscoveryAlert**
 
@@ -60,15 +61,15 @@ To better understand how playbooks and scripts interoperate, consider the _Prism
 ![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_raw_input.png)
 
 
-* Click **outputs** to see how the script transformed the raw JSON input into a Cortex XSOAR object.
+* Click **outputs** to see how the script transformed the raw JSON input into a Cortex XSIAM object.
 
 
 ![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_outputs.png)
 
-At this point, you can add tasks that extend the playbook to check and respond to alerts depending on the properties of the Cortex XSOAR object.
+At this point, you can add tasks that extend the playbook to check and respond to alerts depending on the properties of the Cortex XSIAM object.
 
 ### Audit Alert v3 playbook
-This is a default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
+This playbook is not similar to the other three playbooks. It is a default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
 
 The playbook has the following sections:
 
@@ -87,15 +88,6 @@ Remediation:
 - Manual Remediation
 
 Currently, the playbook supports incidents created by **Runtime** and **WAAS** triggers.
-
-### Compliance Alert v2
-This is a default playbook for parsing and enrichment of Prisma Cloud Compute compliance alerts.
-
-It will handle hosts, images and container compliance alerts.
-Each sub playbook in this playbook is dedicated to a specific resource type: host, container or image, and will loop through all of the retrieved Compliance Issue IDs in order to retrieve enriched information about each of the resources.
-The enriched information will be displayed in the layout under dedicated tabs and includes resources information like hostnames, container ID, image ID, cloud provider info, enriched compliance issue details and more.
-
-In addition, the playbook can create and update external ticketing systems for each compliance issue automatically with the relevant enriched information. In order to do so, fill the relevant playbook inputs
 
 ## Troubleshooting
 
@@ -147,11 +139,12 @@ Configure Prisma Cloud Compute to send alerts to Cortex XSOAR by creating an ale
 The integration ships with four default playbooks:
 * **Prisma Cloud Compute - Audit Alert v3**
 * **Prisma Cloud Compute - Cloud Discovery Alert**
-* **Prisma Cloud Compute - Compliance Alert v2**
+* **Prisma Cloud Compute - Compliance Alert**
 * **Prisma Cloud Compute - Vulnerability Alert**
 
-Two of the above playbooks - _Cloud Discovery Alert_ and _Vulnerability Alert_, contain a single script. The script in each playbook encodes the raw JSON alerts into Cortex XSOAR objects that can then be used in the playbooks. The scripts are:
+Three of the above playbooks (all except _Audit Alert v3_) contain a single script. The script in each playbook encode the raw JSON alerts into Cortex XSOAR objects that can then be used in the playbooks. The scripts are:
 
+* **PrismaCloudComputeParseComplianceAlert**
 * **PrismaCloudComputeParseVulnerabilityAlert**
 * **PrismaCloudComputeParseCloudDiscoveryAlert**
 
@@ -171,7 +164,7 @@ To better understand how playbooks and scripts interoperate, consider the _Prism
 At this point, you can add tasks that extend the playbook to check and respond to alerts depending on the properties of the Cortex XSOAR object.
 
 ### Audit Alert v3 playbook
-This is a default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
+This playbook is not similar to the other three playbooks. It is a default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
 
 The playbook has the following sections:
 
@@ -190,14 +183,6 @@ Remediation:
 - Manual Remediation
 
 Currently, the playbook supports incidents created by **Runtime** and **WAAS** triggers.
-
-### Compliance Alert v2
-This is a default playbook for parsing and enrichment of Prisma Cloud Compute compliance alerts.
-It will handle hosts, images and container compliance alerts.
-Each sub playbook in this playbook is dedicated to a specific resource type: host, container or image, and will loop through all of the retrieved Compliance Issue IDs in order to retrieve enriched information about each of the resources.
-The enriched information will be displayed in the layout under dedicated tabs and includes resources information like hostnames, container ID, image ID, cloud provider info, enriched compliance issue details and more.
-
-In addition, the playbook can create and update external ticketing systems for each compliance issue automatically with the relevant enriched information. In order to do so, fill the relevant playbook inputs
 
 ## Troubleshooting
 

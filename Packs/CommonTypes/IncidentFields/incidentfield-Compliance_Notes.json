@@ -1,8 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Qradar Generic",
-        "Prisma Cloud Compute Compliance v2"
+        "Qradar Generic"
     ],
     "breachScript": "",
     "caseInsensitive": true,
@@ -34,10 +33,7 @@
     "selectValues": [],
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": [
-        "Qradar Generic",
-        "Prisma Cloud Compute Compliance v2"
-    ],
+    "systemAssociatedTypes": null,
     "threshold": 72,
     "toServerVersion": "",
     "type": "multiSelect",

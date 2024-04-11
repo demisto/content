@@ -1104,12 +1104,12 @@ def main():
     base_url = server + '/api/v2/'
     # Should we use SSL
     use_ssl = not params.get('insecure', False)
-    proxy = argToBoolean(params.get('proxy', False))
     api_token = params.get('credentials_api_token', {}).get('password') or params.get('api_token')
 
-    command = demisto.command()
-    client = Client(base_url, username, password, domain, api_token=api_token, verify=use_ssl, proxy=proxy)
+    # Remove proxy if not set to true in params
     handle_proxy()
+    command = demisto.command()
+    client = Client(base_url, username, password, domain, api_token=api_token, verify=use_ssl)
     demisto.info(f'Command being called is {command}')
 
     commands = {

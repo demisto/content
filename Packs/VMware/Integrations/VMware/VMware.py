@@ -83,6 +83,12 @@ def login(params):  # pragma: no cover
     # Preparations for SDKs connections
     s = ssl.SSLContext(ssl.PROTOCOL_TLS)
     s.verify_mode = ssl.CERT_NONE
+    session = requests.session()
+    session.verify = False
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    # Connect to Vsphere automation sdk using username and password
+    vsphere_client = create_vsphere_client(server=full_url, username=user_name, password=password, session=session)
 
     # Connect to a vCenter Server using username and password
     try:
@@ -97,7 +103,7 @@ def login(params):  # pragma: no cover
                           port=port,
                           sslContext=s)
 
-    return si
+    return si, vsphere_client
 
 
 def logout(si):  # pragma: no cover
@@ -829,24 +835,13 @@ def test_module(si):
     return 'ok'
 
 
-def vsphare_client_login(params):
-    full_url, url, port, user_name, password = parse_params(params)
-
-    session = requests.session()
-    session.verify = not params.get('insecure', False)
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
-    # Connect to Vsphere automation sdk using username and password
-    return create_vsphere_client(server=full_url, username=user_name, password=password, session=session)
-
-
 def main():  # pragma: no cover
     if REDIRECT_STD_OUT:
         sys.stdout = StringIO()
     res = []
     si = None
     try:
-        si = login(demisto.params())
+        si, vsphere_client = login(demisto.params())
         if demisto.command() == 'test-module':
             result = test_module(si)
         if demisto.command() == 'vmware-get-vms':
@@ -870,7 +865,6 @@ def main():  # pragma: no cover
         if demisto.command() == 'vmware-change-nic-state':
             result = change_nic_state(si, demisto.args())
         if demisto.command() == 'vmware-list-vms-by-tag':
-            vsphere_client = vsphare_client_login(demisto.params())
             result = list_vms_by_tag(vsphere_client, demisto.args())
         if demisto.command() == 'vmware-create-vm':
             result = create_vm(si, demisto.args())
