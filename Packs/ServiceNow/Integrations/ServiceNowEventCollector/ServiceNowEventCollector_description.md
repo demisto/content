@@ -11,7 +11,8 @@ The integration supports two types of authorization:
 2. OAuth 2.0 authorization.
 
 #### OAuth 2.0 Authorization
-To use OAuth 2.0 authorization follow the next steps:
-1. Login to your ServiceNow instance and create an endpoint for XSIAM to access your instance (please see [Snow OAuth](https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/security/task/t_CreateEndpointforExternalClients.html) for more information). 
-2. Copy the `Client Id` and `Client Secret` (press the lock next to the client secret to reveal it) that were automatically generated when creating the endpoint into the `ClientID` and `Client Secret` fields of the instance configuration.
-3. Select the `Use OAuth Login` checkbox and click the `Done` button.
+To use OAuth 2.0 authorization:
+1. Log in to your ServiceNow instance and create an endpoint for Cortex XSIAM to access your instance. For more information, see [Snow OAuth](https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/security/task/t_CreateEndpointforExternalClients.html) . 
+2. Click the lock next to the Client Secret to reveal it.
+3. Copy the `Client Id` and `Client Secret` into the `ClientID` and `Client Secret` fields of the instance configuration. The `Client Id` and `Client Secret` were automatically generated when you created the endpoint.
+4. Select the `Use OAuth Login` checkbox and click `Done`.

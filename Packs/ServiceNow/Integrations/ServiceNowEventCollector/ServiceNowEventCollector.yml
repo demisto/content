@@ -22,7 +22,7 @@ configuration:
   type: 9
   required: false
   section: Connect
-- display: ServiceNow API Version (e.g. 'v1')
+- display: ServiceNow API Version (e.g., 'v1')
   name: api_version
   type: 0
   required: false
@@ -58,13 +58,13 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: Use this integration to fetch audit logs from Service Now as Cortex XSIAM events.
+description: Use this integration to fetch audit logs from ServiceNow as Cortex XSIAM events.
 display: ServiceNow Event Collector
 name: ServiceNow Event Collector
 script:
   commands:
   - name: service-now-get-audit-logs
-    description: Returns audit logs events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
+    description: Returns audit logs events extracted from ServiceNow. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and exceeding the API request limitation.
     deprecated: false
     arguments:
     - auto: PREDEFINED
@@ -81,12 +81,12 @@ script:
       isArray: false
       defaultValue: 1000
     - name: from_date
-      description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14 " indicates May 18, 2021, 1:45PM.'
+      description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
       required: false
       isArray: false
       defaultValue: ""
     - name: offset
-      description: Starting record index for which to begin retrieving records.
+      description: Starting record index from which to begin retrieving records.
       required: false
       isArray: false
       defaultValue: ""
