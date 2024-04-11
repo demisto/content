@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Delete status argument from redmine-create-issue, Changed arguments status_id,tracker_id,priority_is to status,tracker,priority so it can handle id and name."
+}
