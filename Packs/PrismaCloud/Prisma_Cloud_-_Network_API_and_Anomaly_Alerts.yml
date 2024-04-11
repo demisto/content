@@ -1,9 +1,11 @@
-id: Prisma Cloud - Network API and Anomaly Incidents
+id: Prisma Cloud - Network API and Anomaly Alerts
 version: -1
-name: Prisma Cloud - Network API and Anomaly Incidents
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma Cloud - Network API and Anomaly Alerts
 description: |-
-  This playbook handles incidents of internet exposed services and detect potential risky configurations that can make your cloud environment vulnerable to attacks, and
-  incidents of unusual network and user activity for all users, and are especially critical for privileged users and assumed roles where detecting unusual activity may indicate the first steps in a potential misuse or account compromise.
+  This playbook handles alerts of internet exposed services and detect potential risky configurations that can make your cloud environment vulnerable to attacks, and
+  alerts of unusual network and user activity for all users, and are especially critical for privileged users and assumed roles where detecting unusual activity may indicate the first steps in a potential misuse or account compromise.
 starttaskid: "0"
 tasks:
   "0":
@@ -70,10 +72,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 97f6bc4a-c84f-46c9-89c0-9687b97bbfda
+    taskid: ddf9ce7d-b5ee-4ad5-8e25-38c794ae515e
     type: regular
     task:
-      id: 97f6bc4a-c84f-46c9-89c0-9687b97bbfda
+      id: ddf9ce7d-b5ee-4ad5-8e25-38c794ae515e
       version: -1
       name: IP Enrichment
       description: Checks the reputation of an IP address.
@@ -158,16 +160,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 23f631fe-952d-4904-8bdf-d69285021fa3
+    taskid: 5ee6005a-9c73-4963-8b71-83016b2c8cb0
     type: condition
     task:
-      id: 23f631fe-952d-4904-8bdf-d69285021fa3
+      id: 5ee6005a-9c73-4963-8b71-83016b2c8cb0
       version: -1
       name: Does IP is malicious?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "9"
@@ -225,7 +226,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "8"
@@ -432,10 +432,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 6c232656-52c6-4b24-8918-30776fa31077
+    taskid: 7262156d-8e1e-4d94-83bf-85565398a1da
     type: playbook
     task:
-      id: 6c232656-52c6-4b24-8918-30776fa31077
+      id: 7262156d-8e1e-4d94-83bf-85565398a1da
       version: -1
       name: Cloud Enrichment - Generic
       description: |2-
@@ -587,16 +587,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: bd3672c0-2ab6-4835-8cca-3fdc2b1d2af7
+    taskid: 97bdc027-ff20-4c19-808f-65765aabbc58
     type: condition
     task:
-      id: bd3672c0-2ab6-4835-8cca-3fdc2b1d2af7
+      id: 97bdc027-ff20-4c19-808f-65765aabbc58
       version: -1
       name: Does response needed?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "27"
@@ -663,10 +662,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: fd02b167-e582-4040-8a9f-302fe467f7be
+    taskid: 62462f77-a5c7-43a0-8a06-68f7b817657f
     type: playbook
     task:
-      id: fd02b167-e582-4040-8a9f-302fe467f7be
+      id: 62462f77-a5c7-43a0-8a06-68f7b817657f
       version: -1
       name: Cloud Response - Generic
       description: |-
@@ -745,16 +744,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 6c693e4e-ede1-46b2-8edf-2e90906e2664
+    taskid: 5beff06c-12f3-494b-8a3e-f62bb0469a6d
     type: condition
     task:
-      id: 6c693e4e-ede1-46b2-8edf-2e90906e2664
+      id: 5beff06c-12f3-494b-8a3e-f62bb0469a6d
       version: -1
       name: Perform Cloud Response?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "27"
@@ -799,7 +797,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "24"
@@ -844,7 +841,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -894,10 +890,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 9640af49-911a-45a8-8624-da033d349dd2
+    taskid: bc2b5581-931e-44b0-893b-d35d42432841
     type: playbook
     task:
-      id: 9640af49-911a-45a8-8624-da033d349dd2
+      id: bc2b5581-931e-44b0-893b-d35d42432841
       version: -1
       name: Block IP - Generic v3
       description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
@@ -1077,7 +1073,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "22"
@@ -1144,10 +1139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: a57b5f12-570d-463f-8e3e-6e20a7dcbb18
+    taskid: 64c5c5bd-35bf-4284-8a85-f35219a14c37
     type: regular
     task:
-      id: a57b5f12-570d-463f-8e3e-6e20a7dcbb18
+      id: 64c5c5bd-35bf-4284-8a85-f35219a14c37
       version: -1
       name: Check if user is risky by XDR
       description: Retrieve the risk score of a specific user or list of users with the highest risk score in the environment along with the reason affecting each score.
@@ -1183,10 +1178,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: d0cf5850-da44-4de5-8a7e-d8fde47fd66c
+    taskid: b40f80c4-5d33-4b2f-8b1a-e602f4b7cbe6
     type: regular
     task:
-      id: d0cf5850-da44-4de5-8a7e-d8fde47fd66c
+      id: b40f80c4-5d33-4b2f-8b1a-e602f4b7cbe6
       version: -1
       name: Prisma alert enrichment
       description: Gets the details of an alert based on the alert ID.
@@ -1270,7 +1265,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -1302,16 +1296,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 7265dfe6-a8a7-4b86-8066-c118ba872dbe
+    taskid: c0673dce-c337-45d8-8318-573fed5e05b1
     type: condition
     task:
-      id: 7265dfe6-a8a7-4b86-8066-c118ba872dbe
+      id: c0673dce-c337-45d8-8318-573fed5e05b1
       version: -1
-      name: Host RRN has received from Prisma?
+      name: Has host RRN?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -1492,7 +1485,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       "yes":
       - "41"
@@ -1563,10 +1555,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 3f873b48-5e22-4196-817f-bd02b7a11266
+    taskid: 9c0e54b3-564b-4962-87aa-96fbc703a837
     type: regular
     task:
-      id: 3f873b48-5e22-4196-817f-bd02b7a11266
+      id: 9c0e54b3-564b-4962-87aa-96fbc703a837
       version: -1
       name: Get CVE Details
       description: Returns CVE information by CVE ID.
@@ -1581,7 +1573,6 @@ tasks:
       cve:
         simple: ${CVE.ID}
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1609,22 +1600,21 @@ tasks:
     - incidentfield: CVE ID
       output:
         simple: ${CVE.ID}
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 47f296ff-d425-4a5d-8fec-5ec90f8dc250
+    taskid: 17a52902-6faa-4814-839c-ceb9a4963722
     type: condition
     task:
-      id: 47f296ff-d425-4a5d-8fec-5ec90f8dc250
+      id: 17a52902-6faa-4814-839c-ceb9a4963722
       version: -1
       name: Has related CVE?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "15"
@@ -1667,7 +1657,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "15"
@@ -1791,9 +1780,7 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {
-      "4_6_yes": 0.3
-    },
+    "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 4615,
@@ -1949,5 +1936,3 @@ outputSections:
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2"]
-fromversion: 6.10.0
