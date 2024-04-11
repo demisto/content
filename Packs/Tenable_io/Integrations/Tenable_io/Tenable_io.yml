@@ -790,7 +790,7 @@ script:
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Set this argument to True in order to create events, otherwise the command will only display the events.
-      name: should_push_events
+      name: should_push_vulnerabilities
       predefined:
       - 'true'
       - 'false'
