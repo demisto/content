@@ -1087,102 +1087,25 @@
                     "simple": "behaviors.user_name"
                 },
                 "name": {
-                    "complex": {
-                        "filters": [],
-                        "root": "incident_type",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "item": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "incident_id"
-                                        }
-                                    }
-                                },
-                                "operator": "append"
-                            },
-                            {
-                                "args": {
-                                    "item": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "detection_id"
-                                        }
-                                    }
-                                },
-                                "operator": "append"
-                            },
-                            {
-                                "args": {
-                                    "item": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "device.hostname"
-                                        }
-                                    }
-                                },
-                                "operator": "append"
-                            },
-                            {
-                                "args": {
-                                    "item": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "hosts.hostname"
-                                        }
-                                    }
-                                },
-                                "operator": "append"
-                            },
-                            {
-                                "args": {
-                                    "item": {
-                                        "value": {
-                                            "simple": "Detected Techniques"
-                                        }
-                                    }
-                                },
-                                "operator": "append"
-                            },
-                            {
-                                "args": {
-                                    "item": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "techniques"
-                                        }
-                                    }
-                                },
-                                "operator": "append"
-                            },
-                            {
-                                "args": {
-                                    "item": {
-                                        "isContext": true,
-                                        "value": {
-                                            "simple": "behaviors.technique"
-                                        }
-                                    }
-                                },
-                                "operator": "append"
-                            },
-                            {
-                                "operator": "uniq"
-                            },
-                            {
-                                "args": {
-                                    "separator": {
-                                        "value": {
-                                            "simple": " - "
-                                        }
-                                    }
-                                },
-                                "operator": "join"
-                            }
-                        ]
-                    }
-                },
+					"complex": {
+						"accessor": "}",
+						"filters": [],
+						"root": "${",
+						"transformers": [
+							{
+								"args": {
+									"conditions": {
+										"value": {
+											"simple": "[\n  {\n    \"condition\": \"#{incident_type} == 'detection'\",\n    \"return\": \"Falcon Detection - \" + #{behaviors\\.display_name}  + \" - Detection ID: \" + #{detection_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'incident'\",\n    \"return\": \"Falcon Incident - ID: \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'IDP detection'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'iom_configurations'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'ioa_events'\",\n    \"return\": #{event_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'MOBILE detection'\",\n    \"return\": #{mobile_detection_id}\n  },\n  {\n    \"condition\": \"#{device\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{detection_id} + \" - \" + #{device\\.hostname}\n  },\n  {\n    \"condition\": \"#{hosts\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id} + \" - \" + #{hosts\\.hostname}\n  },\n  {\n    \"condition\": \"#{incident_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{detection_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{detection_id}\n  },\n  {\n    \"default\": #{incident_type}\n  }\n]"
+										}
+									},
+									"flags": {}
+								},
+								"operator": "If-Elif"
+							}
+						]
+					}
+				},
                 "severity": {
                     "complex": {
                         "filters": [],
