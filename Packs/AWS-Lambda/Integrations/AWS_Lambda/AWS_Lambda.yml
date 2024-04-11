@@ -78,6 +78,15 @@ configuration:
   type: 0
   required: false
   defaultvalue:
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
+  section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -1256,6 +1265,12 @@ script:
       name: roleSessionName
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
+    - auto: PREDEFINED
+      description: A list of compatible architectures.
+      name: compatible-architectures
+      predefined:
+      - x86_64
+      - arm64
     outputs:
     - contextPath: AWS.Lambda.Layers.LayerVersionArn
       description: The ARN of the layer version.
@@ -1274,6 +1289,9 @@ script:
       type: number
     - contextPath: AWS.Lambda.Layers.CompatibleRuntimes
       description: The layer’s compatible runtimes.
+      type: list
+    - contextPath: AWS.Lambda.Layers.CompatibleArchitectures
+      description: The layer’s compatible architectures.
       type: list
   - name: aws-lambda-list-layer-version
     description: Lists the versions of an Lambda layer.
@@ -1410,7 +1428,7 @@ script:
     - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
       name: roleSessionDuration
     outputs: []
-  dockerimage: demisto/boto3py3:1.0.0.90777
+  dockerimage: demisto/boto3py3:1.0.0.91694
   runonce: false
   subtype: python3
   script: ''
