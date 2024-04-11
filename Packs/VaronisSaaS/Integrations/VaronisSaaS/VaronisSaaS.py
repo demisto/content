@@ -136,6 +136,7 @@ INCIDENT_FIELDS = [
     "Category",
     "Name",
     "Status",
+    "severity",
     "IPThreatTypes",
     "CloseReason",
     "NumOfAlertedEvents",

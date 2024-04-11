@@ -20,6 +20,9 @@
                 },
                 "CloseReason": {
                     "simple": "varonissaasclosereason"
+                },
+                "severity": {
+                    "simple": "severity"
                 }
             }
         }

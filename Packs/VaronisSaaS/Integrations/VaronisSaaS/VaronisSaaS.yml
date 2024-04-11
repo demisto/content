@@ -574,6 +574,10 @@ script:
       description: Predefined/User-defined.
       type: String
     name: varonis-get-threat-models
+  - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    name: get-mapping-fields
+  - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+    name: update-remote-system
   dockerimage: demisto/python3:3.10.14.91134
   feed: false
   isfetch: true
