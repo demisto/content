@@ -211,6 +211,7 @@ def handle_convert_field(client, field: str, field_value: str):
                                    f"You can provide the {singular} name instead.")
         return field_value
     except ValueError:
+        # user can use custom tracker/priority/status so we retrieve the user's dict and save it in context
         client.get_dict_for_issue_field_request(field)
         integration_context = get_integration_context().get(field, {})
         field_value_id = integration_context.get(field_value)
