@@ -1,12 +1,4 @@
-
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $CI_COMMIT_BRANCH
+    ref: test_move_all_ci_content
     project: "${CI_PROJECT_NAMESPACE}/infra"
-    rules:
-      - if: $BRANCH_NAME_FOR_TEST_UPLOAD_FLOW == null
-  - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $BRANCH_NAME_FOR_TEST_UPLOAD_FLOW
-    project: "${CI_PROJECT_NAMESPACE}/infra"
-    rules:
-      - if: $BRANCH_NAME_FOR_TEST_UPLOAD_FLOW != null
