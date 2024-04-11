@@ -17,18 +17,27 @@ from pytest import raises, mark
 
 import CommonServerPython
 import demistomock as demisto
-from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
-    flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
-    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
-    return_outputs, is_filename_valid, convert_dict_values_bytes_to_str, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch, FeedIndicatorType, \
-    encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
-    response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
-    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam, censor_request_logs, censor_request_logs
+from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
+                                flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
+                                remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid,
+                                get_demisto_version, \
+                                IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode,
+                                parse_date_range, \
+                                return_outputs, is_filename_valid, convert_dict_values_bytes_to_str, \
+                                argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch,
+                                FeedIndicatorType, \
+                                encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown,
+                                is_demisto_version_ge, \
+                                appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str,
+                                get_x_content_info_headers, \
+                                url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
+                                remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common,
+                                send_events_to_xsiam, ExecutionMetrics, \
+                                response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
+                                is_xsoar_on_prem, \
+                                is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam, censor_request_logs,
+                                censor_request_logs, \
+                                SAFE_SLEEP_START_TIME, safe_sleep)
 
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.
@@ -233,66 +242,66 @@ DATA_WITH_URLS = [(
 COMPLEX_DATA_WITH_URLS = [(
     [
         {'data':
-         {'id': '1',
-          'result':
-          {'files':
-           [
+             {'id': '1',
+              'result':
+                  {'files':
+                      [
                           {
                               'filename': 'name',
                               'size': 0,
                               'url': 'url'
                           }
-                          ]
-           },
+                      ]
+                  },
               'links': ['link']
-          }
+              }
          },
         {'data':
-         {'id': '2',
-          'result':
-          {'files':
-           [
-               {
-                   'filename': 'name',
-                   'size': 0,
-                   'url': 'url'
-               }
-           ]
-           },
+             {'id': '2',
+              'result':
+                  {'files':
+                      [
+                          {
+                              'filename': 'name',
+                              'size': 0,
+                              'url': 'url'
+                          }
+                      ]
+                  },
               'links': ['link']
-          }
+              }
          }
     ],
     [
         {'data':
-         {'id': '1',
-          'result':
-          {'files':
-           [
-               {
-                   'filename': 'name',
-                   'size': 0,
-                   'url': '[url](url)'
-               }
-           ]
-           },
+             {'id': '1',
+              'result':
+                  {'files':
+                      [
+                          {
+                              'filename': 'name',
+                              'size': 0,
+                              'url': '[url](url)'
+                          }
+                      ]
+                  },
               'links': ['[link](link)']
-          }
+              }
          },
         {'data':
-         {'id': '2',
-          'result':
-          {'files':
-           [
-               {
-                   'filename': 'name',
-                   'size': 0,
-                   'url': '[url](url)'
-               }
-           ]
-           },
+             {'id': '2',
+              'result':
+                  {'files':
+                      [
+                          {
+                              'filename': 'name',
+                              'size': 0,
+                              'url': '[url](url)'
+                          }
+                      ]
+                  },
               'links': ['[link](link)']
-          }
+              }
          }
     ])]
 
@@ -1347,7 +1356,7 @@ def test_logger_replace_strs(mocker):
     assert ('' not in ilog.replace_strs)
     assert ilog.messages[0] == '<XX_REPLACED> is <XX_REPLACED> and b64: <XX_REPLACED>'
     assert ilog.messages[1] == \
-        'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
+           'special chars like <XX_REPLACED> should be replaced even when url-encoded like <XX_REPLACED>'
 
 
 TEST_SSH_KEY_ESC = '-----BEGIN OPENSSH PRIVATE KEY-----\\nb3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFw' \
@@ -2049,7 +2058,7 @@ class TestCommandResults:
         results = CommandResults(outputs_prefix='File', outputs_key_field=['sha1', 'sha256', 'md5'], outputs=files)
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
-            'File(val.sha1 && val.sha1 == obj.sha1 && val.sha256 && val.sha256 == obj.sha256 && val.md5 && val.md5 == obj.md5)'
+               'File(val.sha1 && val.sha1 == obj.sha1 && val.sha256 && val.sha256 == obj.sha256 && val.md5 && val.md5 == obj.md5)'
 
     def test_output_prefix_includes_dt(self):
         """
@@ -2070,7 +2079,7 @@ class TestCommandResults:
                                  outputs_key_field='', outputs=files)
 
         assert list(results.to_context()['EntryContext'].keys())[0] == \
-            'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
+               'File(val.sha1 == obj.sha1 && val.md5 == obj.md5)'
 
     @pytest.mark.parametrize('score, expected_readable',
                              [(CommonServerPython.Common.DBotScore.NONE, 'Unknown'),
@@ -6904,8 +6913,8 @@ class TestCommonTypes:
             traffic_light_protocol='traffic_light_protocol_test'
         )
         assert email_context.to_context()[email_context.CONTEXT_PATH] == \
-            {'Address': 'user@example.com',
-             'Domain': 'example.com',
+               {'Address': 'user@example.com',
+                'Domain': 'example.com',
                 'Description': 'test',
                 'Internal': True,
                 'STIXID': 'stix_id_test',
@@ -9640,28 +9649,14 @@ def test_logger_write__censor_request_logs_has_been_called(mocker, request_log):
 
 
 @pytest.fixture
-def safe_sleep(mocker):
+def safe_sleep_wrapper(mocker):
     """Fixture to create a ManagedSleep object with mocked run_duration"""
     mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
-    mocker.patch('time.time', return_value=1711453263.0)
-    yield CommonServerPython.SafeSleep()
+    mocker.patch.object(CommonServerPython, 'SAFE_SLEEP_START_TIME', return_value=1711453263.0)
 
 
-def test_init(safe_sleep):
-    """
-    Given: A `SafeSleep` object is created.
-
-    When:The object is initialized.
-
-    Then:
-    - The `run_duration` attribute should be set to the value returned by the mocked `demisto.getRunDuration`.
-    - The `start_time` attribute should be a float representing the current time.
-  """
-    assert safe_sleep.run_duration == 300
-    assert isinstance(safe_sleep.start_time, float)
-
-
-def test_sleep_exceeds_ttl(mocker, safe_sleep):
+@freeze_time(datetime(2024, 4, 10, 10, 0, 10))
+def test_sleep_exceeds_ttl(mocker):
     """
    Given:  A `SafeSleep` object and a sleep duration exceeding the remaining TTL.
 
@@ -9670,14 +9665,41 @@ def test_sleep_exceeds_ttl(mocker, safe_sleep):
    Then:
     - A `ValueError` should be raised indicating that the requested sleep exceeds the TTL.
   """
-    mocker.patch('time.time', return_value=safe_sleep.start_time + 10)
-    with pytest.raises(DemistoException) as excinfo:
-        safe_sleep.sleep(duration_seconds=350)
+    mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
+    setattr(CommonServerPython, 'SAFE_SLEEP_START_TIME', datetime(2024, 4, 10, 10, 0, 0))  # Set stub in your_script
 
-    assert str(excinfo.value) == "Requested sleep of 350 seconds, but time left until docker timeout is 300 seconds."
+    log_warning = mocker.patch.object(demisto, 'info')
+
+    safe_sleep(duration_seconds=350)
+
+    assert log_warning.call_args[0][0] == "Requested a sleep of 350 seconds, but time left until docker timeout is 300 seconds"
 
 
-def test_sleep_mocked_time(mocker, safe_sleep):
+@freeze_time(datetime(2024, 4, 10, 10, 0, 10))
+def test_sleep_exceeds_ttl_with_adjusted(mocker):
+    """
+   Given:  A `SafeSleep` object and a sleep duration exceeding the remaining TTL.
+
+    When: The `sleep` method is called with that duration.
+
+   Then:
+    - A `ValueError` should be raised indicating that the requested sleep exceeds the TTL.
+  """
+    mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
+    setattr(CommonServerPython, 'SAFE_SLEEP_START_TIME', datetime(2024, 4, 10, 10, 0, 0))  # Set stub in your_script
+
+    log_warning = mocker.patch.object(demisto, 'info')
+    sleep_mocker = mocker.patch('time.sleep')
+
+    safe_sleep(duration_seconds=350, adjust_sleep_time=True)
+
+    assert "Requested a sleep of 350 seconds, but time left until docker timeout is 300 seconds." in \
+           log_warning.call_args_list[0][0]
+    assert "adjust_sleep_time is set to True, sleeping until container timeout - 285.0." in log_warning.call_args_list[1][0]
+    assert sleep_mocker.call_count == 1
+
+
+def test_sleep_mocked_time(mocker):
     """
     Given:  A `SafeSleep` object.
 
@@ -9688,15 +9710,16 @@ def test_sleep_mocked_time(mocker, safe_sleep):
     - No exception should be raised if the sleep duration is within the remaining TTL based on mocked time.
     """
 
-    mocker.patch('time.time', return_value=safe_sleep.start_time + 10)
+    mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
+    setattr(CommonServerPython, 'SAFE_SLEEP_START_TIME', datetime(2024, 4, 10, 10, 0, 0))  # Set stub in your_script
     sleep_mocker = mocker.patch('time.sleep')
 
-    # Simulate start time
-    safe_sleep.sleep(duration_seconds=5)  # Sleep for 5 seconds
+    with freeze_time(datetime(2024, 4, 10, 10, 0, 10)):
+        safe_sleep(duration_seconds=5)  # Sleep for 5 seconds
 
     # Advance mocked time by the sleep duration
-    mocker.patch('time.time', return_value=safe_sleep.start_time + 15)
-    safe_sleep.sleep(duration_seconds=50)
+    with freeze_time(datetime(2024, 4, 10, 10, 0, 25)):
+        safe_sleep(duration_seconds=50)
 
     # Verify sleep duration based on mocked time difference
     assert sleep_mocker.call_count == 2

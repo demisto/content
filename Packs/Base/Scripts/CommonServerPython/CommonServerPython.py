@@ -51,7 +51,7 @@ EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
 MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
-
+SAFE_SLEEP_START_TIME = datetime.now()
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     """
@@ -9327,7 +9327,8 @@ def generic_http_request(method,
                 is 'json'.
 
         Returns:
-            Response object: The response object containing the response data and headers.
+            :return: Depends on the resp_type parameter
+            :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
 
         Raises:
             exceptions.RequestException: If an error occurs during the request.
@@ -11911,29 +11912,27 @@ def comma_separated_mapping_to_dict(raw_text):
     return mapping_dict
 
 
-class SafeSleep:
-    def __init__(self,):
-        """
-        Initializes the sleeper with the given TTL in seconds.
+def safe_sleep(duration_seconds: float, adjust_sleep_time: bool=False ):
+    """
+    Sleeps for the given duration, but raises an error if it would exceed the TTL.
 
-        """
-        self.run_duration = demisto.callingContext.get('context', {}).get('runDuration', 5) * 60
-        self.start_time = time.time()
+    Args:
+        duration_seconds: The desired sleep duration in seconds.
+        adjust_sleep_time: If set to true, the
 
-    def sleep(self, duration_seconds):
-        """
-        Sleeps for the given duration, but raises an error if it would exceed the TTL.
-
-        Args:
-            duration_seconds: The desired sleep duration in seconds.
-
-        Raises:
-            ValueError: If the sleep duration would exceed the remaining TTL.
-        """
-        time_left = self.run_duration - (time.time() - self.start_time)
-        if duration_seconds > time_left:
-            raise DemistoException("Requested a sleep of {} seconds, but time left until docker timeout is {} seconds".format(duration_seconds,
-                                                                                                                              self.run_duration))
+    Raises:
+        ValueError: If the sleep duration would exceed the remaining TTL.
+    """
+    global SAFE_SLEEP_START_TIME
+    run_duration = demisto.callingContext.get('context', {}).get('runDuration', 5) * 60
+    time_left = run_duration - (datetime.now() - SAFE_SLEEP_START_TIME).total_seconds()
+    if duration_seconds > time_left:
+        demisto.info("Requested a sleep of {} seconds, but time left until docker timeout is {} seconds.".format(duration_seconds,
+                                                                                                                run_duration))
+        if adjust_sleep_time:
+            demisto.info("adjust_sleep_time is set to True, sleeping until container timeout - {}.".format(time_left - 5))
+            time.sleep(time_left - 5)
+    else:
         time.sleep(duration_seconds)
 
 
