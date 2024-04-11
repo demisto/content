@@ -5,29 +5,39 @@ from collections.abc import Iterable
 from urllib.parse import urljoin
 
 import requests
+PER_PAGE = 100  # value of `per_page` request parameter
 
 
 def main():
+    print('>>>>>>>> main')
     parser = argparse.ArgumentParser(description='Deploy a pack from a contribution PR to a branch')
     parser.add_argument('-p', '--pr_number', help='Contrib PR number')
     parser.add_argument('-b', '--branch', help='The contrib branch')
     parser.add_argument('-c', '--contrib_repo', help='The contrib repo')
     parser.add_argument('-u', '--username', help='The contrib user name')
+    parser.add_argument("-gt", "--github_token", help="The Github token")
     args = parser.parse_args()
 
     pr_number = args.pr_number
     username = args.username
     repo = args.contrib_repo
     branch = args.branch
+    if args.github_token:
+        print('>>>>>>>> args.github_token exists')
+        github_token = args.github_token
+    else:
+        github_token = ''
 
-    packs_dir_names = get_files_from_github(username, branch, pr_number, repo)
+    packs_dir_names = get_files_from_github(
+        username, branch, pr_number, repo, github_token
+    )
     if packs_dir_names:
         print('Successfully updated the base branch '
               'with the following contrib packs: Packs/'
               f'{", Packs/".join(packs_dir_names)}')
 
 
-def get_pr_files(pr_number: str) -> Iterable[str]:
+def get_pr_files(pr_number: str, github_token: str) -> Iterable[str]:
     """
     Get changed files names from a contribution pull request.
     Args:
@@ -36,14 +46,19 @@ def get_pr_files(pr_number: str) -> Iterable[str]:
     Returns:
         A list of changed file names (under the Packs dir), if found.
     """
-
+    print('>>>>>>>> get_pr_files')
     page = 1
     while True:
-        response = requests.get(f'https://api.github.com/repos/demisto/content/pulls/{pr_number}/files',
-                                params={'page': str(page)})
+        print(">>>>>>>> try to send request")
+        response = requests.get(
+            f"https://api.github.com/repos/demisto/content/pulls/{pr_number}/files",
+            params={"page": str(page), "per_page": str(PER_PAGE)},
+            headers={"Authorization": f"Bearer {github_token}"},
+        )
+        print(">>>>>>>> request sent")
         response.raise_for_status()
         files = response.json()
-        if not files:
+        if (not files) or (len(list(files)) < PER_PAGE):
             break
         for pr_file in files:
             if pr_file['filename'].startswith('Packs/'):
@@ -51,7 +66,9 @@ def get_pr_files(pr_number: str) -> Iterable[str]:
         page += 1
 
 
-def get_files_from_github(username: str, branch: str, pr_number: str, repo: str) -> list[str]:
+def get_files_from_github(
+    username: str, branch: str, pr_number: str, repo: str, github_token: str
+) -> list[str]:
     """
     Write the changed files content repo
     Args:
@@ -62,16 +79,21 @@ def get_files_from_github(username: str, branch: str, pr_number: str, repo: str)
     Returns:
         A list of packs names, if found.
     """
+    print('>>>>>>>> get_files_from_github')
     content_path = os.getcwd()
     files_list = set()
     chunk_size = 1024 * 500     # 500 Kb
     base_url = f'https://raw.githubusercontent.com/{username}/{repo}/{branch}/'
-    for file_path in get_pr_files(pr_number):
+    for file_path in get_pr_files(pr_number, github_token):
         abs_file_path = os.path.join(content_path, file_path)
         abs_dir = os.path.dirname(abs_file_path)
         if not os.path.isdir(abs_dir):
             os.makedirs(abs_dir)
-        with open(abs_file_path, 'wb') as changed_file, requests.get(urljoin(base_url, file_path), stream=True) as file_content:
+        with open(abs_file_path, "wb") as changed_file, requests.get(
+            urljoin(base_url, file_path),
+            stream=True,
+            headers={"Authorization": f"Bearer {github_token}"},
+        ) as file_content:
             file_content.raise_for_status()
             for data in file_content.iter_content(chunk_size=chunk_size):
                 changed_file.write(data)

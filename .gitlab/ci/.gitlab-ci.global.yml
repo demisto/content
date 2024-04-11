@@ -148,7 +148,8 @@
     if [[ -n "${CONTRIB_BRANCH}" ]]; then
       USERNAME=$(echo $CONTRIB_BRANCH | cut -d ":" -f 1)
       BRANCH=$(echo $CONTRIB_BRANCH | cut -d ":" -f 2)
-      python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USERNAME -c $CONTRIB_REPO
+      echo "shmuel test-content"
+      python3 ./Utils/update_contribution_pack_in_base_branch.py -p $PULL_REQUEST_NUMBER -b $BRANCH -u $USERNAME -c $CONTRIB_REPO -gt $GITHUB_TOKEN
     fi
   - section_end "getting contrib packs"
 
@@ -282,12 +283,12 @@
     - *check_build_files_are_up_to_date
     - *install_node_modules
     - *install_venv
+    - *gitlab_ci_build_parameters
     - *get_contribution_pack
     - *get_last_upload_commit
     - *install_ssh_keys
     - *neo4j-setup
     - *build_parameters
-    - *gitlab_ci_build_parameters
     - *checkout-upload-commit-content-nightly
 .default-after-script:
   - source .gitlab/helper_functions.sh
