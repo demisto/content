@@ -491,10 +491,10 @@ script:
       type: textArea
     - name: at_time
       description: The point in time used as the basis for Host A. Requires historical
-        API access. Nanosecond precision is allowed. Uses RFC3339 Timestamp.
+        API access. Nanosecond precision is allowed. Uses RFC3339 Timestamp. (up do 7 days in non-premium Censys access).
       type: textArea
     - name: at_time_b
-      description: Requires historical API access. Nanosecond precision is allowed.
+      description: Requires historical API access. Nanosecond precision is allowed. (up do 7 days in non-premium Censys access).
         Uses RFC3339 Timestamp.
       type: textArea
     description: The diff endpoint generates a JSONPatch (RFC6902) formatted patch

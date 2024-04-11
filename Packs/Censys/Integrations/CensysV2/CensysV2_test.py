@@ -143,7 +143,7 @@ def test_censys_view_cert(requests_mock, client):
 
 def test_test_module_valid(requests_mock, client):
     from CensysV2 import test_module
-    requests_mock.get(url='https://search.censys.io/api/v2/hosts/8.8.8.8', status_code=200, json="{}")
+    requests_mock.get(url='https://search.censys.io/api/v2/hosts/search?q=ip=8.8.8.8', status_code=200, json="{}")
 
     assert test_module(client, {}) == 'ok'
 
@@ -151,7 +151,7 @@ def test_test_module_valid(requests_mock, client):
 
 def test_test_module_invalid(requests_mock, client):
     from CensysV2 import test_module
-    requests_mock.get(url='https://search.censys.io/api/v2/hosts/8.8.8.8', status_code=200, json="{}")
+    requests_mock.get(url='https://search.censys.io/api/v2/hosts/search?q=ip=8.8.8.8', status_code=200, json="{}")
 
     params = {'premium_access':False, 'malicious_labels':True}
     with pytest.raises(DemistoException):
@@ -170,14 +170,16 @@ def test_censys_host_history_command(requests_mock, client):
 def test_ip_command_multiple_ips(requests_mock, client):
     from CensysV2 import ip_command
     mock_response = util_load_json('test_data/ip_command_response.json')
-    args = {'ip': ['8.8.8.8', '8.8.8.8', '0.0.0.0']}
+    args = {'ip': ['8.8.8.8', '8.8.8.8', '0.0.0.0', '8.8.4.4']}
     requests_mock.get("/api/v2/hosts/search?q=ip=8.8.8.8", json=mock_response)
     requests_mock.get("/api/v2/hosts/search?q=ip=8.8.8.8", json=mock_response)
     requests_mock.get("/api/v2/hosts/search?q=ip=0.0.0.0", status_code=404, json={})
+    requests_mock.get("/api/v2/hosts/search?q=ip=8.8.4.4", status_code=403, json={'quota':'true'})
     response = ip_command(client, args, {})
     assert response[0].outputs == mock_response.get('result', {}).get('hits')[0]
     assert response[1].outputs == mock_response.get('result', {}).get('hits')[0]
     assert 'An error occurred for item: 0.0.0.0' in response[2].readable_output
+    assert 'Quota exceeded.' in response[3].readable_output
 
 
 def test_ip_command_unauthorized_error(requests_mock, client):

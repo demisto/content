@@ -1,4 +1,3 @@
-from requests import RequestException
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -80,9 +79,25 @@ class Client(BaseClient):
 
 def test_module(client: Client, params: dict[str, Any]) -> str:
     if not params.get('premium_access') and (params.get('malicious_labels') or params.get('suspicious_labels')):
-        raise DemistoException("The reputation labels feature only works with Censys premium access. if you have premium access select the 'Labels premium feature available' option to utilize this functionality")
-    client.censys_view_request('ipv4', '8.8.8.8')
-    return 'ok'
+        raise DemistoException(
+            "The reputation labels feature only works with Censys premium access."
+            "if you have premium access select the 'Labels premium feature available' option "
+            "to utilize this functionality")
+    
+    fields = None
+    if params.get('premium_access'):
+        fields = ['labels']
+
+    try:
+        client.ip_reputation_request('8.8.8.8', fields)
+        return 'ok'
+    except DemistoException as e:
+        if e.res.status_code == 403 and 'specific fields' in e.message:
+            raise DemistoException(
+                "Your user does not have permission for premium features. "
+                "Please ensure that you deselect the 'Labels premium feature available' option "
+                "for non-premium access.")
+        raise e
 
 
 def censys_view_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -126,7 +141,7 @@ def censys_view_command(client: Client, args: dict[str, Any]) -> CommandResults:
             geo_country=country,
             as_owner=demisto.get(result, 'autonomous_system.name'))
 
-        human_readable = tableToMarkdown(f'Information for IP {query}', content)
+        human_readable = tableToMarkdown(f'Information for IP {query}', content, removeNull=True)
         return CommandResults(
             readable_output=human_readable,
             outputs_prefix='Censys.View',
@@ -146,7 +161,7 @@ def censys_view_command(client: Client, args: dict[str, Any]) -> CommandResults:
             'Tags': result.get('tags'),
             'Source': result.get('source'),
         }
-        human_readable = tableToMarkdown('Information for certificate', content)
+        human_readable = tableToMarkdown('Information for certificate', content, removeNull=True)
         return CommandResults(
             readable_output=human_readable,
             outputs_prefix='Censys.View',
@@ -185,7 +200,7 @@ def censys_search_command(client: Client, args: dict[str, Any]) -> CommandResult
                 'Registered Country Code': hit.get('location', {}).get('registered_country_code'),
             })
         headers = ['IP', 'Name', 'Description', 'ASN', 'Location Country code', 'Registered Country Code', 'Services']
-        human_readable = tableToMarkdown(f'Search results for query "{query}"', contents, headers)
+        human_readable = tableToMarkdown(f'Search results for query "{query}"', contents, headers, removeNull=True)
         return CommandResults(
             readable_output=human_readable,
             outputs_prefix='Censys.Search',
@@ -215,7 +230,7 @@ def search_certs_command(client: Client, args: dict[str, Any], query: str, limit
     raw_response = client.censys_search_certs_request(data).get('result', {}).get('hits')
     if not raw_response or not isinstance(raw_response, list):
         error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {raw_response}"
-        raise DemistoException(error_msg)
+        raise ValueError(error_msg)
     results = raw_response[:limit]
     for result in results:
         contents.append({
@@ -228,7 +243,7 @@ def search_certs_command(client: Client, args: dict[str, Any], query: str, limit
             'Issuer': result.get('parsed').get('issuer'),
         })
 
-    human_readable = tableToMarkdown(f'Search results for query "{query}"', contents)
+    human_readable = tableToMarkdown(f'Search results for query "{query}"', contents, removeNull=True)
     return CommandResults(
         readable_output=human_readable,
         outputs_prefix='Censys.Search',
@@ -261,8 +276,15 @@ def censys_host_history_command(client: Client, args: dict[str, Any]) -> Command
 
 
 def ip_command(client: Client, args: dict, params: dict):
-    fields = ["labels","autonomous_system.asn", "location.country", 'location.coordinates.latitude',
-              'location.coordinates.longitude', 'services.port', 'last_updated_at'] if params.get('premium_access') else None
+    fields = [
+        "labels", "autonomous_system.asn", "autonomous_system.name", "autonomous_system.bgp_prefix",
+        "autonomous_system.country_code", "autonomous_system.description",
+        "location.country_code", "location.timezone", "location.province", "location.postal_code",
+        "location.coordinates.latitude", "location.coordinates.longitude", "location.city",
+        "location.continent", "location.country", "services.service_name", "services.port",
+        "services.transport_protocol", "services.extended_service_name", "last_updated_at"
+    ] if params.get('premium_access') else None
+
     ips: list = argToList(args.get('ip'))
     results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
@@ -273,7 +295,7 @@ def ip_command(client: Client, args: dict, params: dict):
             response = raw_response.get('result', {}).get('hits')
             if not response or not isinstance(response, list):
                 error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {raw_response}"
-                raise DemistoException(error_msg)
+                raise ValueError(error_msg)
             
             hit = response[0]
             dbot_score = Common.DBotScore(
@@ -281,7 +303,7 @@ def ip_command(client: Client, args: dict, params: dict):
                 indicator_type=DBotScoreType.IP,
                 integration_name="Censys",
                 score=get_dbot_score(params, hit.get('labels', [])),
-                reliability=params.get('reliability')
+                reliability=params.get('integration_reliability')
             )
             content = {
                 'ip': hit.get('ip'),
@@ -293,11 +315,14 @@ def ip_command(client: Client, args: dict, params: dict):
                 'port': ', '.join([str(service.get('port')) for service in hit.get('services', [])]),
             }
             indicator = Common.IP(dbot_score=dbot_score, **content)
-
+            content['reputation'] = dbot_score.score
             results.append(CommandResults(
                 outputs_prefix='Censys.IP',
                 outputs_key_field='IP',
-                readable_output=tableToMarkdown(f'censys results for IP: {ip}', content, headerTransform=string_to_table_header),
+                readable_output=tableToMarkdown(
+                    f'censys results for IP: {ip}',
+                    content, headerTransform=string_to_table_header,
+                    removeNull=True),
                 outputs=hit,
                 raw_response=raw_response,
                 indicator=indicator,
@@ -328,7 +353,7 @@ def domain_command(client: Client, args: dict, params: dict):
             hits = response.get('hits')
             if not hits or not isinstance(hits, list):
                 error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {response}"
-                raise DemistoException(error_msg)
+                raise ValueError(error_msg)
             
             indicators = []
             ip_content = []
@@ -359,7 +384,7 @@ def domain_command(client: Client, args: dict, params: dict):
                 outputs_key_field='Domain',
                 readable_output=tableToMarkdown(
                     f'Censys results for Domain: {domain}',
-                    ip_content, headerTransform=string_to_table_header),
+                    ip_content, headerTransform=string_to_table_header, removeNull=True),
                 outputs=hits,
                 raw_response=response,
                 indicators=indicators,
@@ -381,27 +406,39 @@ def domain_command(client: Client, args: dict, params: dict):
 
 
 def handle_exceptions(e: Exception, results: list[CommandResults], execution_metrics: ExecutionMetrics, item: str):
-        # Handle RequestException with response
-    if isinstance(e, RequestException) and e.response:
-        status_code = e.response.status_code
-        if status_code == 403 and 'quota' in e.response.json().get('error'):
-            # Handle quota exceeded error
-            execution_metrics.quota_error += 1
-            results.append(CommandResults(readable_output=f"Quota exceeded. {e.response.json()}"))
-            return True
-        elif status_code == 401:
-            # Handle unauthorized access error
-           raise e
-        else:
-            # Handle general error
-            execution_metrics.general_error += 1
-            error_msg = f"An error occurred for item: {item}. Error: {str(e)}"
-            results.append(CommandResults(readable_output=error_msg))
-            return False
-    else:
-        # Handle other exceptions
+    status_code = 0
+    message = str(e)
+
+    if isinstance(e, DemistoException) and hasattr(e.res, 'status_code'):
+        status_code = e.res.status_code
+        message = e.message
+
+    if status_code == 403 and 'quota' in message:
+        # Handle quota exceeded error
+        execution_metrics.quota_error += 1
+        results.append(CommandResults(readable_output=f"Quota exceeded. Error: {message}"))
+        return True
+    
+    if status_code == 429:
         execution_metrics.general_error += 1
-        error_msg = f"An error occurred for item: {item}. Error: {str(e)}"
+        results.append(CommandResults(readable_output=f"Too many requests. Error: {message}"))
+        return True
+    
+    if status_code == 403 and 'specific fields' in message:
+        # Handle non-premium access error
+        raise DemistoException(
+            "Your user does not have permission for premium features. "
+            "Please ensure that you deselect the 'Labels premium feature available' option "
+            "for non-premium access.")
+    
+    elif status_code == 401 or status_code == 403 :
+        # Handle unauthorized access error
+        raise e
+    
+    else:
+        # Handle general error
+        execution_metrics.general_error += 1
+        error_msg = f"An error occurred for item: {item}. Error: {message}"
         results.append(CommandResults(readable_output=error_msg))
         return False
 
