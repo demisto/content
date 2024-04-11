@@ -5128,11 +5128,12 @@ def rtr_polling_retrieve_file_command(args: dict):
             args['hosts_and_requests_ids'] = hosts_and_requests_ids
             args.pop('request_ids')
             args.pop('SHA256')
+            polling_timeout = arg_to_number(args.get('polling_timeout', 600))
             scheduled_command = ScheduledCommand(
                 command=cmd,
                 next_run_in_seconds=interval_in_secs,
                 args=args,
-                timeout_in_seconds=600)
+                timeout_in_seconds=polling_timeout)
             command_results = CommandResults(scheduled_command=scheduled_command,
                                              readable_output="Waiting for the polling execution")
             return command_results
