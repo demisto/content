@@ -41,7 +41,7 @@ def test_cve_id_validation():
     test_cases = [('cve-2000-1234', True),
                   ('CVE-2000-1234', True),
                   ('sdfsdf', False),
-                  ('cve-2000-01111', False),
+                  ('cve-2000-01111', True),  # CVEs with more than 4 ending digits are valid
                   ('cve-2000-0111', True),
                   ('2014-1111', False)]
     for cve_id, is_valid in test_cases:
