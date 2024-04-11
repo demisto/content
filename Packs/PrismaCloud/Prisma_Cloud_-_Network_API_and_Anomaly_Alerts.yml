@@ -1,9 +1,11 @@
-id: Prisma Cloud - Network API and Anomaly Incidents
+id: Prisma Cloud - Network API and Anomaly Alerts_1
 version: -1
-name: Prisma Cloud - Network API and Anomaly Incidents
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma Cloud - Network API and Anomaly Alerts_1
 description: |-
-  This playbook handles incidents of internet exposed services and detect potential risky configurations that can make your cloud environment vulnerable to attacks, and
-  incidents of unusual network and user activity for all users, and are especially critical for privileged users and assumed roles where detecting unusual activity may indicate the first steps in a potential misuse or account compromise.
+  This playbook handles alerts of internet exposed services and detect potential risky configurations that can make your cloud environment vulnerable to attacks, and
+  alerts of unusual network and user activity for all users, and are especially critical for privileged users and assumed roles where detecting unusual activity may indicate the first steps in a potential misuse or account compromise.
 starttaskid: "0"
 tasks:
   "0":
@@ -139,7 +141,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -167,12 +169,11 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
-      - "9"
+      - "8"
       "yes":
-      - "5"
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -203,8 +204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 520
+          "x": 70,
+          "y": 700
         }
       }
     note: false
@@ -225,12 +226,11 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
-      - "8"
+      - "9"
       "yes":
-      - "6"
+      - "4"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -248,8 +248,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 690
+          "x": 450,
+          "y": 530
         }
       }
     note: false
@@ -310,7 +310,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
+          "x": 70,
           "y": 1360
         }
       }
@@ -356,10 +356,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: a14d40f5-2bcc-43f4-8577-750c43d57846
+    taskid: d363ed97-0084-474f-8d63-270eca637f8b
     type: playbook
     task:
-      id: a14d40f5-2bcc-43f4-8577-750c43d57846
+      id: d363ed97-0084-474f-8d63-270eca637f8b
       version: -1
       name: Cloud User Investigation - Generic
       description: |
@@ -573,7 +573,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "27"
@@ -731,7 +730,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "27"
@@ -772,11 +770,10 @@ tasks:
     task:
       id: bb6704b2-b3d8-4473-8e26-32cdeed54c20
       version: -1
-      name: Pause the playbook to perform policy recommendations?
+      name: Stop playbook to perform recommendations?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "24"
@@ -812,16 +809,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 8fe0d4e7-caa6-4776-8a20-0337be0dd38a
+    taskid: 6ff50a45-196e-48ab-8709-980093405ab4
     type: regular
     task:
-      id: 8fe0d4e7-caa6-4776-8a20-0337be0dd38a
+      id: 6ff50a45-196e-48ab-8709-980093405ab4
       version: -1
       name: Pause the playbook to perform policy recommendations
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -1054,7 +1050,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "22"
@@ -1238,16 +1233,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: aab9ed40-9025-4883-88f0-c2ab4c7234e6
+    taskid: 1582f4f4-ec62-496c-89d9-3256f21a0ee4
     type: condition
     task:
-      id: aab9ed40-9025-4883-88f0-c2ab4c7234e6
+      id: 1582f4f4-ec62-496c-89d9-3256f21a0ee4
       version: -1
       name: Does Alert Contains IP?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -1290,7 +1284,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -1471,7 +1464,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -1544,10 +1536,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 3f873b48-5e22-4196-817f-bd02b7a11266
+    taskid: 200ed3dc-15e0-4003-8048-f3db343fa61f
     type: regular
     task:
-      id: 3f873b48-5e22-4196-817f-bd02b7a11266
+      id: 200ed3dc-15e0-4003-8048-f3db343fa61f
       version: -1
       name: Get CVE Details
       description: Returns CVE information by CVE ID.
@@ -1604,7 +1596,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "15"
@@ -1638,16 +1629,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 2aec9d38-f06a-4694-869f-60f8daa27e8e
+    taskid: d5044645-9fe9-4560-8afc-58ea7bf22e26
     type: condition
     task:
-      id: 2aec9d38-f06a-4694-869f-60f8daa27e8e
+      id: d5044645-9fe9-4560-8afc-58ea7bf22e26
       version: -1
       name: Has Results?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "15"
@@ -1695,10 +1685,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 7837fc50-fa9d-489a-89af-977c5c4100b2
+    taskid: 466a99b9-9083-45c1-8fd8-838e7191be6c
     type: regular
     task:
-      id: 7837fc50-fa9d-489a-89af-977c5c4100b2
+      id: 466a99b9-9083-45c1-8fd8-838e7191be6c
       version: -1
       name: Set User Investigation Results
       description: commands.local.cmd.set.incident
@@ -1942,5 +1932,3 @@ outputSections:
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2"]
-fromversion: 6.10.0
