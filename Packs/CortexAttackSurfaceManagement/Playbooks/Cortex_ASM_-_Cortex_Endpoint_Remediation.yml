@@ -17,83 +17,15 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '2'
+      - '9'
+      - '10'
     separatecontext: false
     continueonerrortype: ''
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 10
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
-    taskid: b80a827a-8b19-4bff-8e57-18c29443ffbe
-    type: condition
-    task:
-      id: b80a827a-8b19-4bff-8e57-18c29443ffbe
-      version: -1
-      name: Is a Palo Alto Networks Cortex Endpoint integration enabled and are Input values defined?
-      description: Determines if a Cortex Endpoint integration instance is configured and Input values are defined for remediation actions.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '5'
-      yes:
-      - '4'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Cortex XDR - IR
-                  - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Cortex Core - IR
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ''
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 160
+          "x": 810,
+          "y": -60
         }
       }
     note: false
@@ -110,7 +42,7 @@ tasks:
     task:
       id: 303061dc-4ca2-4bd3-8a6e-4eb0265fd962
       version: -1
-      name: XDR Isolate Endpoint
+      name: Core Isolate Endpoint
       description: Isolates the specified endpoint in Cortex Endpoint (XSIAM/XDR).
       script: Cortex Core - IR|||core-isolate-endpoint
       type: regular
@@ -123,12 +55,13 @@ tasks:
       endpoint_id:
         simple: ${inputs.CortexEndpointID}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ''
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 650
+          "x": 610,
+          "y": 640
         }
       }
     note: false
@@ -184,8 +117,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 410
+          "x": 610,
+          "y": 370
         }
       }
     note: false
@@ -215,8 +148,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -60,
-          "y": 630
+          "x": 200,
+          "y": 610
         }
       }
     note: false
@@ -243,8 +176,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1060
+          "x": 810,
+          "y": 1050
         }
       }
     note: false
@@ -282,8 +215,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 830
+          "x": 810,
+          "y": 860
         }
       }
     note: false
@@ -321,8 +254,226 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -60,
-          "y": 790
+          "x": 200,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: aa8e7ede-33df-4844-800d-52a9e73d7d7f
+    type: condition
+    task:
+      id: aa8e7ede-33df-4844-800d-52a9e73d7d7f
+      version: -1
+      name: Is Core IR enabled?
+      description: Checks if there is an active instance of the Core - IR integration
+        enabled and input values are defined to pull enrichment data.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '5'
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex Core - IR
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 888fb9e7-eeca-4b4d-8335-af120a444d1f
+    type: condition
+    task:
+      id: 888fb9e7-eeca-4b4d-8335-af120a444d1f
+      version: -1
+      name: Is Cortex XDR enabled?
+      description: Checks if there is an active instance of the Cortex XDR integration
+        enabled and input values are defined to pull enrichment data.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '5'
+      yes:
+      - '12'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - IR
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: 11123d92-0621-42b6-8290-034d26b6dd72
+    type: regular
+    task:
+      id: 11123d92-0621-42b6-8290-034d26b6dd72
+      version: -1
+      name: XDR Isolate Endpoint
+      description: Isolates the specified endpoint.
+      script: Cortex XDR - IR|||xdr-endpoint-isolate
+      type: regular
+      iscommand: true
+      brand: Cortex XDR - IR
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      endpoint_id:
+        simple: ${inputs.CortexEndpointID}
+    separatecontext: false
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 03708eba-fec2-4ea7-8da8-b18d52db0ed8
+    type: condition
+    task:
+      id: 03708eba-fec2-4ea7-8da8-b18d52db0ed8
+      version: -1
+      name: Is there only 1 endpoint?
+      description: Checks for only a single cortex endpoint returned from enrichment.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '5'
+      Yes:
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: Yes
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CORTEX-ENDPOINT-ASSET-ID
+                accessor: id
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: '1'
+    continueonerrortype: ''
+    view: |-
+      {
+        "position": {
+          "x": 1020,
+          "y": 370
         }
       }
     note: false
@@ -335,15 +486,20 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "2_4_yes": 0.61,
-      "4_3_Yes": 0.6
+      "10_5_#default#": 0.11,
+      "12_11_Yes": 0.59,
+      "12_5_#default#": 0.24,
+      "4_3_Yes": 0.76,
+      "4_5_#default#": 0.13,
+      "9_4_yes": 0.6,
+      "9_5_#default#": 0.12
     },
     "paper": {
       "dimensions": {
-        "height": 1115,
-        "width": 890,
-        "x": -60,
-        "y": 10
+        "height": 1175,
+        "width": 1200,
+        "x": 200,
+        "y": -60
       }
     }
   }
@@ -363,7 +519,7 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs: []
-quiet: false
+quiet: true
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
