@@ -310,7 +310,7 @@ tasks:
       id: 27b8410b-e99b-40dc-8573-2f34f649b0eb
       version: -1
       name: Prisma Cloud Search Results
-      description: Accepts a json object and returns a markdown.
+      description: Accepts a JSON object and returns a markdown.
       scriptName: JsonToTable
       type: regular
       iscommand: false
