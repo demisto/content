@@ -97,7 +97,7 @@ def get_user(args, client):  # pragma: no cover
     if response.get('Emails'):
         hr_data['Emails'] = response.get('Emails')[0]['Value']
     ec = {'AWS.IAMIdentityCenter.User(val.UserId === obj.UserId)': response}
-    human_readable = tableToMarkdown('AWS IAM Users', hr_data, removeNull=True)
+    human_readable = tableToMarkdown('AWS IAM Identity Center Users', hr_data, removeNull=True)
     result = CommandResults(
         readable_output=human_readable,
         outputs_key_field='UserId',
@@ -122,8 +122,7 @@ def get_user_by_email(args, client):  # pragma: no cover
             }
             hr_data = user_details
             context_data = user
-    # ec = {'AWS.IAMIdentityCenter.User': context_data}
-    human_readable = tableToMarkdown('AWS IAM Users ', hr_data, removeNull=True)
+    human_readable = tableToMarkdown('AWS IAM Identity Center Users ', hr_data, removeNull=True)
     result = CommandResults(
         outputs_prefix='AWS.IAMIdentityCenter.User',
         readable_output=human_readable,
@@ -132,7 +131,6 @@ def get_user_by_email(args, client):  # pragma: no cover
     )
     return_results(result)
 
-# (val.UserId === obj.UserId)
 
 def list_users(args, client):  # pragma: no cover
     context_data = []
@@ -158,7 +156,6 @@ def list_users(args, client):  # pragma: no cover
                'AWS.IAMIdentityCenter(true)': {'UserNextToken': response.get('NextToken')}}
     human_readable = tableToMarkdown('AWS IAM Identity Center Users', hr_data, removeNull=True)
     result = CommandResults(
-        # outputs_prefix='AWS.IAMIdentityCenter.User',
         readable_output=human_readable,
         outputs_key_field='UserId',
         outputs=outputs
@@ -208,7 +205,11 @@ def create_group(args, client):
         del response['ResponseMetadata']
         ec = {'AWS.IAMIdentityCenter.Group': response}
         human_readable = f'Group {group_id} has been successfully created'
-        return_outputs(human_readable, ec)
+        result = CommandResults(
+            readable_output=human_readable,
+            outputs=ec
+        )
+        return_results(result)
 
 
 def delete_group(args, client):
@@ -375,7 +376,7 @@ def list_group_memberships(args, client):
     context_data['GroupMemberships'] = memberships
     outputs = {'AWS.IAMIdentityCenter.Group(val.GroupId === obj.GroupId)': context_data,
                'AWS.IAMIdentityCenter(true)': {'GroupMembershipNextToken': response.get('NextToken')}}
-    human_readable = tableToMarkdown('AWS IAM Identity Center groups', hr_data, removeNull=True)
+    human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
     result = CommandResults(
         readable_output=human_readable,
         outputs_key_field='GroupId',
