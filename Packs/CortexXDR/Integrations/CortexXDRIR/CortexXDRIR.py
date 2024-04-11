@@ -454,7 +454,6 @@ class Client(CoreClient):
         return response['reply']['alerts_ids']
 
 
-
 def get_headers(params: dict) -> dict:
     api_key = params.get('apikey_creds', {}).get('password', '') or params.get('apikey', '')
     api_key_id = params.get('apikey_id_creds', {}).get('password', '') or params.get('apikey_id')
@@ -500,7 +499,7 @@ def update_incident_command(client, args):
     resolve_comment = args.get('resolve_comment')
     add_comment = args.get('add_comment')
     resolve_alerts = argToBoolean(args.get('resolve_alerts', False))
-    
+
     client.update_incident(
         incident_id=incident_id,
         assigned_user_mail=assigned_user_mail,
@@ -991,6 +990,7 @@ def update_remote_system_command(client, args):
             update_incident_command(client, update_args)
 
             close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
+            # Check all relevant fields for an incident being closed in XSOAR UI
             is_closed = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
                          or update_args.get('resolve_comment') or update_args.get('closingUserId'))
             demisto.debug(f"Should close related alert {is_closed=} {close_alerts_in_xdr=}")
@@ -1009,21 +1009,23 @@ def update_remote_system_command(client, args):
 
         return remote_args.remote_incident_id
 
+
 def update_related_alerts(client: Client, args: dict):
-        new_status = args.get('status')
-        comment = args.get('resolve_comment')
-        incident_id = args.get('incident_id')
-        demisto.debug(f"{new_status=}, {comment=}")
-        if not new_status:
-            raise DemistoException(f"Failed to update alerts related to incident {incident_id},"
-                                    "no status found")
-        incident_extra_data = client.get_incident_extra_data(incident_id)
-        if 'alerts' in incident_extra_data and 'data' in incident_extra_data['alerts']:
-            alerts_array = incident_extra_data['alerts']['data']
-            related_alerts_ids_array = [str(alert['alert_id']) for alert in alerts_array if 'alert_id' in alert]
-            demisto.debug(f"{related_alerts_ids_array=}")
-            args_for_command = {'alert_ids': related_alerts_ids_array, 'status': new_status, 'comment': comment}
-            return_results(update_alerts_in_xdr_command(client, args_for_command))
+    new_status = args.get('status')
+    comment = args.get('resolve_comment')
+    incident_id = args.get('incident_id')
+    demisto.debug(f"{new_status=}, {comment=}")
+    if not new_status:
+        raise DemistoException(f"Failed to update alerts related to incident {incident_id},"
+                               "no status found")
+    incident_extra_data = client.get_incident_extra_data(incident_id)
+    if 'alerts' in incident_extra_data and 'data' in incident_extra_data['alerts']:
+        alerts_array = incident_extra_data['alerts']['data']
+        related_alerts_ids_array = [str(alert['alert_id']) for alert in alerts_array if 'alert_id' in alert]
+        demisto.debug(f"{related_alerts_ids_array=}")
+        args_for_command = {'alert_ids': related_alerts_ids_array, 'status': new_status, 'comment': comment}
+        return_results(update_alerts_in_xdr_command(client, args_for_command))
+
 
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
                     statuses: List = [], starred: Optional[bool] = None, starred_incidents_fetch_window: str = None,
