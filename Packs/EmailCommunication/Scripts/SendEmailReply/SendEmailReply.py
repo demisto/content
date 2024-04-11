@@ -994,6 +994,30 @@ def multi_thread_reply(new_email_body, body_type, incident_id, email_selected_th
     return True
 
 
+def add_recipient_to_allowlist(email_to):
+    """Checks a script argument to determine whether to automatically add email_to
+    domain to the EmailDomainAllowList. This allows analysts to receive explicit replies
+    from Email Threads sent to recipients not yet on the EmailDomainAllowList and helps alleviate
+    some of the effort of maintaining an allowlist.
+    Args:
+        email_to: The intended recipient of the Email Thread
+    """
+    args = demisto.args()
+    dynamic_allowlist = args.get('dynamic_allowlist', '')
+    newList = ""
+    if bool(dynamic_allowlist):
+        allowList = demisto.executeCommand("getList", {"listName": "EmailDomainAllowList"})[0]['Contents'].split('\r\n')
+        found = False
+        for item in allowList:
+            if item in email_to:
+                found = True
+        if not found:
+            recipientDomain = email_to.split('@')[1]
+            newList = "\r\n".join(allowList) + "\r\n" + recipientDomain
+            demisto.executeCommand("createList", {"listName": "EmailDomainAllowList", "listData": newList})
+    return newList
+
+
 def main():
     try:
         demisto.debug("Starting SendEmailReply script")

@@ -467,6 +467,22 @@ EMAIL_THREADS = [{"Contents": {"context": {
 }}}]
 
 
+def test_in_email_domain_allowlist(mocker):
+    """
+    Given
+    - Allowlist (XSOAR List)
+    When
+    - List content is returned correctly
+    Then
+    - Validate that the returned message includes the appended domain
+    """
+    from PreprocessEmail import in_email_domain_allowlist
+    allow_list = util_load_json('test_data/getList_emaildomainallowlist_success.json')
+    mocker.patch.object(demisto, 'executeCommand', return_value=allow_list)
+    result = in_email_domain_allowlist('user@example.com')
+    assert result == True
+
+
 @pytest.mark.parametrize(
     "return_incident_path,expected_return,create_context_called",
     [('test_data/email_related_incident_response.json', False, False),

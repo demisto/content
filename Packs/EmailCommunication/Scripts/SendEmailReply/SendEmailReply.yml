@@ -22,6 +22,12 @@ args:
 - name: subject_include_incident_id
   description: Include the Incident ID within the email subject.
   defaultValue: 'false'
+- name: dynamic_allowlist
+  predefined:
+  - 'true'
+  - 'false'
+  defaultValue: 'true'
+  description: Specify whether to dynamically update email domain allowlist with domains of recipients of Email Threads. This will allow replies to Email Threads from domains not currently on the allowlist to create incidents in XSOAR, saving analysts from the task of manually maintaining the allowlist.  
 - name: reputation_calc_async
   auto: PREDEFINED
   predefined:

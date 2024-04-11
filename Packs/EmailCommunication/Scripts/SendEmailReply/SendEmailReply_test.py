@@ -829,6 +829,26 @@ def test_multi_thread_reply(scenario, mocker):
         assert validate_email_sent_call_args.args == validate_email_sent_expected
         assert create_context_call_args.args == create_context_expected
         assert reset_fields_mocker.called is True
+        
+        
+ALLOWLIST_APPENDED = 'example.com\r\nexample.gov'
+
+
+def test_add_recipient_to_allowlist(mocker):
+    """
+    Given
+    - Allowlist (XSOAR List)
+    When
+    - List content is returned correctly
+    Then
+    - Validate that the returned message includes the appended domain
+    """
+    from SendEmailReply import add_recipient_to_allowlist
+    mocker.patch.object(demisto, 'args', return_value={'dynamic_allowlist': True})
+    allow_list = util_load_json('test_data/getList_emaildomainallowlist_success.json')
+    mocker.patch.object(demisto, 'executeCommand', return_value=allow_list)
+    result = add_recipient_to_allowlist('user@example.gov')
+    assert result == ALLOWLIST_APPENDED
 
 
 @pytest.mark.parametrize(
