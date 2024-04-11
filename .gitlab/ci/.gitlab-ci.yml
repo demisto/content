@@ -6,9 +6,9 @@ include:
     ref: $CI_COMMIT_BRANCH
     project: "${CI_PROJECT_NAMESPACE}/infra"
     rules:
-      if: '$IS_TEST_UPLOAD_FLOW == "false"'
+      - if: '$IS_TEST_UPLOAD_FLOW == "false"'
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
     ref: $BRANCH_NAME_FOR_TEST_UPLOAD_FLOW
     project: "${CI_PROJECT_NAMESPACE}/infra"
     rules:
-      if: '$IS_TEST_UPLOAD_FLOW == "true"'
+      - if: '$IS_TEST_UPLOAD_FLOW == "true"'
