@@ -3781,8 +3781,17 @@
         },
         {
             "integrations": "Generic Webhook",
+            "instance_name": "Generic Webhook XSOAR on-prem",
             "playbookID": "Generic Webhook - Test",
             "fromversion": "5.5.0",
+            "toversion": "6.99.99",
+            "has_api": false
+        },
+        {
+            "integrations": "Generic Webhook",
+            "instance_name": "Generic Webhook XSOAR SaaS",
+            "playbookID": "Generic Webhook - Test",
+            "fromversion": "8.5.0",
             "has_api": false
         },
         {
