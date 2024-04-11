@@ -230,7 +230,7 @@ tasks:
       id: 18b8562b-1164-437e-8713-a0a9e52c1c68
       version: -1
       name: Prisma Cloud Network Search
-      description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to limit the results returning, use "limit search records to" at the end of the RQL query, followed by a value from one of these options: 1, 10, 100, 1000, and 10,000.'
+      description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to limit the results returned, use "limit search records to" at the end of the RQL query, followed by one of these options: 1, 10, 100, 1000, and 10,000.'
       script: '|||prisma-cloud-network-search'
       type: regular
       iscommand: true
@@ -310,7 +310,7 @@ tasks:
       id: 27b8410b-e99b-40dc-8573-2f34f649b0eb
       version: -1
       name: Prisma Cloud Search Results
-      description: Accepts a json object and returns a markdown.
+      description: Accepts a JSON object and returns a markdown.
       scriptName: JsonToTable
       type: regular
       iscommand: false
@@ -394,7 +394,7 @@ tasks:
       id: 6edfdfae-f643-4fcb-81e4-35f94cf0936f
       version: -1
       name: Prisma Cloud Config Search
-      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
+      description: Search the configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
       script: '|||prisma-cloud-config-search'
       type: regular
       iscommand: true
@@ -561,7 +561,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false
