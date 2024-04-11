@@ -230,7 +230,7 @@ tasks:
       id: 18b8562b-1164-437e-8713-a0a9e52c1c68
       version: -1
       name: Prisma Cloud Network Search
-      description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to limit the results returning, use "limit search records to" at the end of the RQL query, followed by a value from one of these options: 1, 10, 100, 1000, and 10,000.'
+      description: 'Search networks inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "networks". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to limit the results returned, use "limit search records to" at the end of the RQL query, followed by one of these options: 1, 10, 100, 1000, and 10,000.'
       script: '|||prisma-cloud-network-search'
       type: regular
       iscommand: true
