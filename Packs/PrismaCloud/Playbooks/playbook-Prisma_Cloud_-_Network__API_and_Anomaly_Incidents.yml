@@ -817,7 +817,7 @@ tasks:
     task:
       id: 8fe0d4e7-caa6-4776-8a20-0337be0dd38a
       version: -1
-      name: Perform Prisma Cloud Recommendations
+      name: Pause the playbook to perform policy recommendations
       type: regular
       iscommand: false
       brand: ""
@@ -1260,8 +1260,10 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: IP
+              simple: alert.remoteip
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1560,7 +1562,6 @@ tasks:
       cve:
         simple: ${CVE.ID}
     separatecontext: false
-    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -1588,7 +1589,7 @@ tasks:
     - incidentfield: CVE ID
       output:
         simple: ${CVE.ID}
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1785,6 +1786,30 @@ view: |-
     }
   }
 inputs:
+- key: CreateTicket
+  value:
+    simple: "False"
+  required: false
+  description: Whether to create a ticket in ZenDesk or ServiceNow. Insert True or False
+  playbookInputQuery:
+- key: StopForRecommendations
+  value:
+    simple: "True"
+  required: false
+  description: ""
+  playbookInputQuery:
+- key: EarlyContainment
+  value:
+    simple: "True"
+  required: false
+  description: Whether to perform early containment.
+  playbookInputQuery:
+- key: CloudResponse
+  value:
+    simple: "False"
+  required: false
+  description: Whether to perform cloud response.
+  playbookInputQuery:
 - key: serviceNowShortDescription
   value: {}
   required: false
@@ -1865,31 +1890,18 @@ inputs:
   required: false
   description: The ticket description.
   playbookInputQuery:
-- key: CreateTicket
-  value:
-    simple: "False"
-  required: false
-  description: Whether to create a ticket in ZenDesk or ServiceNow. Insert True or False
-  playbookInputQuery:
-- key: StopForRecommendations
-  value:
-    simple: "True"
-  required: false
-  description: ""
-  playbookInputQuery:
-- key: EarlyContainment
-  value:
-    simple: "True"
-  required: false
-  description: Whether to perform early containment.
-  playbookInputQuery:
-- key: CloudResponse
-  value:
-    simple: "False"
-  required: false
-  description: Whether to perform cloud response.
-  playbookInputQuery:
 inputSections:
+- inputs:
+  - CreateTicket
+  - StopForRecommendations
+  name: Alert Management
+  description: |
+    Alert management settings and data,
+- inputs:
+  - EarlyContainment
+  - CloudResponse
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
 - inputs:
   - serviceNowShortDescription
   - serviceNowImpact
@@ -1912,17 +1924,6 @@ inputSections:
   - ZenDeskDescription
   name: Ticket Management - ZenDesk
   description: Ticket management settings and data for ZenDesk
-- inputs:
-  - CreateTicket
-  - StopForRecommendations
-  name: Alert Management
-  description: |
-    Alert management settings and data,
-- inputs:
-  - EarlyContainment
-  - CloudResponse
-  name: Remediation
-  description: Remediation settings and data, including containment, eradication, and recovery.
 outputSections:
 - outputs: []
   name: General (Outputs group)
