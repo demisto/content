@@ -47,10 +47,11 @@ def create_user(args, client):  # pragma: no cover
             }
         ]
     )
+    userId = response.get('UserId')
     del response['ResponseMetadata']
     response = remove_empty_elements(response)
     ec = {'AWS.IAMIdentityCenter.User': response}
-    human_readable = tableToMarkdown('AWS IAM Identity Center Users', response)
+    human_readable = tableToMarkdown(f'User {userId} has been successfully created', response)
     result = CommandResults(
         readable_output=human_readable,
         outputs=ec
@@ -79,7 +80,11 @@ def delete_user(args, client):
         UserId=f'{userId}'
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results(f'The User {userId} has been removed')
+        hr_data = f'The User {userId} has been removed.'
+        result = CommandResults(
+            readable_output=hr_data
+        )
+        return_results(result)
 
 
 def get_user(args, client):  # pragma: no cover
@@ -204,7 +209,7 @@ def create_group(args, client):
         group_id = response.get('GroupId')
         del response['ResponseMetadata']
         ec = {'AWS.IAMIdentityCenter.Group': response}
-        human_readable = f'Group {group_id} has been successfully created'
+        human_readable = tableToMarkdown(f'Group {group_id} has been successfully created', response)
         result = CommandResults(
             readable_output=human_readable,
             outputs=ec
@@ -219,7 +224,11 @@ def delete_group(args, client):
         GroupId=groupId
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results(f'The Group {groupId} has been removed')
+        hr_data = f'The Group {groupId} has been removed.'
+        result = CommandResults(
+            readable_output=hr_data
+        )
+        return_results(result)
 
 
 def get_groupId_by_displayName(args, client):
@@ -283,7 +292,7 @@ def list_groups_for_user(args, client):  # pragma: no cover
             'MembershipId': group['MembershipId']
         })
     context_data['UserId'] = userID
-    context_data['Groups'] = groups
+    context_data['GroupMemberships'] = groups
     outputs = {'AWS.IAMIdentityCenter.User(val.UserId === obj.UserId)': context_data,
                'AWS.IAMIdentityCenter(true)': {'GroupsUserNextToken': response.get('NextToken')}}
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
@@ -307,7 +316,12 @@ def add_user_to_group(args, client):  # pragma: no cover
     )
     membershipId = response.get('MembershipId')
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-        demisto.results(f'The membership id {membershipId} has been successfully created.')
+        hr_data = f'The membership id {membershipId} has been successfully created.'
+        result = CommandResults(
+            readable_output=hr_data
+        )
+        return_results(result)
+        
 
 def get_group_memberships_for_member(args,client):
     membershipsOfMember = []
@@ -345,7 +359,11 @@ def delete_group_membership(args, client):
                 MembershipId=f'{member}'
             )
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            demisto.results(f'The membership with ids {membershipsToDelete} have been deleted.')
+            hr_data = f'The membership with ids {membershipsToDelete} have been deleted.'
+            result = CommandResults(
+                readable_output=hr_data
+            )
+            return_results(result)
 
 
 def list_group_memberships(args, client):
@@ -386,7 +404,7 @@ def list_group_memberships(args, client):
     
 
 
-def test_function(args, client):
+def test_function(args, client):    # pragma: no cover
     if not IDENTITYSTOREID:
         return_error("The parameter Identity Store ID can be empty and added as an argument to each command, but Test button will fail.")
     response = client.list_users(
@@ -402,11 +420,7 @@ def main():     # pragma: no cover
     aws_default_region = params.get('defaultRegion')
     aws_role_arn = params.get('roleArn')
     aws_role_session_name = params.get('roleSessionName')
-    aws_role_session_duration = params.get('sessionDuration')  # check if changing because IAM does work this way!
-    # aws_default_region = args.get('region') or params.get('defaultRegion')
-    # aws_role_arn = args.get('roleArn') or params.get('roleArn')
-    # aws_role_session_name = args.get('roleSessionName') or params.get('roleSessionName')
-    # aws_role_session_duration = args.get('roleSessionDuration') or params.get('sessionDuration')
+    aws_role_session_duration = params.get('sessionDuration')
     aws_role_policy = None
     aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
     aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
