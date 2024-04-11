@@ -9,7 +9,7 @@ from tempfile import mkdtemp
 from subprocess import Popen, PIPE
 import zipfile
 
-def installLibrary(dir_path, library_name):
+def installLibrary(dir_path: Path, library_name: str) -> str:
     # Install the package using pip     
     cmd = f'python3 -m pip install --target {dir_path} {library_name}'
     process = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
