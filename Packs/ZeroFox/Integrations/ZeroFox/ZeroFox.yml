@@ -1108,6 +1108,14 @@ script:
     - name: notes
       description: The notes to add to an alert.
       required: true
+    - name: action
+      default: true
+      defaultValue: replace
+      description: Whether to replace or append new notes.
+      auto: PREDEFINED
+      predefined:
+      - replace
+      - append
     outputs:
     - contextPath: ZeroFox.Alert.AlertType
       description: The type of an alert.
@@ -1351,6 +1359,7 @@ script:
       description: The entry ID of the attachment.
       required: true
   - name: zerofox-get-alert-attachments
+    deprecated: true
     description: Retrieves the attachments of a specified alert.
     arguments:
     - name: alert_id
