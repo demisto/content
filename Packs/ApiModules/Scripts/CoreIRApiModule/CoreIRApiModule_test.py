@@ -3860,18 +3860,22 @@ def test_handle_outgoing_issue_closure(args, expected_delta):
                                                   "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used when no mapping provided.
-                             ("", list(XSOAR_RESOLVED_STATUS_TO_XDR.values()) + ["resolved_other"]),
+                             ("", ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                                   "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used when improper mapping is provided.
                              ("Duplicate=RANDOM1, Other=Random2",
-                              list(XSOAR_RESOLVED_STATUS_TO_XDR.values()) + ["resolved_other"]),
+                              ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              ("Random1=Duplicate Incident",
-                              list(XSOAR_RESOLVED_STATUS_TO_XDR.values()) + ["resolved_other"]),
+                              ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used when improper mapping *format* is provided.
                              ("Duplicate=Other False Positive=Other",
-                              list(XSOAR_RESOLVED_STATUS_TO_XDR.values()) + ["resolved_other"]),
+                              ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used for when improper key-value pair *format* is provided.
                              ("Duplicate=Other, False Positive=Other True Positive=Other, Other=True Positive",
