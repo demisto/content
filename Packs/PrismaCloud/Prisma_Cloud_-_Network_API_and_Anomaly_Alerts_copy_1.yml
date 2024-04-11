@@ -1,9 +1,11 @@
-id: Prisma Cloud - Network API and Anomaly Incidents
+id: Prisma Cloud - Network API and Anomaly Alerts_1
 version: -1
-name: Prisma Cloud - Network API and Anomaly Incidents
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma Cloud - Network API and Anomaly Alerts_1
 description: |-
-  This playbook handles incidents of internet exposed services and detect potential risky configurations that can make your cloud environment vulnerable to attacks, and
-  incidents of unusual network and user activity for all users, and are especially critical for privileged users and assumed roles where detecting unusual activity may indicate the first steps in a potential misuse or account compromise.
+  This playbook handles alerts of internet exposed services and detect potential risky configurations that can make your cloud environment vulnerable to attacks, and
+  alerts of unusual network and user activity for all users, and are especially critical for privileged users and assumed roles where detecting unusual activity may indicate the first steps in a potential misuse or account compromise.
 starttaskid: "0"
 tasks:
   "0":
@@ -139,7 +141,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "5"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -167,12 +169,11 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
-      - "9"
+      - "8"
       "yes":
-      - "5"
+      - "6"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -203,8 +204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 520
+          "x": 70,
+          "y": 700
         }
       }
     note: false
@@ -225,12 +226,11 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
-      - "8"
+      - "9"
       "yes":
-      - "6"
+      - "4"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -248,8 +248,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
-          "y": 690
+          "x": 450,
+          "y": 530
         }
       }
     note: false
@@ -310,7 +310,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 30,
+          "x": 70,
           "y": 1360
         }
       }
@@ -356,10 +356,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: a14d40f5-2bcc-43f4-8577-750c43d57846
+    taskid: d363ed97-0084-474f-8d63-270eca637f8b
     type: playbook
     task:
-      id: a14d40f5-2bcc-43f4-8577-750c43d57846
+      id: d363ed97-0084-474f-8d63-270eca637f8b
       version: -1
       name: Cloud User Investigation - Generic
       description: |
@@ -573,7 +573,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "27"
@@ -731,7 +730,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "27"
@@ -776,7 +774,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "24"
@@ -821,7 +818,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -1054,7 +1050,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "22"
@@ -1247,7 +1242,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -1288,7 +1282,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -1469,7 +1462,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "3"
@@ -1603,7 +1595,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "15"
@@ -1646,7 +1637,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "15"
@@ -1930,5 +1920,3 @@ outputSections:
 outputs: []
 tests:
 - No tests (auto formatted)
-marketplaces: ["marketplacev2"]
-fromversion: 6.10.0
