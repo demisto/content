@@ -1770,6 +1770,7 @@ class IntegrationLogger(object):
                 if is_debug_mode():
                     if text.startswith(('send:', 'header:')):
                         try:
+                            text= text.replace("send: b\"", "send: b'")
                             text = censor_request_logs(text)
                         except Exception as e:  # should fail silently
                             demisto.debug('Failed censoring request logs - {}'.format(str(e)))
