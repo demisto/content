@@ -411,7 +411,8 @@ def test_generate_bpa_report_request_fails(mocker: MockerFixture, AIOps_client):
     http_request_mock.return_value = response
     with pytest.raises(DemistoException) as e:
         AIOps_client.generate_bpa_report_request(requester_email, requester_name, dict_for_request)
-    assert e.value.message == "Response not in format, can not find uploaded-url or report id."
+    res = {'upload-url1': "qejdhliqhjqo;jo'kqp", 'id': '1'}
+    assert e.value.message == f"Response not in format, can not find uploaded-url or report id. With response {res}."
 
 
 def test_config_file_to_report_request_called_with(mocker, AIOps_client):

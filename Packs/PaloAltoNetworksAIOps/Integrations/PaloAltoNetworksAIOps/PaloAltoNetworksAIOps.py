@@ -117,7 +117,7 @@ class Client(BaseClient):
         report_id = res.get('id', None)
         if upload_url and report_id:
             return upload_url, report_id
-        raise DemistoException('Response not in format, can not find uploaded-url or report id.')
+        raise DemistoException(f'Response not in format, can not find uploaded-url or report id. With response {res}.')
 
     def config_file_to_report_request(self, upload_url, config_in_binary):
         headers = {
