@@ -1012,8 +1012,8 @@ def update_remote_system_command(client, args):
 
 def update_related_alerts(client: Client, args: dict):
     new_status = args.get('status')
-    comment = args.get('resolve_comment')
     incident_id = args.get('incident_id')
+    comment = f"resolved by XSOAR, due to incident {incident_id} has been resolved"
     demisto.debug(f"{new_status=}, {comment=}")
     if not new_status:
         raise DemistoException(f"Failed to update alerts related to incident {incident_id},"
