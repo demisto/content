@@ -30,6 +30,23 @@ ISSUE_STATUS_FOR_LIST_COMMAND = {
     'All': '*'
 }
 
+DICT_OF_ISSUE_ARGS = {'trackers': {
+                            'url_suffix': '/trackers.json',
+                            'key_in_response': 'trackers',
+                            'singular': 'tracker'
+                            },
+                            'statuses': {
+                                'url_suffix': '/issue_statuses.json',
+                                'key_in_response': 'issue_statuses',
+                                'singular': 'status'
+                                },
+                            'priorities': {
+                                'url_suffix': '/enumerations/issue_priorities.json',
+                                'key_in_response': 'issue_priorities',
+                                'singular': 'priority'
+                            }
+                        }
+
 ''' CLIENT CLASS '''
 
 
@@ -112,19 +129,14 @@ class Client(BaseClient):
         return response
 
     def get_dict_for_issue_field_request(self, field):
-        dict_field_to_retrieve = {'trackers': {'url_suffix': '/trackers.json', 'key_in_response': 'tracker'},
-                                  'statuses': {'url_suffix': '/issue_statuses.json', 'key_in_response': 'issue_statuses'},
-                                  'priorities': {
-                                      'url_suffix': '/enumerations/issue_priorities.json', 'key_in_response': 'issue_priorities'
-                                      }
-                                  }
         integration_context = get_integration_context()
         if not integration_context.get(field):
-            response = self._http_request('GET', dict_field_to_retrieve.get(field,{}).get('url_suffix',""),
+            response = self._http_request('GET', DICT_OF_ISSUE_ARGS.get(field, {}).get('url_suffix', ""),
                                           headers=self._get_header)
-            key_in_response = dict_field_to_retrieve.get(field,{}).get('key_in_response',"")
+            key_in_response = DICT_OF_ISSUE_ARGS.get(field, {}).get('key_in_response', "")
             if key_in_response not in response:
-                raise DemistoException(f"Failed to retrieve {field[:-1]} IDs due to a parsing error.")
+                singular = DICT_OF_ISSUE_ARGS.get(field, {}).get('singular', "")
+                raise DemistoException(f"Failed to retrieve {singular} IDs due to a parsing error.")
             integration_context[field] = {}
             for field_id_name in response[key_in_response]:
                 if field_id_name.get("id") and field_id_name.get("name"):
@@ -170,7 +182,7 @@ def adjust_paging_to_request(page_number, page_size, limit):
 
 def convert_args_to_request_format(client: Client, args: Dict[str, Any]):
     if tracker := args.pop('tracker', None):
-        tracker_id = handle_convert_field(client, 'trackers' ,tracker)
+        tracker_id = handle_convert_field(client, 'trackers', tracker)
         args['tracker_id'] = tracker_id
     if status := args.pop('status', None):
         status_id = handle_convert_field(client, 'statuses', status)
@@ -194,16 +206,18 @@ def handle_convert_field(client, field: str, field_value: str):
         integration_context = get_integration_context().get(field, {})
         field_value_id = arg_to_number(field_value)
         if integration_context and field_value not in integration_context.values():
-            raise DemistoException(f"{field[:-1]} id {field_value_id} not found, please make sure this {field[:-1]} id exists. "
-                                   f"You can provide the {field[:-1]} name instead.")
+            singular = DICT_OF_ISSUE_ARGS.get(field, {}).get('singular', "")
+            raise DemistoException(f"{singular} id {field_value_id} not found, please make sure this {singular} id exists. "
+                                   f"You can provide the {singular} name instead.")
         return field_value
     except ValueError:
         client.get_dict_for_issue_field_request(field)
         integration_context = get_integration_context().get(field, {})
         field_value_id = integration_context.get(field_value)
         if not field_value_id:
+            singular = DICT_OF_ISSUE_ARGS.get(field, {}).get('singular', "")
             raise DemistoException(f"Could not find {field_value} in your {field} list, please make sure using an existing"
-                                   f" {field[:-1]} name.")
+                                   f" {singular} name.")
         return field_value_id
     except DemistoException:
         raise
