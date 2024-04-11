@@ -1216,7 +1216,7 @@ def fetch_incidents(
     params = {
         "last_modified_min_date": last_modified_fetched.strftime(DATE_FORMAT),
         "sort_direction": "asc",
-        "sort_field" : "last_modified",
+        "sort_field": "last_modified",
         "offset": last_modified_offset,
     }
 
