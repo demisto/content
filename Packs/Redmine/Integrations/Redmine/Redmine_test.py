@@ -583,7 +583,8 @@ def test_get_issues_list_command_invalid_status_using_request_with_number(mocker
             {'id': '2', 'name': 'Feedback'}
         ]})
         get_issues_list_command(redmine_client, {'status': '5'})
-    assert e.value.message == "status id 5 not found, please make sure this status id exists. You can provide the status name instead."
+    assert e.value.message == ("status id 5 not found, please make sure this status id exists. "
+                               "You can provide the status name instead.")
 
 
 def test_get_issue_by_id_command(mocker, redmine_client):
@@ -1480,7 +1481,8 @@ def test_handle_convert_status_from_name_with_request_id_fail(mocker, redmine_cl
         mock_get_integration_context.return_value = {'statuses': {'new': '1',
                                                                   'in progress': '2'}}
         handle_convert_field(redmine_client, 'statuses', '5')
-    assert e.value.message == "status id 5 not found, please make sure this status id exists. You can provide the status name instead."
+    assert e.value.message == ("status id 5 not found, please make sure this status id exists. "
+                               "You can provide the status name instead.")
 
 
 def test_handle_convert_priority_from_name_with_request_id_fail(mocker, redmine_client):
