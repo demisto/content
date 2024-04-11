@@ -9648,22 +9648,15 @@ def test_logger_write__censor_request_logs_has_been_called(mocker, request_log):
     assert mock_censor.call_count == 1
 
 
-@pytest.fixture
-def safe_sleep_wrapper(mocker):
-    """Fixture to create a ManagedSleep object with mocked run_duration"""
-    mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
-    mocker.patch.object(CommonServerPython, 'SAFE_SLEEP_START_TIME', return_value=1711453263.0)
-
-
 @freeze_time(datetime(2024, 4, 10, 10, 0, 10))
 def test_sleep_exceeds_ttl(mocker):
     """
-   Given:  A `SafeSleep` object and a sleep duration exceeding the remaining TTL.
+   Given: a sleep duration exceeding the remaining TTL.
 
     When: The `sleep` method is called with that duration.
 
    Then:
-    - A `ValueError` should be raised indicating that the requested sleep exceeds the TTL.
+    - A warning should be outputed indicating that the requested sleep exceeds the TTL.
   """
     mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
     setattr(CommonServerPython, 'SAFE_SLEEP_START_TIME', datetime(2024, 4, 10, 10, 0, 0))  # Set stub in your_script
@@ -9678,12 +9671,13 @@ def test_sleep_exceeds_ttl(mocker):
 @freeze_time(datetime(2024, 4, 10, 10, 0, 10))
 def test_sleep_exceeds_ttl_with_adjusted(mocker):
     """
-   Given:  A `SafeSleep` object and a sleep duration exceeding the remaining TTL.
+   Given:  a sleep duration exceeding the remaining TTL.
 
     When: The `sleep` method is called with that duration.
 
    Then:
-    - A `ValueError` should be raised indicating that the requested sleep exceeds the TTL.
+    - A warning should be outputed indicating that the requested sleep exceeds the TTL.
+    - A sleep should be called with the remaining time until timeout.
   """
     mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
     setattr(CommonServerPython, 'SAFE_SLEEP_START_TIME', datetime(2024, 4, 10, 10, 0, 0))  # Set stub in your_script
@@ -9701,7 +9695,7 @@ def test_sleep_exceeds_ttl_with_adjusted(mocker):
 
 def test_sleep_mocked_time(mocker):
     """
-    Given:  A `SafeSleep` object.
+    Given:  a method using sleep.
 
    When:  The `sleep` method is called with a specific duration.
 
