@@ -144,7 +144,7 @@ This playbook is used to pull information from Cortex Endpoint (XSIAM/XDR) syste
 
 This playbook is used for remediating a single exposed Cortex Endpoint (XSIAM/XDR) by isolating the endpoint from the network using the "Isolate Endpoint" feature in XSIAM ([see XSIAM details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Isolate-an-Endpoint)) and XDR ([see XDR details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Isolate-an-Endpoint)). 
 
-![Cortex ASM - Cortex Endpoint Remediation](https://raw.githubusercontent.com/demisto/content/a750c3904dcf1fdd7a483a1fcca63af40951cbcd/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Cortex_Endpoint_Remediation.png)
+![Cortex ASM - Cortex Endpoint Remediation](https://raw.githubusercontent.com/demisto/content/c421d6d3de62992a3ac3afbce09e82224e505641/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Cortex_Endpoint_Remediation.png)
 
 #### Cortex ASM - Detect Service
 
