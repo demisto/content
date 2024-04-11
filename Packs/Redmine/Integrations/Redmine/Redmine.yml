@@ -33,7 +33,7 @@ script:
   - name: redmine-issue-create
     description: |-
       - Create a new Issue
-      - By default, the status of the newly created issue will be set to the status the user set in the Redmine instance as default.
+      - The status of the newly created issue will be set to the status the user set in the Redmine instance as default.
       - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created.
       - To create a custom field, navigate to the server URL with administrative privileges, click **Administration** (located at the top left), select **Custom fields**,' and then proceed to create a new custom field. Once created, you  can add values as needed.
       - To create a category/version, navigate to the server URL -> Click on the Settings (top bar) -> Versions tab and Issue categories tab.
@@ -44,13 +44,13 @@ script:
     - name: tracker
       description: |-
         - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).
-        - This argument is case sensitive.
+        - Note: This argument is case sensitive.
       required: true
     - name: priority
       required: true
       description: |-
         - Enter a priority ID (e.g., 1,2,3) or a priority name (e.g., Low/High).
-        - This argument is case sensitive.
+        - Note: This argument is case sensitive.
     - name: subject
       required: true
       description: The subject for this issue.
@@ -139,13 +139,13 @@ script:
     - name: tracker
       description: |-
         - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).
-        - This argument is case sensitive.
+        - Note: This argument is case sensitive.
     - name: status
       auto: PREDEFINED
       description: |-
         - The status to display issues related to this status.
         - You can use Open/Closed/All from the predefined values or use any of your custom status ID (e.g., 1)/ status name(e.g., New).
-        - This argument is case sensitive.
+        - Note: This argument is case sensitive.
       defaultValue: Open
       predefined:
       - Open
@@ -177,15 +177,15 @@ script:
     - name: tracker
       description: |-
         - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).
-        - This argument is case sensitive.
+        - Note: This argument is case sensitive.
     - name: status
       description: |-
         - Enter a status ID (e.g., 1,2,3) or a status name (e.g., New/Closed).
-        - This argument is case sensitive.
+        - Note: This argument is case sensitive.
     - name: priority
       description: |-
         - Enter a priority ID (e.g., 1,2,3) or a priority name (e.g., Low/High).
-        - This argument is case sensitive.
+        - Note: This argument is case sensitive.
     - name: subject
       description: The subject of the issue.
     - name: description

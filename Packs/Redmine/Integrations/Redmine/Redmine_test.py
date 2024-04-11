@@ -1119,12 +1119,12 @@ def test_handle_convert_tracker_from_id(redmine_client):
     Then:
         - checks handle_convert_tracker returns the right value
     """
-    from Redmine import handle_convert_tracker
+    from Redmine import handle_convert_field
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
         mock_get_integration_context.return_value = {'trackers': {
             'bug': '1'
         }}
-        assert handle_convert_tracker(redmine_client, '1') == '1'
+        assert handle_convert_field(redmine_client, '1') == '1'
 
 
 def test_handle_convert_status_from_id(redmine_client):
@@ -1170,12 +1170,12 @@ def test_handle_convert_tracker_from_name(redmine_client):
     Then:
         - checks handle_convert_tracker returns the right value
     """
-    from Redmine import handle_convert_tracker
+    from Redmine import handle_convert_field
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
         mock_get_integration_context.return_value = {'trackers': {
             'bug': '1'
         }}
-        assert handle_convert_tracker(redmine_client, 'bug') == '1'
+        assert handle_convert_field(redmine_client, 'bug') == '1'
 
 
 def test_handle_convert_status_from_name(redmine_client):
@@ -1221,13 +1221,13 @@ def test_handle_convert_tracker_from_name_capital_letter_fails(redmine_client):
     Then:
         - fails since it is case sensitive
     """
-    from Redmine import handle_convert_tracker
+    from Redmine import handle_convert_field
     from Redmine import DemistoException
     with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
         mock_get_integration_context.return_value = {'trackers': {
             'bug': '1'
         }}
-        handle_convert_tracker(redmine_client, 'Bug')
+        handle_convert_field(redmine_client, 'Bug')
     assert e.value.message == "Could not find Bug in your trackers list, please make sure using an existing tracker name."
 
 
@@ -1278,10 +1278,10 @@ def test_handle_convert_tracker_from_id_with_request(redmine_client):
     Then:
         - checks handle_convert_tracker returns the right value
     """
-    from Redmine import handle_convert_tracker
+    from Redmine import handle_convert_field
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
         mock_get_integration_context.return_value = {}
-        assert handle_convert_tracker(redmine_client, '1') == '1'
+        assert handle_convert_field(redmine_client, '1') == '1'
 
 
 def test_handle_convert_status_from_id_with_request(redmine_client):
@@ -1323,14 +1323,14 @@ def test_handle_convert_tracker_from_name_with_request(mocker, redmine_client):
     Then:
         - checks handle_convert_tracker converts from name to id and returns the right value
     """
-    from Redmine import handle_convert_tracker
+    from Redmine import handle_convert_field
     with patch('Redmine.get_integration_context') as mock_get_integration_context:
         mocker.patch.object(redmine_client, '_http_request', return_value={'trackers': [
             {'id': '1', 'name': 'Bug'},
             {'id': '2', 'name': 'Feature'}
         ]})
         mock_get_integration_context.return_value = {}
-        assert handle_convert_tracker(redmine_client, 'Bug') == '1'
+        assert handle_convert_field(redmine_client, 'Bug') == '1'
 
 
 def test_handle_convert_status_from_name_with_request(mocker, redmine_client):
@@ -1401,7 +1401,7 @@ def test_handle_convert_tracker_from_name_with_request_invalid_response(mocker, 
     Then:
         - handle_convert_tracker raises an error for invalid tracker name
     """
-    from Redmine import handle_convert_tracker
+    from Redmine import handle_convert_field
     from CommonServerPython import DemistoException
     with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
         mocker.patch.object(redmine_client, '_http_request', return_value={'help': [
@@ -1409,7 +1409,7 @@ def test_handle_convert_tracker_from_name_with_request_invalid_response(mocker, 
             {'id': '2', 'name': 'Task'}
         ]})
         mock_get_integration_context.return_value = {}
-        handle_convert_tracker(redmine_client, 'fail')
+        handle_convert_field(redmine_client, 'fail')
     assert e.value.message == "Failed to retrieve tracker IDs due to a parsing error."
 
 
@@ -1443,7 +1443,7 @@ def test_handle_convert_tracker_from_name_with_request_id_fail(mocker, redmine_c
     Then:
         - handle_convert_tracker raises an error for invalid tracker id
     """
-    from Redmine import handle_convert_tracker
+    from Redmine import handle_convert_field
     from CommonServerPython import DemistoException
     with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
         mocker.patch.object(redmine_client, '_http_request', return_value={'trackers': [
@@ -1452,7 +1452,7 @@ def test_handle_convert_tracker_from_name_with_request_id_fail(mocker, redmine_c
         ]})
         mock_get_integration_context.return_value = {'trackers': {'bug': '1',
                                                                   'task': '2'}}
-        handle_convert_tracker(redmine_client, '5')
+        handle_convert_field(redmine_client, '5')
     assert e.value.message == "Tracker id 5 not found, please make sure this tracker id exists."
 
 
@@ -1509,7 +1509,7 @@ def test_handle_convert_tracker_from_name_with_request_fail(mocker, redmine_clie
     Then:
         - handle_convert_tracker raises an error for invalid tracker name
     """
-    from Redmine import handle_convert_tracker
+    from Redmine import handle_convert_field
     from CommonServerPython import DemistoException
     with patch('Redmine.get_integration_context') as mock_get_integration_context, pytest.raises(DemistoException) as e:
         mocker.patch.object(redmine_client, '_http_request', return_value={'trackers': [
@@ -1517,7 +1517,7 @@ def test_handle_convert_tracker_from_name_with_request_fail(mocker, redmine_clie
             {'id': '2', 'name': 'Feature'}
         ]})
         mock_get_integration_context.return_value = {}
-        handle_convert_tracker(redmine_client, 'aaa')
+        handle_convert_field(redmine_client, 'aaa')
     assert e.value.message == "Could not find aaa in your trackers list, please make sure using an existing tracker name."
 
 

@@ -111,40 +111,24 @@ class Client(BaseClient):
         response = self._http_request('GET', '/users.json', params=args, headers=self._get_header)
         return response
 
-    def get_tracker_and_id_dict_request(self):
+    def get_dict_for_issue_field_request(self, field):
+        dict_field_to_retrieve = {'trackers': {'url_suffix': '/trackers.json', 'key_in_response': 'tracker'},
+                                  'statuses': {'url_suffix': '/issue_statuses.json', 'key_in_response': 'issue_statuses'},
+                                  'priorities': {
+                                      'url_suffix': '/enumerations/issue_priorities.json', 'key_in_response': 'issue_priorities'
+                                      }
+                                  }
         integration_context = get_integration_context()
-        if not integration_context.get('trackers'):
-            response = self._http_request('GET', '/trackers.json', headers=self._get_header)
-            if 'trackers' not in response:
-                raise DemistoException("Failed to retrieve tracker IDs due to a parsing error.")
-            integration_context['trackers'] = {}
-            for tracker in response['trackers']:
-                if tracker.get("id") and tracker.get("name"):
-                    integration_context['trackers'][tracker.get("name")] = str(tracker.get("id"))
-            set_integration_context(integration_context)
-
-    def get_status_and_id_dict_request(self):
-        integration_context = get_integration_context()
-        if not integration_context.get('statuses'):
-            response = self._http_request('GET', '/issue_statuses.json', headers=self._get_header)
-            if 'issue_statuses' not in response:
-                raise DemistoException("Failed to retrieve status IDs due to a parsing error.")
-            integration_context['statuses'] = {}
-            for status in response['issue_statuses']:
-                if status.get("id") and status.get("name"):
-                    integration_context['statuses'][status.get("name")] = str(status.get("id"))
-            set_integration_context(integration_context)
-
-    def get_priority_and_id_dict_request(self):
-        integration_context = get_integration_context()
-        if not integration_context.get('priorities'):
-            response = self._http_request('GET', '/enumerations/issue_priorities.json', headers=self._get_header)
-            if 'issue_priorities' not in response:
-                raise DemistoException("Failed to retrieve priority IDs due to a parsing error.")
-            integration_context['priorities'] = {}
-            for priority in response['issue_priorities']:
-                if priority.get("id") and priority.get("name"):
-                    integration_context['priorities'][priority.get("name")] = str(priority.get("id"))
+        if not integration_context.get(field):
+            response = self._http_request('GET', dict_field_to_retrieve.get(field,{}).get('url_suffix',""),
+                                          headers=self._get_header)
+            key_in_response = dict_field_to_retrieve.get(field,{}).get('key_in_response',"")
+            if key_in_response not in response:
+                raise DemistoException(f"Failed to retrieve {field[:-1]} IDs due to a parsing error.")
+            integration_context[field] = {}
+            for field_id_name in response[key_in_response]:
+                if field_id_name.get("id") and field_id_name.get("name"):
+                    integration_context[field][field_id_name.get("name")] = str(field_id_name.get("id"))
             set_integration_context(integration_context)
 
 
@@ -186,13 +170,13 @@ def adjust_paging_to_request(page_number, page_size, limit):
 
 def convert_args_to_request_format(client: Client, args: Dict[str, Any]):
     if tracker := args.pop('tracker', None):
-        tracker_id = handle_convert_tracker(client, tracker)
+        tracker_id = handle_convert_field(client, 'trackers' ,tracker)
         args['tracker_id'] = tracker_id
     if status := args.pop('status', None):
-        status_id = handle_convert_status(client, status)
+        status_id = handle_convert_field(client, 'statuses', status)
         args['status_id'] = status_id
     if priority := args.pop('priority', None):
-        priority_id = handle_convert_priority(client, priority)
+        priority_id = handle_convert_field(client, 'priorities', priority)
         args['priority_id'] = priority_id
     if custom_fields := args.pop('custom_fields', None):
         custom_fields = argToList(custom_fields)
@@ -205,59 +189,22 @@ def convert_args_to_request_format(client: Client, args: Dict[str, Any]):
             raise
 
 
-def handle_convert_tracker(client, tracker: str):
+def handle_convert_field(client, field: str, field_value: str):
     try:
-        integration_context = get_integration_context().get('trackers', {})
-        tracker_id = arg_to_number(tracker)
-        if integration_context and tracker not in integration_context.values():
-            raise DemistoException(f"Tracker id {tracker_id} not found, please make sure this tracker id exists.")
-        return tracker
+        integration_context = get_integration_context().get(field, {})
+        field_value_id = arg_to_number(field_value)
+        if integration_context and field_value not in integration_context.values():
+            raise DemistoException(f"{field[:-1]} id {field_value_id} not found, please make sure this {field[:-1]} id exists. "
+                                   f"You can provide the {field[:-1]} name instead.")
+        return field_value
     except ValueError:
-        client.get_tracker_and_id_dict_request()
-        integration_context = get_integration_context().get('trackers', {})
-        tracker_id = integration_context.get(tracker)
-        if not tracker_id:
-            raise DemistoException(f"Could not find {tracker} in your trackers list, please make sure using an existing"
-                                   " tracker name.")
-        return tracker_id
-    except DemistoException:
-        raise
-
-
-def handle_convert_status(client, status: str):
-    try:
-        integration_context = get_integration_context().get('statuses', {})
-        status_id = arg_to_number(status)
-        if integration_context and status not in integration_context.values():
-            raise DemistoException(f"Status id {status_id} not found, please make sure this status id exists.")
-        return status
-    except ValueError:
-        client.get_status_and_id_dict_request()
-        integration_context = get_integration_context().get('statuses', {})
-        status_id = integration_context.get(status)
-        if not status_id:
-            raise DemistoException(f"Could not find {status} in your statuses list, please make sure using an existing"
-                                   " status name.")
-        return status_id
-    except DemistoException:
-        raise
-
-
-def handle_convert_priority(client, priority: str):
-    try:
-        integration_context = get_integration_context().get('priorities', {})
-        priority_id = arg_to_number(priority)
-        if integration_context and priority not in integration_context.values():
-            raise DemistoException(f"Priority id {priority_id} not found, please make sure this priority id exists.")
-        return priority
-    except ValueError:
-        client.get_priority_and_id_dict_request()
-        integration_context = get_integration_context().get('priorities', {})
-        priority_id = integration_context.get(priority)
-        if not priority_id:
-            raise DemistoException(f"Could not find {priority} in your priorities list, please make sure using an existing"
-                                   " priority name.")
-        return priority_id
+        client.get_dict_for_issue_field_request(field)
+        integration_context = get_integration_context().get(field, {})
+        field_value_id = integration_context.get(field_value)
+        if not field_value_id:
+            raise DemistoException(f"Could not find {field_value} in your {field} list, please make sure using an existing"
+                                   f" {field[:-1]} name.")
+        return field_value_id
     except DemistoException:
         raise
 
@@ -401,9 +348,9 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
             if status in ISSUE_STATUS_FOR_LIST_COMMAND:
                 status_id = ISSUE_STATUS_FOR_LIST_COMMAND[status]
             else:
-                status_id = handle_convert_status(client, status)
+                status_id = handle_convert_field(client, 'statuses', status)
         if tracker:
-            tracker_id = handle_convert_tracker(client, tracker)
+            tracker_id = handle_convert_field(client, 'trackers', tracker)
         if custom_field:
             try:
                 cf_in_format = custom_field.split(":", 1)
