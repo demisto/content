@@ -645,7 +645,6 @@ class TestIPOperations:
         actual_output = cast(list, actual_context.get(self.CONTEXT_PATH))
         assert len(actual_output) == 9
 
-    # TODO
     def test_transform_ip_context_known_keys(self):
         """
         Test for a scenario when the `infoblox-get-ip` command returns
