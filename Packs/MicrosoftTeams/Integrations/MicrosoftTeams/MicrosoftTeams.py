@@ -922,6 +922,7 @@ def validate_auth_header(headers: dict) -> bool:
 
     audience_claim: str = decoded_payload.get('aud', '')
     if audience_claim != BOT_ID:
+        demisto.debug(f"failed to verify audience_claim: {audience_claim} with BOT_ID: {BOT_ID}.")
         demisto.info('Authorization header validation - failed to verify audience_claim')
         return False
 
@@ -2014,7 +2015,7 @@ def send_message():
     message: str = demisto.args().get('message', '')
     external_form_url_header: str | None = demisto.args().get(
         'external_form_url_header') or demisto.params().get('external_form_url_header')
-    demisto.debug("Send message")
+    demisto.debug(f"in send message with message type: {message_type}, and channel name:{demisto.args().get('channel')}")
     try:
         adaptive_card: dict = json.loads(demisto.args().get('adaptive_card', '{}'))
     except ValueError:
@@ -2028,6 +2029,7 @@ def send_message():
 
     if (not channel_name and message_type in {MESSAGE_TYPES['status_changed'], MESSAGE_TYPES['incident_opened']}) \
             or channel_name == INCIDENT_NOTIFICATIONS_CHANNEL:
+        demisto.debug("Got a notification from server.")
         # Got a notification from server
         channel_name = demisto.params().get('incident_notifications_channel', 'General')
         severity: float = float(demisto.args().get('severity'))

@@ -2,6 +2,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from parse_emails.parse_emails import EmailParser
 
+logger = logging.getLogger('parse-email')  # type: ignore[assignment]
+logger.addHandler(DemistoHandler)  # type: ignore[attr-defined]
+
 
 def data_to_md(email_data, email_file_name=None, parent_email_file=None, print_only_headers=False) -> str:
     """
