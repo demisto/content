@@ -383,7 +383,7 @@ def test_get_tracker_and_id_dict_request_called_with(mocker, redmine_client):
         mock_get_integration_context.return_value = {}
         http_request = mocker.patch.object(redmine_client, '_http_request')
         http_request.return_value = {'trackers': [{'bug': '1'},
-                                                {'task': '2'}]}
+                                                  {'task': '2'}]}
         redmine_client.get_dict_for_issue_field_request('trackers')
         http_request.assert_called_with('GET', '/trackers.json', headers={'X-Redmine-API-Key': True})
 
@@ -1179,7 +1179,7 @@ def test_handle_convert_tracker_from_name(redmine_client):
         mock_get_integration_context.return_value = {'trackers': {
             'bug': '1'
         }}
-        assert handle_convert_field(redmine_client, 'trackers' , 'bug') == '1'
+        assert handle_convert_field(redmine_client, 'trackers', 'bug') == '1'
 
 
 def test_handle_convert_status_from_name(redmine_client):
@@ -1392,7 +1392,7 @@ def test_handle_convert_status_from_name_with_request_invalid_response(mocker, r
             {'id': '2', 'name': 'Rejected'}
         ]})
         mock_get_integration_context.return_value = {}
-        handle_convert_field(redmine_client, '', 'New')
+        handle_convert_field(redmine_client, 'statuses', 'New')
     assert e.value.message == "Failed to retrieve status IDs due to a parsing error."
 
 

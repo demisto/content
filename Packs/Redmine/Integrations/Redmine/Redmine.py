@@ -31,21 +31,21 @@ ISSUE_STATUS_FOR_LIST_COMMAND = {
 }
 
 DICT_OF_ISSUE_ARGS = {'trackers': {
-                            'url_suffix': '/trackers.json',
-                            'key_in_response': 'trackers',
-                            'singular': 'tracker'
-                            },
-                            'statuses': {
-                                'url_suffix': '/issue_statuses.json',
-                                'key_in_response': 'issue_statuses',
-                                'singular': 'status'
-                                },
-                            'priorities': {
-                                'url_suffix': '/enumerations/issue_priorities.json',
-                                'key_in_response': 'issue_priorities',
-                                'singular': 'priority'
-                            }
-                        }
+    'url_suffix': '/trackers.json',
+    'key_in_response': 'trackers',
+    'singular': 'tracker'
+},
+    'statuses': {
+    'url_suffix': '/issue_statuses.json',
+    'key_in_response': 'issue_statuses',
+    'singular': 'status'
+},
+    'priorities': {
+    'url_suffix': '/enumerations/issue_priorities.json',
+    'key_in_response': 'issue_priorities',
+    'singular': 'priority'
+}
+}
 
 ''' CLIENT CLASS '''
 
