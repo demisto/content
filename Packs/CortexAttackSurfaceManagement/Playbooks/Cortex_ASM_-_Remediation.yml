@@ -255,8 +255,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 980,
-          "y": 550
+          "x": 1070,
+          "y": 560
         }
       }
     note: false
@@ -306,7 +306,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
+          "x": 0,
           "y": 550
         }
       }
@@ -468,8 +468,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 470
+          "x": 740,
+          "y": 750
         }
       }
     note: false
@@ -693,8 +693,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1200,
-          "y": 410
+          "x": 1300,
+          "y": 390
         }
       }
     note: false
@@ -766,7 +766,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1105,
-        "width": 2090,
+        "width": 2190,
         "x": -510,
         "y": 20
       }
