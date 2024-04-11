@@ -20,7 +20,7 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorNameResolutionNoResults, RateLimitError,
                                 ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
 from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol, Protocol
+from exchangelib.protocol import BaseProtocol, Protocol, NoVerifyHTTPAdapter
 from exchangelib.services import EWSService
 from exchangelib.services.common import EWSAccountService
 from exchangelib.util import add_xml_child, create_element
@@ -50,9 +50,10 @@ Version.fullname = our_fullname
 
 
 class exchangelibSSLAdapter(SSLAdapter):  # pragma: no cover
-    
+
     def cert_verify(self, conn, url, verify, cert):
         # We're overriding a method, so we have to keep the signature, although verify is unused
+        del verify
         super().cert_verify(conn=conn, url=url, verify=False, cert=None)
 
 
@@ -211,7 +212,7 @@ def prepare_context(credentials):  # pragma: no cover
 def prepare():  # pragma: no cover
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     if NON_SECURE:
-        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter
+        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter #NoVerifyHTTPAdapter
     else:
         BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
     AUTO_DISCOVERY = not EWS_SERVER
