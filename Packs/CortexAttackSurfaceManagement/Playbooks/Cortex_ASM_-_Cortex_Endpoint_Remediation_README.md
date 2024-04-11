@@ -11,13 +11,15 @@ This playbook does not use any sub-playbooks.
 ### Integrations
 
 * Cortex Core - IR
+* Cortex XDR - IR
 
 ### Scripts
 
-This playbook does not use any scripts.
+* Set
 
 ### Commands
 
+* xdr-endpoint-isolate
 * core-isolate-endpoint
 
 ## Playbook Inputs
@@ -26,7 +28,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| CortexEndpointID | The ID of the Cortex Endpoint \(XDR / XSIAM\). |  | Required |
+| CortexEndpointID | The ID of the Cortex Endpoint \(XDR\). |  | Required |
 
 ## Playbook Outputs
 
