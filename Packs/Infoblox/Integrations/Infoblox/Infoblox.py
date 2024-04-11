@@ -699,11 +699,8 @@ def transform_ip_context(ip_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for ip in ip_list:
         i: dict[str, Any] = {}
         for k, v in ip.items():
-            try:
-                i[IP_MAPPING[k]] = v
-            except KeyError:
-                demisto.debug(f"key '{k}' not found in expected IP context outputs. Setting it to output...")
-                i[string_to_context_key(k)] = v
+            key_transform = IP_MAPPING[k] if IP_MAPPING.get(k) else string_to_context_key(k)
+            i[key_transform] = v
         output.append(i)
 
     return output
