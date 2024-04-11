@@ -1,4 +1,4 @@
-This playbook handles incidents of internet exposed services and detect potential risky configurations that can make your cloud environment vulnerable to attacks, and
+This playbook handles incidents of internet exposed services and detects potential risky configurations that can make your cloud environment vulnerable to attacks, and
 incidents of unusual network and user activity for all users, and are especially critical for privileged users and assumed roles where detecting unusual activity may indicate the first steps in a potential misuse or account compromise.
 
 ## Dependencies
@@ -22,7 +22,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* JsonToTable
+JsonToTable
 
 ### Commands
 
@@ -55,7 +55,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | ZendeskAssigne | The agent currently assigned to the ticket. |  | Optional |
 | ZendeskCollaborators | The users currently CC'ed on the ticket. |  | Optional |
 | ZenDeskDescription | The ticket description. |  | Optional |
-| CreateTicket | Whether to create a ticket in ZenDesk or ServiceNow. Insert True or False | False | Optional |
+| CreateTicket | Whether to create a ticket in ZenDesk or ServiceNow. Options are True or False. | False | Optional |
 | StopForRecommendations |  | True | Optional |
 | EarlyContainment |  | True | Optional |
 
