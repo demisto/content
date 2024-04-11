@@ -511,7 +511,7 @@ def update_incident_command(client, args):
         resolve_comment=resolve_comment,
         add_comment=add_comment,
     )
-    is_closed = resolve_comment or (status and argToList(status, '_')[0] == 'resolved')
+    is_closed = resolve_comment or (status and argToList(status, '_')[0] == 'RESOLVED')
     if resolve_alerts and is_closed:
         args['status'] = args['status'].lower()
         update_related_alerts(client, args)
