@@ -16,6 +16,7 @@ from Infoblox import (
     INTEGRATION_MAX_RESULTS_DEFAULT,
     INTEGRATION_NETWORK_INFO_CONTEXT_KEY,
     INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY,
+    IP_MAPPING,
     IPv4AddressStatus,
     InfoBloxNIOSClient,
     get_extended_attributes_context,
@@ -648,8 +649,7 @@ class TestIPOperations:
     def test_transform_ip_context_known_keys(self):
         """
         Test for a scenario when the `infoblox-get-ip` command returns
-        an unexpected/unknown key and the program doesn't raise
-        an exception.
+        a expected/known response keys/.
 
         Given:
         - A mock response from InfoBlox API.
@@ -668,9 +668,9 @@ class TestIPOperations:
         ip: list[dict[str, Any]] = res.get("result")
 
         actual_transformation = transform_ip_context(ip)
-
         assert len(actual_transformation) == 1
-        assert actual_transformation[0].get("IpAddress") == ip[0].get("ip_address")
+        for k, v in IP_MAPPING.items():
+            assert actual_transformation[0].get(v) == ip[0].get(k)
 
     def test_transform_ip_context_unknown_key(self):
         """
@@ -697,9 +697,12 @@ class TestIPOperations:
         res: dict[str, list] = json.loads(mock_response)
         res["result"][0][unknown_key] = unknown_key_value
         ip = res.get("result")
-        actual = transform_ip_context(ip)
 
-        assert actual[0]["LeaseState"] == unknown_key_value
+        actual_transformation = transform_ip_context(ip)
+        assert len(actual_transformation) == 1
+        for k, v in IP_MAPPING.items():
+            assert actual_transformation[0].get(v) == ip[0].get(k)
+        assert actual_transformation[0]["LeaseState"] == unknown_key_value
 
 
 class TestHostRecordsOperations:
