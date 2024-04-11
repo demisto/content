@@ -541,3 +541,25 @@ Returns previews of hosts matching a specified search query, or a list of certif
 ## Additional Considerations for this Version
 * This version supports API v2 from Censys. 
 * Breaking backward compatibility: The Censys v2 integration does not support *websites* searches.
+
+### cen-host-history
+
+***
+The diff endpoint generates a JSONPatch (RFC6902) formatted patch by comparing a host against another host (or itself) at optionally given points in time.
+
+#### Base Command
+
+`cen-host-history`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | The IP Address of the original host. Referred to as Host A. | Required | 
+| ip_b | The IP Address of the other host. If not set, defaults to the host provided in the path. Referred to as Host B. | Optional | 
+| at_time | The point in time used as the basis for Host A. Requires historical API access. Nanosecond precision is allowed. Uses RFC3339 Timestamp. | Optional | 
+| at_time_b | Requires historical API access. Nanosecond precision is allowed. Uses RFC3339 Timestamp. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
