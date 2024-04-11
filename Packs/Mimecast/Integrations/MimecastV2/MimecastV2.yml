@@ -1,16 +1,15 @@
 category: Email
 commonfields:
-  id: MimecastV2
+  id: MimecastV2 - dev
   version: -1
 configuration:
-- defaultvalue: https://api.mimecast.com
+- defaultvalue: https://api.services.mimecast.com
   display: BaseUrl - API url including region, For example https://eu-api.mimecast.com
   name: baseUrl
   required: true
   type: 0
 - display: App ID
   name: appId
-  required: true
   type: 0
 - display: User Email Address (Use for auto token refresh)
   name: credentials
@@ -72,6 +71,17 @@ configuration:
   type: 8
   hidden: true
   required: false
+- display: Use OAuth 2.0
+  name:  use_oauth2
+  type: 8
+  required: false
+  defaultvalue: "false"
+- display: Client ID
+  name: client_id
+  type: 4
+- display: Client Secret
+  name: client_secret
+  type: 4
 - additionalinfo: Fetch specific incident types. Default value is "All".
   defaultvalue: All
   display: Fetch incident types
@@ -102,8 +112,8 @@ configuration:
   type: 8
   required: false
 description: Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
-display: Mimecast v2
-name: MimecastV2
+display: Mimecast v2 - dev
+name: MimecastV2 - dev
 script:
   commands:
   - arguments:
@@ -204,8 +214,9 @@ script:
     - contextPath: Mimecast.Message.Status
       description: Message status.
       type: string
-  - description: List all existing Mimecast blocked sender policies.
+  - description: Deprecated. Use mimecast-list-policies instead.
     name: mimecast-list-blocked-sender-policies
+    deprecated: true
     outputs:
     - contextPath: Mimecast.Policy.ID
       description: Policy ID.
@@ -244,9 +255,20 @@ script:
       description: Block emails to receiver type.
       type: string
   - arguments:
-    - description: Filter by policy ID.
+    - description: Filter by policy ID. The policy ID can be retrieved using mimecast-list-blocked-sender-policies data.id field mimecast-list-antispoofing-bypass-policies, mimecast-list-address-alteration-policies and mimecast-list-webwhiteurl-policies.
       name: policyID
       required: true
+    - description: According to this argument an endpoint is selected.
+      name: policyType
+      required: true
+      defaultValue: blockedsenders
+      type: string
+      auto: PREDEFINED
+      predefined:
+      - blockedsenders
+      - antispoofing-bypass
+      - address-alteration
+      - webwhiteurl
     description: Get a blocked sender policy by ID.
     name: mimecast-get-policy
     outputs:
@@ -328,8 +350,9 @@ script:
       - no_action
       - block_sender
       required: true
-    description: Create a Blocked Sender Policy.
+    description: Deprecated. Use mimecast-create-block-sender-policy instead.
     name: mimecast-create-policy
+    deprecated: true
     outputs:
     - contextPath: Mimecast.Policy.ID
       description: Policy ID.
@@ -368,9 +391,19 @@ script:
       description: The receiver type.
       type: String
   - arguments:
-    - description: Policy ID.
+    - description: policy ID. The policy ID can be retrieved using mimecast-list-blocked-sender-policies data.id field mimecast-list-antispoofing-bypass-policies, mimecast-list-address-alteration-policies and mimecast-list-webwhiteurl-policies.
       name: policyID
       required: true
+    - description: According to this argument an endpoint is selected.
+      name: policyType
+      required: true
+      defaultValue: blockedsenders
+      auto: PREDEFINED
+      predefined:
+      - blockedsenders
+      - antispoofing-bypass
+      - address-alteration
+      - webwhiteurl
     description: Delete a Blocked Sender Policy.
     name: mimecast-delete-policy
     outputs:
@@ -803,6 +836,7 @@ script:
       type: string
   - description: discover authentication types that are supported for your account and which base URL to use for the requesting user.
     name: mimecast-discover
+    deprecated: true
     outputs:
     - contextPath: Mimecast.Authentication.AuthenticationTypes
       description: List of authentication types available to the user.
@@ -815,8 +849,10 @@ script:
       type: string
   - description: Refresh access key validity.
     name: mimecast-refresh-token
+    deprecated: true
   - description: Login to generate Access Key and  Secret Key.
     name: mimecast-login
+    deprecated: true
   - arguments:
     - description: Message ID.
       name: messageID
@@ -1005,7 +1041,7 @@ script:
       description: The number of child groups.
       type: Number
   - arguments:
-    - description: The Mimecast ID of the group to return.
+    - description: The Mimecast ID of the group to return. can be retrieved by running mimecast-find-groups.
       name: group_id
       required: true
     - description: The maximum number of results to return.
@@ -1032,7 +1068,7 @@ script:
       description: Whether the user is part of the group.
       type: Boolean
   - arguments:
-    - description: The Mimecast ID of the group to add the user to.
+    - description: The Mimecast ID of the group to add the user to. can be retrieved by running mimecast-find-groups.
       name: group_id
       required: true
     - description: The email address of the user to add to a group.
@@ -1049,7 +1085,7 @@ script:
       description: Whether the user is part of the group.
       type: Boolean
   - arguments:
-    - description: The Mimecast ID of the group from which to remove the user.
+    - description: The Mimecast ID of the group from which to remove the user. can be retrieved by running mimecast-find-groups.
       name: group_id
       required: true
     - description: The email address of the user to remove from the group.
@@ -1069,7 +1105,7 @@ script:
     - description: The name of the new group.
       name: group_name
       required: true
-    - description: The Mimecast ID of the new group's parent. Default will be root level.
+    - description: The Mimecast ID of the new group's parent. Default will be root level. can be retrieved by running mimecast-find-groups.
       name: parent_id
     description: Creates a new Mimecast group.
     name: mimecast-create-group
@@ -1289,8 +1325,9 @@ script:
       - envelope_from
       - header_from
       - both
-    description: Updates the specified policy.
+    description: Deprecated. Use mimecast-update-block-sender-policy instead.
     name: mimecast-update-policy
+    deprecated: true
     outputs:
     - contextPath: Mimecast.Policy.ID
       description: Policy ID.

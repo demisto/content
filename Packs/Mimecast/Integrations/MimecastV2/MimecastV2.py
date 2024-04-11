@@ -15,6 +15,7 @@ from datetime import timedelta
 from urllib.error import HTTPError
 from xml.etree import ElementTree
 
+DEFAULT_POLICY_TYPE = 'blockedsenders'
 
 ''' GLOBALS/PARAMS '''
 
@@ -36,6 +37,10 @@ FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
 EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
 PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
+CLIENT_ID = demisto.params().get('client_id')
+CLIENT_SECRET = demisto.params().get('client_secret')
+USE_OAUTH2 = demisto.params().get("use_oauth2")
+TOKEN_OAUTH2 = ""
 
 
 LOG(f"command is {demisto.command()}")
@@ -121,11 +126,17 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     return results, len_of_results
 
 
-def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers=None):
+def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, oauth2=False, is_file=False, headers={}, data=None):
     is_user_auth = True
     url = BASE_URL + api_endpoint
-    # 2 types of auth, user and non user, mostly user is needed
-    if user_auth:
+    # 3 types of auth, user, non user and OAuth2
+    if USE_OAUTH2:
+        if TOKEN_OAUTH2:
+            headers['Authorization'] = f'Bearer {TOKEN_OAUTH2}'
+            headers['Accept'] = 'application/json'
+            headers['Content-Type'] = 'application/json'
+
+    elif user_auth:
         headers = headers or generate_user_auth_headers(api_endpoint)
 
     else:
@@ -149,9 +160,9 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             verify=USE_SSL,
             params=params,
             headers=headers,
-            json=payload
+            json=payload,
+            data=data
         )
-
         res.raise_for_status()
         if is_file:
             return res
@@ -435,6 +446,31 @@ def auto_refresh_token():
             refresh_token_request()
             current_ts = epoch_seconds()
             demisto.setIntegrationContext({'token_last_update': current_ts})
+
+
+def updating_token_oauth2():
+    """
+    Ensures the OAuth2 token is up to date, refreshing it if necessary.
+
+    Returns:
+        str: The updated OAuth2 token.
+    """
+    global TOKEN_OAUTH2
+    integration_context = demisto.getIntegrationContext()
+    last_update_ts = integration_context.get('last_update')
+    current_ts = epoch_seconds()
+    if (last_update_ts and current_ts - last_update_ts > 15 * 60) or last_update_ts is None:
+        TOKEN_OAUTH2 = token_oauth2_request()
+        if TOKEN_OAUTH2:
+            current_ts = epoch_seconds()
+            token_oauth2 = {
+                'value': TOKEN_OAUTH2,
+                'last_update': current_ts
+            }
+            demisto.setIntegrationContext(token_oauth2)
+
+    else:
+        TOKEN_OAUTH2 = integration_context.get('value')
 
 
 def generate_user_auth_headers(api_endpoint):
@@ -833,10 +869,12 @@ def get_policy():
     context = {}
     title = 'Mimecast list blocked sender policies: \n These are the existing Blocked Sender Policies:'
     policy_id = demisto.args().get('policyID')
+    policy_type = demisto.args().get('policyType')
+
     if policy_id:
         title = 'Mimecast Get Policy'
 
-    policies_list = get_policy_request(policy_id)
+    policies_list = get_policy_request(policy_type, policy_id)
     policies_context = []
     for policy_list in policies_list:
         policy = policy_list.get('policy')
@@ -893,9 +931,15 @@ def get_policy():
     return results
 
 
-def get_policy_request(policy_id=None):
+def get_policy_request(policy_type='blockedsenders', policy_id=None):
     # Setup required variables
-    api_endpoint = '/api/policy/blockedsenders/get-policy'
+    api_endpoints = {
+        'blockedsenders': 'blockedsenders/get-policy',
+        'antispoofing-bypass': 'antispoofing-bypass/get-policy',
+        'address-alteration': 'address-alteration/get-address-alteration-set',
+        'webwhiteurl': 'webwhiteurl/get-policy-with-targets',
+    }
+    api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
     data = []
     if policy_id:
         data.append({
@@ -1039,7 +1083,7 @@ def set_empty_value_args_policy_update(policy_obj, option, policy_id):
     # Check if there are any empty arguments
     if len(empty_args_list) > 0:
         # Fill the empty arguments with the current data using get policy request function
-        policy_details = get_policy_request(policy_id)[0]
+        policy_details = get_policy_request(policy_id=policy_id)[0]
         for arg in empty_args_list:
             if arg == "option":
                 option = policy_details["option"]
@@ -1143,8 +1187,9 @@ def delete_policy():
     contents = []  # type: List[Any]
     context = {}
     policy_id = demisto.args().get('policyID')
+    policy_type = demisto.args().get('policyType')
 
-    delete_policy_request(policy_id)
+    delete_policy_request(policy_id, policy_type)
 
     context['Mimecast.Policy(val.ID && val.ID == obj.ID)'] = {
         'ID': policy_id,
@@ -1163,9 +1208,15 @@ def delete_policy():
     return results
 
 
-def delete_policy_request(policy_id=None):
+def delete_policy_request(policy_type, policy_id=None):
     # Setup required variables
-    api_endpoint = '/api/policy/blockedsenders/delete-policy'
+    api_endpoints = {
+        'blockedsenders': 'blockedsenders/get-policy',
+        'antispoofing-bypass': 'antispoofing-bypass/get-policy',
+        'address-alteration': 'address-alteration/get-address-alteration-set',
+        'webwhiteurl': 'webwhiteurl/get-policy-with-targets',
+    }
+    api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
     data = [{
         'id': policy_id
     }]
@@ -1863,6 +1914,29 @@ def refresh_token_request():
     if response.get('fail'):
         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
     return response.get('data')[0]
+
+
+def token_oauth2_request():
+    if not CLIENT_ID:
+        raise Exception('In order to refresh a token validty duration, account\'s client id is required.')
+    if not CLIENT_SECRET:
+        raise Exception('In order to refresh a token validty duration, account\'s client secret is required.')
+    client_id = CLIENT_ID
+    client_secret = CLIENT_SECRET
+
+    api_endpoint = '/oauth/token'
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    data = {
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'grant_type': 'client_credentials'
+    }
+    response = http_request('POST', api_endpoint, user_auth=False, oauth2=True, headers=headers, data=data)
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('message')))
+    return response.get('access_token')
 
 
 def login():
@@ -3002,6 +3076,8 @@ def main():
     try:
         handle_proxy()
         determine_ssl_usage()
+        if USE_OAUTH2:
+            updating_token_oauth2()
         if ACCESS_KEY:
             auto_refresh_token()
         if command == 'test-module':
@@ -3013,7 +3089,9 @@ def main():
         elif command == 'mimecast-query':
             demisto.results(query(args))
         elif command == 'mimecast-list-blocked-sender-policies':
-            demisto.results(get_policy())
+            pass
+            # TODO run mimecast-list-policies
+            # demisto.results(get_policy())
         elif command == 'mimecast-get-policy':
             demisto.results(get_policy())
         elif command == 'mimecast-create-policy':
