@@ -26,6 +26,11 @@
                 "SEARCH_VALUE": "anomaly"
             }
           ]
+        },
+        {
+            "SEARCH_FIELD": "category",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Incident"
         }
       ]
     }
