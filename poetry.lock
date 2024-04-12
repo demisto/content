@@ -1538,21 +1538,23 @@ files = [
 
 [[package]]
 name = "dnspython"
-version = "2.0.0"
+version = "2.6.1"
 description = "DNS toolkit"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.8"
 files = [
-    {file = "dnspython-2.0.0-py3-none-any.whl", hash = "sha256:40bb3c24b9d4ec12500f0124288a65df232a3aa749bb0c39734b782873a2544d"},
-    {file = "dnspython-2.0.0.zip", hash = "sha256:044af09374469c3a39eeea1a146e8cac27daec951f1f1f157b1962fc7cb9d1b7"},
+    {file = "dnspython-2.6.1-py3-none-any.whl", hash = "sha256:5ef3b9680161f6fa89daf8ad451b5f1a33b18ae8a1c6778cdf4b43f08c0a6e50"},
+    {file = "dnspython-2.6.1.tar.gz", hash = "sha256:e8f0f9c23a7b7cb99ded64e6c3a6f3e701d78f50c55e002b839dea7225cff7cc"},
 ]
 
 [package.extras]
-curio = ["curio (>=1.2)", "sniffio (>=1.1)"]
-dnssec = ["cryptography (>=2.6)"]
-doh = ["requests", "requests-toolbelt"]
-idna = ["idna (>=2.1)"]
-trio = ["sniffio (>=1.1)", "trio (>=0.14.0)"]
+dev = ["black (>=23.1.0)", "coverage (>=7.0)", "flake8 (>=7)", "mypy (>=1.8)", "pylint (>=3)", "pytest (>=7.4)", "pytest-cov (>=4.1.0)", "sphinx (>=7.2.0)", "twine (>=4.0.0)", "wheel (>=0.42.0)"]
+dnssec = ["cryptography (>=41)"]
+doh = ["h2 (>=4.1.0)", "httpcore (>=1.0.0)", "httpx (>=0.26.0)"]
+doq = ["aioquic (>=0.9.25)"]
+idna = ["idna (>=3.6)"]
+trio = ["trio (>=0.23)"]
+wmi = ["wmi (>=1.5.1)"]
 
 [[package]]
 name = "docker"
@@ -2530,17 +2532,17 @@ files = [
 
 [[package]]
 name = "ipwhois"
-version = "1.2.0"
+version = "1.1.0"
 description = "Retrieve and parse whois data for IPv4 and IPv6 addresses."
 optional = false
 python-versions = "*"
 files = [
-    {file = "ipwhois-1.2.0-py2.py3-none-any.whl", hash = "sha256:9f14dfafb5d9eb7c7f56ab34cfad9868b5e453ab4161a90d69fb714fe712056a"},
-    {file = "ipwhois-1.2.0.tar.gz", hash = "sha256:831e3fef3b8041201a048e9456e3b80f45c6c8b7174f34ed211f66b596c84bbe"},
+    {file = "ipwhois-1.1.0-py2.py3-none-any.whl", hash = "sha256:1f01f7cf4b4d667df6859e9f52d0971aac830d1e602946b4c02f477a393cb585"},
+    {file = "ipwhois-1.1.0.tar.gz", hash = "sha256:904efbd8d5fbb3319fc7e3aa33923fdd272bb81fd5a04bd56fd9125be6437a71"},
 ]
 
 [package.dependencies]
-dnspython = "<=2.0.0"
+dnspython = "*"
 
 [[package]]
 name = "isodate"
