@@ -389,7 +389,8 @@ def in_email_domain_allowlist(email_from):
         True or False indicating if the domain is found or not
     """
     domain = email_from.split('@')[1]
-    # Expects an XSOAR list called EmailDomainAllowList with newline separated domains to allow emails to create incidents from with mail integration(s)
+    # Expects an XSOAR list called EmailDomainAllowList with newline separated domains to allow
+    # emails to create incidents from with mail integration(s)
     allowList = demisto.executeCommand("getList", {"listName": "EmailDomainAllowList"})[0]['Contents'].split('\r\n')
     found = False
     for item in allowList:

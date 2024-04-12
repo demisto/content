@@ -480,7 +480,7 @@ def test_in_email_domain_allowlist(mocker):
     allow_list = util_load_json('test_data/getList_emaildomainallowlist_success.json')
     mocker.patch.object(demisto, 'executeCommand', return_value=allow_list)
     result = in_email_domain_allowlist('user@example.com')
-    assert result == True
+    assert result is True  # noqa: E501
 
 
 @pytest.mark.parametrize(
