@@ -1,0 +1,41 @@
+{
+    "id": "10",
+    "ver": "2.1",
+    "result": {
+        "url": "/scan/result/file",
+        "status": {
+            "code": 0,
+            "message": "OK"
+        },
+        "data": {
+            "start_ts": 1706165683,
+            "finish_ts": 1706165683,
+            "untrusted": 1,
+            "now": 1708521632,
+            "rating": [
+                "Malicious"
+            ],
+            "score": 1,
+            "file_name": "pikachu.exe",
+            "jid": [
+                "6977873056495878792"
+            ],
+            "malware_name": [
+                "N/A",
+                "pokemon"
+            ],
+            "vid": [
+                123
+            ],
+            "behavior_info": 0,
+            "infected_os": [],
+            "detection_os": [],
+            "rating_source": [
+                "AV Scan Engine"
+            ],
+            "false_positive_negative": [
+                0
+            ]
+        }
+    }
+}

@@ -887,7 +887,7 @@ def rasterize_command():  # pragma: no cover
 
     rasterize_output = perform_rasterize(path=urls, rasterize_type=rasterize_type, wait_time=wait_time,
                                          navigation_timeout=navigation_timeout, include_url=include_url,
-                                         full_screen=full_screen, return_errors=True)
+                                         full_screen=full_screen, width=width, height=height, return_errors=True)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
 
     for index, (current_rasterize_output, current_url) in enumerate(zip(rasterize_output, urls)):
