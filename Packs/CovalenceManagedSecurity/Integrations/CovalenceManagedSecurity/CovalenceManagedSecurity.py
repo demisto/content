@@ -537,6 +537,7 @@ def main():
     args = demisto.args()
     command = demisto.command()
     broker_url = params.get('broker_url', '')
+    return_error_msg = None
     demisto.info(f'{command} is called')
 
     if broker_url and (command.startswith("cov-mgsec-broker") or command == 'test-module'):
@@ -638,11 +639,14 @@ def main():
             http_text = e.response.text  # Try to extract a text response if it exists.
         except AttributeError:
             http_text = e.response
-        return_error(f'Failed to execute {command} command with HTTP response: {str(http_text)}.'
-                     f'\nStack trace: {traceback.format_exc()}')
+        return_error_msg = (f'Failed to execute {command} command with HTTP response: {str(http_text)}.'
+                            f'\nStack trace: {traceback.format_exc()}')
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {command} command. Error: {str(e)}.\nStack trace: {traceback.format_exc()}')
+        return_error_msg = f'Failed to execute {command} command. Error: {str(e)}.\nStack trace: {traceback.format_exc()}'
+
+    if return_error_msg:
+        return_error(return_error_msg)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
