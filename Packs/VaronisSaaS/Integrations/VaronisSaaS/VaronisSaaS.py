@@ -145,7 +145,9 @@ INCIDENT_FIELDS = [
     "ContainsSensitiveData",
     "Locations",
     "Devices",
-    "Users"
+    "Users",
+    "mirror_direction",
+    "mirror_instance"
 ]
 MIRROR_DIRECTION_MAPPING = {
     "None": None,
@@ -1775,6 +1777,10 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
         enrich_with_url(alert, client._base_url, guid)
 
         alert_converted = convert_incident_alert_to_onprem_format(alert)
+        alert_converted.update({
+            'mirror_direction': MIRROR_DIRECTION_MAPPING.get(params.get('mirror_direction')),
+            'mirror_instance': demisto.integrationInstance()
+        })
 
         incident = {
             'name': f'Varonis alert {name}',
@@ -1782,8 +1788,6 @@ def fetch_incidents_command(client: Client, last_run: Dict[str, datetime], first
             'rawJSON': json.dumps(alert_converted),
             'type': 'Varonis SaaS Incident',
             'severity': convert_to_demisto_severity(alert_converted[AlertAttributes.Alert_Rule_Severity_Name]),
-            'mirror_direction': MIRROR_DIRECTION_MAPPING.get(params.get('mirror_direction')),
-            'mirror_instance': demisto.integrationInstance()
         }
 
         incidents.append(incident)
