@@ -829,8 +829,8 @@ def test_multi_thread_reply(scenario, mocker):
         assert validate_email_sent_call_args.args == validate_email_sent_expected
         assert create_context_call_args.args == create_context_expected
         assert reset_fields_mocker.called is True
-        
-        
+
+
 ALLOWLIST_APPENDED = 'example.com\r\nexample.gov'
 
 
