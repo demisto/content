@@ -1,0 +1,963 @@
+id: InsightIDREnhancement
+name: InsightIDREnhancement
+version: -1
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca00"
+    type: start
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca00"
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+        - "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":50}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+  "1":
+    id: 1
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca01"
+    type: regular
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca01"
+      version: -1
+      name: DeleteContext
+      description: ""
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "2"
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: '{"position":{"x":50,"y":200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "2":
+    id: 2
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca02"
+    type: regular
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca02"
+      version: -1
+      name: rapid7-insight-idr-list-investigations
+      description: ""
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-list-investigations
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "3"
+    scriptarguments:
+      time_range:
+        simple: 27 days
+      limit:
+        simple: 1
+      api_version:
+        simple: V2
+    separatecontext: false
+    view: '{"position":{"x":50,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "3":
+    id: "3"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca03"
+    type: condition
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca03"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "201"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.disposition
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.created_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.last_accessed
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.priority
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.source
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.title
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.organization_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
+    view: '{"position":{"x":50,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "201":
+    id: 201
+    taskid: "85400c83-8664-4380-a027-e2b5e434c201"
+    type: regular
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434c201"
+      version: -1
+      name: rapid7-insight-idr-list-users
+      description: ""
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-list-users
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "202"
+    scriptarguments:
+      limit:
+        simple: 1
+    separatecontext: false
+    view: '{"position":{"x":650,"y":400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "202":
+    id: "202"
+    taskid: "85400c83-8664-4380-a027-e2b5e434c202"
+    type: condition
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434c202"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "4"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.User.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.User.rrn
+                iscontext: true
+    view: '{"position":{"x":650,"y":600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "4":
+    id: 4
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca04"
+    type: regular
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca04"
+      version: -1
+      name: rapid7-insight-idr-get-investigation
+      description: ""
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-get-investigation
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "5"
+    scriptarguments:
+      investigation_id:
+        simple: ${Rapid7InsightIDR.Investigation.rrn}
+      api_version:
+        simple: V2
+    separatecontext: false
+    view: '{"position":{"x":50,"y":800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "5":
+    id: "5"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca05"
+    type: condition
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca05"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "6"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.disposition
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.created_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.last_accessed
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.priority
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.source
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.title
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.organization_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
+    view: '{"position":{"x":50,"y":1000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "6":
+    id: 6
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca06"
+    type: regular
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca06"
+      version: -1
+      name: rapid7-insight-idr-close-investigations
+      description: ""
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-close-investigations
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "7"
+    scriptarguments:
+      source:
+        simple: HUNT
+      start_time:
+        simple: "2020-12-04T10:00:00.515Z"
+      end_time:
+        simple: "2020-12-29T10:00:00.526Z"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "7":
+    id: 7
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca07"
+    type: regular
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca07"
+      version: -1
+      name: rapid7-insight-idr-assign-user
+      description: ""
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-assign-user
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "8"
+    scriptarguments:
+      investigation_id:
+        simple: ${Rapid7InsightIDR.Investigation.rrn}
+      user_email_address:
+        simple: test@test.com
+      api_version:
+        simple: V2
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "8":
+    id: "8"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca08"
+    type: condition
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca08"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "9"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.assignee.email
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.assignee.name
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.disposition
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.created_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.last_accessed
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.priority
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.source
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.title
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.organization_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
+    view: '{"position":{"x":50,"y":1600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "9":
+    id: 9
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca09"
+    type: regular
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca09"
+      version: -1
+      name: rapid7-insight-idr-set-status
+      description: ""
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-set-status
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "10"
+    scriptarguments:
+      status:
+        simple: open
+      investigation_id:
+        simple: ${Rapid7InsightIDR.Investigation.rrn}
+      api_version:
+        simple: V2
+    separatecontext: false
+    view: '{"position":{"x":50,"y":1800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "10":
+    id: "10"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca10"
+    type: condition
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca10"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "11"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.disposition
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.created_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.last_accessed
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.priority
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.source
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.title
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.organization_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
+    view: '{"position":{"x":50,"y":2000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "11":
+    id: 11
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca11"
+    type: regular
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca11"
+      version: -1
+      name: rapid7-insight-idr-create-investigation
+      description: ""
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-create-investigation
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "12"
+    scriptarguments:
+      title:
+        simple: test
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "12":
+    id: "12"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca12"
+    type: condition
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca12"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "13"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.disposition
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.created_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.last_accessed
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.priority
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.source
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.title
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.organization_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
+    view: '{"position":{"x":50,"y":2400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "13":
+    id: 13
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca13"
+    type: regular
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca13"
+      version: -1
+      name: rapid7-insight-idr-update-investigation
+      description: ""
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-update-investigation
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "14"
+    scriptarguments:
+      investigation_id:
+        simple: ${Rapid7InsightIDR.Investigation.rrn}
+      title:
+        simple: test1
+    separatecontext: false
+    view: '{"position":{"x":50,"y":2600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "14":
+    id: "14"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca14"
+    type: condition
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca14"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "15"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.disposition
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.created_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.last_accessed
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.priority
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.source
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.title
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.organization_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
+    view: '{"position":{"x":50,"y":2800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "15":
+    id: 15
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca15"
+    type: regular
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca15"
+      version: -1
+      name: rapid7-insight-idr-search-investigation
+      description: ""
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-search-investigation
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "16"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "16":
+    id: "16"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca16"
+    type: condition
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca16"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "17"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.disposition
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.created_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.last_accessed
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.priority
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.status
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.source
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.title
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.organization_id
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
+    view: '{"position":{"x":50,"y":3200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "17":
+    id: 17
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca17"
+    type: regular
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca17"
+      version: -1
+      name: rapid7-insight-idr-list-investigation-alerts
+      description: ""
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-list-investigation-alerts
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "18"
+    scriptarguments:
+      investigation_id:
+        simple: ${Rapid7InsightIDR.Investigation.rrn}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3400}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "18":
+    id: "18"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca18"
+    type: condition
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca18"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "19"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.alert
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.rrn
+                iscontext: true
+    view: '{"position":{"x":50,"y":3600}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "19":
+    id: 19
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca19"
+    type: regular
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca19"
+      version: -1
+      name: rapid7-insight-idr-list-investigation-product-alerts
+      description: ""
+      script: Rapid7 InsightIDR|||rapid7-insight-idr-list-investigation-product-alerts
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "20"
+    scriptarguments:
+      investigation_id:
+        simple: ${Rapid7InsightIDR.Investigation.rrn}
+    separatecontext: false
+    view: '{"position":{"x":50,"y":3800}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "20":
+    id: "20"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca20"
+    type: condition
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca20"
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      description: ""
+      brand: ""
+    nexttasks:
+      yes:
+        - "21"
+    separatecontext: false
+    conditions:
+      - label: yes
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.[0].alert
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: Rapid7InsightIDR.Investigation.[0].rrn
+                iscontext: true
+    view: '{"position":{"x":50,"y":4000}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+  "21":
+    id: "21"
+    taskid: "85400c83-8664-4380-a027-e2b5e434ca21"
+    type: title
+    task:
+      id: "85400c83-8664-4380-a027-e2b5e434ca21"
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: '{"position":{"x":50,"y":4200}}'
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
+inputs: []
+outputs: []
