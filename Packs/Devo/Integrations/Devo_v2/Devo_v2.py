@@ -33,6 +33,7 @@ FETCH_INCIDENTS_WINDOW = demisto.params().get("fetch_incidents_window")
 TIMEOUT = demisto.params().get("timeout", "60")
 PORT = arg_to_number(demisto.params().get("port", "443") or "443")
 ITEMS_PER_PAGE = 50
+IP_AS_STRING = True
 LIMIT = 100
 HEALTHCHECK_WRITER_RECORD = [{"hello": "world", "from": "demisto-integration"}]
 HEALTHCHECK_WRITER_TABLE = "test.keep.free"
@@ -604,10 +605,10 @@ def filter_results_by_fields(results, filtered_columns_string):
 
 def run_query_command(offset, items):
     to_query = demisto.args()["query"]
+    ip_as_string = (demisto.args().get("ip_as_string", IP_AS_STRING))
     timestamp_from = demisto.args()["from"]
     timestamp_to = demisto.args().get("to", None)
     write_context = demisto.args()["writeToContext"].lower()
-    int(demisto.args().get("queryTimeout", TIMEOUT))
     linq_base = demisto.args().get("linqLinkBase", None)
     time_range = get_time_range(timestamp_from, timestamp_to)
     to_query = f"{to_query} offset {offset} limit {items}"
@@ -626,7 +627,7 @@ def run_query_command(offset, items):
                      address=READER_ENDPOINT,
                      config=ClientConfig(response="json", stream=False))
 
-        results = api.query(query=to_query, dates={'from': from_time, 'to': to_time})
+        results = api.query(query=to_query, ip_as_string=ip_as_string, dates={'from': from_time, 'to': to_time})
     except Exception as e:
         return_error(f"Failed to execute Devo query: {str(e)}")
 
@@ -729,7 +730,7 @@ def get_alerts_command(offset, items):
                  address=READER_ENDPOINT,
                  config=ClientConfig(response="json", stream=False))
 
-    results = api.query(query=query, dates={'from': from_time, 'to': to_time})
+    results = api.query(query=query, dates={'from': from_time, 'to': to_time, 'timeZone': "UTC"})
 
     # Parse the JSON string
     data_dict = json.loads(results)
@@ -836,8 +837,6 @@ def multi_table_query_command(offset, items):
             + " limit "
             + str(items)
         )
-    # demisto.debug("fields from get_types")
-    # demisto.debug(fields)
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         for q in sub_queries:
