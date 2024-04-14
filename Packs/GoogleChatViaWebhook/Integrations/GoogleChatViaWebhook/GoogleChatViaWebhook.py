@@ -53,7 +53,7 @@ class Client(BaseClient):
         demisto.info(f'Message sent. Response: {res}')
         return res
 
-    def send_google_chat_custom_card(self, blocks: dict, threadName: Optional[str]):
+    def send_google_chat_custom_card(self, blocks: str, threadName: Optional[str]):
         """
         Sends the Google Chat custom card to the provided webhook.
 
@@ -120,32 +120,31 @@ def send_google_chat_message_command(client: Client, message: str, threadName: O
         which contains the readable_output indicating the message was sent.
     """
     res = client.send_google_chat_message(message=message, threadName=threadName)
-    if res:
-        result = {
-            'Message': res.get('text'),
-            'SpaceName': res.get('space').get('name'),
-            'SpaceDisplayName': res.get('space').get('displayName'),
-            'SpaceType': res.get('space').get('type'),
-            'CreatedTime': res.get('createTime'),
-            'ThreadReply': res.get('threadReply', False),
-            'ThreadName': res.get('thread').get('name'),
-            'Name': res.get('name'),
-            'SenderDisplayName': res.get('sender').get('displayName'),
-            'SenderName': res.get('sender').get('name'),
-            'SenderType': res.get('sender').get('type')
-        }
-        markdown = '### Google Chat\n'
-        markdown += tableToMarkdown('Message Webhook', result)
-        results = CommandResults(
-            readable_output=markdown,
-            outputs_prefix='GoogleChatWebhook.Message',
-            outputs_key_field='name',
-            outputs=result
-        )
-        return results
+    result = {
+        'Message': res.get('text'),
+        'SpaceName': res.get('space').get('name'),
+        'SpaceDisplayName': res.get('space').get('displayName'),
+        'SpaceType': res.get('space').get('type'),
+        'CreatedTime': res.get('createTime'),
+        'ThreadReply': res.get('threadReply', False),
+        'ThreadName': res.get('thread').get('name'),
+        'Name': res.get('name'),
+        'SenderDisplayName': res.get('sender').get('displayName'),
+        'SenderName': res.get('sender').get('name'),
+        'SenderType': res.get('sender').get('type')
+    }
+    markdown = '### Google Chat\n'
+    markdown += tableToMarkdown('Message Webhook', result)
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='GoogleChatWebhook.Message',
+        outputs_key_field='name',
+        outputs=result
+    )
+    return results
 
 
-def send_google_chat_custom_card_command(client: Client, blocks: dict, threadName: Optional[str]) -> CommandResults:
+def send_google_chat_custom_card_command(client: Client, blocks: str, threadName: Optional[str]) -> CommandResults:
     """
     send_google_chat_custom_card command: Sends the Google Chat custom card to the provided webhook.
 
@@ -159,30 +158,29 @@ def send_google_chat_custom_card_command(client: Client, blocks: dict, threadNam
         which contains the readable_output indicating the message was sent.
     """
     res = client.send_google_chat_custom_card(blocks=blocks, threadName=threadName)
-    if res:
-        result = {
-            'SpaceName': res.get('space').get('name'),
-            'SpaceDisplayName': res.get('space').get('displayName'),
-            'SpaceType': res.get('space').get('type'),
-            'CreatedTime': res.get('createTime'),
-            'ThreadReply': res.get('threadReply', False),
-            'ThreadName': res.get('thread').get('name'),
-            'Name': res.get('name'),
-            'SenderDisplayName': res.get('sender').get('displayName'),
-            'SenderName': res.get('sender').get('name'),
-            'SenderType': res.get('sender').get('type')
-        }
-        markdown = '### Google Chat\n'
-        markdown += tableToMarkdown('Custom Card Webhook', result)
-        # Add the card details to context after formatting md
-        result.update({'Cards': res.get('cardsV2')}),
-        results = CommandResults(
-            readable_output=markdown,
-            outputs_prefix='GoogleChatWebhook.CustomCard',
-            outputs_key_field='name',
-            outputs=result
-        )
-        return results
+    result = {
+        'SpaceName': res.get('space').get('name'),
+        'SpaceDisplayName': res.get('space').get('displayName'),
+        'SpaceType': res.get('space').get('type'),
+        'CreatedTime': res.get('createTime'),
+        'ThreadReply': res.get('threadReply', False),
+        'ThreadName': res.get('thread').get('name'),
+        'Name': res.get('name'),
+        'SenderDisplayName': res.get('sender').get('displayName'),
+        'SenderName': res.get('sender').get('name'),
+        'SenderType': res.get('sender').get('type')
+    }
+    markdown = '### Google Chat\n'
+    markdown += tableToMarkdown('Custom Card Webhook', result)
+    # Add the card details to context after formatting md
+    result.update({'Cards': res.get('cardsV2')})
+    results = CommandResults(
+        readable_output=markdown,
+        outputs_prefix='GoogleChatWebhook.CustomCard',
+        outputs_key_field='name',
+        outputs=result
+    )
+    return results
 
 
 def main() -> None:    # pragma: no cover
@@ -223,7 +221,7 @@ def main() -> None:    # pragma: no cover
             return_results(send_google_chat_message_command(client, message, threadName))
         # Runs the 'send-google-chat-custom-card' integration command
         elif command == 'send-google-chat-custom-card':
-            blocks = args.get('blocks', {})
+            blocks = args.get('blocks', '')
             threadName = args.get('threadName', '')
             return_results(send_google_chat_custom_card_command(client, blocks, threadName))
         else:
