@@ -1,61 +1,31 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 from CommonServerUserPython import *  # noqa
-
 import urllib3
 from typing import Dict, Any
+from openai import OpenAI
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
 ''' CONSTANTS '''
-
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+BASE_URL = 'https://api.openai.com/v1/chat/completions'
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
+    def __init__(self, api_key: str, base_url: str, proxy: bool, verify: bool):
+        super().__init__(base_url=base_url, proxy=proxy, verify=verify)
+        self.api_key = api_key
+        self.base_url = base_url
+        self.headers = {'Authorization': f"Bearer {self.api_key}", "Content-Type": "application/json"}
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+    def chatgpt(self, prompt: str):
+        options = {"max_tokens": 1000, "model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": prompt}]}
+        return self._http_request(method='POST', url_suffix='v1/chat/completions', json_data=options, headers=self.headers)
 
 
 ''' HELPER FUNCTIONS '''
@@ -95,7 +65,6 @@ def test_module(client: Client) -> str:
 
 # TODO: REMOVE the following dummy command function
 def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
     dummy = args.get('dummy', None)
     if not dummy:
         raise ValueError('dummy not specified')
@@ -108,6 +77,8 @@ def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> Comma
         outputs_key_field='',
         outputs=result,
     )
+
+
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
@@ -120,6 +91,41 @@ def main() -> None:
     :return:
     :rtype:
     """
+
+    params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
+
+    api_key = params.get('apikey')
+    verify = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
+
+    try:
+        client = Client(
+            base_url=BASE_URL,
+            api_key=api_key,
+            verify=verify,
+            proxy=proxy
+        )
+
+        if command == 'test-module':
+            return_results(test_module_command(client))
+
+        elif command == "gpt-send-message":
+            return_results(reputations_command(client=client, args=args))
+
+        elif command == "gpt-get-cve-info":
+            return_results(reputations_command(client=client, args=args))
+
+        elif command == "gpt-check-email-header":
+            return_results(reputations_command(client=client, args=args))
+
+        elif command == "gpt-check-email-body":
+            return_results(reputations_command(client=client, args=args))
+
+        except Exception as e:
+            demisto.error(traceback.format_exc())  # print the traceback
+            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
     # TODO: make sure you properly handle authentication
     # api_key = demisto.params().get('credentials', {}).get('password')
@@ -165,7 +171,6 @@ def main() -> None:
 
 
 ''' ENTRY POINT '''
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

@@ -1,8 +1,16 @@
-## BaseIntegration Help
+## OpenAI GPT
 
-Markdown file for integration configuration  help snippet. In this file add:
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+### Generate an API Key
+1. Sign-up or login to [https://platform.openai.com](https://platform.openai.com).
+2. Generate a new API Key at [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys).
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+### Models & Rate Limits
+The integration utilizes the **'Chat Completions'** endpoint merely. Therefor it will only be possible to configure models that support this endpoint (_https://api.openai.com/v1/chat/completions_). 
+
+Models differ in context window size (input size), rate limits, and are designed to suit tasks of varying complexity.
+- [Models overview](https://platform.openai.com/docs/models/overview)
+
+- Each model has its own requests' rate-limit: Refer to [rate-limits](https://platform.openai.com/docs/guides/rate-limits).
+
+TODO - UPDATE URL [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/openaigpt)
