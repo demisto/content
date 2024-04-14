@@ -679,25 +679,26 @@ def main():
                                 "comparing current pipeline status with nearest newer pipeline status")
                             pipeline_changed_status = is_pivot(current_pipeline=next_pipeline,
                                                                pipeline_to_compare=current_pipeline)
-                            # if we already sent a shame message for newer commits, we don't want to send another one for older commits,
-                            # but we will just add a message to its thread to inform that we fixed it #TODO rewrite
-                            if (pipeline_changed_status is not None) and (was_message_already_sent):
-                                #get the tread id
-                                thread_id = 1234
-                                special_message = "whatever"
-                                try:
-                                    response = slack_client.chat_postMessage(text="",
-                                                                             channel="test_slack_notifier_when_master_is_broken",
-                                                                             attachments=special_message,
-                                                                             username=SLACK_USERNAME, link_names=True,
-                                                                             thread_ts=thread_id)
-                                except Exception:
-                                    pass#TODO
-                                
-                    if (pipeline_changed_status is not None) and (not was_message_already_sent):
-                        shame_message = create_shame_message(suspicious_commits, pipeline_changed_status,  # type: ignore
-                                                             options.name_mapping_path)
-                        computed_slack_channel = "test_slack_notifier_when_master_is_broken"
+                    if pipeline_changed_status is not None: 
+                        # if we already sent a shame message for newer commits, we don't want to send another one for older commits,
+                        # but we will just add a message to its thread to inform that we fixed it #TODO rewrite
+                        if was_message_already_sent:
+                            #get the tread id
+                            thread_id = 1234
+                            special_message = "whatever"
+                            try:
+                                response = slack_client.chat_postMessage(text="",
+                                                                        channel="test_slack_notifier_when_master_is_broken",
+                                                                        attachments=special_message,
+                                                                        username=SLACK_USERNAME, link_names=True,
+                                                                        thread_ts=thread_id)
+                            except Exception:
+                                pass#TODO
+                            
+                        else:
+                            shame_message = create_shame_message(suspicious_commits, pipeline_changed_status,  # type: ignore
+                                                                options.name_mapping_path)
+                            computed_slack_channel = "test_slack_notifier_when_master_is_broken"
 
     slack_msg_data, threaded_messages = construct_slack_msg(triggering_workflow,
                                                             pipeline_url,
