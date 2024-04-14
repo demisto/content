@@ -5677,6 +5677,10 @@
         {
             "integrations": "Redmine",
             "playbookID": "Redmine-Test"
+        },
+        {
+            "integrations": "Palo Alto Networks AIOps",
+            "playbookID": "PaloAltoNetworksAIOps-Test"
         }
     ],
     "skipped_tests": {
@@ -6048,7 +6052,8 @@
         "PrismaCloudCompute",
         "ExpanseV2",
         "PrismaSaasSecurity",
-        "PaloAltoNetworks_IoT"
+        "PaloAltoNetworks_IoT",
+        "PaloAltoNetworksAIOps"
     ],
     "unmockable_integrations": {
         "NetscoutArborSightline": "Uses timestamp",
