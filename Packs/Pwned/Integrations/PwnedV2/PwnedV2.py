@@ -37,7 +37,7 @@ RETRIES_END_TIME = datetime.min
 
 def error_handler(res):
     if res.status_code == 404:
-        return
+        raise DemistoException("No result found.")
     else:
         demisto.error(
             'Error in API call to Pwned Integration [%d]. Full text: %s' % (res.status_code, res.text))
@@ -52,7 +52,8 @@ def http_request(method, url_suffix, params=None, data=None):
         'Content-Type': 'application/json',
         'Accept': 'application/json'
     }
-    return generic_http_request(method=method,
+    try:
+        return generic_http_request(method=method,
                                 server_url=BASE_URL,
                                 verify=USE_SSL,
                                 client_headers=headers,
@@ -61,7 +62,10 @@ def http_request(method, url_suffix, params=None, data=None):
                                 params=params,
                                 error_handler=error_handler,
                                 status_list_to_retry=[429],
-                                retries=10)
+                                retries=10,
+                                ok_codes=(200,))
+    except DemistoException:
+        return None
 
 
 def html_description_to_human_readable(breach_description):
