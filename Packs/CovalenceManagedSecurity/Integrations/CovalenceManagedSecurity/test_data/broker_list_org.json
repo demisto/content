@@ -1,0 +1,12 @@
+[
+    {
+        "ID": "2abeafb0-54d4-4a97-ba9a-df07e29f26a7",
+        "name": "Test Org 1",
+        "client_id": "2024-001-AAA"
+    },
+    {
+        "ID": "493618a8-47c6-4a66-88c5-536f4dfc36c0",
+        "name": "Test Org 2",
+        "client_id": "2024-001-BBB"
+    }
+]

@@ -1095,8 +1095,8 @@ def get_action_result(client, data_args):
 
 def main():
     params = demisto.params()
-    username = params.get('credentials').get('identifier')
-    password = params.get('credentials').get('password')
+    username = params.get('credentials', {}).get('identifier')
+    password = params.get('credentials', {}).get('password')
     domain = params.get('domain')
     # Remove trailing slash to prevent wrong URL path to service
     server = params['url'].strip('/')
@@ -1104,12 +1104,12 @@ def main():
     base_url = server + '/api/v2/'
     # Should we use SSL
     use_ssl = not params.get('insecure', False)
+    proxy = argToBoolean(params.get('proxy', False))
     api_token = params.get('credentials_api_token', {}).get('password') or params.get('api_token')
 
-    # Remove proxy if not set to true in params
-    handle_proxy()
     command = demisto.command()
-    client = Client(base_url, username, password, domain, api_token=api_token, verify=use_ssl)
+    client = Client(base_url, username, password, domain, api_token=api_token, verify=use_ssl, proxy=proxy)
+    handle_proxy()
     demisto.info(f'Command being called is {command}')
 
     commands = {

@@ -1,0 +1,1192 @@
+id: FortiSandboxv2
+version: -1
+name: FortiSandboxv2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 385604a2-cb88-48e5-835b-95ceb4f9fba3
+    type: start
+    task:
+      id: 385604a2-cb88-48e5-835b-95ceb4f9fba3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1707f8f0-7e77-44d6-849c-01f9a54b6f50
+    type: regular
+    task:
+      id: 1707f8f0-7e77-44d6-849c-01f9a54b6f50
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 93ecea5c-4c32-4e84-8409-a6f6c4731f9e
+    type: regular
+    task:
+      id: 93ecea5c-4c32-4e84-8409-a6f6c4731f9e
+      version: -1
+      name: file
+      script: FortiSandboxv2|||file
+      type: regular
+      iscommand: true
+      brand: FortiSandboxv2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      file:
+        simple: ${FortiSandbox.Submission.sha256}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e8117b40-09c1-489e-8257-4fa970e49e80
+    type: condition
+    task:
+      id: e8117b40-09c1-489e-8257-4fa970e49e80
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SSDeep
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Message
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: be1d3854-a7cd-4310-87ca-5ba3c72758fe
+    type: regular
+    task:
+      id: be1d3854-a7cd-4310-87ca-5ba3c72758fe
+      version: -1
+      name: url
+      script: FortiSandboxv2|||url
+      type: regular
+      iscommand: true
+      brand: FortiSandboxv2
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      url:
+        simple: www.google.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 4565ed1d-a069-42a2-8d33-d39b98dd7732
+    type: condition
+    task:
+      id: 4565ed1d-a069-42a2-8d33-d39b98dd7732
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f81b4f12-81a4-4589-8487-65c098e71a0c
+    type: regular
+    task:
+      id: f81b4f12-81a4-4589-8487-65c098e71a0c
+      version: -1
+      name: fortisandbox-submission-file-upload
+      script: FortiSandboxv2|||fortisandbox-submission-file-upload
+      type: regular
+      iscommand: true
+      brand: FortiSandboxv2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      entry_id:
+        simple: ${File.EntryID}
+      interval:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 06e5e34a-ef3e-4708-8647-47e2e024058b
+    type: condition
+    task:
+      id: 06e5e34a-ef3e-4708-8647-47e2e024058b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.sid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.jid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.start_ts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.finish_ts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.now
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.untrusted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.rating
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.malware_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.vid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.rating_source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.detail_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.download_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.false_positive_negative
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.file_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Message
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: f9b285d4-4fea-43e4-804a-e806e29b719e
+    type: regular
+    task:
+      id: f9b285d4-4fea-43e4-804a-e806e29b719e
+      version: -1
+      name: fortisandbox-submission-url-upload
+      script: FortiSandboxv2|||fortisandbox-submission-url-upload
+      type: regular
+      iscommand: true
+      brand: FortiSandboxv2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      interval:
+        simple: "5"
+      urls:
+        simple: www.google.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: b8889b1e-f9fc-4ad9-8fd1-86ef8c71f55e
+    type: condition
+    task:
+      id: b8889b1e-f9fc-4ad9-8fd1-86ef8c71f55e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.sid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.jid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.start_ts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.finish_ts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.now
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.untrusted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.rating
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.malware_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.vid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.rating_source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.detail_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.download_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.false_positive_negative
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.file_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: URL.Data
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Message
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 1c63ffda-338b-490f-802c-78bf3ee1f8a6
+    type: regular
+    task:
+      id: 1c63ffda-338b-490f-802c-78bf3ee1f8a6
+      version: -1
+      name: fortisandbox-submission-cancel
+      script: FortiSandboxv2|||fortisandbox-submission-cancel
+      type: regular
+      iscommand: true
+      brand: FortiSandboxv2
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      id:
+        simple: ${FortiSandbox.Submission.sid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: a69ac818-21e4-4a86-8937-6da7aea7f70b
+    type: regular
+    task:
+      id: a69ac818-21e4-4a86-8937-6da7aea7f70b
+      version: -1
+      name: fortisandbox-submission-job-verdict
+      script: FortiSandboxv2|||fortisandbox-submission-job-verdict
+      type: regular
+      iscommand: true
+      brand: FortiSandboxv2
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      id:
+        simple: ${FortiSandbox.Submission.jid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 9e0514d0-8f2b-4376-8ef9-9825a938ea9e
+    type: condition
+    task:
+      id: 9e0514d0-8f2b-4376-8ef9-9825a938ea9e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.start_ts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.finish_ts
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.now
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.false_positive_negative
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.malware_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.rating
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.rating_source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.untrusted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.detail_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.download_url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.jid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Message
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 676c5c3f-3d00-44d0-863a-1ecffbf62092
+    type: regular
+    task:
+      id: 676c5c3f-3d00-44d0-863a-1ecffbf62092
+      version: -1
+      name: fortisandbox-submission-job-list
+      script: FortiSandboxv2|||fortisandbox-submission-job-list
+      type: regular
+      iscommand: true
+      brand: FortiSandboxv2
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      id:
+        simple: ${FortiSandbox.Submission.sid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 87b6cc2e-1f5c-4b51-88fb-aae25a1592de
+    type: condition
+    task:
+      id: 87b6cc2e-1f5c-4b51-88fb-aae25a1592de
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.sid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: FortiSandbox.Submission.jid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 3061d66c-be0a-4ea5-870e-fb898f33e998
+    type: regular
+    task:
+      id: 3061d66c-be0a-4ea5-870e-fb898f33e998
+      version: -1
+      name: fortisandbox-submission-job-report
+      script: FortiSandboxv2|||fortisandbox-submission-job-report
+      type: regular
+      iscommand: true
+      brand: FortiSandboxv2
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      identifier:
+        simple: ${FortiSandbox.Submission.jid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: ba40e022-2127-4060-8b86-c1e4e76d9d46
+    type: condition
+    task:
+      id: ba40e022-2127-4060-8b86-c1e4e76d9d46
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.Name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: InfoFile.Info
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 525a7ba4-9040-4f7e-8e44-8e111793f2eb
+    type: title
+    task:
+      id: 525a7ba4-9040-4f7e-8e44-8e111793f2eb
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 3f39541a-959c-454b-8672-872a1cdeecf6
+    type: regular
+    task:
+      id: 3f39541a-959c-454b-8672-872a1cdeecf6
+      version: -1
+      name: File Create and Upload
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      data:
+        simple: helloworld
+      filename:
+        simple: helloworld.txt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3525,
+        "width": 380,
+        "x": 50,
+        "y": 110
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+description: ''
