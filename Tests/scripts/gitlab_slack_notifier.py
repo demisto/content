@@ -692,7 +692,7 @@ def main():
                                                                              username=SLACK_USERNAME, link_names=True,
                                                                              thread_ts=thread_id)
                                 except Exception:
-                                    pass
+                                    pass#TODO
                                 
                     if (pipeline_changed_status is not None) and (not was_message_already_sent):
                         shame_message = create_shame_message(suspicious_commits, pipeline_changed_status,  # type: ignore
