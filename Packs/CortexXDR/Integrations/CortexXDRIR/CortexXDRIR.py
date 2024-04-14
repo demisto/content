@@ -983,7 +983,7 @@ def update_remote_system_command(client, args):
             update_args = get_update_args(remote_args)
 
             update_args['incident_id'] = remote_args.remote_incident_id
-            if update_args.get('closingUserId'):
+            if update_args.get('closingUserId') and (not update_args.get('close_reason') and not update_args.get('closeReason')):
                 update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
             demisto.debug(f"{update_args=}")
