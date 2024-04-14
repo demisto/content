@@ -761,7 +761,7 @@ def test_schedule_command_sample_upload_when_state_is_fail(
         (
             "test",
             None,
-            {"files": "test", "data": {"api_key": "api_key_test"}, "params": {}},
+            {"files": "test", "data": {"api_key": "api_key_test", 'classify': True}, "params": {}},
         ),
     ],
 )
