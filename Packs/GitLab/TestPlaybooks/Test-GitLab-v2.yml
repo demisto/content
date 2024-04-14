@@ -1410,7 +1410,7 @@ tasks:
       - "74"
     scriptarguments:
       file_path:
-        simple: ./CheckFileCommand
+        simple: CheckFileCommand
       ref:
         simple: main
     separatecontext: false
@@ -1447,7 +1447,7 @@ tasks:
       - "88"
     scriptarguments:
       file_path:
-        simple: ./CheckFileCommand
+        simple: CheckFileCommand
       ref:
         simple: main
     separatecontext: false
