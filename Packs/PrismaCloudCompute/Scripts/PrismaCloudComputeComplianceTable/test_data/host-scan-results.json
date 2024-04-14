@@ -1,0 +1,144 @@
+{
+  "EnrichedComplianceIssue": {
+    "cause": "unable to evaluate check fork/exec /bin/sh: no such file or directory",
+    "cri": false,
+    "custom": true,
+    "cve": "",
+    "cvss": 0,
+    "description": "",
+    "discovered": "0001-01-01T00:00:00Z",
+    "exploit": "",
+    "fixDate": "January 01, 1970 00:00:00 AM",
+    "functionLayer": "",
+    "id": 1337,
+    "layerTime": 0,
+    "link": "",
+    "packageName": "",
+    "packageVersion": "",
+    "published": 0,
+    "riskFactors": null,
+    "secret": {},
+    "severity": "high",
+    "status": "",
+    "templates": null,
+    "text": "",
+    "title": "title",
+    "twistlock": false,
+    "type": "custom",
+    "vecStr": "",
+    "wildfireMalware": {}
+  },
+  "PrismaCloudCompute": {
+    "ReportHostScan": [
+      {
+        "Secrets": null,
+        "_id": "some_report__id",
+        "agentless": false,
+        "allCompliance": {},
+        "appEmbedded": false,
+        "binaries": null,
+        "cloudMetadata": {
+          "accountID": "some_account_id",
+          "awsExecutionEnv": "some_aws_exc_env",
+          "image": "some_cm_image",
+          "provider": "some_provider",
+          "region": "us-west-2",
+          "resourceID": "some_resource_id",
+          "type": "some_type"
+        },
+        "collections": [
+            "All",
+            "Collection1"
+        ],
+        "complianceDistribution": {
+          "critical": 2,
+          "high": 31,
+          "low": 16,
+          "medium": 52,
+          "total": 101
+        },
+        "complianceIssues": null,
+        "complianceIssuesCount": 101,
+        "complianceRiskScore": 2315216,
+        "creationTime": "0001-01-01T00:00:00Z",
+        "distro": "some_distro",
+        "err": "",
+        "files": null,
+        "firewallProtection": {
+          "enabled": false,
+          "outOfBandMode": "some_mode",
+          "supported": true
+        },
+        "firstScanTime": "2023-05-23T01:40:26.186Z",
+        "foundSecrets": null,
+        "history": null,
+        "hostDevices": [
+          {
+            "ip": "some_ip",
+            "name": "some_name"
+          }
+        ],
+        "hostname": "some_hostname1",
+        "hosts": {},
+        "image": {
+          "created": "0001-01-01T00:00:00Z"
+        },
+        "installedProducts": {
+          "docker": "some_docker",
+          "hasPackageManager": true,
+          "osDistro": "some_os_distro"
+        },
+        "instances": [],
+        "isARM64": false,
+        "labels": [
+          "label1",
+          "label2"
+        ],
+        "malwareAnalyzedTime": "0001-01-01T00:00:00Z",
+        "osDistro": "some_os_distro",
+        "osDistroRelease": "some_os_distro_release",
+        "osDistroVersion": "",
+        "packageCorrelationDone": false,
+        "packageManager": false,
+        "packages": null,
+        "pushTime": "0001-01-01T00:00:00Z",
+        "redHatNonRPMImage": false,
+        "repoDigests": [],
+        "repoTag": null,
+        "riskFactors": {
+          "Attack complexity: low": {},
+          "Attack vector: network": {},
+          "Critical severity": {},
+          "DoS - High": {},
+          "DoS - Low": {},
+          "Has fix": {},
+          "High severity": {},
+          "Medium severity": {},
+          "Package in use": {},
+          "Recent vulnerability": {},
+          "Remote execution": {}
+        },
+        "scanBuildDate": "20231106",
+        "scanID": 0,
+        "scanTime": "2024-01-08T06:14:39.078Z",
+        "scanVersion": "some_scan_version",
+        "secretScanMetrics": {},
+        "startupBinaries": null,
+        "tags": [],
+        "trustStatus": "",
+        "type": "some_type",
+        "vulnerabilities": null,
+        "vulnerabilitiesCount": 464,
+        "vulnerabilityDistribution": {
+          "critical": 25,
+          "high": 236,
+          "low": 18,
+          "medium": 185,
+          "total": 464
+        },
+        "vulnerabilityRiskScore": 27378518,
+        "wildFireUsage": null
+      }
+    ]
+  }
+}
