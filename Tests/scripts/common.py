@@ -448,9 +448,13 @@ def was_message_already_sent(commit_index: int, list_of_commits: list, list_of_p
     for previous_commit, current_commit in pairwise(reversed(list_of_commits[:commit_index])):
         current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
         previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
-        # in rare cases some commits have no pipeline
-        if current_pipeline and previous_pipeline and (is_pivot(current_pipeline, previous_pipeline) is not None):
+        # In rare cases, some commits have no pipeline
+        if not current_pipeline or not previous_pipeline:
+            continue
+        
+        if is_pivot(current_pipeline, previous_pipeline) is not None:
             return True
+
     return False
 
 
