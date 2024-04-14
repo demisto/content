@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from contextlib import contextmanager
 
 from typing import Any
 from collections.abc import Callable
@@ -172,7 +173,7 @@ class Client:
             demisto.debug('Initializing engine with no pool (NullPool)')
             engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection,
                                               poolclass=sqlalchemy.pool.NullPool)
-        return engine.connect()
+        return engine
 
     def sql_query_execute_request(self, sql_query: str, bind_vars: Any, fetch_limit=0) -> tuple[list[dict], list]:
         """Execute query in DB via engine
@@ -598,6 +599,19 @@ SQL_LOGGERS = [
 ]
 
 
+# Custom context manager to manage the connection with TTL
+@contextmanager
+def connection_with_ttl(engine, ttl_seconds):
+    # Open a new connection
+    connection = engine.connect()
+    try:
+        # Yield the connection to the caller
+        yield connection
+    finally:
+        # Close the connection
+        connection.close()
+
+
 def main():
     sql_loggers: list = []  # saves the debug loggers
     try:
@@ -629,41 +643,46 @@ def main():
             pool_ttl = DEFAULT_POOL_TTL
         command = demisto.command()
         LOG(f'Command being called in SQL is: {command}')
-        client = Client(dialect=dialect, host=host, username=user, password=password,
+        engine = Client(dialect=dialect, host=host, username=user, password=password,
                         port=port, database=database, connect_parameters=connect_parameters,
                         ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,
                         pool_ttl=pool_ttl, use_ldap=use_ldap)
-        commands: dict[str, Callable[[Client, dict[str, str], str], tuple[str, dict[Any, Any], list[Any]]]] = {
-            'test-module': test_module,
-            'query': sql_query_execute,
-            'pgsql-query': sql_query_execute,
-            'sql-command': sql_query_execute
-        }
-        if command in commands:
-            return_outputs(*commands[command](client, demisto.args(), command))
-        elif command == 'fetch-incidents':
-            incidents, last_run = fetch_incidents(client, params)
-            demisto.setLastRun(last_run)
-            demisto.incidents(incidents)
-        else:
-            raise NotImplementedError(f'{command} is not an existing Generic SQL command')
-    except Exception as err:
-        if 'certificate verify failed' in str(err):
-            return_error("Unexpected error: certificate verify failed, unable to get local issuer certificate. "
-                         "Try selecting 'Trust any certificate' checkbox in the integration configuration.")
-        else:
-            return_error(
-                f'Unexpected error: {str(err)} \nquery: {demisto.args().get("query")}')
+
+        try:
+            # Use the custom context manager to manage the connection
+            with connection_with_ttl(engine.connection, ttl_seconds=engine.pool_ttl) as connection:
+                commands: dict[str, Callable[[Client, dict[str, str], str], tuple[str, dict[Any, Any], list[Any]]]] = {
+                    'test-module': test_module,
+                    'query': sql_query_execute,
+                    'pgsql-query': sql_query_execute,
+                    'sql-command': sql_query_execute
+                }
+                if command in commands:
+                    return_outputs(*commands[command](connection, demisto.args(), command))
+                elif command == 'fetch-incidents':
+                    incidents, last_run = fetch_incidents(connection, params)
+                    demisto.setLastRun(last_run)
+                    demisto.incidents(incidents)
+                else:
+                    raise NotImplementedError(f'{command} is not an existing Generic SQL command')
+
+        except Exception as err:
+            if 'certificate verify failed' in str(err):
+                return_error("Unexpected error: certificate verify failed, unable to get local issuer certificate. "
+                             "Try selecting 'Trust any certificate' checkbox in the integration configuration.")
+            return_error(f'Unexpected error: {str(err)} \nquery: {demisto.args().get("query")}')
     finally:
         try:
-            if client.connection:
-                client.connection.close()
+            if engine.connection:
+                # Close the engine after use
+                engine.connection.dispose()
         except Exception as ex:
             demisto.error(f'Failed closing connection: {str(ex)}')
-        if sql_loggers:
-            for lgr in sql_loggers:
-                demisto.debug(f'setting back ERROR for logger: {repr(lgr)}')
-                lgr.setLevel(logging.ERROR)
+
+            if sql_loggers:
+                for lgr in sql_loggers:
+                    demisto.debug(f'setting back ERROR for logger: {repr(lgr)}')
+                    lgr.setLevel(logging.ERROR)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
