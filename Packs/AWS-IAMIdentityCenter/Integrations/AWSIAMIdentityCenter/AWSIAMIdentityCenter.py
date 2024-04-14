@@ -405,7 +405,7 @@ def list_group_memberships(args, client):
 
 def test_function(args, client):    # pragma: no cover
     if not IDENTITYSTOREID:
-        return_error("The parameter Identity Store ID can be empty and added as an argument to each command, but Test button will fail.")
+        return_error("The parameter Identity Store ID can be empty and added as an argument to each command, but Test will fail.")
     response = client.list_users(
         IdentityStoreId=f'{IDENTITYSTOREID}',
     )
