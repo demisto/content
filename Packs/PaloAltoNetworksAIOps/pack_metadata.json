@@ -1,6 +1,6 @@
 {
     "name": "Palo Alto Networks AIOps",
-    "description": "Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations and compares them to the best practices.",
+    "description": "Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
