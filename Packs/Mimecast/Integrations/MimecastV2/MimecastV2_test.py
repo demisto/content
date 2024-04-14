@@ -686,3 +686,41 @@ def test_get_message_metadata_with_attachments(mocker):
     assert expected_metadata.get('attachments')[0].get('filename') == actual_metadata.get('Attachments')[0].get('FileName')
     assert expected_metadata.get('attachments')[0].get('extension') == actual_metadata.get('Attachments')[0].get('Extension')
     assert expected_metadata.get('attachments')[0].get('id') == actual_metadata.get('Attachments')[0].get('ID')
+
+
+def test_get_archive_search_logs_command(mocker):
+    """_summary_
+
+    Args:
+        mocker (_type_): _description_
+    """
+
+    args = {'query_xml': 'aa@aa.aa'}
+    expected_response = {
+        "meta": {
+            "pagination": {
+                "pageSize": 10,
+                "totalCount": 234,
+                "next": "asides"
+            },
+            "status": 200
+        },
+        "data": [
+            {
+                "logs": [
+                    {
+                        "createTime": "2024-03-20T11:39:36+0000",
+                        "emailAddr": "aa@aaaa.aaa.aa.com",
+                        "source": "archive",
+                        "searchText": "aaaaasas",
+                        "searchReason": "",
+                        "description": "Message Tracking Search"
+                    }
+                ]
+            }
+        ],
+        "fail": []
+    }
+    mocker.patch.object(MimecastV2, 'http_request', return_value={'data': [expected_response]})
+    result = MimecastV2.get_archive_search_logs_command(args)
+    assert expected_response.get('data') == result.outputs[0]['data']

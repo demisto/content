@@ -75,7 +75,7 @@ configuration:
   name:  use_oauth2
   type: 8
   required: false
-  defaultvalue: "false"
+  defaultvalue: "true"
 - display: Client ID
   name: client_id
   type: 4
@@ -2077,6 +2077,19 @@ script:
     - contextPath: Mimecast.EmailQueue.outboundEmailQueue.date
       description: The date for the displayed number of messages.
       type: Date
+  - name: mimecast-get-archive-search-logs
+    description: Retrieves archive search logs.
+    arguments:
+    - name: query_xml
+      type: String
+    - name: page
+      type: Number
+    - name: page_size
+      type: Number
+      defaultValue: 50
+    - name: limit
+      type: Number
+      defaultValue: 50
   isfetch: true
   runonce: false
   script: '-'

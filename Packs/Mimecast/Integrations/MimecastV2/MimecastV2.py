@@ -411,6 +411,35 @@ def list_email_queues_request(args):
                         payload=payload)
 
 
+def get_archive_search_logs_request(args):
+    """
+    Sends a request to get archive search logs.
+
+    :param args: A dictionary containing the request parameters.
+                 Should contain 'query_xml' key for the query XML.
+    :type args: dict
+
+    :return: The response from the API.
+    :rtype: dict
+    """
+
+    query = args.get('query_xml', '')
+    requestBody = None
+    if query:
+        requestBody = {
+            "data": [
+                {
+                    "query": query,
+                }
+            ]
+        }
+
+    return http_request('POST',
+                        api_endpoint='/api/archive/get-archive-search-logs',
+                        payload=requestBody
+                        )
+
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -3067,6 +3096,24 @@ def list_email_queues_command(args):
     )
 
 
+def get_archive_search_logs_command(args: dict) -> CommandResults:
+    """
+    Retrieves archive search logs based on the provided arguments.
+
+    :param args: A dictionary containing the command arguments.
+
+    :return: The CommandResults object containing the outputs and raw response.
+    """
+
+    response = get_archive_search_logs_request(args)
+
+    return CommandResults(
+        outputs_prefix='Mimecast.ArchiveSearchLog',
+        outputs=response.get('data'),
+        raw_response=response
+    )
+
+
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     # Check if token needs to be refresh, if it does and relevant params are set, refresh.
@@ -3160,6 +3207,8 @@ def main():
             return_results(search_processing_message_command(args))
         elif command == 'mimecast-list-email-queues':
             return_results(list_email_queues_command(args))
+        elif command == 'mimecast-get-archive-search-logs':
+            return_results(get_archive_search_logs_command(args))
 
     except Exception as e:
         return_error(e)
