@@ -9648,5 +9648,5 @@ def test_replace_send_preffix(mocker):
     mocker.patch('CommonServerPython.IntegrationLogger.build_curl')
     ilog = IntegrationLogger()
     ilog.set_buffering(False)
-    ilog.write('send: b"hello"\n')
-    assert mock_censor.call_args[0][0] == 'send: b\'hello"'
+    ilog.write('send: b"hello\n')
+    assert mock_censor.call_args[0][0] == "send: b\'hello"
