@@ -205,9 +205,6 @@ def open_prs_for_content_items(
     origin = repo.remotes.origin
     # To fetch al remote branches
     origin.fetch()
-    # logging.info(f'Checking out master\n{repo.git.checkout("master")}')
-    # Pull from master
-    # origin.pull()
 
     if staging_branch != master_branch_name:
         # If staging branch is the master/main branch, then no need to create or update it
@@ -219,21 +216,11 @@ def open_prs_for_content_items(
 
             # Checkout the staging branch
             logging.info(f"Checking out to staging branch: {staging_branch}\n{git.checkout(staging_branch)}")
-
-            # Get the reference to the branch you want to merge from
-            # Use 'refs/heads/branch' to reference a specific branch
-            # show_ref returns '{branch_ref} refs/heads/master', we run split()[0] to get branch_ref
-            master_branch_ref = git.show_ref(f"refs/heads/{master_branch_name}").split()[0]
-
-            # Merge the branch using its ref
-            merge_result = git.merge(master_branch_ref)
-            logging.info(f"Successfully merged changes from {master_branch_name} into {staging_branch}")
-            git.push()
+            # Make staging branch up to date with master
+            origin.pull(master_branch_name)
+            origin.push(staging_branch)
 
             logging.info(f"Checking out to active branch: {current_active_branch}\n{git.checkout(current_active_branch)}")
-            x = 0
-            # Make staging branch up to date with master
-            # src.edit(sha=source_branch.commit.sha)
         except GithubException as github_exception:
             if "Branch not found" in str(github_exception):
                 source_branch = remote_content_repo.get_branch(master_branch_name)
