@@ -1846,9 +1846,8 @@ def main():  # pragma: no cover
         elif command == 'tenable-io-export-vulnerabilities':
             vulnerabilities = []
             results = export_vulnerabilities_command(args)
-            if isinstance(results, CommandResults):
-                if results.raw_response:
-                    vulnerabilities = results.raw_response  # type: ignore
+            if isinstance(results, CommandResults) and results.raw_response:
+                vulnerabilities = results.raw_response  # type: ignore
             return_results(results)
             if argToBoolean(args.get('should_push_vulnerabilities', 'false')):
                 send_data_to_xsiam(vulnerabilities, product=f'{PRODUCT}_vulnerabilities', vendor=VENDOR)
