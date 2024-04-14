@@ -33,13 +33,24 @@ You can add a collection description as is doen in `collection1_name`, or enter 
 ## Access the TAXII Service by Instance Name
 To access the TAXII service by instance name, make sure *Instance execute external* is enabled. 
 
-1. In Cortex XSOAR 6.x:
-   1. Navigate to **Settings > About > Troubleshooting**.
-   2. In the **Server Configuration** section, verify that the *instance.execute.external* key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
-4. Trigger the webhook URL:
+<~XSOAR_ON_PREM>
+1. Navigate to **Settings > About > Troubleshooting**.
+2. In the **Server Configuration** section, verify that the *instance.execute.external* key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add the *instance.execute.external* and set the value to *true*.
+</~XSOAR_ON_PREM>
 
-   - (For Cortex XSOAR 6) In a web browser, go to https://*<xsoar_address>*/instance/execute/*<instance_name>* .
-   - (For Cortex XSOAR 8 or Cortex XSIAM) `https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+Trigger the TAXII Service URL:
+
+<~XSOAR_ON_PREM>
+In a web browser, go to https://*<xsoar_address>*/instance/execute/*<instance_name>*.
+</~XSOAR_ON_PREM>
+
+<~XSIAM>
+`https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+</~XSIAM>
+
+<~XSOAR_SAAS> 
+`https://ext-<tenant>.crtx.<region>.paloaltonetworks.com/xsoar/instance/execute/<instance-name>`
+</~XSOAR_SAAS>
 
 
 ## How to use HTTPS
