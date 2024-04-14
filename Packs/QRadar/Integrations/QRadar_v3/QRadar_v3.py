@@ -691,7 +691,7 @@ class Client(BaseClient):
     def reference_set_delete(self, ref_name: str, purge_only: Optional[str] = None, fields: Optional[str] = None):
         return self.http_request(
             method='DELETE',
-            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}',
+            url_suffix=f'/reference_data/sets/{parse.quote(parse.quote(ref_name, safe=""), safe="")}',
             params=assign_params(purge_only=purge_only, fields=fields)
         )
 
