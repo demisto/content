@@ -31,7 +31,6 @@ alter
         xdm.source.port = to_integer(coalesce(arrayindex(regextract(_raw_log,"Source\s\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)\s"),0),
                                               arrayindex(regextract(_raw_log,"client=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"),0),
                                               arrayindex(regextract(_raw_log,"ClientPort\s(\d+)"),0),
-                                              arrayindex(regextract(_raw_log,".+from\s.+?\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+)"),0),
                                               arrayindex(regextract(_raw_log,"pcb_fport\s\=\s(\d+)"),0),
                                               arrayindex(regextract(_raw_log,"Remote\sip\s\=\s\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\:(\d+).+\sto"),0)
                                               )),
