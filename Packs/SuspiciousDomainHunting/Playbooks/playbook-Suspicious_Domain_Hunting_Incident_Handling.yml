@@ -508,7 +508,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: incident.name
+                  simple: incident.domain
                 iscontext: true
               ignorecase: true
           transformers:
