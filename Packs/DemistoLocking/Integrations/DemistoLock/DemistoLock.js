@@ -46,11 +46,16 @@ switch (command) {
         var time = 0;
         var lock, version;
 
-        do{
-            [lock, version] = getLock();
-            if (lock.guid === guid) {
-                break;
-            }
+        // check if the process already holds the lock
+        [lock, version] = getLock();
+        if (lock.guid === guid) {
+            var md = '### Demisto Locking Mechanism\n';
+            md += 'Lock acquired successfully\n';
+            md += 'GUID: ' + guid;
+            return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
+        }
+        else {
+            // attempt to acquire the lock
             if (!lock.guid) {
                 try {
                     setLock(guid, lockInfo, version);
@@ -58,8 +63,104 @@ switch (command) {
                     logDebug(err.message)
                 }
             }
+            return {
+                Type: entryTypes.note,
+                Contents: 'Lock was acquired, Polling.',
+                PollingCommand: 'demisto-lock-get',
+                NextRun: '30',
+                PollingArgs: {name: lockName, info: lockInfo, timeout: lockTimeout},
+                Timeout: String(lockTimeout)
+            }
+        }
+
+
+        // if (time < lockTimeout) {
+        //     // Polling implementation
+        //     [lock, version] = getLock();
+        //     if (lock.guid === guid) {
+        //         break;
+        //     }
+        //     if (!lock.guid) {
+        //         try {
+        //             setLock(guid, lockInfo, version);
+        //         } catch(err) {
+        //             logDebug(err.message)
+        //         }
+        //     }
+        //     return {
+        //         Type: entryTypes.note,
+        //         Contents: 'This is a contents message',
+        //         PollingCommand: 'demisto-lock-get',
+        //         NextRun: time + '',
+        //         PollingArgs: {lockTimeout: lockTimeout, time: time, lockInfo: lockInfo},
+        //         Timeout: String(time++)
+
+        // }
+        // end - test polling
+
+        // do{
+        //     [lock, version] = getLock();
+        //     if (lock.guid === guid) {
+        //         break;
+        //     }
+        //     if (!lock.guid) {
+        //         try {
+        //             setLock(guid, lockInfo, version);
+        //         } catch(err) {
+        //             logDebug(err.message)
+        //         }
+        //     }
+        //     wait(1);
+        // } while (time++ < lockTimeout) ;
+
+        // [lock, version] = getLock();
+
+        // if (lock.guid === guid) {
+        //     var md = '### Demisto Locking Mechanism\n';
+        //     md += 'Lock acquired successfully\n';
+        //     md += 'GUID: ' + guid;
+        //     return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
+        // } else {
+        //     var md = 'Timeout waiting for lock\n';
+        //     md += 'Lock name: ' + lockName + '\n';
+        //     md += 'Lock info: ' + lock.info + '\n';
+        //     return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: md };
+        // }
+        // break;
+
+    case 'demisto-lock-get':
+        var lockTimeout = args.timeout || params.timeout || 600;
+        var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
+        lockInfo += (args.info) ? ' Additional info: ' + args.info : '';
+
+        var guid = guid();
+        var time = 0;
+        var lock, version;
+
+        do {
+            [lock, version] = getLock();
+            if (lock.guid === guid) {
+                break;
+            }
+            if (!lock.guid) {
+                try {
+                    setLock(guid, lockInfo, version);
+                } catch (err) {
+                    logDebug(err.message);
+                }
+            }
+            if (time % pollingThreshold === 0) {
+                return {
+                    Type: entryTypes.note,
+                    Contents: 'Sleep will complete in ' + time + ' seconds',
+                    PollingCommand: 'demisto-lock-get',
+                    NextRun: '1',
+                    PollingArgs: { timeout: lockTimeout - time, info: args.info },
+                    Timeout: String(lockTimeout + 60)
+                };
+            }
             wait(1);
-        } while (time++ < lockTimeout) ;
+        } while (time++ < lockTimeout);
 
         [lock, version] = getLock();
 
@@ -67,7 +168,7 @@ switch (command) {
             var md = '### Demisto Locking Mechanism\n';
             md += 'Lock acquired successfully\n';
             md += 'GUID: ' + guid;
-            return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
+            return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md };
         } else {
             var md = 'Timeout waiting for lock\n';
             md += 'Lock name: ' + lockName + '\n';
