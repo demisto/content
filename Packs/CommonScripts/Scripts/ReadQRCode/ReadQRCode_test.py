@@ -98,3 +98,29 @@ def test_read_qr_code_multiple_codes():
         'https://www.linkedin.com/company/1334758?trk=NUS_CMPY_TWIT',
         'http://en.m.wikipedia.org'
     ]
+
+def test_extract_indicators_from_text(mocker: MockerFixture):
+    """
+    Given:
+        The extractIndicators script returns an error.
+
+    When:
+        - Calling the extractIndicators script on the extracted text.
+
+    Then:
+        Debug the error and continue.
+    """
+    from ReadQRCode import extract_indicators_from_text
+
+    debug_func = mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(
+        demisto, 'executeCommand', return_value=[{
+            'Contents': 'Error message',
+            'Type': EntryType.ERROR
+        }],
+    )
+
+    res = extract_indicators_from_text(['a', 'b'])
+
+    assert res == {}
+    assert debug_func.assert_called_once_with('Error in "extractIndicators": Error message')
