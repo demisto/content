@@ -654,12 +654,6 @@ class Client(BaseClient):
             method='GET',
             url_suffix=f'/ariel/searches/{search_id}',
         )
-              
-    def search_delete_id(self, search_id: str):
-        return self.http_request(
-            method='DELETE',
-            url_suffix=f'/ariel/searches/{search_id}',
-        )
 
     def search_results_get(self, search_id: str, range_: Optional[str] = None):
         return self.http_request(
@@ -3345,8 +3339,7 @@ def qradar_reference_set_value_delete_command(client: Client, args: dict) -> Com
     original_value = value
 
     if date_value:
-        value = get_time_parameter(original_value, epoch_format=True)
-
+        value = str(get_time_parameter(original_value, epoch_format=True))
     # if this call fails, raise an error and stop command execution
     try:
         response = client.reference_set_value_delete(ref_name, value)
@@ -4199,6 +4192,9 @@ def qradar_search_retrieve_events_command(
         return CommandResults(
             readable_output='Not all events were fetched. partial data is available.',
         )
+        )
+        
+        )        
         
     if status == QueryStatus.ERROR.value:
         raise DemistoException('Polling for events failed')
