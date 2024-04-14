@@ -1,6 +1,6 @@
 certifi==2017.11.5
 chardet==3.0.4
-idna==2.6
+idna==3.7
 olefile==0.44
 pyyaml==3.12
 requests==2.18.4
