@@ -1368,7 +1368,6 @@ def export_vulnerabilities_command(args: Dict[str, Any]) -> PollResult:
         export_uuid_status_response = export_request_with_export_uuid(export_uuid, 'vulns')
         status = export_uuid_status_response.get('status')
         if status == 'FINISHED':
-            print("status is finished")
             chunks_details_list = get_export_chunks_details(export_uuid_status_response, export_uuid, 'vulns')
             command_results = export_vulnerabilities_build_command_result(chunks_details_list)
             return PollResult(command_results)
@@ -1851,7 +1850,6 @@ def main():  # pragma: no cover
                 if results.raw_response:
                     vulnerabilities = results.raw_response  # type: ignore
             return_results(results)
-            print(f"in main, results: {results.raw_response}")
             if argToBoolean(args.get('should_push_events', 'false')) and is_xsiam():
                 send_data_to_xsiam(vulnerabilities, product=f'{PRODUCT}_vulnerabilities', vendor=VENDOR)
 
