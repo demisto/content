@@ -644,7 +644,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
             # in case new entries created less than a minute after incident creation
 
         demisto_debug(f'tags: {tags}')
-        demisto_debug(f'tags: {categories}')
+        demisto_debug(f'categories: {categories}')
         integration_context = get_integration_context()
         XSOARMirror_mirror_reset: dict = json.loads(integration_context.get(MIRROR_RESET, '{}'))
         is_incident_update_after_reset = False
