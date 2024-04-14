@@ -16,6 +16,7 @@ load_dotenv()
 app = typer.Typer(no_args_is_help=True)
 CWD = os.getcwd()
 
+
 def load_json(path: str) -> dict[str, Any]:
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
@@ -63,18 +64,19 @@ def create_remote_pr(
         draft=True,
     )
 
-    if(pr_reviewers):
+    if pr_reviewers:
         pr.create_review_request(reviewers=pr_reviewers)
         logging.info(f'Requested review from {",".join(sorted(pr_reviewers))}')
 
-    if(pr_assignees):
+    if pr_assignees:
         pr.add_to_assignees(*pr_assignees)
         logging.info(f'Assigned to {",".join(sorted(pr_assignees))}')
 
-    if(pr_labels):
+    if pr_labels:
         pr.set_labels(*pr_labels)
         logging.info(f'Set labels to {",".join(sorted(pr_labels))}')
     return pr.html_url
+
 
 def update_content_items_docker_images_and_push(
     docker_image: str,
@@ -89,7 +91,7 @@ def update_content_items_docker_images_and_push(
     remote_content_repo: Repository.Repository,
     origin: Remote,
     pr_assignees: list[str],
-    pr_reviewers: list[str]
+    pr_reviewers: list[str],
 ) -> dict[str, Any]:
     """Updates the content items' docker tags, and pushes the changes to a remote branch.
 
@@ -151,12 +153,10 @@ def update_content_items_docker_images_and_push(
         updated_content_items=updated_content_items,
         pr_assignees=pr_assignees,
         pr_reviewers=pr_reviewers,
-        coverage=coverage
+        coverage=coverage,
     )
-    return {
-        "content_items": updated_content_items,
-        "pr_link": pr_link
-    }
+    return {"content_items": updated_content_items, "pr_link": pr_link}
+
 
 def comma_list(raw_data: str) -> list[str]:
     return raw_data.split(",") if raw_data else []
@@ -205,22 +205,38 @@ def open_prs_for_content_items(
     origin = repo.remotes.origin
     # To fetch al remote branches
     origin.fetch()
-
-    logging.info(f'Checking out master\n{repo.git.checkout("master")}')
+    # logging.info(f'Checking out master\n{repo.git.checkout("master")}')
     # Pull from master
-    origin.pull()
-    source_branch = remote_content_repo.get_branch(master_branch_name)
+    # origin.pull()
+
     if staging_branch != master_branch_name:
         # If staging branch is the master/main branch, then no need to create or update it
         try:
+            current_active_branch = repo.active_branch
             # Check if the staging branch exists, if not, create one
-            src = remote_content_repo.get_git_ref(f"heads/{staging_branch}")
+            remote_content_repo.get_git_ref(f"heads/{staging_branch}")
             # If reached here, that means there is a remote branch with the same name as the staging branch.
 
+            # Checkout the staging branch
+            logging.info(f"Checking out to staging branch: {staging_branch}\n{git.checkout(staging_branch)}")
+
+            # Get the reference to the branch you want to merge from
+            # Use 'refs/heads/branch' to reference a specific branch
+            # show_ref returns '{branch_ref} refs/heads/master', we run split()[0] to get branch_ref
+            master_branch_ref = git.show_ref(f"refs/heads/{master_branch_name}").split()[0]
+
+            # Merge the branch using its ref
+            merge_result = git.merge(master_branch_ref)
+            logging.info(f"Successfully merged changes from {master_branch_name} into {staging_branch}")
+            git.push()
+
+            logging.info(f"Checking out to active branch: {current_active_branch}\n{git.checkout(current_active_branch)}")
+            x = 0
             # Make staging branch up to date with master
-            src.edit(sha=source_branch.commit.sha)
+            # src.edit(sha=source_branch.commit.sha)
         except GithubException as github_exception:
             if "Branch not found" in str(github_exception):
+                source_branch = remote_content_repo.get_branch(master_branch_name)
                 # We need to create remote branch that corresponds to the staging branch
                 remote_content_repo.create_git_ref(ref="refs/heads/" + staging_branch, sha=source_branch.commit.sha)
             else:
@@ -238,22 +254,22 @@ def open_prs_for_content_items(
                 for current_batch in range(1, number_of_batches + 1):
                     logging.info(f"{current_batch=}")
                     content_items_for_batch = content_items[pr_batch_start:pr_batch_end]
-                    pr_content = update_content_items_docker_images_and_push(
-                        current_batch=current_batch,
-                        number_of_batches=number_of_batches,
-                        docker_image=docker_image,
-                        staging_branch=staging_branch,
-                        git=git,
-                        remote_content_repo=remote_content_repo,
-                        origin=origin,
-                        content_items=content_items_for_batch,
-                        pr_labels=image_config["pr_labels"],
-                        target_tag=image_config["target_tag"],
-                        coverage=image_config["coverage"],
-                        pr_assignees=pr_assignees,
-                        pr_reviewers=pr_reviewers
-                    )
-                    docker_images_prs_output[docker_image].append(pr_content)
+                    # pr_content = update_content_items_docker_images_and_push(
+                    #     current_batch=current_batch,
+                    #     number_of_batches=number_of_batches,
+                    #     docker_image=docker_image,
+                    #     staging_branch=staging_branch,
+                    #     git=git,
+                    #     remote_content_repo=remote_content_repo,
+                    #     origin=origin,
+                    #     content_items=content_items_for_batch,
+                    #     pr_labels=image_config["pr_labels"],
+                    #     target_tag=image_config["target_tag"],
+                    #     coverage=image_config["coverage"],
+                    #     pr_assignees=pr_assignees,
+                    #     pr_reviewers=pr_reviewers
+                    # )
+                    # docker_images_prs_output[docker_image].append(pr_content)
                     pr_batch_start = pr_batch_end
                     pr_batch_end = pr_batch_start + prs_limit_int
         if batch_dir:
