@@ -55,12 +55,6 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: Listen Port
-  name: longRunningPort
-  type: 0
-  section: Collect
-  required: false
-  additionalinfo: You must enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -437,7 +431,6 @@ script:
     description: Mirrors the investigation between MatterMost and the Cortex XSOAR War Room.
     name: mirror-investigation
   longRunning: true
-  longRunningPort: true
   runonce: false
   script: '-'
   type: python

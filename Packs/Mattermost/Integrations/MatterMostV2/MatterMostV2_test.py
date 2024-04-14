@@ -1,8 +1,8 @@
 import json
 from MatterMostV2 import (get_team_command, list_channels_command, create_channel_command, add_channel_member_command,
-                           remove_channel_member_command, list_users_command, close_channel_command, send_file_command,
-                           get_channel_id_to_send_notif, event_handler, handle_text_received_from_mm, get_channel_id_from_context,
-                           extract_entitlement, answer_question, handle_posts, create_incidents)
+                          remove_channel_member_command, list_users_command, close_channel_command, send_file_command,
+                          get_channel_id_to_send_notif, event_handler, handle_text_received_from_mm, get_channel_id_from_context,
+                          extract_entitlement, answer_question, handle_posts, create_incidents, get_war_room_url)
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
@@ -125,7 +125,7 @@ def test_add_channel_member_command(http_client):
             'channel_name': 'channel_name',
             'user_id': 'user_id', }
     results = add_channel_member_command(http_client, args)
-    assert 'The member user_id was added to the channel successfully' in results.readable_output
+    assert 'The member username was added to the channel successfully' in results.readable_output
 
 
 def test_remove_channel_member_command(http_client):
@@ -138,7 +138,7 @@ def test_remove_channel_member_command(http_client):
             'channel_name': 'channel_name',
             'user_id': 'user_id', }
     results = remove_channel_member_command(http_client, args)
-    assert 'The member user_id was removed from the channel successfully.' in results.readable_output
+    assert 'The member username was removed from the channel successfully.' in results.readable_output
 
 
 def test_list_users_command(http_client):
@@ -286,7 +286,7 @@ def test_extract_entitlement(entitlement, expected_result):
 
 
 @pytest.mark.asyncio
-async def test_handle_posts_regular_post(mocker):
+async def test_handle_posts_regular_post(http_client, mocker):
     """
     Given:
     - Post payload.
@@ -295,6 +295,7 @@ async def test_handle_posts_regular_post(mocker):
     Then:
     - Validate that the mirror investigation func was called.
     """
+    import MatterMostV2
     payload = util_load_json("test_data/posted_data_user.json")
     mock_integration_context = {
         'mirrors': json.dumps([
@@ -307,6 +308,7 @@ async def test_handle_posts_regular_post(mocker):
     investigation_id = 'Incident123'
     mirrorType = 'both'
     auto_close = True
+    MatterMostV2.CLIENT = http_client
     mocker.patch('MatterMostV2.get_integration_context', return_value=mock_integration_context)
     mocker.patch('MatterMostV2.handle_text_received_from_mm', return_value=None)
 
@@ -388,12 +390,12 @@ async def test_event_handler_bot_message(http_client, mocker):
     with patch('MatterMostV2.demisto') as mock_demisto:
         await handle_posts(bot_payload)
         mock_demisto.debug.assert_called_once_with(
-            msg="MM: Got a bot message. Will not mirror."
+            "MM: Got a bot message. Will not mirror."
         )
 
 
 @pytest.mark.asyncio
-async def test_event_handler_direct_message(ws_client, mocker):
+async def test_event_handler_direct_message(http_client, mocker):
     """
     Given:
     - dm post payload.
@@ -408,11 +410,9 @@ async def test_event_handler_direct_message(ws_client, mocker):
 
     payload = util_load_json("test_data/posted_data_user.json")
     payload["data"]["channel_type"] = "D"
-    mocker.patch.object(demisto, 'updateModuleHealth')
-    mocker.patch.object(demisto, 'directMessage', return_value={})
 
     with patch('MatterMostV2.demisto') as mock_demisto:
-        mocker.patch.object(mock_demisto, 'directMessage', return_value={})
+        mocker.patch.object(mock_demisto, 'updateModuleHealth')
         await handle_posts(payload)
         mock_demisto.directMessage.assert_called_once_with(
             "message", "user_id", "email", True
@@ -471,3 +471,28 @@ async def test_create_incidents(mocker):
     assert incident_arg == incidents_with_labels
     assert user_arg == 'demisto_user'
     assert data == 'nice'
+
+
+class TestGetWarRoomURL:
+
+    def test_get_war_room_url_with_xsiam_from_incident_war_room(self, mocker):
+        url = "https://example.com/WarRoom/INCIDENT-2930"
+        expected_war_room_url = "https://example.com/incidents/war_room?caseId=2930"
+        mocker.patch('MatterMostV2.is_xsiam', return_value=True)
+        mocker.patch.dict(demisto.callingContext, {'context': {'Inv': {'id': 'INCIDENT-2930'}}})
+
+        assert get_war_room_url(url) == expected_war_room_url
+
+    def test_get_war_room_url_without_xsiam_from_incident_war_room(self, mocker):
+        url = "https://example.com/WarRoom/INCIDENT-2930"
+        mocker.patch('MatterMostV2.is_xsiam', return_value=False)
+        expected_war_room_url = "https://example.com/WarRoom/INCIDENT-2930"
+        assert get_war_room_url(url) == expected_war_room_url
+
+    def test_get_war_room_url_with_xsiam_from_alert_war_room(self, mocker):
+        url = "https://example.com/WarRoom/ALERT-1234"
+        mocker.patch('MatterMostV2.is_xsiam', return_value=True)
+        mocker.patch.dict(demisto.callingContext, {'context': {'Inv': {'id': '1234'}}})
+        expected_war_room_url = \
+            "https://example.com/incidents/alerts_and_insights?caseId=1234&action:openAlertDetails=1234-warRoom"
+        assert get_war_room_url(url) == expected_war_room_url

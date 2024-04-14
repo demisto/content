@@ -39,7 +39,7 @@ MIRROR_TYPE = 'mirrorEntry'
 OBJECTS_TO_KEYS = {
     'messages': 'entitlement',
 }
-DEFAULT_OPTIONS = {
+DEFAULT_OPTIONS: Dict[str, Any] = {
     "timeout": 100,
     "request_timeout": None,
     "mfa_token": None,
@@ -55,7 +55,7 @@ ENTITLEMENT_REGEX = fr'{GUID_REGEX}@(({GUID_REGEX})|(?:[\d_]+))_*(\|\S+)?\b'
 ''' CLIENT CLASS '''
 
 
-class WebSocketClient:
+class WebSocketClient:  # pragma: no cover
     def __init__(
         self,
         base_url: str,
@@ -93,15 +93,11 @@ class WebSocketClient:
 
         while True:
             try:
-                kw_args: dict = {}
-                if self.options["websocket_kw_args"]:
-                    kw_args = self.options["websocket_kw_args"]
                 async with aiohttp.ClientSession() as session:
                     async with session.ws_connect(
                         uri,
                         ssl=SSL_CONTEXT,
                         proxy=PROXY_URL,
-                        **kw_args,
                     ) as websocket:
                         demisto.debug('MM: starting to authenticate')
                         await self.authenticate(websocket, event_handler)
@@ -141,7 +137,7 @@ class WebSocketClient:
         """
         Pongs the server if did not get a message within the timeframe
         """
-        timeout = self.options["timeout"]
+        timeout: float = self.options["timeout"]
         while True:
             since_last_msg: float = time.time() - self.last_msg
             next_timeout: float = timeout - since_last_msg if since_last_msg <= timeout else timeout
@@ -165,7 +161,7 @@ class WebSocketClient:
         while True:
             message = await websocket.receive_str()
             status = json.loads(message)
-            demisto.debug(f"MM: The statuate is: {status}")
+            demisto.debug(f"MM: The status is: {status}")
             await event_handler(self, message)
             if ("event" in status and status["event"] == "hello") and ("seq" in status and status["seq"] == 0):
                 demisto.debug("MM: Websocket authentification OK")
@@ -344,7 +340,7 @@ def next_expiry_time() -> float:
     return (datetime.now(timezone.utc) + timedelta(seconds=5)).timestamp()
 
 
-async def check_and_handle_entitlement(text: str, message_id: str, user_name: str) -> str:
+async def check_and_handle_entitlement(text: str, message_id: str, user_name: str) -> str:  # pragma: no cover
     """
     Handles an entitlement message (a reply to a question)
     Args:
@@ -386,7 +382,7 @@ def run_long_running():  # pragma: no cover
             demisto.error(f'MM: Failed to gracefully close the loop - {e_}')
 
 
-async def start_listening():
+async def start_listening():  # pragma: no cover
     """
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
@@ -401,7 +397,7 @@ async def start_listening():
         demisto.error(f"An error has occurred while gathering the loop tasks. {e}")
 
 
-async def mattermost_loop():
+async def mattermost_loop():  # pragma: no cover
 
     try:
         exception_await_seconds = 1
@@ -427,7 +423,8 @@ async def mattermost_loop():
         demisto.error(f"MM: An error has occurred while trying to create the socket client. {e}")
 
 
-def long_running_loop():
+def long_running_loop():  # pragma: no cover
+    global MIRRORING_ENABLED
     tts = 15 if MIRRORING_ENABLED else 60
     while True:
         error = ''
@@ -478,6 +475,7 @@ def is_bot_message(payload: dict) -> bool:
     :param payload: dict: The payload sent with the message
     :return: bool: True indicates the message was from a Bot, False indicates it was from an individual
     """
+    global CLIENT
     from_bot = payload.get('props', {}).get('from_bot', '')
     bot_id = get_user_id_from_token(CLIENT, bot_user=True)
     post = json.loads(payload.get("data", {}).get("post"))
@@ -671,6 +669,9 @@ def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
 
 
 async def answer_question(text: str, question: dict, email: str = ''):
+    """Answers a question from MattermostAskUser
+    """
+    global CLIENT
     entitlement = question.get('entitlement', '')
     to_id = question.get('to_id')
     guid, incident_id, task_id = extract_entitlement(entitlement)
@@ -703,6 +704,7 @@ async def process_entitlement_reply(  # TODO
     :param accountId: str: Zoom account ID
     :return: None
     """
+    global CLIENT
     if '{user}' in entitlement_reply:
         entitlement_reply = entitlement_reply.replace('{user}', str(user_name))
     if '{response}' in entitlement_reply and action_text:
@@ -738,6 +740,7 @@ async def handle_posts(payload):
     :param payload: str: The request payload from mattermost
     :return: None
     """
+    global CLIENT
     payload.get("broadcast", {})
     post = json.loads(payload.get("data", {}).get("post"))
     message = post.get('message', {})
@@ -1010,7 +1013,6 @@ def find_mirror_by_investigation() -> dict:
 
 def test_module(client: HTTPClient) -> str:  # pragma: no cover
     """Tests connectivity with the client.
-    Takes as an argument all client arguments to create a new client
     """
     if MIRRORING_ENABLED and (not LONG_RUNNING or not SECRET_TOKEN or not
                               client.bot_access_token):
@@ -1020,12 +1022,24 @@ For mirrors to work correctly, long running must be enabled and you must provide
 the MatterMost-bot following parameters:
 Bot Access Token""")
 
-    client.get_user_request(user_id='me', bot_user=False)
-    client.get_user_request(user_id='me', bot_user=True)
+    try:
+        client.get_user_request(user_id='me', bot_user=False)
+        client.get_user_request(user_id='me', bot_user=True)
 
-    if client.notification_channel and client.team_name:
-        channel_details = client.get_channel_by_name_and_team_name_request(client.team_name, client.notification_channel)
-        client.send_notification_request(channel_details.get('id', ''), 'Hi there! This is a test message from XSOAR.')
+        if client.notification_channel and client.team_name:
+            channel_details = client.get_channel_by_name_and_team_name_request(client.team_name, client.notification_channel)
+            client.send_notification_request(channel_details.get('id', ''), 'Hi there! This is a test message from XSOAR.')
+
+    except Exception as e:
+        demisto.debug(str(e))
+        if 'Unable to find the existing team' in str(e):
+            raise DemistoException('Could not find the team, make sure it is valid and/or exists.')
+        elif 'Channel does not exist' in str(e):
+            raise DemistoException('Channel does not exist.')
+        elif 'Invalid or expired session, please login again.' in str(e):
+            raise DemistoException('Invalid or expired session. Make sure the tokens are configured properly.')
+        else:
+            raise e
 
     return 'ok'
 
@@ -1059,7 +1073,7 @@ def list_channels_command(client: HTTPClient, args: dict[str, Any]) -> CommandRe
 
     team_details = client.get_team_request(team_name)
 
-    params = {'page': page, 'page_size': page_size}
+    params = {'page': page, 'per_page': page_size}
     channel_details = client.list_channel_request(team_details.get('id', ''), params)
 
     if include_private_channels:
@@ -1130,7 +1144,9 @@ def add_channel_member_command(client: HTTPClient, args: dict[str, Any]) -> Comm
     data = {'user_id': user_id}
     client.add_channel_member_request(channel_details.get('id', ''), data)
 
-    hr = f'The member {user_id} was added to the channel successfully, with channel ID: {channel_details.get("id")}'
+    user_details = client.get_user_request(user_id)
+
+    hr = f'The member {user_details.get("username", user_id)} was added to the channel successfully, with channel ID: {channel_details.get("id")}'  # noqa: E501
     return CommandResults(
         readable_output=hr
     )
@@ -1146,7 +1162,9 @@ def remove_channel_member_command(client: HTTPClient, args: dict[str, Any]) -> C
 
     client.remove_channel_member_request(channel_details.get('id', ''), user_id)
 
-    hr = f'The member {user_id} was removed from the channel successfully.'
+    user_details = client.get_user_request(user_id)
+
+    hr = f'The member {user_details.get("username", user_id)} was removed from the channel successfully.'
     return CommandResults(
         readable_output=hr
     )
@@ -1221,8 +1239,9 @@ def list_users_command(client: HTTPClient, args: dict[str, Any]) -> CommandResul
             raise DemistoException("Must provide a team name if a channel name was provided.")
         channel_details = client.get_channel_by_name_and_team_name_request(team_name, channel_name)
         channel_id = channel_details.get('id', '')
+        team_id = ''  # The search in Mattermost is done with an OR operator
 
-    params = {'page': page, 'page_size': page_size, 'in_team': team_id, 'in_channel': channel_id}
+    params = {'page': page, 'per_page': page_size, 'in_team': team_id, 'in_channel': channel_id}
     remove_nulls_from_dictionary(params)
 
     users = client.list_users_request(params)
@@ -1386,7 +1405,7 @@ def send_notification(client: HTTPClient, **args):
 
     to = args.get('to', '')
     entry = args.get('entry')
-    channel_name = args.get('channel', '') or client.notification_channel
+    channel_name = args.get('channel', '')
     mattermost_ask = argToBoolean(args.get('mattermost_ask', False))
     message_to_send = args.get("message", "")
     ignore_add_url = argToBoolean(args.get('ignoreAddURL', False))
@@ -1396,12 +1415,12 @@ def send_notification(client: HTTPClient, **args):
     original_message = args.get('originalMessage', '')  # From server
     entry_object = args.get('entryObject')  # From server
     investigation_id = ''
-    poll = {}
+    poll: dict = {}
 
     if (to and channel_name):
         raise DemistoException("Cannot use both to and channel_name arguments")
-    if not to and not channel_name:
-        raise DemistoException("Missing arguments, provide channel name or to argument.")
+
+    channel_name = channel_name or client.notification_channel
 
     if entry_object:
         investigation_id = entry_object.get('investigationId')  # From server, available from demisto v6.1 and above
@@ -1448,7 +1467,7 @@ def send_notification(client: HTTPClient, **args):
         raise DemistoException('Could not send message to Mattermost.')
 
 
-def create_poll(message: str, option_1: str = 'option 1', option_2: str = 'option 2'):
+def create_poll(message: str, option_1: str = 'option 1', option_2: str = 'option 2'):  # pragma: no cover
     """
     Creates a poll for the MattermostAsk script
     """
