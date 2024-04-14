@@ -1087,6 +1087,7 @@ When inserting invalid arguments, an error message could be returned.
 | vprScoreValue | When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR), score or scores according to the score operator (vprScoreOperator) argument. | Optional | 
 | vprScoreRange | When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR) score range. Example value: 2.5-3.5. | Optional | 
 | exportUuid | The export UUID. | Optional | 
+| should_push_events | Set this argument to True in order to create vulnerabilities, otherwise the command will only display the vulnerabilities. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 
