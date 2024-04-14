@@ -11928,15 +11928,14 @@ def safe_sleep(duration_seconds: float, adjust_sleep_time: bool=False ):
     """
     Sleeps for the given duration, but raises an error if it would exceed the TTL.
 
-    Args:
         :type duration_seconds: ``float``
         :param duration_seconds: The desired sleep duration in seconds.
 
         :type adjust_sleep_time: ``boolean``
         :param adjust_sleep_time: If set to true, the sleep duration will be the time left until container timeout.
 
-    Raises:
-        ValueError: If the sleep duration would exceed the remaining TTL.
+        :return: None
+        :rtype: ``None``
     """
     global SAFE_SLEEP_START_TIME
     run_duration = demisto.callingContext.get('context', {}).get('runDuration', 5) * 60
