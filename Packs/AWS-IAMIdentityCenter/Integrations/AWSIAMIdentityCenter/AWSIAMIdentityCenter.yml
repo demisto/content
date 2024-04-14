@@ -56,19 +56,19 @@ configuration:
   required: false
   section: Connect
   type: 4
-  # hidden: true
+  hidden: true
 - display: Secret Key
   name: secret_key
   required: false
   section: Connect
   type: 4
-  # hidden: true
-# - display: Access Key
-#   name: credentials
-#   type: 9
-#   displaypassword: Secret Key
-#   section: Connect
-#   required: false
+  hidden: true
+- display: Access Key
+  name: credentials
+  type: 9
+  displaypassword: Secret Key
+  section: Connect
+  required: false
 - additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
   display: Timeout
@@ -168,11 +168,11 @@ script:
     description: Creates a new IAM Identity Center user for your AWS account.
     name: aws-iam-identitycenter-create-user
     outputs:
-    - contextPath: AWS.IAMIdentityCenter.Users.UserId
+    - contextPath: AWS.IAMIdentityCenter.User.UserId
       description: The user Id.
       type: string
-    - contextPath: AWS.IAMIdentityCenter.Users.IdentityStoreId
-      name: Identity Store Id.
+    - contextPath: AWS.IAMIdentityCenter.User.IdentityStoreId
+      description: Identity Store Id.
       type: string
   - arguments:
     - auto: PREDEFINED
@@ -214,103 +214,103 @@ script:
     description: Retrieves information about the specified IAM user, including the user creation date, path, unique ID, and ARN.
     name: aws-iam-identitycenter-get-user
     outputs:
-    - contextPath: AWS.IAMIdentityCenter.Users.UserName
+    - contextPath: AWS.IAMIdentityCenter.User.UserName
       description: The friendly name identifying the user.
       type: string
-    - contextPath: AWS.IAMIdentityCenter.Users.UserId
+    - contextPath: AWS.IAMIdentityCenter.User.UserId
       description: The stable and unique string identifying the user.
       type: string
-    - contextPath: AWS.IAMIdentityCenter.Users.ExternalIds.Issuer
+    - contextPath: AWS.IAMIdentityCenter.User.ExternalIds.Issuer
       description: The issuer for an external identifier.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.ExternalIds.Id
+    - contextPath: AWS.IAMIdentityCenter.User.ExternalIds.Id
       description: The identifier issued to this resource by an external identity provider.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.Formatted
+    - contextPath: AWS.IAMIdentityCenter.User.Name.Formatted
       description: Formatted version of the user's name for display.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.FamilyName
+    - contextPath: AWS.IAMIdentityCenter.User.Name.FamilyName
       description: The family name of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.GivenName
+    - contextPath: AWS.IAMIdentityCenter.User.Name.GivenName
       description: The given name of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.MiddleName
+    - contextPath: AWS.IAMIdentityCenter.User.Name.MiddleName
       description: The middle name of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.HonorificPrefix
+    - contextPath: AWS.IAMIdentityCenter.User.Name.HonorificPrefix
       description: The honorific prefix of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.HonorificSuffix
+    - contextPath: AWS.IAMIdentityCenter.User.Name.HonorificSuffix
       description: The honorific suffix of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.DisplayName
+    - contextPath: AWS.IAMIdentityCenter.User.DisplayName
       description: The name of the user formatted for display when referenced.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.NickName
+    - contextPath: AWS.IAMIdentityCenter.User.NickName
       description: An alternate name for the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.ProfileUrl
+    - contextPath: AWS.IAMIdentityCenter.User.ProfileUrl
       description: URL associated with the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Emails.Value
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Value
       description: Email address associated with the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Emails.Type
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Type
       description: Type of email address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Emails.Primary
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Primary
       description: Indicates whether this is the primary email address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.StreetAddress
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.StreetAddress
       description: Street address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Locality
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Locality
       description: Address locality.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Region
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Region
       description: Region of the address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.PostalCode
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.PostalCode
       description: Postal code of the address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Country
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Country
       description: Country of the address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Formatted
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Formatted
       description: Formatted version of the address for display.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Type
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Type
       description: Type of address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Primary
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Primary
       description: Indicates whether this is the primary address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.PhoneNumbers.Value
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Value
       description: Phone number associated with the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.PhoneNumbers.Type
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Type
       description: Type of phone number.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.PhoneNumbers.Primary
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Primary
       description: Indicates whether this is the primary phone number.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.UserType
+    - contextPath: AWS.IAMIdentityCenter.User.UserType
       description: Type of user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Title
+    - contextPath: AWS.IAMIdentityCenter.User.Title
       description: Title of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.PreferredLanguage
+    - contextPath: AWS.IAMIdentityCenter.User.PreferredLanguage
       description: Preferred language of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Locale
+    - contextPath: AWS.IAMIdentityCenter.User.Locale
       description: Geographical region or location of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Timezone
+    - contextPath: AWS.IAMIdentityCenter.User.Timezone
       description: Time zone of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.IdentityStoreId
+    - contextPath: AWS.IAMIdentityCenter.User.IdentityStoreId
       description: Globally unique identifier for the identity store.
       type: String
   - arguments: 
@@ -357,103 +357,103 @@ script:
     description: Lists the IAM users, returns all users in the AWS account.
     name: aws-iam-identitycenter-list-users
     outputs:
-    - contextPath: AWS.IAMIdentityCenter.Users.UserName
+    - contextPath: AWS.IAMIdentityCenter.User.UserName
       description: The friendly name identifying the user.
       type: string
-    - contextPath: AWS.IAMIdentityCenter.Users.UserId
+    - contextPath: AWS.IAMIdentityCenter.User.UserId
       description: The stable and unique string identifying the user.
       type: string
-    - contextPath: AWS.IAMIdentityCenter.Users.ExternalIds.Issuer
+    - contextPath: AWS.IAMIdentityCenter.User.ExternalIds.Issuer
       description: The issuer for an external identifier.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.ExternalIds.Id
+    - contextPath: AWS.IAMIdentityCenter.User.ExternalIds.Id
       description: The identifier issued to this resource by an external identity provider.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.Formatted
+    - contextPath: AWS.IAMIdentityCenter.User.Name.Formatted
       description: Formatted version of the user's name for display.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.FamilyName
+    - contextPath: AWS.IAMIdentityCenter.User.Name.FamilyName
       description: The family name of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.GivenName
+    - contextPath: AWS.IAMIdentityCenter.User.Name.GivenName
       description: The given name of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.MiddleName
+    - contextPath: AWS.IAMIdentityCenter.User.Name.MiddleName
       description: The middle name of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.HonorificPrefix
+    - contextPath: AWS.IAMIdentityCenter.User.Name.HonorificPrefix
       description: The honorific prefix of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.HonorificSuffix
+    - contextPath: AWS.IAMIdentityCenter.User.Name.HonorificSuffix
       description: The honorific suffix of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.DisplayName
+    - contextPath: AWS.IAMIdentityCenter.User.DisplayName
       description: The name of the user formatted for display when referenced.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.NickName
+    - contextPath: AWS.IAMIdentityCenter.User.NickName
       description: An alternate name for the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.ProfileUrl
+    - contextPath: AWS.IAMIdentityCenter.User.ProfileUrl
       description: URL associated with the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Emails.Value
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Value
       description: Email address associated with the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Emails.Type
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Type
       description: Type of email address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Emails.Primary
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Primary
       description: Indicates whether this is the primary email address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.StreetAddress
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.StreetAddress
       description: Street address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Locality
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Locality
       description: Address locality.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Region
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Region
       description: Region of the address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.PostalCode
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.PostalCode
       description: Postal code of the address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Country
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Country
       description: Country of the address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Formatted
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Formatted
       description: Formatted version of the address for display.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Type
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Type
       description: Type of address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Primary
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Primary
       description: Indicates whether this is the primary address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.PhoneNumbers.Value
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Value
       description: Phone number associated with the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.PhoneNumbers.Type
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Type
       description: Type of phone number.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.PhoneNumbers.Primary
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Primary
       description: Indicates whether this is the primary phone number.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.UserType
+    - contextPath: AWS.IAMIdentityCenter.User.UserType
       description: Type of user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Title
+    - contextPath: AWS.IAMIdentityCenter.User.Title
       description: Title of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.PreferredLanguage
+    - contextPath: AWS.IAMIdentityCenter.User.PreferredLanguage
       description: Preferred language of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Locale
+    - contextPath: AWS.IAMIdentityCenter.User.Locale
       description: Geographical region or location of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Timezone
+    - contextPath: AWS.IAMIdentityCenter.User.Timezone
       description: Time zone of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.IdentityStoreId
+    - contextPath: AWS.IAMIdentityCenter.User.IdentityStoreId
       description: Globally unique identifier for the identity store.
       type: String
     - contextPath: AWS.IAMIdentityCenter.UserNextToken
@@ -503,22 +503,22 @@ script:
     description: Lists all the IAM groups in the AWS account.
     name: aws-iam-identitycenter-list-groups
     outputs:
-    - contextPath: AWS.IAMIdentityCenter.Groups.GroupId
+    - contextPath: AWS.IAMIdentityCenter.Group.GroupId
       description: The identifier for a group in the identity store.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Groups.DisplayName
+    - contextPath: AWS.IAMIdentityCenter.Group.DisplayName
       description: The display name value for the group.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Groups.ExternalIds.Issuer
+    - contextPath: AWS.IAMIdentityCenter.Group.ExternalIds.Issuer
       description: The issuer for an external identifier.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Groups.ExternalIds.Id
+    - contextPath: AWS.IAMIdentityCenter.Group.ExternalIds.Id
       description: The identifier issued to this resource by an external identity provider.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Groups.Description
+    - contextPath: AWS.IAMIdentityCenter.Group.Description
       description: A description of the specified group.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Groups.IdentityStoreId
+    - contextPath: AWS.IAMIdentityCenter.Group.IdentityStoreId
       description: The globally unique identifier for the identity store.
       type: String
     - contextPath: AWS.IAMIdentityCenter.GroupNextToken
@@ -568,13 +568,16 @@ script:
     - description: The name of the user to list groups for.
       name: userName
       required: true
-    description: Lists the IAM groups that the specified IAM user belongs to.
+    description: Lists the IAM Identity Center groups that the specified IAM user belongs to.
     name: aws-iam-identitycenter-list-groups-for-user
     outputs:
-    - contextPath: AWS.IAMIdentityCenter.Users.GroupMemeberships.GroupName
+    - contextPath: AWS.IAMIdentityCenter.User.UserId
+      description: User Id.
+      type: string
+    - contextPath: AWS.IAMIdentityCenter.User.GroupMemeberships.MembershipId
       description: The friendly name that identifies the group.
       type: string
-    - contextPath: AWS.IAMIdentityCenter.Users.GroupMemeberships.GroupId
+    - contextPath: AWS.IAMIdentityCenter.User.GroupMemeberships.GroupId
       description: The stable and unique string identifying the group.
       type: string
   - arguments:
@@ -715,103 +718,103 @@ script:
       name: emailAddress
       required: true
     outputs:
-    - contextPath: AWS.IAMIdentityCenter.Users.UserName
+    - contextPath: AWS.IAMIdentityCenter.User.UserName
       description: The friendly name identifying the user.
       type: string
-    - contextPath: AWS.IAMIdentityCenter.Users.UserId
+    - contextPath: AWS.IAMIdentityCenter.User.UserId
       description: The stable and unique string identifying the user.
       type: string
-    - contextPath: AWS.IAMIdentityCenter.Users.ExternalIds.Issuer
+    - contextPath: AWS.IAMIdentityCenter.User.ExternalIds.Issuer
       description: The issuer for an external identifier.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.ExternalIds.Id
+    - contextPath: AWS.IAMIdentityCenter.User.ExternalIds.Id
       description: The identifier issued to this resource by an external identity provider.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.Formatted
+    - contextPath: AWS.IAMIdentityCenter.User.Name.Formatted
       description: Formatted version of the user's name for display.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.FamilyName
+    - contextPath: AWS.IAMIdentityCenter.User.Name.FamilyName
       description: The family name of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.GivenName
+    - contextPath: AWS.IAMIdentityCenter.User.Name.GivenName
       description: The given name of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.MiddleName
+    - contextPath: AWS.IAMIdentityCenter.User.Name.MiddleName
       description: The middle name of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.HonorificPrefix
+    - contextPath: AWS.IAMIdentityCenter.User.Name.HonorificPrefix
       description: The honorific prefix of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Name.HonorificSuffix
+    - contextPath: AWS.IAMIdentityCenter.User.Name.HonorificSuffix
       description: The honorific suffix of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.DisplayName
+    - contextPath: AWS.IAMIdentityCenter.User.DisplayName
       description: The name of the user formatted for display when referenced.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.NickName
+    - contextPath: AWS.IAMIdentityCenter.User.NickName
       description: An alternate name for the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.ProfileUrl
+    - contextPath: AWS.IAMIdentityCenter.User.ProfileUrl
       description: URL associated with the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Emails.Value
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Value
       description: Email address associated with the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Emails.Type
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Type
       description: Type of email address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Emails.Primary
+    - contextPath: AWS.IAMIdentityCenter.User.Emails.Primary
       description: Indicates whether this is the primary email address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.StreetAddress
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.StreetAddress
       description: Street address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Locality
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Locality
       description: Address locality.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Region
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Region
       description: Region of the address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.PostalCode
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.PostalCode
       description: Postal code of the address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Country
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Country
       description: Country of the address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Formatted
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Formatted
       description: Formatted version of the address for display.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Type
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Type
       description: Type of address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Addresses.Primary
+    - contextPath: AWS.IAMIdentityCenter.User.Addresses.Primary
       description: Indicates whether this is the primary address.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.PhoneNumbers.Value
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Value
       description: Phone number associated with the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.PhoneNumbers.Type
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Type
       description: Type of phone number.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.PhoneNumbers.Primary
+    - contextPath: AWS.IAMIdentityCenter.User.PhoneNumbers.Primary
       description: Indicates whether this is the primary phone number.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.UserType
+    - contextPath: AWS.IAMIdentityCenter.User.UserType
       description: Type of user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Title
+    - contextPath: AWS.IAMIdentityCenter.User.Title
       description: Title of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.PreferredLanguage
+    - contextPath: AWS.IAMIdentityCenter.User.PreferredLanguage
       description: Preferred language of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Locale
+    - contextPath: AWS.IAMIdentityCenter.User.Locale
       description: Geographical region or location of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.Timezone
+    - contextPath: AWS.IAMIdentityCenter.User.Timezone
       description: Time zone of the user.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Users.IdentityStoreId
+    - contextPath: AWS.IAMIdentityCenter.User.IdentityStoreId
       description: Globally unique identifier for the identity store.
       type: String
     name: aws-iam-identitycenter-get-user-by-email
@@ -852,7 +855,7 @@ script:
     - description: The name of the user to remove.
       name: userName
       required: true
-    description: This will remove the entered user.
+    description: Removes the entered user.
     name: aws-iam-identitycenter-delete-user
   - arguments:
     - auto: PREDEFINED
@@ -896,6 +899,13 @@ script:
       required: false
     description: Creates a new IAM Identity Center group for your AWS account.
     name: aws-iam-identitycenter-create-group
+    outputs:
+    - contextPath: AWS.IAMIdentityCenter.Group.GroupId
+      description: The user Id.
+      type: string
+    - contextPath: AWS.IAMIdentityCenter.Group.IdentityStoreId
+      description: Identity Store Id.
+      type: string
   - arguments:
     - auto: PREDEFINED
       description: The AWS Region, if not specified the default region will be used.
@@ -933,7 +943,7 @@ script:
     - description: The name of the group to remove.
       name: groupName
       required: true
-    description: This will remove the entered group.
+    description: Removes the entered group.
     name: aws-iam-identitycenter-delete-group
   - arguments:
     - auto: PREDEFINED
@@ -975,7 +985,7 @@ script:
     - description: Comma seperated list of membership Ids to delete.
       name: membershipId
       required: false
-    description: Deletes all memberships that entered.
+    description: Deletes a user from all groups if a username is provided, or deletes multiple memberships if a list of memberships is provided.
     name: aws-iam-identitycenter-delete-group-membership
   - arguments:
     - auto: PREDEFINED
@@ -1027,13 +1037,13 @@ script:
     - contextPath: AWS.IAMIdentityCenter.GroupMemberships.IdentityStoreId
       description: The globally unique identifier for the identity store.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.GroupMemberships.MembershipId
+    - contextPath: AWS.IAMIdentityCenter.Group.GroupMemberships.MembershipId
       description: The identifier for a GroupMembership object in an identity store.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.GroupMemberships.GroupId
+    - contextPath: AWS.IAMIdentityCenter.Group.GroupId
       description: The identifier for a group in the identity store.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.GroupMemberships.MemberId.UserId
+    - contextPath: AWS.IAMIdentityCenter.Group.GroupMemberships.UserId
       description: Identifier of resources that can be members.
       type: String
     - contextPath: AWS.IAMIdentityCenter.GroupMembershipNextToken

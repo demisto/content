@@ -11,7 +11,7 @@ SERVICE = 'identitystore'
 IDENTITYSTOREID = args.get('IdentityStoreId') or params.get('IdentityStoreId')
 
 
-def create_user(args, client):  # pragma: no cover
+def create_user(args, client):
     username = args.get('userName')
     familyName = args.get('familyName')
     givenName = args.get('givenName')
@@ -87,7 +87,7 @@ def delete_user(args, client):
         return_results(result)
 
 
-def get_user(args, client):  # pragma: no cover
+def get_user(args, client):
     response_id = get_userId_by_username(args, client)
     response = client.describe_user(
         IdentityStoreId=f'{IDENTITYSTOREID}',
@@ -111,7 +111,7 @@ def get_user(args, client):  # pragma: no cover
     return_results(result)
 
 
-def get_user_by_email(args, client):  # pragma: no cover
+def get_user_by_email(args, client):
     emailArg = args.get('emailAddress')
     response = client.list_users(
         IdentityStoreId=f'{IDENTITYSTOREID}',
@@ -137,7 +137,7 @@ def get_user_by_email(args, client):  # pragma: no cover
     return_results(result)
 
 
-def list_users(args, client):  # pragma: no cover
+def list_users(args, client):
     context_data = []
     hr_data = []
     kwargs = {
@@ -168,7 +168,7 @@ def list_users(args, client):  # pragma: no cover
     return_results(result)
 
 
-def list_groups(args, client):  # pragma: no cover
+def list_groups(args, client):
     context_data = []
     hr_data = []
     kwargs = {
@@ -245,7 +245,7 @@ def get_groupId_by_displayName(args, client):
     return response_id
 
 
-def get_group(args, client):  # pragma: no cover
+def get_group(args, client):
     response_id = get_groupId_by_displayName(args, client)
     response = client.describe_group(
         IdentityStoreId=f'{IDENTITYSTOREID}',
@@ -266,7 +266,7 @@ def get_group(args, client):  # pragma: no cover
     return_results(result)
 
 
-def list_groups_for_user(args, client):  # pragma: no cover
+def list_groups_for_user(args, client):
     hr_data = []
     context_data = {}
     userID = get_userId_by_username(args, client)['UserId']
@@ -304,7 +304,7 @@ def list_groups_for_user(args, client):  # pragma: no cover
     return_results(result)
 
 
-def add_user_to_group(args, client):  # pragma: no cover
+def add_user_to_group(args, client):
     userID = get_userId_by_username(args, client)['UserId']
     GroupID = get_groupId_by_displayName(args, client)['GroupId']
     response = client.create_group_membership(
@@ -321,9 +321,9 @@ def add_user_to_group(args, client):  # pragma: no cover
             readable_output=hr_data
         )
         return_results(result)
-        
 
-def get_group_memberships_for_member(args,client):
+
+def get_group_memberships_for_member(args, client):
     membershipsOfMember = []
     userID = get_userId_by_username(args, client)['UserId']
     kwargs = {
@@ -401,7 +401,6 @@ def list_group_memberships(args, client):
         outputs=outputs
     )
     return_results(result)
-    
 
 
 def test_function(args, client):    # pragma: no cover
@@ -424,8 +423,6 @@ def main():     # pragma: no cover
     aws_role_policy = None
     aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
     aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
-    # aws_access_key_id = params.get('access_key')
-    # aws_secret_access_key = params.get('secret_key')
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout')
     retries = params.get('retries') or 5
