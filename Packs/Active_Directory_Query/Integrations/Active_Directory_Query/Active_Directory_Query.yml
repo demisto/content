@@ -46,7 +46,7 @@ configuration:
   name: base_dn_query
   defaultvalue: "(objectClass=user)"
   type: 0
-  required: true
+  advanced: true
   section: Connect
 - display: Page size
   name: page_size
