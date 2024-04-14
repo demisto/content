@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def create_widget_entry(mse_score, ssim_score, color_mse, color_ssim) -> dict:
+def create_widget_entry(mse_score, ssim_score) -> dict:
     data = {
         "Type": 17,
         "size": 30,

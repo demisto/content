@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-import cv2
+from cv2 import cv2
 from skimage.metrics import structural_similarity as compare_ssim
 
 
