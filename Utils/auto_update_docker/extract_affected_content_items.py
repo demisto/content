@@ -50,7 +50,7 @@ def filter_content_items_to_run_on(
     only_nightly: bool = batch_config.get("only_nightly", False)
     min_cov: int = batch_config["min"]
     max_cov: int = batch_config["max"]
-
+    logging.info(f"{min_cov} - {max_cov} in filter_content_items_to_run_on")
     support_levels = batch_config.get("support", [])
     for content_item in content_items_by_docker_image:
         content_item_path = Path(content_item["content_item"])
@@ -60,26 +60,26 @@ def filter_content_items_to_run_on(
         if only_nightly and content_pack_path not in nightly_packs:
             logging.info(f"Pack path {content_pack_path} for {content_item} is not in nightly, skipping.")
             continue
-        if content_item_cov := content_items_coverage.get(str(content_item_path)):
-            content_item_cov_floor = math.floor(content_item_cov)
-            if support_levels and content_item_support not in support_levels:
-                # If support levels is not empty, and the content item's support level is not in the allowed support levels,
-                # then we skip it.
-                logging.info(f"Is not of {support_levels=}, skipping")
-            elif content_item_cov_floor >= min_cov and (content_item_cov <= max_cov and content_item_cov_floor <= max_cov):
-                # NOTE We added the second clause to deal with the following scenario:
-                # If max_cov=70, and content_item_cov=70.12, then content_item_cov_floor will be equal to 70,
-                # if not handled correctly, we will collect the content item, which is wrong, therefore,
-                # we added the condition content_item_cov <= max_cov
+        # If content item is not in coverage report, then we consider it's coverage to be 0
+        content_item_cov = content_items_coverage.get(str(content_item_path), 0)
+        logging.info(f"{content_item_path = } {content_item_cov = }")
+        content_item_cov_floor = math.floor(content_item_cov)
+        if support_levels and content_item_support not in support_levels:
+            # If support levels is not empty, and the content item's support level is not in the allowed support levels,
+            # then we skip it.
+            logging.info(f"Is not of {support_levels=}, skipping")
+        elif content_item_cov_floor >= min_cov and (content_item_cov <= max_cov and content_item_cov_floor <= max_cov):
+            # NOTE We added the second clause to deal with the following scenario:
+            # If max_cov=70, and content_item_cov=70.12, then content_item_cov_floor will be equal to 70,
+            # if not handled correctly, we will collect the content item, which is wrong, therefore,
+            # we added the condition content_item_cov <= max_cov
 
-                # We check the coverage of the content item
-                # Since the content item that we get will be a python file, and we want to
-                # return a YML
-                affected_content_items.append(str(content_item_path.with_suffix('.yml')))
-            else:
-                logging.info(f"{content_item} not within coverage, skipping")
+            # We check the coverage of the content item
+            # Since the content item that we get will be a python file, and we want to
+            # return a YML
+            affected_content_items.append(str(content_item_path.with_suffix('.yml')))
         else:
-            logging.warning(f"Could not find coverage of content item {content_item_path}, skipping")
+            logging.info(f"{content_item} not within coverage, skipping")
 
     return {
         "content_items": affected_content_items,
