@@ -44,11 +44,19 @@
                         "isVisible": true
                     },
                     {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    },
+                    {
                         "fieldId": "indicator_ruleid",
                         "isVisible": true
                     },
                     {
                         "fieldId": "indicator_rulestrings",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_rulecondition",
                         "isVisible": true
                     },
                     {
@@ -158,10 +166,19 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "rulereference",
+                                "height": 22,
+                                "id": "be7c7f80-fa4d-11ee-aa36-45fe8677e48f",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "tags",
                                 "height": 22,
                                 "id": "1e4c4060-e542-11ee-a45c-d1e6a9d22f67",
-                                "index": 6,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -187,10 +204,12 @@
                                         "simple": "tags"
                                     }
                                 },
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "height": 44,
                                 "id": "26319553-e542-11ee-a45c-d1e6a9d22f67",
                                 "index": 7,
+                                "listId": "default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "name": "Remove tags",
                                 "scriptId": "Builtin|||removeIndicatorField",
                                 "sectionItemType": "button",
@@ -202,12 +221,12 @@
                         "name": "Basic Information",
                         "static": false,
                         "w": 1,
-                        "x": 0,
-                        "y": 2
+                        "x": 1,
+                        "y": 0
                     },
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 5,
                         "i": "default-main-indicatorTimeline",
                         "maxW": 3,
                         "moved": false,
@@ -216,7 +235,7 @@
                         "type": "indicatorTimeline",
                         "w": 1,
                         "x": 0,
-                        "y": 5
+                        "y": 3
                     },
                     {
                         "h": 3,
@@ -231,8 +250,8 @@
                         "y": 8
                     },
                     {
-                        "displayType": "ROW",
-                        "h": 2,
+                        "displayType": "CARD",
+                        "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "default-main-3e678d00-e542-11ee-a45c-d1e6a9d22f67",
@@ -258,7 +277,7 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "default-main-5331d100-e542-11ee-a45c-d1e6a9d22f67",
@@ -278,9 +297,9 @@
                         "moved": false,
                         "name": "Strings",
                         "static": false,
-                        "w": 2,
-                        "x": 1,
-                        "y": 4
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
                     },
                     {
                         "displayType": "CARD",
@@ -306,11 +325,11 @@
                         "static": false,
                         "w": 2,
                         "x": 1,
-                        "y": 6
+                        "y": 3
                     },
                     {
                         "displayType": "ROW",
-                        "h": 4,
+                        "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "default-main-9d70c640-e542-11ee-a45c-d1e6a9d22f67",
@@ -334,6 +353,40 @@
                         "static": false,
                         "w": 2,
                         "x": 1,
+                        "y": 4
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "gyphi1jkwg",
+                "name": "Additional Data",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "gyphi1jkwg-b1654590-fa3c-11ee-8a37-5b8ad357ade4",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "id": "b7b30a90-fa3c-11ee-8a37-5b8ad357ade4",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "References",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
                         "y": 0
                     }
                 ],
