@@ -11,7 +11,7 @@ from io import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
-                         ItemAttachment, Version, Body)
+                         ItemAttachment, Version, Body, FolderCollection)
 from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorInvalidIdMalformed,
                                 ErrorInvalidPropertyRequest,
@@ -680,21 +680,18 @@ def get_folder_by_path(account, path, is_public=False):  # pragma: no cover
         if path in folders_map:
             return account.root._folders_map[path]
 
-    if is_public:
-        folder_result = account.public_folders_root
-    elif path == 'AllItems':
-        folder_result = account.root
-    else:
-        folder_result = account.inbox.parent  # Top of Information Store
+    root = account.public_folders_root if is_public else account.root
+    folder = root if path == 'AllItems' else root.tois
     path = path.replace("/", "\\")
     path = path.split('\\')
-    for sub_folder_name in path:
-        folder_filter_by_name = [x for x in folder_result.children if x.name.lower() == sub_folder_name.lower()]
-        if len(folder_filter_by_name) == 0:
-            raise Exception("No such folder %s" % path)
-        folder_result = folder_filter_by_name[0]
-
-    return folder_result
+    for part in path:
+        try:
+            demisto.debug(f'resolving {part=} {path=}')
+            folder = folder // part
+        except Exception as e:
+            demisto.debug(f'got error {e}')
+            raise ValueError(f'No such folder {path}')
+    return folder
 
 
 class MarkAsJunk(EWSAccountService):
@@ -1717,7 +1714,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         is_public = is_default_folder(folder_path, is_public)
         folders = [get_folder_by_path(account, folder_path, is_public)]
     else:
-        folders = account.inbox.parent.walk()  # pylint: disable=E1101
+        folders = FolderCollection(account=account, folders=[account.root.tois]).find_folders()
 
     items = []  # type: ignore
     selected_all_fields = (selected_fields == 'all')
@@ -1869,21 +1866,21 @@ def create_folder(new_folder_name, folder_path, target_mailbox=None):  # pragma:
 
 def find_folders(target_mailbox=None, is_public=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    root = account.root
+    root_collection = FolderCollection(account=account, folders=[account.root])
     if is_public:
-        root = account.public_folders_root
+        root_collection = FolderCollection(account=account, folders=[account.public_folders_root])
     folders = []
-    for f in root.walk():  # pylint: disable=E1101
+    for f in root_collection.find_folders():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
         folders.append(folder)
-    folders_tree = root.tree()  # pylint: disable=E1101
+    readable_output = tableToMarkdown(t=folders, name='Available folders')  # pylint: disable=E1101
 
     return {
         'Type': entryTypes['note'],
         'Contents': folders,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['text'],
-        'HumanReadable': folders_tree,
+        'HumanReadable': readable_output,
         ENTRY_CONTEXT: {
             'EWS.Folders(val.id == obj.id)': folders
         }
