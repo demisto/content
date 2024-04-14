@@ -4191,8 +4191,8 @@ def qradar_search_retrieve_events_command(
         # if last run, we want to get the events that were fetched in the previous calls
         return CommandResults(
             readable_output='Not all events were fetched. partial data is available.',
-        )  
-        
+        )
+
     if status == QueryStatus.ERROR.value:
         raise DemistoException('Polling for events failed')
     if status == QueryStatus.SUCCESS.value:
