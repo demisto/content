@@ -211,10 +211,10 @@ def prepare_context(credentials):  # pragma: no cover
 
 def prepare():  # pragma: no cover
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
-    if NON_SECURE:
-        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter #NoVerifyHTTPAdapter
-    else:
-        BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
+    # if NON_SECURE:
+    #     BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
+    # else:
+    #     BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
     AUTO_DISCOVERY = not EWS_SERVER
     if AUTO_DISCOVERY:
         credentials = Credentials(username=USERNAME, password=PASSWORD)
@@ -475,11 +475,21 @@ def get_folder_by_path(account, path, is_public=False):  # pragma: no cover
             return account.root._folders_map[path]
 
     if is_public:
-        folder_result = account.public_folders_root
+        try:
+            folder_result = account.public_folders_root
+        except Exception as e:
+            raise DemistoException(f'After account.public_folders_root {str(e)}')
     elif path == 'AllItems':
-        folder_result = account.root
+        try:
+            folder_result = account.root
+        except Exception as e:
+            raise DemistoException(f'After account.root {str(e)}')
     else:
-        folder_result = account.inbox.parent  # Top of Information Store
+        try:
+            folder_result = account.inbox.parent  # Top of Information Store
+        except Exception as e:
+            raise DemistoException(f'After account.inbox.parent {str(e)}')
+        
     path = path.replace("/", "\\")
     path = path.split('\\')
     for sub_folder_name in path:
@@ -2072,6 +2082,22 @@ def get_protocol():  # pragma: no cover
 def encode_and_submit_results(obj):  # pragma: no cover
     demisto.results(obj)
 
+class Client(BaseClient):
+
+    def get_test(self) -> Dict[str, Any]:
+        return self._http_request(
+            method='GET',
+            url_suffix='/',
+        )
+
+
+def main(verify=True):
+    client = Client(
+        base_url='https://ec2-34-246-53-163.eu-west-1.compute.amazonaws.com',
+        verify=verify,
+    )
+    res = client.get_test()
+    print(res)
 
 def sub_main():  # pragma: no cover
     global EWS_SERVER, USERNAME, ACCOUNT_EMAIL, PASSWORD
@@ -2082,7 +2108,7 @@ def sub_main():  # pragma: no cover
     PASSWORD = demisto.params()['credentials']['password']
     config, credentials = prepare()
     args = prepare_args(demisto.args())
-
+    #BaseClient._http_request()
     fix_2010()
     try:
         protocol = get_protocol()
@@ -2235,7 +2261,7 @@ def process_main():  # pragma: no cover
     sub_main()
 
 
-def main():  # pragma: no cover
+def main_():  # pragma: no cover
     try:
         handle_proxy()
         # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
