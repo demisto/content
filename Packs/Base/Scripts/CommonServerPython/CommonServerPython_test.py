@@ -9665,7 +9665,7 @@ def test_sleep_exceeds_ttl(mocker):
 
     safe_sleep(duration_seconds=350)
 
-    assert log_warning.call_args[0][0] == "Requested a sleep of 350 seconds, but time left until docker timeout is 300 seconds"
+    assert log_warning.call_args[0][0] == "Requested a sleep of 350 seconds, but time left until docker timeout is 300 seconds."
 
 
 @freeze_time(datetime(2024, 4, 10, 10, 0, 10))
