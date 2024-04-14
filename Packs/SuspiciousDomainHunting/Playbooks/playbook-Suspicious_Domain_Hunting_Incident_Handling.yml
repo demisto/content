@@ -1312,11 +1312,6 @@ view: |-
     }
   }
 inputs:
-- key: contactEmail
-  value: {}
-  required: false
-  description: Email address to receive feedback from the domain registrant
-  playbookInputQuery:
 - key: similarityThreshold
   value:
     simple: "0.5"

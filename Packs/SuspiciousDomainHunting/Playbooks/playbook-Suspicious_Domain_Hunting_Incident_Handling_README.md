@@ -37,7 +37,6 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| contactEmail | Email address to receive feedback from the domain registrant |  | Optional |
 | similarityThreshold | The minimum threshold value for similarity comparison | 0.5 | Optional |
 
 ## Playbook Outputs
