@@ -209,7 +209,7 @@ async def handle_post(request: Request,
         demisto.error(f'Error in request parsing: {e}')
         return Response(status_code=status.HTTP_400_BAD_REQUEST, content='Failed parsing request.')
     if not is_valid_sns_message(payload):
-        return 'Validation of SNS message failed.'
+        return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Validation of SNS message failed.')
 
     if type == 'SubscriptionConfirmation':
         demisto.debug('SubscriptionConfirmation request')
