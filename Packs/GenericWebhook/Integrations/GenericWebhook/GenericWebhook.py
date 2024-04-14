@@ -66,6 +66,7 @@ async def handle_post(
         password = credentials_param.get('password', '')
         auth_failed = False
         if username.startswith('_header'):
+            header_name = username.split(':')[1]
             if not token or not compare_digest(token, password):
                 auth_failed = True
         elif (not credentials) or (not (compare_digest(credentials.username, username)
