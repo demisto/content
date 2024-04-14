@@ -656,9 +656,8 @@ def main():
 
             # If the current commit is the last commit in the list, there is no previous commit,
             # since commits are in ascending order
-            # or if we already sent a shame message for newer commits, we don't want to send another one for older commits.
-            if (current_commit_index != len(list_of_commits) - 1
-                    and not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)):
+            was_message_already_sent = was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)
+            if (current_commit_index != len(list_of_commits) - 1):
                 current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
 
                 # looking backwards until we find a commit with a pipeline to compare with
@@ -670,7 +669,6 @@ def main():
                     pipeline_changed_status = is_pivot(current_pipeline=current_pipeline,
                                                        pipeline_to_compare=previous_pipeline)
 
-
                     if pipeline_changed_status is None and current_commit_index > 0:
                         # looking_forward until we find a commit with a pipeline to compare with
                         next_pipeline, suspicious_commits = get_nearest_newer_commit_with_pipeline(
@@ -681,8 +679,22 @@ def main():
                                 "comparing current pipeline status with nearest newer pipeline status")
                             pipeline_changed_status = is_pivot(current_pipeline=next_pipeline,
                                                                pipeline_to_compare=current_pipeline)
-
-                    if pipeline_changed_status is not None:
+                            # if we already sent a shame message for newer commits, we don't want to send another one for older commits,
+                            # but we will just add a message to its thread to inform that we fixed it #TODO rewrite
+                            if (pipeline_changed_status is not None) and (was_message_already_sent):
+                                #get the tread id
+                                thread_id = 1234
+                                special_message = "whatever"
+                                try:
+                                    response = slack_client.chat_postMessage(text="",
+                                                                             channel="test_slack_notifier_when_master_is_broken",
+                                                                             attachments=special_message,
+                                                                             username=SLACK_USERNAME, link_names=True,
+                                                                             thread_ts=thread_id)
+                                except Exception:
+                                    pass
+                                
+                    if (pipeline_changed_status is not None) and (not was_message_already_sent):
                         shame_message = create_shame_message(suspicious_commits, pipeline_changed_status,  # type: ignore
                                                              options.name_mapping_path)
                         computed_slack_channel = "test_slack_notifier_when_master_is_broken"
@@ -704,14 +716,13 @@ def main():
             response = slack_client.chat_postMessage(text="",
                 channel=channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
             )
-            #adding the thread_ts to the artifacts folder
-            thread_ts: dict = {"thread_ts":response.data['ts']} # type: ignore[assignment]
+            #adding the thread_ts to the message that was saved in the artifacts folder
+            data: dict = response.data  # type: ignore[assignment]
+            thread_ts: str = data['ts']
             with open(output_file, 'a') as f:
-                f.write("\n" + json.dumps(thread_ts))
+                f.write("\n" + json.dumps({"thread_ts": thread_ts}, indent=4, sort_keys=True, default=str))
             
             if threaded_messages:
-                data: dict = response.data  # type: ignore[assignment]
-                thread_ts: str = data['ts']
                 for slack_msg in threaded_messages:
                     slack_msg = [slack_msg] if not isinstance(slack_msg, list) else slack_msg
                     slack_client.chat_postMessage(text="",
