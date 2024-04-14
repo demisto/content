@@ -3794,13 +3794,6 @@
             "has_api": false
         },
         {
-            "integrations": "Generic Webhook",
-            "instance_name": "Generic Webhook XSOAR SaaS",
-            "playbookID": "Generic Webhook - Test",
-            "marketplaces": "xsoar_saas",
-            "has_api": false
-        },
-        {
             "integrations": "Palo Alto Networks Enterprise DLP",
             "playbookID": "Palo_Alto_Networks_Enterprise_DLP - Test",
             "fromversion": "5.0.0"
