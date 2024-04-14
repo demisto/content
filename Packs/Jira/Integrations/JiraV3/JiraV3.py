@@ -2428,7 +2428,6 @@ def upload_file_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
     attachment_name = args.get('attachment_name', '')
     res = upload_XSOAR_attachment_to_jira(client=client, entry_id=entry_id, attachment_name=attachment_name,
                                           issue_id_or_key=issue_id_or_key)
-    demisto.debug(f'The result of upload_XSOAR_attachment_to_jira {res=}')
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
     markdown_dict: List[Dict[str, str]] = []
     for attachment_entry in res:
