@@ -1,14 +1,13 @@
 {
-    "name": "Exabeam",
-    "description": "The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.",
+    "name": "Palo Alto Networks AIOps",
+    "description": "Palo Alto Networks Best Practice Assessment (BPA) analyzes NGFW and Panorama configurations.",
     "support": "xsoar",
-    "currentVersion": "2.3.1",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Analytics & SIEM"
+        "Utilities"
     ],
     "tags": [],
     "useCases": [],
