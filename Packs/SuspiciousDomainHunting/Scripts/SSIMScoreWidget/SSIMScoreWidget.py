@@ -70,7 +70,7 @@ def main():
         if not ssim_score:
             return_results("SSIM Score was not found in the context.")
         else:
-            return_results(create_widget_entry(mse_score, ssim_score, get_color(mse_score), get_color(ssim_score)))
+            return_results(create_widget_entry(mse_score, ssim_score))
 
     except Exception as e:
         return_error(f"Error: {str(e)}")
