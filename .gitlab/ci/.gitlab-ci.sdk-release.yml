@@ -191,7 +191,7 @@ update-validation-docs:
     ARTIFACTS_FOLDER: "${CI_PROJECT_DIR}/artifacts/"
   script:
     - section_start "Update validation docs" --collapsed
-    - python3 ./Tests/sdk_release/validate_update_docs.py -t "${GITHUB_TOKEN}" -b "${RELEASE_VERSION}" -r "${REVIEWER}" -d "${IS_DRAFT}"
+    - python3 ./Tests/sdk_release/update_validate_docs.py -t "${GITHUB_TOKEN}" -b "${RELEASE_VERSION}" -r "${REVIEWER}" -d "${IS_DRAFT}"
     - python3 ./Tests/scripts/gitlab_basic_slack_notifier.py -s "${SLACK_TOKEN}" --allow-failure "true" -gt "${GITLAB_API_TOKEN}" -gu "${REVIEWER}" -ch "${SLACK_CHANNEL}" -f "${ARTIFACTS_FOLDER}/validate_release_notes_message.txt"
     - section_end "Update validation docs"
 
