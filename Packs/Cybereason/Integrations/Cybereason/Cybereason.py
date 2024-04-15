@@ -161,7 +161,6 @@ class Client(BaseClient):
                     error_msg = 'Authentication failed, verify the credentials are correct.'
                 raise ValueError(
                     f'Failed to process the API response. {str(error_msg)} {str(error_content)} - {str(e)}')
-        return None
 
     def error_handler(self, res: requests.Response):
         # Handle error responses gracefully
@@ -417,7 +416,6 @@ def query_connections_command(client: Client, args: dict):
             outputs_prefix='Cybereason.Connection',
             outputs_key_field='Name',
             outputs=context)
-    return None
 
 
 def query_connections(client: Client, machine: str, ip: str, filter_input: str) -> dict:
@@ -918,7 +916,6 @@ def kill_process_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
-        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -943,7 +940,6 @@ def quarantine_file_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
-        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -968,7 +964,6 @@ def unquarantine_file_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
-        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -993,7 +988,6 @@ def block_file_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
-        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1018,7 +1012,6 @@ def delete_registry_key_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
-        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1043,7 +1036,6 @@ def kill_prevent_unsuspend_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n" Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
-        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1068,7 +1060,6 @@ def unsuspend_process_command(client: Client, args: dict):
                 action_status, ['Remediation status'])} \n Reason: {dict_safe_get(
                     action_status, ['Reason'])} \n Remediation ID: {dict_safe_get(action_status, ['Remediation ID'])}'''
             raise DemistoException(failure_response)
-        return None
     else:
         raise DemistoException('Machine must be connected to Cybereason in order to perform this action.')
 
@@ -1222,7 +1213,6 @@ def query_file_command(client: Client, args: dict) -> Any:
                 outputs=cybereason_outputs)
         else:
             raise DemistoException('No results found.')
-    return None
 
 
 def query_file(client: Client, filters: list) -> dict:
@@ -1313,7 +1303,6 @@ def query_domain_command(client: Client, args: dict) -> Any:
                 outputs=cybereason_outputs)
         else:
             raise DemistoException('No results found.')
-    return None
 
 
 def query_domain(client: Client, filters: list) -> dict:
@@ -1375,7 +1364,6 @@ def query_user_command(client: Client, args: dict):
                 outputs=cybereason_outputs)
         else:
             raise DemistoException('No results found.')
-    return None
 
 
 def query_user(client: Client, filters: list) -> dict:
@@ -1736,7 +1724,6 @@ def start_fetchfile_command(client: Client, args: dict):
                 return CommandResults(readable_output="Successfully started fetching file for the given malop")
         except Exception:
             raise Exception("Failed to start fetch file process")
-    return None
 
 
 def start_fetchfile(client: Client, element_id: str, user_name: str) -> dict:
@@ -1839,7 +1826,6 @@ def malware_query_command(client: Client, args: dict):
         if limit_range > 0:
             filter_response = malware_query_filter(client, needs_attention, malware_type, malware_status, time_stamp, limit_range)
             return CommandResults(raw_response=filter_response)
-        return None
     else:
         raise DemistoException("Limit cannot be zero or a negative number.")
 
