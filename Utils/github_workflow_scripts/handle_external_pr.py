@@ -13,7 +13,7 @@ from demisto_sdk.commands.content_graph.objects.integration import Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
 from random import randint
 import requests
-import sys
+import re
 
 from Utils.github_workflow_scripts.utils import (
     get_env_var,
@@ -279,27 +279,58 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
     return False
 
 
-def get_pr_body(pr_number: str) -> str:
-    """
-    Get the comments URL for a PR. If the PR contains a comment about an instance test (for contrib PRs),
-    it will use that comment.
-    Args:
-        pr_number: The pull request number
-
-    Returns:
-        The comments URL for the PR.
-    """
-    pr_url = f'https://api.github.com/repos/demisto/content/pulls/{pr_number}'
-    response = requests.get(pr_url)
-    pr = response.json()
-    body = pr['body']
-    return body
-
-
-def get_user_from_ui_pr(pr, pr_number):
-    body = get_pr_body(pr_number)
-    print("Body of the PR are:\n")
-    print(body)
+# def find_all_open_prs_by_user(pr_creator):
+#     """
+#     find open pr's by the same users (what if there are more then 1 with different reviewers already?
+#     :param pr_creator:
+#     :return:
+#     """
+#     return pr_opened_by_same_user
+#
+#
+# def get_pr_body(pr_number: str) -> str:
+#     """
+#     """
+#     pr_url = f'https://api.github.com/repos/demisto/content/pulls/{pr_number}'
+#     response = requests.get(pr_url)
+#     pr = response.json()
+#     body = pr['body']
+#     return body
+#
+#
+# def get_user_from_ui_pr(pr_number,pr):
+#     """
+#     """
+#     body = pr.body
+#     #body = get_pr_body(pr_number)
+#     print(f"Body of the PR is:{body}")
+#     return re.findall("Contributor\\s+(\\S+)", body)
+#
+#
+# def find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number):
+#     """
+#         in main do one function - find_reveiwer_to_assign - with lines 407-409
+#         in this function
+#         if get open pr's
+#             get reviewer from other prs - in this, filter for current reviewers by removing pr's not from current round
+#         else
+#             determine_reviewer - line 410
+#         return reviewer
+#     """
+#     if pr.user.login == "xsoar-bot":
+#         pr_creator = get_user_from_ui_pr(pr_number, pr)
+#     else:
+#         pr_creator = pr.user.login
+#
+#     other_prs_by_same_user = find_all_open_prs_by_user(pr_creator)
+#     if other_prs_by_same_user:
+#         pr_reviewer = get_reviewer(other_prs_by_same_user)
+#         if pr_reviewer in content_reviewers:
+#             reviewers = [pr_reviewer]
+#         else:
+#
+#     # the section in lines 403-405
+#     #####
 
 
 def main():
@@ -383,10 +414,11 @@ def main():
     print(f"Security Reviewer: {security_reviewer}")
     print(f"TIM Reviewer: {tim_reviewer}")
 
-    #if pr.user.login == "xsoar-bot":
-    get_user_from_ui_pr(pr, pr_number)
+    #content_reviewer = find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number)
 
-
+    body = pr.body
+    # body = get_pr_body(pr_number)
+    print(f"Body of the PR is:{body}")
 
     content_reviewer = determine_reviewer(content_reviewers, content_repo)
     pr.add_to_assignees(content_reviewer)
