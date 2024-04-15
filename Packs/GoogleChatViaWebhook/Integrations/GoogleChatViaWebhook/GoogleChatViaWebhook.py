@@ -32,7 +32,7 @@ class Client(BaseClient):
             threadName (str): If provided, will reply to an existing thread (or create a new thread)
         """
 
-        json_data = {'text': message}
+        json_data: dict[str, Any] = {'text': message}
 
         params = {
             'key': self.key,
@@ -62,7 +62,7 @@ class Client(BaseClient):
             threadName (str): If provided, will reply to an existing thread (or create a new thread)
         """
 
-        json_data = {
+        json_data: dict[str, Any] = {
             'cardsV2': [{
                 'cardId': 'createCardMessage',
                 'card': json.loads(blocks)
