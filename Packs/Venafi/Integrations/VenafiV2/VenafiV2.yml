@@ -1,0 +1,309 @@
+category: IT Services
+commonfields:
+  id: VenafiV2
+  version: -1
+configuration:
+- defaultvalue: ""
+  display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Retrieves information about certificates stored in Venafi.
+display: Venafi TLS Protect
+name: Venafi TLS Protect
+script:
+  commands:
+  - arguments:
+    - description: Specify YYYY-MM-DD or the ISO 8601 format.
+      name: CreatedOn
+      required: false
+    - description: Specify YYYY-MM-DD or the ISO 8601 format.
+      name: CreatedOnGreater
+      required: false
+    - description: Specify YYYY-MM-DD or the ISO 8601 format.
+      name: CreatedOnLess
+      required: false
+    - description: Include only certificates that are enabled 0 or disabled 1.
+      name: Disabled
+      required: false
+    - description: Whether to include only certificates that are in an error state (1) or not in an error state (0).
+      name: InError
+      required: false
+    - auto: PREDEFINED
+      description: 'Validation state. Possible values: "Blank", "Success", or "Failure".'
+      name: ValidationState
+      predefined:
+        - Blank
+        - Success
+        - Failure
+      required: false
+    - auto: PREDEFINED
+      description: 'Management type. Possible values: "Unassigned", "Monitoring", "Enrollment", or "Provisioning".'
+      name: ManagementType
+      predefined:
+      - Unassigned
+      - Monitoring
+      - Enrollment
+      - Provisioning
+      required: false
+    - description: Name of the certificate object.
+      name: Name
+      required: false
+    - description: Whether to include only certificates with network validation disabled (1) or enabled (0).
+      name: NetworkValidationDisabled
+      required: false
+    - description: The full path to the parent of the object in Trust Protection Platform (e.g., \VED\Policy\Engineering,\VED\Policy\HR).
+      name: ParentDn
+      required: false
+    - description: The specific folder from which to retrieve certificates. (The subfolders will also be scanned.) Accepts a single value.
+      name: ParentDnRecursive
+      required: false
+    - description: Whether to include only certificates that are pending workflow resolution (have an outstanding workflow ticket). This parameter does not require a value to be specified.
+      name: PendingWorkflow
+      required: false
+    - description: Comma-separated list of stages in the certificate lifecycle. Will retrieve certificates at one or more of the stages.
+      isArray: true
+      name: Stage
+      required: false
+    - description: Find certificates with a stage greater than the specified stage (does not include specified stage).
+      name: StageGreater
+      required: false
+    - description: Stage before which to retrieve certificates.
+      name: StageLess
+      required: false
+    - description: Whether to include only certificates with validation disabled (1) or enabled (0).
+      name: ValidationDisabled
+      required: false
+    - description: Find certificates by Country attribute of Subject DN.
+      name: C
+      required: false
+    - description: Find certificates by Common name attribute of Subject DN.
+      name: CN
+      required: false
+    - description: Issuer DN. Note, since most Issuer DNs include commas between DN components, it is important to surround the complete Issuer DN within double quotes (“). In addition, if the Issuer DN includes double quotes, each double quote should be prefixed by another double quote.
+      name: Issuer
+      required: false
+    - description: Algorithm for the public key in the certificate (e.g., RSA, DSA).
+      name: KeyAlgorithm
+      required: false
+    - description: Comma-separated list of the bit size of the public key in the certificate (e.g., 2048).
+      name: KeySize
+      required: true
+    - description: The size for which the public key size is greater than.
+      name: KeySizeGreater
+      required: false
+    - description: The size for which the public key size is less than.
+      name: KeySizeLess
+      required: false
+    - description: Find certificates by Locality/City attribute of Subject Distinguished Name (SDN).
+      name: L
+      required: false
+    - description: Find certificates by Organization attribute of Subject DN.
+      name: O
+      required: false
+    - description: Find certificates by State/Province attribute of Subject DN.
+      name: S
+      required: false
+    - description: Find certificates by State/Province attribute of Subject DN.
+      name: S
+      required: false
+    - description: Serial number of the certificate.
+      name: Serial
+      required: false
+    - description: The algorithm used to sign the certificate (e.g., SHA1RSA).
+      name: SignatureAlgorithm
+      required: false
+    - description: Date on which the certificate was issued (e.g., 2015- 10-08T19:15:35.6431456Z or 2015-10-08).
+      name: ValidFrom
+      required: false
+    - description: Date on which the certificate expires (e.g., 2015-10- 08T19:15:35.6431456Z or 2015-10-08).
+      name: ValidTo
+      required: false
+    - description: Date after which the certificates expire.
+      name: ValidToGreater
+      required: false
+    - description: Date before which the certificates expire.
+      name: ValidToLess
+      required: false
+    - description: The maximum number of certificates to return.
+      name: Limit
+      required: false
+    description: Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z format. Additional fields can be used in the query by adding them in a key=value format.
+    name: venafi-get-certificates
+    outputs:
+    - contextPath: Venafi.Certificate.CreatedOn
+      description: The exact date and time when the certificate object was created.
+      type: date
+    - contextPath: Venafi.Certificate.DN
+      description: The DN of the certificate.
+      type: string
+    - contextPath: Venafi.Certificate.Name
+      description: The name of the certificate.
+      type: string
+    - contextPath: Venafi.Certificate.ParentDN
+      description: The full path to the parent of the object in Trust Protection Platform.
+      type: string
+    - contextPath: Venafi.Certificate.SchemaClass
+      description: The class name of the certificate object.
+      type: string
+    - contextPath: Venafi.Certificate.ID
+      description: The certificate object GUID.
+      type: string
+    - contextPath: Venafi.Certificate.X509
+      description: ""
+      type: dictionaryv
+  - name: venafi-get-certificate-details
+    arguments:
+      - name: guid
+        required: true
+        description: The id of the certificate, add description that the user can get this value by running the command “venafi-get-certificates”
+    outputs:
+      - contextPath: Venafi.Certificate.ID
+        description: The certificate object GUID.
+        type: string
+      - contextPath: ParentDN
+        description: The full path to the parent of the object in Trust Protection Platform.
+        type: string
+      - contextPath: CreatedOn
+        description: The exact date and time when the Certificate object was created.
+        type: date
+      - contextPath: DN
+        description: The DN of the certificate.
+        type: string
+      - contextPath: Name
+        description: The name of the certificate.
+        type: string
+      - contextPath: SchemaClass
+        description: The class name of the certificate object.
+        type: string
+      - contextPath: Approver
+        description: An array of one or more users or groups who are certificate approvers.
+        type: string
+      - contextPath: CertificateAuthorityDN
+        description: The CA template that is required for certificate renewal.
+        type: string
+      - contextPath: Contact
+        description: An array of one or more users or groups who receive event notifications. The events notify people about certificate expiration and validation failures.
+        type: string
+      - contextPath: Description
+        description: Certificate description.
+        type: string
+      - contextPath: ManagedBy
+        description: Certificate manager.
+        type: string
+      - contextPath: ManagementType
+        description: The level of management that the Trust Protection Platform applies to the certificate.
+        type: string
+      - contextPath: CertificateDetails.AIAKeyIdentifier
+        description: Authority key identifier.
+        type: string
+      - contextPath: CertificateDetails.Issuer
+        description: The CN, O, L, S, and C values from the certificate request.
+        type: string
+      - contextPath: CertificateDetails.Serial
+        description: The unique serial number that the CA assigned to the certificate.
+        type: string
+      - contextPath: CertificateDetails.Subject
+        description: The CN, O, L, S, and C values from the certificate request.
+        type: string
+      - contextPath: CertificateDetails.Thumbprint
+        description: The SHA1 thumbprint hash of the certificate.
+        type: string
+      - contextPath: CertificateDetails.ValidFrom
+        description: Certificate validation start date.
+        type: string
+      - contextPath: CertificateDetails.ValidTo
+        description: Certificate validation end time.
+        type: string
+      - contextPath: CertificateDetails.AIACAIssuerURL
+        description: ""
+        type: array
+      - contextPath: CertificateDetails.CN
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.CN
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.EnhancedKeyUsage
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.KeyAlgorithm
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.KeySize
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.KeyUsage
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.OU
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.PublicKeyHash
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.SKIKeyIdentifier
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.SignatureAlgorithm
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.SignatureAlgorithmOID
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.StoreAdded
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.SubjectAltNameDNS
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.SubjectAltNameEmail
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.SubjectAltNameOtherNameUPN
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.SubjectAltNameIPAddress
+        description: ""
+        type: string
+      - contextPath: CertificateDetails.SubjectAltNameURI
+        description: ""
+        type: string
+      - contextPath: CreatedBy
+        description: ""
+        type: string
+      - contextPath: Origin
+        description: ""
+        type: string
+      - contextPath: ProcessingDetails
+        description: ""
+        type: dictionary
+      - contextPath: RenewalDetails
+        description: ""
+        type: dictionary
+      - contextPath: ValidationDetails
+        description: ""
+        type: dictionary
+    description: Uses a certificate GUID to extract more details from the cert store.
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.63474
+fromversion: 5.5.0
+tests:
+- VenafiV2 - Test
