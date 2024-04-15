@@ -31,6 +31,7 @@ from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
 from exchangelib.version import VERSIONS as EXC_VERSIONS
+import ssl
 
 
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
@@ -61,6 +62,8 @@ class exchangelibSSLAdapter(SSLAdapter):  # pragma: no cover
 warnings.filterwarnings("ignore")
 
 MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
+SESSION = requests.Session()
+SESSION.mount(prefix='https://', adapter=SSLAdapter(verify=False))
 
 # consts
 VERSIONS = {
@@ -211,10 +214,11 @@ def prepare_context(credentials):  # pragma: no cover
 
 def prepare():  # pragma: no cover
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
-    # if NON_SECURE:
-    #     BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter
-    # else:
-    #     BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
+    
+    if NON_SECURE:
+        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter #NoVerifyHTTPAdapter
+    else:
+        BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
     AUTO_DISCOVERY = not EWS_SERVER
     if AUTO_DISCOVERY:
         credentials = Credentials(username=USERNAME, password=PASSWORD)
@@ -2091,7 +2095,7 @@ class Client(BaseClient):
         )
 
 
-def main(verify=True):
+def main_(verify=True):
     client = Client(
         base_url='https://ec2-34-246-53-163.eu-west-1.compute.amazonaws.com',
         verify=verify,
@@ -2261,7 +2265,7 @@ def process_main():  # pragma: no cover
     sub_main()
 
 
-def main_():  # pragma: no cover
+def main():  # pragma: no cover
     try:
         handle_proxy()
         # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
