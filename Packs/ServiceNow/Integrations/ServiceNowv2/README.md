@@ -15,7 +15,7 @@ This integration was integrated and tested with the Orlando version of ServiceNo
 3. Get, update, create, delete records from any ServiceNow table.
 
 ## Required Permissions
-To use ServiceNow on Cortex XSOAR, ensure your user account has the * snc_platform_rest_api_access* role.
+To use ServiceNow on Cortex XSOAR, ensure your user account has the *snc_platform_rest_api_access* role.
  This role is required to make API calls.
  Also add to your user account the specific tables that you want to have access to.
  However, these permissions may not suffice for managing records in some tables. Make sure you have the correct role so you have permissions to work with the relevant table.
