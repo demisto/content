@@ -1,5 +1,5 @@
 commonfields:
-  id: UseCaseAdoptionMetrics
+  id: AdoptionMetrics
   version: -1
 contentitemexportablefields:
   contentitemfields:
@@ -7,7 +7,7 @@ contentitemexportablefields:
 dockerimage: demisto/python3:3.10.14.91134
 enabled: true
 engineinfo: {}
-name: UseCaseAdoptionMetrics
+name: AdoptionMetrics
 runas: DBotWeakRole
 runonce: false
 script: ''
