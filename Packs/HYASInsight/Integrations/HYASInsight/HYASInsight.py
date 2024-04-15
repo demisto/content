@@ -1,3 +1,4 @@
+from typing import Callable, Tuple
 from urllib3 import disable_warnings
 from CommonServerPython import *
 
