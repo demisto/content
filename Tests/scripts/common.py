@@ -333,6 +333,8 @@ def get_reviewer(pr_url: str) -> str | None:
         _, _, _, repo_owner, repo_name, _, pr_number = pr_url.split("/")
 
         # Get reviewers
+        # TODO change this to use GITHUB_TOKEN, ask afik and lappe about it.
+        # TODO add logs
         reviews_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/pulls/{pr_number}/reviews"
         reviews_response = requests.get(reviews_url)
         reviews_data = reviews_response.json()
@@ -347,7 +349,7 @@ def get_reviewer(pr_url: str) -> str | None:
     return approved_reviewer
 
 
-def get_slack_user_name(name: str | None, name_mapping_path: str) -> str:
+def get_slack_user_name(name: str | None, name_mapping_path: str) -> str:#to
     """
     Get the slack user name for a given Github name.
     Args:
