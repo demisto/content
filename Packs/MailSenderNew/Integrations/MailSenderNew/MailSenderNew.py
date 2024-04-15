@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import contextlib
 from typing import NoReturn
 
+from email.message import Message
 from email.mime.audio import MIMEAudio
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
@@ -265,7 +266,7 @@ def create_msg():
         # This is a simple text message - we cannot have CIDs here
         if len(attachments) > 0:
             # This is multipart - default is mixed
-            msg = MIMEMultipart()
+            msg: Message = MIMEMultipart()
             msg.preamble = 'The message is only available on a MIME-aware mail reader.\n'
             msg.attach(MIMEText(body, 'plain', UTF_8))
             for att in attachments:
