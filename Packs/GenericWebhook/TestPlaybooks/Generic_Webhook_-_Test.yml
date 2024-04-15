@@ -465,7 +465,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: /xsoar/incident/GWH
+                  simple: /xsoar/incident/Generic Webhook
           - operator: replace
             args:
               limit: {}
