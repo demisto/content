@@ -1,5 +1,3 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from collections.abc import Callable
 
 
@@ -372,7 +370,7 @@ def search_fixes(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[
     return human_readable_markdown, context, response
 
 
-def update_asset_command(client: Client, args: dict[str, str]) -> CommandResults:
+def update_asset_command(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
     """
     Update an asset in the Kenna Security Platform.
 
@@ -399,8 +397,8 @@ def update_asset_command(client: Client, args: dict[str, str]) -> CommandResults
 
     result = client.http_request(message='PUT', suffix=url_suffix, data=asset)
     if result.get('status') != "success":
-        return CommandResults(readable_output=f'Could not update asset with ID {asset_id}.', raw_response=result)
-    return CommandResults(readable_output=f'Asset with ID {asset_id} was successfully updated.')
+        return f'Could not update asset with ID {asset_id}.',{},[]
+    return f'Asset with ID {asset_id} was successfully updated.',{},[]
 
 
 def update_vulnerability(client: Client, args: dict) -> tuple[str, Dict[str, Any], List[Dict[str, Any]]]:
@@ -664,15 +662,16 @@ def main():
         'kenna-get-asset-vulnerabilities': get_asset_vulnerabilities,
         'kenna-add-tag': add_tags,
         'kenna-delete-tag': delete_tags,
-        'kenna-get-connector-runs': get_connector_runs
+        'kenna-get-connector-runs': get_connector_runs,
+        'kenna-update-asset': update_asset_command
     }
     try:
         if command in commands:
             return_outputs(*commands[command](client, args))
         elif command == "test-module":
             return_results(test_module(client))
-        elif command == "kenna-update-asset":
-            return_results(update_asset_command(client, args))
+											 
+															  
         elif command == "kenna-search-assets":
             return_results(search_assets_command(client, args))
         elif command == "kenna-search-assets-by-external-id":
