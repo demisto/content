@@ -5,7 +5,7 @@ import json
 import traceback
 from collections import defaultdict
 from ipaddress import ip_address
-from typing import DefaultDict, Tuple
+from typing import Tuple
 from requests import Response
 
 import urllib3

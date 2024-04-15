@@ -85,8 +85,9 @@ def get_files_from_github(
             stream=True,
             headers={"Authorization": f"Bearer {github_token}"},
         ) as file_content:
-            file_content.raise_for_status()
-            for data in file_content.iter_content(chunk_size=chunk_size):
+            # mypy didn't like the request being used as context manager
+            file_content.raise_for_status()  # type:ignore[attr-defined]
+            for data in file_content.iter_content(chunk_size=chunk_size):  # type:ignore[attr-defined]
                 changed_file.write(data)
 
         files_list.add(file_path.split(os.path.sep)[1])

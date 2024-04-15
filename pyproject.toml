@@ -6,18 +6,18 @@ authors = ["Cortex XSOAR"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8,<3.11"
-defusedxml = "^0.7.1"
+python = ">=3.10,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk  = { git = "https://github.com/demisto/demisto-sdk.git", rev = "docker_image_flag_to_precommit" }
-requests = "^2.22.0"
+demisto-sdk = { git = "https://github.com/demisto/demisto-sdk.git", rev = "support-python-311" }
+requests = "^2.31.0"
 pre-commit = "^3.5.0"
 dateparser = "^1.1.8"
+defusedxml = "^0.7.1"
 
 [tool.poetry.group.linters.dependencies]
 mypy = "^0.982"
-flake8 = "^4.0.1"
+flake8 = "^6.0.0"
 ruff = "^0.0.264"
 
 [tool.poetry.group.testing.dependencies]
@@ -53,75 +53,19 @@ boto3-stubs = { extras = [
     "ssm",
     "wafv2",
 ], version = "^1.28.31" }
-types-protobuf = "^4.24.0.4"
-
-[tool.poetry.group.native]
-# This is the python dependencies from the py3-native docker image.
-# See https://github.com/demisto/dockerfiles/blob/master/docker/py3-native/pyproject.toml
-optional = true
-
-[tool.poetry.group.native.dependencies]
-opensearch_dsl = "*"
-aiohttp = "*"
-python-magic = "*"
-pan-os-python = "*"
-pdf2image = "*"
-bs4 = "*"
-lxml = "*"
-chardet = "*"
-six = "*"
-pygments = "*"
-numpy = "*"
-scikit-learn = "*"
-nltk = "*"
-pandas = "*"
-urllib3 = "*"
-python-docx = "*"
-enum34 = "*"
-pypdf2 = "*"
-pikepdf = "*"
-boto3 = "*"
-msal = "*"
-cryptography = "*"
-tzlocal = "*"
-defusedxml = "*"
-isodate = "*"
-future = "*"
-idna = "*"
-pycparser = "*"
-cffi = "*"
-asn1crypto = "*"
-certifi = "*"
-cached-property = "*"
-phrases-case = "*"
-pyvirtualdisplay = "*"
-parse-emails = "*"
-slack-sdk = { extras = ["optional"], version = "*" }
-pyjwt = { extras = ["crypto"], version = "*" }
-google-api-python-client = "*"
-exchangelib = "*"
-requests-oauthlib = "*"
-oauthlib = "*"
-requests-ntlm = "*"
-oauth2client = "*"
-dill = "*"
-eli5 = "*"
-packaging = "*"
-rtfde = "*"
-webdriver-manager = "*"
-selenium = "*"
-cymruwhois = "*"
-simplejson = "*"
-networkx = "*"
-slackclient = "*"
-dpkt = "*"
-aiodns = "*"
-pysocks = "^1.7.0"                                   # must be 1.7.0 or above, cause 1.6.8 doesn't work on python 3.10
-jbxapi = "*"
-python-whois = "*"
-ipwhois = "*"
-edgegrid-python = "*"
-tldextract = "*"
+types-protobuf = "^4.24.0.20240311"
+types-dateparser = "^1.1.4.20240106"
+types-pytz = "^2024.1.0.20240203"
+types-pyyaml = "^6.0.12.20240311"
+types-setuptools = "^69.2.0.20240317"
+types-ujson = "^5.9.0.0"
+types-paramiko ="^2.11.0"
+types-requests = "^2.31.0.20240311"
+types-emoji = "^2.1.0.3"
+types-pymysql = "^1.1.0.1"
+types-six = "^1.16.21.20240311"
+types-markdown = "^3.6.0.20240316"
+types-tabulate = "^0.9.0.20240106"
 
 [tool.poetry.group.ci]
 optional = true
