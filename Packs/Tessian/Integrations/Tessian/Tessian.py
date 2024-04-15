@@ -244,7 +244,7 @@ def delete_from_inbox_command(client: Client, args: dict[str, Any]) -> CommandRe
     )
 
 
-def test_module(client: Client) -> str:  #  pragma: no cover
+def test_module(client: Client) -> str:  # pragma: no cover
     """
     Tests API connectivity and authentication'
     Returning 'ok' indicates that connection to the service is successful.
@@ -270,7 +270,7 @@ def test_module(client: Client) -> str:  #  pragma: no cover
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:  #  pragma: no cover
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
