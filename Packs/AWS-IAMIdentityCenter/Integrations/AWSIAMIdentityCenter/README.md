@@ -447,26 +447,6 @@ There is no context output for this command.
 
 >The membership id a3f47882-5021-7099-8bd8-e81c7c5ec9ed has been successfully created.
 
-### aws-iam-identitycenter-add-user-to-group
-
-***
-Adds the specified user to the specified group.
-
-#### Base Command
-
-`aws-iam-identitycenter-add-user-to-group`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| userName | The name of the user to add. | Required | 
-| groupName | The name of the group to update. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-
 ### aws-iam-identitycenter-get-group
 
 ***
@@ -523,44 +503,6 @@ Get AWS IAM Identity Center group Information.
 >|---|---|
 >| NewGroup | 03c428a2-a0b1-701f-0f7e-5e137f533231 |
 
-
-### aws-iam-identitycenter-get-group
-
-***
-Get AWS IAM Identity Center group Information.
-
-#### Base Command
-
-`aws-iam-identitycenter-get-group`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| groupName | The name of the group to search. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-
-### aws-iam-identitycenter-remove-user-from-all-groups
-
-***
-This will remove the entered user from all groups/memberships.
-
-#### Base Command
-
-`aws-iam-identitycenter-remove-user-from-all-groups`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| userName | Username that will be removed from all groups. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
 
 ### aws-iam-identitycenter-get-user-by-email
 
@@ -619,6 +561,52 @@ There is no context output for this command.
 | AWS.IAMIdentityCenter.User.Timezone | String | Time zone of the user. | 
 | AWS.IAMIdentityCenter.User.IdentityStoreId | String | Globally unique identifier for the identity store. | 
 
+
+#### Command example
+```!aws-iam-identitycenter-get-user-by-email emailAddress=test@example.com```
+#### Context Example
+```json
+{
+    "AWS": {
+        "IAMIdentityCenter": {
+            "User": {
+                "Addresses": [
+                    {
+                        "Region": "None"
+                    }
+                ],
+                "DisplayName": "example",
+                "Emails": [
+                    {
+                        "Primary": true,
+                        "Type": "work",
+                        "Value": "test@example.com"
+                    }
+                ],
+                "IdentityStoreId": "d-9967750fbd",
+                "Name": {
+                    "FamilyName": "fam",
+                    "GivenName": "example"
+                },
+                "ProfileUrl": "None",
+                "Title": "None",
+                "UserId": "13746842-e011-70fe-14fe-600d496510f0",
+                "UserName": "exampleName",
+                "UserType": "None"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS IAM Identity Center Users
+>|DisplayName|Emails|UserId|UserName|
+>|---|---|---|---|
+>| example | test@example.com | 13746842-e011-70fe-14fe-600d496510f0 | exampleName |
+
+
 ### aws-iam-identitycenter-list-memberships
 
 ***
@@ -650,6 +638,36 @@ Lists the memberships of the group.
 | AWS.IAMIdentityCenter.Group.GroupId | String | The identifier for a group in the identity store. | 
 | AWS.IAMIdentityCenter.Group.GroupMemberships.UserId | String | Identifier of resources that can be members. | 
 | AWS.IAMIdentityCenter.GroupMembershipNextToken | String | The pagination token. | 
+
+
+#### Command example
+```!aws-iam-identitycenter-list-memberships groupName=NewGroup```
+#### Context Example
+```json
+{
+    "AWS": {
+        "IAMIdentityCenter": {
+            "Group": {
+                "GroupMemberships":[
+                    {
+                        "MembershipId":"e374b872-9011-7000-c847-55fdcc299204",
+                        "UserId":"c3f438a2-e041-7033-75e8-63eb8c64b0e4"
+                    }
+                ]
+            },
+            "GroupMembershipNextToken":null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Group 03c428a2-a0b1-701f-0f7e-5e137f533231 has been successfully created
+>|GroupId|MembershipId|UserId|
+>|---|---|
+>| a3948882-5051-7090-524c-c8c850bf1919	 | e374b872-9011-7000-c847-55fdcc299204 | c3f438a2-e041-7033-75e8-63eb8c64b0e4 |
+
 
 ### aws-iam-identitycenter-create-group
 
