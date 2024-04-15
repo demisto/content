@@ -1,321 +1,237 @@
 [
-  {
-    "fields": {
-      "actor": [
-        "GOBLINPANDA"
-      ],
-      "confidence": "medium",
-      "creationdate": 1532708005,
-      "domainname": [],
-      "ipaddress": [],
-      "malwarefamily": [],
-      "reports": [
-        "CSA-123"
-      ],
-      "stixkillchainphases": [],
-      "tags": [
-        "MaliciousConfidence/Medium",
-        "Actor/GOBLINPANDA"
-      ],
-      "targets": [],
-      "threattypes": [
-        {
-          "threatcategory": "Suspicious"
-        },
-        {
-          "threatcategory": "Targeted"
-        }
-      ],
-      "updateddate": 1612244501,
-      "vulnerabilities": []
-    },
-    "rawJSON": {
-      "_marker": "123",
-      "actors": [
-        "GOBLINPANDA"
-      ],
-      "deleted": false,
-      "domain_types": [],
-      "id": "domain_abc",
-      "indicator": "abc",
-      "ip_address_types": [],
-      "kill_chains": [],
-      "labels": [
-        {
-          "created_on": 1532708005,
-          "last_valid_on": 1612244501,
-          "name": "MaliciousConfidence/Medium"
-        },
-        {
-          "created_on": 1532708004,
-          "last_valid_on": 1588311187,
-          "name": "Actor/GOBLINPANDA"
-        }
-      ],
-      "last_updated": 1612244501,
-      "malicious_confidence": "medium",
-      "malware_families": [],
-      "published_date": 1532708005,
-      "relations": [
-        {
-          "created_date": 1532712929,
-          "id": "ip_address_1.1.1.1",
-          "indicator": "1.1.1.1",
-          "last_valid_date": 1532712929,
-          "type": "ip_address"
-        }
-      ],
-      "reports": [
-        "CSA-123"
-      ],
-      "targets": [],
-      "threat_types": [
-        "Suspicious",
-        "Targeted"
-      ],
-      "type": "domain",
-      "vulnerabilities": []
-    },
-    "type": "Domain",
+    {"type": "Domain",
     "value": "abc",
-    "relationships": [
-      {
-        "entityA": "abc",
-        "entityAFamily": "Indicator",
-        "entityAType": "Domain",
-        "entityB": "CSA-123",
-        "entityBFamily": "Indicator",
-        "entityBType": "Report",
-        "fields": {},
-        "name": "indicator-of",
-        "reverseName": "indicated-by",
-        "type": "IndicatorToIndicator"
-      },
-      {
-        "entityA": "abc",
-        "entityAFamily": "Indicator",
-        "entityAType": "Domain",
-        "entityB": "GOBLINPANDA",
-        "entityBFamily": "Indicator",
-        "entityBType": "Threat Actor",
-        "fields": {},
-        "name": "indicator-of",
-        "reverseName": "indicated-by",
-        "type": "IndicatorToIndicator"
-      },
-      {
-        "entityA": "abc",
-        "entityAFamily": "Indicator",
-        "entityAType": "Domain",
-        "entityB": "1.1.1.1",
-        "entityBFamily": "Indicator",
-        "entityBType": "IP",
-        "fields": {},
-        "name": "related-to",
-        "reverseName": "related-to",
-        "type": "IndicatorToIndicator"
-      }
-    ]
-  },
-  {
-    "fields": {
-      "actor": [],
-      "confidence": "high",
-      "creationdate": 1573579421,
-      "domainname": [],
-      "ipaddress": [],
-      "malwarefamily": [
-        "Gootkit"
-      ],
-      "reports": [],
-      "stixkillchainphases": [
-        "Command & Control",
-        "Delivery"
-      ],
-      "tags": [
-        "Malware/Gootkit"
-      ],
-      "targets": [],
-      "threattypes": [
-        {
-          "threatcategory": "Criminal"
-        },
-        {
-          "threatcategory": "Banking"
-        }
-      ],
-      "updateddate": 1612070569,
-      "vulnerabilities": []
-    },
     "rawJSON": {
-      "_marker": "1234",
-      "actors": [],
-      "deleted": false,
-      "domain_types": [],
-      "id": "domain_abc1",
-      "indicator": "abc1",
-      "ip_address_types": [],
-      "kill_chains": [
-        "C2", "delivery"
-      ],
-      "labels": [
-        {
-          "created_on": 1588309967,
-          "last_valid_on": 1588309967,
-          "name": "Malware/Gootkit"
-        }
-      ],
-      "last_updated": 1612070569,
-      "malicious_confidence": "high",
-      "malware_families": [
-        "Gootkit"
-      ],
-      "published_date": 1573579421,
-      "relations": [
-        {
-          "created_date": 1609238446,
-          "id": "hash_sha256_1234567890",
-          "indicator": "1234567890",
-          "last_valid_date": 1609238446,
-          "type": "hash_sha256"
-        }
-      ],
-      "reports": [],
-      "targets": [],
-      "threat_types": [
-        "Criminal",
-        "Banking"
-      ],
-      "type": "domain",
-      "vulnerabilities": []
+        "id": "domain_abc",
+        "indicator": "abc",
+        "type": "domain",
+        "deleted": false,
+        "published_date": 1532708005,
+        "last_updated": 1612244501,
+        "reports": ["CSA-123"],
+        "actors": ["GOBLIN PANDA"],
+        "malware_families": [],
+        "kill_chains": [],
+        "ip_address_types": [],
+        "domain_types": [],
+        "malicious_confidence": "medium",
+        "_marker": "123",
+        "labels": 
+            [{"name": "MaliciousConfidence/Medium", "created_on": 1532708005, "last_valid_on": 1612244501},
+            {"name": "Actor/GOBLINPANDA", "created_on": 1532708004, "last_valid_on": 1588311187}],
+        "relations": 
+            [{"id": "ip_address_1.1.1.1", "indicator": "1.1.1.1", "type": "ip_address", "created_date": 1532712929, "last_valid_date": 1532712929}],
+        "targets": [],
+        "threat_types": ["Suspicious", "Targeted"],
+        "vulnerabilities": []},
+        "fields": 
+            {"actor": ["GOBLINPANDA"],
+            "reports": ["CSA-123"],
+            "malwarefamily": [],
+            "stixkillchainphases": [],
+            "ipaddress": [],
+            "domainname": [],
+            "targets": [],
+            "threattypes": 
+                [{"threatcategory": "Suspicious"},
+                {"threatcategory": "Targeted"}],
+                "vulnerabilities": [],
+                "confidence": "medium",
+                "updateddate": 1612244501,
+                "creationdate": 1532708005,
+                "tags": ["MaliciousConfidence/Medium", "Actor/GOBLINPANDA"]},
+                "relationships": [
+                    {"name": "indicator-of",
+                    "reverseName": "indicated-by",
+                    "type": "IndicatorToIndicator",
+                    "entityA": "abc",
+                    "entityAFamily": "Indicator",
+                    "entityAType": "Domain",
+                    "entityB": "CSA-123",
+                    "entityBFamily": "Indicator",
+                    "entityBType": "Report",
+                    "fields": {}},
+                    {"name": "indicator-of",
+                    "reverseName": "indicated-by",
+                    "type": "IndicatorToIndicator",
+                    "entityA": "abc",
+                    "entityAFamily": "Indicator",
+                    "entityAType": "Domain",
+                    "entityB": "GOBLIN PANDA",
+                    "entityBFamily": "Indicator",
+                    "entityBType": "Threat Actor",
+                    "fields": {}},
+                    {"name": "related-to",
+                    "reverseName": "related-to",
+                    "type": "IndicatorToIndicator",
+                    "entityA": "abc",
+                    "entityAFamily": "Indicator",
+                    "entityAType": "Domain",
+                    "entityB": "1.1.1.1",
+                    "entityBFamily": "Indicator",
+                    "entityBType": "IP",
+                    "fields": {}}]}, 
+    {
+        "type": "Domain",
+        "value": "abc1",
+        "rawJSON": {
+            "id": "domain_abc1",
+            "indicator": "abc1",
+            "type": "domain",
+            "deleted": false,
+            "published_date": 1573579421,
+            "last_updated": 1612070569,
+            "reports": [],
+            "actors": [],
+            "malware_families": ["Gootkit"],
+            "kill_chains": ["C2", "delivery"],
+            "ip_address_types": [],
+            "domain_types": [],
+            "malicious_confidence": "high",
+            "_marker": "1234",
+            "labels": [
+                {
+                    "name": "Malware/Gootkit",
+                    "created_on": 1588309967,
+                    "last_valid_on": 1588309967
+                }
+            ],
+            "relations": [
+                {
+                    "id": "hash_sha256_1234567890",
+                    "indicator": "1234567890",
+                    "type": "hash_sha256",
+                    "created_date": 1609238446,
+                    "last_valid_date": 1609238446}],
+                    "targets": [],
+                    "threat_types": ["Criminal", "Banking"],
+                    "vulnerabilities": []
+                    }, 
+                    "fields": 
+                    {"actor": [],
+                    "reports": [],
+                    "malwarefamily": ["Gootkit"],
+                    "stixkillchainphases": ["Command & Control", "Delivery"],
+                    "ipaddress": [],
+                    "domainname": [],
+                    "targets": [],
+                    "threattypes": [
+                        {"threatcategory": "Criminal"}, 
+                        {"threatcategory": "Banking"}
+                        ], "vulnerabilities": [],
+                    "confidence": "high",
+                    "updateddate": 1612070569,
+                    "creationdate": 1573579421,
+                    "tags": ["Malware/Gootkit"]},
+                    "relationships": [
+                        {
+                            "name": "indicator-of",
+                            "reverseName": "indicated-by",
+                            "type": "IndicatorToIndicator",
+                            "entityA": "abc1",
+                            "entityAFamily": "Indicator",
+                            "entityAType": "Domain",
+                            "entityB": "Gootkit",
+                            "entityBFamily": "Indicator",
+                            "entityBType": "Malware", "fields": {}
+                        },
+                        {
+                            "name": "related-to",
+                            "reverseName": "related-to",
+                            "type": "IndicatorToIndicator",
+                            "entityA": "abc1",
+                            "entityAFamily": "Indicator",
+                            "entityAType": "Domain",
+                            "entityB": "1234567890",
+                            "entityBFamily": "Indicator",
+                            "entityBType": "File", "fields": {}
+                        }
+                    ]
     },
-    "type": "Domain",
-    "value": "abc1",
-    "relationships": [
-      {
-        "entityA": "abc1",
-        "entityAFamily": "Indicator",
-        "entityAType": "Domain",
-        "entityB": "Gootkit",
-        "entityBFamily": "Indicator",
-        "entityBType": "Malware",
-        "fields": {},
-        "name": "indicator-of",
-        "reverseName": "indicated-by",
-        "type": "IndicatorToIndicator"
-      },
-      {
-        "entityA": "abc1",
-        "entityAFamily": "Indicator",
-        "entityAType": "Domain",
-        "entityB": "1234567890",
-        "entityBFamily": "Indicator",
-        "entityBType": "File",
-        "fields": {},
-        "name": "related-to",
-        "reverseName": "related-to",
-        "type": "IndicatorToIndicator"
-      }
-    ]
-  },
-  {
-    "fields": {
-      "actor": [],
-      "confidence": "high",
-      "creationdate": 1573579421,
-      "domainname": [],
-      "ipaddress": [],
-      "malwarefamily": [
-        "Gootkit"
-      ],
-      "reports": [],
-      "stixkillchainphases": [
-        "Command & Control"
-      ],
-      "tags": [
-        "Malware/Gootkit"
-      ],
-      "targets": [],
-      "threattypes": [
-        {
-          "threatcategory": "Criminal"
+    {
+        "type": "File",
+        "value": "abc1",
+        "rawJSON": {
+            "id": "file_abc1",
+            "indicator": "abc1",
+            "type": "hash_md5",
+            "deleted": false,
+            "published_date": 1573579421,
+            "last_updated": 1612070569,
+            "reports": [],
+            "actors": [],
+            "malware_families": ["Gootkit"],
+            "kill_chains": ["C2"],
+            "ip_address_types": [],
+            "domain_types": [],
+            "malicious_confidence": "high",
+            "_marker": "1234",
+            "labels": [
+                {
+                    "name": "Malware/Gootkit",
+                    "created_on": 1588309967,
+                    "last_valid_on": 1588309967
+                }
+            ],
+            "relations": [
+                {
+                    "id": "hash_sha256_1234567890",
+                    "indicator": "1234567890",
+                    "type": "hash_sha256",
+                    "created_date": 1609238446,
+                    "last_valid_date": 1609238446
+                }
+            ],
+            "targets": [],
+            "threat_types": ["Criminal", "Banking"],
+            "vulnerabilities": []
         },
-        {
-          "threatcategory": "Banking"
+        "fields": {
+            "actor": [],
+            "reports": [],
+            "malwarefamily": ["Gootkit"],
+            "stixkillchainphases": ["Command & Control"],
+            "ipaddress": [],
+            "domainname": [],
+            "targets": [],
+            "threattypes": [
+                {
+                    "threatcategory": "Criminal"
+                },
+                {
+                    "threatcategory": "Banking"
+                }
+            ],
+            "vulnerabilities": [],
+            "confidence": "high",
+            "updateddate": 1612070569,
+            "creationdate": 1573579421,
+            "tags": ["Malware/Gootkit"]},
+            "relationships": [
+                {
+                    "name": "indicator-of",
+                    "reverseName": "indicated-by",
+                    "type": "IndicatorToIndicator",
+                    "entityA": "abc1",
+                    "entityAFamily": "Indicator",
+                    "entityAType": "File",
+                    "entityB": "Gootkit",
+                    "entityBFamily": "Indicator",
+                    "entityBType": "Malware",
+                    "fields": {}
+                },
+                {
+                    "name": "related-to",
+                    "reverseName": "related-to",
+                    "type": "IndicatorToIndicator",
+                    "entityA": "abc1",
+                    "entityAFamily": "Indicator",
+                    "entityAType": "File",
+                    "entityB": "1234567890",
+                    "entityBFamily": "Indicator",
+                    "entityBType": "File",
+                    "fields": {}
+                }
+            ]
         }
-      ],
-      "updateddate": 1612070569,
-      "vulnerabilities": []
-    },
-    "rawJSON": {
-      "_marker": "1234",
-      "actors": [],
-      "deleted": false,
-      "domain_types": [],
-      "id": "file_abc1",
-      "indicator": "abc1",
-      "ip_address_types": [],
-      "kill_chains": [
-        "C2"
-      ],
-      "labels": [
-        {
-          "created_on": 1588309967,
-          "last_valid_on": 1588309967,
-          "name": "Malware/Gootkit"
-        }
-      ],
-      "last_updated": 1612070569,
-      "malicious_confidence": "high",
-      "malware_families": [
-        "Gootkit"
-      ],
-      "published_date": 1573579421,
-      "relations": [
-        {
-          "created_date": 1609238446,
-          "id": "hash_sha256_1234567890",
-          "indicator": "1234567890",
-          "last_valid_date": 1609238446,
-          "type": "hash_sha256"
-        }
-      ],
-      "reports": [],
-      "targets": [],
-      "threat_types": [
-        "Criminal",
-        "Banking"
-      ],
-      "type": "hash_md5",
-      "vulnerabilities": []
-    },
-    "type": "File",
-    "value": "abc1",
-    "relationships": [
-      {
-        "entityA": "abc1",
-        "entityAFamily": "Indicator",
-        "entityAType": "File",
-        "entityB": "Gootkit",
-        "entityBFamily": "Indicator",
-        "entityBType": "Malware",
-        "fields": {},
-        "name": "indicator-of",
-        "reverseName": "indicated-by",
-        "type": "IndicatorToIndicator"
-      },
-      {
-        "entityA": "abc1",
-        "entityAFamily": "Indicator",
-        "entityAType": "File",
-        "entityB": "1234567890",
-        "entityBFamily": "Indicator",
-        "entityBType": "File",
-        "fields": {},
-        "name": "related-to",
-        "reverseName": "related-to",
-        "type": "IndicatorToIndicator"
-      }
     ]
-  }
-]
