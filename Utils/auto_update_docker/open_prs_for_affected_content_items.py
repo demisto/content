@@ -118,19 +118,27 @@ def update_content_items_docker_images_and_push(
         logging.info(f"Updating docker image of {content_item} to {new_docker_image}")
         with open(content_item) as f:
             yml_content = yaml.safe_load(f)
+        object_to_update = {}
         if "dockerimage" in yml_content:
             # For scripts
-            yml_content["dockerimage"] = new_docker_image
+            object_to_update = yml_content
         elif "dockerimage" in yml_content.get("script", {}):
             # For integrations
-            yml_content["script"]["dockerimage"] = new_docker_image
+            object_to_update = yml_content["script"]
+
+        if object_to_update["dockerimage"] != new_docker_image:
+            # No need to update if docker image is already the target
+            object_to_update["dockerimage"] = new_docker_image
         else:
-            logging.error(f"Could not locate docker image field in YAML, skipping {content_item}")
+            logging.info(f"Docker image is already the target, skipping {content_item}")
             continue
         with open(content_item, "w") as f:
             # We use width=float("inf") so yaml.dump does not add \n to long lines
             yaml.dump(yml_content, f, sort_keys=False, width=float("inf"))
         updated_content_items.append(content_item)
+    if not updated_content_items:
+        # No content items were updated, skipping PR creation
+        return {}
 
     git.add(updated_content_items)
     git.commit(
@@ -256,7 +264,11 @@ def open_prs_for_content_items(
                         pr_assignees=pr_assignees,
                         pr_reviewers=pr_reviewers
                     )
-                    docker_images_prs_output[docker_image].append(pr_content)
+                    if pr_content:
+                        docker_images_prs_output[docker_image].append(pr_content)
+                    else:
+                        # Not all PR batches will have updated content items
+                        logging.info(f"PR batch {current_batch} for {docker_image} with {content_items_for_batch = } did not contain updates")
                     pr_batch_start = pr_batch_end
                     pr_batch_end = pr_batch_start + prs_limit_int
         if batch_dir:
