@@ -127,9 +127,9 @@ def update_content_items_docker_images_and_push(
             object_to_update = yml_content["script"]
 
         if object_to_update["dockerimage"] != new_docker_image:
-            # No need to update if docker image is already the target
             object_to_update["dockerimage"] = new_docker_image
         else:
+            # No need to update if docker image is already the target
             logging.info(f"Docker image is already the target, skipping {content_item}")
             continue
         with open(content_item, "w") as f:
