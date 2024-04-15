@@ -703,8 +703,12 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         updated_event = PYMISP.search(eventid=new_event.id, controller='attributes', value=value)
     except Exception as e:
         demisto.error(f'Got error {e} when searching for event {new_event.id} with controller=attributes')
-        updated_event = PYMISP.search(eventid=event_id, pythonify=True)
-    demisto.debug(f'finished searching event with ID {new_event.id}')
+        try:
+            updated_event = PYMISP.search(eventid=new_event.id, controller='attributes', value=value)
+        except Exception as e:
+            demisto.error(f'Got another error {e} when searching for event {new_event.id} with controller=attributes')
+            updated_event = PYMISP.search(eventid=event_id)
+    demisto.debug(f'finished searching event with ID {new_event.id} before command results')
     human_readable = f"## MISP add attribute\nNew attribute: {value} was added to event id {new_event.id}.\n"
     return CommandResults(
         readable_output=human_readable,
