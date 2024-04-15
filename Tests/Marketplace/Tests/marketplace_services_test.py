@@ -2269,8 +2269,8 @@ class TestReleaseNotes:
         '''
         aggregated_rn = "\n#### Integrations\n##### CrowdStrike Falcon Intel v2\n- wow1\n- wow2\n"
         open_mocker = MockOpen()
-        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_1_0.md', '2_0_0.md'])
-        open_mocker['rn_dir_fake_path/1_1_0.md'].read_data = rn_one
+        mocker.patch('os.listdir', return_value=['1_0_0.md', '1_0_30.md', '2_0_0.md'])
+        open_mocker['rn_dir_fake_path/1_0_30.md'].read_data = rn_one
         open_mocker['rn_dir_fake_path/2_0_0.md'].read_data = rn_two
         mocker.patch('builtins.open', open_mocker)
         rn_lines, latest_rn, new_versions = \

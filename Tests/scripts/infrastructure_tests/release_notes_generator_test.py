@@ -33,7 +33,7 @@ class TestReadAndFormatReleaseNote:
         Then
         - Ensure both integration appear in the formatted string
         """
-        rn_file = os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md')
+        rn_file = os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_0_30.md')
         formatted_text = read_and_format_release_note(rn_file)
         assert 'FakePack1_Integration1' in formatted_text
         assert 'FakePack1_Integration2' in formatted_text
@@ -51,7 +51,7 @@ class TestReadAndFormatReleaseNote:
         Then
         - Ensure only the script appears in the formatted string
         """
-        rn_file = os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_1_0.md')
+        rn_file = os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_30.md')
         formatted_text = read_and_format_release_note(rn_file)
         assert 'FakePack4_Script1' in formatted_text
         assert 'FakePack4_Integration1' not in formatted_text
@@ -194,9 +194,9 @@ class TestGenerateReleaseNotesSummary:
             - FakePack2 with versions 1.1.0
         """
         release_notes_files = [
-            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_0_30.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '2_0_0.md'),
-            os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_1_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_0_30.md'),
         ]
 
         rn_dict, _ = get_release_notes_dict(release_notes_files)
@@ -240,9 +240,9 @@ class TestGenerateReleaseNotesSummary:
             - FakePack2 with version 1.1.0 dose not have the string "(Partner Supported)" after the version
         """
         release_notes_files = [
-            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_0_30.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '2_0_0.md'),
-            os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_1_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_0_30.md'),
         ]
 
         rn_dict, _ = get_release_notes_dict(release_notes_files)
@@ -281,9 +281,9 @@ class TestGenerateReleaseNotesSummary:
             - FakePack2 with version 1.1.0 DOES NOT have the string "(Community Supported)" after the version
         """
         release_notes_files = [
-            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_0_30.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '2_0_0.md'),
-            os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_1_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack2', 'ReleaseNotes', '1_0_30.md'),
         ]
 
         rn_dict, _ = get_release_notes_dict(release_notes_files)
@@ -353,7 +353,7 @@ class TestGenerateReleaseNotesSummary:
         """
         release_notes_files = [
             os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_1.md'),
-            os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_1_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack4', 'ReleaseNotes', '1_0_30.md'),
         ]
         packs_metadta_dict = {
             'FakePack4': {}
@@ -468,7 +468,7 @@ class TestMergeVersionBlocks:
             type sections appears one after the other
         """
         release_notes_paths = [
-            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_0_30.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '2_1_0.md'),
         ]
 
@@ -499,7 +499,7 @@ class TestMergeVersionBlocks:
             one entity title for each one with two comments
         """
         release_notes_paths = [
-            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_1_0.md'),
+            os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '1_0_30.md'),
             os.path.join(TEST_DATA_PATH, 'FakePack1', 'ReleaseNotes', '2_0_0.md'),
         ]
 
