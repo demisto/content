@@ -122,7 +122,8 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         try:
-            port = int(demisto.params().get('longRunningPort'))
+            if port_param := demisto.params().get('longRunningPort'):
+                port = int(port_param)
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
         if demisto.command() == 'test-module':
