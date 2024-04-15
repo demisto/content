@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 ''' GLOBAL VARIABLES '''
 INTERVAL_FOR_POLLING_DEFAULT = 30
 TIMEOUT_FOR_POLLING_DEFAULT = 600
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR :)
 
 ''' CLIENT CLASS '''
 
