@@ -662,22 +662,22 @@ script:
     description: Get AWS IAM Identity Center group Information.
     name: aws-iam-identitycenter-get-group
     outputs: 
-    - contextPath: AWS.IAMIdentityCenter.GroupId
+    - contextPath: AWS.IAMIdentityCenter.Group.GroupId
       description: The identifier for a group in the identity store.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.DisplayName
+    - contextPath: AWS.IAMIdentityCenter.Group.DisplayName
       description: The display name of the group.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.ExternalIds.Issuer
+    - contextPath: AWS.IAMIdentityCenter.Group.ExternalIds.Issuer
       description: The issuer for an external identifier.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.ExternalIds.Id
+    - contextPath: AWS.IAMIdentityCenter.Group.ExternalIds.Id
       description: The identifier issued to this resource by an external identity provider.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.Description
+    - contextPath: AWS.IAMIdentityCenter.Group.Description
       description: A description of the group.
       type: String
-    - contextPath: AWS.IAMIdentityCenter.IdentityStoreId
+    - contextPath: AWS.IAMIdentityCenter.Group.IdentityStoreId
       description: The globally unique identifier for the identity store.
       type: String
   - arguments:

@@ -158,7 +158,8 @@ def test_list_users(mocker):
     list_users(args, client)
     contents = demisto.results.call_args[0][0]
     assert 'AWS IAM Identity Center Users' in contents.get('HumanReadable')
-    assert [{'UserId': 'USER_ID', 'UserName': 'test_user', 'DisplayName': 'Test User', 'Emails': [{'Value': 'test@example.com'}]}] in contents.get(
+    assert [{'UserId': 'USER_ID', 'UserName': 'test_user', 'DisplayName': 'Test User', 'Emails': [{
+        'Value': 'test@example.com'}]}] in contents.get(
         'EntryContext').values()
     assert {'UserNextToken': 'NEXT_TOKEN'} in contents.get(
         'EntryContext').values()
@@ -236,7 +237,8 @@ def test_get_user(mocker):
     get_user(args, client)
     contents = demisto.results.call_args[0][0]
 
-    assert {'UserId': 'USER_ID', 'UserName': 'test_user', 'DisplayName': 'Test User', 'Emails': [{'Value': 'test@example.com'}]} in contents.get(
+    assert {'UserId': 'USER_ID', 'UserName': 'test_user', 'DisplayName': 'Test User', 'Emails': [{
+        'Value': 'test@example.com'}]} in contents.get(
         'EntryContext').values()
     assert 'AWS IAM Identity Center Users' in contents.get('HumanReadable')
 
@@ -285,7 +287,9 @@ def test_get_user_by_email(mocker):
     get_user_by_email(args, client)
     contents = demisto.results.call_args[0][0]
 
-    assert {'UserId': 'USER_ID', 'UserName': 'test_user', 'DisplayName': 'Test User', 'Name': {'FamilyName': 'User', 'GivenName': 'Test'}, 'Emails': [{'Value': 'test@example.com', 'Type': 'work', 'Primary': True}]} in contents.get(
+    assert {'UserId': 'USER_ID', 'UserName': 'test_user', 'DisplayName': 'Test User',
+            'Name': {'FamilyName': 'User', 'GivenName': 'Test'},
+            'Emails': [{'Value': 'test@example.com', 'Type': 'work', 'Primary': True}]} in contents.get(
         'EntryContext').values()
     assert 'AWS IAM Identity Center Users' in contents.get('HumanReadable')
 

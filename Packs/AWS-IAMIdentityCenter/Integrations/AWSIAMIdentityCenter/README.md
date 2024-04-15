@@ -76,7 +76,7 @@ Creates a new IAM Identity Center user for your AWS account.
         "IAMIdentityCenter": {
             "User": {
                 "IdentityStoreId": "d-9967750fbd",
-                "UserId": "63849862-e011-704f-ebde-a0eb7208bbed"
+                "UserId": "13746842-e011-70fe-14fe-600d496510f0"
             }
         }
     }
@@ -85,10 +85,10 @@ Creates a new IAM Identity Center user for your AWS account.
 
 #### Human Readable Output
 
->### User 63849862-e011-704f-ebde-a0eb7208bbed has been successfully created
+>### User 13746842-e011-70fe-14fe-600d496510f0 has been successfully created
 >|IdentityStoreId|UserId|
 >|---|---|
->| d-9967750fbd | 63849862-e011-704f-ebde-a0eb7208bbed |
+>| d-9967750fbd | 13746842-e011-70fe-14fe-600d496510f0 |
 
 
 
@@ -178,7 +178,7 @@ Retrieves information about the specified IAM user, including the user creation 
                 },
                 "ProfileUrl": "None",
                 "Title": "None",
-                "UserId": "63849862-e011-704f-ebde-a0eb7208bbed",
+                "UserId": "13746842-e011-70fe-14fe-600d496510f0",
                 "UserName": "exampleName",
                 "UserType": "None"
             }
@@ -192,7 +192,7 @@ Retrieves information about the specified IAM user, including the user creation 
 >### AWS IAM Identity Center Users
 >|DisplayName|Emails|UserId|UserName|
 >|---|---|---|---|
->| example | test@example.com | 63849862-e011-704f-ebde-a0eb7208bbed | exampleName |
+>| example | test@example.com | 13746842-e011-70fe-14fe-600d496510f0 | exampleName |
 
 
 
@@ -265,178 +265,23 @@ Lists the IAM users, returns all users in the AWS account.
         "IAMIdentityCenter": {
             "User": [
                 {
-                    "DisplayName": "demisto admin",
-                    "Emails": [
-                        {
-                            "Primary": true,
-                            "Type": "work",
-                            "Value": "roman@ferrum-techs.com"
-                        }
-                    ],
-                    "IdentityStoreId": "d-9967750fbd",
-                    "Name": {
-                        "FamilyName": "admin",
-                        "GivenName": "demisto"
-                    },
-                    "UserId": "0394d8f2-6071-7082-97bf-6faaa5c65752",
-                    "UserName": "demistoadmin"
-                },
-                {
                     "Addresses": [
                         {
                             "Region": "None"
                         }
                     ],
-                    "DisplayName": "ho",
+                    "DisplayName": "Test",
                     "IdentityStoreId": "d-9967750fbd",
                     "Name": {
-                        "FamilyName": "hib",
-                        "GivenName": "hhh"
+                        "FamilyName": "Fam",
+                        "GivenName": "Test"
                     },
                     "ProfileUrl": "None",
                     "Title": "None",
-                    "UserId": "0364f8b2-60d1-70da-7841-be6b2f3f81e3",
-                    "UserName": "hi",
+                    "UserId": "c3f438a2-e041-7033-75e8-63eb8c64b0e4",
+                    "UserName": "test",
                     "UserType": "None"
                 },
-                {
-                    "Addresses": [
-                        {
-                            "Region": "None"
-                        }
-                    ],
-                    "DisplayName": "no",
-                    "IdentityStoreId": "d-9967750fbd",
-                    "Name": {
-                        "FamilyName": "no",
-                        "GivenName": "no"
-                    },
-                    "ProfileUrl": "None",
-                    "Title": "None",
-                    "UserId": "73d438c2-6041-7051-3c34-925c16f7f3a2",
-                    "UserName": "no",
-                    "UserType": "None"
-                },
-                {
-                    "Addresses": [
-                        {
-                            "Region": "None"
-                        }
-                    ],
-                    "DisplayName": "men",
-                    "IdentityStoreId": "d-9967750fbd",
-                    "Name": {
-                        "FamilyName": "men",
-                        "GivenName": "men"
-                    },
-                    "ProfileUrl": "None",
-                    "Title": "None",
-                    "UserId": "03e44862-5091-7043-a305-9509aca42ee9",
-                    "UserName": "men",
-                    "UserType": "None"
-                },
-                {
-                    "Addresses": [
-                        {
-                            "Region": "None"
-                        }
-                    ],
-                    "DisplayName": "michal",
-                    "Emails": [
-                        {
-                            "Primary": true,
-                            "Type": "work",
-                            "Value": "michal@gmail.com"
-                        }
-                    ],
-                    "IdentityStoreId": "d-9967750fbd",
-                    "Name": {
-                        "FamilyName": "dag",
-                        "GivenName": "mich"
-                    },
-                    "ProfileUrl": "None",
-                    "Title": "None",
-                    "UserId": "b3f49862-9061-7048-493e-810e2816c546",
-                    "UserName": "michal",
-                    "UserType": "None"
-                },
-                {
-                    "Addresses": [
-                        {
-                            "Region": "None"
-                        }
-                    ],
-                    "DisplayName": "inbal",
-                    "IdentityStoreId": "d-9967750fbd",
-                    "Name": {
-                        "FamilyName": "apt",
-                        "GivenName": "inbal"
-                    },
-                    "ProfileUrl": "None",
-                    "Title": "None",
-                    "UserId": "d3f4a822-c071-70ee-8f4a-c954715e1adf",
-                    "UserName": "inbali",
-                    "UserType": "None"
-                },
-                {
-                    "Addresses": [
-                        {
-                            "Region": "None"
-                        }
-                    ],
-                    "DisplayName": "inbal",
-                    "Emails": [
-                        {
-                            "Primary": true,
-                            "Type": "work",
-                            "Value": "inb@fma"
-                        }
-                    ],
-                    "IdentityStoreId": "d-9967750fbd",
-                    "Name": {
-                        "FamilyName": "apt",
-                        "GivenName": "inbal"
-                    },
-                    "ProfileUrl": "None",
-                    "Title": "None",
-                    "UserId": "9394f882-20c1-7022-eb94-daf20345a352",
-                    "UserName": "inbalapt",
-                    "UserType": "None"
-                },
-                {
-                    "DisplayName": "N D",
-                    "Emails": [
-                        {
-                            "Primary": true,
-                            "Type": "work",
-                            "Value": "nat2@test.com"
-                        }
-                    ],
-                    "IdentityStoreId": "d-9967750fbd",
-                    "Name": {
-                        "FamilyName": "D",
-                        "GivenName": "N"
-                    },
-                    "UserId": "a3c44842-00f1-70d1-64d8-20b3cdb652c7",
-                    "UserName": "nat2"
-                },
-                {
-                    "DisplayName": "IAM Admin CRTX-101245",
-                    "Emails": [
-                        {
-                            "Primary": true,
-                            "Type": "work",
-                            "Value": "tomer@ferrum-techs.com"
-                        }
-                    ],
-                    "IdentityStoreId": "d-9967750fbd",
-                    "Name": {
-                        "FamilyName": "Admin CRTX-101245",
-                        "GivenName": "IAM"
-                    },
-                    "UserId": "b3a4c842-d0b1-7012-c097-06fd11161d83",
-                    "UserName": "IAM_Admin_CRTX-101245"
-                }
             ],
             "UserNextToken": null
         }
@@ -447,18 +292,9 @@ Lists the IAM users, returns all users in the AWS account.
 #### Human Readable Output
 
 >### AWS IAM Identity Center Users
->|DisplayName|Emails|UserId|UserName|
->|---|---|---|---|
->| demisto admin | roman@ferrum-techs.com | 0394d8f2-6071-7082-97bf-6faaa5c65752 | demistoadmin |
->| ho |  | 0364f8b2-60d1-70da-7841-be6b2f3f81e3 | hi |
->| no |  | 73d438c2-6041-7051-3c34-925c16f7f3a2 | no |
->| men |  | 03e44862-5091-7043-a305-9509aca42ee9 | men |
->| michal | michal@gmail.com | b3f49862-9061-7048-493e-810e2816c546 | michal |
->| inbal |  | d3f4a822-c071-70ee-8f4a-c954715e1adf | inbali |
->| inbal | inb@fma | 9394f882-20c1-7022-eb94-daf20345a352 | inbalapt |
->| N D | nat2@test.com | a3c44842-00f1-70d1-64d8-20b3cdb652c7 | nat2 |
->| IAM Admin CRTX-101245 | tomer@ferrum-techs.com | b3a4c842-d0b1-7012-c097-06fd11161d83 | IAM_Admin_CRTX-101245 |
-
+>|DisplayName|UserId|UserName|
+>|---|---|---|
+>| Test | c3f438a2-e041-7033-75e8-63eb8c64b0e4 | test |
 
 
 ### aws-iam-identitycenter-list-groups
@@ -501,43 +337,11 @@ Lists all the IAM groups in the AWS account.
 {
     "AWS": {
         "IAMIdentityCenter": {
-            "Group": [
-                {
-                    "DisplayName": "InbalGrou",
-                    "GroupId": "7314b8c2-5071-7016-328c-5d2df98c68e6",
-                    "IdentityStoreId": "d-9967750fbd"
-                },
-                {
-                    "DisplayName": "IAMAdmin",
-                    "GroupId": "83f42872-5041-7057-245e-2b9dba8afddc",
-                    "IdentityStoreId": "d-9967750fbd"
-                },
-                {
-                    "DisplayName": "InbalGroup",
-                    "GroupId": "433458b2-50d1-7069-b61d-21238462c5f6",
-                    "IdentityStoreId": "d-9967750fbd"
-                },
-                {
-                    "DisplayName": "Newww",
-                    "GroupId": "93c4c862-f001-70d2-567c-2982486b8e97",
-                    "IdentityStoreId": "d-9967750fbd"
-                },
-                {
-                    "DisplayName": "NatGoup3",
-                    "GroupId": "83942812-e0e1-7079-a82c-98bd193e99fa",
-                    "IdentityStoreId": "d-9967750fbd"
-                },
-                {
-                    "DisplayName": "CRTX-101245",
-                    "GroupId": "83846842-90b1-70d3-62c7-42bd21607654",
-                    "IdentityStoreId": "d-9967750fbd"
-                },
-                {
-                    "DisplayName": "NatGroup",
-                    "GroupId": "6324b8b2-f061-7003-45b0-bf53443049b4",
-                    "IdentityStoreId": "d-9967750fbd"
-                }
-            ],
+            "Group": {
+                "DisplayName": "groupy",
+                "GroupId": "83e458c2-d011-70b8-0aee-d9fed9d78714",
+                "IdentityStoreId": "d-9967750fbd"
+            },
             "GroupNextToken": null
         }
     }
@@ -549,13 +353,7 @@ Lists all the IAM groups in the AWS account.
 >### AWS IAM Identity Center Groups
 >|DisplayName|GroupId|
 >|---|---|
->| InbalGrou | 7314b8c2-5071-7016-328c-5d2df98c68e6 |
->| IAMAdmin | 83f42872-5041-7057-245e-2b9dba8afddc |
->| InbalGroup | 433458b2-50d1-7069-b61d-21238462c5f6 |
->| Newww | 93c4c862-f001-70d2-567c-2982486b8e97 |
->| NatGoup3 | 83942812-e0e1-7079-a82c-98bd193e99fa |
->| CRTX-101245 | 83846842-90b1-70d3-62c7-42bd21607654 |
->| NatGroup | 6324b8b2-f061-7003-45b0-bf53443049b4 |
+>| groupy | 83e458c2-d011-70b8-0aee-d9fed9d78714 |
 
 
 
@@ -618,7 +416,7 @@ There is no context output for this command.
 ```!aws-iam-identitycenter-add-user-to-group groupName=NewGroup userName=exampleName```
 #### Human Readable Output
 
->The membership id 13440832-e031-7086-c06d-ee87f8e20383 has been successfully created.
+>The membership id a3f47882-5021-7099-8bd8-e81c7c5ec9ed has been successfully created.
 
 ### aws-iam-identitycenter-add-user-to-group
 
@@ -664,12 +462,12 @@ Get AWS IAM Identity Center group Information.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.IAMIdentityCenter.GroupId | String | The identifier for a group in the identity store. | 
-| AWS.IAMIdentityCenter.DisplayName | String | The display name of the group. | 
-| AWS.IAMIdentityCenter.ExternalIds.Issuer | String | The issuer for an external identifier. | 
-| AWS.IAMIdentityCenter.ExternalIds.Id | String | The identifier issued to this resource by an external identity provider. | 
-| AWS.IAMIdentityCenter.Description | String | A description of the group. | 
-| AWS.IAMIdentityCenter.IdentityStoreId | String | The globally unique identifier for the identity store. | 
+| AWS.IAMIdentityCenter.Group.GroupId | String | The identifier for a group in the identity store. | 
+| AWS.IAMIdentityCenter.Group.DisplayName | String | The display name of the group. | 
+| AWS.IAMIdentityCenter.Group.ExternalIds.Issuer | String | The issuer for an external identifier. | 
+| AWS.IAMIdentityCenter.Group.ExternalIds.Id | String | The identifier issued to this resource by an external identity provider. | 
+| AWS.IAMIdentityCenter.Group.Description | String | A description of the group. | 
+| AWS.IAMIdentityCenter.Group.IdentityStoreId | String | The globally unique identifier for the identity store. | 
 
 #### Command example
 ```!aws-iam-identitycenter-get-group displayName=NewGroup```
@@ -681,7 +479,7 @@ Get AWS IAM Identity Center group Information.
             "Group": {
                 "Description": "New",
                 "DisplayName": "NewGroup",
-                "GroupId": "b394c8f2-4041-70d9-a717-ed7afaa9d24b",
+                "GroupId": "03c428a2-a0b1-701f-0f7e-5e137f533231",
                 "IdentityStoreId": "d-9967750fbd"
             }
         }
@@ -694,7 +492,7 @@ Get AWS IAM Identity Center group Information.
 >### AWS IAM Identity Center Groups
 >|DisplayName|GroupId|
 >|---|---|
->| NewGroup | b394c8f2-4041-70d9-a717-ed7afaa9d24b |
+>| NewGroup | 03c428a2-a0b1-701f-0f7e-5e137f533231 |
 
 
 ### aws-iam-identitycenter-get-group
@@ -792,14 +590,14 @@ There is no context output for this command.
 | AWS.IAMIdentityCenter.User.Timezone | String | Time zone of the user. | 
 | AWS.IAMIdentityCenter.User.IdentityStoreId | String | Globally unique identifier for the identity store. | 
 
-### aws-iam-identitycenter-delete-group-membership
+### aws-iam-identitycenter-list-memberships
 
 ***
-Deletes a user from all groups if a username is provided, or deletes multiple memberships if a list of memberships is provided.
+Lists the memberships of the group.
 
 #### Base Command
 
-`aws-iam-identitycenter-delete-group-membership`
+`aws-iam-identitycenter-list-memberships`
 
 #### Input
 
@@ -810,17 +608,19 @@ Deletes a user from all groups if a username is provided, or deletes multiple me
 | roleSessionDuration | Role Session Duration. | Optional | 
 | roleSessionName | Role Session Name. | Optional | 
 | IdentityStoreId | Identity Store ID. | Optional | 
-| userName | The name of the user to delete from all groups. | Optional | 
-| membershipId | Comma seperated list of membership Ids to delete. | Optional | 
+| limit | Number of results to display. Default is 50. | Optional | 
+| nextToken | The pagination token. | Optional | 
+| groupName | The name of the group to list the memberships. | Required | 
 
 #### Context Output
 
-There is no context output for this command.
-#### Command example
-```!aws-iam-identitycenter-delete-group-membership userName=exampleName```
-#### Human Readable Output
-
->User is not member of any group.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAMIdentityCenter.GroupMemberships.IdentityStoreId | String | The globally unique identifier for the identity store. | 
+| AWS.IAMIdentityCenter.Group.GroupMemberships.MembershipId | String | The identifier for a GroupMembership object in an identity store. | 
+| AWS.IAMIdentityCenter.Group.GroupId | String | The identifier for a group in the identity store. | 
+| AWS.IAMIdentityCenter.Group.GroupMemberships.UserId | String | Identifier of resources that can be members. | 
+| AWS.IAMIdentityCenter.GroupMembershipNextToken | String | The pagination token. | 
 
 ### aws-iam-identitycenter-create-group
 
@@ -858,7 +658,7 @@ Creates a new IAM Identity Center group for your AWS account.
     "AWS": {
         "IAMIdentityCenter": {
             "Group": {
-                "GroupId": "b394c8f2-4041-70d9-a717-ed7afaa9d24b",
+                "GroupId": "03c428a2-a0b1-701f-0f7e-5e137f533231",
                 "IdentityStoreId": "d-9967750fbd"
             }
         }
@@ -868,10 +668,10 @@ Creates a new IAM Identity Center group for your AWS account.
 
 #### Human Readable Output
 
->### Group b394c8f2-4041-70d9-a717-ed7afaa9d24b has been successfully created
+>### Group 03c428a2-a0b1-701f-0f7e-5e137f533231 has been successfully created
 >|GroupId|IdentityStoreId|
 >|---|---|
->| b394c8f2-4041-70d9-a717-ed7afaa9d24b | d-9967750fbd |
+>| 03c428a2-a0b1-701f-0f7e-5e137f533231 | d-9967750fbd |
 
 
 ### aws-iam-identitycenter-delete-group
@@ -901,39 +701,7 @@ There is no context output for this command.
 ```!aws-iam-identitycenter-delete-group groupName=NewGroup```
 #### Human Readable Output
 
->The Group b394c8f2-4041-70d9-a717-ed7afaa9d24b has been removed.
-
-### aws-iam-identitycenter-list-memberships
-
-***
-Lists the memberships of the group.
-
-#### Base Command
-
-`aws-iam-identitycenter-list-memberships`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
-| limit | Number of results to display. Default is 50. | Optional | 
-| nextToken | The pagination token. | Optional | 
-| groupName | The name of the group to list the memberships. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| AWS.IAMIdentityCenter.GroupMemberships.IdentityStoreId | String | The globally unique identifier for the identity store. | 
-| AWS.IAMIdentityCenter.Group.GroupMemberships.MembershipId | String | The identifier for a GroupMembership object in an identity store. | 
-| AWS.IAMIdentityCenter.Group.GroupId | String | The identifier for a group in the identity store. | 
-| AWS.IAMIdentityCenter.Group.GroupMemberships.UserId | String | Identifier of resources that can be members. | 
-| AWS.IAMIdentityCenter.GroupMembershipNextToken | String | The pagination token. | 
+>The Group 03c428a2-a0b1-701f-0f7e-5e137f533231 has been removed.
 
 ### aws-iam-identitycenter-delete-user
 
@@ -962,5 +730,35 @@ There is no context output for this command.
 ```!aws-iam-identitycenter-delete-user userName=exampleName```
 #### Human Readable Output
 
->The User 63849862-e011-704f-ebde-a0eb7208bbed has been removed.
+>The User 13746842-e011-70fe-14fe-600d496510f0 has been removed.
+
+### aws-iam-identitycenter-delete-group-membership
+
+***
+Deletes a user from all groups if a username is provided, or deletes multiple memberships if a list of memberships is provided.
+
+#### Base Command
+
+`aws-iam-identitycenter-delete-group-membership`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | Role Arn. | Optional | 
+| roleSessionDuration | Role Session Duration. | Optional | 
+| roleSessionName | Role Session Name. | Optional | 
+| IdentityStoreId | Identity Store ID. | Optional | 
+| userName | The name of the user to delete from all groups. | Optional | 
+| membershipId | Comma seperated list of membership Ids to delete. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!aws-iam-identitycenter-delete-group-membership userName=exampleName```
+#### Human Readable Output
+
+>User is not member of any group.
 
