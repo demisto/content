@@ -61,13 +61,14 @@ def test_status_update_command(mocker):
     assert response.call_args[0][0].get('HumanReadable') == 'Status updated for user'
 
 
-def test_anomaly_activity_list_command(mocker):
+def test_anomaly_activity_list_command_empty_response(mocker):
     """
     Given:
         - An app client object
         - Relevant arguments
     When:
         - skyhigh-security-anomaly-activity-list command is executed
+        - The request returns 200 OK with no data.
     Then:
         - Ensure the readable output is in the correct format
     """
@@ -79,6 +80,20 @@ def test_anomaly_activity_list_command(mocker):
         m.post('https://www.example.com/shnapi/rest/external/api/v1/queryActivities', status_code=200)
         main()
     assert response.call_args[0][0].get('HumanReadable') == 'No activities found for anomaly ID 1111'
+
+
+def test_anomaly_activity_list_command_with_response(mocker):
+    mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
+    mocker.patch.object(demisto, 'args', return_value={'anomaly_id': '1111'})
+    mocker.patch.object(demisto, 'command', return_value='skyhigh-security-anomaly-activity-list')
+    response = mocker.patch.object(demisto, 'results')
+    with requests_mock.Mocker() as m:
+        m.post('https://www.example.com/shnapi/rest/external/api/v1/queryActivities',
+               text=util_load_text('test_data/activities.txt'),
+               status_code=200)
+        main()
+    assert len(response.call_args[0][0]['Contents']) > 0
+    assert 'Anomaly Activity List' in response.call_args[0][0]['HumanReadable']
 
 
 def test_policy_dictionary_list_command(mocker):
@@ -163,21 +178,3 @@ def test_fetch_incidents(mocker):
     last_run, incidents = fetch_incidents(client, params)
 
     assert len(incidents) == 0
-
-def test(mocker):
-    mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
-    mocker.patch.object(demisto, 'args', return_value={'anomaly_id': '1111'})
-    mocker.patch.object(demisto, 'command', return_value='skyhigh-security-anomaly-activity-list')
-    response = mocker.patch.object(demisto, 'results')
-    with requests_mock.Mocker() as m:
-        m.post('https://www.example.com/shnapi/rest/external/api/v1/queryActivities', util_load_text('test_data/activities.txt'),
-               status_code=200)
-        main()
-    print(response)
-    assert response.call_args[0][0].get('HumanReadable') == 'No activities found for anomaly ID 1111'
-#     from SkyhighSecurity import Client, anomaly_activity_list_command
-#     client = Client(base_url='https://www.example.com/', verify=False)
-#     args = {'anomaly_id': '1111'}
-#     # mocker.patch.object(client, "anomaly_activity_list", return_value=util_load_text('test_data/activities.txt'))
-#     response = anomaly_activity_list_command(client, args)
-#     print(response.outputs)
