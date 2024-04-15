@@ -34,6 +34,10 @@ MAX_SAMPLES = 10
 INCIDENT_TYPE: str
 ALLOW_INCIDENTS: bool
 PORT: int
+MIRRORING_ENABLED: bool
+LONG_RUNNING: bool
+CACHED_INTEGRATION_CONTEXT: dict
+VERIFY_CERT: bool
 MESSAGE_FOOTER = '\n**From MatterMost**'
 MIRROR_TYPE = 'mirrorEntry'
 OBJECTS_TO_KEYS = {
@@ -443,12 +447,7 @@ def long_running_loop():  # pragma: no cover
 
 
 async def event_handler(client: WebSocketClient, req: str):
-    """Handling the events coming from the websocket
-
-    Args:
-        client (WebSocketClient): _description_
-        req (str): _description_
-    """
+    """Handling the events coming from the websocket"""
     demisto.debug(f"MM: Got events: {req} - with type {type(req)}")
     payload = json.loads(req)
 
@@ -690,7 +689,7 @@ async def send_notification_async(client: HTTPClient, channel_id, message, root_
     client.send_notification_request(channel_id, message, root_id=root_id)
 
 
-async def process_entitlement_reply(  # TODO
+async def process_entitlement_reply(  # pragma: no cover
     entitlement_reply: str,
     to_id: str | None = None,
     user_name: str | None = None,
@@ -802,7 +801,7 @@ async def handle_posts(payload):
         await handle_text_received_from_mm(investigation_id, message, operator_email, operator_name)
 
 
-async def handle_listen_error(error: str):  # pragma: no cover
+async def handle_listen_error(error: str):
     """
     Logs an error and updates the module health accordingly.
 

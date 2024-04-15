@@ -1,6 +1,6 @@
-id: MatterMost_V2 - testplaybook
+id: MattermostV2 - testplaybook
 version: -1
-name: MatterMost_V2 - testplaybook
+name: MattermostV2 - testplaybook
 starttaskid: "0"
 tasks:
   "0":
@@ -42,10 +42,10 @@ tasks:
       version: -1
       name: mattermost-get-team
       description: Gets a team details.
-      script: MatterMost_V2|||mattermost-get-team
+      script: MattermostV2|||mattermost-get-team
       type: regular
       iscommand: true
-      brand: MatterMost_V2
+      brand: MattermostV2
     nexttasks:
       '#none#':
       - "13"
@@ -77,10 +77,10 @@ tasks:
       version: -1
       name: mattermost-create-channel
       description: Creates a channel.
-      script: MatterMost_V2|||mattermost-create-channel
+      script: MattermostV2|||mattermost-create-channel
       type: regular
       iscommand: true
-      brand: MatterMost_V2
+      brand: MattermostV2
     nexttasks:
       '#none#':
       - "10"
@@ -156,10 +156,10 @@ tasks:
       version: -1
       name: mattermost-list-users
       description: Lists users.
-      script: MatterMost_V2|||mattermost-list-users
+      script: MattermostV2|||mattermost-list-users
       type: regular
       iscommand: true
-      brand: MatterMost_V2
+      brand: MattermostV2
     nexttasks:
       '#none#':
       - "7"
@@ -193,10 +193,10 @@ tasks:
       version: -1
       name: mattermost-add-channel-member
       description: Adds a channel member.
-      script: MatterMost_V2|||mattermost-add-channel-member
+      script: MattermostV2|||mattermost-add-channel-member
       type: regular
       iscommand: true
-      brand: MatterMost_V2
+      brand: MattermostV2
     nexttasks:
       '#none#':
       - "8"
@@ -232,10 +232,10 @@ tasks:
       version: -1
       name: mattermost-remove-channel-member
       description: Removes a channel member.
-      script: MatterMost_V2|||mattermost-remove-channel-member
+      script: MattermostV2|||mattermost-remove-channel-member
       type: regular
       iscommand: true
-      brand: MatterMost_V2
+      brand: MattermostV2
     nexttasks:
       '#none#':
       - "11"
@@ -271,10 +271,10 @@ tasks:
       version: -1
       name: mattermost-close-channel
       description: Deletes a channel.
-      script: MatterMost_V2|||mattermost-close-channel
+      script: MattermostV2|||mattermost-close-channel
       type: regular
       iscommand: true
-      brand: MatterMost_V2
+      brand: MattermostV2
     scriptarguments:
       channel_name:
         simple: channel_test_playbook_${RandomString}
@@ -305,10 +305,10 @@ tasks:
       version: -1
       name: mattermost-list-channels
       description: Lists channels.
-      script: MatterMost_V2|||mattermost-list-channels
+      script: MattermostV2|||mattermost-list-channels
       type: regular
       iscommand: true
-      brand: MatterMost_V2
+      brand: MattermostV2
     nexttasks:
       '#none#':
       - "4"
@@ -380,10 +380,10 @@ tasks:
       version: -1
       name: mattermost-send-file
       description: Deletes a channel.
-      script: MatterMost_V2|||mattermost-send-file
+      script: MattermostV2|||mattermost-send-file
       type: regular
       iscommand: true
-      brand: MatterMost_V2
+      brand: MattermostV2
     nexttasks:
       '#none#':
       - "9"

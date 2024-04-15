@@ -1,13 +1,13 @@
 Mattermost is an open-source, self-hostable online chat service with file sharing, search, and integrations. It is designed as an internal chat for organisations and companies.
-This integration was integrated and tested with version xx of MatterMost_V2.
+This integration was integrated and tested with version xx of MattermostV2.
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-mattermost_v2).
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-MattermostV2).
 
-## Configure MatterMost_V2 on Cortex XSOAR
+## Configure MattermostV2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for MatterMost_V2.
+2. Search for MattermostV2.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |

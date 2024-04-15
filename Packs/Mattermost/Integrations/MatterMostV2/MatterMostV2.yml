@@ -3,7 +3,7 @@ sectionOrder:
 - Collect
 category: Messaging and Conferencing
 commonfields:
-  id: MatterMost_V2
+  id: MattermostV2
   version: -1
 configuration:
 - display: Server URL
@@ -66,8 +66,8 @@ configuration:
   required: false
   section: Connect - Advanced
 description: Mattermost is an open-source, self-hostable online chat service with file sharing, search, and integrations. It is designed as an internal chat for organisations and companies.
-display: MatterMost v2
-name: MatterMost_V2
+display: Mattermost v2
+name: MattermostV2
 script:
   commands:
   - arguments:
@@ -438,4 +438,4 @@ script:
   dockerimage: devdemisto/mattermost:1.0.0.91765
 fromversion: 6.10.0
 tests:
-- No tests (auto formatted)
+- MattermostV2 - testplaybook

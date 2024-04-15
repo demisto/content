@@ -2,7 +2,7 @@ import json
 from MatterMostV2 import (get_team_command, list_channels_command, create_channel_command, add_channel_member_command,
                           remove_channel_member_command, list_users_command, close_channel_command, send_file_command,
                           get_channel_id_to_send_notif, event_handler, handle_text_received_from_mm, get_channel_id_from_context,
-                          extract_entitlement, answer_question, handle_posts, create_incidents, get_war_room_url)
+                          extract_entitlement, answer_question, handle_posts, create_incidents, get_war_room_url, mirror_investigation)
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
@@ -153,7 +153,7 @@ def test_list_users_command(http_client):
     assert results.outputs[0].get('first_name') == 'first_name'
 
 
-def test_close_channel_command(http_client):
+def test_close_channel_command_no_mirror(http_client):
     """
     Given: A mock MatterMost client.
     When: Running close_channel_command with a team name.
@@ -162,6 +162,35 @@ def test_close_channel_command(http_client):
     args = {'team_name': 'team_name',
             'channel_name': 'channel_name', }
     results = close_channel_command(http_client, args)
+    assert 'The channel channel_name was delete successfully.' in results.readable_output
+
+
+def test_close_channel_command_mirror(http_client, mocker):
+    """
+    Given: A mock MatterMost client.
+    When: Running close_channel_command with a team name.
+    Then: Ensure we get the result, and  was called only once with the first mirror
+    """
+    args = {'team_name': 'team_name',
+            'channel_name': 'channel_name', }
+
+    import MatterMostV2
+    MatterMostV2.CACHE_EXPIRY = False
+    MatterMostV2.CACHED_INTEGRATION_CONTEXT = ''
+    mock_integration_context = {
+        'mirrors': json.dumps([
+            {'channel_name': 'Channel1', 'team_id': 'team_id', 'channel_id': 'channel_id', 'mirrored': False,
+             'investigation_id': 'Incident123', 'mirror_direction': 'toDemisto', 'auto_close': True, 'mirror_type': 'all'},
+            {'channel_name': 'Channel2', 'team_id': 'team_id', 'channel_id': 'channel_id_different_channel', 'mirrored': True,
+             'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True, 'mirror_type': 'chat'},
+        ])
+    }
+    mocker.patch('MatterMostV2.get_integration_context', return_value=mock_integration_context)
+    mocker.patch.object(demisto, 'investigation', return_value={'id': 'Incident123'})
+    mocker.patch.object(demisto, 'mirrorInvestigation')
+    results = close_channel_command(http_client, args)
+
+    demisto.mirrorInvestigation.assert_called_once_with('Incident123', 'none:toDemisto', True)
     assert 'The channel channel_name was delete successfully.' in results.readable_output
 
 
@@ -282,6 +311,45 @@ def test_extract_entitlement(entitlement, expected_result):
 
     assert result == expected_result
 
+
+def test_mirror_investigation_create_new_channel(http_client, mocker):
+    """
+    Given a mock client and relevant arguments,
+    When calling the mirror_investigation function to create a new channel,
+    Then validate that the function returns the expected CommandResults.
+    """
+    import MatterMostV2
+    MatterMostV2.MIRRORING_ENABLED = True
+    MatterMostV2.LONG_RUNNING = True
+    MatterMostV2.SYNC_CONTEXT = True
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'mock_server_url'})
+
+    # Test data
+    args = {
+        'type': 'all',
+        'direction': 'Both',
+        'channelName': 'mirror-channel',
+        'autoclose': True,
+    }
+    mock_integration_context = {
+        'mirrors': json.dumps([
+            {'channel_name': 'Channel1', 'team_id': 'team_id', 'channel_id': 'channel_id', 'mirrored': False,
+             'investigation_id': 'Incident123', 'mirror_direction': 'toDemisto', 'auto_close': True, 'mirror_type': 'all'},
+            {'channel_name': 'Channel2', 'team_id': 'team_id', 'channel_id': 'channel_id', 'mirrored': True,
+             'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True, 'mirror_type': 'chat'},
+        ])
+    }
+    mocker.patch('MatterMostV2.get_integration_context', return_value=mock_integration_context)
+    mocker.patch.object(demisto, 'mirrorInvestigation')
+    # Call the function
+    result = mirror_investigation(http_client, **args)
+
+    # Assert the result
+
+    demisto.mirrorInvestigation.assert_called_once_with('1', 'all:Both', True)
+    assert 'Investigation mirrored successfully' in result.readable_output
+
+
 ######### async tests #########
 
 
@@ -293,32 +361,25 @@ async def test_handle_posts_regular_post(http_client, mocker):
     When:
     - Calling the handle_posts function.
     Then:
-    - Validate that the mirror investigation func was called.
+    - Validate that the mirror investigation func was called. only once, as one of the mirrors was already mirrored.
     """
     import MatterMostV2
     payload = util_load_json("test_data/posted_data_user.json")
     mock_integration_context = {
         'mirrors': json.dumps([
-            {'channel_name': 'Channel1', 'team_id': 'team_id', 'channel_id': 'ID1',
-             'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True},
-            {'channel_name': 'Channel2', 'team_id': 'team_id', 'channel_id': 'ID2',
-             'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True},
+            {'channel_name': 'Channel1', 'team_id': 'team_id', 'channel_id': 'channel_id', 'mirrored': False,
+             'investigation_id': 'Incident123', 'mirror_direction': 'toDemisto', 'auto_close': True, 'mirror_type': 'all'},
+            {'channel_name': 'Channel2', 'team_id': 'team_id', 'channel_id': 'channel_id', 'mirrored': True,
+             'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True, 'mirror_type': 'chat'},
         ])
     }
-    investigation_id = 'Incident123'
-    mirrorType = 'both'
-    auto_close = True
     MatterMostV2.CLIENT = http_client
+    MatterMostV2.CACHE_EXPIRY = False
     mocker.patch('MatterMostV2.get_integration_context', return_value=mock_integration_context)
     mocker.patch('MatterMostV2.handle_text_received_from_mm', return_value=None)
-
-    with patch('MatterMostV2.demisto') as mock_demisto:
-        await handle_posts(payload)
-        mock_demisto.mirrorInvestigation.assert_called_once_with(
-            id=investigation_id,
-            mirrorType=mirrorType,
-            auto_close=auto_close
-        )
+    mocker.patch.object(demisto, 'mirrorInvestigation')
+    await handle_posts(payload)
+    demisto.mirrorInvestigation.assert_called_once_with('Incident123', 'all:toDemisto', True)
 
 
 @pytest.mark.asyncio
@@ -386,12 +447,12 @@ async def test_event_handler_bot_message(http_client, mocker):
     MatterMostV2.CLIENT = http_client
     bot_payload = util_load_json("test_data/posted_data_bot.json")
     mocker.patch.object(demisto, 'updateModuleHealth')
+    mocker.patch.object(demisto, 'debug')
 
-    with patch('MatterMostV2.demisto') as mock_demisto:
-        await handle_posts(bot_payload)
-        mock_demisto.debug.assert_called_once_with(
-            "MM: Got a bot message. Will not mirror."
-        )
+    await handle_posts(bot_payload)
+    demisto.debug.assert_called_once_with(
+        "MM: Got a bot message. Will not mirror."
+    )
 
 
 @pytest.mark.asyncio
@@ -410,13 +471,13 @@ async def test_event_handler_direct_message(http_client, mocker):
 
     payload = util_load_json("test_data/posted_data_user.json")
     payload["data"]["channel_type"] = "D"
+    mocker.patch.object(demisto, 'updateModuleHealth')
+    mocker.patch.object(demisto, 'directMessage', return_value={})
 
-    with patch('MatterMostV2.demisto') as mock_demisto:
-        mocker.patch.object(mock_demisto, 'updateModuleHealth')
-        await handle_posts(payload)
-        mock_demisto.directMessage.assert_called_once_with(
-            "message", "user_id", "email", True
-        )
+    await handle_posts(payload)
+    demisto.directMessage.assert_called_once_with(
+        "message", "", "", True
+    )
 
 
 @pytest.mark.asyncio
