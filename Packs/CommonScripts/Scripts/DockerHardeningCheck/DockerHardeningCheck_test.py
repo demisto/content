@@ -36,7 +36,8 @@ def test_check_cpus(mocker):
     def intensive_calc(i):
         global a
         time.sleep(a * 0.1)
-        a += 1
+        # make the run be slower in next executions
+        a += 5
     mocker.patch.object(DockerHardeningCheck, "intensive_calc", side_effect=intensive_calc)
     assert "CPU processing power increased significantly" in check_cpus(1)
 
