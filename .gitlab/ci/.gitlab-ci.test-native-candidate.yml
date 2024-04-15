@@ -8,7 +8,7 @@
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
       when: always
 
-test-native-candidate:run-lint-with-native-candidate:
+test-native-candidate:run-pre-commit-with-native-candidate:
   extends:
     - .pre-commit-settings
     - .test-native-candidate-rule
