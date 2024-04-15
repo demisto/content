@@ -454,6 +454,16 @@ tasks:
             iscontext: true
           right:
             value:
+              simple: Automated remediation by isolating the endpoint on the network
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmdatacollection
+                accessor: selected
+            iscontext: true
+          right:
+            value:
               simple: Automated remediation by creating empty S3 bucket
     - label: Manual remediation
       condition:
@@ -2488,7 +2498,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -690,
+          "x": -700,
           "y": 1860
         }
       }
@@ -2542,7 +2552,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -690,
+          "x": -700,
           "y": 2210
         }
       }
