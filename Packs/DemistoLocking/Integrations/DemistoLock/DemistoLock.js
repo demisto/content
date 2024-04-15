@@ -104,55 +104,6 @@ switch (command) {
         // }
         // break;
 
-    case 'demisto-lock-get':
-        var lockTimeout = args.timeout || params.timeout || 600;
-        var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
-        lockInfo += (args.info) ? ' Additional info: ' + args.info : '';
-
-        var guid = guid();
-        var time = 0;
-        var lock, version;
-
-        do {
-            [lock, version] = getLock();
-            if (lock.guid === guid) {
-                break;
-            }
-            if (!lock.guid) {
-                try {
-                    setLock(guid, lockInfo, version);
-                } catch (err) {
-                    logDebug(err.message);
-                }
-            }
-            if (time % pollingThreshold === 0) {
-                return {
-                    Type: entryTypes.note,
-                    Contents: 'Sleep will complete in ' + time + ' seconds',
-                    PollingCommand: 'demisto-lock-get',
-                    NextRun: '1',
-                    PollingArgs: { timeout: lockTimeout - time, info: args.info },
-                    Timeout: String(lockTimeout + 60)
-                };
-            }
-            wait(1);
-        } while (time++ < lockTimeout);
-
-        [lock, version] = getLock();
-
-        if (lock.guid === guid) {
-            var md = '### Demisto Locking Mechanism\n';
-            md += 'Lock acquired successfully\n';
-            md += 'GUID: ' + guid;
-            return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md };
-        } else {
-            var md = 'Timeout waiting for lock\n';
-            md += 'Lock name: ' + lockName + '\n';
-            md += 'Lock info: ' + lock.info + '\n';
-            return { ContentsFormat: formats.text, Type: entryTypes.error, Contents: md };
-        }
-        break;
-
     case 'demisto-lock-release':
         if(sync)   {
             mergeVersionedIntegrationContext({newContext : {[lockName] : 'remove'}, retries : 5});
