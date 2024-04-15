@@ -10,6 +10,8 @@ RESPONSE_USER_ID = {'UserId': 'USER_ID'}
 
 RESPONSE_DELETE = {'ResponseMetadata': {'HTTPStatusCode': 200}}
 
+IDENTITY_STORE_ID = '123456'
+
 
 class Boto3Client:
     def create_user(self):
@@ -62,7 +64,6 @@ def test_create_user(mocker):
     """
 
     args = {
-        'IdentityStoreId': '123456',
         'userName': 'test_user',
         'familyName': 'Doe',
         'givenName': 'John',
@@ -72,7 +73,7 @@ def test_create_user(mocker):
     }
     res = {
         'UserId': 'USER_ID',
-        'IdentityStoreId': '123456',
+        'IdentityStoreId': IDENTITY_STORE_ID,
         'ResponseMetadata': {'HTTPStatusCode': 200}
     }
 
@@ -81,9 +82,9 @@ def test_create_user(mocker):
     mocker.patch.object(demisto, 'results')
 
     client = Boto3Client()
-    create_user(args, client)
+    create_user(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
-    assert {'UserId': 'USER_ID', 'IdentityStoreId': '123456'} in contents.get(
+    assert {'UserId': 'USER_ID', 'IdentityStoreId': IDENTITY_STORE_ID} in contents.get(
         'EntryContext').values()
     assert 'User USER_ID has been successfully created' in contents.get('HumanReadable')
 
@@ -104,7 +105,7 @@ def test_create_group(mocker):
         'description': 'Test Description'
     }
     res = {
-        'GroupId': '123456',
+        'GroupId': IDENTITY_STORE_ID,
         'ResponseMetadata': {'HTTPStatusCode': 200}
     }
 
@@ -113,9 +114,9 @@ def test_create_group(mocker):
     mocker.patch.object(demisto, 'results')
 
     client = Boto3Client()
-    create_group(args, client)
+    create_group(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
-    assert {'GroupId': '123456'} in contents.get(
+    assert {'GroupId': IDENTITY_STORE_ID} in contents.get(
         'EntryContext').values()
     assert 'Group 123456 has been successfully created' in contents.get('HumanReadable')
 
@@ -132,13 +133,12 @@ def test_list_users(mocker):
         Verify that the correct users are listed with the correct details
     """
     args = {
-        'IdentityStoreId': '123456',
         'limit': 1,
         'nextToken': 'TOKEN'
     }
 
     res = {
-        'IdentityStoreId': '123456',
+        'IdentityStoreId': IDENTITY_STORE_ID,
         'Users': [
             {
                 'UserId': 'USER_ID',
@@ -155,7 +155,7 @@ def test_list_users(mocker):
     mocker.patch.object(demisto, 'results')
 
     client = Boto3Client()
-    list_users(args, client)
+    list_users(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
     assert 'AWS IAM Identity Center Users' in contents.get('HumanReadable')
     assert [{'UserId': 'USER_ID', 'UserName': 'test_user', 'DisplayName': 'Test User', 'Emails': [{
@@ -194,7 +194,7 @@ def test_list_groups(mocker):
     mocker.patch.object(demisto, 'results')
 
     client = Boto3Client()
-    list_groups(args, client)
+    list_groups(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
     assert 'AWS IAM Identity Center Groups' in contents.get('HumanReadable')
     assert [{'GroupId': '123', 'DisplayName': 'Test Group', 'Description': 'Test Description'}] in contents.get(
@@ -234,7 +234,7 @@ def test_get_user(mocker):
     mocker.patch.object(demisto, 'results')
 
     client = Boto3Client()
-    get_user(args, client)
+    get_user(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
 
     assert {'UserId': 'USER_ID', 'UserName': 'test_user', 'DisplayName': 'Test User', 'Emails': [{
@@ -284,7 +284,7 @@ def test_get_user_by_email(mocker):
     mocker.patch.object(demisto, 'results')
 
     client = Boto3Client()
-    get_user_by_email(args, client)
+    get_user_by_email(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
 
     assert {'UserId': 'USER_ID', 'UserName': 'test_user', 'DisplayName': 'Test User',
@@ -309,7 +309,7 @@ def test_get_group(mocker):
         'displayName': 'test_group'
     }
 
-    response_id = {'GroupId': '123456'}
+    response_id = {'GroupId': IDENTITY_STORE_ID}
 
     res = {
         'GroupId': 'string',
@@ -324,7 +324,7 @@ def test_get_group(mocker):
     mocker.patch.object(demisto, 'results')
 
     client = Boto3Client()
-    get_group(args, client)
+    get_group(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
 
     assert {'GroupId': 'string', 'DisplayName': 'test_group', 'Description': None} in contents.get(
@@ -360,7 +360,7 @@ def test_add_user_to_group(mocker):
     mocker.patch.object(demisto, 'results')
 
     client = Boto3Client()
-    add_user_to_group(args, client)
+    add_user_to_group(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
 
     assert 'The membership id 10203040 has been successfully created.' in contents.get('HumanReadable')
@@ -398,7 +398,7 @@ def test_list_groups_for_user(mocker):
     mocker.patch.object(demisto, 'results')
 
     client = Boto3Client()
-    list_groups_for_user(args, client)
+    list_groups_for_user(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
 
     assert {'GroupMemberships': [{'GroupId': 'GROUP_ID', 'MembershipId': 'MEMBERSHIP_ID'}], 'UserId': 'USER_ID'} in contents.get(
@@ -446,7 +446,7 @@ def test_delete_group_membership(mocker):  # add more inputs! empty memberships 
     mocker.patch.object(demisto, 'results')
 
     client = Boto3Client()
-    delete_group_membership(args, client)
+    delete_group_membership(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
 
     assert "The membership with ids ['MEMBERSHIP_ID', 'MEMBERSHIP_ID123'] have been deleted." in contents.get('HumanReadable')
@@ -473,7 +473,7 @@ def test_delete_user(mocker):
     mocker.patch.object(demisto, 'results')
 
     client = Boto3Client()
-    delete_user(args, client)
+    delete_user(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
 
     assert 'The User USER_ID has been removed.' in contents.get('HumanReadable')
@@ -500,7 +500,7 @@ def test_delete_group(mocker):
     mocker.patch.object(demisto, 'results')
 
     client = Boto3Client()
-    delete_group(args, client)
+    delete_group(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
 
     assert 'The Group GROUP_ID has been removed.' in contents.get('HumanReadable')
@@ -537,7 +537,7 @@ def test_list_group_memberships(mocker):
     mocker.patch.object(demisto, 'results')
 
     client = Boto3Client()
-    list_group_memberships(args, client)
+    list_group_memberships(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
 
     assert {'GroupId': 'GROUP_ID', 'GroupMemberships': [{'MembershipId': 'MEMBERSHIP_ID', 'UserId': 'USER_ID'}]} in contents.get(
