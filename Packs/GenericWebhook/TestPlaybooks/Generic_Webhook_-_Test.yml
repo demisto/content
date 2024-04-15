@@ -1,6 +1,5 @@
 id: Generic Webhook - Test
-version: 9
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Generic Webhook - Test
 starttaskid: "0"
 tasks:
@@ -14,11 +13,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -33,6 +32,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: e795a821-57d1-44bf-8696-94cf8800ea50
@@ -54,14 +54,13 @@ tasks:
         simple: '{"name":"webhook"}'
       method:
         simple: POST
-      password:
-        simple: a
       url:
         simple: ${apiurl}
+      password:
+        simple: a
       username:
         simple: a
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -76,6 +75,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: e2956854-880e-44ce-87dc-2c06fc24f8f7
@@ -96,7 +96,6 @@ tasks:
       name:
         simple: webhook
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -111,6 +110,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: fcedd5f6-11ec-4f9c-8362-509e49f1c359
@@ -134,7 +134,6 @@ tasks:
             value:
               simple: foundIncidents.id
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -149,6 +148,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: aeb43e85-5fa1-4b7e-8d66-814024692d36
@@ -166,8 +166,6 @@ tasks:
       id:
         simple: ${foundIncidents.id}
     separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -182,6 +180,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerror: true
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: 27e098fd-6519-4159-8c1a-fcc64978206f
@@ -202,7 +202,6 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -217,6 +216,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: af66b7ac-bab6-4d02-877e-8a4a9b68f2fa
@@ -243,7 +243,6 @@ tasks:
           right:
             value:
               simple: "200"
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -258,6 +257,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
     taskid: 87d8823d-9eeb-441e-8b46-7ff3ab3d10cb
@@ -278,7 +278,6 @@ tasks:
       seconds:
         simple: "10"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -293,6 +292,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
     taskid: 63378192-b218-4b88-8700-ca66f96ba096
@@ -313,7 +313,6 @@ tasks:
       seconds:
         simple: "10"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -328,6 +327,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
     taskid: 4ffbdb7b-ff60-422d-855f-1386a4267216
@@ -508,5 +508,5 @@ view: |-
   }
 inputs: []
 outputs: []
-dirtyInputs: true
 fromversion: 5.5.0
+description: ''
