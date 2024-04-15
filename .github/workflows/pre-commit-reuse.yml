@@ -12,7 +12,7 @@ jobs:
       contents: write
     steps:
     - name: Install poetry
-      uses: Gr1N/setup-poetry@v8
+      uses: Gr1N/setup-poetry@v9
 
     - name: Checkout
       uses: actions/checkout@v4
@@ -23,7 +23,7 @@ jobs:
       run: echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
     - name: Setup python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
         cache: 'poetry'
@@ -84,8 +84,8 @@ jobs:
       if: |
         always() && 
         steps.check-coverage-xml-exists.outputs.files_exists == 'true' && 
-        steps.check-pytest-junit-exists.outputs.files_exists == false && 
-        github.event.pull_request.head.repo.fork == false
+        steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
+        ! github.event.pull_request.head.repo.fork
       uses: MishaKav/pytest-coverage-comment@main
       with:
         pytest-xml-coverage-path: coverage_report/coverage.xml

@@ -240,10 +240,10 @@ CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or remove
                                     'status': f'Updated incident status, one of {"/".join(STATUS_TEXT_TO_NUM.keys())}'}
 
 CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
-                                     'behaviors.technique', 'device.hostname']
+                                     'behaviors.technique', 'device.hostname', 'detection_id', 'behaviors.display_name']
 
 CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives',
-                                    'tags', 'hosts.hostname']
+                                    'tags', 'hosts.hostname', 'incident_id']
 
 MIRROR_DIRECTION_DICT = {
     'None': None,
@@ -1771,6 +1771,7 @@ def search_device(filter_operator='AND'):
     }
     limit = int(args.get('limit', 50))
     offset = int(args.get('offset', 0))
+    sort = args.get('sort', '')
     url_filter = '{}'.format(str(args.get('filter', '')))
     op = ',' if filter_operator == 'OR' else '+'
     # In Falcon Query Language, '+' stands for AND and ',' for OR
@@ -1791,7 +1792,8 @@ def search_device(filter_operator='AND'):
                 # All args should be a list. this is a fallback
                 url_filter = "{url_filter}{operator}{inp_arg}:'{arg_val}'".format(url_filter=url_filter, operator=op,
                                                                                   inp_arg=k, arg_val=arg)
-    raw_res = http_request('GET', '/devices/queries/devices/v1', params={'filter': url_filter, 'limit': limit, 'offset': offset})
+    raw_res = http_request('GET', '/devices/queries/devices/v1',
+                           params={'filter': url_filter, 'limit': limit, 'offset': offset, 'sort': sort})
     device_ids = raw_res.get('resources')
     if not device_ids:
         return None
@@ -1966,11 +1968,13 @@ def change_host_group_members(action_name: str,
 def host_group_members(filter: str | None,
                        host_group_id: str | None,
                        limit: str | None,
-                       offset: str | None):
+                       offset: str | None,
+                       sort: str | None):
     params = {'id': host_group_id,
               'filter': filter,
               'offset': offset,
-              'limit': limit}
+              'limit': limit,
+              'sort': sort}
     response = http_request(method='GET',
                             url_suffix='/devices/combined/host-group-members/v1',
                             params=params)
@@ -2265,9 +2269,11 @@ def get_remote_detection_data(remote_incident_id: str):
     mirrored_data = mirrored_data_list[0]
 
     mirrored_data['severity'] = severity_string_to_int(mirrored_data.get('max_severity_displayname'))
+    demisto.debug(f'In get_remote_detection_data {remote_incident_id=} {mirrored_data=}')
 
     updated_object: dict[str, Any] = {'incident_type': 'detection'}
     set_updated_object(updated_object, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
+    demisto.debug(f'After set_updated_object {updated_object=}')
     return mirrored_data, updated_object
 
 
@@ -4734,8 +4740,9 @@ def update_host_group_command(host_group_id: str,
 def list_host_group_members_command(host_group_id: str | None = None,
                                     filter: str | None = None,
                                     offset: str | None = None,
-                                    limit: str | None = None) -> CommandResults:
-    response = host_group_members(filter, host_group_id, limit, offset)
+                                    limit: str | None = None,
+                                    sort: str | None = None) -> CommandResults:
+    response = host_group_members(filter, host_group_id, limit, offset, sort)
     devices = response.get('resources')
     if not devices:
         return CommandResults(readable_output='No hosts are found',
@@ -5123,11 +5130,12 @@ def rtr_polling_retrieve_file_command(args: dict):
             args['hosts_and_requests_ids'] = hosts_and_requests_ids
             args.pop('request_ids')
             args.pop('SHA256')
+            polling_timeout = arg_to_number(args.get('polling_timeout', 600))
             scheduled_command = ScheduledCommand(
                 command=cmd,
                 next_run_in_seconds=interval_in_secs,
                 args=args,
-                timeout_in_seconds=600)
+                timeout_in_seconds=polling_timeout)
             command_results = CommandResults(scheduled_command=scheduled_command,
                                              readable_output="Waiting for the polling execution")
             return command_results
