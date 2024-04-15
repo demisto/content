@@ -712,7 +712,7 @@ script:
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
-    - description: The email of the user to be removed.
+    - description: The email of the user.
       name: emailAddress
       required: true
     outputs:
