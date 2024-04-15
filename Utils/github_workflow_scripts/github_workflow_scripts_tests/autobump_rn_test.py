@@ -582,7 +582,7 @@ def test_pack_auto_bumper(tmp_path, mocker):
     bc_file.write_text(bc_json)
     metadata_file.write_text(json.dumps({"name": "MyPack", "currentVersion": "1.0.5"}))
 
-    new_rn = rn_path / "1_0_30.md"
+    new_rn = rn_path / "1_1_0.md"
     new_bc_file = rn_path / "1_1_0.json"
     mocker.patch.object(UpdateRN, "get_master_version", return_value="1.0.5")
     mocker.patch.object(
