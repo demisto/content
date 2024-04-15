@@ -241,22 +241,22 @@ def open_prs_for_content_items(
                 for current_batch in range(1, number_of_batches + 1):
                     logging.info(f"{current_batch=}")
                     content_items_for_batch = content_items[pr_batch_start:pr_batch_end]
-                    # pr_content = update_content_items_docker_images_and_push(
-                    #     current_batch=current_batch,
-                    #     number_of_batches=number_of_batches,
-                    #     docker_image=docker_image,
-                    #     staging_branch=staging_branch,
-                    #     git=git,
-                    #     remote_content_repo=remote_content_repo,
-                    #     origin=origin,
-                    #     content_items=content_items_for_batch,
-                    #     pr_labels=image_config["pr_labels"],
-                    #     target_tag=image_config["target_tag"],
-                    #     coverage=image_config["coverage"],
-                    #     pr_assignees=pr_assignees,
-                    #     pr_reviewers=pr_reviewers
-                    # )
-                    # docker_images_prs_output[docker_image].append(pr_content)
+                    pr_content = update_content_items_docker_images_and_push(
+                        current_batch=current_batch,
+                        number_of_batches=number_of_batches,
+                        docker_image=docker_image,
+                        staging_branch=staging_branch,
+                        git=git,
+                        remote_content_repo=remote_content_repo,
+                        origin=origin,
+                        content_items=content_items_for_batch,
+                        pr_labels=image_config["pr_labels"],
+                        target_tag=image_config["target_tag"],
+                        coverage=image_config["coverage"],
+                        pr_assignees=pr_assignees,
+                        pr_reviewers=pr_reviewers
+                    )
+                    docker_images_prs_output[docker_image].append(pr_content)
                     pr_batch_start = pr_batch_end
                     pr_batch_end = pr_batch_start + prs_limit_int
         if batch_dir:
