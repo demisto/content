@@ -397,7 +397,7 @@
     fi
   - section_end "Validate content-test-conf Branch Merged"
 
-.unittests-and-lint-settings:
+.pre-commit-settings:
   tags:
     - gce
   stage: unittests-and-validations
@@ -427,7 +427,7 @@
   cache:
     policy: pull-push
   extends:
-    - .unittests-and-lint-settings
+    - .pre-commit-settings
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
