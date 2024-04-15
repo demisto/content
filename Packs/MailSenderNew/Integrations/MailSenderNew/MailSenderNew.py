@@ -265,7 +265,7 @@ def create_msg():
         # This is a simple text message - we cannot have CIDs here
         if len(attachments) > 0:
             # This is multipart - default is mixed
-            msg = MIMEMultipart()  # type: Message
+            msg = MIMEMultipart()
             msg.preamble = 'The message is only available on a MIME-aware mail reader.\n'
             msg.attach(MIMEText(body, 'plain', UTF_8))
             for att in attachments:
@@ -377,7 +377,7 @@ def main():
     # -- COMMANDS --
     try:
         if demisto.command() == 'test-module':
-            msg = MIMEText('This is a test mail from Demisto\nRegards\nDBot')  # type: Message
+            msg = MIMEText('This is a test mail from Demisto\nRegards\nDBot')
             msg['Subject'] = 'Test mail from Demisto'
             msg['From'] = from_email
             msg['To'] = from_email
