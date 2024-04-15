@@ -83,6 +83,17 @@ def test_anomaly_activity_list_command_empty_response(mocker):
 
 
 def test_anomaly_activity_list_command_with_response(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+        - Response with data
+    When:
+        - skyhigh-security-anomaly-activity-list command is executed
+        - The request returns 200 OK with with fata.
+    Then:
+        - Ensure the readable output is in the correct format
+    """
     mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
     mocker.patch.object(demisto, 'args', return_value={'anomaly_id': '1111'})
     mocker.patch.object(demisto, 'command', return_value='skyhigh-security-anomaly-activity-list')
@@ -94,6 +105,28 @@ def test_anomaly_activity_list_command_with_response(mocker):
         main()
     assert len(response.call_args[0][0]['Contents']) > 0
     assert 'Anomaly Activity List' in response.call_args[0][0]['HumanReadable']
+
+
+def test_csv2json():
+    """
+    Given:
+        - Response text.
+    When:
+        - Executing the csv2json function.
+    Then:
+        - Verify that the text is in the right format.
+    """
+    from SkyhighSecurity import csv2json
+    response = util_load_text('test_data/activities.txt')
+    results = csv2json(response)
+    assert type(results) is list
+    assert results[0] == {'Severity': 'High', 'ID': '34290314', 'Service / Domain Name': 'Microsoft Exchange Online',
+                          'Date / Time': '10-Feb-2021 00:07:19', 'Anomaly Type': 'Data Transfer', 'Activity Type': 'Upload',
+                          'Response': 'Allowed', 'User Risk Level': 'Medium',
+                          'User / IP Address': 'c1eeefb535697e4434adc4c9edd7d4f8788f6cbe053a60d12ad0cbf100c12345',
+                          'Anomaly Value': '199612833', 'Threshold': '90040000', 'DestinationHost': 'outlook.office365.com',
+                          'Valid': 'Yes'}
+
 
 
 def test_policy_dictionary_list_command(mocker):
