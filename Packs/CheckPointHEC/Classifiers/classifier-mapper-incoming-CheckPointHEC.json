@@ -18,14 +18,8 @@
                 "State": {
                     "simple": "state"
                 },
-                "dbotMirrorId": {
-                    "simple": "eventId"
-                },
                 "External Link": {
                     "simple": "entityLink"
-                },
-                "details": {
-                    "simple": "description"
                 },
                 "severity": {
                     "simple": "severity"

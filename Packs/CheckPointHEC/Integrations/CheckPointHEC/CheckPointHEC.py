@@ -239,7 +239,7 @@ class Client(BaseClient):
                 'saasAttrOp': 'is',
                 'saasAttrValue': sender_match
             })
-        elif domain:
+        if domain:
             extended_filter.append({
                 'saasAttrName': 'entityPayload.fromDomain',
                 'saasAttrOp': 'is',
@@ -269,7 +269,7 @@ class Client(BaseClient):
                 'saasAttrOp': 'is',
                 'saasAttrValue': recipients_match
             })
-        elif links:
+        if links:
             extended_filter.append({
                 'saasAttrName': 'entityPayload.emailLinks',
                 'saasAttrOp': 'is',
@@ -368,7 +368,8 @@ def test_module(client: Client):
 
 
 def fetch_incidents(client: Client, first_fetch: str, saas_apps: List[str], states: List[str], severities: List[int],
-                    threat_types: List[str], max_fetch: int):
+                    threat_types: List[str], max_fetch: int, fetch_interval: int):
+    now = datetime.utcnow()  # We get current time before processing
     last_run = demisto.getLastRun()
     if not (last_fetch := last_run.get('last_fetch')):
         if last_fetch := dateparser.parse(first_fetch, date_formats=[DATE_FORMAT]):
@@ -393,6 +394,8 @@ def fetch_incidents(client: Client, first_fetch: str, saas_apps: List[str], stat
         last_run[count_field] = count
 
         incidents.append({
+            'dbotMirrorId': event.get('eventId'),
+            'details': event.get('description'),
             'name': f'Threat: {threat_type.replace("_", " ").title()} {count}',
             'occurred': occurred,
             'rawJSON': json.dumps(event),
@@ -404,7 +407,7 @@ def fetch_incidents(client: Client, first_fetch: str, saas_apps: List[str], stat
     if incidents:
         last_run['last_fetch'] = incidents[-1]['occurred']
     else:
-        last_run['last_fetch'] = (datetime.utcnow() - timedelta(minutes=10)).isoformat()
+        last_run['last_fetch'] = (now - timedelta(minutes=fetch_interval)).isoformat()
 
     demisto.setLastRun(last_run)
     demisto.incidents(incidents)
@@ -516,8 +519,7 @@ def checkpointhec_search_emails(client: Client, date_last: str = None, date_from
                                   sender_match, domain, cp_detection, ms_detection, detection_op, server_ip, recipients_contains,
                                   recipients_match, links, message_id, cp_quarantined_state, ms_quarantined_state,
                                   quarantined_state_op, name_contains, name_match, client_ip, attachment_md5)
-    if 'responseData' in result:
-        entities = result.get('responseData')
+    if entities := result.get('responseData'):
         emails = []
         for entity in entities:
             email = entity['entityPayload']
@@ -529,7 +531,7 @@ def checkpointhec_search_emails(client: Client, date_last: str = None, date_from
         )
     else:
         return CommandResults(
-            readable_output='Error searching emails with given parameters'
+            readable_output='Emails with the specified parameters were not found'
         )
 
 
@@ -601,6 +603,7 @@ def main() -> None:  # pragma: no cover
                 'severities': [SEVERITY_VALUES.get(x.lower()) for x in argToList(params.get('event_severity'))],
                 'threat_types': [x.lower().replace(' ', '_') for x in argToList(params.get('threat_type'))],
                 'max_fetch': int(params.get('max_fetch', MAX_FETCH_DEFAULT)),
+                'fetch_interval': params.get('incidentFetchInterval'),
             }
             fetch_incidents(client, **kwargs)
         elif command == 'checkpointhec-get-entity':
