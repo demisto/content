@@ -74,31 +74,6 @@ switch (command) {
             }
         }
 
-
-        // if (time < lockTimeout) {
-        //     // Polling implementation
-        //     [lock, version] = getLock();
-        //     if (lock.guid === guid) {
-        //         break;
-        //     }
-        //     if (!lock.guid) {
-        //         try {
-        //             setLock(guid, lockInfo, version);
-        //         } catch(err) {
-        //             logDebug(err.message)
-        //         }
-        //     }
-        //     return {
-        //         Type: entryTypes.note,
-        //         Contents: 'This is a contents message',
-        //         PollingCommand: 'demisto-lock-get',
-        //         NextRun: time + '',
-        //         PollingArgs: {lockTimeout: lockTimeout, time: time, lockInfo: lockInfo},
-        //         Timeout: String(time++)
-
-        // }
-        // end - test polling
-
         // do{
         //     [lock, version] = getLock();
         //     if (lock.guid === guid) {
