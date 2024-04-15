@@ -119,6 +119,7 @@ script:
       description: The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter.
       isArray: true
     - name: ip_as_string
+      required: false
       description: Flag to return IP as string.
       defaultValue: true
     outputs:

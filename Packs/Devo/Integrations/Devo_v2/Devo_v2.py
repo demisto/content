@@ -627,7 +627,7 @@ def run_query_command(offset, items):
                      address=READER_ENDPOINT,
                      config=ClientConfig(response="json", stream=False))
 
-        results = api.query(query=to_query, ip_as_string=ip_as_string, dates={'from': from_time, 'to': to_time})
+        results = api.query(query=to_query, dates={'from': from_time, 'to': to_time}, ip_as_string=ip_as_string)
     except Exception as e:
         return_error(f"Failed to execute Devo query: {str(e)}")
 
