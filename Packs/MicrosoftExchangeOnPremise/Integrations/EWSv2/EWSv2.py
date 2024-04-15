@@ -214,11 +214,10 @@ def prepare_context(credentials):  # pragma: no cover
 
 def prepare():  # pragma: no cover
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
-    
     if NON_SECURE:
-        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter #NoVerifyHTTPAdapter
-    else:
-        BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
+        BaseProtocol.RETRY_WAIT = 20 # type: ignore
+        BaseProtocol.TIMEOUT = 1000 # type: ignore
+        BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter #exchangelibSSLAdapter
     AUTO_DISCOVERY = not EWS_SERVER
     if AUTO_DISCOVERY:
         credentials = Credentials(username=USERNAME, password=PASSWORD)
