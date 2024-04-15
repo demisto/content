@@ -252,7 +252,7 @@ def test_fetch_incidents(mocker):
     mocker.patch.object(demisto, 'getLastRun', return_value={'last_fetch': '2023-06-30T00:00:00'})
     demisto_incidents = mocker.patch.object(demisto, 'incidents')
 
-    fetch_incidents(client, '1 day', ['office365_emails'], [], [], [], 10)
+    fetch_incidents(client, '1 day', ['office365_emails'], [], [], [], 10, 1)
     call_api.assert_called_once()
     demisto_incidents.assert_called_once()
 
