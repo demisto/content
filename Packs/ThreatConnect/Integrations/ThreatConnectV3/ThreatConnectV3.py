@@ -1188,7 +1188,7 @@ def tc_add_indicator_command(client: Client, args: dict, rating: str = '0', indi
         "summary": indicator,
     }
     if description:
-        payload['attributes'] = {"data":[
+        payload['attributes'] = {"data": [
             {"type": "Description",
              "value": description,
              "default": True
