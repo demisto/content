@@ -340,6 +340,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     if get_token_flag:
         token = get_token()
         headers['Authorization'] = f'Bearer {token}'
+        demisto.debug(f'In http_request the last 4 chars: {token[-4:]}')
     url = SERVER + url_suffix
 
     headers['User-Agent'] = 'PANW-XSOAR'
@@ -398,6 +399,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 demisto.debug(f'Try to create a new token because {res.status_code=}')
                 token = get_token(new_token=True)
                 headers['Authorization'] = f'Bearer {token}'
+                demisto.debug(f'The last 4 chars of new is: {token[-4:]}')
                 return http_request(
                     method=method,
                     url_suffix=url_suffix,
@@ -1246,6 +1248,7 @@ def get_token(new_token=False):
         demisto.debug(f'{passed_mins=}')
         if passed_mins >= TOKEN_LIFE_TIME:
             # token expired
+            demisto.debug('token expired')
             auth_token = get_token_request()
             demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
         else:
@@ -1257,6 +1260,7 @@ def get_token(new_token=False):
         demisto.debug('there is no token')
         auth_token = get_token_request()
         demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
+    demisto.debug(f'The last 4 chars: {auth_token[-4:]}')
     return auth_token
 
 
