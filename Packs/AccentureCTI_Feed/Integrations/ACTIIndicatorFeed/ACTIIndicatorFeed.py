@@ -16,6 +16,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
         list of indicators returned from api. Each indicator is represented in dictionary
     """
     fetch_time = demisto.params().get('fetch_time', '14 days')
+    a=2
     params: dict = feed.get('filters', {})
     current_indicator_type = feed.get('indicator_type', '')
     start_date, end_date = parse_date_range(fetch_time, utc=True)
