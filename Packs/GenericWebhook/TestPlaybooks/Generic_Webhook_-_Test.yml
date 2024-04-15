@@ -55,7 +55,7 @@ tasks:
       method:
         simple: POST
       password:
-        simple: '{TOMMED}vDFO95B9a8R6J6DvJq0LhYTrU7xAXZQvhaic/4ar2RbcPGGWUGRE55dmWk7hiocBl73e1ckCh8Drl08nLlORdrt6hLBdy1Fx7g5WWEzaewhrSq46cx4sONexODutb+OTNdG/1xjiYGXphnjriMKpv2GRLL4BOGxjXpgej4RlPNPJZ/NoImZiPPpkqRw7WeGlU93xPFCwQM4Z4XuLcuLb5A=='
+        simple: a
       url:
         simple: ${apiurl}
       username:
