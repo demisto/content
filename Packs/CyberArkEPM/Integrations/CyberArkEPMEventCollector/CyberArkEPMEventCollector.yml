@@ -61,6 +61,34 @@ configuration:
   required: false
   type: 0
   section: Collect
+- display: Event type
+  additionalinfo: A comma-separated list of Event types to fetch
+  name: event_type
+  required: false
+  type: 16
+  options:
+  - AttackAttempt
+  - AttackBlock
+  - SuspiciousActivityAttempt
+  - SuspiciousActivityblock
+  - ElevationRequest
+  - Trust
+  - Installation
+  - Launch
+  - ManualRequest
+  - Block
+  - RestrictAccess
+  - DetectAccess
+  - Ransomware
+  - ElevationRequest
+  - Trust
+  - ManualRequest
+  - Installation
+  - Launch
+  - Block
+  - Access
+  - Skipped
+  section: Collect
 description: CyberArk EPM Event Collector fetches events.
 display: CyberArk EPM Event Collector
 name: CyberArkEPMEventCollector
