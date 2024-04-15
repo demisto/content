@@ -1,8 +1,9 @@
 import json
-from MatterMostV2 import (get_team_command, list_channels_command, create_channel_command, add_channel_member_command,
+from MattermostV2 import (get_team_command, list_channels_command, create_channel_command, add_channel_member_command,
                           remove_channel_member_command, list_users_command, close_channel_command, send_file_command,
                           get_channel_id_to_send_notif, event_handler, handle_text_received_from_mm, get_channel_id_from_context,
-                          extract_entitlement, answer_question, handle_posts, create_incidents, get_war_room_url, mirror_investigation)
+                          extract_entitlement, answer_question, handle_posts, create_incidents, get_war_room_url,
+                          mirror_investigation)
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
@@ -46,7 +47,7 @@ def http_mock(method: str, url_suffix: str = "", full_url: str = "", params: dic
 
 @pytest.fixture(autouse=True)
 def ws_client(mocker):
-    from MatterMostV2 import WebSocketClient
+    from MattermostV2 import WebSocketClient
 
     return WebSocketClient(
         base_url='mock url',
@@ -58,7 +59,7 @@ def ws_client(mocker):
 
 @pytest.fixture(autouse=True)
 def http_client(mocker):
-    from MatterMostV2 import HTTPClient
+    from MattermostV2 import HTTPClient
 
     headers = {"Authorization": "Token mock"}
     http_client = HTTPClient(
@@ -174,9 +175,9 @@ def test_close_channel_command_mirror(http_client, mocker):
     args = {'team_name': 'team_name',
             'channel_name': 'channel_name', }
 
-    import MatterMostV2
-    MatterMostV2.CACHE_EXPIRY = False
-    MatterMostV2.CACHED_INTEGRATION_CONTEXT = ''
+    import MattermostV2
+    MattermostV2.CACHE_EXPIRY = False
+    MattermostV2.CACHED_INTEGRATION_CONTEXT = ''
     mock_integration_context = {
         'mirrors': json.dumps([
             {'channel_name': 'Channel1', 'team_id': 'team_id', 'channel_id': 'channel_id', 'mirrored': False,
@@ -185,7 +186,7 @@ def test_close_channel_command_mirror(http_client, mocker):
              'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True, 'mirror_type': 'chat'},
         ])
     }
-    mocker.patch('MatterMostV2.get_integration_context', return_value=mock_integration_context)
+    mocker.patch('MattermostV2.get_integration_context', return_value=mock_integration_context)
     mocker.patch.object(demisto, 'investigation', return_value={'id': 'Incident123'})
     mocker.patch.object(demisto, 'mirrorInvestigation')
     results = close_channel_command(http_client, args)
@@ -204,7 +205,7 @@ def test_send_file_command(http_client, mocker):
         'name': 'test_file.txt',
         'path': '/path/to/test_file.txt'
     }
-    mocker.patch('MatterMostV2.demisto.getFilePath', return_value=expected_file_info)
+    mocker.patch('MattermostV2.demisto.getFilePath', return_value=expected_file_info)
     mocker.patch.object(http_client, 'send_file_request', return_value=util_load_json("test_data/send_file_response.json"))
 
     args = {'team_name': 'team_name',
@@ -228,9 +229,9 @@ def test_get_channel_id_from_context(mocker):
     When: Running get_channel_id_from_context.
     Then: Ensure we get the result.
     """
-    import MatterMostV2
-    MatterMostV2.CACHE_EXPIRY = False
-    MatterMostV2.CACHED_INTEGRATION_CONTEXT = ''
+    import MattermostV2
+    MattermostV2.CACHE_EXPIRY = False
+    MattermostV2.CACHED_INTEGRATION_CONTEXT = ''
     mock_integration_context = {
         'mirrors': json.dumps([
             {'channel_name': 'Channel1', 'team_id': 'team_id', 'channel_id': 'ID1',
@@ -239,7 +240,7 @@ def test_get_channel_id_from_context(mocker):
              'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True},
         ])
     }
-    mocker.patch('MatterMostV2.get_integration_context', return_value=mock_integration_context)
+    mocker.patch('MattermostV2.get_integration_context', return_value=mock_integration_context)
     results = get_channel_id_from_context('Channel1', 'Incident123')
     assert results
 
@@ -264,14 +265,14 @@ def test_save_entitlement():
         'messages': 'entitlement',
     }
 
-    with patch('MatterMostV2.get_integration_context') as mock_get_integration_context, \
-            patch('MatterMostV2.set_to_integration_context_with_retries') as mock_set_integration_context:
+    with patch('MattermostV2.get_integration_context') as mock_get_integration_context, \
+            patch('MattermostV2.set_to_integration_context_with_retries') as mock_set_integration_context:
 
         mock_get_integration_context.return_value = {'messages': []}
         fixed_timestamp = '2023-09-09T20:08:50Z'
 
         with freeze_time(fixed_timestamp):
-            from MatterMostV2 import save_entitlement
+            from MattermostV2 import save_entitlement
             save_entitlement(entitlement, message_id, reply, expiry, default_response, to_id)
 
         expected_data = {
@@ -318,10 +319,10 @@ def test_mirror_investigation_create_new_channel(http_client, mocker):
     When calling the mirror_investigation function to create a new channel,
     Then validate that the function returns the expected CommandResults.
     """
-    import MatterMostV2
-    MatterMostV2.MIRRORING_ENABLED = True
-    MatterMostV2.LONG_RUNNING = True
-    MatterMostV2.SYNC_CONTEXT = True
+    import MattermostV2
+    MattermostV2.MIRRORING_ENABLED = True
+    MattermostV2.LONG_RUNNING = True
+    MattermostV2.SYNC_CONTEXT = True
     mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'mock_server_url'})
 
     # Test data
@@ -339,7 +340,7 @@ def test_mirror_investigation_create_new_channel(http_client, mocker):
              'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True, 'mirror_type': 'chat'},
         ])
     }
-    mocker.patch('MatterMostV2.get_integration_context', return_value=mock_integration_context)
+    mocker.patch('MattermostV2.get_integration_context', return_value=mock_integration_context)
     mocker.patch.object(demisto, 'mirrorInvestigation')
     # Call the function
     result = mirror_investigation(http_client, **args)
@@ -363,7 +364,7 @@ async def test_handle_posts_regular_post(http_client, mocker):
     Then:
     - Validate that the mirror investigation func was called. only once, as one of the mirrors was already mirrored.
     """
-    import MatterMostV2
+    import MattermostV2
     payload = util_load_json("test_data/posted_data_user.json")
     mock_integration_context = {
         'mirrors': json.dumps([
@@ -373,10 +374,10 @@ async def test_handle_posts_regular_post(http_client, mocker):
              'investigation_id': 'Incident123', 'mirror_direction': 'both', 'auto_close': True, 'mirror_type': 'chat'},
         ])
     }
-    MatterMostV2.CLIENT = http_client
-    MatterMostV2.CACHE_EXPIRY = False
-    mocker.patch('MatterMostV2.get_integration_context', return_value=mock_integration_context)
-    mocker.patch('MatterMostV2.handle_text_received_from_mm', return_value=None)
+    MattermostV2.CLIENT = http_client
+    MattermostV2.CACHE_EXPIRY = False
+    mocker.patch('MattermostV2.get_integration_context', return_value=mock_integration_context)
+    mocker.patch('MattermostV2.handle_text_received_from_mm', return_value=None)
     mocker.patch.object(demisto, 'mirrorInvestigation')
     await handle_posts(payload)
     demisto.mirrorInvestigation.assert_called_once_with('Incident123', 'all:toDemisto', True)
@@ -399,7 +400,7 @@ async def test_handle_text(mocker):
     operator_name = "Test User"
     MESSAGE_FOOTER = '\n**From MatterMost**'
 
-    with patch('MatterMostV2.demisto') as mock_demisto:
+    with patch('MattermostV2.demisto') as mock_demisto:
         await handle_text_received_from_mm(investigation_id, text, operator_email, operator_name)
         mock_demisto.addEntry.assert_called_once_with(
             id=investigation_id,
@@ -443,8 +444,8 @@ async def test_event_handler_bot_message(http_client, mocker):
     Then:
     - Validate that the demisto.debug func was called.
     """
-    import MatterMostV2
-    MatterMostV2.CLIENT = http_client
+    import MattermostV2
+    MattermostV2.CLIENT = http_client
     bot_payload = util_load_json("test_data/posted_data_bot.json")
     mocker.patch.object(demisto, 'updateModuleHealth')
     mocker.patch.object(demisto, 'debug')
@@ -465,9 +466,9 @@ async def test_event_handler_direct_message(http_client, mocker):
     Then:
     - Validate that the demisto.debug func was called.
     """
-    import MatterMostV2
-    MatterMostV2.CLIENT = http_client
-    MatterMostV2.ALLOW_INCIDENTS = True
+    import MattermostV2
+    MattermostV2.CLIENT = http_client
+    MattermostV2.ALLOW_INCIDENTS = True
 
     payload = util_load_json("test_data/posted_data_user.json")
     payload["data"]["channel_type"] = "D"
@@ -491,14 +492,14 @@ async def test_answer_question(http_client, mocker):
     Then:
     - Validate that the function correctly handles the entitlement and returns the incident_id.
     """
-    import MatterMostV2
-    MatterMostV2.CLIENT = http_client
+    import MattermostV2
+    MattermostV2.CLIENT = http_client
     mock_question = {
         'entitlement': 'guid123@incident456|task789',
         'to_id': '123'
     }
 
-    mocker.patch('MatterMostV2.process_entitlement_reply')
+    mocker.patch('MattermostV2.process_entitlement_reply')
 
     result = await answer_question("Answer123", mock_question, "user@example.com")
     assert result == 'incident456'
@@ -539,20 +540,20 @@ class TestGetWarRoomURL:
     def test_get_war_room_url_with_xsiam_from_incident_war_room(self, mocker):
         url = "https://example.com/WarRoom/INCIDENT-2930"
         expected_war_room_url = "https://example.com/incidents/war_room?caseId=2930"
-        mocker.patch('MatterMostV2.is_xsiam', return_value=True)
+        mocker.patch('MattermostV2.is_xsiam', return_value=True)
         mocker.patch.dict(demisto.callingContext, {'context': {'Inv': {'id': 'INCIDENT-2930'}}})
 
         assert get_war_room_url(url) == expected_war_room_url
 
     def test_get_war_room_url_without_xsiam_from_incident_war_room(self, mocker):
         url = "https://example.com/WarRoom/INCIDENT-2930"
-        mocker.patch('MatterMostV2.is_xsiam', return_value=False)
+        mocker.patch('MattermostV2.is_xsiam', return_value=False)
         expected_war_room_url = "https://example.com/WarRoom/INCIDENT-2930"
         assert get_war_room_url(url) == expected_war_room_url
 
     def test_get_war_room_url_with_xsiam_from_alert_war_room(self, mocker):
         url = "https://example.com/WarRoom/ALERT-1234"
-        mocker.patch('MatterMostV2.is_xsiam', return_value=True)
+        mocker.patch('MattermostV2.is_xsiam', return_value=True)
         mocker.patch.dict(demisto.callingContext, {'context': {'Inv': {'id': '1234'}}})
         expected_war_room_url = \
             "https://example.com/incidents/alerts_and_insights?caseId=1234&action:openAlertDetails=1234-warRoom"

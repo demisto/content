@@ -38,6 +38,7 @@ MIRRORING_ENABLED: bool
 LONG_RUNNING: bool
 CACHED_INTEGRATION_CONTEXT: dict
 VERIFY_CERT: bool
+CACHE_EXPIRY: float
 MESSAGE_FOOTER = '\n**From MatterMost**'
 MIRROR_TYPE = 'mirrorEntry'
 OBJECTS_TO_KEYS = {
@@ -57,7 +58,6 @@ DEFAULT_OPTIONS: Dict[str, Any] = {
 GUID_REGEX = r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}(\}){0,1}'
 ENTITLEMENT_REGEX = fr'{GUID_REGEX}@(({GUID_REGEX})|(?:[\d_]+))_*(\|\S+)?\b'
 ''' CLIENT CLASS '''
-
 
 class WebSocketClient:  # pragma: no cover
     def __init__(
@@ -171,7 +171,6 @@ class WebSocketClient:  # pragma: no cover
                 demisto.debug("MM: Websocket authentification OK")
                 return True
             demisto.error("MM: Websocket authentification failed")
-
 
 class HTTPClient(BaseClient):
     """Client class to interact with the MatterMost API
@@ -314,6 +313,7 @@ class HTTPClient(BaseClient):
 
         return response
 
+CLIENT: HTTPClient
 
 ''' HELPER FUNCTIONS '''
 

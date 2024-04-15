@@ -354,7 +354,7 @@ tasks:
       data:
         simple: "123"
       filename:
-        simple: mattermostv2test
+        simple: MattermostV2test
     separatecontext: false
     continueonerrortype: ""
     view: |-
