@@ -97,7 +97,7 @@
             "mandatory": true,
             "minVersion": "1.0.0",
             "name": "CertStream",
-            "certification": "certified",
+            "certification": "",
             "author": "Cortex XSOAR"
         }
     }
