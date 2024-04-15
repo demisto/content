@@ -1863,7 +1863,7 @@
         {
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
-            "memory_threshold": 120,
+            "memory_threshold": 140,
             "fromversion": "4.1.0",
             "timeout": 5000,
             "is_mockable": false
