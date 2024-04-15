@@ -13,7 +13,6 @@ from email.policy import SMTP, SMTPUTF8
 from io import StringIO
 from multiprocessing import Process
 from xml.sax import SAXParseException
-
 import chardet
 import dateparser
 import exchangelib
@@ -65,7 +64,7 @@ warnings.filterwarnings("ignore")
 APP_NAME = "ms-ews-o365"
 FOLDER_ID_LEN = 120
 MAX_INCIDENTS_PER_FETCH = 200
-FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
+FETCH_TIME = demisto.params().get('fetch_time') or '500 minutes'
 
 # move results
 MOVED_TO_MAILBOX = "movedToMailbox"
@@ -2085,6 +2084,27 @@ def handle_incorrect_message_id(message_id: str) -> str:
         return fixed_message_id
     return message_id
 
+@staticmethod
+def items(message):
+        """Get all the message's header fields and values.
+
+        These will be sorted in the order they appeared in the original
+        message, or were added to the message, and may contain duplicates.
+        Any fields deleted and re-inserted are always appended to the header
+        list.
+        """
+        demisto.debug(f"{APP_NAME}: we are in the items method")
+        list_ = []
+        for k, v in message._headers:
+            try:
+                list_.append((k, message.policy.header_fetch_parse(k, v)))
+            except ValueError as ex:
+                demisto.debug(f"{APP_NAME}: {k=},{v=}")
+                if "invalid arguments; address parts cannot contain CR or LF" in str(ex):
+                    list_.append((k, message.policy.header_fetch_parse(k, v.replace('\r', '').replace('\n', ''))))
+                    
+        return [(k, message.policy.header_fetch_parse(k, v))
+                for k, v in message._headers]
 
 def parse_incident_from_item(item):  # pragma: no cover
     """
@@ -2180,23 +2200,37 @@ def parse_incident_from_item(item):  # pragma: no cover
                                   f'\nError: {e.getMessage()}')
                     continue
             else:
+                demisto.debug(f"{APP_NAME}: we have an attachmentItems")
                 # other item attachment
                 label_attachment_type = "attachmentItems"
                 label_attachment_id_type = "attachmentItemsId"
 
                 # save the attachment
                 if attachment.item.mime_content:
+                    demisto.debug(f"{APP_NAME}: we have an mime_content")
                     mime_content = attachment.item.mime_content
                     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
+                    demisto.debug(f"{APP_NAME}:{email_policy=}")
                     if isinstance(mime_content, str) and not mime_content.isascii():
                         mime_content = mime_content.encode()
+                    demisto.debug(f"{APP_NAME}:{mime_content=}")
                     attached_email = email.message_from_bytes(mime_content, policy=email_policy) \
                         if isinstance(mime_content, bytes) \
                         else email.message_from_string(mime_content, policy=email_policy)
                     if attachment.item.headers:
+                        demisto.debug(f"{APP_NAME}: headers {attachment.item.headers=}")
                         # compare header keys case-insensitive
                         attached_email_headers = []
                         attached_email = handle_attached_email_with_incorrect_message_id(attached_email)
+                        demisto.debug(f"{APP_NAME}: attached_email {attached_email=}")
+                        for header in attachment.item.headers:
+                            demisto.debug(f"{APP_NAME}: attached_email header {header=}")
+                        try:
+                            the_headers = items(attached_email)
+                            demisto.debug(f"{APP_NAME}: attached_email {the_headers=}")
+                        except ValueError as ex:
+                            if "invalid arguments; address parts cannot contain CR or LF" in str(ex):
+                                demisto.debug(f"we got the except: {attached_email=}")
                         for h, v in attached_email.items():
                             if not isinstance(v, str):
                                 try:
