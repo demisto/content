@@ -123,4 +123,4 @@ def test_extract_indicators_from_text(mocker: MockerFixture):
     res = extract_indicators_from_text(['a', 'b'])
 
     assert res == {}
-    assert debug_func.assert_called_once_with('Error in "extractIndicators": Error message')
+    debug_func.assert_called_once_with('Error in "extractIndicators": Error message')
