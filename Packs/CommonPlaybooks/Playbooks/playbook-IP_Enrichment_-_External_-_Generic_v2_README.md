@@ -24,8 +24,8 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* ip
 * vt-private-get-ip-report
+* ip
 
 ## Playbook Inputs
 
@@ -34,12 +34,12 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | IP | The IP address to enrich. | IP.Address | Optional |
-| InternalRange | A CSV list of IP address ranges \(in CIDR notation\). Use this list to check if an IP address is found within a set of IP address ranges. For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16 | Optional |
+| InternalRange | A comma-separated list of IP address ranges \(in CIDR notation\). Use this list to check if an IP address is found within a set of IP address ranges. For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
 | ResolveIP | Whether to convert the IP address to a hostname using a DNS query \(True/False\).<br/>The default value is true. | True | Required |
 | UseReputationCommand | Define if you would like to use the \!IP command.<br/>Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.<br/>Possible values: True / False.<br/>The default value is false. | False | Required |
 | extended_data | Define whether you want the generic reputation command to return extended data \(last_analysis_results\).<br/>Possible values: True / False.<br/>The default value is false. | False | Optional |
 | threat_model_association | Define whether you wish to enhance generic reputation command to include additional information such as Threat Bulletins, Attack patterns, Actors, Campaigns, TTPs, vulnerabilities, etc. Note: If set to true, additional 6 API calls will be performed.<br/>Possible values: True / False.<br/>The default value is false. | False | Optional |
-| ExecutedFromParent | Whether to execute common logic, like the classification of IP addresses to ranges and resolving, in the the main \(IP Enrichment - Generic v2\) enrichment playbook, instead of in the sub-playbooks.<br/>Setting this to True will execute the relevant commands in the main playbook instead of executing them in both sub-playbooks.<br/><br/>Set this to True in the parent playbook if you are using the parent playbook, as opposed to using the sub-playbooks directly in your playbooks, as this will improve the performance of the playbook and reduce the overfall size of the incident. | False | Optional |
+| ExecutedFromParent | Whether to execute common logic, like the classification of IP addresses to ranges and resolving, in the the main \(IP Enrichment - Generic v2\) enrichment playbook, instead of the sub-playbooks.<br/>Possible values are: True, False.<br/><br/>Setting this to True and using the parent playbook will execute the relevant commands in the main playbook instead of executing them in both sub-playbooks, which improves the performance of the playbook and reducing the overall size of the incident. | False | Optional |
 
 ## Playbook Outputs
 
@@ -52,7 +52,7 @@ This playbook does not use any sub-playbooks.
 | Endpoint | The endpoint's object. | unknown |
 | Endpoint.Hostname | The hostname to enrich. | string |
 | Endpoint.IP | A list of endpoint IP addresses. | string |
-| IP.Address | The IP address. | string |
+| IP.Address | The IP Address. | string |
 | IP.InRange | Is the IP in the input ranges? \(could be 'yes' or 'no\). | string |
 | DBotScore.Indicator | The indicator that was tested. | string |
 | DBotScore.Type | The indicator type. | string |

@@ -152,6 +152,17 @@ def is_execution_time_exceeded(start_time: datetime) -> bool:
     return secs_from_beginning > EXECUTION_TIMEOUT_SECONDS
 
 
+def remove_unsupported_event_types(last_run_dict: dict, event_types_to_fetch: list):
+    keys_to_remove = []
+
+    for key in last_run_dict:
+        if (key in ALL_SUPPORTED_EVENT_TYPES) and (key not in event_types_to_fetch):
+            keys_to_remove.append(key)
+
+    for key in keys_to_remove:
+        last_run_dict.pop(key, None)
+
+
 def setup_last_run(last_run_dict: dict, event_types_to_fetch: list[str]) -> dict:
     """
     Setting the last_tun object with the right operation to be used throughout the integration run.
@@ -162,6 +173,7 @@ def setup_last_run(last_run_dict: dict, event_types_to_fetch: list[str]) -> dict
     Returns:
         dict: the modified last run dictionary with the needed operation
     """
+    remove_unsupported_event_types(last_run_dict, event_types_to_fetch)
     first_fetch = int(arg_to_datetime('now').timestamp())  # type: ignore[union-attr]
     for event_type in event_types_to_fetch:
         if not last_run_dict.get(event_type, {}).get('operation'):
@@ -308,6 +320,20 @@ def handle_event_types_to_fetch(event_types_to_fetch) -> list[str]:
     )
 
 
+def next_trigger_time(num_of_events, max_fetch, new_last_run):
+    """Check wether to add the next trigger key to the next_run dict based on number of fetched events.
+
+    Args:
+        num_of_events (int): The number of events fetched.
+        max_fetch (int): The maximum fetch limit.
+        new_last_run (dict): the next_run to update
+    """
+    if num_of_events > (max_fetch / 2):
+        new_last_run['nextTrigger'] = '0'
+    else:
+        new_last_run.pop('nextTrigger', None)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -357,19 +383,20 @@ def main() -> None:  # pragma: no cover
                 for event_type, status, in client.fetch_status.items():
                     if not status:
                         new_last_run[event_type] = {'operation': 'resend'}
-                demisto.debug(f'Setting the last_run to: {new_last_run}')
 
                 end = datetime.utcnow()
+
                 demisto.debug(f'Handled {len(events)} total events in {(end - start).seconds} seconds')
-
-                # set nextTrigger key in the lastRun dictionary to 0 (seconds) - this will trigger the next
-                # fetch-events to start immediately after the current fetch-events ends (CRTX-89345)
-                new_last_run['nextTrigger'] = '0'
-
+                next_trigger_time(len(events), max_fetch, new_last_run)
+                demisto.debug(f'Setting the last_run to: {new_last_run}')
                 demisto.setLastRun(new_last_run)
 
     # Log exceptions and return errors
     except Exception as e:
+        last_run = new_last_run if new_last_run else demisto.getLastRun()
+        last_run.pop('nextTrigger', None)
+        demisto.setLastRun(last_run)
+        demisto.debug(f'last run after removing nextTrigger {last_run}')
         return_error(f'Failed to execute {command_name} command.\nError:\n{str(e)}')
 
 

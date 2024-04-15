@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import sys
+import re
 from datetime import datetime, timedelta
 from distutils.util import strtobool
 from pathlib import Path
@@ -25,7 +26,8 @@ from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, ge
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.common import get_pipelines_and_commits, is_pivot, get_commit_by_sha, get_pipeline_by_commit, \
-    create_shame_message, slack_link
+    create_shame_message, slack_link, was_message_already_sent, get_nearest_newer_commit_with_pipeline, \
+    get_nearest_older_commit_with_pipeline
 from Tests.scripts.test_modeling_rule_report import calculate_test_modeling_rule_results, \
     read_test_modeling_rule_to_jira_mapping, get_summary_for_test_modeling_rule, TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED
 from Tests.scripts.test_playbooks_report import read_test_playbook_to_jira_mapping, TEST_PLAYBOOKS_TO_JIRA_TICKETS_CONVERTED
@@ -58,6 +60,7 @@ UPLOAD_BUCKETS = [
     (ARTIFACTS_FOLDER_XSIAM_SERVER_TYPE, "XSIAM", False),
     (ARTIFACTS_FOLDER_XPANSE_SERVER_TYPE, "XPANSE", False)
 ]
+REGEX_EXTRACT_MACHINE = re.compile(r"qa2-test-\d+")
 
 
 def options_handler() -> argparse.Namespace:
@@ -106,6 +109,75 @@ def get_artifact_data(artifact_folder: Path, artifact_relative_path: str) -> str
 
 def get_test_report_pipeline_url(pipeline_url: str) -> str:
     return f"{pipeline_url}/test_report"
+
+
+def get_msg_machines(
+    failed_jobs: dict, job_cause_fail: set[str], job_cause_warning: set[str], msg: str
+):
+    if job_cause_fail.intersection(set(failed_jobs)):
+        color = "danger"
+    elif job_cause_warning.intersection(set(failed_jobs)):
+        color = "warning"
+    else:
+        color = "good"
+
+    return [
+        {
+            "fallback": msg,
+            "color": color,
+            "title": msg,
+        }
+    ]
+
+
+def machines_saas_and_xsiam(failed_jobs):
+    lock_xsoar_machine_raw_txt = get_artifact_data(
+        ARTIFACTS_FOLDER_XSOAR / "logs", "lock_file.txt"
+    )
+    lock_xsiam_machine_raw_txt = get_artifact_data(
+        ARTIFACTS_FOLDER_XSIAM / "logs", "lock_file.txt"
+    )
+    machines = []
+
+    if lock_xsoar_machine_raw_txt and (
+        xsoar_machine := REGEX_EXTRACT_MACHINE.findall(lock_xsoar_machine_raw_txt)
+    ):
+        machines.extend(
+            get_msg_machines(
+                failed_jobs,
+                {"xsoar_ng_server_ga"},
+                {"xsoar-test_playbooks_results"},
+                f"XSOAR SAAS:\n{','.join(xsoar_machine)}",
+            )
+        )
+
+    if lock_xsiam_machine_raw_txt and (
+        xsiam_machine := REGEX_EXTRACT_MACHINE.findall(lock_xsiam_machine_raw_txt)
+    ):
+        machines.extend(
+            get_msg_machines(
+                failed_jobs,
+                {"xsiam_server_ga"},
+                {"xsiam-test_playbooks_results", "xsiam-test_modeling_rule_results"},
+                f"XSIAM:\n{','.join(xsiam_machine)}",
+            )
+        )
+
+    if not machines:
+        return machines
+    return (
+        get_msg_machines(
+            failed_jobs,
+            {"xsoar_ng_server_ga", "xsiam_server_ga"},
+            {
+                "xsoar-test_playbooks_results",
+                "xsiam-test_playbooks_results",
+                "xsiam-test_modeling_rule_results",
+            },
+            f"Used {len(machines)} machine(s)",
+        )
+        + machines
+    )
 
 
 def test_modeling_rules_results(artifact_folder: Path,
@@ -237,7 +309,7 @@ def get_playbook_tests_data(artifact_folder: Path) -> tuple[set[str], set[str], 
     failed_tests = set()
     skipped_tests = set()
     skipped_integrations = set(split_results_file(get_artifact_data(artifact_folder, 'skipped_integrations.txt')))
-    xml = JUnitXml.fromfile(artifact_folder / TEST_PLAYBOOKS_REPORT_FILE_NAME)
+    xml = JUnitXml.fromfile(str(artifact_folder / TEST_PLAYBOOKS_REPORT_FILE_NAME))
     for test_suite in xml.iterchildren(TestSuite):
         properties = get_properties_for_test_suite(test_suite)
         if playbook_id := properties.get("playbook_id"):
@@ -356,11 +428,13 @@ def bucket_upload_results(bucket_artifact_folder: Path,
     return slack_msg_append, threaded_messages
 
 
-def construct_slack_msg(triggering_workflow: str,
-                        pipeline_url: str,
-                        pipeline_failed_jobs: list[ProjectPipelineJob],
-                        pull_request: GithubPullRequest | None,
-                        shame_message: tuple[str, str, str] | None) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+def construct_slack_msg(
+    triggering_workflow: str,
+    pipeline_url: str,
+    pipeline_failed_jobs: list[ProjectPipelineJob],
+    pull_request: GithubPullRequest | None,
+    shame_message: tuple[str, str, str, str] | None,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]] | list[list[dict[str, Any]]]]:
     # report failing jobs
     content_fields = []
 
@@ -412,6 +486,7 @@ def construct_slack_msg(triggering_workflow: str,
         has_failed_tests |= (test_playbooks_has_failure_xsoar or test_playbooks_has_failure_xsiam
                              or test_modeling_rules_has_failure_xsiam)
         slack_msg_append += missing_content_packs_test_conf(ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE)
+        threaded_messages.append(machines_saas_and_xsiam(failed_jobs_names))
     if triggering_workflow == CONTENT_NIGHTLY:
         # The coverage Slack message is only relevant for nightly and not for PRs.
         slack_msg_append += construct_coverage_slack_msg()
@@ -441,9 +516,9 @@ def construct_slack_msg(triggering_workflow: str,
     title += title_append
     slack_msg_start = []
     if shame_message:
-        shame_title, shame_value, shame_color = shame_message
+        hi_and_status, person_in_charge, in_this_pr, shame_color = shame_message
         slack_msg_start.append({
-            "title": f"{shame_title}\n{shame_value}",
+            "title": f"{hi_and_status}\n{person_in_charge}\n{in_this_pr}",
             "color": shame_color
         })
     return slack_msg_start + [{
@@ -516,6 +591,13 @@ def build_link_to_message(response: SlackResponse) -> str:
     return ""
 
 
+def channels_to_send_msg(computed_slack_channel):
+    if computed_slack_channel in ("dmst-build", CONTENT_CHANNEL):
+        return (computed_slack_channel,)
+    else:
+        return (CONTENT_CHANNEL, computed_slack_channel)
+
+
 def main():
     install_logging('Slack_Notifier.log')
     options = options_handler()
@@ -562,32 +644,53 @@ def main():
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
     if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
-        # We check if the previous build failed and this one passed, or wise versa.
+        computed_slack_channel = "dmst-build-test"
+        # Check if the current commit's pipeline differs from the previous one. If the previous pipeline is still running,
+        # compare the next build. For commits without pipelines, compare the current one to the nearest commit with a
+        # pipeline and all those in between, marking them as suspicious.
         list_of_pipelines, list_of_commits = get_pipelines_and_commits(gitlab_client=gitlab_client,
                                                                        project_id=project_id, look_back_hours=LOOK_BACK_HOURS)
         current_commit = get_commit_by_sha(commit_sha, list_of_commits)
         if current_commit:
             current_commit_index = list_of_commits.index(current_commit)
+
             # If the current commit is the last commit in the list, there is no previous commit,
             # since commits are in ascending order
-            if current_commit_index != len(list_of_commits) - 1:
-                previous_commit = list_of_commits[current_commit_index + 1]
+            # or if we already sent a shame message for newer commits, we don't want to send another one for older commits.
+            if (current_commit_index != len(list_of_commits) - 1
+                    and not was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)):
                 current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
-                previous_pipeline = get_pipeline_by_commit(previous_commit, list_of_pipelines)
-                if current_pipeline and previous_pipeline:
-                    pipeline_changed_status = is_pivot(current_pipeline, previous_pipeline)
+
+                # looking backwards until we find a commit with a pipeline to compare with
+                previous_pipeline, suspicious_commits = get_nearest_older_commit_with_pipeline(
+                    list_of_pipelines, list_of_commits, current_commit_index)
+                if previous_pipeline and suspicious_commits and current_pipeline:
+                    pipeline_changed_status = is_pivot(current_pipeline=current_pipeline,
+                                                       pipeline_to_compare=previous_pipeline)
+
                     logging.info(
-                        f"Checking pipeline {current_pipeline}, the commit is {current_commit} "
-                        f"and the pipeline change status is: {pipeline_changed_status}"
-                    )
+                        "comparing current pipeline status with nearest older pipeline status")
+
+                    if pipeline_changed_status is None and current_commit_index > 0:
+                        # looking_forward until we find a commit with a pipeline to compare with
+                        next_pipeline, suspicious_commits = get_nearest_newer_commit_with_pipeline(
+                            list_of_pipelines, list_of_commits, current_commit_index)
+
+                        if next_pipeline and suspicious_commits:
+                            pipeline_changed_status = is_pivot(current_pipeline=next_pipeline,
+                                                               pipeline_to_compare=current_pipeline)
+                            logging.info(
+                                "comparing current pipeline status with nearest newer pipeline status")
+
                     if pipeline_changed_status is not None:
-                        shame_message = create_shame_message(
-                            current_commit, pipeline_changed_status, options.name_mapping_path
-                        )
+                        shame_message = create_shame_message(suspicious_commits, pipeline_changed_status,  # type: ignore
+                                                             options.name_mapping_path)
                         computed_slack_channel = "test_slack_notifier_when_master_is_broken"
-        else:
-            computed_slack_channel = "dmst-build-test"
-    slack_msg_data, threaded_messages = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs, pull_request,
+
+    slack_msg_data, threaded_messages = construct_slack_msg(triggering_workflow,
+                                                            pipeline_url,
+                                                            pipeline_failed_jobs,
+                                                            pull_request,
                                                             shame_message)
 
     with contextlib.suppress(Exception):
@@ -596,29 +699,30 @@ def main():
         with open(output_file, 'w') as f:
             f.write(json.dumps(slack_msg_data, indent=4, sort_keys=True, default=str))
         logging.info(f'Successfully wrote Slack message to {output_file}')
+    for channel in channels_to_send_msg(computed_slack_channel):
+        try:
+            response = slack_client.chat_postMessage(
+                channel=channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
+            )
 
-    try:
-        response = slack_client.chat_postMessage(
-            channel=computed_slack_channel, attachments=slack_msg_data, username=SLACK_USERNAME, link_names=True
-        )
+            if threaded_messages:
+                data: dict = response.data  # type: ignore[assignment]
+                thread_ts: str = data['ts']
+                for slack_msg in threaded_messages:
+                    slack_msg = [slack_msg] if not isinstance(slack_msg, list) else slack_msg
+                    slack_client.chat_postMessage(
+                        channel=channel, attachments=slack_msg, username=SLACK_USERNAME,
+                        thread_ts=thread_ts
+                    )
 
-        if threaded_messages:
-            data: dict = response.data  # type: ignore[assignment]
-            thread_ts: str = data['ts']
-            for slack_msg in threaded_messages:
-                slack_client.chat_postMessage(
-                    channel=computed_slack_channel, attachments=[slack_msg], username=SLACK_USERNAME,
-                    thread_ts=thread_ts
-                )
-
-        link = build_link_to_message(response)
-        logging.info(f'Successfully sent Slack message to channel {computed_slack_channel} link: {link}')
-    except Exception:
-        if strtobool(options.allow_failure):
-            logging.warning(f'Failed to send Slack message to channel {computed_slack_channel} not failing build')
-        else:
-            logging.exception(f'Failed to send Slack message to channel {computed_slack_channel}')
-            sys.exit(1)
+            link = build_link_to_message(response)
+            logging.info(f'Successfully sent Slack message to channel {channel} link: {link}')
+        except Exception:
+            if strtobool(options.allow_failure):
+                logging.warning(f'Failed to send Slack message to channel {channel} not failing build')
+            else:
+                logging.exception(f'Failed to send Slack message to channel {channel}')
+                sys.exit(1)
 
 
 if __name__ == '__main__':

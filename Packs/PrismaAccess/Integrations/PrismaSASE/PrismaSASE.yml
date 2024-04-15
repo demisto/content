@@ -36,7 +36,7 @@ configuration:
   advanced: true
   required: false
 description: Provides commands for interaction with Prisma SASE API.
-display: Palo Alto Networks - Prisma SASE
+display: Palo Alto Networks - Strata Cloud Manager
 name: Palo Alto Networks - Prisma SASE
 script:
   commands:
@@ -1469,7 +1469,7 @@ script:
       name: tsg_id
     description: Quarantine a host.
     name: prisma-sase-quarantine-host
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.13.89009
   runonce: false
   script: '-'
   subtype: python3

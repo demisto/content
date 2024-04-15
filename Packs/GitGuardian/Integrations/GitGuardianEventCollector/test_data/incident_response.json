@@ -1,0 +1,126 @@
+{
+    "count": 2,
+    "next": null,
+    "previous": null,
+    "results": [
+        {
+            "id": 1,
+            "display_name": "Generic High Entropy Secret",
+            "url": "url",
+            "created_at": "2024-01-03T21:10:42.679524Z",
+            "status": "triggered",
+            "assignee": null,
+            "severity": null,
+            "severity_rule": null,
+            "incident_note_count": 0,
+            "nb_of_occurrences_still_on_github": 2,
+            "tags": [],
+            "commit_sha": "commit_sha",
+            "file_path": "file_path",
+            "repo_name": "repo_name",
+            "github_organization": null,
+            "occurrence_count": 2,
+            "first_occurrence_id": 25450146,
+            "first_occurrence_date": "2024-01-03T21:05:38Z",
+            "last_occurrence_date": "2024-01-03T21:05:38Z",
+            "category": "Other",
+            "name": "generic_high_entropy_secret",
+            "validity_status": "can_not_check",
+            "last_seen_valid": null,
+            "last_seen_invalid": null,
+            "resolved_at": null,
+            "who": [
+                {
+                    "developer_type": "github_user",
+                    "email": "email",
+                    "github_id": 1,
+                    "github_login": "github_login",
+                    "id": 1,
+                    "name": "name",
+                    "match_score": 18000210
+                }
+            ],
+            "relations": [
+                {
+                    "reason": "By dev from perimeter",
+                    "detail": "The secret has been attached to your account because a developer from your perimeter is involved."
+                }
+            ],
+            "has_feedback": false,
+            "is_shared": false,
+            "resolution_reasons": [],
+            "api_url": "api_url",
+            "public_link": null,
+            "public_link_expire_at": null
+        },
+        {
+            "id": 2,
+            "display_name": "Generic High Entropy Secret",
+            "url": "url",
+            "created_at": "2024-01-08T19:04:02.270567Z",
+            "status": "triggered",
+            "assignee": null,
+            "severity": 40,
+            "severity_rule": {
+                "id": 2,
+                "name": "Test Rule Decrease Severity"
+            },
+            "incident_note_count": 0,
+            "nb_of_occurrences_still_on_github": 4,
+            "tags": [
+                {
+                    "description": "Test file",
+                    "long_description": [
+                        "One of the occurrences of this secret was found in a potential test file."
+                    ]
+                }
+            ],
+            "commit_sha": "commit_sha",
+            "file_path": "file_path",
+            "repo_name": "repo_name",
+            "github_organization": null,
+            "occurrence_count": 4,
+            "first_occurrence_id": 25490080,
+            "first_occurrence_date": "2024-01-09T10:31:40Z",
+            "last_occurrence_date": "2024-01-09T17:00:00Z",
+            "category": "Other",
+            "name": "generic_high_entropy_secret",
+            "validity_status": "can_not_check",
+            "last_seen_valid": null,
+            "last_seen_invalid": null,
+            "resolved_at": null,
+            "who": [
+                {
+                    "developer_type": "github_user",
+                    "email": "email",
+                    "github_id": 0,
+                    "github_login": "github_login",
+                    "id": 0,
+                    "name": "name",
+                    "match_score": 18000210
+                },
+                {
+                    "developer_type": "github_user",
+                    "email": "email",
+                    "github_id": 0,
+                    "github_login": "github_login",
+                    "id": 0,
+                    "name": "name",
+                    "match_score": 18000200
+                }
+            ],
+            "relations": [
+                {
+                    "reason": "By dev from perimeter",
+                    "detail": "The secret has been attached to your account because a developer from your perimeter is involved."
+                }
+            ],
+            "has_feedback": false,
+            "is_shared": false,
+            "resolution_reasons": [],
+            "api_url": "api_url",
+            "public_link": null,
+            "public_link_expire_at": null
+        }
+    ]
+}

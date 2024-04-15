@@ -1,0 +1,62 @@
+{
+    "content": [
+        {
+            "id": "CVE-1",
+            "deviceId": "2a",
+            "type": "remote code execution",
+            "severity": "critical",
+            "url": "url?name=CVE-1",
+            "activeExploit": false,
+            "exploitPocUrl": {
+                "exploitPocUrls": []
+            }
+        },
+        {
+            "id": "CVE-2",
+            "deviceId": "2a",
+            "type": "code execution w/eop",
+            "severity": "critical",
+            "url": "url?name=CVE-2",
+            "activeExploit": false,
+            "exploitPocUrl": {
+                "exploitPocUrls": []
+            }
+        },
+        {
+            "id": "CVE-3",
+            "deviceId": "2a",
+            "type": "code execution w/eop",
+            "severity": "critical",
+            "url": "url?name=CVE-3",
+            "activeExploit": false,
+            "exploitPocUrl": {
+                "exploitPocUrls": []
+            }
+        }
+    ],
+    "pageable": {
+        "sort": {
+            "unsorted": true,
+            "sorted": false,
+            "empty": true
+        },
+        "pageNumber": 0,
+        "pageSize": 3,
+        "offset": 0,
+        "paged": true,
+        "unpaged": false
+    },
+    "last": false,
+    "totalPages": 5,
+    "totalElements": 15,
+    "first": true,
+    "numberOfElements": 20,
+    "sort": {
+        "unsorted": true,
+        "sorted": false,
+        "empty": true
+    },
+    "size": 3,
+    "number": 0,
+    "empty": false
+}

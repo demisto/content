@@ -8,7 +8,8 @@
   "IAM - Sync User",
   "IAM - Rehire User",
   "Vectra Account",
-  "CrowdStrike Falcon IDP Detection"
+  "CrowdStrike Falcon IDP Detection",
+  "CrowdStrike Falcon Mobile Detection"
  ],
  "caseInsensitive": true,
  "cliName": "displayname",

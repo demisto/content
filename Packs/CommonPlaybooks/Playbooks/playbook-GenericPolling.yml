@@ -77,6 +77,8 @@ tasks:
         simple: ${inputs.PollingCommandArgName}
       timeout:
         simple: ${inputs.Timeout}
+      extractMode:
+        simple: ${inputs.ExtractMode}
     separatecontext: false
     view: |-
       {
@@ -291,6 +293,11 @@ inputs:
   value: {}
   required: false
   description: "Values of the additional arguments for the polling command, for example: (value1,value2,...)."
+  playbookInputQuery:
+- key: ExtractMode
+  value: {}
+  required: false
+  description: Indicator Extraction mode for the command sequence. (In XSOAR 8 and above, for first run command set manually the RunPollingCommand task in the playbook, Advanced -> Indicator Extraction mode).
   playbookInputQuery:
 outputs: []
 tests:
