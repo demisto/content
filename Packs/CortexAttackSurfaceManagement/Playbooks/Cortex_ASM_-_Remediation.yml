@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 510,
+          "y": 20
         }
       }
     note: false
@@ -53,6 +53,8 @@ tasks:
       - '10'
       Azure:
       - '6'
+      Cortex Endpoint:
+      - '13'
       GCP:
       - '9'
       On Prem:
@@ -127,12 +129,29 @@ tasks:
           right:
             value:
               simple: On Prem
+    - label: Cortex Endpoint
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CORTEX-ENDPOINT-ASSET-ID
+            iscontext: true
     continueonerrortype: ''
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 235
+          "x": 510,
+          "y": 170
         }
       }
     note: false
@@ -159,8 +178,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 860
+          "x": 510,
+          "y": 1060
         }
       }
     note: false
@@ -236,8 +255,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1100,
-          "y": 450
+          "x": 1070,
+          "y": 560
         }
       }
     note: false
@@ -287,8 +306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 470
+          "x": 0,
+          "y": 550
         }
       }
     note: false
@@ -358,8 +377,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -30,
-          "y": 680
+          "x": -260,
+          "y": 835
         }
       }
     note: false
@@ -449,8 +468,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 470
+          "x": 740,
+          "y": 750
         }
       }
     note: false
@@ -491,8 +510,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -210,
-          "y": 450
+          "x": -260,
+          "y": 400
         }
       }
     note: false
@@ -583,8 +602,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -460,
-          "y": 680
+          "x": -510,
+          "y": 655
         }
       }
     note: false
@@ -674,8 +693,64 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1520,
-          "y": 420
+          "x": 1300,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 09e585e1-b45b-4168-840a-a8c437cdaabd
+    type: playbook
+    task:
+      id: 09e585e1-b45b-4168-840a-a8c437cdaabd
+      version: -1
+      name: Cortex ASM - Cortex Endpoint Remediation
+      playbookName: Cortex ASM - Cortex Endpoint Remediation
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      CortexEndpointID:
+        complex:
+          root: alert.asmsystemids
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: alert.asmsystemids.type
+                iscontext: true
+              right:
+                value:
+                  simple: CORTEX-ENDPOINT-ASSET-ID
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: true
+    continueonerrortype: ''
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 750
         }
       }
     note: false
@@ -690,10 +765,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 875,
-        "width": 2360,
-        "x": -460,
-        "y": 50
+        "height": 1105,
+        "width": 2190,
+        "x": -510,
+        "y": 20
       }
     }
   }
