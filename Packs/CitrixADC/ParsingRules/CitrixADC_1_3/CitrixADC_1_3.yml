@@ -1,5 +1,5 @@
-id: Citrix ADC Parsing Rule
-name: Citrix_ADC_ParsingRule
+id: Citrix_ADC_ParsingRule
+name: Citrix ADC ParsingRule
 fromversion: 6.10.0
 tags: []
 rules: ''
