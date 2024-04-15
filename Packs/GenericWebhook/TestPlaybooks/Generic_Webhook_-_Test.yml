@@ -1,15 +1,15 @@
 id: Generic Webhook - Test
-version: -1
+version: 9
 vcShouldKeepItemLegacyProdMachine: false
 name: Generic Webhook - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: c7d992e0-ff43-4432-83ed-0feef1d24395
+    taskid: 0aa21dad-9d9c-4ff1-83f6-182f4c5fdcfb
     type: start
     task:
-      id: c7d992e0-ff43-4432-83ed-0feef1d24395
+      id: 0aa21dad-9d9c-4ff1-83f6-182f4c5fdcfb
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 743818a9-d4cb-4612-845e-ca64c9ea8c9f
+    taskid: e795a821-57d1-44bf-8696-94cf8800ea50
     type: regular
     task:
-      id: 743818a9-d4cb-4612-845e-ca64c9ea8c9f
+      id: e795a821-57d1-44bf-8696-94cf8800ea50
       version: -1
       name: Trigger the webhook
       description: Sends http request. Returns the response as json.
@@ -52,12 +52,14 @@ tasks:
     scriptarguments:
       body:
         simple: '{"name":"webhook"}'
-      headers:
-        simple: Authorization:token
       method:
         simple: POST
+      password:
+        simple: '{TOMMED}vDFO95B9a8R6J6DvJq0LhYTrU7xAXZQvhaic/4ar2RbcPGGWUGRE55dmWk7hiocBl73e1ckCh8Drl08nLlORdrt6hLBdy1Fx7g5WWEzaewhrSq46cx4sONexODutb+OTNdG/1xjiYGXphnjriMKpv2GRLL4BOGxjXpgej4RlPNPJZ/NoImZiPPpkqRw7WeGlU93xPFCwQM4Z4XuLcuLb5A=='
       url:
         simple: ${apiurl}
+      username:
+        simple: a
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -76,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 9846f967-7cd3-4f0b-8fde-888e498d6d90
+    taskid: e2956854-880e-44ce-87dc-2c06fc24f8f7
     type: regular
     task:
-      id: 9846f967-7cd3-4f0b-8fde-888e498d6d90
+      id: e2956854-880e-44ce-87dc-2c06fc24f8f7
       version: -1
       name: Search the incident
       description: Searches Demisto incidents
@@ -111,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 44dfc9ae-421d-4f9a-8f0f-4b7cc00482a9
+    taskid: fcedd5f6-11ec-4f9c-8362-509e49f1c359
     type: condition
     task:
-      id: 44dfc9ae-421d-4f9a-8f0f-4b7cc00482a9
+      id: fcedd5f6-11ec-4f9c-8362-509e49f1c359
       version: -1
       name: Verify incident was created successfully
       type: condition
@@ -149,10 +151,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 5f2a7af1-28aa-47b7-8dbc-648b3484fac9
+    taskid: aeb43e85-5fa1-4b7e-8d66-814024692d36
     type: regular
     task:
-      id: 5f2a7af1-28aa-47b7-8dbc-648b3484fac9
+      id: aeb43e85-5fa1-4b7e-8d66-814024692d36
       version: -1
       name: Close webhook triggered incident
       description: commands.local.cmd.close.inv
@@ -164,6 +166,7 @@ tasks:
       id:
         simple: ${foundIncidents.id}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -181,10 +184,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: bb00f395-fee2-43d8-8d0a-091404433b40
+    taskid: 27e098fd-6519-4159-8c1a-fcc64978206f
     type: regular
     task:
-      id: bb00f395-fee2-43d8-8d0a-091404433b40
+      id: 27e098fd-6519-4159-8c1a-fcc64978206f
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -216,10 +219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 6f35e110-7317-4b16-82b3-ba9880f8292e
+    taskid: af66b7ac-bab6-4d02-877e-8a4a9b68f2fa
     type: condition
     task:
-      id: 6f35e110-7317-4b16-82b3-ba9880f8292e
+      id: af66b7ac-bab6-4d02-877e-8a4a9b68f2fa
       version: -1
       name: Verify Success HTTP Response
       type: condition
@@ -257,10 +260,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 0b95c681-eaef-4eeb-81ea-44b9f9485018
+    taskid: 87d8823d-9eeb-441e-8b46-7ff3ab3d10cb
     type: regular
     task:
-      id: 0b95c681-eaef-4eeb-81ea-44b9f9485018
+      id: 87d8823d-9eeb-441e-8b46-7ff3ab3d10cb
       version: -1
       name: Sleep 10 seconds to let the webserver spin up
       description: Sleep for X seconds
@@ -292,10 +295,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 23f61a77-44f4-483c-8685-03c55adc58ce
+    taskid: 63378192-b218-4b88-8700-ca66f96ba096
     type: regular
     task:
-      id: 23f61a77-44f4-483c-8685-03c55adc58ce
+      id: 63378192-b218-4b88-8700-ca66f96ba096
       version: -1
       name: Sleep 10 seconds before searching the incident
       description: Sleep for X seconds
@@ -327,10 +330,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 91b018a3-465f-4cc4-8147-bca892daca6f
+    taskid: 4ffbdb7b-ff60-422d-855f-1386a4267216
     type: regular
     task:
-      id: 91b018a3-465f-4cc4-8147-bca892daca6f
+      id: 4ffbdb7b-ff60-422d-855f-1386a4267216
       version: -1
       name: GetServerInfo
       scriptName: GetServerInfo
@@ -358,10 +361,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 5a126a45-c326-4199-85f7-f6589297ab3d
+    taskid: 2123708e-945d-46c9-85f2-0d2478480250
     type: condition
     task:
-      id: 5a126a45-c326-4199-85f7-f6589297ab3d
+      id: 2123708e-945d-46c9-85f2-0d2478480250
       version: -1
       name: is xsoar 6
       type: condition
@@ -401,10 +404,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 2db5db0c-5603-417a-8ba3-bcaaa3941ad8
+    taskid: 3bd15d9b-c5b3-42c7-8114-0c101ddba4e3
     type: regular
     task:
-      id: 2db5db0c-5603-417a-8ba3-bcaaa3941ad8
+      id: 3bd15d9b-c5b3-42c7-8114-0c101ddba4e3
       version: -1
       name: set localhost
       description: Set a value in context under the key you entered.
@@ -438,10 +441,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 4365a646-2084-47db-8dd5-f4e9271139ac
+    taskid: 9255d23e-3e0f-4236-853c-2794a062d201
     type: regular
     task:
-      id: 4365a646-2084-47db-8dd5-f4e9271139ac
+      id: 9255d23e-3e0f-4236-853c-2794a062d201
       version: -1
       name: set serverurl
       description: Set a value in context under the key you entered.
@@ -465,7 +468,7 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: /xsoar/instance/Generic Webhook
+                  simple: /xsoar/instance/execute/GenericWebhook
           - operator: replace
             args:
               limit: {}
@@ -505,3 +508,4 @@ view: |-
   }
 inputs: []
 outputs: []
+dirtyInputs: true
