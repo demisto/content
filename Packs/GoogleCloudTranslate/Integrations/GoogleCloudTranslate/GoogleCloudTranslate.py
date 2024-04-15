@@ -48,11 +48,11 @@ class Client:
         result = self.client.get_supported_languages(parent=parent)
 
         return [
-            {
-                "language_code": language.language_code,
-                "support_source": language.support_source,
-                "support_target": language.support_target
-            }
+            dict(
+                language_code=language.language_code,
+                support_source=language.support_source,
+                support_target=language.support_target
+            )
             for language in result.languages
         ]
 
@@ -119,7 +119,7 @@ def test_module(client):
         return 'ok'
 
     except Exception as e:
-        return f'Test failed: {str(e)}'
+        return 'Test failed: {}'.format(str(e))
 
 
 def supported_languages(client):
