@@ -601,12 +601,16 @@ SQL_LOGGERS = [
 
 # Custom context manager to manage the connection with TTL
 @contextmanager
-def connection_with_ttl(engine, ttl_seconds):
+def connection_with_ttl(engine: sqlalchemy.engine, ttl_seconds: int):
     # Open a new connection
     connection = engine.connect()
     try:
         # Yield the connection to the caller
         yield connection
+
+    except Exception as err:
+        return_error(f'Unexpected error: {str(err)} \nquery: {demisto.args().get("query")}')
+
     finally:
         # Close the connection
         connection.close()
@@ -643,24 +647,26 @@ def main():
             pool_ttl = DEFAULT_POOL_TTL
         command = demisto.command()
         LOG(f'Command being called in SQL is: {command}')
-        engine = Client(dialect=dialect, host=host, username=user, password=password,
+        client = Client(dialect=dialect, host=host, username=user, password=password,
                         port=port, database=database, connect_parameters=connect_parameters,
                         ssl_connect=ssl_connect, use_pool=use_pool, verify_certificate=verify_certificate,
                         pool_ttl=pool_ttl, use_ldap=use_ldap)
 
+        commands: dict[str, Callable[[Client, dict[str, str], str], tuple[str, dict[Any, Any], list[Any]]]] = {
+            'test-module': test_module,
+            'query': sql_query_execute,
+            'pgsql-query': sql_query_execute,
+            'sql-command': sql_query_execute
+        }
+
         try:
             # Use the custom context manager to manage the connection
-            with connection_with_ttl(engine.connection, ttl_seconds=engine.pool_ttl) as connection:
-                commands: dict[str, Callable[[Client, dict[str, str], str], tuple[str, dict[Any, Any], list[Any]]]] = {
-                    'test-module': test_module,
-                    'query': sql_query_execute,
-                    'pgsql-query': sql_query_execute,
-                    'sql-command': sql_query_execute
-                }
+            with connection_with_ttl(client.connection, ttl_seconds=client.pool_ttl) as connection:
+                client.connection = connection
                 if command in commands:
-                    return_outputs(*commands[command](connection, demisto.args(), command))
+                    return_outputs(*commands[command](client, demisto.args(), command))
                 elif command == 'fetch-incidents':
-                    incidents, last_run = fetch_incidents(connection, params)
+                    incidents, last_run = fetch_incidents(client, params)
                     demisto.setLastRun(last_run)
                     demisto.incidents(incidents)
                 else:
@@ -673,16 +679,16 @@ def main():
             return_error(f'Unexpected error: {str(err)} \nquery: {demisto.args().get("query")}')
     finally:
         try:
-            if engine.connection:
+            if client.connection:
                 # Close the engine after use
-                engine.connection.dispose()
+                client.connection.dispose()
         except Exception as ex:
             demisto.error(f'Failed closing connection: {str(ex)}')
 
-            if sql_loggers:
-                for lgr in sql_loggers:
-                    demisto.debug(f'setting back ERROR for logger: {repr(lgr)}')
-                    lgr.setLevel(logging.ERROR)
+        if sql_loggers:
+            for lgr in sql_loggers:
+                demisto.debug(f'setting back ERROR for logger: {repr(lgr)}')
+                lgr.setLevel(logging.ERROR)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
