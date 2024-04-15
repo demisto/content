@@ -29,6 +29,7 @@ script:
   type: javascript
   commands:
   - name: demisto-lock-get
+    polling: true
     arguments:
     - name: name
       default: true
@@ -54,4 +55,3 @@ script:
     arguments: []
     description: Release all locks
 fromversion: 5.0.0
-polling: true

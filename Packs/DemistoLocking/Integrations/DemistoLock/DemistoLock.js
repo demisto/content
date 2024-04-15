@@ -48,6 +48,7 @@ switch (command) {
 
         // check if the process already holds the lock
         [lock, version] = getLock();
+
         if (lock.guid === guid) {
             var md = '### Demisto Locking Mechanism\n';
             md += 'Lock acquired successfully\n';
