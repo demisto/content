@@ -1536,17 +1536,18 @@ class TestJiraUploadFileCommand:
         from JiraV3 import upload_XSOAR_attachment_to_jira
         client = jira_base_client_mock()
         issue_key = 'COMPANYSA-35'
-        expected_file_mime_type = 'application/pdf'
         mocker.patch('JiraV3.get_file_name_and_content', return_value=('dummy_file_name.pdf', b'dummy content'))
-        mocker.patch('JiraV3.guess_type', return_value=(expected_file_mime_type, ''))
+        mocker.patch('JiraV3.guess_type', return_value=('application/pdf', ''))
         mocker.patch.object(client, 'upload_attachment', side_effect=DemistoException('failed to upload', res={}))
-        mock_demisto = mocker.patch('JiraV3.demisto')
-        try:
-            upload_XSOAR_attachment_to_jira(client=client, entry_id='', issue_id_or_key=issue_key)
-        except Exception:
-            mock_demisto.debug.assert_any_call("The first call to upload_attachment() with "
-                                               "chosen_file_mime_type='application/pdf' failed. Trying again with "
-                                               "file_mime_type=application-type")
+        mock_request = mocker.patch.object(client, 'upload_attachment',
+                                           side_effect=[DemistoException('failed to upload', res={}), {}])
+        upload_XSOAR_attachment_to_jira(client=client, entry_id='', issue_id_or_key=issue_key)
+
+        # Validate that we run upload_attachment twice, once with an error, and second time to use default file type
+        assert mock_request.call_count == 2
+        # Validate that the second call uses the default file type (application-type)
+        mock_request.assert_called_with(files={'file': ('dummy_file_name.pdf', b'dummy content', 'application-type')},
+                                        issue_id_or_key=issue_key)
 
     def test_create_files_to_upload(self, mocker):
         """

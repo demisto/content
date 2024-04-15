@@ -1440,9 +1440,9 @@ def create_files_to_upload(file_mime_type: str, file_name: str, file_bytes: byte
         """
     # guess_type can return a None mime type if the type can’t be guessed (missing or unknown suffix). In this case, we should use
     # a default mime type
-    file_mime_type = file_mime_type if file_mime_type else guess_type(file_name)[0] or 'application-type'
-    demisto.debug(f'In create_files_to_upload {file_mime_type=}')
-    return {'file': (attachment_name or file_name, file_bytes, file_mime_type)}
+    mime_type_to_upload = file_mime_type if file_mime_type else guess_type(file_name)[0] or 'application-type'
+    demisto.debug(f'In create_files_to_upload {mime_type_to_upload=}')
+    return {'file': (attachment_name or file_name, file_bytes, mime_type_to_upload)}
 
 
 def create_file_info_from_attachment(client: JiraBaseClient, attachment_id: str, file_name: str = '') -> Dict[str, Any]:
@@ -2464,6 +2464,7 @@ def upload_XSOAR_attachment_to_jira(client: JiraBaseClient, entry_id: str,
     """
     file_name, file_bytes = get_file_name_and_content(entry_id=entry_id)
     files = create_files_to_upload('', file_name, file_bytes, attachment_name)
+    # Index 2 holds the MIME type
     chosen_file_mime_type = files.get("file", ())[2]
     # try upload the attachment with the specific mime type
     try:
