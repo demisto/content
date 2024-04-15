@@ -58,7 +58,7 @@ class Client(BaseClient):
         Sends the Google Chat custom card to the provided webhook.
 
         Args:
-            blocks (dict): Customized card to send to the Google Chat webhook.
+            blocks (str): Customized card to send to the Google Chat webhook.
             threadName (str): If provided, will reply to an existing thread (or create a new thread)
         """
 
@@ -150,7 +150,7 @@ def send_google_chat_custom_card_command(client: Client, blocks: str, threadName
 
     Args:
         client (Client): Google Chat client to use.
-        blocks (dict): The custom card to send to the Google Chat Space (UI Kit Builder JSON blocks)
+        blocks (str): The custom card to send to the Google Chat Space (UI Kit Builder JSON blocks)
         threadName (str): If provided, will reply to an existing thread (or create a new thread)
 
     Returns:
