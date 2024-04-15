@@ -1,6 +1,5 @@
-register_module_line('Digital Shadows V2', 'start', __line__())
-register_module_line('Digital Shadows V2', 'start', __line__())
-### pack version: 1.0.5
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 from typing import Any, List, Dict
@@ -436,11 +435,11 @@ utc_tzinfo = timezone(timedelta(), name="UTC")
 
 
 def get_indicator_events(
-        request_handler: HttpRequestHandler,
-        event_num_after=0,
-        event_created_after: datetime = None,
-        limit=100,
-        **kwargs
+    request_handler: HttpRequestHandler,
+    event_num_after=0,
+    event_created_after: datetime = None,
+    limit=100,
+    **kwargs
 ) -> List:
     """Retrieve a batch of triage item events
 
@@ -463,7 +462,7 @@ def get_indicator_events(
 
 
 def get_indicators(
-        request_handler: HttpRequestHandler, indicator_ids=[], **kwargs
+    request_handler: HttpRequestHandler, indicator_ids=[], **kwargs
 ) -> List:
     """Retrieve one or more indicators by ID."""
 
@@ -479,12 +478,12 @@ def get_indicators(
 ################################### Indicator grouping ###################################
 
 def get_indicator_grouping_events(
-        request_handler: HttpRequestHandler,
-        logger: Logger,
-        event_num_after=0,
-        event_created_after: datetime = None,
-        limit=100,
-        **kwargs
+    request_handler: HttpRequestHandler,
+    logger: Logger,
+    event_num_after=0,
+    event_created_after: datetime = None,
+    limit=100,
+    **kwargs
 ) -> List:
     """Retrieve a batch of triage item events
 
@@ -507,7 +506,7 @@ def get_indicator_grouping_events(
 
 
 def get_indicator_groupings(
-        request_handler: HttpRequestHandler, ids=[], **kwargs
+    request_handler: HttpRequestHandler, ids=[], **kwargs
 ) -> List:
     """Retrieve one or more indicator groupings by ID."""
 
@@ -670,11 +669,11 @@ class SearchLightTriagePoller(object):
         incident_map = {incident[ID]: incident for incident in incidents}
         asset_map = {asset[ID]: asset for asset in assets}
         comment_map = get_comments_map(triage_item_comments)
-
+        LOG('inside merge ------->>>>')
         for triage_item in triage_items:
             data_item = {TRIAGE_ITEM: triage_item, ASSETS: [], EVENT: event_map[triage_item[ID]]}
             if triage_item[ID] in comment_map:
-                data_item[COMMENTS] = comment_map[triage_item[ID]]
+                data_item[COMMENTS] = json.dumps(comment_map[triage_item[ID]])
 
             alert_or_incident = None
             if ALERT_ID in triage_item[SOURCE] and triage_item[SOURCE][ALERT_ID]:
@@ -682,6 +681,7 @@ class SearchLightTriagePoller(object):
                 if triage_item[SOURCE][ALERT_ID] not in alert_map:
                     continue
                 alert = alert_map[triage_item[SOURCE][ALERT_ID]]
+                alert = self.stringyfyAlert(alert)
                 data_item[ALERT] = alert
                 alert_or_incident = alert
             elif INCIDENT_ID in triage_item[SOURCE] and triage_item[SOURCE][INCIDENT_ID]:
@@ -696,7 +696,7 @@ class SearchLightTriagePoller(object):
                 # assets can be missing if deleted
                 asset = asset_map.get(asset_id_holder[ID], None)
                 if asset:
-                    data_item[ASSETS].append(asset)
+                    data_item[ASSETS].append(json.dumps(asset))
 
             # a new boolean field “auto-closed”, is added → where the triage-event indicates that the triage item is\
             # auto-rejected, this is set to true. Otherwise, it is false
@@ -710,6 +710,40 @@ class SearchLightTriagePoller(object):
             data.append(data_item)
 
         return data
+
+    def stringyfyAlert(self, alert):
+        LOG(f'------stringyfyAlert')
+        if alert.get('risk-factors'):
+            alert.update({'risk-factors': json.dumps(alert.get('risk-factors'))})
+        if alert.get('mitre-attack-mapping'):
+            alert.update({'mitre-attack-mapping': json.dumps(alert.get('mitre-attack-mapping'))})
+        if alert.get('validation'):
+            alert.update({'validation': json.dumps(alert.get('validation'))})
+
+        alert_details = {}
+        if alert.get('title'):
+            alert_details['title'] = alert.pop('title')
+        if alert.get('portal-id'):
+            alert_details['portal-id'] = alert.pop('portal-id')
+        if alert.get('id'):
+            alert_details['id'] = alert.pop('id')
+        if alert.get('description'):
+            alert_details['description'] = alert.pop('description')
+        if alert.get('raised'):
+            alert_details['raised'] = alert.pop('raised')
+        if alert.get('updated'):
+            alert_details['updated'] = alert.pop('updated')
+        if alert.get('email'):
+            alert_details['email'] = alert.pop('email')
+        if alert.get('password'):
+            alert_details['password'] = alert.pop('password')
+        if alert.get('inferred-password-type'):
+            alert_details['inferred-password-type'] = alert.pop('inferred-password-type')
+        if alert.get('first-seen'):
+            alert_details['first-seen'] = alert.pop('first-seen')
+        alert['details'] = json.dumps(alert_details)
+        LOG(f'------alert: {alert}')
+        return alert
 
     def poll_triage(self, event_num_start=0, limit=100, event_created_after=None, alert_risk_types=[RISK_TYPE_ALL]):
         """
@@ -823,12 +857,12 @@ class SearchLightIndicatorsPoller(object):
             a transformed value, or the original value if no transform is needed
         """
         if value_type == 'email' \
-                or value_type == 'host' \
-                or value_type == 'ipv4' \
-                or value_type == 'ipv6' \
-                or value_type == 'md5' \
-                or value_type == 'sha1' \
-                or value_type == 'sha256':
+            or value_type == 'host' \
+            or value_type == 'ipv4' \
+            or value_type == 'ipv6' \
+            or value_type == 'md5' \
+            or value_type == 'sha1' \
+            or value_type == 'sha256':
 
             # lowercase as these types are inherantly case-insensitive
             return value.lower()
@@ -1015,9 +1049,9 @@ def main():
                 for item in data:
                     indicator = {
                         'type': item['type'],
-                        'fields': item['group_labels'],
+                        'fields': {"some": "thing"},
                         'occurred': item["created"],
-                        'rawJSON': json.dumps(item)
+                        'rawJSON': item
                     }
                     indicators.append(indicator)
                 # check if the version is higher than 6.5.0 so we can use noUpdate parameter
@@ -1042,6 +1076,7 @@ def main():
 
             poll_result = search_list_triage_poller.poll_triage(event_num_start=last_event_num, limit=2,
                                                                 alert_risk_types=riskTypes)
+            LOG(f"after poll_result ------>")
             data = poll_result.triage_data
             last_polled_number = poll_result.max_event_number
             # LOG(f"after poll_result {data}")
@@ -1076,4 +1111,3 @@ def main():
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
 
-register_module_line('Digital Shadows V2', 'end', __line__())
