@@ -92,8 +92,6 @@ configuration:
   name: proxy
   section: Connect
   type: 8
-
-
 description: Amazon Web Services IAM Identity Center.
 display: AWS - IAM Identity Center - TEST
 name: AWS - IAM Identity Center - TEST

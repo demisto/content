@@ -387,6 +387,35 @@ Lists the IAM Identity Center groups that the specified IAM user belongs to.
 | AWS.IAMIdentityCenter.User.GroupMemeberships.MembershipId | string | The friendly name that identifies the group. | 
 | AWS.IAMIdentityCenter.User.GroupMemeberships.GroupId | string | The stable and unique string identifying the group. | 
 
+#### Command example
+```!aws-iam-identitycenter-list-groups-for-user userName=exampleName```
+#### Context Example
+```json
+{
+    "AWS": {
+        "IAMIdentityCenter": {
+            "GroupsUserNextToken":null,
+            "User":{
+                "GroupMemberships":[
+                    {
+                        "GroupId":"a3948882-5051-7090-524c-c8c850bf1919",
+                        "MembershipId":"e374b872-9011-7000-c847-55fdcc299204",
+                    }
+                ],
+                "UserId":"c3f438a2-e041-7033-75e8-63eb8c64b0e4"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### AWS IAM Identity Center Groups
+>|GroupID|MembershipID|UserID|
+>|---|---|---|
+>| a3948882-5051-7090-524c-c8c850bf1919 | e374b872-9011-7000-c847-55fdcc299204 | c3f438a2-e041-7033-75e8-63eb8c64b0e4 |
+
 
 ### aws-iam-identitycenter-add-user-to-group
 

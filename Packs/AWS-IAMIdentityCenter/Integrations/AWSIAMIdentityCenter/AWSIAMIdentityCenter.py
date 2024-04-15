@@ -10,7 +10,7 @@ args = demisto.args()
 SERVICE = 'identitystore'
 
 
-def create_user(args, client, identity_store_id):
+def create_user(args, client, IdentityStoreId):
     username = args.get('userName')
     familyName = args.get('familyName')
     givenName = args.get('givenName')
@@ -27,7 +27,7 @@ def create_user(args, client, identity_store_id):
         emailData['Primary'] = argToBoolean(primaryEmail)
         emailData['Type'] = 'work'
     response = client.create_user(
-        identity_store_id=f'{identity_store_id}',
+        IdentityStoreId=f'{IdentityStoreId}',
         UserName=f'{username}',
         Name={
             'FamilyName': f'{familyName}',
@@ -58,10 +58,10 @@ def create_user(args, client, identity_store_id):
     return_results(result)
 
 
-def get_userId_by_username(args, client, identity_store_id):
+def get_userId_by_username(args, client, IdentityStoreId):
     userName = args.get('userName')
     response_id = client.get_user_id(
-        identity_store_id=f'{identity_store_id}',
+        IdentityStoreId=f'{IdentityStoreId}',
         AlternateIdentifier={
             'UniqueAttribute': {
                 'AttributePath': "userName",
@@ -72,10 +72,10 @@ def get_userId_by_username(args, client, identity_store_id):
     return response_id
 
 
-def delete_user(args, client, identity_store_id):
-    userId = get_userId_by_username(args, client, identity_store_id)['UserId']
+def delete_user(args, client, IdentityStoreId):
+    userId = get_userId_by_username(args, client, IdentityStoreId)['UserId']
     response = client.delete_user(
-        identity_store_id=f'{identity_store_id}',
+        IdentityStoreId=f'{IdentityStoreId}',
         UserId=f'{userId}'
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -86,10 +86,10 @@ def delete_user(args, client, identity_store_id):
         return_results(result)
 
 
-def get_user(args, client, identity_store_id):
-    response_id = get_userId_by_username(args, client, identity_store_id)
+def get_user(args, client, IdentityStoreId):
+    response_id = get_userId_by_username(args, client, IdentityStoreId)
     response = client.describe_user(
-        identity_store_id=f'{identity_store_id}',
+        IdentityStoreId=f'{IdentityStoreId}',
         UserId=response_id.get('UserId')
     )
     del response['ResponseMetadata']
@@ -110,10 +110,10 @@ def get_user(args, client, identity_store_id):
     return_results(result)
 
 
-def get_user_by_email(args, client, identity_store_id):
+def get_user_by_email(args, client, IdentityStoreId):
     emailArg = args.get('emailAddress')
     response = client.list_users(
-        identity_store_id=f'{identity_store_id}',
+        IdentityStoreId=f'{IdentityStoreId}',
     )
     for user in response.get('Users'):
         userEmail = user.get('Emails')
@@ -136,11 +136,11 @@ def get_user_by_email(args, client, identity_store_id):
     return_results(result)
 
 
-def list_users(args, client, identity_store_id):
+def list_users(args, client, IdentityStoreId):
     context_data = []
     hr_data = []
     kwargs = {
-        'identity_store_id': identity_store_id,
+        'IdentityStoreId': IdentityStoreId,
         'MaxResults': arg_to_number(args.get('limit') or params.get('limit')),
         'NextToken': args.get('nextToken')
     }
@@ -167,11 +167,11 @@ def list_users(args, client, identity_store_id):
     return_results(result)
 
 
-def list_groups(args, client, identity_store_id):
+def list_groups(args, client, IdentityStoreId):
     context_data = []
     hr_data = []
     kwargs = {
-        'identity_store_id': identity_store_id,
+        'IdentityStoreId': IdentityStoreId,
         'MaxResults': arg_to_number(args.get('limit') or params.get('limit')),
         'NextToken': args.get('nextToken')
     }
@@ -196,9 +196,9 @@ def list_groups(args, client, identity_store_id):
     return_results(result)
 
 
-def create_group(args, client, identity_store_id):
+def create_group(args, client, IdentityStoreId):
     kwargs = {
-        'identity_store_id': f'{identity_store_id}',
+        'IdentityStoreId': f'{IdentityStoreId}',
         'DisplayName': args.get('displayName'),
         'Description': args.get('description')
     }
@@ -216,10 +216,10 @@ def create_group(args, client, identity_store_id):
         return_results(result)
 
 
-def delete_group(args, client, identity_store_id):
-    groupId = get_groupId_by_displayName(args, client, identity_store_id).get('GroupId')
+def delete_group(args, client, IdentityStoreId):
+    groupId = get_groupId_by_displayName(args, client, IdentityStoreId).get('GroupId')
     response = client.delete_group(
-        identity_store_id=f'{identity_store_id}',
+        IdentityStoreId=f'{IdentityStoreId}',
         GroupId=groupId
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -230,10 +230,10 @@ def delete_group(args, client, identity_store_id):
         return_results(result)
 
 
-def get_groupId_by_displayName(args, client, identity_store_id):
+def get_groupId_by_displayName(args, client, IdentityStoreId):
     groupName = args.get('displayName') or args.get('groupName')
     response_id = client.get_group_id(
-        identity_store_id=f'{identity_store_id}',
+        IdentityStoreId=f'{IdentityStoreId}',
         AlternateIdentifier={
             'UniqueAttribute': {
                 'AttributePath': "displayName",
@@ -244,10 +244,10 @@ def get_groupId_by_displayName(args, client, identity_store_id):
     return response_id
 
 
-def get_group(args, client, identity_store_id):
-    response_id = get_groupId_by_displayName(args, client, identity_store_id)
+def get_group(args, client, IdentityStoreId):
+    response_id = get_groupId_by_displayName(args, client, IdentityStoreId)
     response = client.describe_group(
-        identity_store_id=f'{identity_store_id}',
+        IdentityStoreId=f'{IdentityStoreId}',
         GroupId=response_id.get('GroupId')
     )
     hr_data = {
@@ -265,12 +265,12 @@ def get_group(args, client, identity_store_id):
     return_results(result)
 
 
-def list_groups_for_user(args, client, identity_store_id):
+def list_groups_for_user(args, client, IdentityStoreId):
     hr_data = []
     context_data = {}
-    userID = get_userId_by_username(args, client, identity_store_id)['UserId']
+    userID = get_userId_by_username(args, client, IdentityStoreId)['UserId']
     kwargs = {
-        'identity_store_id': f'{identity_store_id}',
+        'IdentityStoreId': f'{IdentityStoreId}',
         'MemberId': {
             'UserId': f'{userID}'
         },
@@ -303,11 +303,11 @@ def list_groups_for_user(args, client, identity_store_id):
     return_results(result)
 
 
-def add_user_to_group(args, client, identity_store_id):
-    userID = get_userId_by_username(args, client, identity_store_id)['UserId']
-    GroupID = get_groupId_by_displayName(args, client, identity_store_id)['GroupId']
+def add_user_to_group(args, client, IdentityStoreId):
+    userID = get_userId_by_username(args, client, IdentityStoreId)['UserId']
+    GroupID = get_groupId_by_displayName(args, client, IdentityStoreId)['GroupId']
     response = client.create_group_membership(
-        identity_store_id=f'{identity_store_id}',
+        IdentityStoreId=f'{IdentityStoreId}',
         GroupId=f'{GroupID}',
         MemberId={
             'UserId': f'{userID}'
@@ -322,11 +322,11 @@ def add_user_to_group(args, client, identity_store_id):
         return_results(result)
 
 
-def get_group_memberships_for_member(args, client, identity_store_id):
+def get_group_memberships_for_member(args, client, IdentityStoreId):
     membershipsOfMember = []
-    userID = get_userId_by_username(args, client, identity_store_id)['UserId']
+    userID = get_userId_by_username(args, client, IdentityStoreId)['UserId']
     kwargs = {
-        'identity_store_id': f'{identity_store_id}',
+        'IdentityStoreId': f'{IdentityStoreId}',
         'MemberId': {
             'UserId': f'{userID}'
         }
@@ -339,14 +339,14 @@ def get_group_memberships_for_member(args, client, identity_store_id):
     return membershipsOfMember
 
 
-def delete_group_membership(args, client, identity_store_id):
+def delete_group_membership(args, client, IdentityStoreId):
     membershipsToDelete = []
     if args.get('membershipId') and args.get('userName'):
         return_error("Please provide one of userName and membershipId.")
     elif args.get('membershipId'):
         membershipsToDelete = argToList(args.get('membershipId'))
     elif args.get('userName'):
-        membershipsToDelete = get_group_memberships_for_member(args, client, identity_store_id)
+        membershipsToDelete = get_group_memberships_for_member(args, client, IdentityStoreId)
         if membershipsToDelete == []:
             demisto.results('User is not member of any group.')
     else:
@@ -354,7 +354,7 @@ def delete_group_membership(args, client, identity_store_id):
     if membershipsToDelete != []:
         for member in membershipsToDelete:
             response = client.delete_group_membership(
-                identity_store_id=f'{identity_store_id}',
+                IdentityStoreId=f'{IdentityStoreId}',
                 MembershipId=f'{member}'
             )
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -365,12 +365,12 @@ def delete_group_membership(args, client, identity_store_id):
             return_results(result)
 
 
-def list_group_memberships(args, client, identity_store_id):
+def list_group_memberships(args, client, IdentityStoreId):
     hr_data = []
     context_data = {}
-    groupId = get_groupId_by_displayName(args, client, identity_store_id).get('GroupId')
+    groupId = get_groupId_by_displayName(args, client, IdentityStoreId).get('GroupId')
     kwargs = {
-        'identity_store_id': identity_store_id,
+        'IdentityStoreId': IdentityStoreId,
         'GroupId': groupId,
         'MaxResults': arg_to_number(args.get('limit') or params.get('limit')),
         'NextToken': args.get('nextToken')
@@ -402,11 +402,11 @@ def list_group_memberships(args, client, identity_store_id):
     return_results(result)
 
 
-def test_function(args, client, identity_store_id):    # pragma: no cover
-    if not identity_store_id:
+def test_function(args, client, IdentityStoreId):    # pragma: no cover
+    if not IdentityStoreId:
         return_error("The parameter Identity Store ID can be empty and added as an argument to each command, but Test will fail.")
     response = client.list_users(
-        identity_store_id=f'{identity_store_id}',
+        IdentityStoreId=f'{IdentityStoreId}',
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results('ok')
@@ -415,7 +415,7 @@ def test_function(args, client, identity_store_id):    # pragma: no cover
 def main():     # pragma: no cover
     params = demisto.params()
     args = demisto.args()
-    identity_store_id = args.get('identity_store_id') or params.get('identity_store_id')
+    IdentityStoreId = args.get('IdentityStoreId') or params.get('IdentityStoreId')
     aws_default_region = params.get('defaultRegion')
     aws_role_arn = params.get('roleArn')
     aws_role_session_name = params.get('roleSessionName')
@@ -448,33 +448,33 @@ def main():     # pragma: no cover
     try:
         demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
-            test_function(args, client, identity_store_id)
+            test_function(args, client, IdentityStoreId)
         elif command == 'aws-iam-identitycenter-create-user':
-            create_user(args, client, identity_store_id)
+            create_user(args, client, IdentityStoreId)
         elif command == 'aws-iam-identitycenter-get-user':
-            get_user(args, client, identity_store_id)
+            get_user(args, client, IdentityStoreId)
         elif command == 'aws-iam-identitycenter-get-user-by-email':
-            get_user_by_email(args, client, identity_store_id)
+            get_user_by_email(args, client, IdentityStoreId)
         elif command == 'aws-iam-identitycenter-list-users':
-            list_users(args, client, identity_store_id)
+            list_users(args, client, IdentityStoreId)
         elif command == 'aws-iam-identitycenter-list-groups':
-            list_groups(args, client, identity_store_id)
+            list_groups(args, client, IdentityStoreId)
         elif command == 'aws-iam-identitycenter-get-group':
-            get_group(args, client, identity_store_id)
+            get_group(args, client, IdentityStoreId)
         elif command == 'aws-iam-identitycenter-list-groups-for-user':
-            list_groups_for_user(args, client, identity_store_id)
+            list_groups_for_user(args, client, IdentityStoreId)
         elif command == 'aws-iam-identitycenter-add-user-to-group':
-            add_user_to_group(args, client, identity_store_id)
+            add_user_to_group(args, client, IdentityStoreId)
         elif command == 'aws-iam-identitycenter-delete-user':
-            delete_user(args, client, identity_store_id)
+            delete_user(args, client, IdentityStoreId)
         elif command == 'aws-iam-identitycenter-create-group':
-            create_group(args, client, identity_store_id)
+            create_group(args, client, IdentityStoreId)
         elif command == 'aws-iam-identitycenter-delete-group':
-            delete_group(args, client, identity_store_id)
+            delete_group(args, client, IdentityStoreId)
         elif command == 'aws-iam-identitycenter-delete-group-membership':
-            delete_group_membership(args, client, identity_store_id)
+            delete_group_membership(args, client, IdentityStoreId)
         elif command == 'aws-iam-identitycenter-list-memberships':
-            list_group_memberships(args, client, identity_store_id)
+            list_group_memberships(args, client, IdentityStoreId)
 
     except Exception as e:
         return_error('Error has occurred in the AWS IAM Integration: {code}\n {message}'.format(
