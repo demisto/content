@@ -23,7 +23,7 @@ configuration:
   section: Connect
 - display: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
   name: timeout
-  defaultvalue: "10"
+  defaultvalue: '10'
   type: 0
   section: Connect
   advanced: true
@@ -86,7 +86,7 @@ configuration:
   advanced: true
   required: false
 script:
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.92207
   type: python
   subtype: python3
   script: '-'
@@ -256,7 +256,7 @@ script:
       isArray: true
     outputs:
     - contextPath: Domain.Name
-      description: 'The domain name. For example, "google.com".'
+      description: The domain name. For example, "google.com".
       type: String
     - contextPath: Domain.Malicious.Vendor
       description: The vendor reporting the domain as malicious.
@@ -452,7 +452,7 @@ script:
       - last_modified_date|asc
       - last_modified_date|desc
     - name: slug
-      description: 'Search by ''slug'' or short descriptive name. For example, "anchor-panda".'
+      description: Search by 'slug' or short descriptive name. For example, "anchor-panda".
     - name: display_full_fields
       description: Whether to return and display full data from CS API. (For example full description, which by default is short).
       defaultValue: false
@@ -497,19 +497,19 @@ script:
       description: A list of targeted countries associated with this actor.
       type: String
     - contextPath: FalconIntel.Actor.Origins
-      description: "The actor's country of origin. For example, Afghanistan."
+      description: The actor's country of origin. For example, Afghanistan.
       type: String
     - contextPath: FalconIntel.Actor.Motivations
-      description: "The actor's motivations. For example, Criminal."
+      description: The actor's motivations. For example, Criminal.
       type: String
     - contextPath: FalconIntel.Actor.Capability
-      description: "The actor's capability. For example, Average."
+      description: The actor's capability. For example, Average.
       type: String
     - contextPath: FalconIntel.Actor.Group
-      description: "The the group of the actor. For example, panda gang."
+      description: The the group of the actor. For example, panda gang.
       type: String
     - contextPath: FalconIntel.Actor.Region
-      description: "The region of the actor. For example, Eastern Europe."
+      description: The region of the actor. For example, Eastern Europe.
       type: String
     - contextPath: FalconIntel.Actor.KillChains
       description: Kill chain fields.
@@ -581,7 +581,7 @@ script:
       - last_updated|asc
       - last_updated|desc
     - name: id
-      description: "The indicator's ID, in the following format: <type>_<indicator>."
+      description: 'The indicator''s ID, in the following format: <type>_<indicator>.'
     - default: true
       defaultValue: '10'
       description: The maximum number of indicators to retrieve. The default is 10.
@@ -636,7 +636,7 @@ script:
       description: For malicious URL, the associated kill chain.
       type: String
     - contextPath: Domain.Name
-      description: 'The domain name. For example, "google.com".'
+      description: The domain name. For example, "google.com".
       type: String
     - contextPath: Domain.Malicious.Vendor
       description: The vendor reporting the domain as malicious.
@@ -742,7 +742,7 @@ script:
     - name: free_search
       description: Search across all fields in a report object.
     - name: name
-      description: Search for keywords across report names (for example, the report’s title).
+      description: "Search for keywords across report names (for example, the report\u2019s title)."
     - name: actors
       description: Search for a report related to particular actors. Actors should be comma separated. For example, actor1,actor2, etc.
       isArray: true
@@ -840,16 +840,16 @@ script:
       description: The full description of the report.
       type: String
     - contextPath: FalconIntel.Report.TargetIndustries
-      description: "Targeted industries included in the report. For example, aerospace."
+      description: Targeted industries included in the report. For example, aerospace.
       type: String
     - contextPath: FalconIntel.Report.TargetCountries
-      description: "Targeted countries included in the report. For example, afghanistan."
+      description: Targeted countries included in the report. For example, afghanistan.
       type: String
     - contextPath: FalconIntel.Report.Motivations
-      description: "Motivations included in the report. For example, criminal."
+      description: Motivations included in the report. For example, criminal.
       type: String
     - contextPath: FalconIntel.Report.Tags
-      description: "The report's tags. For example, intel_feed."
+      description: The report's tags. For example, intel_feed.
       type: String
     description: Queries CrowdStrike intelligence publications.
 tests:

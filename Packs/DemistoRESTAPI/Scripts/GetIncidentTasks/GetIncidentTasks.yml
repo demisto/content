@@ -18,9 +18,9 @@ args:
   isArray: true
   description: 'Comma-separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, LoopError, Skipped, Blocked. (Leave empty to get all tasks).'
 - name: name
-  description: 'The name of the task to search.'
+  description: The name of the task to search.
 - name: tag
-  description: 'The tag to search.'
+  description: The tag to search.
 outputs:
 - contextPath: Tasks
   description: The entire task object.
@@ -59,7 +59,7 @@ outputs:
   type: string
 scripttarget: 0
 sensitive: true
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.14.92207
 tests:
 - No test
 fromversion: 6.10.0

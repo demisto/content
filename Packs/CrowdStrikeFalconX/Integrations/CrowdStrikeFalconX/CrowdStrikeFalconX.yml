@@ -82,15 +82,15 @@ script:
       description: Interval in seconds between each poll.
       name: interval_in_seconds
     - auto: PREDEFINED
-      default:
-      defaultValue: no
+      default: null
+      defaultValue: false
       description: Whether to submit the given file to the sandbox. Can be "yes" or "no". Default is "no".
       name: submit_file
       predefined:
-      - no
-      - yes
+      - false
+      - true
     - auto: PREDEFINED
-      defaultValue: "160: Windows 10"
+      defaultValue: '160: Windows 10'
       description: Sandbox environment used for analysis. Relevant if the submit_file parameter is set to true.
       name: environment_id
       predefined:
@@ -368,7 +368,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Name of the malware sample that’s used for file type detection. and analysis.
+    - description: "Name of the malware sample that\u2019s used for file type detection. and analysis."
       name: submit_name
     - description: Set a custom date for the sandbox environment in the format yyyy-MM-dd.
       name: system_date
@@ -1368,8 +1368,7 @@ script:
       type: Number
   - arguments:
     - default: true
-      description: |-
-        The file hash(es) to search for.
+      description: The file hash(es) to search for.
       isArray: true
       name: file
       required: true
@@ -1434,9 +1433,7 @@ script:
       description: The actual score.
       type: Number
   - arguments:
-    - description: |-
-        A web page or file URL. It can be HTTP(S) or FTP.
-        For example: “https://url.com”,“ftp://ftp.com”.
+    - description: "A web page or file URL. It can be HTTP(S) or FTP.\nFor example: \u201Chttps://url.com\u201D,\u201Cftp://ftp.com\u201D."
       name: url
     - description: Sandbox environment used for analysis.
       name: environment_id
@@ -1451,13 +1448,17 @@ script:
       - 64-bit
       - '100: Windows 7'
       - 32-bit
-    - description: |-
-        Runtime script for sandbox analysis. Values:
+    - description: 'Runtime script for sandbox analysis. Values:
+
         default
+
         default_maxantievasion
+
         default_randomfiles
+
         default_randomtheme
-        default_openie.
+
+        default_openie.'
       name: action_script
     - description: 'Command line script passed to the submitted file at runtime. Max length: 2048 characters.'
       name: command_line
@@ -1726,7 +1727,7 @@ script:
       name: accept_encoding
     description: Downloads IOC packs, PCAP files, and other analysis artifacts.
     name: cs-fx-download-ioc
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.14.92207
   runonce: false
   script: '-'
   subtype: python3

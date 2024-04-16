@@ -18,20 +18,23 @@ args:
 - description: Request body.
   name: body
 - auto: PREDEFINED
-  defaultValue: 'war room entry'
-  description: |-
-    Where to upload the file
+  defaultValue: war room entry
+  description: 'Where to upload the file
+
     - Available options are:
+
     - `war room entry`: the file will be uploaded as war room entry.
+
     - `incident attachment`: the file will be uploaded as incident attachment.
-    - default are `war room entry`.
+
+    - default are `war room entry`.'
   name: target
   predefined:
-  - 'war room entry'
-  - 'incident attachment'
-comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
+  - war room entry
+  - incident attachment
+comment: "Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident\u2019s War Room."
 subtype: python3
-dockerimage: demisto/python3:3.10.13.88772
+dockerimage: demisto/python3:3.10.14.92207
 tags:
 - DemistoAPI
 timeout: '0'
