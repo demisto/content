@@ -288,6 +288,8 @@ def get_user_from_ui_pr(pr):
         user = str(user_in_list[0])
         return user
     except Exception:
+        user_list = re.findall("Contributor\s@(\S+)", body)
+        print(f'the user is: {user_list}')
         print(f'failed pr is: {pr}')
         print(f'pr body: {pr.body}')
 
