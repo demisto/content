@@ -372,16 +372,16 @@ def validate_confusion_matrix(confusion_matrix):
 
 
 def main():
-    input = demisto.args()['input']
-    input_type = demisto.args()['inputType']
-    model_name = demisto.args()['modelName']
-    store_model = demisto.args()['storeModel'] == 'true'
+    input = demisto.args().get('input')
+    input_type = demisto.args().get('inputType', 'pickle_filename')
+    model_name = demisto.args().get('modelName')
+    store_model = demisto.args().get('storeModel') == 'true'
     model_override = demisto.args().get('overrideExistingModel', 'false') == 'true'
-    target_accuracy = float(demisto.args()['targetAccuracy'])
-    text_field = demisto.args()['textField']
-    tag_fields = demisto.args()['tagField'].split(",")
-    labels_mapping = get_phishing_map_labels(demisto.args()['phishingLabels'])
-    keyword_min_score = float(demisto.args()['keywordMinScore'])
+    target_accuracy = float(demisto.args().get('targetAccuracy'))
+    text_field = demisto.args().get('textField')
+    tag_fields = demisto.args().get('tagField').split(",")
+    labels_mapping = get_phishing_map_labels(demisto.args().get('phishingLabels'))
+    keyword_min_score = float(demisto.args().get('keywordMinScore'))
     return_predictions_on_test_set = demisto.args().get('returnPredictionsOnTestSet', 'false') == 'true'
     original_text_fields = demisto.args().get('originalTextFields', '')
     algorithm = demisto.args().get('trainingAlgorithm', AUTO_TRAINING_ALGO)
