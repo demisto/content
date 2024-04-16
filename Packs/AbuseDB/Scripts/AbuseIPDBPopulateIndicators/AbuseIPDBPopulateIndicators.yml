@@ -11,13 +11,13 @@ enabled: true
 args:
 - name: days
   description: Time range to return reports for (in days).
-  defaultValue: "30"
+  defaultValue: '30'
 - name: limit
-  description: 'Maximum number of IPs to retrieve.'
-  defaultValue: "200"
+  description: Maximum number of IPs to retrieve.
+  defaultValue: '200'
 - name: confidence
-  description: 'The Minimum confidence required of IPs to retrieve.'
-  defaultValue: "100"
+  description: The Minimum confidence required of IPs to retrieve.
+  defaultValue: '100'
 scripttarget: 0
 dependson:
   must:
@@ -28,4 +28,4 @@ runas: DBotWeakRole
 tests:
 - AbuseIPDB PopulateIndicators Test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.66339
+dockerimage: demisto/python3:3.10.14.92207

@@ -122,7 +122,7 @@ script:
       name: last_updated
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: 'Whether to return artifacts of samples.'
+      description: Whether to return artifacts of samples.
       name: artifact
       predefined:
       - 'true'
@@ -1356,7 +1356,7 @@ script:
       description: The domain name.
       type: String
     polling: true
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.92207
   runonce: false
   script: '-'
   subtype: python3

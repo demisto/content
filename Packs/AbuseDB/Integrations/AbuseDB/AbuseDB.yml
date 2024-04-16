@@ -24,7 +24,7 @@ configuration:
   hidden: true
   section: Connect
   required: false
-- defaultvalue: 'C - Fairly reliable'
+- defaultvalue: C - Fairly reliable
   display: Source Reliability
   name: integrationReliability
   required: true
@@ -151,7 +151,7 @@ script:
       type: String
     - contextPath: AbuseIPDB.IP.IsTor
       description: Is the IP address a Tor IP.
-      type: String¨
+      type: "String\xA8"
     - contextPath: AbuseIPDB.IP.IsWhitelisted
       description: Is the IP address whitelisted.
       type: String
@@ -257,7 +257,7 @@ script:
       type: String
     - contextPath: AbuseIPDB.IP.IsTor
       description: Is the IP address a Tor IP.
-      type: String¨
+      type: "String\xA8"
     - contextPath: AbuseIPDB.IP.IsWhitelisted
       description: Is the IP address whitelisted.
       type: String
@@ -339,7 +339,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.14.92207
 fromversion: 5.0.0
 tests:
 - AbuseIPDB Test

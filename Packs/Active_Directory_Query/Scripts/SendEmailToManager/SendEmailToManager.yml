@@ -18,8 +18,8 @@ args:
 - name: allowReply
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: If true, we will add an entitlement to the subject allowing manager to reply to war room.
 - name: body
   description: The contents of the email body. It's a template that can include $empName and $managerName which will be replaced with actual values.
@@ -31,9 +31,9 @@ args:
   description: Indicates whether to use one-time entitlement or a persistent one.
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
-  defaultValue: "false"
+  - 'true'
+  - 'false'
+  defaultValue: 'false'
 scripttarget: 0
 dependson:
   must:
@@ -42,4 +42,4 @@ dependson:
 timeout: 0s
 tests:
 - No test
-dockerimage: demisto/python3:3.10.13.87159
+dockerimage: demisto/python3:3.10.14.92207
