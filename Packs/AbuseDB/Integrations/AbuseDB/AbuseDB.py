@@ -30,7 +30,7 @@ BLACKLIST_CMD = 'blacklist'
 ANALYSIS_TITLE = "AbuseIPDB Analysis"
 BLACKLIST_TITLE = "AbuseIPDB Blacklist"
 REPORT_SUCCESS = "IP address reported successfully."
-
+ass = 2
 API_QUOTA_REACHED_MESSAGE = 'Too many requests (possibly bad API key). Status code: 429'
 
 HEADERS = {
