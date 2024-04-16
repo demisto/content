@@ -1,7 +1,7 @@
 commonfields:
   id: ExpanseEvidenceDynamicSection
   version: -1
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.14.92207
 enabled: true
 name: ExpanseEvidenceDynamicSection
 comment: Dynamic Section script used in Expanse Issue layout to display the Latest Evidence structure.

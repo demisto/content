@@ -42,10 +42,10 @@ configuration:
   required: false
 - defaultvalue: '7'
   name: min_last_observed
-  display: 'Retrieve indicators observed in the last specified number of days'
+  display: Retrieve indicators observed in the last specified number of days
   type: 0
   required: false
-- defaultvalue: 'suddenDeath'
+- defaultvalue: suddenDeath
   display: ''
   name: feedExpirationPolicy
   type: 17
@@ -115,16 +115,16 @@ script:
     - defaultValue: '10'
       description: The maximum number of results to return per type
       name: max_indicators
-    - defaultValue: yes
+    - defaultValue: true
       description: Retrieve discovered IPs
       name: ip
-    - defaultValue: yes
+    - defaultValue: true
       description: Retrieve discovered Domains
       name: domain
-    - defaultValue: yes
+    - defaultValue: true
       description: Retrieve discovered certificates
       name: certificate
-    - defaultValue: yes
+    - defaultValue: true
       description: Retrieve IP Ranges
       name: iprange
     description: Retrieve discovered IPs/IP Ranges/Domains/Certificates
@@ -133,7 +133,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.14.92207
 fromversion: 6.0.0
 tests:
 - Feed Expanse Test
