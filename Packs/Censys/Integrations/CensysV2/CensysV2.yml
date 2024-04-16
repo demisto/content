@@ -500,6 +500,31 @@ script:
     description: The diff endpoint generates a JSONPatch (RFC6902) formatted patch
       by comparing a host against another host (or itself) at optionally given points
       in time.
+    outputs:
+    - contextPath: Censys.HostHistory.a
+      description: Placeholder for data object 'a'.
+      type: Unknown
+    - contextPath: Censys.HostHistory.b.ip
+      description: The IP address associated with the host history object 'b'.
+      type: String
+    - contextPath: Censys.HostHistory.b.last_updated_at
+      description: The date and time when the host history object 'b' was last updated.
+      type: Date
+    - contextPath: Censys.HostHistory.patch.op
+      description: The operation performed in the patch object.
+      type: String
+    - contextPath: Censys.HostHistory.patch.path
+      description: The path within the host history object where the patch operation was applied.
+      type: String
+    - contextPath: Censys.HostHistory.patch.value
+      description: The value associated with the patch operation.
+      type: String
+    - contextPath: Censys.HostHistory.patch.value.record_type
+      description: The type of DNS record associated with the patch value.
+      type: String
+    - contextPath: Censys.HostHistory.patch.value.resolved_at
+      description: The date and time when the DNS record associated with the patch value was resolved.
+      type: Date
   - name: ip
     arguments: 
     - name: ip
@@ -508,42 +533,75 @@ script:
       type: textArea
     description: Runs reputation on IPs
     outputs:
+    - contextPath: Censys.IP.services.port
+      description: The port number associated with the service running on the IP.
+      type: Number
+    - contextPath: Censys.IP.services.transport_protocol
+      description: The transport protocol used by the service running on the IP.
+      type: String
+    - contextPath: Censys.IP.services.extended_service_name
+      description: The extended name of the service running on the IP.
+      type: String
+    - contextPath: Censys.IP.services.service_name
+      description: The name of the service running on the IP.
+      type: String
+    - contextPath: Censys.IP.services.certificate
+      description: The SSL/TLS certificate associated with the service running on the IP.
+      type: String
+    - contextPath: Censys.IP.labels
+      description: Labels associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.dns.reverse_dns.names
+      description: Reverse DNS names associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.autonomous_system.country_code
+      description: The country code of the autonomous system associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.autonomous_system.description
+      description: Description of the autonomous system associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.autonomous_system.name
+      description: Name of the autonomous system associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.autonomous_system.bgp_prefix
+      description: BGP prefix of the autonomous system associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.autonomous_system.asn
+      description: Autonomous System Number (ASN) of the autonomous system associated with the IP address.
+      type: Number
     - contextPath: Censys.IP.ip
       description: The IP address.
       type: String
-    - contextPath: Censys.IP.asn
-      description: The autonomous system number (ASN) associated with the IP.
-      type: Number
-    - contextPath: Censys.IP.region
-      description: The region or country associated with the IP.
+    - contextPath: Censys.IP.location.country
+      description: Country name of the location associated with the IP address.
       type: String
-    - contextPath: Censys.IP.updated_date
-      description: The date when the information associated with the IP was last updated.
+    - contextPath: Censys.IP.location.timezone
+      description: Timezone of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.location.province
+      description: Province name of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.location.coordinates.latitude
+      description: Latitude coordinate of the location associated with the IP address.
+      type: Number
+    - contextPath: Censys.IP.location.coordinates.longitude
+      description: Longitude coordinate of the location associated with the IP address.
+      type: Number
+    - contextPath: Censys.IP.location.continent
+      description: Continent name of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.location.postal_code
+      description: Postal code of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.location.city
+      description: City name of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.location.country_code
+      description: Country code of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.last_updated_at
+      description: The date and time when the information about the IP address was last updated.
       type: Date
-    - contextPath: Censys.IP.geo_latitude
-      description: The latitude coordinate of the IP's geographic location.
-      type: Number
-    - contextPath: Censys.IP.geo_longitude
-      description: The longitude coordinate of the IP's geographic location.
-      type: Number
-    - contextPath: Censys.IP.geo_country
-      description: The country associated with the IP's geographic location.
-      type: String
-    - contextPath: Censys.IP.port
-      description: The port numbers associated with the IP.
-      type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: string
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: string
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: string
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: string
   - name: domain
     arguments: 
     - name: domain
@@ -555,30 +613,18 @@ script:
     - contextPath: Censys.Domain.domain
       description: The domain name.
       type: String
-    - contextPath: Censys.Domain.description
+    - contextPath: Censys.Domain.autonomous_system.description
       description: A description associated with the autonomous system of the domain.
       type: String
-    - contextPath: Censys.Domain.updated_date
+    - contextPath: Censys.Domain.last_updated_at
       description: The date when the information associated with the domain was last updated.
       type: Date
-    - contextPath: Censys.Domain.geo_country
+    - contextPath: Censys.Domain.location.country
       description: The country associated with the domain's geographic location.
       type: String
-    - contextPath: Censys.Domain.port
+    - contextPath: Censys.Domain.services.port
       description: The port numbers associated with the domain.
       type: String
-    - contextPath: DBotScore.Score
-      description: The actual score.
-      type: string
-    - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
-      type: string
-    - contextPath: DBotScore.Type
-      description: The indicator type.
-      type: string
-    - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the score.
-      type: string
   dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
