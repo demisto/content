@@ -285,9 +285,12 @@ def find_all_open_prs_by_user(content_repo, pr_creator):
     :param pr_creator:
     :return:
     """
-    all_prs = content_repo.get_pulls()
-    print(f'Number of all open PRs is: {len(all_prs)}')
-    return len(all_prs)
+    all_prs = content_repo.get_pulls(per_page=100)
+    total_prs= []
+    print(f'Number of all open PRs is: {all_prs.totalCount}')
+    for pr in all_prs:
+        total_prs.append(pr)
+    return total_prs
     #return pr_opened_by_same_user
 
 
@@ -405,8 +408,8 @@ def main():
     print(f"Security Reviewer: {security_reviewer}")
     print(f"TIM Reviewer: {tim_reviewer}")
 
-    all_prs = content_repo.get_pulls()
-    print(f'Number of all open PRs is: {all_prs.totalCount}')
+    prs = find_all_open_prs_by_user(content_repo, "edi")
+    print(f'Number of open PRs is: {prs}')
     #content_reviewer = find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number)
 
     content_reviewer = determine_reviewer(content_reviewers, content_repo)
