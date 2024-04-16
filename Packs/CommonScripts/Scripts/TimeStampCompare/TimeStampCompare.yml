@@ -6,7 +6,7 @@ args:
   isArray: true
   name: values_to_compare
   required: true
-- description: "Time format of the times you entered. By default, the script uses automatic parsing. This should be used for cases like DD/MM/YYYY. Automatic parsing will detect formats such as: February 15th 2009, 02-15-2020, 02-15-2020T14:30:00Z"
+- description: 'Time format of the times you entered. By default, the script uses automatic parsing. This should be used for cases like DD/MM/YYYY. Automatic parsing will detect formats such as: February 15th 2009, 02-15-2020, 02-15-2020T14:30:00Z'
   name: time_format
 comment: Compares a single timestamp to a list of timestamps.
 commonfields:
@@ -28,5 +28,5 @@ subtype: python3
 tags: []
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.14.92207
 fromversion: 5.0.0

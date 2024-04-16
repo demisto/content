@@ -2,8 +2,7 @@ commonfields:
   id: GenerateRandomString
   version: -1
 name: GenerateRandomString
-comment: |-
-  Generates random string
+comment: Generates random string
 script: ''
 type: python
 subtype: python3
@@ -49,4 +48,4 @@ scripttarget: 0
 tests:
 - RandomStringGenerateTest
 fromversion: 6.2.0
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.14.92207
