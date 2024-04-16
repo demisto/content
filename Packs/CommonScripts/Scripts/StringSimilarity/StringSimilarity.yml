@@ -18,12 +18,12 @@ args:
   isArray: true
 - name: similarity_threshold
   description: The similarity threshold to show results for, a value between 0 < x >1.
-  defaultValue: "0.1"
+  defaultValue: '0.1'
 outputs:
 - contextPath: StringSimilarity.SimilarityScore
   description: Similarity score - a value between 1.0 if the sequences are identical, and 0.0 if they have nothing in common.
 scripttarget: 0
-dockerimage: demisto/python3:3.10.13.78960
+dockerimage: demisto/python3:3.10.14.92207
 subtype: python3
 runonce: false
 runas: DBotWeakRole
