@@ -15,14 +15,14 @@ commonfields:
   id: SplunkAddComment
   version: -1
 name: SplunkAddComment
-script: ""
+script: ''
 type: python
 tags: []
 enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.12.68714
+dockerimage: demisto/python3:3.10.14.92207
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

@@ -281,13 +281,13 @@ script:
   - arguments:
     - description: The number of results to return.
       name: limit
-    - description: |-
-        The start of the date range for searching.
-        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
+    - description: 'The start of the date range for searching.
+
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).'
       name: start_date
-    - description: |-
-        The end of the date range for searching.
-        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
+    - description: 'The end of the date range for searching.
+
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).'
       name: end_date
     description: Return the latest vulnerabilities found.
     name: cve-latest
@@ -404,22 +404,22 @@ script:
       type: String
   - arguments:
     - default: true
-      description: |-
-        The query for the search.
-        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext).
+      description: 'The query for the search.
+
+        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext).'
       name: q
       required: true
-    - description: |-
-        The start of the date range for searching.
-        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
+    - description: 'The start of the date range for searching.
+
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).'
       name: start_date
-    - description: |-
-        The end of the date range for searching.
-        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).
+    - description: 'The end of the date range for searching.
+
+        The format should be YYYY-MM-DDThh:mm:ssZ (e.g. 2016-01-01T00:00:00Z).'
       name: end_date
-    - description: |-
-        Bookmark used to page through results.
-        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext).
+    - description: 'Bookmark used to page through results.
+
+        (https://exchange.xforce.ibmcloud.com/api/doc/?#Vulnerabilities_get_vulnerabilities_fulltext).'
       name: bookmark
     description: Gets list of all vulnerabilities associated with the search term.
     name: xfe-search-cves
@@ -469,7 +469,7 @@ script:
     - contextPath: XFE.CVESearch.Bookmark
       description: Bookmark used to page through results.
       type: String
-  dockerimage: demisto/python3:3.10.13.73190
+  dockerimage: demisto/python3:3.10.14.92207
   runonce: false
   script: '-'
   subtype: python3

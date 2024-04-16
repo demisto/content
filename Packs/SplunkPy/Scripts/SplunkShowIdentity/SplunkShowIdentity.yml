@@ -3,8 +3,8 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-dockerimage: demisto/python3:3.10.13.89009
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.14.92207
 enabled: true
 name: SplunkShowIdentity
 runas: DBotWeakRole
