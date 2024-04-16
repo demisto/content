@@ -108,7 +108,7 @@ def get_docker_image_tag(docker_image: str, images_tag: dict[str, str]) -> str:
 
 def get_docker_batch_config(docker_image: str, custom_images: list[str], default_batches: list[dict[str, Any]],
                       image_custom_configs: dict[str, Any], current_batch_index: int) -> dict[str, Any]:
-    """_summary_
+    """Get the relevant docker batch, whether the default or custom batch.
 
     Args:
         docker_image (str): The docker image to retrieve its relevant batch config.
@@ -126,7 +126,7 @@ def get_docker_batch_config(docker_image: str, custom_images: list[str], default
         batches_configs_to_use: list[dict[str, Any]] = image_custom_configs[docker_image]["batches"]
 
     return batches_configs_to_use[current_batch_index] if current_batch_index < len(batches_configs_to_use) else {}
-    
+
 
 def get_affected_content_items_by_docker_image(
     default_batches: list[dict[str, Any]],
@@ -196,7 +196,7 @@ def calculate_affected_docker_images(
         docker_images_arg (str): Docker images arg supplied by the user. This will either be:
             i) ALL - Use all docker images\n
             ii) docker1,docker2,... - A list of docker images to use.\n
-            iii) ALL/docker1,docker2,... - All docker images, excluding docker1,docker2,...\n
+            iii) ALL@docker1,docker2,... - All docker images, excluding docker1,docker2,...\n
         images_to_exclude (list[str]): A list of images that will be excluded.
         all_docker_images (list[str]): All docker images returned from the graph.
 
@@ -249,11 +249,11 @@ def query_used_dockers_per_content_item(tx: Transaction) -> list[tuple[str, str,
 
 def get_content_items_by_docker_image() -> dict[str, list[dict[str, Any]]]:
     """Return all content items of type 'integration' and 'script', with their respective
-    docker images.
+    docker images, support level, and pack path.
 
     Returns:
         dict[str, list[dict[str, Any]]]: The key will be the docker image, and the value will be a list
-        containing data about the content items and respective pack.
+        containing data about the content items and respective pack and support level.
     """
     content_images: dict[str, list[dict[str, Any]]] = defaultdict(list)
     with ContentGraphInterface() as graph, graph.driver.session() as session:
@@ -294,7 +294,7 @@ def get_affected_content_items(
     docker_images_arg: str = typer.Option(
         default="ALL",
         help=("The docker images that should be affected by the auto update, either a comma"
-        " separated list, the string 'ALL', or 'ALL/docker1,docker2',"
+        " separated list, the string 'ALL', or 'ALL@docker1,docker2',"
         " where the last option will exclude the stated docker images"),
     ),
     auto_update_dir: str = typer.Option(
