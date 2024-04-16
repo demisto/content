@@ -5674,6 +5674,10 @@
         {
             "integrations": "Palo Alto Networks AIOps",
             "playbookID": "PaloAltoNetworksAIOps-Test"
+        },
+        {
+            "integrations": "MattermostV2",
+            "playbookID": "MattermostV2 - testplaybook"
         }
     ],
     "skipped_tests": {

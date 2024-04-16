@@ -59,6 +59,7 @@ GUID_REGEX = r'(\{){0,1}[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA
 ENTITLEMENT_REGEX = fr'{GUID_REGEX}@(({GUID_REGEX})|(?:[\d_]+))_*(\|\S+)?\b'
 ''' CLIENT CLASS '''
 
+
 class WebSocketClient:  # pragma: no cover
     def __init__(
         self,
@@ -171,6 +172,7 @@ class WebSocketClient:  # pragma: no cover
                 demisto.debug("MM: Websocket authentification OK")
                 return True
             demisto.error("MM: Websocket authentification failed")
+
 
 class HTTPClient(BaseClient):
     """Client class to interact with the MatterMost API
@@ -312,6 +314,7 @@ class HTTPClient(BaseClient):
         response = self._http_request(method='POST', url_suffix='/api/v4/channels/direct', data=[bot_id, user_id])
 
         return response
+
 
 CLIENT: HTTPClient
 

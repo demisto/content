@@ -3,7 +3,7 @@ from MattermostV2 import (get_team_command, list_channels_command, create_channe
                           remove_channel_member_command, list_users_command, close_channel_command, send_file_command,
                           get_channel_id_to_send_notif, event_handler, handle_text_received_from_mm, get_channel_id_from_context,
                           extract_entitlement, answer_question, handle_posts, create_incidents, get_war_room_url,
-                          mirror_investigation)
+                          mirror_investigation, send_notification)
 import pytest
 import demistomock as demisto
 from unittest.mock import patch
@@ -351,6 +351,23 @@ def test_mirror_investigation_create_new_channel(http_client, mocker):
     assert 'Investigation mirrored successfully' in result.readable_output
 
 
+def test_send_notification_command(http_client, mocker):
+    """
+    Given -
+        client
+    When -
+        send message to channel
+    Then -
+        Validate that
+    """
+    mocker.patch.object(http_client, "send_notification_request", return_value={'message_id': 'message_id'})
+    result = send_notification(http_client,
+                               user_id='user1',
+                               message='Hello',
+                               to='channel1',
+                               )
+
+    assert result.readable_output == 'Message sent to MatterMost successfully. Message ID is: message_id'
 ######### async tests #########
 
 

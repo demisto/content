@@ -24,19 +24,16 @@ def main():
 
     if demisto.get(demisto.args(), 'task'):
         entitlementString += '|' + demisto.get(demisto.args(), 'task')
-    message = '{} - Please reply `{} {}` or `{} {}`'.format(demisto.args()['message'],
-                                                            option1,
-                                                            entitlementString,
-                                                            option2,
-                                                            entitlementString)
-
+    message = '%s - Please reply `%s %s` or `%s %s`' % (demisto.args()['message'],
+                                                        option1,
+                                                        entitlementString,
+                                                        option2,
+                                                        entitlementString)
     demisto.results(demisto.executeCommand('send-notification', {
         'to': demisto.get(demisto.args(), 'user'),
         'message': message,
         'ignoreAddURL': 'true',
-        'using-brand': 'mattermost',
-        'mattermost_ask': True,
-        'entitlement': entitlementString
+        'using-brand': 'mattermost'
     }))
 
 
