@@ -29,7 +29,7 @@ configuration:
 - display: Connection Security
   additionalinfo: The connection security. The `SSL/TLS` first establishes a secure `SSL/TLS` connection and conducts SMTP over that connection, and STARTTLS starts with unencrypted SMTP and then switches to SSL/TLS to ensure security.
   name: tls
-  defaultvalue: "None"
+  defaultvalue: None
   type: 15
   options:
   - None
@@ -109,7 +109,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.10.14.92207
 tests:
 - Mail Sender (New) Test
 fromversion: 5.0.0

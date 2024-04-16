@@ -22,24 +22,24 @@ args:
 - name: searchThisWeek
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: Limit the search to the current week (true/false).
-  defaultValue: "true"
+  defaultValue: 'true'
 - name: stripSubject
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: Removes the prefix from the subject of reply and forward messages (e.g., FW:).
-  defaultValue: "true"
+  defaultValue: 'true'
 - name: escapeColons
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: Escape from colon (true/false).
-  defaultValue: "false"
+  defaultValue: 'false'
 outputs:
 - contextPath: EWS.Query
   description: The result query.
@@ -48,4 +48,4 @@ scripttarget: 0
 tests:
 - buildewsquery_test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.14.92207

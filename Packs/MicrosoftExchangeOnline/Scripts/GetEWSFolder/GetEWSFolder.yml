@@ -27,10 +27,10 @@ script: '-'
 subtype: python3
 tags:
 - ml
-timeout: 6µs
+timeout: "6\xB5s"
 type: python
 runas: DBotWeakRole
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.14.92207
 tests:
 - Get EWS Folder Test
 fromversion: 5.0.0

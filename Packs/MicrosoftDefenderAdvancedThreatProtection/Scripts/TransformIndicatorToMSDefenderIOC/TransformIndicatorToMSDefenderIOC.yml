@@ -66,7 +66,7 @@ outputs:
   description: Id the customer can submit in the request for custom correlation.
   type: String
 - contextPath: TransformIndicatorToMSDefenderIOC.Indicators.sourceType
-  description: 'User in case the Indicator created by a user. "AadApp" in case it submitted using automated application via the API.'
+  description: User in case the Indicator created by a user. "AadApp" in case it submitted using automated application via the API.
   type: String
 - contextPath: TransformIndicatorToMSDefenderIOC.Indicators.createdBySource
   description: The name of the user or application that submitted the indicator.
@@ -89,7 +89,7 @@ outputs:
 script: '-'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.14.92207
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
