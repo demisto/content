@@ -344,6 +344,7 @@ class Client(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
+
 def encode_file_path_if_needed(file_path: str) -> str:
     """Encode the file path if not already encoded.
 
@@ -365,7 +366,6 @@ def encode_file_path_if_needed(file_path: str) -> str:
         # The supplied file_path is already encoded, no need to encode it
         encoded_file_path = file_path_to_encode
     return f"{file_path_suffix}{encoded_file_path}"
-    
 
 
 def check_args_for_update(args: dict, optional_params: list) -> dict:
