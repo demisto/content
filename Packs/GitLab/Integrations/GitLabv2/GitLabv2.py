@@ -358,7 +358,10 @@ def encode_file_path_if_needed(file_path: str) -> str:
     # If starts with ./, then we don't want to encode the suffix, only the rest
     file_path_to_encode = file_path[2:] if file_path.startswith('./') else file_path
     encoded_file_path = ''
+
+    # To decode file_path_to_encode
     decoded_file_path = urllib.parse.unquote(file_path_to_encode)
+
     if decoded_file_path == file_path_to_encode:
         # The supplied file_path is not encoded, and we can go ahead and encode it
         encoded_file_path = urllib.parse.quote(file_path_to_encode, safe='')
