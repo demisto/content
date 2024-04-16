@@ -3,13 +3,13 @@ args:
   name: entry_id
   required: true
 - auto: PREDEFINED
-  defaultValue: "false"
+  defaultValue: 'false'
   description: Adds indicators to context.
   name: add_context
   predefined:
-  - "true"
-  - "false"
-- description: A comma-separated list of tags to add to indicators. 
+  - 'true'
+  - 'false'
+- description: A comma-separated list of tags to add to indicators.
   name: tags
 outputs:
 - contextPath: StixIndicators.type
@@ -30,7 +30,7 @@ tags:
 - ioc
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.14.92207
 tests:
 - No tests
 fromversion: 5.0.0
