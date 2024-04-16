@@ -11,6 +11,12 @@ TEST_INPUTS = [
 
     ('10:00:00', '12:00:00', '20:00:00', False, 'before begin date'),
     ('15:00:00', '02:00:00', '12:00:00', False, 'after end date'),
+
+    ('23:00:00', '22:00:00', '02:00:00', True, 'between midnight 1'),
+    ('01:00:00', '20:00:00', '05:00:00', True, 'between midnight 2'),
+
+    ('17:00:00', '22:00:00', '02:00:00', False, 'before midnight'),
+    ('06:00:00', '20:00:00', '05:00:00', False, 'after midnight')
 ]
 
 
