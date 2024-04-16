@@ -17,27 +17,18 @@ from pytest import raises, mark
 
 import CommonServerPython
 import demistomock as demisto
-from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
-                                flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
-                                remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid,
-                                get_demisto_version, \
-                                IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode,
-                                parse_date_range, \
-                                return_outputs, is_filename_valid, convert_dict_values_bytes_to_str, \
-                                argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch,
-                                FeedIndicatorType, \
-                                encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown,
-                                is_demisto_version_ge, \
-                                appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str,
-                                get_x_content_info_headers, \
-                                url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-                                remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common,
-                                send_events_to_xsiam, ExecutionMetrics, \
-                                response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
-                                is_xsoar_on_prem, \
-                                is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam, censor_request_logs,
-                                censor_request_logs, \
-                                SAFE_SLEEP_START_TIME, safe_sleep)
+from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
+    flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
+    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
+    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
+    return_outputs, is_filename_valid, convert_dict_values_bytes_to_str, \
+    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch, FeedIndicatorType, \
+    encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
+    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
+    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
+    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
+    response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
+    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam, censor_request_logs, censor_request_logs, safe_sleep
 
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.
@@ -9646,6 +9637,28 @@ def test_logger_write__censor_request_logs_has_been_called(mocker, request_log):
     ilog.set_buffering(False)
     ilog.write(request_log)
     assert mock_censor.call_count == 1
+
+
+def test_replace_send_preffix(mocker):
+    """
+    Given:
+        - A string that contains 'send: b"' in it.
+    When:
+        - The write function is called to add this string to the logs.
+    Then:
+        - Verify that the text 'send: b"' has been replaced with "send: b'" to standardize the log format for easier log handling.
+    """
+    mocker.patch.object(demisto, 'params', return_value={
+        'credentials': {'password': 'my_password'},
+    })
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('CommonServerPython.is_debug_mode', return_value=True)
+    mock_censor = mocker.patch('CommonServerPython.censor_request_logs')
+    mocker.patch('CommonServerPython.IntegrationLogger.build_curl')
+    ilog = IntegrationLogger()
+    ilog.set_buffering(False)
+    ilog.write('send: b"hello\n')
+    assert mock_censor.call_args[0][0] == "send: b\'hello"
 
 
 @freeze_time(datetime(2024, 4, 10, 10, 0, 10))
