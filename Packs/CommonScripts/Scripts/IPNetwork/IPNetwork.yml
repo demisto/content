@@ -6,16 +6,7 @@ commonfields:
   id: IPNetwork
   version: -1
 name: IPNetwork
-comment: |
-  Gather information regarding CIDR -
-      1. Broadcast_address
-      2. CIDR
-      3. First_address
-      4. Last address
-      5. Max prefix len
-      6. Num addresses
-      7. Private
-      8. Version
+comment: "Gather information regarding CIDR -\n    1. Broadcast_address\n    2. CIDR\n    3. First_address\n    4. Last address\n    5. Max prefix len\n    6. Num addresses\n    7. Private\n    8. Version\n"
 outputs:
 - contextPath: Network.CIDR
   description: Network CIDR.
@@ -47,6 +38,6 @@ tags:
 - ip
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.12.66339
+dockerimage: demisto/python3:3.10.14.92207
 runas: DBotWeakRole
 fromversion: 5.0.0
