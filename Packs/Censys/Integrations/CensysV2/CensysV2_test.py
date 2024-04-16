@@ -142,6 +142,14 @@ def test_censys_view_cert(requests_mock, client):
 
 
 def test_test_module_valid(requests_mock, client):
+    """
+    Given:
+        - A valid client
+    When:
+        - Testing the module
+    Then:
+        - Ensure the module test is successful and returns 'ok'
+    """
     from CensysV2 import test_module
     requests_mock.get(url='https://search.censys.io/api/v2/hosts/search?q=ip=8.8.8.8', status_code=200, json="{}")
 
@@ -150,6 +158,14 @@ def test_test_module_valid(requests_mock, client):
 
 
 def test_test_module_invalid(requests_mock, client):
+    """
+    Given:
+        - An invalid client with specific parameters
+    When:
+        - Testing the module
+    Then:
+        - Ensure a DemistoException is raised
+    """
     from CensysV2 import test_module
     requests_mock.get(url='https://search.censys.io/api/v2/hosts/search?q=ip=8.8.8.8', status_code=200, json="{}")
 
@@ -159,6 +175,14 @@ def test_test_module_invalid(requests_mock, client):
 
 
 def test_ip_command_multiple_ips(requests_mock, client):
+    """
+    Given:
+        - Multiple IP addresses in the arguments
+    When:
+        - Running the ip_command function
+    Then:
+        - Validate the responses for each IP, including errors and quota exceeded messages
+    """
     from CensysV2 import ip_command
     mock_response = util_load_json('test_data/ip_command_response.json')
     args = {'ip': ['8.8.8.8', '8.8.8.8', '0.0.0.0', '8.8.4.4']}
@@ -174,6 +198,14 @@ def test_ip_command_multiple_ips(requests_mock, client):
 
 
 def test_ip_command_unauthorized_error(requests_mock, client):
+    """
+    Given:
+        - An unauthorized request
+    When:
+        - Running the ip_command function
+    Then:
+        - Ensure a DemistoException is raised
+    """
     from CensysV2 import ip_command
     args = {'ip': ['8.8.8.8']}
     requests_mock.get("/api/v2/hosts/search?q=ip=8.8.8.8", status_code=401, json={})
@@ -182,6 +214,14 @@ def test_ip_command_unauthorized_error(requests_mock, client):
 
 
 def test_ip_command_malicious_ip(requests_mock, client):
+    """
+    Given:
+        - An IP address flagged as malicious
+    When:
+        - Running the ip_command function
+    Then:
+        - Ensure the correct DBot score is assigned
+    """
     from CensysV2 import ip_command
     mock_response = util_load_json('test_data/ip_command_response.json')
     args = {"ip": ['8.8.8.8']}
@@ -192,6 +232,14 @@ def test_ip_command_malicious_ip(requests_mock, client):
 
 
 def test_domain_command_multiple_domains(requests_mock, client):
+    """
+    Given:
+        - Multiple domain names in the arguments
+    When:
+        - Running the domain_command function
+    Then:
+        - Validate the responses for each domain, including errors
+    """
     from CensysV2 import domain_command
     mock_response = util_load_json('test_data/domain_command_response.json')
     args = {'domain': ['amazon.com', 'amazon.com', 'example.com']}
