@@ -8,7 +8,7 @@ from collections.abc import Callable
 
 ''' GLOBALS/PARAMS '''
 PARAMS = demisto.params()
-
+a= 2
 API_KEY = AutoFocusKeyRetriever(PARAMS.get('credentials', {}).get('password') or PARAMS.get('api_key')).key
 
 # Remove trailing slash to prevent wrong URL path to service
