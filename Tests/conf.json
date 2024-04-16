@@ -425,6 +425,7 @@
             ],
             "playbookID": "Mail-Listener Test Playbook",
             "fromversion": "5.0.0",
+            "memory_threshold": 130,
             "instance_names": [
                 "Mail_Sender_(New)_STARTTLS"
             ]
@@ -3597,7 +3598,8 @@
         },
         {
             "integrations": "MongoDB",
-            "playbookID": "MongoDB - Test"
+            "playbookID": "MongoDB - Test",
+            "memory_threshold": 130
         },
         {
             "integrations": "DNSDB_v2",
