@@ -48,6 +48,7 @@ TOKEN_OAUTH2 = ""
 DEFAULT_POLICY_TYPE = 'blockedsenders'
 LOG(f"command is {demisto.command()}")
 PAGE_SIZE_MAX = 2000
+DEFAULT_PAGE_SIZE = 50
 
 # default query xml template for test module
 default_query_xml = "<?xml version=\"1.0\"?> \n\
@@ -148,12 +149,21 @@ def request_with_pagination_api2(api_endpoint: str, data: list, limit: int, page
     Raises:
         Exception: If the API returns an error response.
     """
+
     if page and page_size:
         limit = page * page_size
-    elif not page and not page_size:  # only limit
+    elif limit and not page and not page_size:
         page_size = PAGE_SIZE_MAX
-    elif page and not page_size or page_size and not page:
-        raise ValueError('Either both page and page_size must be provided, or neither should be provided.')
+    elif limit and (page and not page_size or page_size and not page):
+        raise ValueError('You can only provide either both page and page_size or limit only.')
+    elif page and not limit and not page_size:
+        page_size = DEFAULT_PAGE_SIZE
+        limit = page_size * page
+    elif page_size and not limit and not page:
+        raise ValueError('You can only provide either both page and page_size or limit only.')
+    elif not limit and not page and not page_size:
+        limit = DEFAULT_PAGE_SIZE
+        page_size = PAGE_SIZE_MAX
 
     payload = {
         'meta': {
@@ -163,7 +173,6 @@ def request_with_pagination_api2(api_endpoint: str, data: list, limit: int, page
         },
         'data': data
     }
-
     response = http_request('POST', api_endpoint, payload, headers=headers)
 
     len_of_results = 0
@@ -172,7 +181,8 @@ def request_with_pagination_api2(api_endpoint: str, data: list, limit: int, page
         if response.get('fail'):
             raise Exception(json.dumps(response.get('fail')[0].get('errors')))
 
-        response_data = response.get('data')[0]['logs']
+        # response_data = response.get('data')[0]['logs'] # for mimecast-get-search-logs
+        response_data = response.get('data')
         for entry in response_data:
             if not limit or len_of_results < limit:
                 len_of_results += 1
@@ -3205,6 +3215,34 @@ def get_search_logs_command(args: dict) -> CommandResults:
     )
 
 
+def mimecast_get_view_logs_command(args: dict) -> CommandResults:
+    query = args.get('query', '')
+    start = arg_to_datetime(args.get('start')).isoformat() if args.get('start') else None  # type: ignore
+    end = arg_to_datetime(args.get('end')).isoformat() if args.get('end') else None  # type: ignore
+
+    if start and end and start > end:
+        raise ValueError('Start date cannot be greater than end date.')
+
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get('limit'))
+
+    data = [{}]
+    if query:
+        data[0]['query'] = query
+    if start:
+        data[0]['start'] = start
+    if end:
+        data[0]['end'] = end
+
+    response = request_with_pagination_api2('/api/archive/get-view-logs', data, limit, page, page_size)  # type: ignore
+
+    return CommandResults(
+        outputs_prefix='Mimecast.ViewLog',
+        outputs=response
+    )
+
+
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     # Check if token needs to be refresh, if it does and relevant params are set, refresh.
@@ -3302,6 +3340,8 @@ def main():
             return_results(get_archive_search_logs_command(args))
         elif command == 'mimecast-get-search-logs':
             return_results(get_search_logs_command(args))
+        elif command == 'mimecast-get-view-logs':
+            return_results(mimecast_get_view_logs_command(args))
 
     except Exception as e:
         return_error(e)

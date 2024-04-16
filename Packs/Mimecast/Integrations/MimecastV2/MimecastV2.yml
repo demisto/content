@@ -2103,16 +2103,37 @@ script:
       description: The latest search log to return in the following format 2017-09-16T14:49:18+0000. Defaults to the end of the current day.
       type: String
     - name: page
-      description: aa
+      description: Page number for pagination.
       type: Number
     - name: page_size
-      description: aa
+      description: Number of items per page for pagination.
       type: Number
-      # defaultValue: 50
     - name: limit
-      description: aa
+      description: The maximum number of items to return.
       type: Number
-      defaultValue: 50      
+      defaultValue: 50
+  - name: mimecast-get-view-logs
+    description: Retrieves the email view logs.
+    arguments:
+    - name: query
+      description: Text to search within the logs, which can contain email addresses.
+      type: String
+    - name: start
+      description: The earliest search log to return in the following format 2017-09-16T14:49:18+0000. Defaults to the start of the current day.
+      type: String
+    - name: end
+      description: The latest search log to return in the following format 2017-09-16T14:49:18+0000. Defaults to the end of the current day.
+      type: String
+    - name: page
+      description: Page number for pagination.
+      type: Number
+    - name: page_size
+      description: Number of items per page for pagination.
+      type: Number
+    - name: limit
+      description: The maximum number of items to return.
+      type: Number
+      # defaultValue: 50  
   isfetch: true
   runonce: false
   script: '-'
