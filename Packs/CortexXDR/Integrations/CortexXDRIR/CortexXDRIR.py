@@ -1026,7 +1026,7 @@ def update_related_alerts(client: Client, args: dict):
         related_alerts_ids_array = [str(alert['alert_id']) for alert in alerts_array if 'alert_id' in alert]
         demisto.debug(f"{related_alerts_ids_array=}")
         args_for_command = {'alert_ids': related_alerts_ids_array, 'status': new_status, 'comment': comment}
-        return_results(update_alerts_in_xdr_command(client, args_for_command))
+        update_alerts_in_xdr_command(client, args_for_command)
 
 
 def fetch_incidents(client, first_fetch_time, integration_instance, last_run: dict = None, max_fetch: int = 10,
