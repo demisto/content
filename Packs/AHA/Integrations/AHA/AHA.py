@@ -11,6 +11,7 @@ requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # py
 
 ''' CONSTANTS '''
 REPLACE = 'replace'
+a=6
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 URL_SUFFIX_PATTERN = f'/products/{REPLACE}/'
 EDIT_FIELDS = ['id', 'reference_num', 'name', 'description', 'workflow_status', 'created_at']
