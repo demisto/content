@@ -283,7 +283,7 @@ def get_user_from_ui_pr(pr):
     """
     """
     body = pr.body
-    user_in_list = re.findall("Contributor\\s+(\\S+)", body)
+    user_in_list = re.findall("Contributor\s@(\S+)", body)
     user = str(user_in_list[0])
     return user
 
