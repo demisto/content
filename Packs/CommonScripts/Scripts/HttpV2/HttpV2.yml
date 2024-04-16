@@ -13,32 +13,43 @@ args:
   - DELETE
   - HEAD
   required: true
-- description: |-
-    Specify a hash of headers to send with the request.
+- description: 'Specify a hash of headers to send with the request.
+
     Headers can be of string type but need to be formatted in the following ways:
-    `{"key1": "value1", "key2": "value2"}` or `"key1": "value1", "key2": "value2"`
+
+    `{"key1": "value1", "key2": "value2"}` or `"key1": "value1", "key2": "value2"`'
   name: headers
   type: keyValue
 - description: Specify the body of the request.
   name: body
   type: textArea
-- description: |-
-    Specify the Content-Type header for the request.
+- description: 'Specify the Content-Type header for the request.
+
     Shorthands are provided for the following common content types:
+
     json (application/json)
+
     xml (text/xml)
+
     form (application/x-www-form-urlencoded)
+
     data (multipart/form-data)
-    If you choose to define a different type, please include the full type name, e.g: application/pdf
+
+    If you choose to define a different type, please include the full type name, e.g: application/pdf'
   name: request_content_type
-- description: |-
-    Specify the Accept header for the request - the response content type.
+- description: 'Specify the Accept header for the request - the response content type.
+
     Shorthands are provided for the following common content types:
+
     json (application/json)
+
     xml (text/xml)
+
     form (application/x-www-form-urlencoded)
+
     data (multipart/form-data)
-    If you choose to define a different type, please include the full type name, e.g: application/pdf
+
+    If you choose to define a different type, please include the full type name, e.g: application/pdf'
   name: response_content_type
 - auto: PREDEFINED
   defaultValue: raw_response
@@ -74,12 +85,12 @@ args:
   description: Specify the timeout between each retry in seconds. Defaults to 5.
   name: timeout_between_retries
 - auto: PREDEFINED
-  defaultValue: no
+  defaultValue: false
   description: Save the response in a file.
   name: save_as_file
   predefined:
-  - yes
-  - no
+  - true
+  - false
 - defaultValue: http-file
   description: filename
   name: filename
@@ -127,7 +138,7 @@ tags:
 - basescript
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.14.92207
 tests:
 - HttpV2-test
 fromversion: 6.5.0

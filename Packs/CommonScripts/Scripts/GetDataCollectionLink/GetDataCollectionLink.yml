@@ -6,17 +6,17 @@ args:
   isArray: true
   name: users
   required: true
-comment: |-
-  Generates the URL for a Data Collection Task into Context.  Can be used to get the url for tasks send via Email, Slack, or even if you select "By Task Only".
+comment: 'Generates the URL for a Data Collection Task into Context.  Can be used to get the url for tasks send via Email, Slack, or even if you select "By Task Only".
 
-  To generate links for specific users, add an array of users in the users argument.
+
+  To generate links for specific users, add an array of users in the users argument.'
 commonfields:
   id: GetDataCollectionLink
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-dockerimage: demisto/python3:3.10.13.83255
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.14.92207
 enabled: true
 name: GetDataCollectionLink
 outputs:

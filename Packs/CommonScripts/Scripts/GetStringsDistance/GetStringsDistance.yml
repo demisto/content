@@ -21,12 +21,12 @@ args:
   description: The input string(s) to compare.
 - name: distance
   description: Distance that is considered close.
-  defaultValue: "3"
+  defaultValue: '3'
 outputs:
 - contextPath: LevenshteinDistance
   description: The closeness of the sender domain to our configured domains.
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.14.92207
 tests:
 - GetStringsDistance - Test

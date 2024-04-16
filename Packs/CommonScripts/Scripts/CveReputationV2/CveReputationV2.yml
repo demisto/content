@@ -19,8 +19,8 @@ scripttarget: 0
 dependson:
   must:
   - cve
-timeout: 2.4µs
-dockerimage: demisto/python3:3.10.13.86272
+timeout: "2.4\xB5s"
+dockerimage: demisto/python3:3.10.14.92207
 runonce: false
 fromversion: 6.5.0
 tests:
