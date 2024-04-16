@@ -78,20 +78,20 @@ class Client(BaseClient):
 
 
 def test_module(client: Client, params: dict[str, Any]) -> str:
+    # Check if the user has selected malicious or suspicious labels without premium access
     if not params.get('premium_access') and (params.get('malicious_labels') or params.get('suspicious_labels')):
         raise DemistoException(
             "The reputation labels feature only works with Censys premium access."
             "if you have premium access select the 'Labels premium feature available' option "
-            "to utilize this functionality")
-    
-    fields = None
-    if params.get('premium_access'):
-        fields = ['labels']
+            "to utilize this functionality, or deselect labels")
+        
+    fields = ['labels'] if params.get('premium_access') else None
 
     try:
         client.ip_reputation_request('8.8.8.8', fields)
         return 'ok'
     except DemistoException as e:
+        # Handle permission error for non-premium users attempting to access premium features
         if e.res.status_code == 403 and 'specific fields' in e.message:
             raise DemistoException(
                 "Your user does not have permission for premium features. "
@@ -166,7 +166,7 @@ def censys_view_command(client: Client, args: dict[str, Any]) -> CommandResults:
             readable_output=human_readable,
             outputs_prefix='Censys.View',
             outputs_key_field='fingerprint_sha256',
-            outputs=res,
+            outputs=result,
             raw_response=res
         )
 
@@ -355,39 +355,27 @@ def domain_command(client: Client, args: dict, params: dict):
                 error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {response}"
                 raise ValueError(error_msg)
             
-            indicators = []
-            ip_content = []
-            for hit in hits:
-                dbot_score = Common.DBotScore(
-                    indicator=hit.get('ip'),
-                    indicator_type=DBotScoreType.IP,
-                    integration_name="Censys",
-                    score=get_dbot_score(params, hit.get('labels', [])),
-                    reliability=params.get('reliability')
-                )
-
-                content = {
-                    'domain': domain,
-                    # 'ip': hit.get('ip'),
-                    'description': hit.get('autonomous_system', {}).get('description'),
-                    'updated_date': hit.get('last_updated_at'),
-                    # 'dns': hit.get('dns', {}).get('reverse_dns', {}).get('names'),
-                    'geo_country': hit.get('location', {}).get('country'),
-                    'port': ', '.join([str(service.get('port')) for service in hit.get('services', [])]),
-                }
-                indicator = Common.Domain(dbot_score=dbot_score, **content)
-                ip_content.append(content)
-                indicators.append(indicator)
+            relationships = [EntityRelationship(
+                name=EntityRelationship.Relationships.RELATED_TO,
+                entity_a=domain,
+                entity_a_type='Domain',
+                entity_b=hit.get('ip'),
+                entity_b_type='IP',
+                reverse_name=EntityRelationship.Relationships.RELATED_TO,
+                brand = 'Censys') for hit in hits]
+            
+            dbot_score = Common.DBotScore(indicator=domain, indicator_type=DBotScoreType.DOMAIN, score=Common.DBotScore.NONE)
+            indicator = Common.Domain(domain=domain, dbot_score=dbot_score, relationships=relationships)
 
             results.append(CommandResults(
                 outputs_prefix='Censys.Domain',
                 outputs_key_field='Domain',
                 readable_output=tableToMarkdown(
                     f'Censys results for Domain: {domain}',
-                    ip_content, headerTransform=string_to_table_header, removeNull=True),
+                    {'domain': domain}, headerTransform=string_to_table_header, removeNull=True),
                 outputs=hits,
                 raw_response=response,
-                indicators=indicators,
+                indicator=indicator,
             ))
 
             execution_metrics.success += 1
@@ -420,6 +408,7 @@ def handle_exceptions(e: Exception, results: list[CommandResults], execution_met
         return True
     
     if status_code == 429:
+        #Handle rate limits error
         execution_metrics.general_error += 1
         results.append(CommandResults(readable_output=f"Too many requests. Error: {message}"))
         return True
@@ -429,7 +418,7 @@ def handle_exceptions(e: Exception, results: list[CommandResults], execution_met
         raise DemistoException(
             "Your user does not have permission for premium features. "
             "Please ensure that you deselect the 'Labels premium feature available' option "
-            "for non-premium access.")
+            f"for non-premium access. Error: {message}")
     
     elif status_code == 401 or status_code == 403 :
         # Handle unauthorized access error

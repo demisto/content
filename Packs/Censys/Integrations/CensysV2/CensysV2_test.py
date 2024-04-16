@@ -138,7 +138,7 @@ def test_censys_view_cert(requests_mock, client):
                       '0f19dc01e643ca0c3127d8f48be64cf3302f661234', json=mock_response)
     response = censys_view_command(client, args)
     assert '### Information for certificate' in response.readable_output
-    assert response.outputs == mock_response
+    assert response.outputs == mock_response.get('result')
 
 
 def test_test_module_valid(requests_mock, client):
@@ -174,7 +174,7 @@ def test_ip_command_multiple_ips(requests_mock, client):
     requests_mock.get("/api/v2/hosts/search?q=ip=8.8.8.8", json=mock_response)
     requests_mock.get("/api/v2/hosts/search?q=ip=8.8.8.8", json=mock_response)
     requests_mock.get("/api/v2/hosts/search?q=ip=0.0.0.0", status_code=404, json={})
-    requests_mock.get("/api/v2/hosts/search?q=ip=8.8.4.4", status_code=403, json={'quota':'true'})
+    requests_mock.get("/api/v2/hosts/search?q=ip=8.8.4.4", status_code=403, json={'message':'quota'})
     response = ip_command(client, args, {})
     assert response[0].outputs == mock_response.get('result', {}).get('hits')[0]
     assert response[1].outputs == mock_response.get('result', {}).get('hits')[0]
