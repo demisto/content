@@ -562,20 +562,71 @@ script:
       type: textArea
     description: Return all related IPs as relationships
     outputs:
-    - contextPath: Censys.Domain.domain
-      description: The domain name.
+    - contextPath: Censys.Domain.location.postal_code
+      description: The postal code of the location associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.location.province
+      description: The province name of the location associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.location.country_code
+      description: The country code of the location associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.location.timezone
+      description: The timezone of the location associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.location.country
+      description: The country name of the location associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.location.coordinates.longitude
+      description: The longitude coordinate of the location associated with the domain.
+      type: Number
+    - contextPath: Censys.Domain.location.coordinates.latitude
+      description: The latitude coordinate of the location associated with the domain.
+      type: Number
+    - contextPath: Censys.Domain.location.continent
+      description: The continent name of the location associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.location.city
+      description: The city name of the location associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.autonomous_system.country_code
+      description: The country code of the autonomous system associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.autonomous_system.asn
+      description: The Autonomous System Number (ASN) associated with the domain.
+      type: Number
+    - contextPath: Censys.Domain.autonomous_system.name
+      description: The name of the autonomous system associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.autonomous_system.bgp_prefix
+      description: The BGP prefix of the autonomous system associated with the domain.
       type: String
     - contextPath: Censys.Domain.autonomous_system.description
-      description: A description associated with the autonomous system of the domain.
+      description: The description of the autonomous system associated with the domain.
       type: String
-    - contextPath: Censys.Domain.last_updated_at
-      description: The date when the information associated with the domain was last updated.
-      type: Date
-    - contextPath: Censys.Domain.location.country
-      description: The country associated with the domain's geographic location.
+    - contextPath: Censys.Domain.services.transport_protocol
+      description: The transport protocol used by the service associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.services.extended_service_name
+      description: The extended name of the service associated with the domain.
       type: String
     - contextPath: Censys.Domain.services.port
-      description: The port numbers associated with the domain.
+      description: The port number associated with the service associated with the domain.
+      type: Number
+    - contextPath: Censys.Domain.services.service_name
+      description: The name of the service associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.services.certificate
+      description: The SSL/TLS certificate associated with the service associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.last_updated_at
+      description: The date and time when the information about the domain was last updated.
+      type: Date
+    - contextPath: Censys.Domain.ip
+      description: The IP address associated with the domain.
+      type: String
+    - contextPath: Censys.Domain.dns.reverse_dns.names
+      description: The reverse DNS names associated with the domain.
       type: String
   dockerimage: demisto/python3:3.10.13.84405
   runonce: false

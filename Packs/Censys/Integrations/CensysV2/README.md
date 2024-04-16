@@ -686,7 +686,31 @@ Runs reputation on Domains.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Censys.Domain.location.postal_code | String | The postal code of the location associated with the domain. |
+| Censys.Domain.location.province | String | The province name of the location associated with the domain. |
+| Censys.Domain.location.country_code | String | The country code of the location associated with the domain. |
+| Censys.Domain.location.timezone | String | The timezone of the location associated with the domain. |
+| Censys.Domain.location.country | String | The country name of the location associated with the domain. |
+| Censys.Domain.location.coordinates.longitude | Number | The longitude coordinate of the location associated with the domain. |
+| Censys.Domain.location.coordinates.latitude | Number | The latitude coordinate of the location associated with the domain. |
+| Censys.Domain.location.continent | String | The continent name of the location associated with the domain. |
+| Censys.Domain.location.city | String | The city name of the location associated with the domain. |
+| Censys.Domain.autonomous_system.country_code | String | The country code of the autonomous system associated with the domain. |
+| Censys.Domain.autonomous_system.asn | Number | The Autonomous System Number (ASN) associated with the domain. |
+| Censys.Domain.autonomous_system.name | String | The name of the autonomous system associated with the domain. |
+| Censys.Domain.autonomous_system.bgp_prefix | String | The BGP prefix of the autonomous system associated with the domain. |
+| Censys.Domain.autonomous_system.description | String | The description of the autonomous system associated with the domain. |
+| Censys.Domain.services.transport_protocol | String | The transport protocol used by the service associated with the domain. |
+| Censys.Domain.services.extended_service_name | String | The extended name of the service associated with the domain. |
+| Censys.Domain.services.port | Number | The port number associated with the service associated with the domain. |
+| Censys.Domain.services.service_name | String | The name of the service associated with the domain. |
+| Censys.Domain.services.certificate | String | The SSL/TLS certificate associated with the service associated with the domain. |
+| Censys.Domain.last_updated_at | Date | The date and time when the information about the domain was last updated. |
+| Censys.Domain.ip | String | The IP address associated with the domain. |
+| Censys.Domain.dns.reverse_dns.names | String | The reverse DNS names associated with the domain. |
+
 
 #### Command example
 
@@ -838,6 +862,6 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-| **Description** | **Domain** | **Geo Country** | **Port** | **Reputation** | **Updated Date** |
-| --- | --- | --- | --- | --- | --- |
-| AMAZON-02 | amazon.com | United States | 80, 443 | 0 | 443	2024-04-14T20:51:03.617Z |
+| **Domain** |
+| --- |
+| amazon.com |
