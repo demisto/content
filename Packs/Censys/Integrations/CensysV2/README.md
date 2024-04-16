@@ -16,6 +16,12 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | Secret | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
+    | Labels premium feature available | False |
+    | IP and Domain Malicious labels | False |
+    | IP and Domain Suspicious labels | False |
+    | Malicious labels threshold | False |
+    | Suspicious labels threshold | False |
+
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -445,7 +451,7 @@ Returns detailed information for an IP address or SHA256 within the specified in
 #### Human Readable Output
 
 >### Information for IP 8.8.8.8
->|ASN|Bgp Prefix|Last Updated|Name|Service|
+>|ASN|Routing|Last Updated|Network|Protocols|
 >|---|---|---|---|---|
 >| 15169 | 8.8.8.0/24 | 2022-08-30T06:39:12.356Z | GOOGLE | {'Port': 53, 'Service Name': 'DNS'},<br/>{'Port': 443, 'Service Name': 'HTTP'},<br/>{'Port': 853, 'Service Name': 'UNKNOWN'} |
 
@@ -533,7 +539,7 @@ Returns previews of hosts matching a specified search query, or a list of certif
 #### Human Readable Output
 
 >### Search results for query "parsed.issuer.common_name: "Let's Encrypt""
->|Issuer|Issuer dn|Names|SHA256|Subject dn|Validity|
+>|Issuer|Issuer DN|Names|SHA256|Subject DN|Validity|
 >|---|---|---|---|---|---|
 >| organization: Let's Encrypt | C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3 | *.45g4rg43g4fr3434g.gb.net,<br/>45g4rg43g4fr3434g.gb.net | f3ade17dffcadd9532aeb2514f10d66e22941393725aa65366ac286df9b442ec | CN=45g4rg43g4fr3434g.gb.net | start: 2020-10-12T14:46:11Z<br/>end: 2021-01-10T14:46:11Z |
 
@@ -557,9 +563,347 @@ The diff endpoint generates a JSONPatch (RFC6902) formatted patch by comparing a
 | --- | --- | --- |
 | ip | The IP Address of the original host. Referred to as Host A. | Required | 
 | ip_b | The IP Address of the other host. If not set, defaults to the host provided in the path. Referred to as Host B. | Optional | 
-| at_time | The point in time used as the basis for Host A. Requires historical API access. Nanosecond precision is allowed. Uses RFC3339 Timestamp. | Optional | 
-| at_time_b | Requires historical API access. Nanosecond precision is allowed. Uses RFC3339 Timestamp. | Optional | 
+| at_time | The point in time used as the basis for Host A. Requires historical API access. Nanosecond precision is allowed. Uses RFC3339 Timestamp. (up do 7 days in non-premium Censys access). | Optional | 
+| at_time_b | Requires historical API access. Nanosecond precision is allowed. (up do 7 days in non-premium Censys access). Uses RFC3339 Timestamp. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Censys.HostHistory.a | Unknown  | Placeholder for data object 'a'. |
+| Censys.HostHistory.b.ip | String | The IP address associated with the host history object 'b'. |
+| Censys.HostHistory.b.last_updated_at | Date | The date and time when the host history object 'b' was last updated. |
+| Censys.HostHistory.patch.op | String | The operation performed in the patch object. |
+| Censys.HostHistory.patch.path | String | The path within the host history object where the patch operation was applied. |
+| Censys.HostHistory.patch.value | String | The value associated with the patch operation. |
+| Censys.HostHistory.patch.value.record_type | String | The type of DNS record associated with the patch value. |
+| Censys.HostHistory.patch.value.resolved_at | Date | The date and time when the DNS record associated with the patch value was resolved. |
+
+#### Command example
+
+```!cen-host-history ip=8.8.8.8 ip_b=8.8.4.4 at_time=2024-04-02T17:49:05Z at_time_b=2024-07-02T17:49:05Z```
+
+#### Context Example
+
+```json
+{
+    "Censys": {
+        "HostHistory": {
+            "a": {
+                "ip": "8.8.8.8",
+                "last_updated_at": "2024-04-02T15:24:08.194Z"
+            },
+            "b": {
+                "ip": "8.8.4.4",
+                "last_updated_at": "2024-04-14T06:05:42.573Z"
+            },
+            "patch": [
+                {
+                    "op": "replace",
+                    "path": "/autonomous_system_updated_at",
+                    "value": "2024-04-01T13:23:53.983689279Z"
+                },
+                {
+                    "op": "replace",
+                    "path": "/last_updated_at",
+                    "value": "2024-04-14T06:05:42.573Z"
+                },
+            ]
+        }
+    }
+}
+```
+
+
+### ip
+
+***
+Runs reputation on IPs.
+
+#### Base Command
+
+`ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | IP address or a list of IP addresses to assess reputation. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Censys.IP.services.port | Number   | The port number associated with the service running on the IP. |
+| Censys.IP.services.transport_protocol | String | The transport protocol used by the service running on the IP. |
+| Censys.IP.services.extended_service_name | String   | The extended name of the service running on the IP. |
+| Censys.IP.services.service_name | String | The name of the service running on the IP. |
+| Censys.IP.services.certificate | String   | The SSL/TLS certificate associated with the service running on the IP. |
+| Censys.IP.labels | String | Labels associated with the IP address (with premium access only). |
+| Censys.IP.dns.reverse_dns.names | String | Reverse DNS names associated with the IP address. |
+| Censys.IP.autonomous_system.country_code | String | The country code of the autonomous system associated with the IP address. |
+| Censys.IP.autonomous_system.description | String | Description of the autonomous system associated with the IP address. |
+| Censys.IP.autonomous_system.name | String | Name of the autonomous system associated with the IP address. |
+| Censys.IP.autonomous_system.bgp_prefix | String | BGP prefix of the autonomous system associated with the IP address. |
+| Censys.IP.autonomous_system.asn | Number | Autonomous System Number (ASN) of the autonomous system associated with the IP address. |
+| Censys.IP.ip | String | The IP address. |
+| Censys.IP.location.country | String | Country name of the location associated with the IP address. |
+| Censys.IP.location.timezone | String | Timezone of the location associated with the IP address. |
+| Censys.IP.location.province | String | Province name of the location associated with the IP address. |
+| Censys.IP.location.coordinates.latitude | Number | Latitude coordinate of the location associated with the IP address. |
+| Censys.IP.location.coordinates.longitude | Number | Longitude coordinate of the location associated with the IP address. |
+| Censys.IP.location.continent | String | Continent name of the location associated with the IP address. |
+| Censys.IP.location.postal_code | String | Postal code of the location associated with the IP address. |
+| Censys.IP.location.city | String | City name of the location associated with the IP address. |
+| Censys.IP.location.country_code | String   | Country code of the location associated with the IP address. |
+| Censys.IP.last_updated_at | Date | The date and time when the information about the IP address was last updated. |
+
+#### Command example
+
+```!ip ip=8.8.8.8,8.8.4.4```
+
+#### Context Example
+
+```json
+{
+    "services": [
+        {
+            "port": 53,
+            "transport_protocol": "UDP",
+            "extended_service_name": "DNS",
+            "service_name": "DNS"
+        },
+        {
+            "certificate": "5a7763efee07b08b18a4af2796bfaac46641a2f15c98e88c3d79fa9a06adfc87",
+            "extended_service_name": "HTTPS",
+            "port": 443,
+            "transport_protocol": "TCP",
+            "service_name": "HTTP"
+        },
+        {
+            "service_name": "UNKNOWN",
+            "transport_protocol": "QUIC",
+            "extended_service_name": "UNKNOWN",
+            "port": 443
+        },
+        {
+            "transport_protocol": "TCP",
+            "service_name": "UNKNOWN",
+            "port": 853,
+            "certificate": "5a7763efee07b08b18a4af2796bfaac46641a2f15c98e88c3d79fa9a06adfc87",
+            "extended_service_name": "UNKNOWN"
+        }
+    ],
+    "labels": ["database","email","file-sharing","iot","login-page"],
+    "dns": {
+        "reverse_dns": {
+            "names": [
+                "dns.google"
+            ]
+        }
+    },
+    "autonomous_system": {
+        "country_code": "US",
+        "description": "GOOGLE",
+        "name": "GOOGLE",
+        "bgp_prefix": "8.8.8.0/24",
+        "asn": 15169
+    },
+    "ip": "8.8.8.8",
+    "location": {
+        "country": "United States",
+        "timezone": "America/Los_Angeles",
+        "province": "California",
+        "coordinates": {
+            "latitude": 37.4056,
+            "longitude": -122.0775
+        },
+        "continent": "North America",
+        "postal_code": "94043",
+        "city": "Mountain View",
+        "country_code": "US"
+    },
+    "last_updated_at": "2024-04-07T02:16:23.015Z"
+}
+```
+
+#### Human Readable Output
+
+>### censys results for IP: 8.8.8.8
+>| **Asn** | **Geo Country** | **Geo Latitude** | **Geo Longitude** | **Ip** | **Port** | **Reputation** | **Updated** |
+>| --- | --- | --- | --- | --- | --- | --- |  --- |
+>| 15169 | United States | 37.4056 | -122.0775 | 8.8.8.8 | 53, 443, 443, 853 | 0 | 2024-04-14T08:03:28.159Z |
+
+
+### domain
+
+***
+Runs reputation on Domains.
+
+#### Base Command
+
+`domain`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Domain Address or a list of Domains to assess reputation. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+```!domain domain=amazon.com,facebook.com```
+
+#### Context Example
+
+```json
+{
+    "code": 200,
+    "status": "OK",
+    "result": {
+      "query": "dns.names=amazon.com",
+      "total": 3,
+      "duration": 239,
+      "hits": [
+        {
+          "location": {
+            "province": "Virginia",
+            "country": "United States",
+            "coordinates": {
+              "longitude": -77.48749,
+              "latitude": 39.04372
+            },
+            "timezone": "America/New_York",
+            "country_code": "US",
+            "continent": "North America",
+            "postal_code": "20147",
+            "city": "Ashburn"
+          },
+          "autonomous_system": {
+            "description": "AMAZON-02",
+            "bgp_prefix": "54.239.16.0/20",
+            "name": "AMAZON-02",
+            "country_code": "US",
+            "asn": 16509
+          },
+          "services": [
+            {
+              "port": 80,
+              "transport_protocol": "TCP",
+              "service_name": "HTTP",
+              "extended_service_name": "HTTP"
+            },
+            {
+              "transport_protocol": "TCP",
+              "certificate": "bb638b53bbde53dff9e8f707b9be32751e84fd865910636281902b204b062a50",
+              "extended_service_name": "HTTPS",
+              "service_name": "HTTP",
+              "port": 443
+            }
+          ],
+          "last_updated_at": "2024-04-06T16:57:13.170Z",
+          "ip": "54.239.28.85"
+        },
+        {
+          "ip": "205.251.242.103",
+          "services": [
+            {
+              "port": 80,
+              "transport_protocol": "TCP",
+              "service_name": "HTTP",
+              "extended_service_name": "HTTP"
+            },
+            {
+              "port": 443,
+              "transport_protocol": "TCP",
+              "extended_service_name": "HTTPS",
+              "service_name": "HTTP",
+              "certificate": "bb638b53bbde53dff9e8f707b9be32751e84fd865910636281902b204b062a50"
+            }
+          ],
+          "dns": {
+            "reverse_dns": {
+              "names": [
+                "s3-console-us-standard.console.aws.amazon.com"
+              ]
+            }
+          },
+          "location": {
+            "province": "Virginia",
+            "postal_code": "20147",
+            "country": "United States",
+            "timezone": "America/New_York",
+            "continent": "North America",
+            "city": "Ashburn",
+            "country_code": "US",
+            "coordinates": {
+              "latitude": 39.04372,
+              "longitude": -77.48749
+            }
+          },
+          "autonomous_system": {
+            "country_code": "US",
+            "bgp_prefix": "205.251.240.0/22",
+            "asn": 16509,
+            "description": "AMAZON-02",
+            "name": "AMAZON-02"
+          },
+          "last_updated_at": "2024-04-06T16:57:13.171Z"
+        },
+        {
+          "location": {
+            "postal_code": "20147",
+            "province": "Virginia",
+            "country_code": "US",
+            "timezone": "America/New_York",
+            "country": "United States",
+            "coordinates": {
+              "longitude": -77.48749,
+              "latitude": 39.04372
+            },
+            "continent": "North America",
+            "city": "Ashburn"
+          },
+          "last_updated_at": "2024-04-06T16:57:13.170Z",
+          "autonomous_system": {
+            "country_code": "US",
+            "asn": 16509,
+            "name": "AMAZON-02",
+            "bgp_prefix": "52.94.224.0/20",
+            "description": "AMAZON-02"
+          },
+          "services": [
+            {
+              "transport_protocol": "TCP",
+              "extended_service_name": "HTTP",
+              "port": 80,
+              "service_name": "HTTP"
+            },
+            {
+              "extended_service_name": "HTTPS",
+              "transport_protocol": "TCP",
+              "certificate": "bb638b53bbde53dff9e8f707b9be32751e84fd865910636281902b204b062a50",
+              "service_name": "HTTP",
+              "port": 443
+            }
+          ],
+          "ip": "52.94.236.248"
+        }
+      ],
+      "links": {
+        "next": "",
+        "prev": ""
+      }
+    }
+}
+```
+
+#### Human Readable Output
+
+| **Description** | **Domain** | **Geo Country** | **Port** | **Reputation** | **Updated Date** |
+| --- | --- | --- | --- | --- | --- |
+| AMAZON-02 | amazon.com | United States | 80, 443 | 0 | 443	2024-04-14T20:51:03.617Z |
