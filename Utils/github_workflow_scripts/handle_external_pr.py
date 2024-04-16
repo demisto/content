@@ -409,7 +409,7 @@ def main():
     print(f"TIM Reviewer: {tim_reviewer}")
 
     prs = find_all_open_prs_by_user(content_repo, "edi")
-    print(f'The PR\'s:\n {prs}')
+    print(f'The number of PR\'s:\n {len(prs)}')
     #content_reviewer = find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number)
 
     content_reviewer = determine_reviewer(content_reviewers, content_repo)
