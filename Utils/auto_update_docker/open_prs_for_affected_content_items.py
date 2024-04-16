@@ -45,7 +45,8 @@ def create_remote_pr(
         target_tag (str): The docker's target tag.
         head_branch (str): The head branch, that has the committed changes.
         remote_content_repo (Repository.Repository): Remote repository.
-        pr_labels (list[str]): PR tags.
+        updated_content_items (list[str]): The content items that hold the changes of their docker tag.
+        pr_labels (list[str]): The PR labels.
         pr_assignees (list[str], optional): PR assignee/s. Defaults to [].
         pr_reviewers (list[str], optional): PR reviewer/s. Defaults to [].
         base_branch (str, optional): The base branch. Defaults to "master".
@@ -99,13 +100,19 @@ def update_content_items_docker_images_and_push(
         docker_image (str): The docker image.
         content_items (list[str]): Content items to update their docker images.
         target_tag (str): Target tag of docker image.
-        pr_labels (list[str]): PR tags.
+        coverage (str): The coverage of the content items in the PR batch.
+        pr_labels (list[str]): The PR labels.
         current_batch (int): PR batch number, with respect to docker image.
         number_of_batches (int): Overall number of batches.
         staging_branch (str): The staging branch, which is treated as the base branch of the PR.
         git (Git): Git object to stage and commit files.
-        remote_content_repo (Repository.Repository): The remote repository. Used to created PRs.
-        origin (Remote): Remote object. Used to open PRs on the remote repository.
+        remote_content_repo (Repository.Repository): he remote repository. Used to created PRs.
+        origin (Remote):  Remote object. Used to open PRs on the remote repository.
+        pr_assignees (list[str]): The PR assignees.
+        pr_reviewers (list[str]): The PR reviewers.
+
+    Returns:
+        dict[str, Any]: A dictionary that holds the content items that were updated, and their PR link.
     """
     logging.info(f"Updating the following content items: {','.join(content_items)}")
     current_batch_branch_name = f"AUD-{docker_image}-{target_tag}-pr-batch-{current_batch}"
@@ -262,13 +269,16 @@ def open_prs_for_content_items(
                         target_tag=image_config["target_tag"],
                         coverage=image_config["coverage"],
                         pr_assignees=pr_assignees,
-                        pr_reviewers=pr_reviewers
+                        pr_reviewers=pr_reviewers,
                     )
                     if pr_content:
                         docker_images_prs_output[docker_image].append(pr_content)
                     else:
                         # Not all PR batches will have updated content items
-                        logging.info(f"PR batch {current_batch} for {docker_image} with {content_items_for_batch = } did not contain updates")
+                        logging.info(
+                            f"PR batch {current_batch} for {docker_image} with {content_items_for_batch = }"
+                            " did not contain updates"
+                        )
                     pr_batch_start = pr_batch_end
                     pr_batch_end = pr_batch_start + prs_limit_int
         if batch_dir:
