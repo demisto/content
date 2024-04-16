@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 import pytest
 from Infoblox import (
     INTEGRATION_COMMON_ADDITIONAL_FIELDS_CONTEXT_KEY,
@@ -16,6 +16,7 @@ from Infoblox import (
     INTEGRATION_MAX_RESULTS_DEFAULT,
     INTEGRATION_NETWORK_INFO_CONTEXT_KEY,
     INTEGRATION_COMMON_NETWORKVIEW_CONTEXT_KEY,
+    IP_MAPPING,
     IPv4AddressStatus,
     InfoBloxNIOSClient,
     get_extended_attributes_context,
@@ -24,6 +25,7 @@ from Infoblox import (
     get_network_info_command,
     transform_ext_attrs,
     transform_host_records_context,
+    transform_ip_context,
     transform_ipv4_range,
     transform_network_info_context
 )
@@ -643,6 +645,64 @@ class TestIPOperations:
         assert self.CONTEXT_PATH in actual_context
         actual_output = cast(list, actual_context.get(self.CONTEXT_PATH))
         assert len(actual_output) == 9
+
+    def test_transform_ip_context_known_keys(self):
+        """
+        Test for a scenario when the `infoblox-get-ip` command returns
+        a expected/known response keys/.
+
+        Given:
+        - A mock response from InfoBlox API.
+
+        When:
+        - The response has all expected attributes.
+
+        Then:
+        - The transformation keys are as expected.
+        """
+
+        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
+                         / "get_ipv4_address_from_ip_address.json").read_text()
+
+        res: dict[str, list] = json.loads(mock_response)
+        ip: list[dict[str, Any]] = res.get("result")
+
+        actual_transformation = transform_ip_context(ip)
+        assert len(actual_transformation) == 1
+        for k, v in IP_MAPPING.items():
+            assert actual_transformation[0].get(v) == ip[0].get(k)
+
+    def test_transform_ip_context_unknown_key(self):
+        """
+        Test for a scenario when the `infoblox-get-ip` command returns
+        an unexpected/unknown key and the program doesn't raise
+        an exception. See https://jira-dc.paloaltonetworks.com/browse/XSUP-35724.
+
+        Given:
+        - A mock response from InfoBlox API.
+
+        When:
+        - The response has an attribute, lease_state="active" that is unknown.
+
+        Then:
+        - The context output includes the transformed unknown key "LeaseState".
+        """
+
+        mock_response = (Path(__file__).parent.resolve() / "test_data" / self.__class__.__name__
+                         / "get_ipv4_address_from_ip_address.json").read_text()
+
+        unknown_key = "lease_state"
+        unknown_key_value = "active"
+
+        res: dict[str, list] = json.loads(mock_response)
+        res["result"][0][unknown_key] = unknown_key_value
+        ip = res.get("result")
+
+        actual_transformation = transform_ip_context(ip)
+        assert len(actual_transformation) == 1
+        for k, v in IP_MAPPING.items():
+            assert actual_transformation[0].get(v) == ip[0].get(k)
+        assert actual_transformation[0]["LeaseState"] == unknown_key_value
 
 
 class TestHostRecordsOperations:
