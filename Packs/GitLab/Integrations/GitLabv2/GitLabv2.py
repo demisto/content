@@ -363,10 +363,10 @@ def encode_file_path_if_needed(file_path: str) -> str:
     decoded_file_path = urllib.parse.unquote(file_path_to_encode)
 
     if decoded_file_path == file_path_to_encode:
-        # The supplied file_path is not encoded, and we can go ahead and encode it
+        # file_path_to_encode is not encoded, we can go ahead and encode it
         encoded_file_path = urllib.parse.quote(file_path_to_encode, safe='')
     else:
-        # The supplied file_path is already encoded, no need to encode it
+        # file_path_to_encode is already encoded, no need to encode it
         encoded_file_path = file_path_to_encode
     return f"{file_path_suffix}{encoded_file_path}"
 
