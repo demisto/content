@@ -64,8 +64,7 @@ script:
       - name: reset_conversation_history
         required: false
         description: Whether to keep previously sent messages in a conversation context or start a new conversation.
-        type:
-        defaultValue: 'false'
+        type: Boolean
 
       - name: max_tokens
         required: false
