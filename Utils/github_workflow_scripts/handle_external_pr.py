@@ -279,6 +279,15 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
     return False
 
 
+def get_user_from_ui_pr(pr):
+    """
+    """
+    body = pr.body
+    user_in_list = re.findall("Contributor\\s+(\\S+)", body)
+    user = str(user_in_list[0])
+    return user
+
+
 def find_all_open_prs_by_user(content_repo, pr_creator):
     """
     find open pr's by the same users (what if there are more then 1 with different reviewers already?
@@ -286,19 +295,19 @@ def find_all_open_prs_by_user(content_repo, pr_creator):
     :return:
     """
     all_prs = content_repo.get_pulls()
-    total_prs= []
+    similar_prs= []
     print(f'Number of all open PRs is: {all_prs.totalCount}')
     for pr in all_prs:
-        total_prs.append(pr)
-    return total_prs
+        if pr.user.login == "xsoar-bot":
+            pr_creator_from_body = get_user_from_ui_pr(pr)
+            if pr_creator_from_body == pr_creator:
+                similar_prs.append(pr)
+        elif pr.user.login == pr_creator:
+            similar_prs.append(pr)
+        else:
+            continue
+    return similar_prs
     #return pr_opened_by_same_user
-
-
-def get_user_from_ui_pr(pr):
-    """
-    """
-    body = pr.body
-    return re.findall("Contributor\\s+(\\S+)", body)
 
 
 def find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number):
@@ -316,7 +325,9 @@ def find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number):
     else:
         pr_creator = pr.user.login
 
-    other_prs_by_same_user = find_all_open_prs_by_user(content_repo, pr_creator)
+    #other_prs_by_same_user = find_all_open_prs_by_user(content_repo, pr_creator)
+    other_prs_by_same_user = find_all_open_prs_by_user(content_repo, "edibleShell")
+    return other_prs_by_same_user
     #if other_prs_by_same_user:
     #    pr_reviewer = get_reviewer(other_prs_by_same_user)
     #    if pr_reviewer in content_reviewers:
@@ -408,9 +419,8 @@ def main():
     print(f"Security Reviewer: {security_reviewer}")
     print(f"TIM Reviewer: {tim_reviewer}")
 
-    prs = find_all_open_prs_by_user(content_repo, "edi")
-    print(f'The number of PR\'s:\n {len(prs)}')
-    #content_reviewer = find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number)
+    temp = find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number)
+    print(f'The PR we search is {temp}')
 
     content_reviewer = determine_reviewer(content_reviewers, content_repo)
     pr.add_to_assignees(content_reviewer)
