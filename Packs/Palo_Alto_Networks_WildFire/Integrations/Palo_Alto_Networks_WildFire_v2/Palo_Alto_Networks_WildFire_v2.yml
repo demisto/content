@@ -194,12 +194,12 @@ script:
       name: md5
       isArray: true
     - auto: PREDEFINED
-      defaultValue: 'pdf'
+      defaultValue: pdf
       description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
       name: format
       predefined:
-      - 'xml'
-      - 'pdf'
+      - xml
+      - pdf
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to receive extended information from WildFire. Only relevant when polling=true.
@@ -209,7 +209,7 @@ script:
       - 'false'
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report returns extended data, which includes additional outputs.
+      description: "If set to \u201Ctrue\u201D, the report returns extended data, which includes additional outputs."
       name: extended_data
       predefined:
       - 'true'
@@ -440,12 +440,12 @@ script:
       description: The timeout in seconds until polling ends.
       name: timeout_in_seconds
     - auto: PREDEFINED
-      defaultValue: 'pdf'
+      defaultValue: pdf
       description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
       name: format
       predefined:
-      - 'xml'
-      - 'pdf'
+      - xml
+      - pdf
       deprecated: true
     - auto: PREDEFINED
       defaultValue: 'false'
@@ -456,7 +456,7 @@ script:
       - 'false'
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report returns extended data, which includes additional outputs.
+      description: "If set to \u201Ctrue\u201D, the report returns extended data, which includes additional outputs."
       name: extended_data
       predefined:
       - 'true'
@@ -696,7 +696,7 @@ script:
       name: url
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report returns extended data, which includes additional outputs.
+      description: "If set to \u201Ctrue\u201D, the report returns extended data, which includes additional outputs."
       name: extended_data
       predefined:
       - 'true'
@@ -998,12 +998,12 @@ script:
       description: The timeout in seconds until polling ends.
       name: timeout_in_seconds
     - auto: PREDEFINED
-      defaultValue: 'pdf'
+      defaultValue: pdf
       description: The type of structured report (XML or PDF) to request. Only relevant when polling=true.
       name: format
       predefined:
-      - 'xml'
-      - 'pdf'
+      - xml
+      - pdf
       deprecated: true
     - auto: PREDEFINED
       defaultValue: 'false'
@@ -1014,7 +1014,7 @@ script:
       - 'false'
     - auto: PREDEFINED
       defaultValue: false
-      description: If set to “true”, the report returns extended data, which includes additional outputs.
+      description: "If set to \u201Ctrue\u201D, the report returns extended data, which includes additional outputs."
       name: extended_data
       predefined:
       - 'true'
@@ -1264,7 +1264,7 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.92207
   runonce: false
   script: '-'
   subtype: python3

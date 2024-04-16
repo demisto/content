@@ -45,7 +45,7 @@ script:
   commands:
   - arguments:
     - default: true
-      defaultValue: ""
+      defaultValue: ''
       description: A comma-separated list of URLs to check the reputation of.
       isArray: true
       name: url
@@ -81,7 +81,7 @@ script:
     name: phishtank-reload
   - description: Shows the status (timestamp) of the last time that PhishTank database was loaded.
     name: phishtank-status
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.14.92207
   runonce: false
   script: '-'
   subtype: python3
