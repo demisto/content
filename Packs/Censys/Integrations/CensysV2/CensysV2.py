@@ -36,27 +36,6 @@ class Client(BaseClient):
         res = self._http_request('GET', url_suffix, json_data=data)
         return res
 
-    def censys_host_history_request(self, ip: str, ip_b: str = '', at_time: str = '', at_time_b: str = '') -> dict:
-        """
-        Retrieve the diff between two hosts (or the same host at different times).
-
-        :param ip: The IP Address of the original host (Host A).
-        :param ip_b: The IP Address of the other host (Host B). Defaults to the host provided in the path if not set.
-        :param at_time: The point in time used as the basis for Host A.
-        :param at_time_b: The point in time used as the basis for Host B.
-        :return: The diff between the hosts.
-        """
-        url_suffix = f'/api/v2/hosts/{ip}/diff'
-        params = {}
-        if ip_b:
-            params['ip_b'] = ip_b
-        if at_time:
-            params['at_time'] = at_time
-        if at_time_b:
-            params['at_time_b'] = at_time_b
-        res = self._http_request('GET', url_suffix, params=params)
-        return res
-
     def ip_reputation_request(self, ip: str, fields: list| None):
         url_suffix = f"/api/v2/hosts/search?q=ip={ip}"
         if fields:
@@ -250,28 +229,6 @@ def search_certs_command(client: Client, args: dict[str, Any], query: str, limit
         outputs_key_field='fingerprint_sha256',
         outputs=results,
         raw_response=raw_response
-    )
-
-
-def censys_host_history_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """
-    Returns the diff between two hosts (or the same host at different times).
-
-    :param client: The Censys client.
-    :param args: Command arguments.
-    :return: Command results.
-    """
-    ip = args.get("ip", '')
-    ip_b = args.get("ip_b", '')
-    at_time = args.get("at_time", '')
-    at_time_b = args.get("at_time_b", '')
-
-    res = client.censys_host_history_request(ip, ip_b, at_time, at_time_b).get("result", {})
-    return CommandResults(
-        outputs_prefix='Censys.HostHistory',
-        outputs_key_field='ip',
-        outputs=res,
-        raw_response=res
     )
 
 
@@ -477,8 +434,6 @@ def main() -> None:
             return_results(censys_view_command(client, demisto.args()))
         elif command == 'cen-search':
             return_results(censys_search_command(client, demisto.args()))
-        elif command == 'cen-host-history':
-            return_results(censys_host_history_command(client, demisto.args()))
         elif command == 'ip':
             return_results(ip_command(client, demisto.args(), params))
         elif command == 'domain':

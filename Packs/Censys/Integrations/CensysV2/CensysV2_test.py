@@ -158,15 +158,6 @@ def test_test_module_invalid(requests_mock, client):
         test_module(client, params)
 
 
-def test_censys_host_history_command(requests_mock, client):
-    from CensysV2 import censys_host_history_command
-    mock_response = util_load_json('test_data/host_history_response.json')
-    args = {"ip": '8.8.8.8', 'ip_b': '8.8.4.4'}
-    requests_mock.get('https://search.censys.io/api/v2/hosts/8.8.8.8/diff?ip_b=8.8.4.4', json=mock_response)
-    response = censys_host_history_command(client, args)
-    assert response.outputs == mock_response.get('result')
-
-
 def test_ip_command_multiple_ips(requests_mock, client):
     from CensysV2 import ip_command
     mock_response = util_load_json('test_data/ip_command_response.json')
