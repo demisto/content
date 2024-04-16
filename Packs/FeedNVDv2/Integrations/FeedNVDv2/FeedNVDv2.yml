@@ -14,6 +14,11 @@ configuration:
   name: apiKey
   required: true
   type: 9
+- defaultvalue: 1 year
+  display: First fetch time
+  name: first_fetch
+  required: false
+  type: 0
 - additionalinfo: First CVE was published in September of 1999
   defaultvalue: "2013-01-01"
   display: Date to begin fetching CVEs from (YYYY-MM-DD)
