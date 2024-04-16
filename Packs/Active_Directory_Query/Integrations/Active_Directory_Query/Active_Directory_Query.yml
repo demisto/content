@@ -41,13 +41,6 @@ configuration:
   type: 0
   required: true
   section: Connect
-- display: Base query to verify the Base DN with (for example "(objectClass=user)")
-  additionalinfo: 'A basic query that is being executed to the AD server to verify that the base DN parameter is configured correctly'
-  name: base_dn_query
-  defaultvalue: "(objectClass=user)"
-  type: 0
-  advanced: true
-  section: Connect
 - display: Page size
   name: page_size
   defaultvalue: "500"
