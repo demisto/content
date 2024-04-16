@@ -86,13 +86,7 @@
     fi
   - section_end "Cleanup env results from artifacts folder"
 
-demisto-sdk-nightly:run-unittests-and-lint:
-  extends:
-    - .run-unittests-and-lint
-    - .sdk-nightly-schedule-rule
-
 demisto-sdk-nightly:run-pre-commit:
-  allow_failure: true
   extends:
     - .run-pre-commit
     - .sdk-nightly-schedule-rule

@@ -7,8 +7,7 @@ from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
 CONTENT_NIGHTLY_JOBS = [
-    'run-unittests-and-lint: [native:dev,from-yml]',
-    'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
+    'run-pre-commit',
     'run-validations',
     'trigger-private-build',
     'mpv2-prepare-testing-bucket',
@@ -29,7 +28,7 @@ CONTENT_NIGHTLY_JOBS = [
 ]
 
 SDK_NIGHTLY_JOBS = [
-    'demisto-sdk-nightly:run-unittests-and-lint',
+    'demisto-sdk-nightly:run-pre-commit',
     'demisto-sdk-nightly:run-validations',
     'demisto-sdk-nightly:run-validations-new-validate-flow',
     'demisto_sdk_nightly:check_idset_dependent_commands',
@@ -42,8 +41,7 @@ SDK_NIGHTLY_JOBS = [
 ]
 
 BUCKET_UPLOAD_JOBS = [
-    'run-unittests-and-lint-upload-flow: [native:dev,from-yml]',
-    'run-unittests-and-lint-upload-flow: [native:ga,native:maintenance,native:candidate]',
+    'run-pre-commit-upload-flow',
     'run-validations-upload-flow',
     'run-validations-upload-flow-new-validate-flow',
     'mpv2-prepare-testing-bucket-upload-flow',
@@ -62,8 +60,7 @@ BUCKET_UPLOAD_JOBS = [
 ]
 
 CONTENT_COMMON_JOBS = [
-    'run-unittests-and-lint: [native:dev,from-yml]',
-    'run-unittests-and-lint: [native:ga,native:maintenance,native:candidate]',
+    'run-pre-commit',
     'run-validations',
     'run-validations-new-validate-flow',
     'test-upload-flow',

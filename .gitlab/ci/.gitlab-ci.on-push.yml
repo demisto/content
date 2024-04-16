@@ -79,30 +79,7 @@ stop-running-pipelines:
     - section_end "Stop running pipelines on current branch"
     - job-done
 
-# runs in gitlab for the on-push flow (except for contributors)
-run-unittests-and-lint:
-  extends:
-    - .run-unittests-and-lint
-  rules:
-    - if: '$BUCKET_UPLOAD == "true"'
-      when: never
-    - if: '$SECURITY_SCANS == "true"'
-      when: never
-    - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
-      when: never
-    - if: '$BUILD_MACHINES_CLEANUP == "true"'
-      when: never
-    - if: '$SDK_RELEASE == "true"'
-      when: never
-    - if: '$FORCE_BUCKET_UPLOAD == "true"'
-      when: never
-    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
-      when: never
-    - if: '$DEMISTO_SDK_NIGHTLY != "true"'
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-
 run-pre-commit:
-  allow_failure: true
   extends:
     - .run-pre-commit
   cache:
@@ -119,6 +96,8 @@ run-pre-commit:
     - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
       when: never
     - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
+      when: never
+    - if: '$SDK_RELEASE == "true"'
       when: never
     # In sdk nighly we run this separately 
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
@@ -447,7 +426,7 @@ jobs-done-check-nightly:
     - .jobs-done-check
   needs:
     - cloning-content-repo-last-upload-commit
-    - run-unittests-and-lint
+    - run-pre-commit
     - run-validations
     - trigger-private-build
     - mpv2-prepare-testing-bucket
@@ -490,7 +469,7 @@ jobs-done-check-on-push:
     - .push-rule
     - .jobs-done-check
   needs:
-    - run-unittests-and-lint
+    - run-pre-commit
     - run-validations
     - stop-running-pipelines
     - test-upload-flow
@@ -534,7 +513,7 @@ jobs-done-check-on-merge:
     - .jobs-done-check
   needs:
     - merge-dev-secrets
-    - run-unittests-and-lint
+    - run-pre-commit
     - run-validations
     - test-upload-flow
     - trigger-private-build
