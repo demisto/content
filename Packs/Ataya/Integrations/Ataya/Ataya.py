@@ -77,6 +77,7 @@ def assign_command(client: Client, imsi=""):
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
+    a = 2
     command = demisto.command()
 
     base_url = params.get('url')
