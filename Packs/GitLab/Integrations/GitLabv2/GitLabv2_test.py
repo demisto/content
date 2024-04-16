@@ -13,10 +13,20 @@ def util_load_json(path):
         pytest.param("./CheckFileCommand", "./CheckFileCommand"),
         pytest.param("test/test_file.py", "test%2Ftest_file.py"),
         pytest.param("./test/test_file.py", "./test%2Ftest_file.py"),
-        pytest.param("/test%2Ftest_file.py", "./test%2Ftest_file.py"),
+        pytest.param("./test%2Ftest_file.py", "./test%2Ftest_file.py"),
+        pytest.param("test%2Ftest_file.py", "test%2Ftest_file.py"),
     ),
 )
 def test_encode_file_path_if_needed(file_path, expected_encoded_file_path):
+    """
+        Given:
+            - A file path
+        When:
+            - Running the helper method encode_file_path_if_needed, which dictates if a file path
+            should be encoded or not.
+        Then:
+            - Check if the returned file path was indeed encoded, or did not need encoding.
+        """
     from GitLabv2 import encode_file_path_if_needed
     encoded_file_path = encode_file_path_if_needed(file_path)
     assert encoded_file_path == expected_encoded_file_path

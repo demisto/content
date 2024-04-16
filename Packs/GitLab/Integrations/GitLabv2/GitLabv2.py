@@ -345,8 +345,16 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 def encode_file_path_if_needed(file_path: str) -> str:
+    """Encode the file path if not already encoded.
+
+    Args:
+        file_path (str): The file path, can be URL encoded or not.
+
+    Returns:
+        str: Return the file path as is if already URL encoded, else, returns the encoding it.
+    """
     file_path_suffix = './' if file_path.startswith('./') else ''
-    # If starts with ./, then we don't want to encode it, only the rest
+    # If starts with ./, then we don't want encode the suffix, only the rest
     file_path_to_encode = file_path[2:] if file_path.startswith('./') else file_path
     encoded_file_path = ''
     decoded_file_path = urllib.parse.unquote(file_path_to_encode)
@@ -817,7 +825,7 @@ def get_raw_file_command(client: Client, args: dict[str, Any]) -> list:
     file_path = args.get('file_path', '')
     headers = ['path', 'reference', 'content']
     if file_path:
-        file_path = urllib.parse.quote(file_path, safe='')
+        file_path = encode_file_path_if_needed(file_path)
     response = client.get_raw_file_request(file_path, ref)
     outputs = {'path': file_path, 'content': response, 'ref': ref}
     human_readable = tableToMarkdown('Raw file', outputs, headers=headers)
@@ -920,7 +928,7 @@ def file_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
     file_path = args.get('file_path', '')
     headers = ['FileName', 'FilePath', 'Ref', 'ContentSha', 'CommitId', 'LastCommitId', 'Size']
     if file_path:
-        file_path = urllib.parse.quote(file_path, safe='')
+        file_path = encode_file_path_if_needed(file_path)
     response = client.file_get_request(file_path, branch)
     human_readable_dict = {'FileName': response.get('file_name', ''),
                            'FilePath': response.get('file_path', ''),
