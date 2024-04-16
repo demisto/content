@@ -128,7 +128,6 @@ def test_csv2json():
                           'Valid': 'Yes'}
 
 
-
 def test_policy_dictionary_list_command(mocker):
     """
     Given:
