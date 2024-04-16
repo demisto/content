@@ -284,11 +284,11 @@ def get_user_from_ui_pr(pr):
     """
     try:
         body = pr.body
-        user_in_list = re.findall("Contributor\s@(\S+)", body)
+        user_in_list = re.findall("Contributor\s(\S+)", body)
         user = str(user_in_list[0])
         return user
     except Exception:
-        user_list = re.findall("Contributor\s@(\S+)", body)
+        user_list = re.findall("Contributor\s(\S+)", body)
         print(f'the user is: {user_list}')
         print(f'failed pr is: {pr}')
         print(f'pr body: {pr.body}')
@@ -312,6 +312,7 @@ def find_all_open_prs_by_user(content_repo, pr_creator):
             similar_prs.append(pr)
         else:
             continue
+    print(f'similar prs are: {similar_prs}')
     return similar_prs
     #return pr_opened_by_same_user
 
