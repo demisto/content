@@ -60,8 +60,8 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
     # Check if the user has selected malicious or suspicious labels without premium access
     if not params.get('premium_access') and (params.get('malicious_labels') or params.get('suspicious_labels')):
         raise DemistoException(
-            "The reputation labels feature only works with Censys premium access."
-            "if you have premium access select the 'Labels premium feature available' option "
+            "The 'Determine IP score by label' feature only works for Censys paid subscribers."
+            "if you have paid access select the 'Determine IP score by label' option "
             "to utilize this functionality, or deselect labels")
         
     fields = ['labels'] if params.get('premium_access') else None
@@ -74,7 +74,7 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
         if e.res.status_code == 403 and 'specific fields' in e.message:
             raise DemistoException(
                 "Your user does not have permission for premium features. "
-                "Please ensure that you deselect the 'Labels premium feature available' option "
+                "Please ensure that you deselect the 'Determine IP score by label' option "
                 "for non-premium access.")
         raise e
 

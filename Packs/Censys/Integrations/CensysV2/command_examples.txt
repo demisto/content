@@ -2,6 +2,5 @@
 !cen-view index=ipv4 query=8.8.8.8
 !cen-view index=certificates query=9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc
 !cen-search index=ipv4 query="services.service_name:HTTP" limit=1
-!cen-host-history ip=8.8.8.8 ip_b=8.8.4.4 at_time=2024-04-02T17:49:05Z at_time_b=2024-07-02T17:49:05Z
 !ip ip=8.8.8.8,8.8.4.4
 !domain domain=amazon.com,google.com
