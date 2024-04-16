@@ -168,7 +168,7 @@ configuration:
 - display: Close all related alerts in XDR
   name: close_alerts_in_xdr
   required: false
-  additionalinfo: "Close all related alerts in XDR once an incident has been closed in XSOAR."
+  additionalinfo: "Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR."
   advanced: true
   type: 8
   section: Collect
@@ -638,7 +638,7 @@ script:
     - description: Add a comment to the incident.
       name: add_comment
     - auto: PREDEFINED
-      description: Whether to resolve alerts related to a resolved incident (status arg include RESOLVED or resolve_comment args is used).
+      description: Whether to resolve alerts related to a resolved incident. The incident is considered resolved when the status argument includes the "RESOLVED" or "resolve_comment" value.
       name: resolve_alerts
       predefined:
       - 'true'
@@ -3507,7 +3507,7 @@ script:
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
   - arguments:
-    - description: A comma separated list of alert ids.
+    - description: A comma-separated list of alert IDs.
       name: alert_ids
       required: true
       isArray: true
@@ -3522,7 +3522,7 @@ script:
       - low
       - informational
     - auto: PREDEFINED
-      description: Status to be changed to updated alerts.
+      description: New status for updated alerts.
       name: status
       required: false
       predefined:
