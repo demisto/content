@@ -330,7 +330,7 @@ def find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number):
         pr_creator = pr.user.login
 
     #other_prs_by_same_user = find_all_open_prs_by_user(content_repo, pr_creator)
-    other_prs_by_same_user = find_all_open_prs_by_user(content_repo, "edibleShell")
+    other_prs_by_same_user = find_all_open_prs_by_user(content_repo, "djangelic")
     return other_prs_by_same_user
     #if other_prs_by_same_user:
     #    pr_reviewer = get_reviewer(other_prs_by_same_user)
