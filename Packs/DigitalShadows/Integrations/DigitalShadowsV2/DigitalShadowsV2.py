@@ -1,5 +1,4 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+register_module_line('Digital Shadows V2', 'start', __line__())
 
 ''' IMPORTS '''
 from typing import Any, List, Dict
@@ -719,29 +718,6 @@ class SearchLightTriagePoller(object):
             alert.update({'mitre-attack-mapping': json.dumps(alert.get('mitre-attack-mapping'))})
         if alert.get('validation'):
             alert.update({'validation': json.dumps(alert.get('validation'))})
-
-        alert_details = {}
-        if alert.get('title'):
-            alert_details['title'] = alert.pop('title')
-        if alert.get('portal-id'):
-            alert_details['portal-id'] = alert.pop('portal-id')
-        if alert.get('id'):
-            alert_details['id'] = alert.pop('id')
-        if alert.get('description'):
-            alert_details['description'] = alert.pop('description')
-        if alert.get('raised'):
-            alert_details['raised'] = alert.pop('raised')
-        if alert.get('updated'):
-            alert_details['updated'] = alert.pop('updated')
-        if alert.get('email'):
-            alert_details['email'] = alert.pop('email')
-        if alert.get('password'):
-            alert_details['password'] = alert.pop('password')
-        if alert.get('inferred-password-type'):
-            alert_details['inferred-password-type'] = alert.pop('inferred-password-type')
-        if alert.get('first-seen'):
-            alert_details['first-seen'] = alert.pop('first-seen')
-        alert['details'] = json.dumps(alert_details)
         LOG(f'------alert: {alert}')
         return alert
 
