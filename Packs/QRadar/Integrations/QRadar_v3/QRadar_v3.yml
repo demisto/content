@@ -3065,7 +3065,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: devdemisto/python3:3.11.9.92380
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true
