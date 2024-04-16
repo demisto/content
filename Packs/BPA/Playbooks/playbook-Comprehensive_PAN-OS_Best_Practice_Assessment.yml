@@ -1,9 +1,7 @@
 id: Comprehensive PAN-OS Best Practice Assessment
 version: -1
-name: Comprehensive PAN-OS Best Practice Assessment
-description: |
-  Comprehensive version for PAN-OS Best Practice Assessment Report which fetches the BPA report zipped file, unzips it, rasterises the PDF, and visualizes the data in the custom Best Practice Assessment incident layout.
-  You have the option to email the report via the playbook inputs.
+name: Comprehensive PAN-OS Best Practice Assessment (Deprecated)
+description: Deprecated. Use Palo Alto Networks AIops instead, run aiops-bpa-report-generate command.
 starttaskid: "0"
 tasks:
   "0":
@@ -294,6 +292,7 @@ inputs:
     Set an email recipient to send the BPA report to.
     Can be a CSV list.
 outputs: []
+deprecated: true
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- No tests (Deprecated)
