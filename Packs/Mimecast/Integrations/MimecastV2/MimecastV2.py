@@ -1938,7 +1938,7 @@ def get_message():
         suffix = TYPE_TO_SUFFIX.get(message_type, '')
         file_name = f'{message_id}.{suffix}' if suffix else message_id
         email_file = get_message_body_content_request(message_id, message_context, message_type)
-        results.append(fileResult(message_id, email_file))
+        results.append(fileResult(file_name, email_file))
 
     return results
 
