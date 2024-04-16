@@ -6,7 +6,7 @@ from copy import deepcopy
 from typing import Callable, Tuple
 
 from datetime import datetime
-
+INTEGRATION_NAME = "BmcITSM"
 SERVICE_REQUEST = "service request"
 CHANGE_REQUEST = "change request"
 INCIDENT = "incident"
@@ -389,7 +389,11 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API respnse from BmcITSM.
         """
+        demisto.debug(f"{INTEGRATION_NAME}: the query: {query=}, the form: {form=}")
+        demisto.debug(f"{INTEGRATION_NAME}: called command is {demisto.command()}")
+        demisto.debug(f"{INTEGRATION_NAME}: the endpoint: arsys/v1/entry/{form}")
         params = remove_empty_elements({"q": query})
+        demisto.debug(f"{INTEGRATION_NAME}: {params=}")
         response = self._http_request("GET", f"arsys/v1/entry/{form}", params=params)
         return response
 
@@ -3379,6 +3383,7 @@ def fetch_relevant_tickets_by_ticket_type(
 
     ticket_form = TICKET_TYPE_TO_LIST_FORM[ticket_type]
     t_epoch_from = dict_safe_get(last_run, [ticket_type, "last_create_time"])
+    demisto.debug(f"{INTEGRATION_NAME}: the query: {ticket_type=}, {t_epoch_from=}, {t_epoch_to=}, {status_filter=}, {impact_filter=}, {urgency_filter=}, {custom_query=}")
     fetch_query = gen_fetch_incidents_query(
         ticket_type,
         t_epoch_from,
@@ -3388,7 +3393,7 @@ def fetch_relevant_tickets_by_ticket_type(
         urgency_filter,
         custom_query,
     )
-
+    
     response = client.list_request(ticket_form, fetch_query)
     relevant_records, _ = get_paginated_records_with_hr(response.get("entries"), max_fetch)
     outputs: List[dict] = format_command_output(
