@@ -236,7 +236,8 @@ def open_prs_for_content_items(
 
             logging.info(f"Checking out to active branch: {current_active_branch}\n{git.checkout(current_active_branch)}")
         except GithubException as github_exception:
-            if "Branch not found" in str(github_exception):
+            # Resource not found
+            if github_exception.status == 404:
                 source_branch = remote_content_repo.get_branch(master_branch_name)
                 # We need to create remote branch that corresponds to the staging branch
                 remote_content_repo.create_git_ref(ref="refs/heads/" + staging_branch, sha=source_branch.commit.sha)
