@@ -283,8 +283,12 @@ def get_user_from_ui_pr(pr):
     """
     try:
         body = pr.body
+        print(f'PR from ui is: {pr}')
+        print(f'pr body: {pr.body}')
         index_of_user = body.find("Contributor\n@")
+        print(f'index of user: {index_of_user}')
         substring_user = body[index_of_user+len("Contributor\n@")]
+        print(f'substring user: {substring_user}')
         user_in_list = substring_user.split("\n")[0]
         print(f'searched user is: {user_in_list}')
         #user_in_list = re.findall("Contributor\s(\S+)", body)
