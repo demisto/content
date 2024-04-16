@@ -406,7 +406,7 @@ def main():
     print(f"TIM Reviewer: {tim_reviewer}")
 
     all_prs = content_repo.get_pulls()
-    print(f'Number of all open PRs is: {len(all_prs)}')
+    print(f'Number of all open PRs is: {all_prs.totalCount}')
     #content_reviewer = find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number)
 
     content_reviewer = determine_reviewer(content_reviewers, content_repo)
