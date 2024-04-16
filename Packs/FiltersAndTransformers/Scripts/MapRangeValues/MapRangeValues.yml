@@ -37,7 +37,7 @@ args:
   isArray: true
   description: A comma-separated list of values to map to.
 - name: sep
-  required: true
+  required: false
   default: true
   defaultValue: '-'
   description: The separator between the start and end of range values.
