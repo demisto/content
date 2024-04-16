@@ -993,7 +993,7 @@ def update_remote_system_command(client, args):
             # Check all relevant fields for an incident being closed in XSOAR UI
             is_closed = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
                          or update_args.get('resolve_comment') or update_args.get('closingUserId'))
-            demisto.debug(f"Should close related alert {is_closed=} {close_alerts_in_xdr=}")
+            demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
             if close_alerts_in_xdr and is_closed:
                 update_related_alerts(client, update_args)
 
@@ -1013,7 +1013,7 @@ def update_remote_system_command(client, args):
 def update_related_alerts(client: Client, args: dict):
     new_status = args.get('status')
     incident_id = args.get('incident_id')
-    comment = f"resolved by XSOAR, due to incident {incident_id} has been resolved"
+    comment = f"Resolved by XSOAR, due to incident {incident_id} that has been resolved."
     demisto.debug(f"{new_status=}, {comment=}")
     if not new_status:
         raise DemistoException(f"Failed to update alerts related to incident {incident_id},"
@@ -1244,7 +1244,7 @@ def update_alerts_in_xdr_command(client: Client, args: Dict) -> CommandResults:
         array_of_sublist_ids = client.update_alerts_in_xdr_request(alerts_sublist, severity, status, comment)
         array_of_all_ids += array_of_sublist_ids
     if not array_of_all_ids:
-        raise DemistoException("Could not find alerts to update, please make sure you used a valid alert IDs.")
+        raise DemistoException("Could not find alerts to update, please make sure you used valid alert IDs.")
     return CommandResults(readable_output="Alerts with IDs {} have been updated successfully.".format(",".join(array_of_all_ids))
                           )
 
