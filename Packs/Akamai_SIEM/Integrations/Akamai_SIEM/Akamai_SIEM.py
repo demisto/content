@@ -36,6 +36,7 @@ INTEGRATION_CONTEXT_NAME = 'Akamai'
 VENDOR = "Akamai"
 PRODUCT = "WAF"
 FETCH_EVENTS_PAGE_SIZE = 50000
+b=2
 
 # Disable insecure warnings
 urllib3.disable_warnings()
