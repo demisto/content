@@ -58,7 +58,7 @@ def req(method, path, data, param_data):
             try:
                 statuses = json.loads(response.headers.get('x-redlock-status'))  # type: ignore
                 for status in statuses:
-                    text += '\n%s [%s]' % (status.get('i18nKey', ''), status.get('subject', ''))
+                    text += '\n{} [{}]'.format(status.get('i18nKey', ''), status.get('subject', ''))
                     # Handle case for no remediation details
                     if status['i18nKey'] == 'remediation_unavailable':
                         return False
@@ -417,7 +417,7 @@ def get_rql_response(args):
     rql = args.get('rql')
 
     limit = str(args.get('limit', '1'))
-    rql += " limit search records to {}".format(limit)
+    rql += f" limit search records to {limit}"
 
     payload = {"query": rql, "filter": {}}
 
@@ -897,7 +897,7 @@ def fetch_incidents():
     if demisto.getParam('policyName'):
         payload['filters'].append({'name': 'policy.name', 'operator': '=',  # type: ignore
                                    'value': demisto.getParam('policyName')})
-    demisto.info("Executing Prisma Cloud (RedLock) fetch_incidents with payload: {}".format(payload))
+    demisto.info(f"Executing Prisma Cloud (RedLock) fetch_incidents with payload: {payload}")
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
 
