@@ -2,7 +2,7 @@ args:
 - description: The query for the Indicators that you want to export. (e.g. type:IP and reputation:Bad and expirationStatus:active). You can and should generate the query from the Indicators search screen.
   name: query
   required: true
-- defaultValue: "7"
+- defaultValue: '7'
   description: Indicator last seen days  (default is 7).  Needs to be a number.
   name: seenDays
 - description: 'Comma separated list of columns (fields) for the CSV.  (Default is: id,indicator_type,value,source,score,relatedIncCount,setBy,sourceBrands,modified).'
@@ -13,12 +13,12 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
+    fromServerVersion: ''
 dependson:
   must:
   - core-api-post
   - core-api-get
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.14.92207
 enabled: true
 name: ExportIndicatorsToCSV
 runas: DBotWeakRole

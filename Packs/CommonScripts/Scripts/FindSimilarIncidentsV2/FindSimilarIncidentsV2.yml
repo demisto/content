@@ -51,14 +51,18 @@ args:
   predefined:
   - 'yes'
   - 'no'
-comment: |-
-  Finds similar incidents by common incident keys, labels, custom fields or context keys.
-  It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
-  For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).
+comment: 'Finds similar incidents by common incident keys, labels, custom fields or context keys.
+
+  It''s highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
+
+  For best performance, it''s recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).
+
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
+
   For more information, see the section about permissions here:
-  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations'
 commonfields:
   id: FindSimilarIncidents
   version: -1
@@ -85,7 +89,7 @@ tags:
 - incidents
 timeout: 300ns
 type: python
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.14.92207
 tests:
 - Dedup - Generic v3
 fromversion: 5.0.0

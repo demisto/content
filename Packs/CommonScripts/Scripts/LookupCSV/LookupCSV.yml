@@ -15,8 +15,8 @@ args:
   description: CSV file has a header row.
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
 - name: column
   description: Column to search for value in, if not specified, entire CSV is parsed into the context.
 - name: value
@@ -32,7 +32,7 @@ outputs:
   description: The value that was searched.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.14.92207
 runas: DBotWeakRole
 commonfields:
   id: LookupCSV
