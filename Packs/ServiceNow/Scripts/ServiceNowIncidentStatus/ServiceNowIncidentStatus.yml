@@ -8,12 +8,13 @@ tags:
 - dynamic-section
 - python
 - servicenow v2
-comment: |
-  populates the value of the ServiceNow Ticket State field and display it in a layout widget.
+comment: 'populates the value of the ServiceNow Ticket State field and display it in a layout widget.
+
+  '
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.14.92207
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)

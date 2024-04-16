@@ -68,12 +68,12 @@ script:
     deprecated: false
     arguments:
     - auto: PREDEFINED
-      defaultValue: "False"
+      defaultValue: 'False'
       description: Set this argument to True in order to create events, otherwise the command will only display them.
       name: should_push_events
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
       required: true
     - name: limit
       description: The maximum number of events to return.
@@ -84,14 +84,14 @@ script:
       description: 'The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM.'
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: ''
     - name: offset
       description: Starting record index from which to begin retrieving records.
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: ''
     outputs: []
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.10.14.92207
   isfetchevents: true
   runonce: false
   script: ''

@@ -17,10 +17,11 @@ commonfields:
   id: ServiceNowCreateIncident
   version: -1
 name: ServiceNowCreateIncident
-comment: |-
-  This script is used to wrap the generic create-record command in ServiceNow.
+comment: 'This script is used to wrap the generic create-record command in ServiceNow.
+
   You can add fields that you want to create the record with as script arguments or in the
-  code and work with the records easily.
+
+  code and work with the records easily.'
 outputs:
 - contextPath: ServiceNow.Incident.ID
   description: Incident ID.
@@ -43,6 +44,6 @@ dependson:
 tests:
 - No test - Hibernating instance
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.14.92207
 skipprepare:
 - script-name-incident-to-alert

@@ -5,10 +5,11 @@ args:
   name: number
 - description: Incident assigne name (e.g John Smith).
   name: assignee
-comment: |-
-  This script is used to wrap the generic query-table command in ServiceNow.
+comment: 'This script is used to wrap the generic query-table command in ServiceNow.
+
   You can add fields that you want to use as inputs and outputs from the record as script arguments or in the
-  code and work with the records easily.
+
+  code and work with the records easily.'
 commonfields:
   id: ServiceNowQueryIncident
   version: -1
@@ -40,6 +41,6 @@ dependson:
   must:
   - servicenow-query-table
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.14.92207
 skipprepare:
 - script-name-incident-to-alert
