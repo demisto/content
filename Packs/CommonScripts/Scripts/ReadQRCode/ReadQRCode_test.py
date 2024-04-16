@@ -99,6 +99,7 @@ def test_read_qr_code_multiple_codes():
         'http://en.m.wikipedia.org'
     ]
 
+
 def test_extract_indicators_from_text(mocker: MockerFixture):
     """
     Given:
