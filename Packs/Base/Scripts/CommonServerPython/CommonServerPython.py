@@ -11924,7 +11924,7 @@ def comma_separated_mapping_to_dict(raw_text):
     return mapping_dict
 
 
-def safe_sleep(duration_seconds: float, adjust_sleep_time: bool=False ):
+def safe_sleep(duration_seconds, adjust_sleep_time=False ):
     """
     Sleeps for the given duration, but raises an error if it would exceed the TTL.
 
