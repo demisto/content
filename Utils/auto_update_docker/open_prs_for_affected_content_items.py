@@ -183,7 +183,6 @@ def open_prs_for_content_items(
         help="The affected content items that will have their image tags updated, supplied as a json",
     ),
     staging_branch: str = typer.Option(
-        default="auto_update_docker_staging_branch",
         help="The staging branch, that will act as the base branch for the PRs",
     ),
     batch_dir: str = typer.Option(
