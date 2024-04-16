@@ -14,12 +14,14 @@ args:
 - defaultValue: ' '
   description: Concatenates list values.
   name: listSeparator
-comment: |-
-  Copy a context key to an incident field of multiple incidents, based on an incident query.
+comment: 'Copy a context key to an incident field of multiple incidents, based on an incident query.
+
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
+
   For more information, see the section about permissions here:
-  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations'
 commonfields:
   id: CopyContextToField
   version: -1
@@ -32,6 +34,6 @@ timeout: '0'
 type: python
 subtype: python3
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.14.92207
 tests:
 - CopyContextToFieldTest
