@@ -2,15 +2,14 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 import urllib3
-from typing import Dict
-from enum import Enum
+from typing import Dict, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
+EML_FILE_PREFIX = '.eml'
 
 class Roles:
     ASSISTANT = 'assistant'
@@ -237,14 +236,6 @@ def check_email_body_command(client: OpenAiClient, args: Dict[str, Any]) -> Comm
 #         outputs_key_field='Conversation',
 #         outputs=result,
 #     )
-#
-#
-# def check_email_header(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
-#     pass
-#
-#
-# def check_email_body(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
-#     pass
 
 
 ''' MAIN FUNCTION '''
