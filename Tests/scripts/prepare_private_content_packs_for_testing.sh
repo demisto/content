@@ -25,8 +25,8 @@ gcloud auth activate-service-account --key-file="$KF" >> "${ARTIFACTS_FOLDER_SER
 echo "Auth loaded successfully."
 
 GCS_MARKET_BUCKET="marketplace-dist"
-GCS_BUILD_BUCKET="marketplace-ci-build-private-private"
-GCS_PRIVATE_TESTING_BUCKET="marketplace-ci-build-private-private"
+GCS_BUILD_BUCKET="marketplace-ci-build-private"
+GCS_PRIVATE_TESTING_BUCKET="marketplace-ci-build-private"
 GCS_PRIVATE_PROD_BUCKET="marketplace-dist-private"
 GCS_TESTING_BUCKET="marketplace-ci-build-private"
 GCS_PUBLIC_PROD_BUCKET="marketplace-dist"

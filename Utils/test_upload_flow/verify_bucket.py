@@ -36,7 +36,7 @@ class VerifyMessages(str):
 # dev buckets
 XSOAR_TESTING_BUCKET = 'marketplace-dist-dev'
 XSOAR_SAAS_TESTING_BUCKET = 'marketplace-saas-dist-dev-private'
-XSIAM_TESTING_BUCKET = 'marketplace-v2-dist-private-dev-private'
+XSIAM_TESTING_BUCKET = 'marketplace-v2-dist-dev-private'
 
 # Test pack names
 TestUploadFlowXSOAR = 'TestUploadFlowXSOAR'

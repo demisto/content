@@ -20,7 +20,7 @@ fi
 
 _branch="$(git branch  --show-current)"
 _bucket="marketplace-dist-dev"
-_bucket_v2="marketplace-v2-dist-private-dev-private"
+_bucket_v2="marketplace-v2-dist-dev-private"
 _bucket_xpanse="marketplace-xpanse-dist-dev-private"
 _bucket_xsoar_saas="marketplace-saas-dist-dev-private"
 _force="false"

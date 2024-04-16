@@ -3,11 +3,11 @@ variables:
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
   DONT_CACHE_LAST_RESPONSE: "true"
   GCS_MARKET_BUCKET: "marketplace-dist"
-  GCS_MARKET_V2_BUCKET: "marketplace-v2-dist-private-private"
+  GCS_MARKET_V2_BUCKET: "marketplace-v2-dist-private"
   GCS_MARKET_XPANSE_BUCKET: "xpanse-dist"
   GCS_MARKET_XSOAR_SAAS_BUCKET: "marketplace-saas-dist"
   GCS_MARKET_BUCKET_DEV: "marketplace-dist-dev"
-  GCS_MARKET_V2_BUCKET_DEV: "marketplace-v2-dist-private-dev-private-private"
+  GCS_MARKET_V2_BUCKET_DEV: "marketplace-v2-dist-dev-private"
   GCS_MARKET_XSOAR_SAAS_BUCKET_DEV: "marketplace-saas-dist-dev-private"
   STORAGE_BASE_PATH: ""
   SLACK_CHANNEL: "dmst-build-test"
@@ -30,7 +30,7 @@ variables:
   IFRA_ENV_TYPE: "Content-Env"
   GET_SOURCES_ATTEMPTS: 3  # see https://docs.gitlab.com/ee/ci/runners/configure_runners.html#job-stages-attempts
   GCS_PRODUCTION_BUCKET: "marketplace-dist"
-  GCS_PRODUCTION_V2_BUCKET: "marketplace-v2-dist-private-private"
+  GCS_PRODUCTION_V2_BUCKET: "marketplace-v2-dist-private"
   GCS_PRODUCTION_XPANSE_BUCKET: "xpanse-dist"
   GCS_PRODUCTION_XSOAR_SAAS_BUCKET: "marketplace-saas-dist"
   DEMISTO_CONNECTION_POOL_MAXSIZE: "180" # see this issue for more info https://github.com/demisto/etc/issues/36886

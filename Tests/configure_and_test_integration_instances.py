@@ -78,7 +78,7 @@ MARKETPLACE_TEST_BUCKET = (
     'marketplace-ci-build-private/content/builds'
 )
 MARKETPLACE_XSIAM_BUCKETS = (
-    'marketplace-v2-dist-private-dev-private/upload-flow/builds-xsiam'
+    'marketplace-v2-dist-dev-private/upload-flow/builds-xsiam'
 )
 ARTIFACTS_FOLDER_MPV2 = os.getenv('ARTIFACTS_FOLDER_MPV2', '/builds/xsoar/content/artifacts/marketplacev2')
 ARTIFACTS_FOLDER = os.getenv('ARTIFACTS_FOLDER')
