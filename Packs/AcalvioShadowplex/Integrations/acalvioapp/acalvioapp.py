@@ -7,7 +7,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 OK_HTTP_CODES = (200, 201)
-
+b=7
 
 class Action():
 
