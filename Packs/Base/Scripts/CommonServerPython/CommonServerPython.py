@@ -11857,6 +11857,70 @@ def comma_separated_mapping_to_dict(raw_text):
     return mapping_dict
 
 
+def get_file_by_entry_id(entry_id):
+    try:
+        get_file_path_res = demisto.getFilePath(entry_id)
+        file_path = get_file_path_res["path"]
+        file_name = get_file_path_res["name"]
+
+        with open(file_path, "r", encoding='utf-8') as f:
+            file_content = f.read()
+
+    except KeyError:
+        raise DemistoException("Error: File path or name not found.")
+    except Exception as e:
+        raise DemistoException(f"Error: An unexpected error occurred: {str(e)}")
+
+    return file_name, file_content
+
+import email
+from email import policy
+
+def parse_email(email_content):
+
+    """
+        Parses the email content to extract headers and the body from a MIME-formatted string.
+
+        :type email_content: ``str``
+        :param email_content: The full text content of an email file (usually .eml).
+
+        :return: A tuple containing a dictionary of email headers and the plain text body of the email.
+        :rtype: ``Tuple[Dict[str, str], str]``
+
+        Note:
+        - This function assumes the email is encoded in UTF-8 but will replace undecodable characters if present.
+        - It specifically extracts 'text/plain' parts and skips any attachments.
+        """
+
+    # Parse the email content using the email library
+    try:
+        email_message = email.message_from_string(email_content, policy=policy.default)
+    except Exception as e:
+        raise Exception("Error parsing email: %s" % str(e))
+
+    # Extract headers
+    headers = dict((k, v) for k, v in email_message.items())
+
+    # Extract body
+    body = ""
+    if email_message.is_multipart():
+        for part in email_message.walk():
+            ctype = part.get_content_type()
+            cdispo = str(part.get('Content-Disposition'))
+
+            # Skip any text/plain (txt) attachments
+            if ctype == 'text/plain' and 'attachment' not in cdispo:
+                body = part.get_payload(decode=True)
+                body = body.decode('utf-8', errors='replace')
+                break
+    else:
+        # Not multipart, just get the payload
+        body = email_message.get_payload(decode=True)
+        body = body.decode('utf-8', errors='replace')
+
+    return headers, body
+
+
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################

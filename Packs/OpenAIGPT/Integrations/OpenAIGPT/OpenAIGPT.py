@@ -115,6 +115,20 @@ def extract_assistant_message(response: Dict[str, Any], conversation: List[Dict[
     return response_content
 
 
+def get_email_parts(entry_id: str) -> Tuple[Dict[str, str], str]:
+    if not entry_id:
+        return_error("Provide an entryId of an uploaded '.eml' file.")
+
+    file_name, file_content = get_file_by_entry_id(entry_id)
+    file_content: str
+    file_name: str
+
+    if not file_name.endswith(EML_FILE_PREFIX):
+        return_error("Provided 'entryId' does not point to a valid '.eml' file.")
+
+    return parse_email(file_content)
+
+
 def construct_prompt(new_message: str, conversation_context=None, rag_data=""):
     if not conversation_context:
         conversation_context = []
@@ -173,6 +187,38 @@ def send_message_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandR
         outputs=conversation,
         readable_output=assistant_message
     )
+
+
+def check_email_header_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
+    entry_id: str | None = args.get('entryId', None)
+    email_headers, _ = get_email_parts(entry_id)
+    demisto.debug(f'openai-gpt checking email headers: {email_headers=}')
+    return CommandResults(
+        outputs_prefix='OpenAIGPT.Email.Headers',
+        outputs=email_headers,
+        readable_output=str(email_headers)
+    )
+    # # 3 - Construct the prompt
+    # prompt = ""
+    # # Starting a new conversation as of a new topic discussed.
+    # args.update({'reset_conversation_history': True, 'message': prompt})
+    # return send_message_command(client, args)
+
+
+def check_email_body_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
+    entry_id: str | None = args.get('entryId', None)
+    _, email_body = get_email_parts(entry_id)
+    demisto.debug(f'openai-gpt checking email body: {email_body=}')
+    return CommandResults(
+        outputs_prefix='OpenAIGPT.Email.Body',
+        outputs=email_body,
+        readable_output=email_body
+    )
+    # # 3 - Construct the prompt
+    # prompt = ""
+    # # Starting a new conversation as of a new topic discussed.
+    # args.update({'reset_conversation_history': True, 'message': prompt})
+    # return send_message_command(client, args)
 
 
 # def get_cve_info_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
@@ -239,11 +285,11 @@ def main() -> None:
         # elif command == "gpt-get-cve-info":
         #     return_results(get_cve_info_command(client=client, args=args))
         #
-        # elif command == "gpt-check-email-header":
-        #     return_results(check_email_header(client=client, args=args))
-        #
-        # elif command == "gpt-check-email-body":
-        #     return_results(check_email_body(client=client, args=args))
+        elif command == "gpt-check-email-header":
+            return_results(check_email_header_command(client=client, args=args))
+
+        elif command == "gpt-check-email-body":
+            return_results(check_email_body_command(client=client, args=args))
 
     except Exception as e:
         demisto.error(traceback.format_exc())

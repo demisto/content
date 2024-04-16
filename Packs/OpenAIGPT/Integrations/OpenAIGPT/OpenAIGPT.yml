@@ -111,8 +111,8 @@ script:
   - name: gpt-check-email-body
     description: Check email body for possible security issues.
     arguments:
-      - name: cve
-        description: CVE to provide information of.
+      - name: entryId
+        description: Entry ID of an uploaded '.eml' file.
         required: true
 
       - name: additionalInstructions
