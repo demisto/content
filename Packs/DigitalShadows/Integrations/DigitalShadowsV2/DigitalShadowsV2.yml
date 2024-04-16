@@ -14,7 +14,6 @@ configuration:
   required: true
   type: 0
 - additionalinfo: Account ID associated with this account.
-  defaultvalue: "291983189783"
   display: Account ID
   displaypassword: API Key
   hiddenusername: true
