@@ -8,6 +8,7 @@ urllib3.disable_warnings()
 
 '''CONSTANTS'''
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+a= 2
 
 
 class Client(BaseClient):
