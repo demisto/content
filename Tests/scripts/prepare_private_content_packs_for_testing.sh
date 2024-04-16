@@ -25,10 +25,10 @@ gcloud auth activate-service-account --key-file="$KF" >> "${ARTIFACTS_FOLDER_SER
 echo "Auth loaded successfully."
 
 GCS_MARKET_BUCKET="marketplace-dist"
-GCS_BUILD_BUCKET="marketplace-ci-build-private"
-GCS_PRIVATE_TESTING_BUCKET="marketplace-ci-build-private"
+GCS_BUILD_BUCKET="marketplace-ci-build-private-private"
+GCS_PRIVATE_TESTING_BUCKET="marketplace-ci-build-private-private"
 GCS_PRIVATE_PROD_BUCKET="marketplace-dist-private"
-GCS_TESTING_BUCKET="marketplace-ci-build"
+GCS_TESTING_BUCKET="marketplace-ci-build-private"
 GCS_PUBLIC_PROD_BUCKET="marketplace-dist"
 SOURCE_PATH="content/packs"
 
@@ -41,8 +41,8 @@ gsutil -m cp -r "gs://$GCS_PRIVATE_PROD_BUCKET/$SOURCE_PATH" "gs://$GCS_PRIVATE_
 echo "Finished copying private bucket successfully."
 
 
-echo "Copying index.zip at: gs://marketplace-dist/content/packs/index.zip to target path: gs://marketplace-ci-build/private/dummy_index/index.zip ..."
-gsutil -m cp "gs://marketplace-dist/content/packs/index.zip" "gs://marketplace-ci-build/private/dummy_index/index.zip" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/prepare_private_content_packs_for_testing.log" 2>&1
+echo "Copying index.zip at: gs://marketplace-dist/content/packs/index.zip to target path: gs://marketplace-ci-build-private/private/dummy_index/index.zip ..."
+gsutil -m cp "gs://marketplace-dist/content/packs/index.zip" "gs://marketplace-ci-build-private/private/dummy_index/index.zip" >> "${ARTIFACTS_FOLDER_SERVER_TYPE}/logs/prepare_private_content_packs_for_testing.log" 2>&1
 echo "Finished copying private index.zip successfully."
 
 

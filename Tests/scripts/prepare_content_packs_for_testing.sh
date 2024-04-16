@@ -36,7 +36,7 @@ gcloud auth activate-service-account --key-file="$GCS_MARKET_KEY" >> "${ARTIFACT
 echo "Auth loaded successfully."
 
 # ====== BUILD CONFIGURATION ======
-GCS_BUILD_BUCKET="marketplace-ci-build"
+GCS_BUILD_BUCKET="marketplace-ci-build-private"
 BUILD_BUCKET_PATH="content/builds/$CI_COMMIT_BRANCH/$CI_PIPELINE_ID$STAGING_SUFFIX/$MARKETPLACE_TYPE"
 BUILD_BUCKET_PACKS_DIR_PATH="$BUILD_BUCKET_PATH/content/packs"
 BUILD_BUCKET_CONTENT_DIR_FULL_PATH="$GCS_BUILD_BUCKET/$BUILD_BUCKET_PATH/content"

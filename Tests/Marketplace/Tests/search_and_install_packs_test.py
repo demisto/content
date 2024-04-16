@@ -299,7 +299,7 @@ class MockHttpRequest:
 
 GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY = '{"id":"errInstallContentPack","status":400,"title":"Could not install content ' \
                                       'pack","detail":"Could not install content pack","error":"Get' \
-                                      ' \"https://storage.googleapis.com/marketplace-ci-build/content/builds' \
+                                      ' \"https://storage.googleapis.com/marketplace-ci-build-private/content/builds' \
                                       '/master%2F2788053%2Fxsoar/content/packs/pack2/1.0.2/pack2.zip\": http2: ' \
                                       'timeout awaiting response headers","encrypted":false,"multires":null}'
 

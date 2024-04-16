@@ -7,9 +7,9 @@ if [ "$#" -lt "1" ]; then
   -ct, --ci-token             The ci token.
   [-b, --branch]              The branch name. Default is the current branch.
   [-gb, --bucket]             The name of the bucket to upload the packs to. Default is marketplace-dist-dev.
-  [-gb2, --bucket_v2]         The name of the bucket to upload the marketplace v2 packs to. Default is marketplace-v2-dist-dev.
-  [-gb3, --bucket_xpanse]     The name of the bucket to upload the xpanse marketplace packs to. Default is xpanse-dist-dev.
-  [-gb4, --bucket_xsoar_saas] The name of th bucket to upload the xsoar_saas marketplace packs to. Default is marketplace-saas-dist-dev.
+  [-gb2, --bucket_v2]         The name of the bucket to upload the marketplace v2 packs to. Default is marketplace-v2-dist-private-dev-private.
+  [-gb3, --bucket_xpanse]     The name of the bucket to upload the xpanse marketplace packs to. Default is marketplace-xpanse-dist-dev-private.
+  [-gb4, --bucket_xsoar_saas] The name of th bucket to upload the xsoar_saas marketplace packs to. Default is marketplace-saas-dist-dev-private.
   [-f, --force]               Whether to trigger the force upload flow.
   [-p, --packs]               CSV list of pack IDs. Mandatory when the --force flag is on.
   [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-bucket-upload.
@@ -24,9 +24,9 @@ fi
 
 _branch="$(git branch  --show-current)"
 _bucket="marketplace-dist-dev"
-_bucket_v2="marketplace-v2-dist-dev"
-_bucket_xpanse="xpanse-dist-dev"
-_bucket_xsoar_saas="marketplace-saas-dist-dev"
+_bucket_v2="marketplace-v2-dist-private-dev-private"
+_bucket_xpanse="marketplace-xpanse-dist-dev-private"
+_bucket_xsoar_saas="marketplace-saas-dist-dev-private"
 _force="false"
 _slack_channel="dmst-bucket-upload"
 _storage_base_path=""
@@ -55,8 +55,8 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -gb2|--bucket_v2)
-  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-v2-dist" ]; then
-    echo "Only test buckets are allowed to use. Using marketplace-v2-dist-dev instead."
+  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-v2-dist-private" ]; then
+    echo "Only test buckets are allowed to use. Using marketplace-v2-dist-private-dev-private instead."
   else
     _bucket_v2=$2
   fi
@@ -65,7 +65,7 @@ while [[ "$#" -gt 0 ]]; do
 
   -gb3|--bucket_xpanse)
   if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "xpanse-dist" ]; then
-    echo "Only test buckets are allowed to use. Using xpanse-dist-dev instead."
+    echo "Only test buckets are allowed to use. Using marketplace-xpanse-dist-dev-private instead."
   else
     _bucket_xpanse=$2
   fi
@@ -74,7 +74,7 @@ while [[ "$#" -gt 0 ]]; do
 
   -gb4|--bucket_xsoar_saas)
   if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-saas-dist" ]; then
-    echo "Only test buckets are allowed to use. Using marketplace-saas-dist-dev instead."
+    echo "Only test buckets are allowed to use. Using marketplace-saas-dist-dev-private instead."
   else
     _bucket_xsoar_saas=$2
   fi

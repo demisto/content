@@ -147,8 +147,8 @@ class TestRegex:
 
         corepacks_file = {
             "corePacks": [
-                "https://storage.googleapis.com/marketplace-ci-build/content/packs/pack_1/1.4.0/pack_1.zip",
-                "https://storage.googleapis.com/marketplace-ci-build/content/packs/pack_2/2.2.3/pack_2.zip"
+                "https://storage.googleapis.com/marketplace-ci-build-private/content/packs/pack_1/1.4.0/pack_1.zip",
+                "https://storage.googleapis.com/marketplace-ci-build-private/content/packs/pack_2/2.2.3/pack_2.zip"
             ],
             "upgradeCorePacks": [
                 "pack_1"
