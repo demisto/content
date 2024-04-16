@@ -1,7 +1,7 @@
 id: IPv6 CIDR extraction test
 version: -1
 name: IPv6 CIDR extraction test
-description: Test extraction flow of IPv6 CIDR in XSOAR
+description: test test.
 starttaskid: "0"
 tasks:
   "0":

@@ -1,6 +1,5 @@
 id: Mail-Listener Test Playbook
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Mail-Listener Test Playbook
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -439,6 +439,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -503,3 +504,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: test test.
