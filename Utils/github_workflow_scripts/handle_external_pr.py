@@ -285,7 +285,7 @@ def find_all_open_prs_by_user(content_repo, pr_creator):
     :param pr_creator:
     :return:
     """
-    all_prs = content_repo.get_pulls(per_page=100)
+    all_prs = content_repo.get_pulls()
     total_prs= []
     print(f'Number of all open PRs is: {all_prs.totalCount}')
     for pr in all_prs:
@@ -409,7 +409,7 @@ def main():
     print(f"TIM Reviewer: {tim_reviewer}")
 
     prs = find_all_open_prs_by_user(content_repo, "edi")
-    print(f'Number of open PRs is: {prs}')
+    print(f'The PR\'s:\n {prs}')
     #content_reviewer = find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number)
 
     content_reviewer = determine_reviewer(content_reviewers, content_repo)
