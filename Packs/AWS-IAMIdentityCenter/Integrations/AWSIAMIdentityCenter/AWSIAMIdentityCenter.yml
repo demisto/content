@@ -119,7 +119,6 @@ script:
     - description: Is this the primary email address for the associated resource. 
       name: userEmailAddressPrimary
       required: false
-      defaultValue: true
       auto: PREDEFINED
       predefined:
       - yes
@@ -891,7 +890,7 @@ script:
       required: false
     - description: The name of the group to create.
       name: displayName
-      required: false
+      required: true
     - description: The description of the group to create.
       name: description
       required: false
