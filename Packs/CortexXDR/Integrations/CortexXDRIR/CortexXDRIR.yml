@@ -17,7 +17,7 @@ configuration:
   type: 13
   section: Connect
   required: false
-  defaultvalue: 'Cortex XDR - Lite'
+  defaultvalue: Cortex XDR - Lite
 - defaultvalue: 'false'
   display: Remove legacy incident fields
   name: dont_format_sublists
@@ -45,14 +45,14 @@ configuration:
   required: false
 - display: Custom close-reason mapping (XDR -> XSOAR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
   section: Collect
-  additionalinfo: 'Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved, Duplicate Incident=Other". Refer to integration documentation for possible close-reasons - `XDR Incident Mirroring`.'
+  additionalinfo: "Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: \u201CKnown Issue=Resolved, Duplicate Incident=Other\". Refer to integration documentation for possible close-reasons - `XDR Incident Mirroring`."
   name: custom_xdr_to_xsoar_close_reason_mapping
   defaultvalue: ''
   type: 0
   required: false
 - name: url
   type: 0
-  display: 'Server URL (copy URL from XDR)'
+  display: Server URL (copy URL from XDR)
   section: Connect
   required: true
 - displaypassword: API Key ID
@@ -135,7 +135,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: 'Whether the XDR tenant Mode is prevent only'
+- additionalinfo: Whether the XDR tenant Mode is prevent only
   display: Prevent Only Mode
   name: prevent_only
   type: 8
@@ -158,7 +158,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- additionalinfo: "Whether to fetch only the essential incident's fields and minimize the incident's information."
+- additionalinfo: Whether to fetch only the essential incident's fields and minimize the incident's information.
   display: Minimize Incident Information
   name: exclude_fields
   required: false
@@ -215,9 +215,9 @@ script:
     - description: Starred fetch window timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
       defaultValue: 3 days
       name: starred_incidents_fetch_window
-    description: |-
-      Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
-      If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
+    description: 'Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
+
+      If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.'
     name: xdr-get-incidents
     outputs:
     - contextPath: PaloAltoNetworksXDR.Incident.incident_id
@@ -254,15 +254,17 @@ script:
       description: Number of users involved in the incident.
       type: number
     - contextPath: PaloAltoNetworksXDR.Incident.severity
-      description: |
-        Calculated severity of the incident. Valid values are: "low","medium","high".
+      description: 'Calculated severity of the incident. Valid values are: "low","medium","high".
+
+        '
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.low_severity_alert_count
       description: Number of alerts with the severity LOW.
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.status
-      description: |
-        Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate_incident","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
+      description: 'Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate_incident","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
+
+        '
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.description
       description: Dynamic calculated description of the incident.
@@ -308,9 +310,9 @@ script:
       description: Date and time that the first alert occurred in the incident.
       type: Date
     - contextPath: PaloAltoNetworksXDR.Incident.status
-      description: |-
-        Current status of the incident. Valid values are:
-        "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing","resolved_other".
+      description: 'Current status of the incident. Valid values are:
+
+        "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing","resolved_other".'
       type: String
     - contextPath: PaloAltoNetworksXDR.Incident.severity
       description: 'Calculated severity of the incident. Valid values are: "low","medium","high".'
@@ -589,7 +591,7 @@ script:
       description: IP address.
       type: String
     - contextPath: IP.Geo.Country
-      description: 'The country in which the IP address is located.'
+      description: The country in which the IP address is located.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -644,23 +646,23 @@ script:
     - description: Integer value for the source port.
       name: local_port
       required: true
-    - description: |-
-        String value of the destination IP
-        address.
+    - description: 'String value of the destination IP
+
+        address.'
       name: remote_ip
       required: true
-    - description: |-
-        Integer value for the destination
-        port.
+    - description: 'Integer value for the destination
+
+        port.'
       name: remote_port
       required: true
     - description: Integer value representing the time the alert occurred in milliseconds, or a string value in date format 2019-10-23T10:00:00. If not set, the event time will be defined as now.
       name: event_timestamp
     - auto: PREDEFINED
       defaultValue: Medium
-      description: |-
-        String value of alert severity. Valid values are:
-        Informational, Low, Medium or High.
+      description: 'String value of alert severity. Valid values are:
+
+        Informational, Low, Medium or High.'
       name: severity
       predefined:
       - Informational
@@ -672,10 +674,11 @@ script:
       required: true
     - description: String defining the alert description.
       name: alert_description
-    description: |-
-      Uploads an alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
+    description: 'Uploads an alert from external alert sources in Cortex XDR format. Cortex XDR displays alerts that are parsed
+
       successfully in related incidents and views. You can send 600 alerts per minute. Each request can contain a
-      maximum of 60 alerts.
+
+      maximum of 60 alerts.'
     name: xdr-insert-parsed-alert
   - arguments:
     - description: List of alerts in CEF format.
@@ -740,21 +743,18 @@ script:
     - description: The endpoint ID (string) for which to reverse the isolation. You can retrieve it from the xdr-get-endpoints command.
       name: endpoint_id
       required: true
-    - description: |-
-        Whether to suppress an error when trying to unisolate a disconnected endpoint. When sets to false, an error will be returned.
+    - description: Whether to suppress an error when trying to unisolate a disconnected endpoint. When sets to false, an error will be returned.
       name: suppress_disconnected_endpoint_error
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
-    - description: |-
-        Interval in seconds between each poll.
+    - description: Interval in seconds between each poll.
       name: interval_in_seconds
     - description: Polling timeout in seconds.
       name: timeout_in_seconds
-    - description: |-
-        For polling use.
+    - description: For polling use.
       isArray: true
       name: action_id
       deprecated: true
@@ -794,24 +794,24 @@ script:
     - description: A comma-separated list of endpoint IDs.
       isArray: true
       name: endpoint_id_list
-    - description: |-
-        A comma-separated list of distribution package names or installation package names.
-        Example: dist_name1,dist_name2.
+    - description: 'A comma-separated list of distribution package names or installation package names.
+
+        Example: dist_name1,dist_name2.'
       isArray: true
       name: dist_name
-    - description: |-
-        A comma-separated list of private IP addresses.
-        Example: 10.1.1.1,192.168.1.1.
+    - description: 'A comma-separated list of private IP addresses.
+
+        Example: 10.1.1.1,192.168.1.1.'
       isArray: true
       name: ip_list
-    - description: |-
-        A comma-separated list of public IP addresses that correlate to the last IPv4 address from which the Cortex XDR agent connected (know as `Last Origin IP`).
-        Example: 8.8.8.8,1.1.1.1.
+    - description: 'A comma-separated list of public IP addresses that correlate to the last IPv4 address from which the Cortex XDR agent connected (know as `Last Origin IP`).
+
+        Example: 8.8.8.8,1.1.1.1.'
       isArray: true
       name: public_ip_list
-    - description: |-
-        The group name to which the agent belongs.
-        Example: group_name1,group_name2.
+    - description: 'The group name to which the agent belongs.
+
+        Example: group_name1,group_name2.'
       isArray: true
       name: group_name
     - description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
@@ -823,50 +823,61 @@ script:
       - linux
       - macos
       - android
-    - description: |-
-        A comma-separated list of alias names.
-        Examples: alias_name1,alias_name2.
+    - description: 'A comma-separated list of alias names.
+
+        Examples: alias_name1,alias_name2.'
       name: alias_name
       isArray: true
-    - description: |-
-        Specifies whether the endpoint was isolated or unisolated.
+    - description: Specifies whether the endpoint was isolated or unisolated.
       name: isolate
       auto: PREDEFINED
       predefined:
       - isolated
       - unisolated
-    - description: |-
-        Hostname
-        Example: hostname1,hostname2.
+    - description: 'Hostname
+
+        Example: hostname1,hostname2.'
       name: hostname
       isArray: true
-    - description: |-
-        All the agents that were first seen after {first_seen_gte}.
+    - description: 'All the agents that were first seen after {first_seen_gte}.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date).
+
+        "2019-10-21T23:45:00" (date).'
       name: first_seen_gte
-    - description: |-
-        All the agents that were first seen before {first_seen_lte}.
+    - description: 'All the agents that were first seen before {first_seen_lte}.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date).
+
+        "2019-10-21T23:45:00" (date).'
       name: first_seen_lte
-    - description: |-
-        All the agents that were last seen before {last_seen_gte}.
+    - description: 'All the agents that were last seen before {last_seen_gte}.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date).
+
+        "2019-10-21T23:45:00" (date).'
       name: last_seen_gte
-    - description: |-
-        All the agents that were last seen before {last_seen_lte}.
+    - description: 'All the agents that were last seen before {last_seen_lte}.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date).
+
+        "2019-10-21T23:45:00" (date).'
       name: last_seen_lte
     - defaultValue: '0'
       description: Page number (for pagination). The default is 0 (the first page).
@@ -993,14 +1004,14 @@ script:
     - description: A comma-separated list of endpoint IDs to use as a filter.
       isArray: true
       name: endpoint_id_list
-    - description: |-
-        A comma-separated list of distribution package names or installation package names to use as a filter.
-        Example: dist_name1,dist_name2.
+    - description: 'A comma-separated list of distribution package names or installation package names to use as a filter.
+
+        Example: dist_name1,dist_name2.'
       isArray: true
       name: dist_name
-    - description: |-
-        A comma-separated list of IP addresses to use as a filter.
-        Example: 8.8.8.8,1.1.1.1.
+    - description: 'A comma-separated list of IP addresses to use as a filter.
+
+        Example: 8.8.8.8,1.1.1.1.'
       isArray: true
       name: ip_list
     - description: A comma-separated list of group names to which the agent belongs to use as a filter.
@@ -1015,9 +1026,9 @@ script:
       - linux
       - macos
       - android
-    - description: |-
-        A comma-separated list of alias names to use as a filter.
-        Examples: alias_name1,alias_name2.
+    - description: 'A comma-separated list of alias names to use as a filter.
+
+        Examples: alias_name1,alias_name2.'
       isArray: true
       name: alias_name
     - auto: PREDEFINED
@@ -1029,42 +1040,54 @@ script:
     - description: A comma-separated list of hostnames to use as a filter.
       isArray: true
       name: hostname
-    - description: |-
-        All the agents that were first seen after {first_seen_gte} to use as a filter.
+    - description: 'All the agents that were first seen after {first_seen_gte} to use as a filter.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date).
+
+        "2019-10-21T23:45:00" (date).'
       name: first_seen_gte
-    - description: |-
-        All the agents that were first seen before {first_seen_lte} to use as a filter.
+    - description: 'All the agents that were first seen before {first_seen_lte} to use as a filter.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date).
+
+        "2019-10-21T23:45:00" (date).'
       name: first_seen_lte
-    - description: |-
-        All the agents that were last seen after {last_seen_gte} to use as a filter.
+    - description: 'All the agents that were last seen after {last_seen_gte} to use as a filter.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date).
+
+        "2019-10-21T23:45:00" (date).'
       name: last_seen_gte
-    - description: |-
-        All the agents that were last seen before {last_seen_lte} to use as a filter.
+    - description: 'All the agents that were last seen before {last_seen_lte} to use as a filter.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date).
+
+        "2019-10-21T23:45:00" (date).'
       name: last_seen_lte
     - name: username
       description: The usernames to use as a filter. Accepts a single user, or comma-separated list of usernames.
       isArray: true
     - name: new_alias_name
       required: true
-      description: |-
-        The alias name to change to.
-        Note: If you send an empty field, (e.g., new_alias_name=\"\") the current alias name is deleted.
+      description: 'The alias name to change to.
+
+        Note: If you send an empty field, (e.g., new_alias_name=\"\") the current alias name is deleted.'
     - name: scan_status
       description: The scan status of the endpoint to use as a filter.
       auto: PREDEFINED
@@ -1097,7 +1120,7 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: "String, valid values are:\n• windows \n• linux\n• macos \n• android."
+      description: "String, valid values are:\n\u2022 windows \n\u2022 linux\n\u2022 macos \n\u2022 android."
       name: platform
       predefined:
       - windows
@@ -1106,10 +1129,11 @@ script:
       - android
       required: true
     - auto: PREDEFINED
-      description: |-
-        A string representing the type of package to create.
+      description: 'A string representing the type of package to create.
+
         standalone - An installation for a new agent
-        upgrade - An upgrade of an agent from ESM.
+
+        upgrade - An upgrade of an agent from ESM.'
       name: package_type
       predefined:
       - standalone
@@ -1139,22 +1163,13 @@ script:
       description: Information about the package.
       type: String
   - arguments:
-    - description: |-
-        The ID of the installation package.
-        Copy the distribution_id from the "id" field on Endpoints > Agent Installation page.
+    - description: 'The ID of the installation package.
+
+        Copy the distribution_id from the "id" field on Endpoints > Agent Installation page.'
       name: distribution_id
       required: true
     - auto: PREDEFINED
-      description: |-
-        The installation package type. Valid
-        values are:
-        • upgrade
-        • sh - For Linux
-        • rpm - For Linux
-        • deb - For Linux
-        • pkg - For Mac
-        • x86 - For Windows
-        • x64 - For Windows.
+      description: "The installation package type. Valid\nvalues are:\n\u2022 upgrade\n\u2022 sh - For Linux\n\u2022 rpm - For Linux\n\u2022 deb - For Linux\n\u2022 pkg - For Mac\n\u2022 x86 - For Windows\n\u2022 x64 - For Windows."
       name: package_type
       predefined:
       - upgrade
@@ -1189,7 +1204,7 @@ script:
       description: The status of installation package.
       type: String
   - arguments:
-    - description: User’s email address.
+    - description: "User\u2019s email address."
       name: email
     - description: The audit log type.
       name: type
@@ -1226,19 +1241,25 @@ script:
       - SUCCESS
       - FAIL
       - PARTIAL
-    - description: |-
-        Return logs for which the timestamp is after 'log_time_after'.
+    - description: 'Return logs for which the timestamp is after ''log_time_after''.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date).
+
+        "2019-10-21T23:45:00" (date).'
       name: timestamp_gte
-    - description: |-
-        Return logs for which the timestamp is before the 'log_time_after'.
+    - description: 'Return logs for which the timestamp is before the ''log_time_after''.
+
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date).
+
+        "2019-10-21T23:45:00" (date).'
       name: timestamp_lte
     - defaultValue: '0'
       description: Page number (for pagination). The default is 0 (the first page).
@@ -1365,20 +1386,26 @@ script:
       predefined:
       - Success
       - Fail
-    - description: |-
-        Return logs that their timestamp is greater than 'log_time_after'.
-        Supported values:
-        1579039377301 (time in milliseconds)
-        "3 days" (relative date)
-        "2019-10-21T23:45:00" (date).
-      name: timestamp_gte
-    - description: |-
-        Return logs for which the timestamp is before the 'timestamp_lte'.
+    - description: 'Return logs that their timestamp is greater than ''log_time_after''.
 
         Supported values:
+
         1579039377301 (time in milliseconds)
+
         "3 days" (relative date)
-        "2019-10-21T23:45:00" (date).
+
+        "2019-10-21T23:45:00" (date).'
+      name: timestamp_gte
+    - description: 'Return logs for which the timestamp is before the ''timestamp_lte''.
+
+
+        Supported values:
+
+        1579039377301 (time in milliseconds)
+
+        "3 days" (relative date)
+
+        "2019-10-21T23:45:00" (date).'
       name: timestamp_lte
     - defaultValue: '0'
       description: Page number (for pagination). The default is 0 (the first page).
@@ -1534,7 +1561,7 @@ script:
     - description: String that represents the path of the file you want to quarantine.
       name: file_path
       required: true
-    - description: String that represents the file’s hash. Must be a valid SHA256 hash.
+    - description: "String that represents the file\u2019s hash. Must be a valid SHA256 hash."
       name: file_hash
       required: true
     - description: Interval in seconds between each poll.
@@ -1561,7 +1588,7 @@ script:
     - description: String that represents the path of the file you want to quarantine.
       name: file_path
       required: true
-    - description: String that represents the file’s hash. Must be a valid SHA256 hash.
+    - description: "String that represents the file\u2019s hash. Must be a valid SHA256 hash."
       name: file_hash
       required: true
   - arguments:
@@ -1799,7 +1826,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.endpointScan.aborted
       description: Was the scan aborted?
       type: Boolean
-  - description: "Gets mapping fields from remote incident. Note: This method will not update the current incident, it's here for debugging purposes."
+  - description: 'Gets mapping fields from remote incident. Note: This method will not update the current incident, it''s here for debugging purposes.'
     name: get-mapping-fields
     arguments: []
   - arguments:
@@ -1809,7 +1836,7 @@ script:
     - defaultValue: '0'
       description: UTC timestamp in seconds. The incident is only updated if it was modified after the last update time.
       name: lastUpdate
-    description: "Gets remote data from a remote incident. Note: This method will not update the current incident, it's here for debugging purposes."
+    description: 'Gets remote data from a remote incident. Note: This method will not update the current incident, it''s here for debugging purposes.'
     name: get-remote-data
   - arguments:
     - description: Date string representing the local time.The incident is only returned if it was modified after the last update time.
@@ -2314,12 +2341,10 @@ script:
   - arguments:
     - description: Allows linking the response action to the incident that triggered it.
       name: incident_id
-    - description: |-
-        A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
+    - description: A comma-separated list of endpoint IDs. Can be retrieved by running the xdr-get-endpoints command.
       name: endpoint_ids
       required: true
-    - description: |-
-        Section of a script you want to initiate on an endpoint (e.g., print("7")).
+    - description: Section of a script you want to initiate on an endpoint (e.g., print("7")).
       name: snippet_code
       required: true
     deprecated: true
@@ -2344,7 +2369,7 @@ script:
       description: General status of the action, considering the status of all the endpoints.
       type: String
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.error_message
-      description: Error message regarding permissions for running APIs or the action doesn’t exist.
+      description: "Error message regarding permissions for running APIs or the action doesn\u2019t exist."
       type: String
     - contextPath: PaloAltoNetworksXDR.ScriptStatus.endpoints_timeout
       description: Number of endpoints in "timeout" status.
@@ -2728,15 +2753,9 @@ script:
       name: status
       required: true
       isArray: true
-    - description: |-
-        All the agents that were last seen before {last_seen_gte}. Supported
-                values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"
-                (date).
+    - description: "All the agents that were last seen before {last_seen_gte}. Supported\n        values: 1579039377301 (time in milliseconds) \"3 days\" (relative date) \"2019-10-21T23:45:00\"\n        (date)."
       name: last_seen_gte
-    - description: |-
-        All the agents that were last seen before {last_seen_lte}. Supported
-                values: 1579039377301 (time in milliseconds) "3 days" (relative date) "2019-10-21T23:45:00"
-                (date).
+    - description: "All the agents that were last seen before {last_seen_lte}. Supported\n        values: 1579039377301 (time in milliseconds) \"3 days\" (relative date) \"2019-10-21T23:45:00\"\n        (date)."
       name: last_seen_lte
     description: Returns the number of the connected\disconnected endpoints.
     name: xdr-get-endpoints-by-status
@@ -2936,7 +2955,7 @@ script:
       isArray: true
       name: alert_source
     - auto: PREDEFINED
-      description: Supports relative times or “custom” time option. If you choose the "custom" option, you should use start_time and end_time arguments.
+      description: "Supports relative times or \u201Ccustom\u201D time option. If you choose the \"custom\" option, you should use start_time and end_time arguments."
       name: time_frame
       predefined:
       - 60 minutes
@@ -2957,9 +2976,9 @@ script:
     - description: CGO CMD.
       isArray: true
       name: causality_actor_process_image_command_line
-    - description: |-
-        Trimmed to 128 unicode chars during event serialization.
-        Full value reported as part of the original process event.
+    - description: 'Trimmed to 128 unicode chars during event serialization.
+
+        Full value reported as part of the original process event.'
       isArray: true
       name: actor_process_image_command_line
     - description: The command line of the process created.
@@ -3092,47 +3111,82 @@ script:
       description: The category of the alert.
       type: String
     - contextPath: PaloAltoNetworksXDR.Alert.alert_action_status
-      description: |-
-        The alert action. Possible values.
+      description: 'The alert action. Possible values.
+
 
         DETECTED: detected
-        DETECTED_0: detected (allowed the session)
-        DOWNLOAD: detected (download)
-        DETECTED_19: detected (forward)
-        POST_DETECTED: detected (post detected)
-        PROMPT_ALLOW: detected (prompt allow)
-        DETECTED_4: detected (raised an alert)
-        REPORTED: detected (reported)
-        REPORTED_TRIGGER_4: detected (on write)
-        SCANNED: detected (scanned)
-        DETECTED_23: detected (sinkhole)
-        DETECTED_18: detected (syncookie sent)
-        DETECTED_21: detected (wildfire upload failure)
-        DETECTED_20: detected (wildfire upload success)
-        DETECTED_22: detected (wildfire upload skip)
-        DETECTED_MTH: detected (xdr managed threat hunting)
-        BLOCKED_25: prevented (block)
-        BLOCKED: prevented (blocked)
-        BLOCKED_14: prevented (block-override)
-        BLOCKED_5: prevented (blocked the url)
-        BLOCKED_6: prevented (blocked the ip)
-        BLOCKED_13: prevented (continue)
-        BLOCKED_1: prevented (denied the session)
-        BLOCKED_8: prevented (dropped all packets)
-        BLOCKED_2: prevented (dropped the session)
-        BLOCKED_3: prevented (dropped the session and sent a tcp reset)
-        BLOCKED_7: prevented (dropped the packet)
-        BLOCKED_16: prevented (override)
-        BLOCKED_15: prevented (override-lockout)
-        BLOCKED_26: prevented (post detected)
-        PROMPT_BLOCK: prevented (prompt block)
-        BLOCKED_17: prevented (random-drop)
-        BLOCKED_24: prevented (silently dropped the session with an icmp unreachable message to the host or application)
-        BLOCKED_9: prevented (terminated the session and sent a tcp reset to both sides of the connection)
-        BLOCKED_10: prevented (terminated the session and sent a tcp reset to the client)
-        BLOCKED_11: prevented (terminated the session and sent a tcp reset to the server)
-        BLOCKED_TRIGGER_4: prevented (on write).
 
+        DETECTED_0: detected (allowed the session)
+
+        DOWNLOAD: detected (download)
+
+        DETECTED_19: detected (forward)
+
+        POST_DETECTED: detected (post detected)
+
+        PROMPT_ALLOW: detected (prompt allow)
+
+        DETECTED_4: detected (raised an alert)
+
+        REPORTED: detected (reported)
+
+        REPORTED_TRIGGER_4: detected (on write)
+
+        SCANNED: detected (scanned)
+
+        DETECTED_23: detected (sinkhole)
+
+        DETECTED_18: detected (syncookie sent)
+
+        DETECTED_21: detected (wildfire upload failure)
+
+        DETECTED_20: detected (wildfire upload success)
+
+        DETECTED_22: detected (wildfire upload skip)
+
+        DETECTED_MTH: detected (xdr managed threat hunting)
+
+        BLOCKED_25: prevented (block)
+
+        BLOCKED: prevented (blocked)
+
+        BLOCKED_14: prevented (block-override)
+
+        BLOCKED_5: prevented (blocked the url)
+
+        BLOCKED_6: prevented (blocked the ip)
+
+        BLOCKED_13: prevented (continue)
+
+        BLOCKED_1: prevented (denied the session)
+
+        BLOCKED_8: prevented (dropped all packets)
+
+        BLOCKED_2: prevented (dropped the session)
+
+        BLOCKED_3: prevented (dropped the session and sent a tcp reset)
+
+        BLOCKED_7: prevented (dropped the packet)
+
+        BLOCKED_16: prevented (override)
+
+        BLOCKED_15: prevented (override-lockout)
+
+        BLOCKED_26: prevented (post detected)
+
+        PROMPT_BLOCK: prevented (prompt block)
+
+        BLOCKED_17: prevented (random-drop)
+
+        BLOCKED_24: prevented (silently dropped the session with an icmp unreachable message to the host or application)
+
+        BLOCKED_9: prevented (terminated the session and sent a tcp reset to both sides of the connection)
+
+        BLOCKED_10: prevented (terminated the session and sent a tcp reset to the client)
+
+        BLOCKED_11: prevented (terminated the session and sent a tcp reset to the server)
+
+        BLOCKED_TRIGGER_4: prevented (on write).'
       type: String
     - contextPath: PaloAltoNetworksXDR.Alert.alert_action_status_readable
       description: The alert action.
@@ -3229,8 +3283,7 @@ script:
       name: comments
     - auto: PREDEFINED
       defaultValue: group
-      description: |-
-        The string value to replace an active directory group or organizational unit.
+      description: The string value to replace an active directory group or organizational unit.
       name: ad_type
       predefined:
       - group
@@ -3348,9 +3401,11 @@ script:
       description: Name of scope associated with the user, if applicable.
       type: array
   - arguments:
-    - description: |
-        Unique ID of a specific user.
+    - description: 'Unique ID of a specific user.
+
         User ID could be either of the `foo/dummy` format, or just `dummy`.
+
+        '
       name: user_id
     - description: Limit the number of users that will appear in the list. (Use limit when no specific host is requested.)
       name: limit
@@ -3492,7 +3547,7 @@ script:
       isArray: true
     name: xdr-remove-user-role
     description: Remove one or more users from a role.
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   isfetch:xpanse: false
   script: ''

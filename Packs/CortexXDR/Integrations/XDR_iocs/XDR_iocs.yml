@@ -81,7 +81,7 @@ configuration:
   - Bad
   type: 18
   required: false
-- display: 'Source Reliability'
+- display: Source Reliability
   name: feedReliability
   options:
   - A - Completely reliable
@@ -94,7 +94,7 @@ configuration:
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
-- display: 'Traffic Light Protocol Color'
+- display: Traffic Light Protocol Color
   name: tlp_color
   type: 15
   options:
@@ -132,10 +132,10 @@ configuration:
   display: XSOAR Severity Field
   name: xsoar_severity_field
   type: 0
-  defaultvalue: 'sourceoriginalseverity'
+  defaultvalue: sourceoriginalseverity
   required: false
-- defaultvalue: 'comments'
-  additionalinfo: 'The Cortex XSOAR field where comments are stored and being export to XDR. Default is `comments`. Expecting a Cortex XSOAR IOC format of a comment (nested dictionary).'
+- defaultvalue: comments
+  additionalinfo: The Cortex XSOAR field where comments are stored and being export to XDR. Default is `comments`. Expecting a Cortex XSOAR IOC format of a comment (nested dictionary).
   display: XSOAR Comment Field Exporting To XDR
   name: xsoar_comments_field
   options:
@@ -170,9 +170,9 @@ script:
   - description: Create a file with all the IOCs that are going to sync to Cortex XDR.
     name: xdr-iocs-to-keep-file
   - arguments:
-    - description: |-
-        For first sync, set to true.
-        (do NOT run this twice!).
+    - description: 'For first sync, set to true.
+
+        (do NOT run this twice!).'
       name: firstTime
       auto: PREDEFINED
       default: true
@@ -220,7 +220,7 @@ script:
       required: true
     description: Disables IOCs in the XDR server.
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.10.14.92207
   feed: true
   runonce: false
   script: '-'
