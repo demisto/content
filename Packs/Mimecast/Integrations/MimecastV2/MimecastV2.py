@@ -68,6 +68,11 @@ default_query_xml = "<?xml version=\"1.0\"?> \n\
 
 ''' API COMMUNICATION FUNCTIONS'''
 
+TYPE_TO_SUFFIX = {
+    'HTML': 'html',
+    'PLAIN': 'txt',
+    'RFC822': 'eml'
+}
 
 def request_with_pagination(api_endpoint: str, data: list, response_param: str = None, limit: int = 100,
                             page: int = None,
@@ -1930,6 +1935,8 @@ def get_message():
         })
 
     if message_part == 'all' or message_part == 'message':
+        suffix = TYPE_TO_SUFFIX.get(message_type, '')
+        file_name = f'{message_id}.{suffix}' if suffix else message_id
         email_file = get_message_body_content_request(message_id, message_context, message_type)
         results.append(fileResult(message_id, email_file))
 
@@ -1959,7 +1966,6 @@ def get_message_metadata(message_id):
     contents = {}  # type: Dict[Any, Any]
     context = {}  # type: Dict[Any, Any]
     message = get_message_metadata_request(message_id)
-    demisto.debug(f'Received the following message:\n {json.dumps(message)}')
 
     receivers = message.get('to', [])
     to_context = []
