@@ -1,10 +1,10 @@
 args:
 - name: EntryID
   description: The RDP cache file's entryID to process.
-- defaultValue: "False"
+- defaultValue: 'False'
   name: verbose
   description: Should the command produce verbose output.
-- defaultValue: "64"
+- defaultValue: '64'
   name: width
   description: Image width.
 commonfields:
@@ -12,8 +12,8 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-dockerimage: demisto/python3:3.10.13.78623
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.14.92207
 enabled: true
 name: BMCTool
 comment: Parse RDP bitmap cache data into a single collage image file.
