@@ -10,6 +10,7 @@ import time
 # 3-rd party imports
 import requests
 import urllib3
+a = 89
 
 # Local imports
 from akamai.edgegrid import EdgeGridAuth
