@@ -12,7 +12,6 @@ from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
 from demisto_sdk.commands.content_graph.objects.integration import Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
 from random import randint
-import requests
 import re
 
 from Utils.github_workflow_scripts.utils import (
@@ -284,9 +283,12 @@ def get_user_from_ui_pr(pr):
     """
     try:
         body = pr.body
-        user_in_list = re.findall("Contributor\s(\S+)", body)
-        user = str(user_in_list[0])
-        return user
+        index_of_user = body.find("Contributor\n@")
+        substring_user = body[index_of_user+len("Contributor\n@")]
+        user_in_list = substring_user.split("\n")[0]
+        #user_in_list = re.findall("Contributor\s(\S+)", body)
+        #user = str(user_in_list[0])
+        return user_in_list
     except Exception:
         user_list = re.findall("Contributor\s(\S+)", body)
         print(f'the user is: {user_list}')
