@@ -14,15 +14,15 @@ args:
   description: The service to use for resolving the URL. If not set, a default service is used.
   auto: PREDEFINED
   predefined:
-  - "longurl.in"
-  - "unshorten.me"
-  - "Built-In"
+  - longurl.in
+  - unshorten.me
+  - Built-In
 - name: url
   required: true
   description: The URL to resolve.
   default: true
 - name: redirect_limit
-  defaultValue: "5"
+  defaultValue: '5'
   description: A maximum number of recursions to run in case of nested shortened-URLs. Use 0 for unlimited (not recommended).
 - name: use_system_proxy
   predefined:
@@ -34,8 +34,8 @@ args:
 - name: insecure
   type: Boolean
   predefined:
-  - "False"
-  - "True"
+  - 'False'
+  - 'True'
   description: Trust any certificate (not secure).
 outputs:
 - contextPath: URL.Data
@@ -61,6 +61,6 @@ outputs:
   type: list
 scripttarget: 0
 tests:
-- "No test"
+- No test
 fromversion: 6.5.0
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.14.92207

@@ -21,7 +21,7 @@ args:
   description: Sender email address
 - name: distance
   description: Distance that is considered close
-  defaultValue: "3"
+  defaultValue: '3'
 outputs:
 - contextPath: LevenshteinDistance
   description: The closeness of the sender domain to our configured domains
@@ -29,6 +29,6 @@ scripttarget: 0
 dependson: {}
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.14.92207
 tests:
 - No tests (auto formatted)
