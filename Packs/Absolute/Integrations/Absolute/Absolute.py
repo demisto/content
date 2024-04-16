@@ -468,6 +468,7 @@ def device_freeze_request_command(args, client) -> CommandResults:
 
 def prepare_payload_to_freeze_request(args):
     request_name = args.get('request_name')
+    a= 1
     html_message = args.get('html_message')
     message_name = args.get('message_name')
     device_ids = argToList(args.get('device_ids'))
