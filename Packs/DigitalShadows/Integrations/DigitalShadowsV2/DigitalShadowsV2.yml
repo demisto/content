@@ -247,3 +247,6 @@ script:
   script: ''
   subtype: python3
   type: python
+
+defaultmapperin: DigitalShadowsIncidentMapper
+defaultclassifier: DigitalShadowsIncidentClassifier
