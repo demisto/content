@@ -2927,6 +2927,9 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: timeout_in_seconds
+      type: Number
+      description: The timeout in seconds to use when polling events.
     description: Polling command to search for events of a specific offense.
     name: qradar-search-retrieve-events
     polling: true
