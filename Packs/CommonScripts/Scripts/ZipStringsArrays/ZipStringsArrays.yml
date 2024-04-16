@@ -12,9 +12,7 @@ args:
   required: true
   description: The first list. list1 must be the same size as list2.
 - name: format
-  description: |-
-    The format to join the lists by. For example, {1}-{2} joins the values for the same index in both lists, 
-    where {1} is replaced with the value from list1 and {2} is replaced with the value from list2.
+  description: "The format to join the lists by. For example, {1}-{2} joins the values for the same index in both lists, \nwhere {1} is replaced with the value from list1 and {2} is replaced with the value from list2."
 - name: list2
   isArray: true
   required: true
@@ -25,9 +23,9 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.14.92207
 runas: DBotWeakRole
 fromversion: 6.0.0
-comment: 'Joins values from two lists by index according to a given format.'
+comment: Joins values from two lists by index according to a given format.
 tests:
 - No tests (auto formatted)

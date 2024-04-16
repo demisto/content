@@ -7,9 +7,9 @@ args:
   isArray: true
   name: tags
   required: true
-comment: |-
-  A wrapper script to the 'AppendindicatorField' script that enables adding tags to certain indicators.
-  Note: You can use this script in an incident Layout button to allow tags to be added to indicators through the incident.
+comment: 'A wrapper script to the ''AppendindicatorField'' script that enables adding tags to certain indicators.
+
+  Note: You can use this script in an incident Layout button to allow tags to be added to indicators through the incident.'
 commonfields:
   id: AppendindicatorFieldWrapper
   version: -1
@@ -20,5 +20,5 @@ tags:
 - incident-action-button
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.14.92207
 fromversion: 6.2.0
