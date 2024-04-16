@@ -1959,6 +1959,7 @@ def get_message_metadata(message_id):
     contents = {}  # type: Dict[Any, Any]
     context = {}  # type: Dict[Any, Any]
     message = get_message_metadata_request(message_id)
+    demisto.debug(f'Received the following message:\n {json.dumps(message)}')
 
     receivers = message.get('to', [])
     to_context = []
