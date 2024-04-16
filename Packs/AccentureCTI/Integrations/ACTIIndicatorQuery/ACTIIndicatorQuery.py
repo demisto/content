@@ -5,6 +5,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 '''CONSTANTS'''
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+a= 2
 IDEFENSE_URL_TEMPLATE = "https://intelgraph.idefense.com/#/node/{0}/view/{1}"
 ATTACHMENT_LINK = 'https://intelgraph.idefense.com/rest/files/download'
 IA_URL = 'https://intelgraph.idefense.com/#/node/intelligence_alert/view/'
