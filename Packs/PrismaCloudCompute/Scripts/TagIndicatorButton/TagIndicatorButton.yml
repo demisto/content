@@ -8,7 +8,7 @@ args:
 commonfields:
   id: TagIndicatorButton
   version: -1
-dockerimage: demisto/python3:3.10.13.89009
+dockerimage: demisto/python3:3.10.14.92207
 enabled: true
 comment: This is a wrapper around the setIndicators script.
 name: TagIndicatorButton
@@ -21,4 +21,3 @@ type: python
 fromversion: 6.0.0
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
-

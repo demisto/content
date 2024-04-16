@@ -11,25 +11,25 @@ commonfields:
 name: PrismaCloudComputeParseComplianceAlert
 outputs:
 - contextPath: PrismaCloudCompute.ComplianceAlert.compliance.description
-  description: 'The compliance description.'
+  description: The compliance description.
   type: String
 - contextPath: PrismaCloudCompute.ComplianceAlert.compliance.id
-  description: 'The compliance ID.'
+  description: The compliance ID.
   type: String
 - contextPath: PrismaCloudCompute.ComplianceAlert.compliance.type
-  description: 'The compliance type.'
+  description: The compliance type.
   type: String
 - contextPath: PrismaCloudCompute.ComplianceAlert.time
-  description: 'Compliance alert creation time.'
+  description: Compliance alert creation time.
   type: Date
 - contextPath: PrismaCloudCompute.ComplianceAlert.type
-  description: 'Entity type (host / image / container).'
+  description: Entity type (host / image / container).
   type: String
 script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.14.92207
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

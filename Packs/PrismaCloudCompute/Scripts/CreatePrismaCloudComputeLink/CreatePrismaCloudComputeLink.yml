@@ -10,7 +10,7 @@ args:
 commonfields:
   id: CreatePrismaCloudComputeLink
   version: -1
-dockerimage: demisto/python3:3.10.13.89009
+dockerimage: demisto/python3:3.10.14.92207
 enabled: true
 name: CreatePrismaCloudComputeLink
 runas: DBotWeakRole
@@ -23,4 +23,3 @@ type: python
 fromversion: 6.0.0
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
-

@@ -64,7 +64,7 @@ script:
       description: Name of the file, folder, or user associated with the event.
       type: String
     - contextPath: SaasSecurity.Event.item_unique_id
-      description: Unique ID number for an asset’s related asset.
+      description: "Unique ID number for an asset\u2019s related asset."
       type: String
     - contextPath: SaasSecurity.Event.user
       description: Cloud app user that performed the action.
@@ -109,7 +109,7 @@ script:
       description: The item owner.
       type: String
     - contextPath: SaasSecurity.Event.container_name
-      description: Item’s container name.
+      description: "Item\u2019s container name."
       type: String
     - contextPath: SaasSecurity.Event.item_creator
       description: Item creator.
@@ -118,7 +118,7 @@ script:
       description: Number of times the asset violated the policy.
       type: Number
     - contextPath: SaasSecurity.Event.policy_rule_name
-      description: Violated policy’s name.
+      description: "Violated policy\u2019s name."
       type: String
     - contextPath: SaasSecurity.Event.incident_owner
       description: Incident owner.
@@ -127,7 +127,7 @@ script:
       description: Incident category.
       type: String
     - contextPath: SaasSecurity.Event.item_creator_email
-      description: Item creator’s email.
+      description: "Item creator\u2019s email."
       type: String
     - contextPath: SaasSecurity.Event.action_taken
       description: Action taken.
@@ -144,7 +144,7 @@ script:
     - contextPath: SaasSecurity.Event.resource_value_new
       description: New resource value. (optional).
       type: String
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.14.92207
   isfetchevents: true
   script: '-'
   subtype: python3
