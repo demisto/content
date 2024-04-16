@@ -43,10 +43,10 @@ args:
   name: query
 - description: Filter by the page number
   name: page
-- defaultValue: "0"
-  description: |-
-    The number of events to return from the alert JSON. The default is 0, which returns all events.
-    Note that the count is from the head of the list, regardless of event time or other properties.
+- defaultValue: '0'
+  description: 'The number of events to return from the alert JSON. The default is 0, which returns all events.
+
+    Note that the count is from the head of the list, regardless of event time or other properties.'
   name: trimevents
 - description: Number of incidents per page (per fetch)
   name: size
@@ -62,8 +62,8 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
-dockerimage: demisto/python3:3.10.13.86272
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.14.92207
 enabled: true
 name: SearchIncidentsSummary
 outputs:
@@ -104,7 +104,4 @@ type: python
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-
-#### Scripts
-##### GetTime
 - Documentation and metadata improvements.
