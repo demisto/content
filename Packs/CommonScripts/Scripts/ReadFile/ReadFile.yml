@@ -25,10 +25,10 @@ args:
 - name: output_metadata
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: Set true in order to output additional metadata on the file, to context.
-  defaultValue: "false"
+  defaultValue: 'false'
 comment: Load the contents of a file into context.
 commonfields:
   id: ReadFile
@@ -60,6 +60,6 @@ type: python
 subtype: python3
 runas: DBotWeakRole
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.14.92207
 tests:
 - No tests (auto formatted)

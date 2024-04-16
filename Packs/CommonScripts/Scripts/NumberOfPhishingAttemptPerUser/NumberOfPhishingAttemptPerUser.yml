@@ -1,9 +1,11 @@
-comment: |-
-  Shows a bar chart of the number of incident the 'To' and 'From' email addresses.
+comment: 'Shows a bar chart of the number of incident the ''To'' and ''From'' email addresses.
+
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
+
   For more information, see the section about permissions here:
-  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations'
 fromversion: 5.0.0
 commonfields:
   id: NumberOfPhishingAttemptPerUser
@@ -15,7 +17,7 @@ tags:
 - dynamic-section
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.14.92207
 subtype: python3
 tests:
 - No test

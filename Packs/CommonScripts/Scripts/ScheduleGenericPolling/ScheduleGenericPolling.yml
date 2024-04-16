@@ -29,11 +29,11 @@ args:
 - name: interval
   required: true
   description: Polling frequency - how often the polling command should run (minutes).
-  defaultValue: "1"
+  defaultValue: '1'
 - name: timeout
   required: true
   description: How much time to poll before declaring a timeout and resuming the playbook (minutes).
-  defaultValue: "60"
+  defaultValue: '60'
 - name: tag
   required: true
   description: The tag of the blocking manual task ("Wait For Polling Task To Finish").
@@ -49,4 +49,4 @@ args:
 scripttarget: 0
 tests:
 - Generic Polling Test
-dockerimage: demisto/python3:3.10.13.89009
+dockerimage: demisto/python3:3.10.14.92207
