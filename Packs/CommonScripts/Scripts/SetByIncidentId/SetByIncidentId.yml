@@ -7,13 +7,16 @@ type: python
 subtype: python3
 tags:
 - DemistoAPI
-comment: |-
-  Works the same as the 'Set' command, but can work across incidents by specifying 'id' as an argument.
-  Sets a value into the context with the given context key. Doesn't append by default.
+comment: 'Works the same as the ''Set'' command, but can work across incidents by specifying ''id'' as an argument.
+
+  Sets a value into the context with the given context key. Doesn''t append by default.
+
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
+
   For more information, see the section about permissions here:
-  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations'
 enabled: true
 args:
 - name: id
@@ -28,19 +31,19 @@ args:
 - name: append
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: If false then the context key will be overwritten. If set to true then the script will append to existing context key
-  defaultValue: "false"
+  defaultValue: 'false'
 - name: errorUnfinished
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: Returns an error if not all of the incidents where modified.
-  defaultValue: "false"
+  defaultValue: 'false'
 scripttarget: 0
 tests:
 - No test
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.10.14.92207
