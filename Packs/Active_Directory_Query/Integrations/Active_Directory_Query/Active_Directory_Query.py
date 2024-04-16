@@ -19,6 +19,7 @@ from ldap3.utils.conv import escape_filter_chars
 CIPHERS_STRING = '@SECLEVEL=1:ECDHE+AESGCM:ECDHE+CHACHA20:DHE+AESGCM:DHE+CHACHA20:ECDH+AESGCM:' \
                  'DH+AESGCM:ECDH+AES:DH+AES:RSA+ANESGCM:RSA+AES:!aNULL:!eNULL:!MD5:!DSS'  # Allowed ciphers for SSL/TLS
 DEFAULT_TIMEOUT = 120  # timeout for ssl/tls socket
+a= 1
 START_TLS = 'Start TLS'
 TLS = 'TLS'
 SSL = 'SSL'
