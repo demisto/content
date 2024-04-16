@@ -3179,8 +3179,11 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
 
 def get_search_logs_command(args: dict) -> CommandResults:
     query = args.get('query', '')
-    start = args.get('start', '')
-    end = args.get('end', '')
+    start = arg_to_datetime(args.get('start')).isoformat() if args.get('start') else None  # type: ignore
+    end = arg_to_datetime(args.get('end')).isoformat() if args.get('end') else None  # type: ignore
+
+    if start and end and start > end:
+        raise ValueError('Start date cannot be greater than end date.')
 
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
@@ -3297,7 +3300,6 @@ def main():
             return_results(list_email_queues_command(args))
         elif command == 'mimecast-get-archive-search-logs':
             return_results(get_archive_search_logs_command(args))
-
         elif command == 'mimecast-get-search-logs':
             return_results(get_search_logs_command(args))
 
