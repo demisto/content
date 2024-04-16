@@ -1,5 +1,5 @@
 import math
-import time
+from packaging.version import Version
 import logging
 from collections import defaultdict
 from pathlib import Path
@@ -55,11 +55,18 @@ def filter_content_items_to_run_on(
     for content_item in content_items_by_docker_image:
         content_item_path = Path(content_item["content_item"])
         content_item_support = content_item["support_level"]
-        content_pack_path = content_item["pack_path"]
-        
-        if only_nightly and content_pack_path not in nightly_packs:
-            logging.info(f"Pack path {content_pack_path} for {content_item} is not in nightly, skipping.")
+        content_item_pack_path = content_item["pack_path"]
+        content_item_docker_image_tag = content_item["docker_image_tag"]
+
+        if only_nightly and content_item_pack_path not in nightly_packs:
+            logging.info(f"Pack path {content_item_pack_path} for {content_item} is not in nightly, skipping.")
             continue
+
+        if Version(content_item_docker_image_tag) >= Version(target_docker_tag):
+            # If current content item tag is larger or equal than the target tag, skip
+            logging.info(f"{content_item_docker_image_tag = } >= {target_docker_tag = }, skipping.")
+            continue
+
         # If content item is not in coverage report, then we consider it's coverage to be 0
         content_item_cov = content_items_coverage.get(str(content_item_path), 0)
         logging.info(f"{content_item_path = } {content_item_cov = }")
@@ -266,11 +273,13 @@ def get_content_items_by_docker_image() -> dict[str, list[dict[str, Any]]]:
                     pack_path = full_pack_path.split("/")[1]
 
                     # Since the docker image returned will include the tag, we only need the image
-                    docker_image_without_tag = docker_image.split(":")[0]
-
+                    docker_image_split = docker_image.split(":")
+                    docker_image_without_tag = docker_image_split[0]
+                    docker_image_tag = docker_image_without_tag[1]
                     content_images[docker_image_without_tag].append({"content_item": content_item_py,
                                                                     "support_level": support_level,
-                                                                    "pack_path": pack_path})
+                                                                    "pack_path": pack_path,
+                                                                    "docker_image_tag": docker_image_tag})
                 else:
                     logging.warning(f"{content_item_py} was returned from the graph, but not found in repo")
             else:
