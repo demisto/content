@@ -65,18 +65,13 @@ configuration:
   additionalinfo: A comma-separated list of Event types to fetch
   name: event_type
   required: false
+  defaultvalue: AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock
   type: 16
   options:
   - AttackAttempt
   - AttackBlock
   - SuspiciousActivityAttempt
   - SuspiciousActivityblock
-  - ElevationRequest
-  - Trust
-  - Installation
-  - Launch
-  - ManualRequest
-  - Block
   - RestrictAccess
   - DetectAccess
   - Ransomware
