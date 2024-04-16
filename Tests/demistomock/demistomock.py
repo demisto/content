@@ -810,7 +810,7 @@ def incidents(incidents=None):
       incidents (list): In integration only, list of incident objects (Default value = None).
 
     Returns:
-      list: List of the current incident objects.
+      list: List containing the current incident object.
 
     """
     if incidents is None:
