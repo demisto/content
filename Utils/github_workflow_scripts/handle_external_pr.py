@@ -282,10 +282,14 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
 def get_user_from_ui_pr(pr):
     """
     """
-    body = pr.body
-    user_in_list = re.findall("Contributor\s@(\S+)", body)
-    user = str(user_in_list[0])
-    return user
+    try:
+        body = pr.body
+        user_in_list = re.findall("Contributor\s@(\S+)", body)
+        user = str(user_in_list[0])
+        return user
+    except Exception:
+        print(f'failed pr is: {pr}')
+        print(f'pr body: {pr.body}')
 
 
 def find_all_open_prs_by_user(content_repo, pr_creator):
