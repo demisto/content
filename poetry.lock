@@ -1085,14 +1085,11 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.29.0"
+version = "1.29.2"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
-python-versions = "<3.11,>=3.8"
-files = [
-    {file = "demisto_sdk-1.29.1-py3-none-any.whl", hash = "sha256:b6cdc01ca241e2e61d4df35ce9e04aede8df3486b02e4866f9d3411601ceac61"},
-    {file = "demisto_sdk-1.29.1.tar.gz", hash = "sha256:d5d163bdfed931e136a5601becf58008d78442e94e94560dcabd5134474f99a7"},
-]
+python-versions = "^3.8,<3.12"
+files = []
 develop = false
 
 [package.dependencies]
@@ -1166,8 +1163,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "support-python-311"
-resolved_reference = "59c4afa0ec005e3989aed9a100ddff71d15fb473"
+reference = "d660effd78dfe8b3a8325ed61c49c4b1d750bae2"
+resolved_reference = "d660effd78dfe8b3a8325ed61c49c4b1d750bae2"
 
 [[package]]
 name = "deprecated"
@@ -4802,4 +4799,4 @@ pyyaml = "*"
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.11"
-content-hash = "620b72148fb137673260d082e2230cba8779b9c68273a154d983b92de35a9fff"
+content-hash = "43bc6a7b8c02fb78528122dd3b40abc4ac72a145fc4850e5136b804753d3855c"
