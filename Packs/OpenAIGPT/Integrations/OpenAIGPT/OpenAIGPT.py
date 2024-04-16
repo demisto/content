@@ -2,84 +2,155 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 import urllib3
-from typing import Dict, Any
-from openai import OpenAI
+from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-BASE_URL = 'https://api.openai.com/v1/chat/completions'
 
 ''' CLIENT CLASS '''
 
 
-class Client(BaseClient):
+class OpenAiClient(BaseClient):
+    CHAT_COMPLETIONS_URL = 'https://api.openai.com/v1/chat/completions'
+    DEFAULT_TEMPERATURE = 1
+    DEFAULT_TOP_P = 1
 
-    def __init__(self, api_key: str, base_url: str, proxy: bool, verify: bool):
-        super().__init__(base_url=base_url, proxy=proxy, verify=verify)
+    def __init__(self, api_key: str, model: str, proxy: bool, verify: bool):
+        super().__init__(base_url=OpenAiClient.CHAT_COMPLETIONS_URL, proxy=proxy, verify=verify)
         self.api_key = api_key
-        self.base_url = base_url
-        self.headers = {'Authorization': f"Bearer {self.api_key}", "Content-Type": "application/json"}
+        self.model = model
+        self.headers = {'Authorization': f'Bearer {self.api_key}', 'Content-Type': 'application/json'}
 
-    def chatgpt(self, prompt: str):
-        options = {"max_tokens": 1000, "model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": prompt}]}
-        return self._http_request(method='POST', url_suffix='v1/chat/completions', json_data=options, headers=self.headers)
+    def get_chat_completions(self,
+                             chat_context: List[Dict[str, str]],
+                             completion_params: Dict[str, str | None]) -> Dict[str, any]:
+        """ """
+        options = {'model': self.model}
+        max_tokens = completion_params.get('max_tokens', None)
+        if max_tokens:
+            options['max_tokens'] = int(max_tokens)
+
+        temperature = completion_params.get('temperature', None)
+        if temperature:
+            options['temperature'] = float(temperature)
+
+        top_p = completion_params.get('top_p', None)
+        if top_p:
+            options['top_p'] = float(top_p)
+
+        options['messages'] = chat_context
+        demisto.debug(f"openai-gpt Using options for chat completion: {options=}")
+        return self._http_request(method='POST',
+                                  full_url=OpenAiClient.CHAT_COMPLETIONS_URL,
+                                  json_data=options,
+                                  headers=self.headers)
 
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+def construct_prompt(new_message: str, conversation_context=None, rag_data=""):
+    if not conversation_context:
+        conversation_context = []
+    # TODO - implement this
+
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
+def test_module(client: OpenAiClient) -> str:
+    """Tests API connectivity and authentication along with model compatability with 'Chat Completions' endpoint.
 
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
     Raises exceptions if something goes wrong.
 
-    :type client: ``Client``
-    :param Client: client to use
+    :type client: ``OpenAiClient``
+    :param client: client to use
 
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-
-    message: str = ''
+    message = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
+        chat_message = {"role": "user", "content": ""}
+        client.get_chat_completions(chat_context=[chat_message], completion_params={})
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
     return message
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
+def send_message_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
+    message = args.get('message', "")
+    if not message:
+        raise ValueError('Message not provided')
 
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
+    reset_conversation_history = args.get('reset_conversation_history', False)
+    conversation = demisto.dt(demisto.context(), 'OpenAIGPT.Conversation')
+    demisto.debug(f'openai-gpt send_message using conversation history from context: {conversation=}')
+    if reset_conversation_history or not conversation:
+        conversation = []
+
+    conversation.append({"role": "user", "content": message})
+
+    completion_params = {
+        'max_tokens': args.get('max_tokens', None),
+        'temperature': args.get('temperature', None),
+        'top_p': args.get('top_p', None)
+    }
+    response = client.get_chat_completions(chat_context=conversation, completion_params=completion_params)
+    choices: list = response.get('choices', [])
+    if not choices:
+        return_error("Could not retrieve message from response.")
+
+    message = choices[0].get('message', {})
+    if not message:
+        return_error("Could not retrieve message from response.")
+
+    conversation.append(message)
+
+    response_content = message.get('content', '')
+    if not response_content:
+        return_error("Could not retrieve message from response.")
 
     return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
+        outputs_prefix='OpenAIGPT.Conversation',
+        outputs=conversation,
+        readable_output=response_content
     )
 
 
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
+# def get_cve_info_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
+#     cve = args.get('CVE', None)
+#     if not cve:
+#         raise ValueError('CVE not specified')
+#
+#     # TODO - RAG CVE Data
+#     # TODO - construct prompt
+#     # TODO - client.getChatCompletion(prompt)
+#     # TODO - conversation =
+#     # TODO - answer =
+#
+#     return CommandResults(
+#         outputs_prefix='OpenAIGPT',
+#         outputs_key_field='Conversation',
+#         outputs=result,
+#     )
+#
+#
+# def check_email_header(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
+#     pass
+#
+#
+# def check_email_body(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
+#     pass
 
 
 ''' MAIN FUNCTION '''
@@ -96,78 +167,40 @@ def main() -> None:
     args = demisto.args()
     command = demisto.command()
 
-    api_key = params.get('apikey')
+    api_key = params.get('api_key')
+    # If a model name was provided within the free text box,
+    # it will be used instead of the selected one in the model selection box.
+    # The provided model will be tested for compatability within the test module.
+    model = params.get('model-freetext') if params.get('model-freetext') else params.get('model-select')
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
     try:
-        client = Client(
-            base_url=BASE_URL,
+        client = OpenAiClient(
             api_key=api_key,
+            model=model,
             verify=verify,
             proxy=proxy
         )
 
         if command == 'test-module':
-            return_results(test_module_command(client))
+            return_results(test_module(client))
 
         elif command == "gpt-send-message":
-            return_results(reputations_command(client=client, args=args))
+            return_results(send_message_command(client=client, args=args))
 
-        elif command == "gpt-get-cve-info":
-            return_results(reputations_command(client=client, args=args))
+        # elif command == "gpt-get-cve-info":
+        #     return_results(get_cve_info_command(client=client, args=args))
+        #
+        # elif command == "gpt-check-email-header":
+        #     return_results(check_email_header(client=client, args=args))
+        #
+        # elif command == "gpt-check-email-body":
+        #     return_results(check_email_body(client=client, args=args))
 
-        elif command == "gpt-check-email-header":
-            return_results(reputations_command(client=client, args=args))
-
-        elif command == "gpt-check-email-body":
-            return_results(reputations_command(client=client, args=args))
-
-        except Exception as e:
-            demisto.error(traceback.format_exc())  # print the traceback
-            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
-
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
-    try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
-
-        if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
-
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
-
-    # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        demisto.error(traceback.format_exc())
+        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
 
 
 ''' ENTRY POINT '''

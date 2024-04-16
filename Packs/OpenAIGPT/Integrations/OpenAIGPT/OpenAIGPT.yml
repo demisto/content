@@ -42,7 +42,6 @@ configuration:
   type: 0
   required: false
   section: connect
-  defaultvalue: ''
 
 - display: Trust any certificate (not secure)
   name: insecure
@@ -62,7 +61,7 @@ script:
         required: true
         description: The message that the GPT model will respond to.
 
-      - name: reset_message_history
+      - name: reset_conversation_history
         required: false
         description: Whether to keep previously sent messages in a conversation context or start a new conversation.
         type:
@@ -74,12 +73,10 @@ script:
 
       - name: temperature
         required: false
-        defaultValue: '1'
         description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
 
       - name: top_p
         required: false
-        defaultValue: '1'
         description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
     outputs:
     - contextPath: OpenAIGPT.Conversation
