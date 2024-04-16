@@ -64,7 +64,7 @@ configuration:
   advanced: true
   required: false
 - display: Fetch only incidents matching these filters
-  defaultvalue: 'alert.status=open'
+  defaultvalue: alert.status=open
   name: filters
   type: 0
   additionalinfo: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
@@ -112,7 +112,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
@@ -143,7 +143,7 @@ script:
     - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_to
     - auto: PREDEFINED
-      description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      description: The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.
       name: time_range_unit
       predefined:
       - hour
@@ -286,7 +286,7 @@ script:
     - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_to
     - auto: PREDEFINED
-      description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      description: The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.
       name: time_range_unit
       predefined:
       - hour
@@ -355,7 +355,7 @@ script:
     - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_to
     - auto: PREDEFINED
-      description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      description: The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.
       name: time_range_unit
       predefined:
       - hour
@@ -379,7 +379,7 @@ script:
     - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_to
     - auto: PREDEFINED
-      description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      description: The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.
       name: time_range_unit
       predefined:
       - hour
@@ -502,7 +502,7 @@ script:
     - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_to
     - auto: PREDEFINED
-      description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      description: The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.
       name: time_range_unit
       predefined:
       - hour
@@ -523,14 +523,14 @@ script:
     - description: Search ID. Can be used to rerun the same search.
       name: search_id
     - auto: PREDEFINED
-      defaultValue: 'desc'
+      defaultValue: desc
       description: The direction to sort the results by. Both sort direction and field must be specified if sorting.
       name: sort_direction
       predefined:
       - asc
       - desc
     - auto: PREDEFINED
-      defaultValue: 'insertTs'
+      defaultValue: insertTs
       description: The field to sort the results by. Both sort direction and field must be specified if sorting.
       name: sort_field
       predefined:
@@ -543,7 +543,7 @@ script:
       - cloudAccount
       - cloudRegion
       - stateId
-    - description: 'Whether to include the resource JSON or not. Default is "true". "false" will not return the resource JSON, "true" will return the resource JSON. Note that if the value is "true", some of the keys, which contain large data objects, are still omitted by default and in order to retrieve them, set the "include_additional_resource_fields" argument to "true". Doing so can increase the context size dramatically.'
+    - description: Whether to include the resource JSON or not. Default is "true". "false" will not return the resource JSON, "true" will return the resource JSON. Note that if the value is "true", some of the keys, which contain large data objects, are still omitted by default and in order to retrieve them, set the "include_additional_resource_fields" argument to "true". Doing so can increase the context size dramatically.
       name: include_resource_json
       defaultValue: 'true'
       auto: PREDEFINED
@@ -747,7 +747,7 @@ script:
     - description: 'End time for the search. Time is interpreted as UTC. Values can be in either ISO date format, relative time, or epoch timestamp. For example: "2019-10-21T23:45:00 GMT+3" (ISO date format), "3 days" (relative time), 1579039377301 (epoch time).'
       name: time_range_date_to
     - auto: PREDEFINED
-      description: 'The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.'
+      description: The search time unit. The "login" and "epoch" options are only available if "time_range_value" is not provided.
       name: time_range_unit
       predefined:
       - hour
@@ -845,9 +845,9 @@ script:
       description: Search title of the files.
       name: search_title
       predefined:
-      - 'title'
-      - 'constructive_title'
-      - 'descriptive_title'
+      - title
+      - constructive_title
+      - descriptive_title
     - description: 'Comma-separated list of severities of the files. Available options are: CRITICAL, HIGH, MEDIUM, LOW, INFO.'
       isArray: true
       name: severities
@@ -1939,9 +1939,9 @@ script:
     - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
       name: time-range-value
     - auto: PREDEFINED
-      description: |-
-        The search unit. The "login" and "epoch" options are only available if timeRangeValue
-        is not provided.
+      description: 'The search unit. The "login" and "epoch" options are only available if timeRangeValue
+
+        is not provided.'
       name: time-range-unit
       predefined:
       - hour
@@ -2041,9 +2041,9 @@ script:
     - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
       name: time-range-value
     - auto: PREDEFINED
-      description: |-
-        The search unit. The "login" and "epoch" options are only available if timeRangeValue
-        is not provided.
+      description: 'The search unit. The "login" and "epoch" options are only available if timeRangeValue
+
+        is not provided.'
       name: time-range-unit
       predefined:
       - hour
@@ -2070,9 +2070,9 @@ script:
     - description: The number of time range value units for the search. For example, 3 days, 5 weeks, etc.
       name: time-range-value
     - auto: PREDEFINED
-      description: |-
-        The search unit. The "login" and "epoch" options are only available if timeRangeValue
-        is not provided.
+      description: 'The search unit. The "login" and "epoch" options are only available if timeRangeValue
+
+        is not provided.'
       name: time-range-unit
       predefined:
       - hour

@@ -9,15 +9,14 @@ configuration:
   section: Collect
   required: false
 - name: address
-  display: |-
-    Prisma Cloud Compute Console URL and Port
+  display: Prisma Cloud Compute Console URL and Port
   required: true
   type: 0
   additionalinfo: URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute, for example https://example.net:1234
   section: Connect
 - name: project
   display: Prisma Cloud Compute Project Name (if applicable)
-  defaultvalue:
+  defaultvalue: null
   type: 0
   additionalinfo: Copy the project name from the alert profile created in Prisma Cloud Compute and paste in this field.
   section: Connect
@@ -39,14 +38,14 @@ configuration:
 - name: credentials
   display: Username
   required: true
-  defaultvalue:
+  defaultvalue: null
   type: 9
   additionalinfo: Prisma Cloud Compute login credentials.
-  displaypassword: ""
+  displaypassword: ''
   section: Connect
 - name: certificate
   display: Prisma Cloud Compute CA Certificate
-  defaultvalue:
+  defaultvalue: null
   type: 12
   additionalinfo: CA Certificate used by Prisma Cloud Compute. Copy the certificate from the alert profile created in Prisma Cloud Compute.
   section: Connect
@@ -74,10 +73,10 @@ description: Use the Prisma Cloud Compute integration to fetch incidents from yo
 display: Palo Alto Networks - Prisma Cloud Compute
 name: PaloAltoNetworks_PrismaCloudCompute
 script:
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   runonce: false
-  script: "-"
+  script: '-'
   subtype: python3
   type: python
   commands:
@@ -87,13 +86,13 @@ script:
     - name: hostname
       description: A comma-separated list of profile (hostname) IDs. For example, !prisma-cloud-compute-profile-host-list hostname="*149*,*257*".
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: limit
       description: The maximum number of hosts and their profile events to return. Must be between 1-50.
-      defaultValue: "15"
+      defaultValue: '15'
     - name: offset
       description: The offset by which to begin listing hosts and their profile events.
-      defaultValue: "0"
+      defaultValue: '0'
     outputs:
     - contextPath: PrismaCloudCompute.ProfileHost._id
       description: The profile ID (hostname).
@@ -239,37 +238,37 @@ script:
     - name: cluster
       description: A comma-separated list of runtime profile Kubernetes clusters.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: id
       description: A comma-separated list of runtime profile (hostname) IDs. For example, !prisma-cloud-compute-profile-container-list id="*256*,*148*".
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: image
       description: A comma-separated list of runtime profile images. For example, !prisma-cloud-compute-profile-container-list image="*console*,*defender*".
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: image_id
       description: A comma-separated list of runtime profile image IDs. For example, !prisma-cloud-compute-profile-container-list image_id="*123*,*456*".
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: namespace
       description: A comma-separated list of runtime profile Kubernetes namespaces. For example, !prisma-cloud-compute-profile-container-list namespace="*namespace1*,*namespace2*".
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: os
       description: A comma-separated list of service runtime profile operating systems. For example, !prisma-cloud-compute-profile-container-list os="*Red Hat*,*Windows*".
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: state
       description: A comma-separated list of runtime profile states. For example, !prisma-cloud-compute-profile-container-list state=*active*.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: limit
       description: The maximum number of containers and their profile events. Must be between 1-50.
-      defaultValue: "15"
+      defaultValue: '15'
     - name: offset
       description: The offset by which to begin listing containers and their profile events.
-      defaultValue: "0"
+      defaultValue: '0'
     outputs:
     - contextPath: PrismaCloudCompute.ProfileContainer._id
       description: The profile ID.
@@ -526,13 +525,13 @@ script:
     - name: id
       description: Container profile ID. Can be retrieved from the "prisma-cloud-compute-profile-container-list" command.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: limit
       description: The maximum number of hosts to return. Must be between 1-50.
-      defaultValue: "50"
+      defaultValue: '50'
     - name: offset
       description: The offset by which to begin listing hosts of the container.
-      defaultValue: "0"
+      defaultValue: '0'
     outputs:
     - contextPath: PrismaCloudCompute.ProfileContainerHost.containerID
       description: The container ID.
@@ -546,24 +545,24 @@ script:
     - name: id
       description: The container ID. Can be retrieved from the "prisma-cloud-compute-profile-container-list" command.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: collections
       description: The collections scoping the query.
-      defaultValue: ""
+      defaultValue: ''
     - name: hostname
       description: The hostname for which data should be fetched. Can be retrieved from the "prisma-cloud-compute-hosts-list" command.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: incident_id
       description: A comma-separated list of incident IDs if the request type is an incident.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: limit
       description: The maximum number of forensics data records to return. Must be between 1-50.
-      defaultValue: "20"
+      defaultValue: '20'
     - name: offset
       description: The offset by which to begin listing records from.
-      defaultValue: "0"
+      defaultValue: '0'
     outputs:
     - contextPath: PrismaCloudCompute.ContainerForensic.containerID
       description: The container ID.
@@ -649,21 +648,21 @@ script:
     - name: id
       description: The host ID. Can be retrieved from the "prisma-cloud-compute-hosts-list" command.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: collections
       description: A comma-separated list of collections.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: incident_id
       description: A comma-separated list of incident IDs in case the request type is an incident.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: limit
       description: The maximum number of forensics data records to return. Must be between 1-50.
-      defaultValue: "20"
+      defaultValue: '20'
     - name: offset
       description: The offset by which to begin listing host forensics from.
-      defaultValue: "0"
+      defaultValue: '0'
     outputs:
     - contextPath: PrismaCloudCompute.HostForensic.Forensics.app
       description: The application associated with the event.
@@ -752,14 +751,14 @@ script:
       description: A comma-separated list of custom IP addresses to add to the banned IPs list that will be blocked. For example ip=1.1.1.1,2.2.2.2.
       required: true
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     outputs: []
   - name: prisma-cloud-compute-custom-feeds-malware-list
     description: List all custom uploaded md5 malwares.
     arguments:
     - name: limit
       description: The maximum number of records of custom md5 malwares to return.
-      defaultValue: "50"
+      defaultValue: '50'
     outputs:
     - contextPath: PrismaCloudCompute.CustomFeedMalware.digest
       description: An internal digest of the feed.
@@ -782,12 +781,12 @@ script:
     - name: name
       description: The name that will be attached to the MD5 records.
       required: true
-      defaultValue: ""
+      defaultValue: ''
     - name: md5
       description: A comma-separated list of MD5 hashes to be added.
       required: true
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     outputs: []
   - name: cve
     description: Get information about the CVEs in the system. Will return a maximum of 50 records. It is possible to query for a partial CVE description such as cve-2020 or cve-2014 or by severity/distro/package.
@@ -795,18 +794,18 @@ script:
     - name: cve_id
       description: Deprecated. Use the `cve` argument instead.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: cve
       description: A comma-separated list of CVEs, for example, cve=cve-2016-223,cve-2020-3546.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
       default: true
     outputs:
     - contextPath: CVE.ID
-      description: "The ID of the CVE, for example: CVE-2015-1653."
+      description: 'The ID of the CVE, for example: CVE-2015-1653.'
       type: String
     - contextPath: CVE.CVSS
-      description: "The CVSS of the CVE, for example: 10.0."
+      description: 'The CVSS of the CVE, for example: 10.0.'
       type: String
     - contextPath: CVE.Modified
       description: The timestamp of when the CVE was last modified.
@@ -834,28 +833,28 @@ script:
     arguments:
     - name: cluster
       description: The cluster name by which to scope the query.
-      defaultValue: ""
+      defaultValue: ''
     - name: hostname
       description: Name of a specific defender to retrieve.
-      defaultValue: ""
+      defaultValue: ''
     - name: type
       description: Indicates the defender types to return (e.g., docker, dockerWindows, cri, etc.).
-      defaultValue: ""
+      defaultValue: ''
     - name: connected
       description: Indicates whether to return only connected defenders (true) or disconnected defenders (false).
-      defaultValue: ""
+      defaultValue: ''
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: limit
       description: The maximum number of defender records to return.
-      defaultValue: "20"
+      defaultValue: '20'
     - name: offset
       description: The offset number by which to begin listing defenders and their information.
-      defaultValue: "0"
+      defaultValue: '0'
     outputs:
     - contextPath: PrismaCloudCompute.DefenderDetails.category
-      description: "The category of the defender type (host/container/serverless). Range of acceptable values: container, host, serverless, appEmbedded."
+      description: 'The category of the defender type (host/container/serverless). Range of acceptable values: container, host, serverless, appEmbedded.'
       type: String
     - contextPath: PrismaCloudCompute.DefenderDetails.certificateExpiration
       description: The client's certificate expiry time.
@@ -922,7 +921,7 @@ script:
     arguments:
     - name: limit
       description: The maximum number of collections to return.
-      defaultValue: "50"
+      defaultValue: '50'
     outputs:
     - contextPath: PrismaCloudCompute.Collection.accountIDs
       description: A list of the cloud account IDs.
@@ -978,14 +977,14 @@ script:
     - name: cluster
       description: A comma-separated list of cluster names to filter the results by.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: collections
       description: A comma-separated list of collections to filter the results by. Can be retrieved from the "prisma-cloud-compute-collections-list" command.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: limit
       description: The maximum number of namespace name records to return.
-      defaultValue: "50"
+      defaultValue: '50'
     outputs:
     - contextPath: PrismaCloudCompute.RadarContainerNamespace
       description: The names of the container namespaces.
@@ -996,55 +995,55 @@ script:
     - name: clusters
       description: A comma-separated list of cluster names to filter the results by.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: compact
       description: Whether only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata).
-      defaultValue: "true"
+      defaultValue: 'true'
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: fields
       description: A comma-separated list of fields to return. Possible values are labels, repo, registry, clusters, hosts, tag.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: hostname
       description: A comma-separated list of hostnames to filter the results by. Can be retrieved from the "prisma-cloud-compute-profile-host-list" command.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: id
       description: A comma-separated list of image IDs to filter the results by. Run !prisma-cloud-compute-images-scan-list without any arguments to get image IDs.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: name
       description: A comma-separated list of image names to filter the results by.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: registry
       description: A comma-separated list of image registries to filter the results by.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: repository
       description: A comma-separated list of image repositories to filter the results by.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: compliance_ids
       description: A comma-separated list of compliance IDs to filter the results by.
       isArray: true
     - name: limit_record
       description: The maximum number of scan image records to return.
-      defaultValue: "10"
+      defaultValue: '10'
     - name: limit_stats
       description: The maximum number of compliance/vulnerability records to return.
-      defaultValue: "10"
+      defaultValue: '10'
     - name: offset
       description: The offset by which to begin listing image scan results.
-      defaultValue: "0"
+      defaultValue: '0'
     - name: all_results
       description: Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. Might slow down the command run time.
-      defaultValue: "false"
+      defaultValue: 'false'
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: PrismaCloudCompute.ReportsImagesScan._id
       description: Image identifier (image ID or repo:tag).
@@ -1229,47 +1228,47 @@ script:
     - name: clusters
       description: A comma-separated list of cluster names to filter the results by.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: compact
       description: Whether only minimal image data is to be returned (i.e., skip vulnerabilities, compliance, and extended image metadata).
-      defaultValue: "true"
+      defaultValue: 'true'
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: distro
       description: A comma-separated list of operating system distros to filter the results by.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: fields
       description: A comma-separated list of fields to return. Possible values are labels, repo, registry, clusters, hosts, tag.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: hostname
       description: A comma-separated list of hostnames to filter the results by. Can be retrieved from the "prisma-cloud-compute-profile-host-list" command.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: provider
       description: A comma-separated list of cloud providers to filter the results by.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: compliance_ids
       description: A comma-separated list of compliance IDs to filter the results by.
       isArray: true
     - name: limit_record
       description: The maximum number of scan host records to return.
-      defaultValue: "10"
+      defaultValue: '10'
     - name: limit_stats
       description: The maximum number of compliance/vulnerability records to return.
-      defaultValue: "10"
+      defaultValue: '10'
     - name: offset
       description: The offset by which to begin listing host scan results.
-      defaultValue: "0"
+      defaultValue: '0'
     - name: all_results
       description: Whether to retrieve all results. The "limit_record" and "limit_stats" arguments will be ignored. Might slow down the command run time.
-      defaultValue: "false"
+      defaultValue: 'false'
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: PrismaCloudCompute.ReportHostScan._id
       description: The host identifier (host ID or hostname).
@@ -1424,23 +1423,23 @@ script:
     - name: cve
       description: A comma-separated list of CVE IDs that can be used as a pivot for the impacted resource search. For example cve=CVE-2018-14600,CVE-2021-31535.
       isArray: true
-      defaultValue: ""
+      defaultValue: ''
     - name: limit
       description: The maximum number of records of impacted hosts/images to return.
-      defaultValue: "50"
+      defaultValue: '50'
     - name: offset
       description: The offset by which to begin listing impacted hosts/images records.
-      defaultValue: "0"
+      defaultValue: '0'
     - name: resourceType
       description: ResourceType is the single resource type to return vulnerability data for.
       auto: PREDEFINED
       predefined:
-      - 'container'
-      - 'image'
-      - 'host'
-      - 'function'
-      - 'codeRepo'
-      - 'registryImage'
+      - container
+      - image
+      - host
+      - function
+      - codeRepo
+      - registryImage
     outputs:
     - contextPath: PrismaCloudCompute.VulnerabilitiesImpactedResource._id
       description: Id is the CVE ID (index for the impacted resources).
@@ -1477,7 +1476,7 @@ script:
       type: integer
   - name: prisma-cloud-compute-get-waas-policies
     arguments: []
-    description: "Get the Waas Container Policies from Defend >> WAAS >> Containers."
+    description: Get the Waas Container Policies from Defend >> WAAS >> Containers.
     outputs:
     - contextPath: PrismaCloudCompute.Policies.Name
       description: The Policy Name.
@@ -1987,7 +1986,7 @@ script:
       description: Event ID of runtime file integrity audit event for which to get details. Either event_id or hostname is required.
     - name: limit
       description: Limit on number of events to return. Only relevant if filtering by hostname.
-      defaultValue: "10"
+      defaultValue: '10'
     - description: 'Minimum timestamp for event search. Format: YYYY-mm-ddTHH:MM:SSZ.'
       name: from_date
     - description: 'Maximum timestamp for event search. Format: YYYY-mm-ddTHH:MM:SSZ.'
@@ -2069,32 +2068,32 @@ script:
       isArray: true
     - name: pass
       description: Indicates whether to filter on passed scans (true) or not (false).
-      defaultValue: "true"
+      defaultValue: 'true'
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: scan_time_to
       description: Filters results by end datetime. Based on scan time.
     - name: scan_time_from
       description: Filters results by start datetime. Based on scan time.
     - name: limit
       description: The maximum number of CI scan results to return. Must be between 1-50.
-      defaultValue: "50"
+      defaultValue: '50'
     - name: offset
       description: The offset by which to begin listing CI scan results.
-      defaultValue: "0"
+      defaultValue: '0'
     - name: all_results
       description: Whether to retrieve all results. The "limit" argument will be ignored. Might slow down the command run time. Using this argument may return a lot of results and is not recommended to be used often.
-      defaultValue: "false"
+      defaultValue: 'false'
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: verbose
       description: Whether to retrieve all fields of each scan result. When used with the "all_results" argument, it may return a lot of results in a file.
-      defaultValue: "false"
+      defaultValue: 'false'
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: PrismaCloudCompute.CIScan._id
       description: The scan ID.
@@ -2382,23 +2381,23 @@ script:
     - name: agentless
       description: Whether to filter by agentless scans.
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: search
       description: Term to search for.
     - name: limit
       description: The maximum number of container scan reports to return. Must be between 1-50.
-      defaultValue: "50"
+      defaultValue: '50'
     - name: offset
       description: The offset by which to begin listing container scan reports.
-      defaultValue: "0"
+      defaultValue: '0'
     - auto: PREDEFINED
       name: all_results
       description: Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often.
-      defaultValue: "false"
+      defaultValue: 'false'
       predefined:
-        - "true"
-        - "false"
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: PrismaCloudCompute.ContainersScanResults._id
       description: The container scan ID.
@@ -2514,16 +2513,16 @@ script:
     - name: agentless
       description: Whether to filter by agentless scans.
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: search
       description: Term to search for.
     - name: limit
       description: The maximum number of container scan reports to return. Must be between 1-50.
-      defaultValue: "50"
+      defaultValue: '50'
     - name: offset
       description: The offset by which to begin listing container scan reports.
-      defaultValue: "0"
+      defaultValue: '0'
     outputs:
     - contextPath: PrismaCloudCompute.Hosts._id
       description: The host ID.
@@ -2634,10 +2633,10 @@ script:
       description: Term to search for.
     - name: limit
       description: The maximum number of container scan reports to return. Must be between 1-50.
-      defaultValue: "50"
+      defaultValue: '50'
     - name: offset
       description: The offset by which to begin listing container scan reports.
-      defaultValue: "0"
+      defaultValue: '0'
     outputs:
     - contextPath: PrismaCloudCompute.RuntimeContainerAuditEvents.os
       description: The operating system of the container.
@@ -2732,178 +2731,178 @@ script:
   - name: prisma-cloud-compute-archive-audit-incident
     description: Acknowledges an incident and moves it to an archived state.
     arguments:
-      - name: incident_id
-        description: Incident ID.
-        isArray: false
-        required: true
-      - auto: PREDEFINED
-        name: action
-        description: Action for the command. archive - incident will be archived, unarchive - incident will be unarchived.
-        predefined:
-          - "archive"
-          - "unarchive"
-        defaultValue: "archive"
+    - name: incident_id
+      description: Incident ID.
+      isArray: false
+      required: true
+    - auto: PREDEFINED
+      name: action
+      description: Action for the command. archive - incident will be archived, unarchive - incident will be unarchived.
+      predefined:
+      - archive
+      - unarchive
+      defaultValue: archive
   - name: prisma-cloud-compute-runtime-host-audit-events-list
     description: Retrieves the runtime host audit events.
     arguments:
-      - name: clusters
-        description: A comma-separated list of cluster names.
-        isArray: true
-      - name: namespaces
-        description: A comma-separated list of namespace names.
-        isArray: true
-      - name: audit_id
-        description: A comma-separated list of audit event IDs.
-        isArray: true
-      - name: profile_id
-        description: A comma-separated list of runtime profile IDs.
-        isArray: true
-      - name: image_name
-        description: A comma-separated list of image names.
-        isArray: true
-      - name: container
-        description: A comma-separated list of container names.
-        isArray: true
-      - name: container_id
-        description: A comma-separated list of container IDs.
-        isArray: true
-      - name: type
-        description: A comma-separated list of audit event types.
-        isArray: true
-      - name: effect
-        description: A comma-separated list of audit event effects.
-        isArray: true
-      - name: user
-        description: A comma-separated list of users.
-        isArray: true
-      - name: os
-        description: A comma-separated list of operating systems.
-        isArray: true
-      - name: app
-        description: A comma-separated list of applications.
-        isArray: true
-      - name: hostname
-        description: A comma-separated list of hostnames.
-        isArray: true
-      - name: time
-        description: Time is used to filter by audit time, format '%Y-%m-%dT%H:%M:%S.%SZ'.
-      - name: attack_type
-        description: AttackTypes is used to filter by runtime audit attack type.
-      - name: limit
-        description: The maximum number of container scan reports to return. Must be between 1-50.
-        defaultValue: "50"
-      - name: offset
-        description: The offset by which to begin listing container scan reports.
-        defaultValue: "0"
-      - auto: PREDEFINED
-        name: all_results
-        description: Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often.
-        defaultValue: "false"
-        predefined:
-          - "true"
-          - "false"
+    - name: clusters
+      description: A comma-separated list of cluster names.
+      isArray: true
+    - name: namespaces
+      description: A comma-separated list of namespace names.
+      isArray: true
+    - name: audit_id
+      description: A comma-separated list of audit event IDs.
+      isArray: true
+    - name: profile_id
+      description: A comma-separated list of runtime profile IDs.
+      isArray: true
+    - name: image_name
+      description: A comma-separated list of image names.
+      isArray: true
+    - name: container
+      description: A comma-separated list of container names.
+      isArray: true
+    - name: container_id
+      description: A comma-separated list of container IDs.
+      isArray: true
+    - name: type
+      description: A comma-separated list of audit event types.
+      isArray: true
+    - name: effect
+      description: A comma-separated list of audit event effects.
+      isArray: true
+    - name: user
+      description: A comma-separated list of users.
+      isArray: true
+    - name: os
+      description: A comma-separated list of operating systems.
+      isArray: true
+    - name: app
+      description: A comma-separated list of applications.
+      isArray: true
+    - name: hostname
+      description: A comma-separated list of hostnames.
+      isArray: true
+    - name: time
+      description: Time is used to filter by audit time, format '%Y-%m-%dT%H:%M:%S.%SZ'.
+    - name: attack_type
+      description: AttackTypes is used to filter by runtime audit attack type.
+    - name: limit
+      description: The maximum number of container scan reports to return. Must be between 1-50.
+      defaultValue: '50'
+    - name: offset
+      description: The offset by which to begin listing container scan reports.
+      defaultValue: '0'
+    - auto: PREDEFINED
+      name: all_results
+      description: Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often.
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
     outputs:
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents._id
-        description: The audit event ID.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.accountID
-        description: The account ID of the container.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.app
-        description: The app.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.attackType
-        description: The attack type.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.attackTechniques
-        description: Attack technique of the event.
-        type: Unknown
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.collections
-        description: The collections.
-        type: Unknown
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.command
-        description: The command of the audit event.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.count
-        description: The count of audit events.
-        type: Number
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.effect
-        description: The audit event effect.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.filepath
-        description: The file path of the audit event.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.fqdn
-        description: The fully qualified domain name used in the audit event.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.events.hostname
-        description: The hostname on which the command was invoked.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.md5
-        description: The MD5 hash of the file.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.msg
-        description: The audit event message.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.pid
-        description: The process ID.
-        type: Number
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.processPath
-        description: The process path.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.profileId
-        description: The profile ID.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.provider
-        description: The provider of the container.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.region
-        description: The region of the container.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.resourceID
-        description: The resource ID of the event.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.ruleName
-        description: The rule name.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.severity
-        description: The severity of the audit event.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.time
-        description: The audit event time.
-        type: Date
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.type
-        description: The audit event type.
-        type: String
-      - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.user
-        description: The audited event user.
-        type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents._id
+      description: The audit event ID.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.accountID
+      description: The account ID of the container.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.app
+      description: The app.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.attackType
+      description: The attack type.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.attackTechniques
+      description: Attack technique of the event.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.collections
+      description: The collections.
+      type: Unknown
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.command
+      description: The command of the audit event.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.count
+      description: The count of audit events.
+      type: Number
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.effect
+      description: The audit event effect.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.filepath
+      description: The file path of the audit event.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.fqdn
+      description: The fully qualified domain name used in the audit event.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.events.hostname
+      description: The hostname on which the command was invoked.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.md5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.msg
+      description: The audit event message.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.pid
+      description: The process ID.
+      type: Number
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.processPath
+      description: The process path.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.profileId
+      description: The profile ID.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.provider
+      description: The provider of the container.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.region
+      description: The region of the container.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.resourceID
+      description: The resource ID of the event.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.ruleName
+      description: The rule name.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.severity
+      description: The severity of the audit event.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.time
+      description: The audit event time.
+      type: Date
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.type
+      description: The audit event type.
+      type: String
+    - contextPath: PrismaCloudCompute.RuntimeHostAuditEvents.user
+      description: The audited event user.
+      type: String
   - name: prisma-cloud-compute-runtime-container-policy-list
     description: Retrieves the runtime policy for containers protected by Defender. A policy consists of ordered rules.
     arguments:
-      - auto: PREDEFINED
-        name: all_results
-        description: Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often.
-        defaultValue: "false"
-        predefined:
-          - "true"
-          - "false"
-      - name: limit
-        description: The maximum number of container scan reports to return. Must be between 1-50.
-        defaultValue: "50"
-      - name: offset
-        description: The offset by which to begin listing container scan reports.
-        defaultValue: "0"
+    - auto: PREDEFINED
+      name: all_results
+      description: Whether to retrieve all results. The "limit" argument will be ignored. Using this argument may return a lot of results and might slow down the command run time. Therefore, it is not recommended to be used often.
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    - name: limit
+      description: The maximum number of container scan reports to return. Must be between 1-50.
+      defaultValue: '50'
+    - name: offset
+      description: The offset by which to begin listing container scan reports.
+      defaultValue: '0'
     outputs:
-      - contextPath: PrismaCloudCompute.Policies.RuntimeContainerPolicy.name
-        description: The audit event time.
-        type: Date
-      - contextPath: PrismaCloudCompute.Policies.RuntimeContainerPolicy.owner
-        description: The audit event type.
-        type: String
-      - contextPath: PrismaCloudCompute.Policies.RuntimeContainerPolicy.modified
-        description: The audited event modified time.
-        type: Date
+    - contextPath: PrismaCloudCompute.Policies.RuntimeContainerPolicy.name
+      description: The audit event time.
+      type: Date
+    - contextPath: PrismaCloudCompute.Policies.RuntimeContainerPolicy.owner
+      description: The audit event type.
+      type: String
+    - contextPath: PrismaCloudCompute.Policies.RuntimeContainerPolicy.modified
+      description: The audited event modified time.
+      type: Date
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0

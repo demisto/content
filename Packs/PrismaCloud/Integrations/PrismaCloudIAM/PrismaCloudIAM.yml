@@ -82,7 +82,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-description: 'The Prisma Cloud IAM API consists of a set of API endpoints that allow customers to perform CRUD operation on their user profiles.'
+description: The Prisma Cloud IAM API consists of a set of API endpoints that allow customers to perform CRUD operation on their user profiles.
 display: PrismaCloud IAM
 name: PrismaCloud IAM
 script:
@@ -254,7 +254,7 @@ script:
       type: String
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.92207
   runonce: false
   script: '-'
   subtype: python3
