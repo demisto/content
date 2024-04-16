@@ -7,6 +7,19 @@ def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
+@pytest.mark.parametrize(
+    "file_path, expected_encoded_file_path",
+    (
+        pytest.param("./CheckFileCommand", "./CheckFileCommand"),
+        pytest.param("test/test_file.py", "test%2Ftest_file.py"),
+        pytest.param("./test/test_file.py", "./test%2Ftest_file.py"),
+        pytest.param("/test%2Ftest_file.py", "./test%2Ftest_file.py"),
+    ),
+)
+def test_encode_file_path_if_needed(file_path, expected_encoded_file_path):
+    from GitLabv2 import encode_file_path_if_needed
+    encoded_file_path = encode_file_path_if_needed(file_path)
+    assert encoded_file_path == expected_encoded_file_path
 
 ARGS_CASES = [
     (2, -1, False,  # The page_size value must be equal to 1 or bigger.
