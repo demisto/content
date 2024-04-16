@@ -46,9 +46,9 @@ configuration:
   type: 0
   required: false
 - defaultvalue: opened_at
-  display: |-
-    Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at>[Last Run]".
-    To prevent duplicate incidents, this field is mandatory for fetching incidents.
+  display: 'Timestamp field to filter by (e.g., `opened_at`) This is how the filter is applied to the query: "ORDERBYopened_at^opened_at>[Last Run]".
+
+    To prevent duplicate incidents, this field is mandatory for fetching incidents.'
   name: timestamp_field
   type: 0
   required: false
@@ -83,7 +83,7 @@ configuration:
   name: use_display_value
   type: 8
   required: false
-- additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format (full form) `HH:mm:ss` with support to `a` notation for AM/PM.'
+- additionalinfo: Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format (full form) `HH:mm:ss` with support to `a` notation for AM/PM.
   defaultvalue: None
   display: Instance Date Format
   name: display_date_format
@@ -138,14 +138,14 @@ configuration:
   - marketplacev2
   required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file from ServiceNow.
-  defaultvalue: 'FromServiceNow'
+  defaultvalue: FromServiceNow
   display: File Entry Tag From ServiceNow
   name: file_tag_from_service_now
   type: 0
   hidden:
   - marketplacev2
   required: false
-- additionalinfo: "According to the timestamp in this field, records will be queried to check for updates."
+- additionalinfo: According to the timestamp in this field, records will be queried to check for updates.
   display: Timestamp field to query for updates as part of the mirroring flow
   name: update_timestamp_field
   type: 0
@@ -161,7 +161,7 @@ configuration:
   hidden:
   - marketplacev2
   required: false
-- additionalinfo: "Custom (user defined) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here."
+- additionalinfo: 'Custom (user defined) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a ''u_''. These fields will be included in the mirroring capabilities, if added here.'
   display: Custom Fields to Mirror
   name: custom_fields
   type: 12
@@ -169,7 +169,7 @@ configuration:
   - marketplacev2
   required: false
 - additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.
-  defaultvalue: 'None'
+  defaultvalue: None
   display: Mirrored XSOAR Ticket closure method
   name: close_incident
   type: 15
@@ -180,19 +180,19 @@ configuration:
   hidden:
   - marketplacev2
   required: false
-- additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
+- additionalinfo: "Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: \u201C10=Design,11=Development,12=Testing\u201D) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a \"Server configuration\" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason."
   defaultvalue: ''
   display: Mirrored XSOAR Ticket custom close state code
   name: server_close_custom_state
   type: 0
   required: false
-- additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
+- additionalinfo: "Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels (acceptable format example: \u201C10=Design,11=Development,12=Testing\u201D) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a \"Server configuration\" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason."
   display: Mirrored XSOAR Ticket custom close resolution code (overwrites the custom close state)
   name: server_custom_close_code
   type: 0
   required: false
 - additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
-  defaultvalue: 'None'
+  defaultvalue: None
   display: Mirrored ServiceNow Ticket closure method
   name: close_ticket_multiple_options
   type: 15
@@ -222,17 +222,17 @@ configuration:
   type: 8
   required: false
 - defaultvalue: 'false'
-  display: 'Use system proxy settings'
+  display: Use system proxy settings
   name: proxy
   type: 8
   required: false
 - defaultvalue: 'false'
-  display: 'Trust any certificate (not secure)'
+  display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
 - defaultvalue: '1'
-  display: 'Incidents Fetch Interval'
+  display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
   required: false
@@ -1590,7 +1590,7 @@ script:
       type: Unknown
   - arguments:
     - auto: PREDEFINED
-      defaultValue: 'GET'
+      defaultValue: GET
       description: action to be performed on path.
       isArray: true
       name: method
@@ -1629,7 +1629,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api.
       type: string
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   ismappable: true
   isremotesyncin: true

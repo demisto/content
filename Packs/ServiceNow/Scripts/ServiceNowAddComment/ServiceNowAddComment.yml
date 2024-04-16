@@ -21,11 +21,11 @@ commonfields:
   version: -1
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
+    fromServerVersion: ''
 dependson:
   must:
   - '|||servicenow-add-comment'
-dockerimage: demisto/python3:3.10.14.90585
+dockerimage: demisto/python3:3.10.14.92207
 enabled: true
 name: ServiceNowAddComment
 runas: DBotWeakRole
