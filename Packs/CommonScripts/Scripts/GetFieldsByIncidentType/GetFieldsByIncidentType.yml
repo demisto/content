@@ -14,37 +14,37 @@ args:
 - name: short_names
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: Whether to shorten the incident field names. If "true", will cause output to use shortened field names. The default value is "false".
-  defaultValue: "false"
+  defaultValue: 'false'
 - name: exclude_system
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: Whether to only return non-system fields. If "true", will only output non-system fields. The default value is "false".
-  defaultValue: "false"
+  defaultValue: 'false'
 - name: explicit_only
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: Whether to only include fields that are explicitly associated to the incident type. If "true", only fields which are explicitly associated to the incident type will be included (i.e., excludes fields for which the "associate to any" checkbox is selected). The default value is "false".
-  defaultValue: "false"
+  defaultValue: 'false'
 - name: pprint
   auto: PREDEFINED
   predefined:
-  - "true"
-  - "false"
+  - 'true'
+  - 'false'
   description: Pretty-prints the output.
-  defaultValue: "true"
+  defaultValue: 'true'
 scripttarget: 0
 subtype: python3
 dependson:
   must:
   - '|||core-api-get'
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.14.92207
 runas: DBotWeakRole
 tests:
 - No test - unit test

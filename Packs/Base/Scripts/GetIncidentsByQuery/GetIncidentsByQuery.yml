@@ -39,13 +39,16 @@ args:
 - defaultValue: '100'
   description: Incidents query batch size.
   name: pageSize
-comment: |-
-  Gets a list of incident objects and the associated incident outputs that
+comment: 'Gets a list of incident objects and the associated incident outputs that
+
   match the specified query and filters. The results are returned in a structured data file.
 
+
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
+
   For more information, see the section about permissions here:
-  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations'
 commonfields:
   id: GetIncidentsByQuery
   version: -1
@@ -61,9 +64,9 @@ script: '-'
 subtype: python3
 tags:
 - ml
-timeout: 60µs
+timeout: "60\xB5s"
 type: python
-dockerimage: demisto/python3:3.10.13.87159
+dockerimage: demisto/python3:3.10.14.92207
 tests:
 - Create Phishing Classifier V2 ML Test
 fromversion: 5.0.0
