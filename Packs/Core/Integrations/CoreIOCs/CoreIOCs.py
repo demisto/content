@@ -50,9 +50,12 @@ class Client(CoreClient):
     }
 
     def __init__(self, params: Dict):
-        url = params.get('url')
-        if not url:
-            url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
+        if USING_CORE_CLIENT_HTTP_REQUEST:
+            url = "/api/webapp/"
+        else:
+            url = params.get('url')
+            if not url:
+                url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
         self._base_url: str = urljoin(url, '/public_api/v1/indicators/')
         self._verify_cert: bool = not params.get('insecure', False)
         self._params = params
@@ -60,8 +63,8 @@ class Client(CoreClient):
 
     def http_request(self, url_suffix: str, requests_kwargs=None) -> Dict:
         if USING_CORE_CLIENT_HTTP_REQUEST:
-            url: str = urljoin("/api/webapp/", '/public_api/v1/indicators/')
-            return CoreClient._http_request(self, method='POST', url_suffix=url, data=requests_kwargs)
+            demisto.debug(f'_base_url {self._base_url} url_suffix:{url_suffix} | {self._base_url + url_suffix}')
+            return CoreClient._http_request(self, method='POST', url_suffix=url_suffix, data=requests_kwargs)
         if requests_kwargs is None:
             requests_kwargs = dict()
         res = requests.post(url=self._base_url + url_suffix,
@@ -356,6 +359,7 @@ def core_expiration_to_demisto(expiration) -> Union[str, None]:
 def module_test(client: Client):
     ts = int(datetime.now(timezone.utc).timestamp() * 1000) - 1
     path, requests_kwargs = prepare_get_changes(ts)
+    demisto.debug(f'path {path}')
     requests_kwargs: Dict = get_requests_kwargs(_json=requests_kwargs)
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
     demisto.results('ok')
