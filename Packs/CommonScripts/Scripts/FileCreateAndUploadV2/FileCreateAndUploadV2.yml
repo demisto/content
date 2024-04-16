@@ -6,8 +6,9 @@ script: ''
 type: python
 tags:
 - Utility
-comment: |
-  Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+comment: 'Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+
+  '
 enabled: true
 args:
 - name: filename
@@ -61,7 +62,7 @@ outputs:
   type: String
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.13.89009
+dockerimage: demisto/python3:3.10.14.92207
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

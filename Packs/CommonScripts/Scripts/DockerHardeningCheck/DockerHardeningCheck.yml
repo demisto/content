@@ -37,11 +37,11 @@ args:
   - cloud_metadata
   - host_machine
   - all
-  description: 'The network check to perform. cloud_metadata - check that access is blocked to cloud metadata server, host_machine - check that access is blocked to the host machine on the default gateway IP, all - perform all network tests.'
+  description: The network check to perform. cloud_metadata - check that access is blocked to cloud metadata server, host_machine - check that access is blocked to the host machine on the default gateway IP, all - perform all network tests.
   defaultValue: cgroup
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.14.91134
+dockerimage: demisto/python3:3.10.14.92207
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
