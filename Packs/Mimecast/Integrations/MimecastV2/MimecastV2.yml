@@ -2090,6 +2090,29 @@ script:
     - name: limit
       type: Number
       defaultValue: 50
+  - name: mimecast-get-search-logs
+    description: Retrieves the search logs.
+    arguments:
+    - name: query
+      description: Text to search within the logs, which can contain email addresses.
+      type: String
+    - name: start
+      description: The earliest search log to return in the following format 2017-09-16T14:49:18+0000. Defaults to the start of the current day.
+      type: String
+    - name: end
+      description: The latest search log to return in the following format 2017-09-16T14:49:18+0000. Defaults to the end of the current day.
+      type: String
+    - name: page
+      description: aa
+      type: Number
+    - name: page_size
+      description: aa
+      type: Number
+      # defaultValue: 50
+    - name: limit
+      description: aa
+      type: Number
+      defaultValue: 50      
   isfetch: true
   runonce: false
   script: '-'

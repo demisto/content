@@ -689,10 +689,18 @@ def test_get_message_metadata_with_attachments(mocker):
 
 
 def test_get_archive_search_logs_command(mocker):
-    """_summary_
+    """
+    Test case for the 'get_archive_search_logs_command' function of the MimecastV2 class,
+    where no 'query_xml' argument is given.
 
-    Args:
-        mocker (_type_): _description_
+    GIVEN:
+        - A mocked HTTP request to the Mimecast API (using http_request).
+
+    WHEN:
+        - The 'get_archive_search_logs_command' function is called without the 'query_xml' argument.
+
+    THEN:
+        - Make sure no exception is raised.
     """
 
     args = {'query_xml': 'aa@aa.aa'}
@@ -723,4 +731,51 @@ def test_get_archive_search_logs_command(mocker):
     }
     mocker.patch.object(MimecastV2, 'http_request', return_value={'data': [expected_response]})
     result = MimecastV2.get_archive_search_logs_command(args)
-    assert expected_response.get('data') == result.outputs[0]['data']
+    assert expected_response.get('data') == result.outputs['data'][0]['data']
+
+
+def test_get_search_logs_command(mocker):
+    """
+    Tests the 'get_archive_search_logs_command' function of the MimecastV2 class with various arguments.
+
+    This test mocks the http_request method to return a sample response containing archive search
+    logs data. It then calls the get_archive_search_logs_command function with arguments specifying
+    limit, page, page_size, query, and start date. Finally, it asserts that the extracted logs data
+    matches the expected response.
+
+    Args:
+        mocker (pytest.MonkeyFixture): Pytest mocker fixture used to patch methods.
+    """
+
+    args = {'limit': '50', 'page': '1', 'page_size': '1', 'query': 'aa.aa.aa.aa', 'start': '2017-09-16T14:49:18+0000'}
+    expected_response = {
+        "meta": {
+            "pagination": {
+                "pageSize": 1,
+                "totalCount": 169,
+                "next": "eNodjskOgjAUAP-lVzy0ZVFMPFSMuAVUFKM3bAvWqE9bcMH47xKOkznMfNE9K6RRtVQC9UkHGckr3QIifoon8Xt_FWf-LFbpyYlK7NAkHOYFOdx2Nr4slhEjanlystHRWrNNb7zxgU6lr1y6Ul78qKKZSz0Lz7NKfKyazXUdxmzd9exRDof0ApC-kgAGqIN4ZUq4Ss1ByKYebBNGMGXU9hr5lNoouLWLWnLQwpSZLtvp3x9nzD75"
+            },
+            "status": 200
+        },
+        "data": [
+            {
+                "logs": [
+                    {
+                        "createTime": "2024-03-25T12:04:48+0000",
+                        "emailAddr": "aa@aa.aa.aa.com",
+                        "source": "archive",
+                        "searchText": "{\"mailbox\":\"aa@aa.aaa.aaaa.com\",\"query\":\"[]\"}",
+                        "searchPath": "/INBOX/",
+                        "searchReason": "",
+                        "isAdmin": 'true',
+                        "museQuery": "[]",
+                        "description": "Archive Mailbox"
+                    }
+                ]
+            }
+        ],
+        "fail": []
+    }
+    mocker.patch.object(MimecastV2, 'http_request', return_value=expected_response)
+    result = MimecastV2.get_archive_search_logs_command(args)
+    assert expected_response.get('data')[0]['logs'] == result.outputs['data'][0]['logs']

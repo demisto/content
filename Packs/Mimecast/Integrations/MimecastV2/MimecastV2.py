@@ -15,15 +15,17 @@ from datetime import timedelta
 from urllib.error import HTTPError
 from xml.etree import ElementTree
 
-DEFAULT_POLICY_TYPE = 'blockedsenders'
 
 ''' GLOBALS/PARAMS '''
-
+print(demisto.args())
 BASE_URL = demisto.params().get('baseUrl')
 ACCESS_KEY = demisto.params().get('accessKey')
-SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds', {}).get('password', '')
+SECRET_KEY = demisto.params().get('secretKey')
+# SECRET_KEY = demisto.params().get('secretKey') or demisto.params().get('secretKey_creds', {}).get('password', '')
 APP_ID = demisto.params().get('appId')
-APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {}).get('password', '')
+# APP_KEY = demisto.params().get('appKey') or demisto.params().get('appKey_creds', {}).get('password', '')
+APP_KEY = demisto.params().get('appKey')
+
 USE_SSL = None  # assigned in determine_ssl_usage
 PROXY = bool(demisto.params().get('proxy'))
 # Flags to control which type of incidents are being fetched
@@ -34,16 +36,18 @@ FETCH_ATTACHMENTS = 'Attachments' in FETCH_PARAMS or FETCH_ALL
 FETCH_IMPERSONATIONS = 'Impersonation' in FETCH_PARAMS or FETCH_ALL
 FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
 # Used to refresh token / discover available auth types / login
-EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
-PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
+EMAIL_ADDRESS = demisto.params().get('email')
+# EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
+# PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
+PASSWORD = demisto.params().get('password')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
 CLIENT_ID = demisto.params().get('client_id')
 CLIENT_SECRET = demisto.params().get('client_secret')
 USE_OAUTH2 = demisto.params().get("use_oauth2")
 TOKEN_OAUTH2 = ""
-
-
+DEFAULT_POLICY_TYPE = 'blockedsenders'
 LOG(f"command is {demisto.command()}")
+PAGE_SIZE_MAX = 2000
 
 # default query xml template for test module
 default_query_xml = "<?xml version=\"1.0\"?> \n\
@@ -126,7 +130,66 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     return results, len_of_results
 
 
-def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, oauth2=False, is_file=False, headers={}, data=None):
+def request_with_pagination_api2(api_endpoint: str, data: list, limit: int, page: int, page_size: int, headers={}) -> list:
+    """
+    Makes a paginated request to an API using OAuth2 authentication and retrieves all results up to a specified limit.
+
+    Args:
+        api_endpoint (str): The URL of the API endpoint to call.
+        data (list): The data to be sent in the request body (usually empty).
+        limit (int, optional): The maximum number of results to retrieve. Defaults to 50.
+        page (int, optional): The current page number.
+        page_size (int, optional): The number of results to retrieve per page. Defaults to 50.
+        headers (dict, optional): Additional headers to include in the request. Defaults to {}.
+
+    Returns:
+        list: A list containing all retrieved log entries, up to the specified limit.
+
+    Raises:
+        Exception: If the API returns an error response.
+    """
+    if page and page_size:
+        limit = page * page_size
+    elif not page and not page_size:  # only limit
+        page_size = PAGE_SIZE_MAX
+    elif page and not page_size or page_size and not page:
+        raise ValueError('Either both page and page_size must be provided, or neither should be provided.')
+
+    payload = {
+        'meta': {
+            'pagination': {
+                'pageSize': page_size
+            }
+        },
+        'data': data
+    }
+
+    response = http_request('POST', api_endpoint, payload, headers=headers)
+
+    len_of_results = 0
+    results = []
+    while True:
+        if response.get('fail'):
+            raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+
+        response_data = response.get('data')[0]['logs']
+        for entry in response_data:
+            if not limit or len_of_results < limit:
+                len_of_results += 1
+                results.append(entry)
+
+        next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
+        if not next_page or (limit and len_of_results >= limit):
+            break
+
+        payload['meta']['pagination']['pageToken'] = next_page
+        response = http_request('POST', api_endpoint, payload, headers=headers)
+
+    print(len_of_results)
+    return results
+
+
+def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers={}, data=None):
     is_user_auth = True
     url = BASE_URL + api_endpoint
     # 3 types of auth, user, non user and OAuth2
@@ -153,11 +216,12 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
 
     LOG('running {} request with url={}\tparams={}\tdata={}\tis user auth={}'.format(
         method, url, json.dumps(params), json.dumps(payload), is_user_auth))
+    # print('method:',method,'url:',url,'headers:',headers,'payload:',payload,'data:',data)
     try:
         res = requests.request(
             method,
             url,
-            verify=USE_SSL,
+            verify=False,
             params=params,
             headers=headers,
             json=payload,
@@ -182,6 +246,29 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
     except Exception as e:
         LOG(e)
         raise
+
+
+def token_oauth2_request():
+    if not CLIENT_ID:
+        raise Exception('In order to refresh a token validty duration, account\'s client id is required.')
+    if not CLIENT_SECRET:
+        raise Exception('In order to refresh a token validty duration, account\'s client secret is required.')
+    client_id = CLIENT_ID
+    client_secret = CLIENT_SECRET
+
+    api_endpoint = '/oauth/token'
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    data = {
+        'client_id': client_id,
+        'client_secret': client_secret,
+        'grant_type': 'client_credentials'
+    }
+    response = http_request('POST', api_endpoint, user_auth=False, headers=headers, data=data)
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('message')))
+    return response.get('access_token')
 
 
 def search_message_request(args):
@@ -486,20 +573,20 @@ def updating_token_oauth2():
     """
     global TOKEN_OAUTH2
     integration_context = demisto.getIntegrationContext()
-    last_update_ts = integration_context.get('last_update')
+    integration_context.get('last_update')
     current_ts = epoch_seconds()
-    if (last_update_ts and current_ts - last_update_ts > 15 * 60) or last_update_ts is None:
-        TOKEN_OAUTH2 = token_oauth2_request()
-        if TOKEN_OAUTH2:
-            current_ts = epoch_seconds()
-            token_oauth2 = {
-                'value': TOKEN_OAUTH2,
-                'last_update': current_ts
-            }
-            demisto.setIntegrationContext(token_oauth2)
+    # if (last_update_ts and current_ts - last_update_ts > 15 * 60) or last_update_ts is None:
+    TOKEN_OAUTH2 = token_oauth2_request()
+    if TOKEN_OAUTH2:
+        current_ts = epoch_seconds()
+        token_oauth2 = {
+            'value': TOKEN_OAUTH2,
+            'last_update': current_ts
+        }
+        demisto.setIntegrationContext(token_oauth2)
 
-    else:
-        TOKEN_OAUTH2 = integration_context.get('value')
+    # else:
+        # TOKEN_OAUTH2 = integration_context.get('value')
 
 
 def generate_user_auth_headers(api_endpoint):
@@ -1945,29 +2032,6 @@ def refresh_token_request():
     return response.get('data')[0]
 
 
-def token_oauth2_request():
-    if not CLIENT_ID:
-        raise Exception('In order to refresh a token validty duration, account\'s client id is required.')
-    if not CLIENT_SECRET:
-        raise Exception('In order to refresh a token validty duration, account\'s client secret is required.')
-    client_id = CLIENT_ID
-    client_secret = CLIENT_SECRET
-
-    api_endpoint = '/oauth/token'
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded'
-    }
-    data = {
-        'client_id': client_id,
-        'client_secret': client_secret,
-        'grant_type': 'client_credentials'
-    }
-    response = http_request('POST', api_endpoint, user_auth=False, oauth2=True, headers=headers, data=data)
-    if response.get('fail'):
-        raise Exception(json.dumps(response.get('fail')[0].get('message')))
-    return response.get('access_token')
-
-
 def login():
     headers = ['Access Key', 'Secret Key']
     contents = []
@@ -3091,8 +3155,7 @@ def list_email_queues_command(args):
     return CommandResults(
         outputs_prefix='Mimecast.EmailQueue',
         readable_output=total_markdown,
-        outputs=response.get('data'),
-        raw_response=response
+        outputs=response
     )
 
 
@@ -3109,8 +3172,33 @@ def get_archive_search_logs_command(args: dict) -> CommandResults:
 
     return CommandResults(
         outputs_prefix='Mimecast.ArchiveSearchLog',
-        outputs=response.get('data'),
+        outputs=response,
         raw_response=response
+    )
+
+
+def get_search_logs_command(args: dict) -> CommandResults:
+    query = args.get('query', '')
+    start = args.get('start', '')
+    end = args.get('end', '')
+
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args['limit'])
+
+    data = [{}]
+    if query:
+        data[0]['query'] = query
+    if start:
+        data[0]['start'] = start
+    if end:
+        data[0]['end'] = end
+
+    response = request_with_pagination_api2('/api/archive/get-search-logs', data, limit, page, page_size)  # type: ignore
+
+    return CommandResults(
+        outputs_prefix='Mimecast.SearchLog',
+        outputs=response
     )
 
 
@@ -3122,7 +3210,7 @@ def main():
 
     try:
         handle_proxy()
-        determine_ssl_usage()
+        # determine_ssl_usage()
         if USE_OAUTH2:
             updating_token_oauth2()
         if ACCESS_KEY:
@@ -3209,6 +3297,9 @@ def main():
             return_results(list_email_queues_command(args))
         elif command == 'mimecast-get-archive-search-logs':
             return_results(get_archive_search_logs_command(args))
+
+        elif command == 'mimecast-get-search-logs':
+            return_results(get_search_logs_command(args))
 
     except Exception as e:
         return_error(e)
