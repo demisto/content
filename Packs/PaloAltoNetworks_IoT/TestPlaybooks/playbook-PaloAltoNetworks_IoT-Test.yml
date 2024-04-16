@@ -13,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -370,13 +371,13 @@ tasks:
           root: PaloAltoNetworksIoT.Vulns
           accessor: vulnerability_name
           transformers:
-            - operator: FirstArrayElement
+          - operator: FirstArrayElement
       id:
         complex:
           root: PaloAltoNetworksIoT.Vulns
           accessor: zb_ticketid
           transformers:
-            - operator: FirstArrayElement
+          - operator: FirstArrayElement
       reason:
         simple: XSOAR nightly integration test
     separatecontext: false
@@ -403,6 +404,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -431,3 +433,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: test test.
