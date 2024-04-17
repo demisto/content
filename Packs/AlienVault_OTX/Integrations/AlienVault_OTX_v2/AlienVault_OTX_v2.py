@@ -22,6 +22,7 @@ Attributes:
 INTEGRATION_NAME = 'AlienVault OTX v2'
 INTEGRATION_COMMAND_NAME = 'alienvault'
 INTEGRATION_CONTEXT_NAME = 'AlienVaultOTX'
+pn = 2
 
 
 class Client(BaseClient):
