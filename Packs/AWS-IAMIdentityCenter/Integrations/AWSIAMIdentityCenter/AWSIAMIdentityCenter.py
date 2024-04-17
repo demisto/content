@@ -500,7 +500,7 @@ def list_group_memberships(args, client, IdentityStoreId):
     context_data['GroupMembershipNextToken'] = response.get('NextToken')
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
     result = CommandResults(
-        outputs_prefix= PREFIXGROUP,
+        outputs_prefix=PREFIXGROUP,
         readable_output=human_readable,
         outputs_key_field='GroupId',
         outputs=context_data
