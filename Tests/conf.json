@@ -5659,7 +5659,7 @@
         },
         {
             "integrations": "Redmine",
-            "playbookID": "Redmine-Test"
+            "playbookID": "Redmine_Test"
         },
         {
             "integrations": "Palo Alto Networks AIOps",
