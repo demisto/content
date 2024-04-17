@@ -3780,7 +3780,6 @@
             "integrations": "Generic Webhook",
             "instance_names": "Generic Webhook XSOAR on-prem",
             "playbookID": "Generic Webhook - Test",
-            "marketplaces": "xsoar_on_prem",
             "has_api": false
         },
         {
