@@ -210,14 +210,14 @@ def prepare_context(credentials):  # pragma: no cover
     else:
         SERVER_BUILD = get_build_autodiscover(context_dict)
         EWS_SERVER = get_endpoint_autodiscover(context_dict)
-
+ 
 
 def prepare():  # pragma: no cover
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     if NON_SECURE:
         BaseProtocol.RETRY_WAIT = 20 # type: ignore
         BaseProtocol.TIMEOUT = 1000 # type: ignore
-        BaseProtocol.HTTP_ADAPTER_CLS = NoVerifyHTTPAdapter #exchangelibSSLAdapter
+        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter #exchangelibSSLAdapter
     AUTO_DISCOVERY = not EWS_SERVER
     if AUTO_DISCOVERY:
         credentials = Credentials(username=USERNAME, password=PASSWORD)
