@@ -1,3 +1,4 @@
+import demistomock
 from CommonServerPython import *
 
 """ IMPORTS """
@@ -1549,6 +1550,7 @@ def main() -> None:
                 is_test=False,
             )
             # saves next_run for the time fetch-incidents is invoked.
+            demistomock.debug(f"FireEyeNX setting next run to: {next_run}")
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
