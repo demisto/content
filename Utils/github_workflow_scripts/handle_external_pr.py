@@ -301,7 +301,7 @@ def get_user_from_ui_pr(pr):
         print(f'pr body: {pr.body}')
 
 
-def find_all_open_prs_by_user(content_repo, pr_creator):
+def find_all_open_prs_by_user(content_repo, pr_creator, pr_number):
     """
     find open pr's by the same users (what if there are more then 1 with different reviewers already?
     :param pr_creator:
@@ -312,6 +312,8 @@ def find_all_open_prs_by_user(content_repo, pr_creator):
     similar_prs = []
     print(f'Number of all open PRs is: {all_prs.totalCount}')
     for pr in all_prs:
+        if pr.id == pr_number:
+            continue
         if pr.user.login == "xsoar-bot":
             pr_creator_from_body = get_user_from_ui_pr(pr)
             print(f'pr creator from body is: {pr_creator_from_body}')
@@ -342,7 +344,7 @@ def find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number):
     else:
         pr_creator = pr.user.login
 
-    other_prs_by_same_user = find_all_open_prs_by_user(content_repo, pr_creator)
+    other_prs_by_same_user = find_all_open_prs_by_user(content_repo, pr_creator, pr_number)
     return other_prs_by_same_user
     #if other_prs_by_same_user:
     #    pr_reviewer = get_reviewer(other_prs_by_same_user)
