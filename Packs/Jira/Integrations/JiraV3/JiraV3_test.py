@@ -1564,8 +1564,9 @@ class TestJiraUploadFileCommand:
         expected_file_mime_type = 'application/pdf'
         expected_files = {'file': (file_name, file_bytes, expected_file_mime_type)}
         mocker.patch('JiraV3.guess_type', return_value=(expected_file_mime_type, ''))
-        result = create_files_to_upload('', file_name, file_bytes)
-        assert result == expected_files
+        result_files, result_mime_type = create_files_to_upload('', file_name, file_bytes)
+        assert result_files == expected_files
+        assert result_mime_type == expected_file_mime_type
 
     def test_create_files_to_upload_none_type(self, mocker):
         """
@@ -1583,8 +1584,9 @@ class TestJiraUploadFileCommand:
         expected_file_mime_type = 'application-type'
         expected_files = {'file': (file_name, file_bytes, expected_file_mime_type)}
         mocker.patch('JiraV3.guess_type', return_value=(None, ''))
-        result = create_files_to_upload('', file_name, file_bytes)
-        assert result == expected_files
+        result_files, result_mime_type = create_files_to_upload('', file_name, file_bytes)
+        assert result_files == expected_files
+        assert result_mime_type == expected_file_mime_type
 
     def test_create_files_to_upload_given_type(self, mocker):
         """
@@ -1602,8 +1604,9 @@ class TestJiraUploadFileCommand:
         expected_file_mime_type = 'application-type'
         expected_files = {'file': (file_name, file_bytes, expected_file_mime_type)}
         mock_guess_type = mocker.patch('JiraV3.guess_type', return_value=(None, ''))
-        result = create_files_to_upload(expected_file_mime_type, file_name, file_bytes)
-        assert result == expected_files
+        result_files, result_mime_type = create_files_to_upload(expected_file_mime_type, file_name, file_bytes)
+        assert result_files == expected_files
+        assert result_mime_type == expected_file_mime_type
         mock_guess_type.assert_not_called()
 
 

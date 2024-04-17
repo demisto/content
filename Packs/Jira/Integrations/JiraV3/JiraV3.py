@@ -1426,7 +1426,7 @@ def get_current_time_in_seconds() -> float:
     return time.time_ns() / (10 ** 9)
 
 
-def create_files_to_upload(file_mime_type: str, file_name: str, file_bytes: bytes, attachment_name: str | None = None) -> dict:
+def create_files_to_upload(file_mime_type: str, file_name: str, file_bytes: bytes, attachment_name: str | None = None) -> tuple:
     """ Creates the file object to upload to Jira
         Args:
             file_mime_type (str): The mime type of the file.
@@ -1436,13 +1436,14 @@ def create_files_to_upload(file_mime_type: str, file_name: str, file_bytes: byte
             same one as in XSOAR. Default is None
 
         Returns:
-            [Dict[tuple(str, bytes, str)]]: The file object of new attachment (file name, content in bytes, mime type).
+            tuple([Dict[tuple(str, bytes, str)]], str): The dift is The file object of new attachment (file name, content in
+            bytes, mime type), and the str is the mime type to upload with the file.
         """
     # guess_type can return a None mime type if the type can’t be guessed (missing or unknown suffix). In this case, we should use
     # a default mime type
     mime_type_to_upload = file_mime_type if file_mime_type else guess_type(file_name)[0] or 'application-type'
     demisto.debug(f'In create_files_to_upload {mime_type_to_upload=}')
-    return {'file': (attachment_name or file_name, file_bytes, mime_type_to_upload)}
+    return {'file': (attachment_name or file_name, file_bytes, mime_type_to_upload)}, mime_type_to_upload
 
 
 def create_file_info_from_attachment(client: JiraBaseClient, attachment_id: str, file_name: str = '') -> Dict[str, Any]:
@@ -2463,9 +2464,7 @@ def upload_XSOAR_attachment_to_jira(client: JiraBaseClient, entry_id: str,
         List[Dict[str, Any]]: The results of the API, which will hold the newly added attachment.
     """
     file_name, file_bytes = get_file_name_and_content(entry_id=entry_id)
-    files = create_files_to_upload('', file_name, file_bytes, attachment_name)
-    # Index 2 holds the MIME type
-    chosen_file_mime_type = files.get("file", ())[2]
+    files, chosen_file_mime_type = create_files_to_upload('', file_name, file_bytes, attachment_name)
     # try upload the attachment with the specific mime type
     try:
         return client.upload_attachment(issue_id_or_key=issue_id_or_key, files=files)
@@ -2478,7 +2477,7 @@ def upload_XSOAR_attachment_to_jira(client: JiraBaseClient, entry_id: str,
         else:
             demisto.debug(f'The first call to upload_attachment() with {chosen_file_mime_type=} failed. '
                           f'Trying again with file_mime_type=application-type')
-            files = create_files_to_upload('application-type', file_name, file_bytes, attachment_name)
+            files, _ = create_files_to_upload('application-type', file_name, file_bytes, attachment_name)
             return client.upload_attachment(issue_id_or_key=issue_id_or_key, files=files)
 
 
