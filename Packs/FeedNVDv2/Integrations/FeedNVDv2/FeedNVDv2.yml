@@ -12,18 +12,28 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   name: apiKey
-  required: true
+  required: false
   type: 9
+- name: keyword_search
+  display: Keyword Search
+  type: 0
+  additionalinfo: This returns only the CVEs where the word or phrase is found in the description.
+  required: false
+- name: cvssv3severity
+  display: CVSS 3 Severity Filter
+  additionalinfo: Select the severities you wish to get back from the feed.
+  options:
+  - CRITICAL
+  - HIGH
+  - MEDIUM
+  - LOW
+  defaultvalue: 
+  required: false
+  type: 16
 - defaultvalue: 1 year
   display: First fetch time
   name: first_fetch
   required: false
-  type: 0
-- additionalinfo: First CVE was published in September of 1999
-  defaultvalue: "2013-01-01"
-  display: Date to begin fetching CVEs from (YYYY-MM-DD)
-  name: start_date
-  required: true
   type: 0
 - additionalinfo: 'See the following URL for more information: https://nvd.nist.gov/developers/vulnerabilities#cves-hasKev' # disable-secrets-detection
   defaultvalue: "false"
@@ -64,7 +74,8 @@ configuration:
   - suddenDeath
   required: false
   type: 17
-- display: Feed Fetch Interval
+- defaultvalue: '60'
+  display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
@@ -122,15 +133,33 @@ image: ''
 name: FeedNVDv2
 script:
   commands:
-  - arguments:
+  - description: Manually retrieve CVEs from NVD using the history parameter for number of days back to fetch.
+    name: nvd-get-indicators
+    arguments:
     - auto: PREDEFINED
       description: Number of days back to retrieve CVEs.
       name: history
       predefined:
-      - ""
+      - "7 days"
       required: true
-    description: Manually retrieve CVEs from NVD using the history parameter for number of days back to fetch.
-    name: nvd-get-indicators
+    - name: keyword
+      description: Keywords to query CVEs by.
+    outputs:
+    - contextPath: CVE.ID
+      description: The ID of the CVE.
+      type: String
+    - contextPath: CVE.CVSS
+      description: The CVSS score of the CVE.
+      type: number
+    - contextPath: CVE.Published
+      description: The date the CVE was published.
+      type: Date
+    - contextPath: CVE.Modified
+      description: The date that the CVE was last modified.
+      type: Date
+    - contextPath: CVE.Description
+      description: The description of the CVE.
+      type: String
   dockerimage: demisto/python3:3.10.13.86272
   feed: true
   runonce: false
