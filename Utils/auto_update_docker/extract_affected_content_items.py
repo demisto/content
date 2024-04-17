@@ -13,12 +13,13 @@ from demisto_sdk.commands.common.handlers import DEFAULT_JSON_HANDLER as json
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import (
     Neo4jContentGraphInterface as ContentGraphInterface,
 )
-from demisto_sdk.commands.common.docker.docker_image import (DockerImage)
+from demisto_sdk.commands.common.docker.docker_image import DockerImage
 
 logging.basicConfig(level=logging.INFO)
 load_dotenv()
 app = typer.Typer(no_args_is_help=True)
 CWD = os.getcwd()
+
 
 def load_json(path: str) -> dict[str, Any]:
     with open(path, encoding="utf-8") as f:
@@ -84,19 +85,24 @@ def filter_content_items_to_run_on(
             # We check the coverage of the content item
             # Since the content item that we get will be a python file, and we want to
             # return a YML
-            affected_content_items.append(str(content_item_path.with_suffix('.yml')))
+            affected_content_items.append(str(content_item_path.with_suffix(".yml")))
         else:
             logging.info(f"{content_item} not within coverage, skipping")
 
-    return {
-        "content_items": affected_content_items,
-        "pr_labels": batch_config.get("pr_labels", []),
-        "target_tag": target_docker_tag,
-        "coverage": f"{min_cov}-{max_cov}"
-    } if affected_content_items else {}
+    return (
+        {
+            "content_items": affected_content_items,
+            "pr_labels": batch_config.get("pr_labels", []),
+            "target_tag": target_docker_tag,
+            "coverage": f"{min_cov}-{max_cov}",
+        }
+        if affected_content_items
+        else {}
+    )
 
-def get_docker_image_tag(docker_image: str, images_tag: dict[str, str]) -> str:
-    """Return the docker image tag from the 'images_tag' file supplied to the program, if not found,
+
+def get_docker_image_target_tag(docker_image: str, images_tag: dict[str, str]) -> str:
+    """Return the docker image tag from the 'images_tag' file under {flow_dir / Path("images_tag.json")}, if not found,
     will query DockerHub to retrieve the latest tag of the docker image.
 
     Args:
@@ -113,8 +119,14 @@ def get_docker_image_tag(docker_image: str, images_tag: dict[str, str]) -> str:
     latest_tag = DockerImage(docker_image).latest_tag
     return latest_tag.base_version
 
-def get_docker_batch_config(docker_image: str, custom_images: list[str], default_batches: list[dict[str, Any]],
-                      image_custom_configs: dict[str, Any], current_batch_index: int) -> dict[str, Any]:
+
+def get_docker_batch_config(
+    docker_image: str,
+    custom_images: list[str],
+    default_batches: list[dict[str, Any]],
+    image_custom_configs: dict[str, Any],
+    current_batch_index: int,
+) -> dict[str, Any]:
     """Get the relevant docker batch, whether the default or custom batch.
 
     Args:
@@ -167,22 +179,22 @@ def get_affected_content_items_by_docker_image(
     custom_images: list[str] = list(image_custom_configs.keys())
     for docker_image in affected_docker_images:
         affected_content_items: dict[str, Any] = {}
-        docker_image_tag = get_docker_image_tag(docker_image=docker_image,
-                                                images_tag=images_tag)
+        docker_image_target_tag = get_docker_image_target_tag(docker_image=docker_image, images_tag=images_tag)
         docker_batch_config = get_docker_batch_config(
             docker_image=docker_image,
             custom_images=custom_images,
             default_batches=default_batches,
             image_custom_configs=image_custom_configs,
-            current_batch_index=current_batch_index)
+            current_batch_index=current_batch_index,
+        )
         if docker_batch_config:
             affected_content_items = filter_content_items_to_run_on(
                 batch_config=docker_batch_config,
                 content_items_coverage=content_items_coverage,
                 content_items_by_docker_image=content_items_by_docker_image[docker_image],
-                target_docker_tag=docker_image_tag,
+                target_docker_tag=docker_image_target_tag,
                 nightly_packs=nightly_packs,
-                )
+            )
         else:
             logging.info(f"No batch config was found for {docker_image = }, and {current_batch_index = }")
         if affected_content_items:
@@ -267,7 +279,7 @@ def get_content_items_by_docker_image() -> dict[str, list[dict[str, Any]]]:
         content_items_info = session.execute_read(query_used_dockers_per_content_item)
         for docker_image, content_item, auto_update_docker_image, full_pack_path, support_level in content_items_info:
             if auto_update_docker_image:
-                content_item_py = Path(content_item).with_suffix('.py')
+                content_item_py = Path(content_item).with_suffix(".py")
                 if content_item_py.is_file():
                     # Since the full_pack_path is in the format "Packs/{pack path}"
                     pack_path = full_pack_path.split("/")[1]
@@ -276,15 +288,43 @@ def get_content_items_by_docker_image() -> dict[str, list[dict[str, Any]]]:
                     docker_image_split = docker_image.split(":")
                     docker_image_without_tag = docker_image_split[0]
                     docker_image_tag = docker_image_without_tag[1]
-                    content_images[docker_image_without_tag].append({"content_item": content_item_py,
-                                                                    "support_level": support_level,
-                                                                    "pack_path": pack_path,
-                                                                    "docker_image_tag": docker_image_tag})
+                    content_images[docker_image_without_tag].append(
+                        {
+                            "content_item": content_item_py,
+                            "support_level": support_level,
+                            "pack_path": pack_path,
+                            "docker_image_tag": docker_image_tag,
+                        }
+                    )
                 else:
                     logging.warning(f"{content_item_py} was returned from the graph, but not found in repo")
             else:
                 logging.warning(f"{auto_update_docker_image=} configured for {content_item}, skipping")
     return content_images
+
+
+def docker_tags_parser(benchmark_docker_tags: str) -> dict[str, str]:
+    if not benchmark_docker_tags:
+        return {}
+
+    # Remove spaces, if input has spaces between comma
+    # docker_tags_no_spaces = benchmark_docker_tags.replace(" ", "")
+
+    # Split the input string into key-value pairs
+    pairs = benchmark_docker_tags.split(",")
+
+    # Initialize an empty dictionary to store the key-value pairs
+    result_dict = {}
+
+    # Iterate over each key-value pair
+    for pair in pairs:
+        # Split the pair into key and value
+        key, value = pair.split(":")
+        # strip() to remove spaces
+        result_dict[key.strip()] = value.strip()
+
+    return result_dict
+
 
 @app.command()
 def get_affected_content_items(
@@ -300,11 +340,19 @@ def get_affected_content_items(
     flow_index: int = typer.Option(
         help="The flow index",
     ),
+    benchmark_docker_tags: dict[str, str] = typer.Option(
+        default="",
+        help="Docker images and their benchmark tags, where each docker image will hold the tag from which every content items'"
+        " ",
+        parser=docker_tags_parser,
+    ),
     docker_images_arg: str = typer.Option(
         default="ALL",
-        help=("The docker images that should be affected by the auto update, either a comma"
-        " separated list, the string 'ALL', or 'ALL@docker1,docker2',"
-        " where the last option will exclude the stated docker images"),
+        help=(
+            "The docker images that should be affected by the auto update, either a comma"
+            " separated list, the string 'ALL', or 'ALL@docker1,docker2',"
+            " where the last option will exclude the stated docker images"
+        ),
     ),
     auto_update_dir: str = typer.Option(
         default="",
@@ -313,15 +361,13 @@ def get_affected_content_items(
 ):
     # IMPORTANT - "demisto-sdk graph create" must be ran before
     # Entry point of code
-
     path_dir = Path(auto_update_dir) if dir else Path(CWD)
     if not path_dir.exists():
         raise Exception(f"{path_dir = } was not found, aborting")
 
-    tests_conf = load_json('Tests/conf.json')
+    tests_conf = load_json("Tests/conf.json")
     # Get nightly packs from tests conf
-    nightly_packs: list[str] = tests_conf.get('nightly_packs', [])
-
+    nightly_packs: list[str] = tests_conf.get("nightly_packs", [])
 
     # Creates flow directory if it does not exist, else it does nothing
     flow_dir = path_dir / Path(f"flow_{flow_index}")
@@ -347,12 +393,14 @@ def get_affected_content_items(
     image_custom_configs: dict[str, Any] = image_configs["custom_configs"]
 
     content_items_by_docker_image: dict[str, list[dict[str, Any]]] = get_content_items_by_docker_image()
-
     affected_docker_images = calculate_affected_docker_images(
         docker_images_arg=docker_images_arg,
         images_to_exclude=images_to_exclude,
         all_docker_images=list(content_items_by_docker_image.keys()),
     )
+    if set(benchmark_docker_tags.keys()) != set(affected_docker_images):
+        raise Exception("Dockers configured in benchmark_docker_tags should match the dockers of the docker_images_arg argument")
+
     default_batches: list[dict[str, Any]] = image_configs["default"]["batches"]
     affected_content_items_by_docker_image = get_affected_content_items_by_docker_image(
         default_batches=default_batches,
@@ -362,11 +410,13 @@ def get_affected_content_items(
         affected_docker_images=affected_docker_images,
         content_items_by_docker_image=content_items_by_docker_image,
         images_tag=images_tag,
-        nightly_packs=nightly_packs
+        nightly_packs=nightly_packs,
     )
 
-    docker_images_target_tag = {docker_image: affected_items["target_tag"] for docker_image, affected_items in
-                                affected_content_items_by_docker_image.items()}
+    docker_images_target_tag = {
+        docker_image: affected_items["target_tag"]
+        for docker_image, affected_items in affected_content_items_by_docker_image.items()
+    }
 
     # Output docker_images_target_tag | images_tag
     images_tags_path.touch(exist_ok=True)
@@ -376,6 +426,7 @@ def get_affected_content_items(
     affected_content_items_path = batch_dir / Path("affected_content_items.json")
     affected_content_items_path.touch(exist_ok=True)
     affected_content_items_path.write_text(json.dumps(affected_content_items_by_docker_image))
+
 
 def main():
     app()
