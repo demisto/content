@@ -277,7 +277,7 @@ script:
       default: false
       isArray: false
       secret: false
-      description: This ARO ID to transition.
+      description: This ARO ID to comment on.
     - name: comment
       required: true
       default: false
