@@ -169,7 +169,7 @@ script:
       default: false
       isArray: false
       secret: false
-      description: This ARO ID to transition.
+      description: The ARO ID to transition.
     - name: resolution
       required: true
       description: 'Resolution to transition the ARO to.'
@@ -277,7 +277,7 @@ script:
       default: false
       isArray: false
       secret: false
-      description: This ARO ID to comment on.
+      description: The ARO ID to comment on.
     - name: comment
       required: true
       default: false
