@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 import urllib3
 from typing import Dict, Tuple
+import parse_emails
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -11,9 +12,47 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 EML_FILE_PREFIX = '.eml'
 
+CHECK_EMAIL_HEADERS_PROMPT = """
+I have a set of email headers. 
+Analyze these headers for any potential security issues such as spoofing, phishing attempts, or other malicious activity.
+Please identify any suspicious fields, explain why they might be concerning, and suggest any further actions that could be taken \
+to investigate or mitigate these issues.
+Additional instructions: {}
+
+'''
+{}
+'''
+
+Please, review each header, highlighting any red flags and explaining the potential risks associated with them.
+Make you answer very concise and easily readable, with references to the email headers if there are, otherwise do not refer to \
+hypothetical problems.
+"""
+
+CHECK_EMAIL_BODY_PROMPT = """
+I have this email body that I suspect may contain security risks such as phishing links, suspicious attachments,
+or signs of social engineering. Please analyze the content of this email body, identify any elements that may pose security 
+threats, and explain why these elements are concerning. Also, suggest any steps that could be taken to further verify these risks
+or protect against these threats. 
+Additional instructions: {}
+
+'''
+{}
+'''
+
+Highlight potential security risks, and explain the implications of such risks.
+Make you answer very concise and easily readable, with references to the email body if there are, otherwise do not refer to \
+hypothetical problems.
+"""
+
+
 class Roles:
     ASSISTANT = 'assistant'
     USER = 'user'
+
+
+class EmailParts:
+    HEADERS = 'headers'
+    BODY = 'body'
 
 
 ''' CLIENT CLASS '''
@@ -91,7 +130,8 @@ def get_updated_conversation(reset_conversation_history: bool, message: str) -> 
 
 
 def extract_assistant_message(response: Dict[str, Any], conversation: List[Dict[str, str]]) -> str:
-    """Extracts the assistant message from a response and updates the conversation history.
+    """
+        Extracts the assistant message from a response and updates the conversation history.
         Returns:
         The assistant message as a string.
     """
@@ -114,18 +154,82 @@ def extract_assistant_message(response: Dict[str, Any], conversation: List[Dict[
     return response_content
 
 
-def get_email_parts(entry_id: str) -> Tuple[Dict[str, str], str]:
+def get_email_parts(entry_id: str) -> tuple[List[Dict[str, str]] | None, str | None, str | None]:
+    """
+        Extracts and parses the headers, text body, and HTML body from an .eml file identified by a given entry ID.
+
+        Args:
+        - entry_id (str): The unique identifier for the uploaded .eml file in the war room.
+
+        Returns:
+        - tuple[List[Dict[str, str]] | None, str | None, str | None]: A tuple containing three elements:
+            - headers (List[Dict[str, str]] | None): A list of dictionaries where each dictionary represents an email header.
+            - text_body (str | None): The plain text body of the email, if available.
+            - html_body (str | None): The HTML body of the email, if available.
+    """
     if not entry_id:
         return_error("Provide an entryId of an uploaded '.eml' file.")
 
-    file_name, file_content = get_file_by_entry_id(entry_id)
-    file_content: str
-    file_name: str
+    get_file_path_res = demisto.getFilePath(entry_id)
+    file_path = get_file_path_res["path"]
+    file_name = get_file_path_res["name"]
 
     if not file_name.endswith(EML_FILE_PREFIX):
         return_error("Provided 'entryId' does not point to a valid '.eml' file.")
 
-    return parse_email(file_content)
+    email_parser = parse_emails.EmailParser(file_path=file_path)
+    email_parser.parse()
+
+    headers, text_body, html_body = (email_parser.parsed_email.get('Headers', None),
+                                     email_parser.parsed_email.get('Text', None),
+                                     email_parser.parsed_email.get('HTML', None))
+    return headers, text_body, html_body
+
+
+def check_email_part(email_part: str, client: OpenAiClient, args: Dict[str, Any]):
+    """
+        Checks email parts (headers/body) for potential security issues using predefined prompts
+        ('CHECK_EMAIL_HEADERS_PROMPT', 'CHECK_EMAIL_BODY_PROMPT') that are sent to the GPT model.
+    """
+    entry_id: str | None = args.get('entryId', None)
+    email_headers, email_text_body, email_html_body = get_email_parts(entry_id)
+    additional_instructions = args.get('additionalInstructions', '')
+
+    if email_part == EmailParts.HEADERS:
+        demisto.debug(f'openai-gpt checking email headers: {email_headers=}')
+        if email_headers:
+            email_headers_formatted = []
+            for header in email_headers:
+                # Each header is represented as follows: {'name': 'From', 'value': 'Example <example@example.com>'},
+                # therefore we want to combine them into a formatted string in order to reduce token's usage in prompts.
+                header_formatted = ': '.join(header.values())
+                email_headers_formatted.append(header_formatted)
+
+            readable_input = '\n'.join(email_headers_formatted)
+            check_email_part_message = CHECK_EMAIL_HEADERS_PROMPT.format(additional_instructions, readable_input)
+
+        else:
+            raise DemistoException("'parse_emails' did not extract any email headers from the provided file..")
+    elif email_part == EmailParts.BODY:
+        demisto.debug(f'openai-gpt checking email body: {email_text_body=} {email_html_body=}')
+
+        if not email_text_body and not email_html_body:
+            raise DemistoException("'email_parser' did not extract any email body from the provided file.")
+
+        email_text_body = f'Body/Text: {email_text_body}' if email_text_body else ''
+        email_html_body = f'HTML/Text: {email_html_body}' if email_html_body else ''
+
+        readable_input = '\n'.join([email_text_body, email_html_body])
+        check_email_part_message = CHECK_EMAIL_BODY_PROMPT.format(additional_instructions, readable_input)
+    else:
+        raise DemistoException("Invalid email part to check provided.")
+
+    # Starting a new conversation as of a new topic discussed.
+    args.update({'reset_conversation_history': True, 'message': check_email_part_message})
+
+    # Displaying the analyzed email part to the war room.
+    return_results(readable_input)
+    return send_message_command(client, args)
 
 
 def construct_prompt(new_message: str, conversation_context=None, rag_data=""):
@@ -184,40 +288,17 @@ def send_message_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandR
     return CommandResults(
         outputs_prefix='OpenAIGPT.Conversation',
         outputs=conversation,
+        replace_existing=True,
         readable_output=assistant_message
     )
 
 
-def check_email_header_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
-    entry_id: str | None = args.get('entryId', None)
-    email_headers, _ = get_email_parts(entry_id)
-    demisto.debug(f'openai-gpt checking email headers: {email_headers=}')
-    return CommandResults(
-        outputs_prefix='OpenAIGPT.Email.Headers',
-        outputs=email_headers,
-        readable_output=str(email_headers)
-    )
-    # # 3 - Construct the prompt
-    # prompt = ""
-    # # Starting a new conversation as of a new topic discussed.
-    # args.update({'reset_conversation_history': True, 'message': prompt})
-    # return send_message_command(client, args)
+def check_email_headers_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
+    return check_email_part(EmailParts.HEADERS, client, args)
 
 
 def check_email_body_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
-    entry_id: str | None = args.get('entryId', None)
-    _, email_body = get_email_parts(entry_id)
-    demisto.debug(f'openai-gpt checking email body: {email_body=}')
-    return CommandResults(
-        outputs_prefix='OpenAIGPT.Email.Body',
-        outputs=email_body,
-        readable_output=email_body
-    )
-    # # 3 - Construct the prompt
-    # prompt = ""
-    # # Starting a new conversation as of a new topic discussed.
-    # args.update({'reset_conversation_history': True, 'message': prompt})
-    # return send_message_command(client, args)
+    return check_email_part(EmailParts.BODY, client, args)
 
 
 # def get_cve_info_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
@@ -277,7 +358,8 @@ def main() -> None:
         #     return_results(get_cve_info_command(client=client, args=args))
         #
         elif command == "gpt-check-email-header":
-            return_results(check_email_header_command(client=client, args=args))
+            results = check_email_headers_command(client=client, args=args)
+            return_results(results)
 
         elif command == "gpt-check-email-body":
             return_results(check_email_body_command(client=client, args=args))
