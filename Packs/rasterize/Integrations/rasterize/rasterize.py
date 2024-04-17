@@ -208,23 +208,6 @@ class PychromeEventHandler:
             self.start_frame = frameId
             demisto.debug(f'Frame started loading: {frameId}')
 
-    def page_frame_stopped_loading(self, frameId):
-        demisto.debug(f'PychromeEventHandler.page_frame_stopped_loading, {frameId=}')
-        if self.start_frame == frameId:
-            try:
-                with self.screen_lock:
-                    try:
-                        self.tab.Page.stopLoading()
-                    except Exception as ex:
-                        demisto.info(f'Failed to stop tab loading due to {ex}')
-                        raise ex
-                    # Activate current tab
-                    activation_result = self.browser.activate_tab(self.tab.id)
-                    activation_result, operation_time = backoff(activation_result)
-                    self.tab_ready_event.set()
-            except pychrome.exceptions.PyChromeException as pce:
-                demisto.info(f'Exception when Frame stopped loading: {frameId}, {pce}')
-
     def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # noqa: F841
         demisto.debug(f'PychromeEventHandler.network_data_received, {requestId=}')
         if requestId and not self.request_id:
@@ -435,7 +418,6 @@ def setup_tab_event(browser, tab):
     tab.Network.dataReceived = tab_event_handler.network_data_received
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
-    tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
 
     return tab_event_handler, tab_ready_event
 
@@ -455,13 +437,6 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
             tab.Page.navigate(url=path, _timeout=navigation_timeout)
         else:
             tab.Page.navigate(url=path)
-
-        success_flag = tab_ready_event.wait(navigation_timeout)
-
-        if not success_flag:
-            message = f'Timeout of {navigation_timeout} seconds reached while waiting for {path}'
-            demisto.error(message)
-            return_error(message)
 
         time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"Navigated to {path=} on {tab.id=}")
@@ -858,6 +833,20 @@ def module_test():  # pragma: no cover
     demisto.results('ok')
 
 
+def get_list_item(list_of_items: list, index: int, default_value: str):
+    if index >= len(list_of_items):
+        return default_value
+
+    return list_of_items[index]
+
+
+def add_filename_suffix(file_names: list, file_extension: str):
+    ret_value = []
+    for current_filename in file_names:
+        ret_value.append(f'{current_filename}.{file_extension}')
+    return ret_value
+
+
 def rasterize_command():  # pragma: no cover
     url = demisto.getArg('url')
     width, height = get_width_height(demisto.args())
@@ -872,14 +861,16 @@ def rasterize_command():  # pragma: no cover
     file_extension = "png"
     if rasterize_type == RasterizeType.PDF or str(rasterize_type).lower == RasterizeType.PDF.value:
         file_extension = "pdf"
-    file_name = f'{file_name}.{file_extension}'  # type: ignore
+
+    demisto.debug(f'file_name type is: {type(file_name)}')
+    file_names = argToList(file_name)
+    file_names = add_filename_suffix(file_names, file_extension)
 
     rasterize_output = perform_rasterize(path=url, rasterize_type=rasterize_type, wait_time=wait_time,
                                          navigation_timeout=navigation_timeout, include_url=include_url,
-                                         full_screen=full_screen)
+                                         full_screen=full_screen, width=width, height=height)
     demisto.debug(f"rasterize_command response, {rasterize_type=}, {len(rasterize_output)=}")
-    for current_rasterize_output in rasterize_output:
-        # demisto.debug(f"rasterize_command response, {current_rasterize_output=}")
+    for index, current_rasterize_output in enumerate(rasterize_output):
 
         if rasterize_type == RasterizeType.JSON or str(rasterize_type).lower == RasterizeType.JSON.value:
             output = {'image_b64': base64.b64encode(current_rasterize_output[0]).decode('utf8'),
@@ -887,7 +878,8 @@ def rasterize_command():  # pragma: no cover
             return_results(CommandResults(raw_response=output, readable_output=f"Successfully rasterize url: {url}"))
         else:
             res = []
-            current_res = fileResult(filename=file_name, data=current_rasterize_output[0], file_type=entryTypes['entryInfoFile'])
+            current_res = fileResult(filename=get_list_item(file_names, index, f'url.{file_extension}'),
+                                     data=current_rasterize_output[0], file_type=entryTypes['entryInfoFile'])
 
             if rasterize_type == RasterizeType.PNG or str(rasterize_type).lower == RasterizeType.PNG.value:
                 current_res['Type'] = entryTypes['image']

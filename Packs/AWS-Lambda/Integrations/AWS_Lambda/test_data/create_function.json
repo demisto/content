@@ -1,0 +1,105 @@
+{
+    "FunctionName": "TestLambdaFunction",
+    "FunctionArn": "test",
+    "Runtime": "nodejs",
+    "Role": "test",
+    "Handler": "test handler",
+    "CodeSize": 30,
+    "Description": "test function",
+    "Timeout": 30,
+    "MemorySize": 123,
+    "LastModified": "test",
+    "CodeSha256": "test",
+    "Version": "test",
+    "VpcConfig": {
+        "SubnetIds": [
+            "test1",
+            "test2"
+        ],
+        "SecurityGroupIds": [
+            "test1",
+            "test2"
+        ],
+        "VpcId": "test",
+        "Ipv6AllowedForDualStack": true
+    },
+    "DeadLetterConfig": {
+        "TargetArn": "test"
+    },
+    "Environment": {
+        "Variables": {
+            "string": "test"
+        },
+        "Error": {
+            "ErrorCode": "test",
+            "Message": "test"
+        }
+    },
+    "KMSKeyArn": "test",
+    "TracingConfig": {
+        "Mode": "Active"
+    },
+    "MasterArn": "test",
+    "RevisionId": "test",
+    "Layers": [
+        {
+            "Arn": "test",
+            "CodeSize": 123,
+            "SigningProfileVersionArn": "test",
+            "SigningJobArn": "test"
+        }
+    ],
+    "State": "Pending",
+    "StateReason": "test",
+    "StateReasonCode": "Idle",
+    "LastUpdateStatus": "Successful",
+    "LastUpdateStatusReason": "test",
+    "LastUpdateStatusReasonCode": "EniLimitExceeded",
+    "FileSystemConfigs": [
+        {
+            "Arn": "test",
+            "LocalMountPath": "test"
+        }
+    ],
+    "PackageType": "Zip",
+    "ImageConfigResponse": {
+        "ImageConfig": {
+            "EntryPoint": [
+                "test"
+            ],
+            "Command": [
+                "test"
+            ],
+            "WorkingDirectory": "test"
+        },
+        "Error": {
+            "ErrorCode": "test",
+            "Message": "test"
+        }
+    },
+    "SigningProfileVersionArn": "test",
+    "SigningJobArn": "test",
+    "Architectures": [
+        "x86_64"
+    ],
+    "EphemeralStorage": {
+        "Size": 123
+    },
+    "SnapStart": {
+        "ApplyOn": "PublishedVersions",
+        "OptimizationStatus": "On"
+    },
+    "RuntimeVersionConfig": {
+        "RuntimeVersionArn": "test",
+        "Error": {
+            "ErrorCode": "test",
+            "Message": "test"
+        }
+    },
+    "LoggingConfig": {
+        "LogFormat": "JSON",
+        "ApplicationLogLevel": "TRACE",
+        "SystemLogLevel": "DEBUG",
+        "LogGroup": "test"
+    }
+}
