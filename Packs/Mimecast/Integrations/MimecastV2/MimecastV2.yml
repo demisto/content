@@ -2332,6 +2332,56 @@ script:
     - contextPath: Mimecast.Policy.Receiver.Type
       description: The receiver type.
       type: String
+  - name: mimecast-list-policies
+    description: List all existing Mimecast blocked sender policies.
+    arguments:
+    - name: policyType
+      description: According to this argument an endpoint is selected.
+      required: true
+      defaultValue: blockedsenders
+      # type: string
+      auto: PREDEFINED
+      predefined:
+      - blockedsenders
+      - antispoofing-bypass
+      - address-alteration
+    outputs:
+    - contextPath: Mimecast.Policy.ID
+      description: Policy ID.
+      type: string
+    - contextPath: Mimecast.Policy.Sender.Address
+      description: Block Sender by email address.
+      type: string
+    - contextPath: Mimecast.Policy.Sender.Domain
+      description: Block Sender by domain.
+      type: string
+    - contextPath: Mimecast.Policy.Sender.Group
+      description: Block Sender by group.
+      type: string
+    - contextPath: Mimecast.Policy.Bidirectional
+      description: Blocked policy is bidirectional or not.
+      type: boolean
+    - contextPath: Mimecast.Policy.Receiver.Address
+      description: Block emails to receiver type address.
+      type: string
+    - contextPath: Mimecast.Policy.Receiver.Domain
+      description: Block emails to receiver type domain.
+      type: string
+    - contextPath: Mimecast.Policy.Receiver.Group
+      description: Block emails to receiver type group.
+      type: string
+    - contextPath: Mimecast.Policy.FromDate
+      description: Policy validation start date.
+      type: date
+    - contextPath: Mimecast.Policy.ToDate
+      description: Policy expiration date.
+      type: date
+    - contextPath: Mimecast.Policy.Sender.Type
+      description: Block emails to sender type.
+      type: string
+    - contextPath: Mimecast.Policy.Receiver.Type
+      description: Block emails to receiver type.
+      type: string
   isfetch: true
   runonce: false
   script: '-'

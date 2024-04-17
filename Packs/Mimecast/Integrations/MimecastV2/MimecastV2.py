@@ -1084,6 +1084,30 @@ def get_policy_request(policy_type='blockedsenders', policy_id=None):
     return response.get('data')
 
 
+def list_policies_request(policy_type='blockedsenders'):
+    # Setup required variables
+    api_endpoints = {
+        'blockedsenders': 'blockedsenders/get-policy',
+        'antispoofing-bypass': 'antispoofing-bypass/get-policy',
+        'address-alteration': 'address-alteration/get-policy',
+    }
+    api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
+
+    # data = []
+    # if policy_id:
+    #     data.append({
+    #         'id': policy_id
+    #     })
+    # payload = {
+    #     'data': data
+    # }
+
+    response = http_request('POST', api_endpoint)
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+    return response.get('data')
+
+
 def get_arguments_for_policy_command(args):
     # type: (dict) -> tuple[dict, str]
     """
@@ -3277,6 +3301,11 @@ def mimecast_list_account_command(args: dict) -> CommandResults:
     )
 
 
+def mimecast_list_policies_command(args: dict) -> CommandResults:
+    policyType = str(args.get('policyType'))
+    list_policies_request(policyType)
+
+
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     # Check if token needs to be refresh, if it does and relevant params are set, refresh.
@@ -3299,9 +3328,7 @@ def main():
         elif command == 'mimecast-query':
             demisto.results(query(args))
         elif command == 'mimecast-list-blocked-sender-policies':
-            pass
-            # TODO run mimecast-list-policies
-            # demisto.results(get_policy())
+            demisto.results(get_policy())
         elif command == 'mimecast-get-policy':
             demisto.results(get_policy())
         elif command == 'mimecast-create-policy' or command == 'mimecast-create-block-sender-policy':
@@ -3378,6 +3405,8 @@ def main():
             return_results(mimecast_get_view_logs_command(args))
         elif command == 'mimecast-list-account':
             return_results(mimecast_list_account_command(args))
+        elif command == 'mimecast-list-policies':
+            return_results(mimecast_list_policies_command(args))
 
     except Exception as e:
         return_error(e)
