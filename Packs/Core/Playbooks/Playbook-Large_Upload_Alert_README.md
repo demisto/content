@@ -19,14 +19,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Entity Enrichment - Generic v3
 * Search and Compare Process Executions - Generic
-* Endpoint Investigation Plan
 * Command-Line Analysis
 * TIM - Indicator Relationships Analysis
-* Threat Hunting - Generic
 * Block Indicators - Generic v3
 * User Investigation - Generic
-* Entity Enrichment - Generic v3
+* Endpoint Investigation Plan
+* Threat Hunting - Generic
 
 ### Integrations
 
@@ -35,14 +35,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Scripts
 
 * Set
-* FindSimilarIncidents
+* DBotFindSimilarAlerts
 
 ### Commands
 
 * setAlert
+* core-isolate-endpoint
 * setAlertStatus
 * core-get-cloud-original-alerts
-* core-isolate-endpoint
 
 ## Playbook Inputs
 
