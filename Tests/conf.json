@@ -3781,9 +3781,8 @@
         },
         {
             "integrations": "Generic Webhook",
-            "instance_name": "Generic Webhook XSOAR on-prem",
+            "instance_names": "Generic Webhook XSOAR on-prem",
             "playbookID": "Generic Webhook - Test",
-            "marketplaces": "xsoar_on_prem",
             "has_api": false
         },
         {
@@ -5662,7 +5661,7 @@
         },
         {
             "integrations": "Redmine",
-            "playbookID": "Redmine-Test"
+            "playbookID": "Redmine_Test"
         },
         {
             "integrations": "Palo Alto Networks AIOps",
