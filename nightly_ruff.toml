@@ -179,6 +179,8 @@ select = [
     "UP033", # lru-cache-with-maxsize-none
     "UP037", # quoted-annotation
 
+    "W291", # trailing-whitespace
+
     "YTT101", # sys-version-slice3
     "YTT102", # sys-version2
     "YTT103", # sys-version-cmp-str3

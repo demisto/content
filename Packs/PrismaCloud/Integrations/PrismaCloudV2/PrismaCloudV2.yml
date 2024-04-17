@@ -112,7 +112,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.85667
+  dockerimage: demisto/python3:3.10.14.91134
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
@@ -543,6 +543,20 @@ script:
       - cloudAccount
       - cloudRegion
       - stateId
+    - description: 'Whether to include the resource JSON or not. Default is "true". "false" will not return the resource JSON, "true" will return the resource JSON. Note that if the value is "true", some of the keys, which contain large data objects, are still omitted by default and in order to retrieve them, set the "include_additional_resource_fields" argument to "true". Doing so can increase the context size dramatically.'
+      name: include_resource_json
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: 'Whether to retrieve all of the resource JSON, including keys with large objects such as: "disks.shieldedInstanceInitialState" and "configure-sh" key under metadata. Default is "false".'
+      name: include_additional_resource_fields
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
     description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "config". When no absolute time nor relative time arguments are provided, the default time range is all times.
     name: prisma-cloud-config-search
     outputs:
@@ -652,7 +666,7 @@ script:
       predefined:
       - asc
       - desc
-    description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times.
+    description: Search events inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with "event". When no absolute time nor relative time arguments are provided, the default time range is all times. In order to reduce the returned data, set the "include_resource_json" argument to "false".
     name: prisma-cloud-event-search
     outputs:
     - contextPath: PrismaCloud.Event.subject
@@ -2084,41 +2098,37 @@ script:
     description: Search networks on the Prisma Cloud platform using RQL language.
     name: redlock-search-network
   - arguments:
-      - default: false
-        description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
-        isArray: false
-        name: lastUpdate
-        required: false
-        secret: false
+    - default: false
+      description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
     deprecated: false
-    description: Get the list of incidents that were modified since the last update time.
-      This method is used for debugging purposes. The get-modified-remote-data command
-      is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+    description: Get the list of incidents that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
     execution: false
     name: get-modified-remote-data
   - arguments:
-      - default: false
-        description: The remote incident ID.
-        isArray: false
-        name: id
-        required: true
-        secret: false
-      - default: false
-        defaultValue: '0'
-        description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
-        isArray: false
-        name: lastUpdate
-        required: false
-        secret: false
+    - default: false
+      description: The remote incident ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
     deprecated: false
-    description: Get remote data from a remote incident. This method does not update
-      the current incident, and should be used for debugging purposes only.
+    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     execution: false
     name: get-remote-data
   - arguments: []
     deprecated: false
-    description: Updates the remote incident with local incident changes. This method
-      is only used for debugging purposes and will not update the current incident.
+    description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
 tests:
@@ -2126,3 +2136,4 @@ tests:
 defaultmapperin: RedLock-mapper
 defaultclassifier: RedLock
 fromversion: 6.5.0
+hybrid: true

@@ -94,13 +94,14 @@ def http_request(method, params=None):
     Returns: request result
 
     """
+    proxy_url = PROXIES.get('https') if PROXIES.get('https') != '' else PROXIES.get('http')
     api = API(
         USERNAME,
         API_KEY,
         app_partner='cortex_xsoar',
         app_name='iris-plugin',
         app_version='2.0',
-        proxy_url=PROXIES,
+        proxy_url=proxy_url,
         verify_ssl=VERIFY_CERT,
         always_sign_api_key=True
     )

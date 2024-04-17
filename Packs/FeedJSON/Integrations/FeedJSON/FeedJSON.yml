@@ -72,21 +72,27 @@ configuration:
   name: auto_detect_type
   type: 8
   required: false
-- additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored.
-  display: Indicator Type
+- additionalinfo: Remove ports from IPv4 type indicators in the fetch command (e.g. ,192.168.1.1:8080 -> 192.168.1.1)
+  display: Remove IPv4 Ports
+  name: remove_ports
+  type: 8
+  required: false
+  defaultvalue: 'false'
+- display: Indicator Type
   name: indicator_type
   type: 0
   required: false
+  additionalinfo: Type of the indicator in the feed. If auto-detect is checked then the value set as Indicator Type will be ignored.
 - display: Username
   name: credentials
-  type: 9
   required: false
+  type: 9
 - additionalinfo: JMESPath expression for extracting the indicators. You can use http://jmespath.org/ to identify the proper expression.
   display: JMESPath Extractor
   name: extractor
-  required: true
   type: 0
-- additionalinfo: The JSON attribute that holds the indicator value. Default value is 'indicator'.
+  required: true
+- additionalinfo: "The JSON attribute that holds the indicator value. Default value is 'indicator'."
   display: JSON Indicator Attribute
   name: indicator
   type: 0
@@ -101,11 +107,11 @@ configuration:
   name: headers
   type: 12
   required: false
-- additionalinfo: "When using a custom classifier and mapper with this feed, use this option to include the indicator type in the raw json used for classification and mapping."
-  display: Include indicator type for mapping
+- display: Include indicator type for mapping
   name: rawjson_include_indicator_type
   type: 8
   required: false
+  additionalinfo: "When using a custom classifier and mapper with this feed, use this option to include the indicator type in the raw JSON used for classification and mapping."
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -114,7 +120,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+- additionalinfo: "When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system."
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
@@ -133,9 +139,12 @@ script:
     - defaultValue: '50'
       description: The maximum number of results to return. The default value is 50.
       name: limit
+    - defaultValue: 'false'
+      description: Remove ports from IPv4s.
+      name: remove_ports
     description: Gets the feed indicators.
     name: json-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.47376
+  dockerimage: demisto/py3-tools:1.0.0.86899
   feed: true
   runonce: false
   script: '-'

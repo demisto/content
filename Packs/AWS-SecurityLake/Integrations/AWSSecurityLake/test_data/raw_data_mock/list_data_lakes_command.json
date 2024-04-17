@@ -1,0 +1,38 @@
+{
+    "dataLakes": [
+        {
+            "createStatus": "INITIALIZED",
+            "dataLakeArn": "test",
+            "encryptionConfiguration": {
+                "kmsKeyId": "test"
+            },
+            "lifecycleConfiguration": {
+                "expiration": {
+                    "days": 123
+                },
+                "transitions": [
+                    {
+                        "days": 123,
+                        "storageClass": "test"
+                    }
+                ]
+            },
+            "region": "test",
+            "replicationConfiguration": {
+                "regions": [
+                    "test"
+                ],
+                "roleArn": "test"
+            },
+            "s3BucketArn": "test",
+            "updateStatus": {
+                "exception": {
+                    "code": "test",
+                    "reason": "test"
+                },
+                "requestId": "test",
+                "status": "INITIALIZED"
+            }
+        }
+    ]
+}

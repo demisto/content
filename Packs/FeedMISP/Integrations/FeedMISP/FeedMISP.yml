@@ -127,6 +127,9 @@ script:
     - name: limit
       defaultValue: '10'
       description: The maximum number of results to return.
+    - name: page
+      defaultValue: '1'
+      description: The page number of the results to retrieve.
     - name: tags
       description: Attributes having one of the tags, or being an attribute of an event having one of the tags, will be returned. You can enter a comma-separated list of tags, for example <tag1>,<tag2>,<tag3>. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags'.
     - name: attribute_type
@@ -139,7 +142,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.83255
+  dockerimage: demisto/python3:3.10.13.89009
 fromversion: 5.5.0
 tests:
 - MISPfeed Test

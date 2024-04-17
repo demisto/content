@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "#### Changes in the ***jira-create-issue*** and ***jira-edit-issue*** commands:\n- ***jira-create-issue***: It is no longer possible to send additional arguments when using the 'issue_json' argument. All required arguments for the command must be provided within the 'issue_json'.\n- ***jira-edit-issue***: It is no longer possible to send additional arguments when using the 'issue_json' argument, except for the arguments 'action', 'transition', 'status', 'issue_id', and 'issue_key'. All required arguments for the command must be provided within the 'issue_json'."
+}

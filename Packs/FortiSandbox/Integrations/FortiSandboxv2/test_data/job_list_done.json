@@ -1,0 +1,19 @@
+{
+    "id": "17",
+    "ver": "2.0",
+    "result": {
+        "url": "/scan/result/get-jobs-of-submission",
+        "status": {
+            "code": 0,
+            "message": "OK"
+        },
+        "data": {
+            "jids": [
+                "000",
+                "111",
+                "222"
+            ],
+            "total_jids": 3
+        }
+    }
+}

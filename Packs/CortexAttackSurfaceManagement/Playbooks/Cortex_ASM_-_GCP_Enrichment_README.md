@@ -14,13 +14,12 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* GridFieldSetup
 * Set
-* GetTime
+GridFieldSetup
 
 ### Commands
 
-This playbook does not use any commands.
+setAlert
 
 ## Playbook Inputs
 

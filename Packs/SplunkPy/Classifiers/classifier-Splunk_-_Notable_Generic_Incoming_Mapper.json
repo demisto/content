@@ -23,23 +23,6 @@
                 }
             }
         },
-        "Splunk Generic": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Notable - ID": {
-                    "simple": "event_id"
-                },
-                "dbotMirrorDirection": {
-                    "simple": "mirror_direction"
-                },
-                "dbotMirrorId": {
-                    "simple": "event_id"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "mirror_instance"
-                }
-            }
-        },
         "Splunk Notable Generic": {
             "dontMapEventToLabels": false,
             "internalMapping": {
@@ -180,5 +163,6 @@
     "name": "Splunk - Notable Generic Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
+    "marketplaces": ["xsoar", "marketplacev2"],
     "fromVersion": "6.0.0"
 }

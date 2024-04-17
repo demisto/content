@@ -804,13 +804,13 @@ def getIntegrationContextVersioned(refresh=False):
 
 def incidents(incidents=None):
     """In script, retrieves the `Incidents` list from the context
-    In integration, used to return incidents to the server
+    In integration, used to return incidents to the server.
 
     Args:
-      incidents (list): In integration only, list of incident objects (Default value = None)
+      incidents (list): In integration only, list of incident objects (Default value = None).
 
     Returns:
-      list: List of incident objects
+      list: List containing the current incident object.
 
     """
     if incidents is None:
@@ -1062,7 +1062,7 @@ def createIndicators(indicators_batch, noUpdate=False):
 
 
 def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None,
-                     populateFields=None):
+                     populateFields=None, **kwargs):
     """Searches for indicators according to given query.
     If using Elasticsearch with Cortex XSOAR 6.1 or later,
     the searchAfter argument must be used instead of the page argument.

@@ -1,0 +1,63 @@
+{
+    "data": {
+        "listAuditLogsByDate": {
+            "items": [
+                {
+                    "date": "2024-01-01T14:17:38.552096Z",
+                    "error": "",
+                    "op": "updateAnalyticSet",
+                    "user": "system",
+                    "resourceId": "1",
+                    "args": {
+                        "input": {
+                            "types": [
+                                "Prevent"
+                            ],
+                            "visibility": "SENSITIVE",
+                            "name": "Example Prevention",
+                            "description": "Prevent Example"
+                        },
+                        "uuid": "1"
+                    }
+                },
+                {
+                    "date": "2024-01-01T14:17:38.552096Z",
+                    "error": "",
+                    "op": "updateAnalyticSet",
+                    "user": "system",
+                    "resourceId": "2",
+                    "args": {
+                        "input": {
+                            "types": [
+                                "Prevent"
+                            ],
+                            "visibility": "SENSITIVE",
+                            "name": "Example Prevention",
+                            "description": "Prevent Example"
+                        },
+                        "uuid": "2"
+                    }
+                },
+                {
+                    "date": "2024-01-01T14:17:38.552096Z",
+                    "error": "",
+                    "op": "updateAnalyticSet",
+                    "user": "system",
+                    "resourceId": "3",
+                    "args": {
+                        "input": {
+                            "types": [
+                                "Prevent"
+                            ],
+                            "visibility": "SENSITIVE",
+                            "name": "Example Prevention",
+                            "description": "Prevent Example"
+                        },
+                        "uuid": "3"
+                    }
+                }
+            ],
+            "pageInfo": {}
+        }
+    }
+}

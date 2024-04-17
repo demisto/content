@@ -74,7 +74,7 @@ tasks:
       version: -1
       name: Set Incident Severity to High
       description: commands.local.cmd.set.parent.incident.field
-      script: Builtin|||setParentIncidentField
+      script: Builtin|||setParentIncidentFields
       type: regular
       iscommand: true
       brand: Builtin
@@ -109,7 +109,7 @@ tasks:
     task:
       id: b3b786b8-c446-4170-8557-722d96186c75
       version: -1
-      name: Set the incident severity
+      name: Set the alert severity to Low
       description: Optionally increases the incident severity to the new value if it is greater than the existing severity.
       scriptName: IncreaseIncidentSeverity
       type: regular
@@ -186,6 +186,7 @@ tasks:
     nexttasks:
       '#none#':
       - "36"
+      - "58"
     scriptarguments:
       body:
         simple: |-
@@ -354,7 +355,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1310,
+          "x": 1540,
           "y": 1880
         }
       }
@@ -476,6 +477,8 @@ tasks:
           root: inputs.alert_id
       extend-context:
         simple: alertData=
+      filter_alert_fields:
+        simple: "false"
       ignore-outputs:
         simple: "false"
     separatecontext: false
@@ -529,8 +532,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1310,
-          "y": 2060
+          "x": 1320,
+          "y": 2250
         }
       }
     note: false
@@ -562,8 +565,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1310,
-          "y": 2245
+          "x": 1320,
+          "y": 2435
         }
       }
     note: false
@@ -591,7 +594,7 @@ tasks:
       {
         "position": {
           "x": 720,
-          "y": 2610
+          "y": 2790
         }
       }
     note: false
@@ -766,8 +769,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1310,
-          "y": 2430
+          "x": 1320,
+          "y": 2620
         }
       }
     note: false
@@ -976,6 +979,193 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: ad5076a5-7198-4fbe-8003-e288bfd83048
+    type: condition
+    task:
+      id: ad5076a5-7198-4fbe-8003-e288bfd83048
+      version: -1
+      name: Should rotate the credentials automatically?
+      description: Whether to rotate the credentials automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.autoAccessKeyRemediation
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: inputs.autoUserRemediation
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: c9cef60f-31d3-45b8-8c99-a2e977258a43
+    type: playbook
+    task:
+      id: c9cef60f-31d3-45b8-8c99-a2e977258a43
+      version: -1
+      name: Cloud Credentials Rotation - Generic
+      description: |-
+        ## **Cloud Credentials Rotation - Generic**
+
+        This comprehensive playbook combines the remediation steps from AWS, Azure, and GCP sub-playbooks into a single, cohesive guide. Regardless of which Cloud Service Provider (CSP) you're working with, this playbook will direct you to the relevant steps, ensuring swift and effective response.
+
+        The primary objective is to offer an efficient way to address compromised credentials across different cloud platforms. By consolidating the key steps from AWS, Azure, and GCP, it minimizes the time spent searching for platform-specific procedures and accelerates the remediation process, ensuring the highest level of security for your cloud environments.
+
+        ## **Integrations for Each Sub-Playbook**
+
+        In order to seamlessly execute the actions mentioned in each sub-playbook, specific integrations are essential. These integrations facilitate the automated tasks and processes that the playbook carries out. Here are the required integrations for each sub-playbook:
+
+        ### **AWS Sub-Playbook:**
+        1. [**AWS - IAM**](https://xsoar.pan.dev/docs/reference/integrations/aws---iam): Used to manage AWS Identity and Access Management.
+        2. [**AWS - EC2**](https://xsoar.pan.dev/docs/reference/integrations/aws---ec2): Essential for managing Amazon Elastic Compute Cloud (EC2) instances.
+
+        ### **GCP Sub-Playbook:**
+        1. [**Google Workspace Admin**](https://xsoar.pan.dev/docs/reference/integrations/g-suite-admin): Manages users, groups, and other entities within Google Workspace.
+        2. [**GCP-IAM**](https://xsoar.pan.dev/docs/reference/integrations/gcp-iam): Ensures management and control of GCP's Identity and Access Management.
+
+        ### **Azure Sub-Playbook:**
+        1. [**Microsoft Graph Users**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-user): Manages users and related entities in Microsoft Graph.
+        2. [**Microsoft Graph Applications**](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-applications): Manages applications within Microsoft Graph.
+      playbookName: Cloud Credentials Rotation - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      AWS-accessKeyID:
+        simple: ${Core.OriginalAlert.event.identity_orig.accessKeyId}
+      AWS-instanceID:
+        complex:
+          root: alert.username
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alert.username
+                iscontext: true
+              right:
+                value:
+                  simple: i-
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: /
+              fields:
+                value:
+                  simple: "2"
+      AWS-newInstanceProfileName:
+        simple: ${inputs.AWS-newInstanceProfileName}
+      AWS-newRoleName:
+        simple: ${inputs.AWS-newRoleName}
+      AWS-roleNameToRestrict:
+        simple: ${inputs.AWS-roleNameToRestrict}
+      AWS-userID:
+        simple: ${alert.username}
+      Azure-AppID:
+        simple: ${Core.OriginalAlert.event.identity_orig.claims.appid}
+      Azure-ObjectID:
+        complex:
+          root: Core.OriginalAlert.event.identity_orig
+          accessor: claims
+          transformers:
+          - operator: Stringify
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: http://schemas.microsoft.com/identity/claims/objectidentifier":"\w{8}\-\w{4}\-\w{4}\-\w{4}\-\w{12}
+              unpack_matches: {}
+          - operator: ExtractInbetween
+            args:
+              from:
+                value:
+                  simple: http://schemas.microsoft.com/identity/claims/objectidentifier":"
+              to:
+                value:
+                  simple: '"'
+      Azure-userID:
+        simple: ${alert.username}
+      GCP-SAEmail:
+        simple: ${Core.OriginalAlert.event.identity_orig.principalEmail}
+      GCP-cloudProject:
+        simple: ${alert.cloudproject}
+      GCP-userID:
+        simple: ${alert.username}
+      GCP-zone:
+        simple: ${Core.OriginalAlert.event.zone}
+      RemediationType:
+        simple: ${inputs.credentialsRemediationType}
+      cloudProvider:
+        simple: ${alert.cloudprovider}
+      identityType:
+        simple: ${alert.cloudidentitytype}
+      shouldCloneSA:
+        simple: ${inputs.shouldCloneSA}
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -985,11 +1175,12 @@ view: |-
       "41_54_Yes": 0.42,
       "49_27_Malicious": 0.62,
       "49_29_User Verification": 0.61,
-      "56_32_#default#": 0.49
+      "56_32_#default#": 0.49,
+      "58_59_yes": 0.44
     },
     "paper": {
       "dimensions": {
-        "height": 2875,
+        "height": 3055,
         "width": 1260,
         "x": 720,
         "y": -200
@@ -1040,7 +1231,26 @@ inputs:
   description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
   playbookInputQuery:
 - key: InternalRange
-  value: {}
+  value:
+    complex:
+      root: lists
+      accessor: PrivateIPs
+      transformers:
+      - operator: RegexExtractAll
+        args:
+          error_if_no_match: {}
+          ignore_case: {}
+          multi_line: {}
+          period_matches_newline: {}
+          regex:
+            value:
+              simple: (\b(?:\d{1,3}\.){3}\d{1,3}\b/\d{1,2})
+          unpack_matches: {}
+      - operator: join
+        args:
+          separator:
+            value:
+              simple: ','
   required: false
   description: "A list of internal IP ranges to check IP addresses against. \nFor IP Enrichment - Generic v2 playbook."
   playbookInputQuery:
@@ -1067,6 +1277,24 @@ inputs:
     simple: "False"
   required: false
   description: Whether to execute the user remediation flow automatically.
+  playbookInputQuery:
+- key: credentialsRemediationType
+  value:
+    simple: "Reset"
+  required: false
+  description: |-
+    The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:
+
+    Reset: By entering "Reset" in the input, the playbook will execute password reset.
+    Supports: AWS, MSGraph Users, GCP and GSuite Admin.
+
+    Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.
+    Supports: GCP, GSuite Admin and MSGraph Users.
+
+    Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.
+    Supports: AWS.
+
+    ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP.
   playbookInputQuery:
 - key: AWS-accessKeyRemediationType
   value:
@@ -1100,6 +1328,28 @@ inputs:
     AWS available types:
     Delete - for the user deletion.
     Revoke - for revoking the user's credentials.
+  playbookInputQuery:
+- key: shouldCloneSA
+  value: {}
+  required: false
+  description: |-
+    Whether to clone the compromised SA before putting a deny policy to it.
+    True/False
+  playbookInputQuery:
+- key: AWS-newRoleName
+  value: {}
+  required: false
+  description: The name of the new role to create if the analyst decides to clone the service account.
+  playbookInputQuery:
+- key: AWS-newInstanceProfileName
+  value: {}
+  required: false
+  description: The name of the new instance profile to create if the analyst decides to clone the service account.
+  playbookInputQuery:
+- key: AWS-roleNameToRestrict
+  value: {}
+  required: false
+  description: If provided, the role will be attached with a deny policy without the compute instance analysis flow.
   playbookInputQuery:
 - key: Azure-resourceRemediationType
   value:
@@ -1277,12 +1527,17 @@ inputSections:
   - autoBlockIndicators
   - autoResourceRemediation
   - autoUserRemediation
+  - credentialsRemediationType
   name: Remediation
   description: Remediation settings and data, including containment, eradication, and recovery.
 - inputs:
   - AWS-accessKeyRemediationType
   - AWS-resourceRemediationType
   - AWS-userRemediationType
+  - shouldCloneSA
+  - AWS-newRoleName
+  - AWS-newInstanceProfileName
+  - AWS-roleNameToRestrict
   name: AWS Remediation
   description: AWS Remediation settings and data, including containment, eradication, and recovery.
 - inputs:

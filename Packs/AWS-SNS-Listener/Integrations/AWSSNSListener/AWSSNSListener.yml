@@ -1,0 +1,73 @@
+category: Messaging and Conferencing
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: AWS-SNS-Listener
+  version: -1
+configuration:
+- display: Long running instance
+  defaultvalue: 'true'
+  name: longRunning
+  type: 8
+  hidden: true
+  section: Connect
+  advanced: true
+  required: false
+- additionalinfo: "Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. (For Cortex XSOAR 8 and Cortex XSIAM) If you do not enter a Listen Port, an unused port for AWS SNS Listener will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port."
+  display: Listen Port
+  name: longRunningPort
+  type: 0
+  required: false
+  section: Connect
+- additionalinfo: Uses basic authentication for accessing the list. If empty, no authentication is enforced. (For Cortex XSOAR 8 and Cortex XSIAM) Optional for engines, otherwise mandatory.
+  display: Username
+  name: credentials
+  type: 9
+  section: Connect
+  required: false
+- additionalinfo: "Set the endpoint of your listener. example: /snsv2"
+  display: Endpoint
+  name: endpoint
+  type: 0
+  section: Connect
+  required: false
+- display: Certificate (Required for HTTPS)
+  additionalinfo: "(For Cortex XSOAR 6.x) For use with HTTPS - the certificate that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) Custom certificates are not supported."
+  name: certificate
+  type: 12
+  section: Connect
+  required: false
+- display: Private Key (Required for HTTPS)
+  additionalinfo: "(For Cortex XSOAR 6.x) For use with HTTPS - the private key that the service should use. (For Cortex XSOAR 8 and Cortex XSIAM) When using an engine, configure a private API key. Not supported on the Cortex XSOAR​​ or Cortex XSIAM server."
+  name: key
+  type: 14
+  section: Connect
+  required: false
+- additionalinfo: "Because this is a push-based integration, it cannot fetch sample events in the mapping wizard. After you finish mapping, it is recommended to turn off the sample events storage to reduce performance overhead."
+  display: Store sample events for mapping
+  name: store_samples
+  type: 8
+  section: Connect
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: 'Amazon Simple Notification Service (SNS) is a managed service that provides message delivery from publishers to subscribers.'
+display: AWS-SNS-Listener
+name: AWS-SNS-Listener
+script:
+  commands: []
+  dockerimage: demisto/fastapi:1.0.0.87576
+  longRunning: true
+  longRunningPort: true
+  script: '-'
+  subtype: python3
+  type: python
+  isFetchSamples: true
+fromversion: 6.10.0
+tests:
+- AWS SNS Listener - Test

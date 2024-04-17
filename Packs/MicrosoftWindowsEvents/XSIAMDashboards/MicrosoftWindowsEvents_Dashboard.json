@@ -244,7 +244,7 @@
             "widget_key": "xql_1677409452302",
             "title": "Microsoft Windows Events - Logon Types",
             "creation_time": 1677409452302,
-            "description": "This widget displys the common logon types",
+            "description": "This widget displays the common logon types",
             "data": {
                 "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type=\"Microsoft-Windows-*\"\n|filter xdm.logon.type!=null\n|comp count(xdm.logon.type) by xdm.logon.type\n| view graph type = pie subtype = full xaxis = xdm.logon.type yaxis = count_1 valuecolor(\"NETWORK\",\"#7876b6\") valuecolor(\"INTERACTIVE\",\"#f15050\") valuecolor(\"SERVICE\",\"#b7b797\") seriestitle(\"count_1\",\"Count\") ",
                 "time_frame": {
@@ -325,7 +325,7 @@
             "creation_time": 1677409686512,
             "description": "This widget displays the top Event ID's in a descending order",
             "data": {
-                "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type=\"Microsoft-Windows-*\"\n|comp count(xdm.event.operation_sub_type) as ActionCount by xdm.event.operation_sub_type\n| view graph type = pie subtype = full xaxis = xdm.event.operation_sub_type yaxis = ActionCount ",
+                "phrase": "datamodel dataset in (microsoft_windows_raw)\n| filter xdm.observer.type=\"Microsoft-Windows-*\"\n| comp count(xdm.event.operation_sub_type) as `Action Count` by xdm.event.operation_sub_type\n| sort desc `Action Count` ",
                 "time_frame": {
                     "relativeTime": 604800000
                 },
@@ -402,7 +402,7 @@
             "widget_key": "xql_1677418467521",
             "title": "Microsoft Windows Events - Top Actions",
             "creation_time": 1677418467521,
-            "description": "This widget displys the common actions",
+            "description": "This widget displays the common actions",
             "data": {
                 "phrase": "datamodel dataset in (microsoft_windows_raw)\n|filter xdm.observer.type=\"Microsoft-Windows-*\"\n|comp count(xdm.event.operation_sub_type) as ActionCount by xdm.event.operation_sub_type\n| view graph type = pie subtype = full xaxis = xdm.event.operation_sub_type yaxis = ActionCount ",
                 "time_frame": {

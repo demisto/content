@@ -2,14 +2,13 @@
     "name": "SOX Compliance",
     "description": "Ensure your organization is following SOX guidelines with the relevant dashboard and report evidence.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "2.0.0",
     "author": "Cortex XSIAM",
     "url": "https://www.paloaltonetworks.com/cortex",
     "categories": [
         "Analytics & SIEM"
     ],
-    "tags": [
-    ],
+    "tags": [],
     "created": "2023-03-20T13:16:53Z",
     "useCases": [
         "Compliance"
@@ -21,7 +20,6 @@
         "compliance"
     ],
     "marketplaces": [
-    "marketplacev2"
+        "marketplacev2"
     ]
-
 }

@@ -1,4 +1,4 @@
-description: Playbook to enriches Service owner in Azure directory.
+description: Playbook to enriches Service ownership info in Azure and On-Prem Active Directory.
 id: Cortex ASM - Active Directory Enrichment
 inputs:
 - description: The service owner to enrich in Azure directory.
@@ -18,7 +18,8 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "8"
+      - "15"
+      - "16"
     note: false
     quietmode: 0
     separatecontext: false
@@ -37,7 +38,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 50
+          "y": -110
         }
       }
   "2":
@@ -64,8 +65,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 1150
+          "x": 220,
+          "y": 2780
         }
       }
   "7":
@@ -101,8 +102,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 370
+          "x": 692.5,
+          "y": 440
         }
       }
   "8":
@@ -167,8 +168,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
-          "y": 195
+          "x": 692.5,
+          "y": 215
         }
       }
   "10":
@@ -198,8 +199,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 535
+          "x": 692.5,
+          "y": 655
         }
       }
   "11":
@@ -210,7 +211,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - "29"
     note: false
     quietmode: 0
     scriptarguments:
@@ -261,8 +262,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 905
+          "x": 692.5,
+          "y": 1105
         }
       }
   "14":
@@ -327,8 +328,696 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 680
+          "x": 692.5,
+          "y": 875
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bbe8cd21-2420-4d97-862e-a96575cd698a
+      iscommand: false
+      name: Azure AD
+      type: title
+      version: -1
+      description: ''
+    taskid: bbe8cd21-2420-4d97-862e-a96575cd698a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 692.5,
+          "y": 60
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 180dd51c-a6f6-4534-8862-de8845e1de8d
+      iscommand: false
+      name: On-Prem AD
+      type: title
+      version: -1
+      description: ''
+    taskid: 180dd51c-a6f6-4534-8862-de8845e1de8d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 60
+        }
+      }
+  "17":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: Active Directory Query v2
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.serviceowner
+                transformers:
+                - operator: uniq
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if there’s an active instance of the Active Directory Query v2 integration enabled.
+      id: 86b4e28f-4f6c-43f4-89d3-e06aa9da1f79
+      iscommand: false
+      name: Is Active Directory Query v2 enabled and Input defined?
+      type: condition
+      version: -1
+    taskid: 86b4e28f-4f6c-43f4-89d3-e06aa9da1f79
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 215
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      email:
+        complex:
+          root: inputs.serviceowner
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Queries Active Directory and returns information for the specified Email.
+      id: 41b6b0cd-3018-4ae0-871e-90ea9a4675aa
+      iscommand: true
+      name: Get account info from Active Directory
+      script: '|||ad-get-user'
+      type: regular
+      version: -1
+    taskid: 41b6b0cd-3018-4ae0-871e-90ea9a4675aa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 420
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: ActiveDirectory.Users.manager
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Is there a manager?
+      id: bf677600-1639-431a-88ba-02025a546344
+      iscommand: false
+      name: Is there a manager?
+      type: condition
+      version: -1
+    taskid: bf677600-1639-431a-88ba-02025a546344
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 810
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: manager-name=attributes.displayName::manager-email=attributes.mail
+      ignore-outputs:
+        simple: "true"
+      name:
+        complex:
+          accessor: manager
+          root: ActiveDirectory.Users
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: ',CN='
+            operator: split
+          - operator: FirstArrayElement
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: CN=
+            operator: replace
+          - operator: uniq
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Active Directory Query v2
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      id: 56097741-3c3f-4aff-82e8-e2dbe755cf92
+      iscommand: true
+      name: Get User Manager Details
+      script: Active Directory Query v2|||ad-get-user
+      type: regular
+      version: -1
+    taskid: 56097741-3c3f-4aff-82e8-e2dbe755cf92
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 1060
+        }
+      }
+  "21":
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "23"
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 70bfa636-ba5c-4f8e-837c-8bd1ccadf737
+      iscommand: false
+      name: Set Fields
+      type: title
+      version: -1
+      description: ''
+    taskid: 70bfa636-ba5c-4f8e-837c-8bd1ccadf737
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -860,
+          "y": 1250
+        }
+      }
+  "22":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: name
+                root: ActiveDirectory.Users
+                transformers:
+                - operator: uniq
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "19"
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Ownership Information exists?
+      id: c77f9e47-944a-4ba4-8e87-6cc125230f5f
+      iscommand: false
+      name: Ownership Information exists?
+      type: condition
+      version: -1
+    taskid: c77f9e47-944a-4ba4-8e87-6cc125230f5f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 590
+        }
+      }
+  "23":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: manager-email
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manager Email Information exists?
+      id: 748dbf44-082f-4271-8f77-6fadff81faf7
+      iscommand: false
+      name: Manager Email exists?
+      type: condition
+      version: -1
+    taskid: 748dbf44-082f-4271-8f77-6fadff81faf7
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 1410
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmserviceownerunrankedraw
+      keys:
+        simple: name,email,source,timestamp
+      val1:
+        complex:
+          accessor: displayName
+          root: ActiveDirectory.Users
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val2:
+        complex:
+          accessor: mail
+          root: ActiveDirectory.Users
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val3:
+        simple: OnPrem-AD-User
+      val4:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Sets the potential Azure service owner to the grid field for the ASM service owner object.
+      id: 5d50a384-5aa2-41ac-8fa1-65f479066d75
+      iscommand: false
+      name: Set service owner grid field (User)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 5d50a384-5aa2-41ac-8fa1-65f479066d75
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -860,
+          "y": 1620
+        }
+      }
+  "25":
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "29"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmserviceownerunrankedraw
+      keys:
+        simple: name,email,source,timestamp
+      val1:
+        complex:
+          root: manager-name
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val2:
+        complex:
+          root: manager-email
+          transformers:
+          - args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: n/a
+            operator: SetIfEmpty
+      val3:
+        simple: OnPrem-AD-Manager
+      val4:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Sets the potential Azure service owner to the grid field for the ASM service owner object.
+      id: 2d385835-421f-472f-8906-a51e82adef5e
+      iscommand: false
+      name: Set service owner grid field (Manager)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 2d385835-421f-472f-8906-a51e82adef5e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 1620
+        }
+      }
+  "26":
+    continueonerrortype: ""
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: ACTIVE-DIRECTORY
+      val2:
+        simple: "true"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      id: c9ab4182-7e8e-4156-843d-86f0928d9ae8
+      iscommand: false
+      name: Set ASM enrichment status to true
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: c9ab4182-7e8e-4156-843d-86f0928d9ae8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2450
+        }
+      }
+  "27":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: asm_fields_set_for_ad
+          operator: isTrue
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
+      id: 38e4dec2-7526-4e27-8e9f-20aa87e69665
+      iscommand: false
+      name: Was enrichment performed?
+      type: condition
+      version: -1
+    taskid: 38e4dec2-7526-4e27-8e9f-20aa87e69665
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 2230
+        }
+      }
+  "28":
+    continueonerrortype: ""
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: ACTIVE-DIRECTORY
+      val2:
+        simple: "false"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      id: 2776383c-dd23-472f-8e6c-159ce715f305
+      iscommand: false
+      name: Set ASM enrichment status to false
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 2776383c-dd23-472f-8e6c-159ce715f305
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 2450
+        }
+      }
+  "29":
+    continueonerrortype: ""
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_fields_set_for_ad
+      value:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 0404a822-5f28-484c-8deb-21d3104b3272
+      iscommand: false
+      name: Set true flag for completed enrichment
+      script: Set
+      type: regular
+      version: -1
+    taskid: 0404a822-5f28-484c-8deb-21d3104b3272
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 2010
         }
       }
 version: -1
@@ -337,13 +1026,15 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1165,
-        "width": 840,
-        "x": 40,
-        "y": 50
+        "height": 2955,
+        "width": 2262.5,
+        "x": -860,
+        "y": -110
       }
     }
   }
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
+contentitemexportablefields:
+  contentitemfields: {}

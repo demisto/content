@@ -15,7 +15,9 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
         ticket_id = demisto.incident()['CustomFields'].get('servicenowticketid')
 
     command_args['id'] = ticket_id
-    command_args['ticket_type'] = table_name
+    demisto.debug(f'Using ticket_type: {table_name}')
+    if table_name:
+        command_args['ticket_type'] = table_name
     if tag == 'comment':
         command_args['comments'] = note
     else:
@@ -23,11 +25,18 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
     command_args['using'] = using
 
     try:
+        demisto.debug(f'Calling servicenow-update-ticket, {command_args=}')
         command_res = demisto.executeCommand("servicenow-update-ticket", command_args)
+        demisto.debug(f'After calling servicenow-update-ticket, {command_res=}')
         resp = command_res[0]
         if isError(resp):
             raise Exception(resp['Contents'])
         else:
+            if 'result' not in resp['Contents'] or not resp['Contents']['result']:
+                message = "Empty result. Please check your input. e.g. the ticket_id, or table_name"
+                demisto.info(message)
+                return_error(message)
+
             result = resp['Contents']['result']
             output_results = {}
 
@@ -42,6 +51,7 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
             md = tableToMarkdown("ServiceNow Comment Added", [output_results])
 
     except Exception as ex1:
+        demisto.info(f"Failed to update ticket. {type(ex1)}: {ex1}, Trace:\n{traceback.format_exc()}")
         return_error(str(ex1))
     return CommandResults(readable_output=md)
 

@@ -6,7 +6,7 @@ import zipfile
 
 import pytest
 
-from Tests.scripts.gitlab_client import GitlabClient, GetArtifactErrors
+from Tests.scripts.gitlab_client import GitlabClient
 
 
 SHA = "mock_sha"
@@ -34,7 +34,7 @@ def mock_artifacts_api_response(
     return mock_bytes.getvalue()
 
 
-def test_get_packs_dependencies(
+def test_get_artifact_file(
     client: GitlabClient,
     requests_mock,
 ) -> None:
@@ -42,15 +42,15 @@ def test_get_packs_dependencies(
         Given:
             - A Gitlab Client
             - A Commit SHA
-            - The job name in which a packs_dependencies.json should be stored as an artifact
+            - The job name in which a packs_dependencies.json file should be stored as an artifact
         When:
-            - Calling get_packs_dependencies_json()
+            - Calling get_artifact_file()
         Then:
             - Ensure the response is the expected data.
     """
     packs_dependencies_json: dict = {}
     requests_mock.get(
-        f"{client.base_url}/pipelines?sha={SHA}",
+        f"{client.base_url}/pipelines",
         json=[{"id": "mock_pipeline_id"}],
     )
     requests_mock.get(
@@ -61,11 +61,11 @@ def test_get_packs_dependencies(
         f"{client.base_url}/jobs/mock_job_id/artifacts",
         content=mock_artifacts_api_response(packs_dependencies_json),
     )
-    assert client.get_packs_dependencies_json(
+    assert json.loads(client.get_artifact_file(
         SHA,
         JOB_NAME,
         PACKS_DEPENDENCIES_FILEPATH,
-    ) == packs_dependencies_json
+    )) == packs_dependencies_json
 
 
 @pytest.mark.parametrize(
@@ -75,54 +75,54 @@ def test_get_packs_dependencies(
             [],
             None,
             None,
-            GetArtifactErrors.NO_PIPELINES,
+            "No pipelines",
             id="No Pipelines",
         ),
         pytest.param(
             [{"id": "mock_pipeline_id"}],
             [{"id": "mock_job_id", "name": "some_job"}],
             None,
-            GetArtifactErrors.NO_JOB,
+            "No job",
             id="No Job",
         ),
         pytest.param(
             [{"id": "mock_pipeline_id"}],
             [{"id": "mock_job_id", "name": JOB_NAME}],
             {"status_code": 404},
-            GetArtifactErrors.NO_ARTIFACTS,
+            "No artifacts",
             id="No artifacts",
         ),
         pytest.param(
             [{"id": "mock_pipeline_id"}],
             [{"id": "mock_job_id", "name": JOB_NAME}],
             {"content": mock_artifacts_api_response(data=None)},
-            GetArtifactErrors.NO_FILE_IN_ARTIFACTS,
+            "does not exist in the artifacts",
             id="No pack_dependencies.json file in artifacts",
         ),
     ]
 )
-def test_get_packs_dependencies_bad(
+def test_get_artifact_file_bad(
     client: GitlabClient,
     requests_mock: Any,
     pipelines_mock_response: list | None,
     jobs_mock_response: list | None,
     artifacts_mock_repsonse: dict | None,
-    expected_err: GetArtifactErrors,
+    expected_err: str,
 ) -> None:
     """
         Given:
             - A Gitlab Client
             - A Commit SHA
-            - The job name in which a packs_dependencies.json should be stored as an artifact
+            - The job name in which a packs_dependencies.json file should be stored as an artifact
             - A marketplace version
             - Test cases for different Gitlab API responses.
         When:
-            - Calling get_packs_dependencies_json()
+            - Calling get_artifact_file()
         Then:
             - Ensure an exception is raised for all test cases.
     """
     requests_mock.get(
-        f"{client.base_url}/pipelines?sha={SHA}",
+        f"{client.base_url}/pipelines",
         json=pipelines_mock_response,
     )
     requests_mock.get(
@@ -135,9 +135,9 @@ def test_get_packs_dependencies_bad(
             **artifacts_mock_repsonse,
         )
     with pytest.raises(Exception) as e:
-        client.get_packs_dependencies_json(
+        client.get_artifact_file(
             SHA,
             JOB_NAME,
             PACKS_DEPENDENCIES_FILEPATH,
         )
-    assert expected_err.value in str(e)
+    assert expected_err in str(e)

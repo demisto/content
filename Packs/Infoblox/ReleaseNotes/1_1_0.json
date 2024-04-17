@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "<ul><li>The `infoblox-get-ip` command returns a list/array of IPs in the `Infoblox.IP` context path (instead of a single IP).</li><li>The `infoblox-get-ip` command context output paths `Infoblox.IP.Objects`, `Infoblox.IP.Names`, `Infoblox.IP.Extattrs` were stripped of the leading whitespace (e.g. `Infoblox.IP. Objects` -> `Infoblox.IP.Objects`). </li><li>The `infoblox-get-ip` command will now return a maximum of 50 results.</li></ul>Make sure to check and update any Playbooks/Scripts that use the above context paths."
+}

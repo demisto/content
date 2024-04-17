@@ -393,7 +393,8 @@ Adds URLs to the specified category.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | category-id | The ID of the category to add the specified URLs to. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command. | Required | 
-| url | A comma-separated list of URLs to add to the specified category. For example, pandora.com,spotify.com. | Required | 
+| url | A comma-separated list of URLs to add to the specified category. For example, pandora.com,spotify.com. | Optional | 
+| retaining-parent-category-url | A comma-separated list of URLs to add to the retaining parent category section inside the specified category. For example, pandora.com,spotify.com. | Optional | 
 
 #### Context Output
 
@@ -447,7 +448,8 @@ Adds IP address to the specified category.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | category-id | The ID of the category to add the specified IP addresses to. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command. | Required | 
-| ip | A comma-separated list of IP address to add to the specified category. For example, 1.2.3.4,8.8.8.8. | Required | 
+| ip | A comma-separated list of IP address to add to the specified category. For example, 1.2.3.4,8.8.8.8. | Optional | 
+| retaining-parent-category-ip | A comma-separated list of IP address to add to the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8. | Optional | 
 
 #### Context Output
 
@@ -501,7 +503,8 @@ Removes URLs from the specified category.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | category-id | The ID of the category to remove the specified URLs from. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command. | Required | 
-| url | A comma-separated list of URLs to remove from the specified category. For example, pandora.com,spotify.com. | Required | 
+| url | A comma-separated list of URLs to remove from the specified category. For example, pandora.com,spotify.com. | Optional | 
+| retaining-parent-category-url | A comma-separated list of URLs to remove from the retaining parent category section inside the specified category. For example, pandora.com,spotify.com. | Optional | 
 
 #### Context Output
 
@@ -553,7 +556,8 @@ Removes IP address from the specified category.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | category-id | The ID of the category to remove the specified IP addresses from. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command. | Required | 
-| ip | A comma-separated list of IP addresses to remove from the specified category. For example, 1.2.3.4,8.8.8.8. | Required | 
+| ip | A comma-separated list of IP addresses to remove from the specified category. For example, 1.2.3.4,8.8.8.8. | Optional | 
+| retaining-parent-category-ip | A comma-separated list of IP address to remove from the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8. | Optional | 
 
 #### Context Output
 

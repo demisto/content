@@ -7,12 +7,10 @@
 !reversinglabs-titaniumcloud-file-download hash="21841b32c6165b27dddbd4d6eb3a672defe54271"
 !reversinglabs-titaniumcloud-file-reputation hash="21841b32c6165b27dddbd4d6eb3a672defe54271"
 !reversinglabs-titaniumcloud-file-upload entryId=7612@08d0efc0-7fc6-4c26-8ae9-f3bfc7b92a59
-!reversinglabs-titaniumcloud-get-dynamic-analysis-results sha1=21841b32c6165b27dddbd4d6eb3a672defe54271
 !reversinglabs-titaniumcloud-imphash-similarity imphash=fb815acbc7109e8c83537d7d9c7020be max_results=2
 !reversinglabs-titaniumcloud-reanalyze-sample hash=21841b32c6165b27dddbd4d6eb3a672defe54271
 !reversinglabs-titaniumcloud-rha1-analytics hash=21841b32c6165b27dddbd4d6eb3a672defe54271
 !reversinglabs-titaniumcloud-rha1-functional-similarity hash=21841b32c6165b27dddbd4d6eb3a672defe54271 result_limit=2
-!reversinglabs-titaniumcloud-submit-for-dynamic-analysis sha1=21841b32c6165b27dddbd4d6eb3a672defe54271 platform=windows10
 !reversinglabs-titaniumcloud-uri-index uri=8.8.4.4 result_limit=2
 !reversinglabs-titaniumcloud-uri-statistics uri=127.0.0.1
 !reversinglabs-titaniumcloud-url-analyses-feed-from-date results_per_page=2 max_results=2 time_format=timestamp start_time=1685976746
@@ -35,3 +33,8 @@
 !reversinglabs-titaniumcloud-network-reputation network_locations=http://43.138.221.139/jquery-3.3.1.min.js,61.253.71.111,bloom-artists.com
 !reversinglabs-titaniumcloud-network-reputation-override set_overrides_list="http://163.197.220.144/5x8x,url,suspicious|http://163.197.220.144/j.ad,url,known" remove_overrides_list="http://43.138.221.139/jquery-3.3.1.min.js,url"
 !reversinglabs-titaniumcloud-network-reputation-overrides-list result_limit=10
+!reversinglabs-titaniumcloud-get-sample-dynamic-analysis-results sha1=21841b32c6165b27dddbd4d6eb3a672defe54271 analysis_id=08249dbc-77bf-482e-be4d-b8fa58de01c7 latest_analysis=false
+!reversinglabs-titaniumcloud-submit-sample-for-dynamic-analysis sha1=21841b32c6165b27dddbd4d6eb3a672defe54271 platform=windows10
+!reversinglabs-titaniumcloud-get-url-dynamic-analysis-results url=http://classicairjordanshoes.com/classic-air-jordan-9-c-7.html?zenid=egbmmbi039iqms5ho5dt2qnunm0mettt analysis_id=0f57134a-ecb8-4f8f-ad60-903b63bf8bc4 latest_analysis=false
+!reversinglabs-titaniumcloud-submit-url-for-dynamic-analysis url=http://classicairjordanshoes.com/classic-air-jordan-9-c-7.html?zenid=egbmmbi039iqms5ho5dt2qnunm0mettt platform=windows10
+

@@ -25,7 +25,8 @@
         "Cortex XDR - XCLOUD Cryptomining",
         "Cortex XDR Device Control Violations",
         "Cortex XDR Disconnected endpoints",
-        "Cortex XDR Incident"
+        "Cortex XDR Incident",
+        "Cortex XDR - Lite"
     ],
     "associatedToAll": false,
     "unmapped": false,

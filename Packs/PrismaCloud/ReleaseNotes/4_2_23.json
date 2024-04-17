@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "In order to maintain reasonable response size, the output now lacks the folowing 2 values by default: ***data.items.data.disks.shieldedInstanceInitialState***, ***data.items.data.metadata.items.configure-sh***. Use the argument ****include_additional_resource_fields=true**** to include their values in the output."
+}

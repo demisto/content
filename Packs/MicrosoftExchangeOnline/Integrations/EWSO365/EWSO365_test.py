@@ -3,20 +3,35 @@ import json
 import unittest
 from unittest.mock import MagicMock, patch
 
-import demistomock as demisto
-
 import pytest
+from EWSO365 import (
+    SMTP,
+    EWSClient,
+    ExpandGroup,
+    GetSearchableMailboxes,
+    add_additional_headers,
+    create_message,
+    email,
+    fetch_emails_as_incidents,
+    fetch_last_emails,
+    find_folders,
+    get_expanded_group,
+    get_item_as_eml,
+    get_searchable_mailboxes,
+    handle_attached_email_with_incorrect_message_id,
+    handle_html,
+    handle_incorrect_message_id,
+    handle_transient_files,
+    parse_incident_from_item,
+    parse_item_as_dict,
+)
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
 from exchangelib.attachments import AttachmentId, ItemAttachment
 from exchangelib.items import Item, Message
 from exchangelib.properties import MessageHeader
 from freezegun import freeze_time
 
-from EWSO365 import (ExpandGroup, GetSearchableMailboxes, EWSClient, fetch_emails_as_incidents,
-                     add_additional_headers, fetch_last_emails, find_folders,
-                     get_expanded_group, get_searchable_mailboxes, handle_html,
-                     handle_transient_files, parse_incident_from_item, parse_item_as_dict, get_item_as_eml,
-                     create_message)
+import demistomock as demisto
 
 with open("test_data/commands_outputs.json") as f:
     COMMAND_OUTPUTS = json.load(f)
@@ -35,6 +50,8 @@ class TestNormalCommands:
 
     class MockClient:
         class MockAccount:
+            DEFAULT_FOLDER_TRAVERSAL_DEPTH = 3
+
             def __init__(self):
                 self.root = self
                 self.walk_res = []
@@ -84,7 +101,7 @@ class TestNormalCommands:
         def get_folder_by_path(self, path, account=None, is_public=False):
             return ""
 
-    def test_ews_find_folders(self):
+    def test_ews_find_folders(self, mocker):
         """
         This test checks the following normal_command:
             * ews-find-folders
@@ -100,7 +117,6 @@ class TestNormalCommands:
             - the expected result will be the same as the entry context
         """
         command_name = "ews-find-folders"
-
         raw_response = RAW_RESPONSES[command_name]
         expected = COMMAND_OUTPUTS[command_name]
         client = self.MockClient()
@@ -250,10 +266,12 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in messages)
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
+
     from EWSO365 import RECEIVED_FILTER
     client = TestNormalCommands.MockClient()
     client.max_fetch = 1
@@ -291,10 +309,12 @@ def test_fetch_and_mark_as_read(mocker):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in [])
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
+
     from EWSO365 import RECEIVED_FILTER
     client = TestNormalCommands.MockClient()
     client.get_folder_by_path = mock_get_folder_by_path
@@ -448,6 +468,7 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in [Message(), Message(), Message(), Message(), Message()])
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
@@ -498,6 +519,7 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in [Message(), Message(), Message(), Message(), Message()])
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
@@ -783,8 +805,8 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
             return "Account"
 
         def get_item_from_mailbox(self, account, item_id):
-
             return Item(mime_content=content, headers=item_headers, subject=subject)
+
     mock_file_result = mocker.patch('EWSO365.fileResult')
 
     get_item_as_eml(MockEWSClient(), "item", "account@test.com")
@@ -823,4 +845,56 @@ class TestEmailModule(unittest.TestCase):
             name="file.txt", content="data", is_inline=True, content_id="12345"
         )
         mock_message.assert_called_once()
-        self.assertIsInstance(result, MagicMock)
+        assert isinstance(result, MagicMock)
+
+
+@pytest.mark.parametrize("headers, expected_formatted_headers", [
+    pytest.param([("Message-ID", '<valid_header>')], [("Message-ID", '<valid_header>')], id="valid header"),
+    pytest.param([("Message-ID", '<[valid_header]>')], [("Message-ID", '<valid_header>')], id="invalid header"),
+    pytest.param([("Message-ID", 'Other type of header format')], [("Message-ID", 'Other type of header format')],
+                 id="untouched header format"),
+])
+def test_handle_attached_email_with_incorrect_id(mocker, headers, expected_formatted_headers):
+    """
+    Given:
+        - case 1: valid Message-ID header value in attached email object
+        - case 1: invalid Message-ID header value in attached email object
+        - case 3: a Message-ID header value format which is not tested in the context of handle_attached_email_with_incorrect_id
+    When:
+        - fetching email which have an attached email with Message-ID header
+    Then:
+        - case 1: verify the header in the correct format
+        - case 2: correct the invalid Message-ID header value
+        - case 3: return the header value without without further handling
+
+    """
+    mime_content = b'\xc400'
+    email_policy = SMTP
+    attached_email = email.message_from_bytes(mime_content, policy=email_policy)
+    attached_email._headers = headers
+    assert handle_attached_email_with_incorrect_message_id(attached_email)._headers == expected_formatted_headers
+
+
+@pytest.mark.parametrize("message_id, expected_message_id_output", [
+    pytest.param('<message_id>', '<message_id>', id="valid message_id 1"),
+    pytest.param('<mess<[age_id>', '<mess<[age_id>', id="valid message_id 2"),
+    pytest.param('<>]message_id>', '<>]message_id>', id="valid message_id 3"),
+    pytest.param('<[message_id]>', '<message_id>', id="invalid message_id"),
+    pytest.param('\r\n\t<message_id>', '\r\n\t<message_id>', id="valid message_id with escape chars"),
+    pytest.param('\r\n\t<[message_id]>', '\r\n\t<message_id>', id="invalid message_id with escape chars"),
+])
+def test_handle_incorrect_message_id(message_id, expected_message_id_output):
+    """
+    Given:
+        - case 1: valid Message-ID header value in attached email object
+        - case 1: invalid Message-ID header value in attached email object
+        - case 3: a Message-ID header value format which is not tested in the context of handle_attached_email_with_incorrect_id
+    When:
+        - fetching email which have an attached email with Message-ID header
+    Then:
+        - case 1: verify the header in the correct format
+        - case 2: correct the invalid Message-ID header value
+        - case 3: return the header value without without further handling
+
+    """
+    assert handle_incorrect_message_id(message_id) == expected_message_id_output

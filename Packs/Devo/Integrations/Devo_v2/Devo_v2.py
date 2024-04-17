@@ -33,6 +33,7 @@ FETCH_INCIDENTS_WINDOW = demisto.params().get("fetch_incidents_window")
 TIMEOUT = demisto.params().get("timeout", "60")
 PORT = arg_to_number(demisto.params().get("port", "443") or "443")
 ITEMS_PER_PAGE = 50
+LIMIT = 100
 HEALTHCHECK_WRITER_RECORD = [{"hello": "world", "from": "demisto-integration"}]
 HEALTHCHECK_WRITER_TABLE = "test.keep.free"
 RANGE_PATTERN = re.compile("^[0-9]+ [a-zA-Z]+")
@@ -520,6 +521,48 @@ def fetch_incidents():
     return incidents
 
 
+def filter_results_by_fields(results, filtered_columns_string):
+    """
+    Filter a list of dictionaries by including only specified fields.
+
+    Parameters:
+        - results (list): A list of dictionaries representing rows of data.
+        - filtered_columns_string (str): A comma-separated string containing field names to include.
+
+    Returns:
+        list: A new list of dictionaries with only the specified fields.
+
+    Raises:
+        ValueError: If the filtered_columns_string contains invalid column names.
+    """
+    if filtered_columns_string == "":
+        raise ValueError("filtered_columns cannot be empty.")
+
+    if not filtered_columns_string:
+        return results
+
+    if not results:
+        return results
+
+    filtered_columns_list = argToList(filtered_columns_string)
+
+    # Check if all fields from filtered_columns_list are present in the first dictionary in results
+    first_dict = results[0]
+    missing_columns = set(filtered_columns_list) - set(first_dict)
+    if missing_columns:
+        raise ValueError(f"Fields {list(missing_columns)} not found in query result")
+
+    filtered_results = []
+
+    for result in results:
+        filtered_result = {
+            column: result.get(column) for column in filtered_columns_list
+        }
+        filtered_results.append(filtered_result)
+
+    return filtered_results
+
+
 def run_query_command(offset, items):
     to_query = demisto.args()["query"]
     timestamp_from = demisto.args()["from"]
@@ -529,6 +572,7 @@ def run_query_command(offset, items):
     linq_base = demisto.args().get("linqLinkBase", None)
     time_range = get_time_range(timestamp_from, timestamp_to)
     to_query = f"{to_query} offset {offset} limit {items}"
+    filtered_columns = demisto.args().get("filtered_columns", None)
     results = list(
         ds.Reader(
             oauth_token=READER_OAUTH_TOKEN,
@@ -553,6 +597,8 @@ def run_query_command(offset, items):
             linq_base=linq_base,
         )
     }
+
+    results = filter_results_by_fields(results, filtered_columns)
 
     entry = {
         "Type": entryTypes["note"],
@@ -598,6 +644,7 @@ def get_alerts_command(offset, items):
     linq_base = demisto.args().get("linqLinkBase", None)
     user_alert_table = demisto.args().get("table_name", None)
     user_prefix = demisto.args().get("prefix", "")
+    filtered_columns = demisto.args().get("filtered_columns", None)
     user_alert_table = user_alert_table if user_alert_table else DEFAULT_ALERT_TABLE
     if user_prefix:
         user_prefix = f"{user_prefix}_"
@@ -662,6 +709,8 @@ def get_alerts_command(offset, items):
         for ed in res[extra_data]:
             res[extra_data][ed] = urllib.parse.unquote_plus(res[extra_data][ed])
 
+    results = filter_results_by_fields(results, filtered_columns)
+
     entry = {
         "Type": entryTypes["note"],
         "Contents": results,
@@ -707,6 +756,7 @@ def multi_table_query_command(offset, items):
     timestamp_to = demisto.args().get("to", None)
     write_context = demisto.args()["writeToContext"].lower()
     query_timeout = int(demisto.args().get("queryTimeout", TIMEOUT))
+    filtered_columns = demisto.args().get("filtered_columns", None)
     global COUNT_MULTI_TABLE
     time_range = get_time_range(timestamp_from, timestamp_to)
 
@@ -750,6 +800,8 @@ def multi_table_query_command(offset, items):
 
     concurrent.futures.wait(futures)
 
+    all_results = filter_results_by_fields(all_results, filtered_columns)
+
     entry = {
         "Type": entryTypes["note"],
         "Contents": all_results,
@@ -772,13 +824,42 @@ def multi_table_query_command(offset, items):
     return entry
 
 
+def convert_to_str(value):
+    if isinstance(value, list) and not value:
+        return_warning("Empty list encountered.")
+        return '[]'
+    elif isinstance(value, dict) and not value:
+        return_warning("Empty dictionary encountered.")
+        return '{}'
+    elif isinstance(value, list | dict):
+        return json.dumps(value)
+    return str(value)
+
+
 def write_to_table_command():
-    table_name = demisto.args()["tableName"]
-    records = check_type(demisto.args()["records"], list)
+    tag = demisto.args().get("tag", None)
+    tableName = demisto.args()["tableName"]
+    records_str = demisto.args()["records"]
     linq_base = demisto.args().get("linqLinkBase", None)
 
+    final_tag = tag or tableName
+
+    # Use json.loads to parse the records string
+    try:
+        records = json.loads(records_str)
+    except json.JSONDecodeError:
+        return_error("Error decoding JSON. Please ensure the records are valid JSON.")
+
+    # Ensure records is a list
+    if not isinstance(records, list):
+        return_error("The 'records' parameter must be a list.")
+
+    # Check if all records are empty
+    if all(not record for record in records):
+        return_error("All records are empty.")
+
     creds = get_writer_creds()
-    linq = f"from {table_name}"
+    linq = f"from {tableName}"
 
     sender = Sender(
         SenderConfigSSL(
@@ -789,28 +870,37 @@ def write_to_table_command():
         )
     )
 
+    total_events = 0
+    total_bytes_sent = 0
+
     for r in records:
-        try:
-            sender.send(tag=table_name, msg=json.dumps(r))
-        except TypeError:
-            sender.send(tag=table_name, msg=f"{r}")
+        # Convert each record to a JSON string or string
+        formatted_record = convert_to_str(r)
+
+        # If the record is empty, skip sending it
+        if not formatted_record.strip():
+            continue
+
+        # Send each record to Devo with the specified tag
+        sender.send(tag=final_tag, msg=formatted_record)
+
+        # Update totals
+        total_events += 1
+        total_bytes_sent += len(formatted_record.encode("utf-8"))
+
+    current_ts = int(time.time())
+    start_ts = (current_ts - 30) * 1000
+    end_ts = (current_ts + 30) * 1000
 
     querylink = {
         "DevoTableLink": build_link(
             linq,
-            int(1000 * time.time()) - 3600000,
-            int(1000 * time.time()),
+            start_ts,
+            end_ts,
             linq_base=linq_base,
         )
     }
 
-    entry = {
-        "Type": entryTypes["note"],
-        "Contents": {"recordsWritten": records},
-        "ContentsFormat": formats["json"],
-        "ReadableContentsFormat": formats["markdown"],
-        "EntryContext": {"Devo.RecordsWritten": records, "Devo.LinqQuery": linq},
-    }
     entry_linq = {
         "Type": entryTypes["note"],
         "Contents": querylink,
@@ -818,24 +908,17 @@ def write_to_table_command():
         "ReadableContentsFormat": formats["markdown"],
         "EntryContext": {"Devo.QueryLink": createContext(querylink)},
     }
-    headers: list = []
-    resultRecords: list = []
-    innerDict: dict = {}
-    for obj in records:
-        record = json.loads(obj)
-        currKey = list(record.keys())
-        currValue = list(record.values())
 
-        headers.extend(currKey)
+    entry = {
+        "Type": entryTypes["note"],
+        "Contents": {"TotalRecords": total_events, "TotalBytesSent": total_bytes_sent},
+        "ContentsFormat": formats["json"],
+        "ReadableContentsFormat": formats["markdown"],
+        "EntryContext": {"Devo.TotalRecords": total_events, "Devo.TotalBytesSent": total_bytes_sent, "Devo.LinqQuery": linq},
+    }
 
-        innerDict.update(dict(zip(currKey, currValue)))  # Create a dictionary using zip
-    resultRecords.append(innerDict)  # Append the dictionary to the list
-
-    demisto.debug("final array :")
-    demisto.debug(resultRecords)
-
-    md = tableToMarkdown("Entries to load into Devo", resultRecords, headers)
-    entry["HumanReadable"] = md
+    md_message = f"Total Records Sent: {total_events}.\nTotal Bytes Sent: {total_bytes_sent}."
+    entry["HumanReadable"] = md_message
 
     md_linq = tableToMarkdown(
         "Link to Devo Query",
@@ -847,9 +930,19 @@ def write_to_table_command():
 
 
 def write_to_lookup_table_command():
-    lookup_table_name = demisto.args()["lookupTableName"]
-    headers = check_type(demisto.args()["headers"], list)
-    records = check_type(demisto.args()["records"], list)
+    lookup_table_name = demisto.args().get("lookupTableName")
+    headers_param = demisto.args().get("headers")
+    records_param = demisto.args().get("records")
+
+    if not lookup_table_name or not headers_param or not records_param:
+        return_error("Missing required arguments. Please provide lookupTableName, headers, and records.")
+
+    # Parse JSON strings to Python objects
+    try:
+        headers = json.loads(headers_param)
+        records = json.loads(records_param)
+    except json.JSONDecodeError as e:
+        return_error(f"Failed to parse JSON: {str(e)}")
 
     creds = get_writer_creds()
 
@@ -860,35 +953,59 @@ def write_to_lookup_table_command():
         chain=creds["chain"].name,
     )
 
+    con = None
+    total_events = 0
+    total_bytes = 0
+
     try:
+        # Validate headers
+        if not isinstance(headers, dict) or "headers" not in headers or not isinstance(headers["headers"], list):
+            raise ValueError("Invalid headers format. 'headers' must be a list.")
+
+        columns = headers["headers"]
+
+        # Set default values for optional parameters
+        key_index = int(headers.get("key_index", 0))  # Ensure it's casted to integer
+        action = headers.get("action", "INC")  # Set default value to 'INC'
+
+        # Validate key_index
+        if key_index < 0:
+            raise ValueError("key_index must be a non-negative integer value.")
+
+        # Validate action
+        if action not in {"INC", "FULL"}:
+            raise ValueError("action must be either 'INC' or 'FULL'.")
+
         con = Sender(config=engine_config, timeout=60)
+        lookup = Lookup(name=lookup_table_name, con=con)
 
-        lookup = Lookup(name=lookup_table_name, historic_tag=None, con=con)
-        # Order sensitive list
-        pHeaders = json.dumps(headers)
+        lookup.send_headers(headers=columns, key_index=key_index, event="START", action=action)
 
-        lookup.send_control("START", pHeaders, "INC")
-
+        # Send data lines
         for r in records:
-            lookup.send_data_line(key_index=0, fields=r["values"])
+            fields = r.get("fields", [])
+            delete = r.get("delete", False)
+            lookup.send_data_line(key_index=key_index, fields=fields, delete=delete)
+            total_events += 1
+            total_bytes += len(json.dumps(r))
 
-        lookup.send_control("END", pHeaders, "INC")
-    finally:
+        # Send end event
+        lookup.send_headers(headers=columns, key_index=key_index, event="END", action=action)
+
+        # Flush buffer and shutdown connection
         con.flush_buffer()
         con.socket.shutdown(0)
 
-    entry = {
-        "Type": entryTypes["note"],
-        "Contents": {"recordsWritten": records},
-        "ContentsFormat": formats["json"],
-        "ReadableContentsFormat": formats["markdown"],
-        "EntryContext": {"Devo.RecordsWritten": records},
-    }
+        # Return three lines as output
+        return f"Lookup Table Name: {lookup_table_name}.\nTotal Records Sent: {total_events}.\nTotal Bytes Sent: {total_bytes}."
 
-    md = tableToMarkdown("Entries to load into Devo", records)
-    entry["HumanReadable"] = md
+    except Exception as e:
+        return_error(f"Failed to execute command write-to-lookup-table. Error: {str(e)}")
 
-    return [entry]
+    finally:
+        if con:
+            con.flush_buffer()
+            con.socket.shutdown(0)
 
 
 def main():

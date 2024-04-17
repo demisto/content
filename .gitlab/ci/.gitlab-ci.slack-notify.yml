@@ -1,5 +1,5 @@
 default:
-  image: docker-io.art.code.pan.run/devdemisto/gitlab-content-ci:1.0.0.64455
+  image: ${DOCKER_IO}/devdemisto/gitlab-content-ci:1.0.0.64455
   artifacts:
     expire_in: 30 days
     paths:

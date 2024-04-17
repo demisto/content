@@ -564,13 +564,13 @@ def fetch_incidents():
         demisto.debug('QRadarMsg - Enriched  {} successfully'.format(fetch_query))
     for offense in raw_offenses:
         offense_id = max(offense_id, offense['id'])
-    
-    
+
+
     demisto.debug("QRadar - Number of incidents before filtering: %s", len(raw_offenses))
     demisto.debug("QRadar - Number of incidents after filtering: %s", len(incidents))
     demisto.debug("QRadar - Number of incidents skipped: %s", len(raw_offenses) - len(incidents))
     demisto.setLastRun({'id': offense_id})
-    demisto.debug('QRadar - Next run after incidents fetching: %s', offense_id) 
+    demisto.debug('QRadar - Next run after incidents fetching: %s', offense_id)
     return incidents
 
 

@@ -77,7 +77,8 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - ASM Alert](#cortex-asm---asm-alert)
   - [Cortex ASM - AWS Enrichment](#cortex-asm---aws-enrichment)
   - [Cortex ASM - Azure Enrichment](#cortex-asm---azure-enrichment)
-  - [Cortex ASM - Decision](#cortex-asm---decision)
+  - [Cortex ASM - Cortex Endpoint Enrichment](#cortex-asm---cortex-endpoint-enrichment)
+  - [Cortex ASM - Cortex Endpoint Remediation](#cortex-asm---cortex-endpoint-remediation)
   - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
   - [Cortex ASM - Email Notification](#cortex-asm---email-notification)
   - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
@@ -111,9 +112,9 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
 
 #### Cortex ASM - Active Directory Enrichment
 
-A playbook that given the email address enriches Service owner in Azure directory.
+A playbook that given the email address enriches Service owner in Azure  and On-Prem directory.
 
-![Cortex ASM - Active Directory Enrichment](https://raw.githubusercontent.com/demisto/content/394aad3c8e680a444018c82322c449205ccd31a1/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Active_Directory_Enrichment.png)
+![Cortex ASM - Active Directory Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Active_Directory_Enrichment.png)
 
 #### Cortex ASM - ASM Alert
 
@@ -133,11 +134,17 @@ A playbook that given the IP address enriches Azure information relevant to ASM 
 
 ![Cortex ASM - Azure Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Azure_Enrichment.png)
 
-#### Cortex ASM - Decision
+#### Cortex ASM - Cortex Endpoint Enrichment
 
-A playbook that returns "RemediationAction" options based on meeting "Automated Remediation Requirements" as well as whether ServiceNowV2 integration is set up.
+This playbook is used to pull information from Cortex Endpoint (XSIAM/XDR) systems for enrichment purposes.
 
-![Cortex ASM - Decision](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Decision.png)
+![Cortex ASM - Cortex Endpoint Enrichment](https://raw.githubusercontent.com/demisto/content/935a77339c2b1ecde3b9ea64992018bd625c61ed/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Cortex_Endpoint_Enrichment.png)
+
+#### Cortex ASM - Cortex Endpoint Remediation
+
+This playbook is used for remediating a single exposed Cortex Endpoint (XSIAM/XDR) by isolating the endpoint from the network using the "Isolate Endpoint" feature in XSIAM ([see XSIAM details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Isolate-an-Endpoint)) and XDR ([see XDR details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Isolate-an-Endpoint)). 
+
+![Cortex ASM - Cortex Endpoint Remediation](https://raw.githubusercontent.com/demisto/content/c421d6d3de62992a3ac3afbce09e82224e505641/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Cortex_Endpoint_Remediation.png)
 
 #### Cortex ASM - Detect Service
 
