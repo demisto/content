@@ -676,7 +676,7 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
     attributes_args.update({'sharing_group_id': sharing_group_id}) if sharing_group_id else None
 
     if not new_event:
-        demisto.debug(f'Before searching event ID {event_id}')
+        demisto.debug(f'Searching event ID {event_id}')
         try:
             response = PYMISP.search(eventid=event_id, pythonify=True)
         except Exception as e:
@@ -694,7 +694,7 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         return None
 
     value = attributes_args.get('value')
-    demisto.debug(f'searching event with ID {new_event.id}')
+    demisto.debug(f'searching event ID {new_event.id} with controller=attributes')
     try:
         updated_event = PYMISP.search(eventid=new_event.id, controller='attributes', value=value)
     except Exception as e:
