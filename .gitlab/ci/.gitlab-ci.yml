@@ -1,3 +1,6 @@
+variables:
+  CURRENT_BRANCH_NAME: $CI_COMMIT_BRANCH
+
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
     ref: test_move_all_ci_content

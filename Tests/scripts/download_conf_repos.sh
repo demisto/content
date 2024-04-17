@@ -87,14 +87,14 @@ clone_repository_with_fallback_branch() {
 
 TEST_UPLOAD_BRANCH_SUFFIX="-upload_test_branch-"
 # Search for the branch name without the suffix of '-upload_test_branch-' in case it exists.
-if [[ "${CI_COMMIT_BRANCH}" == *"${TEST_UPLOAD_BRANCH_SUFFIX}"* ]]; then
+if [[ "${CURRENT_BRANCH_NAME}" == *"${TEST_UPLOAD_BRANCH_SUFFIX}"* ]]; then
   # Using bash string pattern matching to search only the last occurrence of the suffix, that's why we use a single '%'.
-  SEARCHED_BRANCH_NAME="${CI_COMMIT_BRANCH%"${TEST_UPLOAD_BRANCH_SUFFIX}"*}"
+  SEARCHED_BRANCH_NAME="${CURRENT_BRANCH_NAME%"${TEST_UPLOAD_BRANCH_SUFFIX}"*}"
   echo "Found branch with suffix ${TEST_UPLOAD_BRANCH_SUFFIX} in branch name, using the branch ${SEARCHED_BRANCH_NAME} to clone content-test-conf and infra repositories"
 else
-  # default to CI_COMMIT_BRANCH when the suffix is not found.
-  echo "Didn't find a branch with suffix ${TEST_UPLOAD_BRANCH_SUFFIX} in branch name, using the branch ${CI_COMMIT_BRANCH} to clone content-test-conf and infra repositories, with fallback to master"
-  SEARCHED_BRANCH_NAME="${CI_COMMIT_BRANCH}"
+  # default to CURRENT_BRANCH_NAME when the suffix is not found.
+  echo "Didn't find a branch with suffix ${TEST_UPLOAD_BRANCH_SUFFIX} in branch name, using the branch ${CURRENT_BRANCH_NAME} to clone content-test-conf and infra repositories, with fallback to master"
+  SEARCHED_BRANCH_NAME="${CURRENT_BRANCH_NAME}"
 fi
 echo "Getting content-test-conf and infra repositories with branch:${SEARCHED_BRANCH_NAME}, with fallback to master"
 
