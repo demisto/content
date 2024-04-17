@@ -1061,6 +1061,8 @@ def get_policy():
 
 
 def get_policy_request(policy_type='blockedsenders', policy_id=None):
+    if not policy_type:
+        policy_type = 'blockedsenders'
     # Setup required variables
     api_endpoints = {
         'blockedsenders': 'blockedsenders/get-policy',
