@@ -3304,7 +3304,7 @@ def main():
             # demisto.results(get_policy())
         elif command == 'mimecast-get-policy':
             demisto.results(get_policy())
-        elif command == 'mimecast-create-policy':
+        elif command == 'mimecast-create-policy' or command == 'mimecast-create-block-sender-policy':
             demisto.results(create_policy())
         elif command == 'mimecast-update-policy':
             demisto.results(update_policy())
