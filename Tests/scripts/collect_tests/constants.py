@@ -91,6 +91,8 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.ASSETS_MODELING_RULE,
     FileType.ASSETS_MODELING_RULE_SCHEMA,
     FileType.ASSETS_MODELING_RULE_XIF,
+    FileType.CASE_FIELD,
+    FileType.CASE_LAYOUT_RULE,
 }
 
 ONLY_UPLOAD_PACK_FILE_TYPES: set[FileType] = {
@@ -149,6 +151,8 @@ XSIAM_COMPONENT_FILES: set[FileType] = {
     FileType.TRIGGER,
     FileType.CORRELATION_RULE,
     FileType.ASSETS_MODELING_RULE_SCHEMA,
+    FileType.CASE_FIELD,
+    FileType.CASE_LAYOUT_RULE,
 }
 
 TEST_DATA_PATTERN = '*_testdata.json'
