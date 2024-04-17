@@ -346,7 +346,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
         incident_mirror_reset: dict = {incident['id']: True for incident in incidents}
         if incident_mirror_reset:
             if isinstance(integration_context.get(MIRROR_RESET), dict):
-                demisto.debug(f'Adding incidents id: {incident_mirror_reset} to integration context: {integration_context.get(MIRROR_RESET)}')
+                demisto.debug(f'Adding incidents id: {incident_mirror_reset} '
+                              f'to integration context: {integration_context.get(MIRROR_RESET)}')
                 integration_context[MIRROR_RESET].update(incident_mirror_reset)
             else:
                 demisto.debug(f'Set integration context to: {incident_mirror_reset}')
