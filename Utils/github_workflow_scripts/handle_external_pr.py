@@ -311,6 +311,8 @@ def find_all_open_prs_by_user(content_repo, pr_creator, pr_number):
     all_prs = content_repo.get_pulls()
     similar_prs = []
     print(f'Number of all open PRs is: {all_prs.totalCount}')
+    print(f'pr_number from main pr: {pr_number}')
+    print(f'pr_id from going over all prs: {pr_}')
     for pr in all_prs:
         if pr.id == pr_number:
             continue
@@ -321,6 +323,7 @@ def find_all_open_prs_by_user(content_repo, pr_creator, pr_number):
                 similar_prs.append(pr)
         elif pr.user.login == pr_creator:
             print(f'pr creator from login: {pr.user.login}')
+            print(f'pr_id from going over all prs: {pr.id}')
             similar_prs.append(pr)
         else:
             continue
