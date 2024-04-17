@@ -4,9 +4,9 @@ import demistomock as demisto
 
 AWSIAMIdentityCenter = importlib.import_module("AWSIAMIdentityCenter")
 
-RESPONSE_GROUP_ID = {'GroupId': 'GROUP_ID'}
+RESPONSE_GROUP_ID = 'GROUP_ID'
 
-RESPONSE_USER_ID = {'UserId': 'USER_ID'}
+RESPONSE_USER_ID = 'USER_ID'
 
 RESPONSE_DELETE = {'ResponseMetadata': {'HTTPStatusCode': 200}}
 
@@ -86,7 +86,7 @@ def test_create_user(mocker):
     contents = demisto.results.call_args[0][0]
     assert {'UserId': 'USER_ID', 'IdentityStoreId': IDENTITY_STORE_ID} in contents.get(
         'EntryContext').values()
-    assert 'User USER_ID has been successfully created' in contents.get('HumanReadable')
+    assert 'User test_user has been successfully created with user id USER_ID' in contents.get('HumanReadable')
 
 
 def test_create_group(mocker):
@@ -118,7 +118,7 @@ def test_create_group(mocker):
     contents = demisto.results.call_args[0][0]
     assert {'GroupId': IDENTITY_STORE_ID} in contents.get(
         'EntryContext').values()
-    assert 'Group 123456 has been successfully created' in contents.get('HumanReadable')
+    assert 'Group Test Group has been successfully created with id 123456' in contents.get('HumanReadable')
 
 
 def test_list_users(mocker):
@@ -401,10 +401,8 @@ def test_list_groups_for_user(mocker):
     list_groups_for_user(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
 
-    assert {'GroupMemberships': [{'GroupId': 'GROUP_ID', 'MembershipId': 'MEMBERSHIP_ID'}], 'UserId': 'USER_ID'} in contents.get(
-        'EntryContext').values()
-    assert {'GroupsUserNextToken': None} in contents.get(
-        'EntryContext').values()
+    assert {'GroupMemberships': [{'GroupId': 'GROUP_ID', 'MembershipId': 'MEMBERSHIP_ID'}], 'UserId': 'USER_ID',
+            'GroupsUserNextToken': None} in contents.get('EntryContext').values()
     assert 'AWS IAM Identity Center Groups' in contents.get('HumanReadable')
 
 

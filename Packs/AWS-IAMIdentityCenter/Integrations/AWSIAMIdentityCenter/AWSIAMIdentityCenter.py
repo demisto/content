@@ -12,6 +12,7 @@ PREFIX = 'AWS.IAMIdentityCenter'
 PREFIXUSER = 'AWS.IAMIdentityCenter.User'
 PREFIXGROUP = 'AWS.IAMIdentityCenter.Group'
 
+
 def create_user(args, client, IdentityStoreId):
     username = args.get('userName')
     familyName = args.get('familyName')
@@ -27,25 +28,25 @@ def create_user(args, client, IdentityStoreId):
         return_error('Error: When specifying userEmailAddressPrimary, userEmailAddress must also be provided.')
     if primaryEmail:
         primaryEmail = argToBoolean(primaryEmail)
-    
+
     kwargs = {
-        'IdentityStoreId':IdentityStoreId,
-        'UserName':username,
-        'Name':{
+        'IdentityStoreId': IdentityStoreId,
+        'UserName': username,
+        'Name': {
             'FamilyName': familyName,
             'GivenName': givenName
         },
-        'Emails':[
+        'Emails': [
             {
-            'Value': userEmail,
-            'Primary': primaryEmail
+                'Value': userEmail,
+                'Primary': primaryEmail
             }
         ],
-        'DisplayName':userDisplayName,
-        'UserType':userType,
-        'ProfileUrl':profileUrl,
-        'Title':title,
-        'Addresses':[
+        'DisplayName': userDisplayName,
+        'UserType': userType,
+        'ProfileUrl': profileUrl,
+        'Title': title,
+        'Addresses': [
             {
                 'Region': region,
             }
@@ -56,7 +57,7 @@ def create_user(args, client, IdentityStoreId):
     userId = response.get('UserId')
     response.pop('ResponseMetadata', None)
     response = remove_empty_elements(response)
-    human_readable = tableToMarkdown(f'User {username} has been successfully created with user id {userId}',response)
+    human_readable = tableToMarkdown(f'User {username} has been successfully created with user id {userId}', response)
     result = CommandResults(
         outputs_prefix=PREFIXUSER,
         readable_output=human_readable,
@@ -108,8 +109,8 @@ def get_user_operations_list(args):
             'AttributeValue': path_and_value[var]
         })
     return to_update
-    
-    
+
+
 def update_user(args, client, IdentityStoreId):
     userName = args.get('userName')
     user_id = get_userId_by_username(args, client, IdentityStoreId)
@@ -119,13 +120,13 @@ def update_user(args, client, IdentityStoreId):
         "UserId": user_id,
         "Operations": operations
     }
-    response = client.update_user(**kwargs)
+    client.update_user(**kwargs)
     hr_data = f'User {userName} has been successfully updated'
     result = CommandResults(
         readable_output=hr_data
     )
     return_results(result)
-    
+
 
 def delete_user(args, client, IdentityStoreId):
     userId = get_userId_by_username(args, client, IdentityStoreId)
@@ -133,12 +134,13 @@ def delete_user(args, client, IdentityStoreId):
         IdentityStoreId=IdentityStoreId,
         UserId=userId
     )
-    #if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-    hr_data = f'The User {userId} has been removed.'
-    result = CommandResults(
-        readable_output=hr_data
-    )
-    return_results(result)
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.debug(f'The User {userId} has been removed.')
+        hr_data = f'The User {userId} has been removed.'
+        result = CommandResults(
+            readable_output=hr_data
+        )
+        return_results(result)
 
 
 def get_user(args, client, IdentityStoreId):
@@ -158,7 +160,7 @@ def get_user(args, client, IdentityStoreId):
         for email in response.get('Emails'):
             emails.append(email.get('Value'))
         hr_data['Emails'] = emails
-    
+
     human_readable = tableToMarkdown('AWS IAM Identity Center Users', hr_data, removeNull=True)
     result = CommandResults(
         outputs_prefix=PREFIXUSER,
@@ -190,7 +192,7 @@ def get_user_by_email(args, client, IdentityStoreId):
                     }
                     hr_data = user_details
                     context_data = user
-        
+
     human_readable = tableToMarkdown('AWS IAM Identity Center Users ', hr_data, removeNull=True)
     result = CommandResults(
         outputs_prefix=PREFIXUSER,
@@ -207,8 +209,9 @@ def get_limit(args):
         limit = arg_to_number(args.get('limit'))
         if limit and limit < 50:
             return limit
-        
+
     return 50
+
 
 def list_users(args, client, IdentityStoreId):
     context_data = []
@@ -262,7 +265,7 @@ def list_groups(args, client, IdentityStoreId):
         }
         hr_data.append(group_details)
         context_data.append(group)
-        
+
     outputs = {f'{PREFIXGROUP}(val.GroupId === obj.GroupId)': context_data,
                f'{PREFIX}(true)': {'GroupNextToken': response.get('NextToken')}}
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
@@ -302,6 +305,7 @@ def delete_group(args, client, IdentityStoreId):
         GroupId=groupId
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.debug(f'The Group {groupId} has been removed.')
         hr_data = f'The Group {groupId} has been removed.'
         result = CommandResults(
             readable_output=hr_data
@@ -322,7 +326,7 @@ def get_groupId_by_displayName(args, client, IdentityStoreId):
     )
     return response_id.get('GroupId')
 
-    
+
 def update_group(args, client, IdentityStoreId):
     displayName = args.get('displayName')
     group_id = get_groupId_by_displayName(args, client, IdentityStoreId)
@@ -334,13 +338,12 @@ def update_group(args, client, IdentityStoreId):
             'AttributeValue': args.get('description')
         }]
     }
-    response = client.update_group(**kwargs)
+    client.update_group(**kwargs)
     hr_data = f'Group {displayName} has been successfully updated'
     result = CommandResults(
         readable_output=hr_data
     )
     return_results(result)
-
 
 
 def get_group(args, client, IdentityStoreId):
@@ -381,7 +384,7 @@ def list_groups_for_user(args, client, IdentityStoreId):
     groups = []
     for group in response.get('GroupMemberships', []):
         hr_data.append({
-            'UserID': group.get('MemberId').get('UserId'),
+            'UserID': userID,
             'GroupID': group.get('GroupId'),
             'MembershipID': group.get('MembershipId')
         })
@@ -389,16 +392,16 @@ def list_groups_for_user(args, client, IdentityStoreId):
             'GroupId': group.get('GroupId'),
             'MembershipId': group.get('MembershipId')
         })
-        
+
     context_data['UserId'] = userID
     context_data['GroupMemberships'] = groups
-    outputs = {f'{PREFIXUSER}(val.UserId === obj.UserId)': context_data,
-               f'{PREFIX}(true)': {'GroupsUserNextToken': response.get('NextToken')}}
+    context_data['GroupsUserNextToken'] = response.get('NextToken')
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
     result = CommandResults(
+        outputs_prefix=PREFIXUSER,
         readable_output=human_readable,
         outputs_key_field='UserId',
-        outputs=outputs
+        outputs=context_data
     )
     return_results(result)
 
@@ -435,7 +438,7 @@ def get_group_memberships_for_member(args, client, IdentityStoreId):
     groups_response = client.list_group_memberships_for_member(**kwargs)
     for group in groups_response.get('GroupMemberships', []):
         membershipsOfMember.append(group.get('MembershipId'))
-        
+
     return membershipsOfMember
 
 
@@ -457,8 +460,9 @@ def delete_group_membership(args, client, IdentityStoreId):
                 IdentityStoreId=IdentityStoreId,
                 MembershipId=member
             )
-            
+
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            demisto.debug(f'The membership with ids {membershipsToDelete} have been deleted.')
             hr_data = f'The membership with ids {membershipsToDelete} have been deleted.'
             result = CommandResults(
                 readable_output=hr_data
@@ -490,16 +494,16 @@ def list_group_memberships(args, client, IdentityStoreId):
             'MembershipId': membership.get('MembershipId'),
             'UserId': membership.get('MemberId', {}).get('UserId')
         })
-        
+
     context_data['GroupId'] = groupId
     context_data['GroupMemberships'] = memberships
-    outputs = {f'{PREFIXGROUP}(val.GroupId === obj.GroupId)': context_data,
-               f'{PREFIX}(true)': {'GroupMembershipNextToken': response.get('NextToken')}}
+    context_data['GroupMembershipNextToken'] = response.get('NextToken')
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
     result = CommandResults(
+        outputs_prefix= PREFIXGROUP,
         readable_output=human_readable,
         outputs_key_field='GroupId',
-        outputs=outputs
+        outputs=context_data
     )
     return_results(result)
 
@@ -510,7 +514,7 @@ def test_module(args, client, IdentityStoreId):    # pragma: no cover
                      included as an argument in every command. For testing the integration instance without specifiend `Identity\
                      Store ID` as a parameter you can execute `list_users` command specifieng\
                      `Identity Store ID` argument in xsoar cli.")
-        
+
     response = client.list_users(
         IdentityStoreId=IdentityStoreId,
     )
@@ -532,14 +536,14 @@ def main():     # pragma: no cover
     timeout = params.get('timeout')
     retries = params.get('retries') or 5
     command = demisto.command()
-    
+
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
-                    aws_secret_access_key)
+                        aws_secret_access_key)
 
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
-                            None, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
-                            retries)
+                               None, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
+                               retries)
 
         client = aws_client.aws_session(
             service=SERVICE,
@@ -548,7 +552,6 @@ def main():     # pragma: no cover
             role_session_name=args.get('roleSessionName'),
             role_session_duration=args.get('roleSessionDuration'),
         )
-
 
         demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
@@ -586,12 +589,10 @@ def main():     # pragma: no cover
         else:
             raise NotImplementedError(f'Command {command} is not implemented in AWS - IAM Identity Center integration.')
 
-        
     # Log exceptions and return errors
     except Exception as e:
+        demisto.info(e)
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
-
-       
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

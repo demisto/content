@@ -11,6 +11,7 @@ configuration:
   section: Connect
   type: 4
 - display: Role Session Name
+  additionalinfo: "A descriptive name for the assumed role session."
   name: roleSessionName
   required: false
   section: Connect
@@ -45,9 +46,9 @@ configuration:
   type: 0
   required: false
 - display: Identity Store ID
+  additionalinfo: "The Identity Store Id parameter is required for API requests. It can be provided as a parameter or as an argument."
   name: IdentityStoreId
   required: false
-  additionalinfo: ''
   section: Connect
   type: 4
 - display: Access Key
