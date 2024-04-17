@@ -5657,7 +5657,7 @@
             "instance_names": "AWS-SNS-Listener"
         },
         {
-            "integrations": "Redmine111",
+            "integrations": "Redmine",
             "playbookID": "Redmine_Test"
         },
         {
