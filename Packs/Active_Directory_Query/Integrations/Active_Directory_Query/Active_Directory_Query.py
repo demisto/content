@@ -286,7 +286,7 @@ def base_dn_verified(base_dn):
     # search AD with a simple query to test base DN is configured correctly
     try:
         search(
-            "(objectClass=user)",
+            "(objectClass=*)",
             base_dn,
             size_limit=1
         )
