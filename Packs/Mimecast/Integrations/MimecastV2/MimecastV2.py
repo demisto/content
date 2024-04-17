@@ -131,7 +131,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
     return results, len_of_results
 
 
-def request_with_pagination_api2(api_endpoint: str, data: list, limit: int, page: int, page_size: int, headers={}) -> list:
+def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_size: int, data=[{}], headers={}) -> list:
     """
     Makes a paginated request to an API using OAuth2 authentication and retrieves all results up to a specified limit.
 
@@ -229,7 +229,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
 
     LOG('running {} request with url={}\tparams={}\tdata={}\tis user auth={}'.format(
         method, url, json.dumps(params), json.dumps(payload), is_user_auth))
-    # print('method:',method,'url:',url,'headers:',headers,'payload:',payload,'data:',data)
+    print('method:',method,'url:',url,'headers:',headers,'payload:',payload,'data:',data)
     try:
         res = requests.request(
             method,
@@ -1084,28 +1084,30 @@ def get_policy_request(policy_type='blockedsenders', policy_id=None):
     return response.get('data')
 
 
-def list_policies_request(policy_type='blockedsenders'):
-    # Setup required variables
-    api_endpoints = {
-        'blockedsenders': 'blockedsenders/get-policy',
-        'antispoofing-bypass': 'antispoofing-bypass/get-policy',
-        'address-alteration': 'address-alteration/get-policy',
-    }
-    api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
+# def list_policies_request(policy_type='blockedsenders'):
+#     # Setup required variables
+#     api_endpoints = {
+#         'blockedsenders': 'blockedsenders/get-policy',
+#         'antispoofing-bypass': 'antispoofing-bypass/get-policy',
+#         'address-alteration': 'address-alteration/get-policy',
+#     }
+#     api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
 
-    # data = []
-    # if policy_id:
-    #     data.append({
-    #         'id': policy_id
-    #     })
-    # payload = {
-    #     'data': data
-    # }
+#     # data = []
+#     # if policy_id:
+#     #     data.append({
+#     #         'id': policy_id
+#     #     })
+#     # payload = {
+#     #     'data': data
+#     # }
 
-    response = http_request('POST', api_endpoint)
-    if response.get('fail'):
-        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
-    return response.get('data')
+#     request_with_pagination_api2(api_endpoint)
+    
+#     response = http_request('POST', api_endpoint)
+#     if response.get('fail'):
+#         raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+#     return response.get('data')
 
 
 def get_arguments_for_policy_command(args):
@@ -3302,8 +3304,24 @@ def mimecast_list_account_command(args: dict) -> CommandResults:
 
 
 def mimecast_list_policies_command(args: dict) -> CommandResults:
-    policyType = str(args.get('policyType'))
-    list_policies_request(policyType)
+    policy_type = args.get('policyType','blockedsenders')
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get('limit'))
+
+
+    api_endpoints = {
+        'blockedsenders': 'blockedsenders/get-policy',
+        'antispoofing-bypass': 'antispoofing-bypass/get-policy',
+        'address-alteration': 'address-alteration/get-policy',
+    }
+    api_endpoint = f'/api/policy/{api_endpoints[policy_type]}'
+
+    result_list = request_with_pagination_api2(api_endpoint, limit=limit, page=page, page_size=page_size)
+    return CommandResults(
+        outputs_prefix='Mimecast.Account',
+        outputs=result_list
+    )
 
 
 def main():
