@@ -4,8 +4,7 @@ from CommonServerPython import *
 
 import dateparser
 from requests import Response
-from typing import Dict, Any, Union, Tuple, List
-from datetime import timezone
+from typing import Any
 from requests.exceptions import (
     MissingSchema,
     InvalidSchema,
@@ -39,7 +38,7 @@ DEFAULT_FIRST_FETCH = '12 hours'
 ALERT_INCIDENT_TYPE = 'FireEye NX Alert'
 IPS_EVENT_INCIDENT_TYPE = 'FireEye NX IPS Event'
 
-MESSAGES: Dict[str, str] = {
+MESSAGES: dict[str, str] = {
     'BAD_REQUEST_ERROR': 'An error occurred while fetching the data.',
     'AUTHENTICATION_ERROR': 'Unauthenticated. Check the configured Username and Password.',
     'PROXY_ERROR': "Proxy Error - cannot connect to proxy. Either try clearing the 'Use system proxy' check-box or "
@@ -70,7 +69,7 @@ MESSAGES: Dict[str, str] = {
     'INVALID_FETCH_TYPE': 'The given value for Fetch Types is invalid. Expected Alerts or/and IPS Events ',
 }
 
-URL_SUFFIX: Dict[str, str] = {
+URL_SUFFIX: dict[str, str] = {
     'GET_TOKEN': '/auth/login',
     'GET_ARTIFACTS_METADATA': '/artifacts/{}/meta',
     'GET_ARTIFACTS': '/artifacts/{}',
@@ -142,7 +141,7 @@ class Client(BaseClient):
         base_url: str,
         verify: bool,
         proxy: bool,
-        auth: Tuple[str, str],
+        auth: tuple[str, str],
         request_timeout: int,
     ):
         super().__init__(
@@ -216,6 +215,8 @@ class Client(BaseClient):
                     return resp.json()
             elif self.is_supported_context_type(content_type):
                 return resp
+            return None
+        return None
 
     @staticmethod
     def is_supported_context_type(content_type: str):
@@ -384,8 +385,8 @@ def get_incidents_for_alert(**kwargs) -> list:
     :param kwargs: Contains all required arguments.
     :return: Incident List for alert.
     """
-    incidents: List[Dict[str, Any]] = []
-
+    incidents: list[dict[str, Any]] = []
+    last_run = kwargs['last_run']
     headers = {
         'X-FeApi-Token': kwargs['client'].get_api_token(),
         'Accept': CONTENT_TYPE_JSON,
@@ -418,7 +419,11 @@ def get_incidents_for_alert(**kwargs) -> list:
             )
 
         count = kwargs['fetch_count']
+        last_incident_name = last_run.get('alerts', {}).get('last_incident_name')
         for alert in resp.get('alert', []):
+            # remove duplicate incident
+            if last_incident_name and alert.get('ruleName', '') == last_incident_name:
+                continue
             # set incident
             context_alert = remove_empty_entities(alert)
             context_alert['incidentType'] = ALERT_INCIDENT_TYPE
@@ -454,7 +459,7 @@ def get_incidents_for_alert(**kwargs) -> list:
 
 
 def get_incidents_for_event(
-    client: Client, start_time: int, fetch_limit: int, mvx_correlated: bool
+    client: Client, start_time: int, fetch_limit: int, mvx_correlated: bool, last_run: dict
 ):
     """
     Return List of incidents for event.
@@ -463,9 +468,10 @@ def get_incidents_for_event(
     :param start_time: It contains the timestamp in milliseconds on when to start fetching incidents.
     :param fetch_limit: limit for number of fetch incidents per fetch.
     :param mvx_correlated: The boolean flag that tell us to fetch events which only mvx correlated.
+    :param last_run: The last run object.
     :return: Incident List for event.
     """
-    incidents: List[Dict[str, Any]] = []
+    incidents: list[dict[str, Any]] = []
 
     # Preparing header and parameters
     headers = {
@@ -495,7 +501,11 @@ def get_incidents_for_event(
     total_records = len(resp.get('events', []))
     count = 0
     if total_records > 0:
+        last_incident_name = last_run.get('events', {}).get('last_incident_name')
         for event in resp.get('events', []):
+            # remove duplicate incident
+            if last_incident_name and event.get('ruleName', '') == last_incident_name:
+                continue
             # set incident
             context_event = remove_empty_entities(event)
             context_event['incidentType'] = IPS_EVENT_INCIDENT_TYPE
@@ -527,7 +537,7 @@ def validate_fetch_type(fetch_type):
         if len(fetch_type) == 0:
             raise ValueError(MESSAGES['INVALID_FETCH_TYPE'])
 
-        if not ('Alerts' in fetch_type) and not ('IPS Events' in fetch_type):
+        if 'Alerts' not in fetch_type and 'IPS Events' not in fetch_type:
             raise ValueError(MESSAGES['INVALID_FETCH_TYPE'])
 
 
@@ -566,15 +576,12 @@ def remove_dash_and_underscore_from_key(d):  # type: ignore
     :return: Dictionary with pascal case key.
     """
 
-    if not isinstance(d, (dict, list)):
+    if not isinstance(d, dict | list):
         return d
     elif isinstance(d, list):
-        return [
-            value
-            for value in (
-                remove_dash_and_underscore_from_key(value) for value in d
-            )
-        ]
+        return (
+            [remove_dash_and_underscore_from_key(value) for value in d]
+        )
     else:
         return {
             pascal_case(key): remove_dash_and_underscore_from_key(value)
@@ -594,9 +601,7 @@ def get_request_timeout(request_timeout: str) -> int:
     """
     try:
         request_timeout_str = (
-            str(DEFAULT_REQUEST_TIMEOUT)
-            if not request_timeout
-            else request_timeout
+            request_timeout if request_timeout else str(DEFAULT_REQUEST_TIMEOUT)
         )
         request_timeout_int = int(request_timeout_str)
     except ValueError:
@@ -618,7 +623,7 @@ def get_fetch_limit(fetch_limit):
     :param fetch_limit: The maximum number of incident want to fetch.
     :return: fetch limit
     """
-    fetch_limit = DEFAULT_FETCH_LIMIT if not fetch_limit else fetch_limit
+    fetch_limit = fetch_limit if fetch_limit else DEFAULT_FETCH_LIMIT
     try:
         fetch_limit_int = int(fetch_limit)
         if not 1 <= fetch_limit_int <= 200:
@@ -629,7 +634,7 @@ def get_fetch_limit(fetch_limit):
     return fetch_limit_int
 
 
-def generate_report_file_name(args: Dict[str, Any]) -> str:
+def generate_report_file_name(args: dict[str, Any]) -> str:
     """
     Create the filename of the info file of report.
 
@@ -644,8 +649,8 @@ def generate_report_file_name(args: Dict[str, Any]) -> str:
 
 
 def validate_alert_report_type_arguments(
-    args: Dict[str, Any], params: Dict[str, Any]
-) -> Dict[str, Any]:
+    args: dict[str, Any], params: dict[str, Any]
+) -> dict[str, Any]:
     """
     Validates the arguments required for alert details report type from input arguments of reports command.
     Will raise ValueError if inappropriate input given.
@@ -665,8 +670,8 @@ def validate_alert_report_type_arguments(
 
 
 def validate_ips_report_type_arguments(
-    args: Dict[str, Any], params: Dict[str, Any]
-) -> Dict[str, Any]:
+    args: dict[str, Any], params: dict[str, Any]
+) -> dict[str, Any]:
     """
     Validates the arguments required for IPS report types from input arguments of reports command.
     Will raise ValueError if inappropriate input given.
@@ -693,8 +698,8 @@ def validate_ips_report_type_arguments(
 
 
 def validate_time_parameters(
-    args: Dict[str, Any], params: Dict[str, Any]
-) -> Dict[str, Any]:
+    args: dict[str, Any], params: dict[str, Any]
+) -> dict[str, Any]:
     """
     Validates the time arguments from input arguments of reports command.
 
@@ -730,7 +735,7 @@ def validate_time_parameters(
     return params
 
 
-def get_reports_params(args: Dict[str, Any]) -> Dict[str, Any]:
+def get_reports_params(args: dict[str, Any]) -> dict[str, Any]:
     """
     Validates the input arguments of command and returns parameter dictionary. This function validates the
     report_type, output format(type), time arguments.
@@ -739,7 +744,7 @@ def get_reports_params(args: Dict[str, Any]) -> Dict[str, Any]:
     :param args: Input arguments of command
     :return: Params dict or error message
     """
-    params: Dict[str, Any] = {}
+    params: dict[str, Any] = {}
     arg_keys = args.keys()
 
     report_type = args.get('report_type', '')
@@ -767,7 +772,7 @@ def get_reports_params(args: Dict[str, Any]) -> Dict[str, Any]:
     return params
 
 
-def add_time_suffix_into_arguments(args: Dict[str, Any]):
+def add_time_suffix_into_arguments(args: dict[str, Any]):
     """
     Add time suffix into arguments.
 
@@ -798,7 +803,7 @@ def add_time_suffix_into_arguments(args: Dict[str, Any]):
             )
 
 
-def get_events_params(args: Dict[str, Any]) -> Dict[str, Any]:
+def get_events_params(args: dict[str, Any]) -> dict[str, Any]:
     """
     Validates the input arguments of command and returns parameter dictionary
     or raises ValueError in case of validation failed.
@@ -806,7 +811,7 @@ def get_events_params(args: Dict[str, Any]) -> Dict[str, Any]:
     :param args: Input arguments of command
     :return: Params dict or error message
     """
-    params: Dict[str, Any] = {'event_type': 'Ips Event'}
+    params: dict[str, Any] = {'event_type': 'Ips Event'}
     arg_keys = args.keys()
 
     if 'duration' in arg_keys:
@@ -852,7 +857,7 @@ def get_events_params(args: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def prepare_hr_for_artifact_metadata(
-    artifacts_info: List[Dict[str, Any]]
+    artifacts_info: list[dict[str, Any]]
 ) -> str:
     """
     Prepare Human readable for get artifact metadata.
@@ -891,7 +896,7 @@ def remove_empty_entities(d):
     def empty(x):
         return x is None or x == {} or x == [] or x == ''
 
-    if not isinstance(d, (dict, list)):
+    if not isinstance(d, dict | list):
         return d
     elif isinstance(d, list):
         return [
@@ -909,7 +914,7 @@ def remove_empty_entities(d):
         }
 
 
-def prepare_hr_for_alert_response(resp: Dict) -> str:
+def prepare_hr_for_alert_response(resp: dict) -> str:
     """
     Prepare human readable for alert response.
 
@@ -1097,8 +1102,8 @@ def test_function(**kwargs) -> str:
 
 @logger
 def get_artifacts_metadata_by_alert_command(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Gets malware artifacts metadata for the specified UUID.
 
@@ -1155,8 +1160,8 @@ def get_artifacts_metadata_by_alert_command(
 
 @logger
 def get_artifacts_by_alert_command(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, Dict[str, Any]]:
+    client: Client, args: dict[str, Any]
+) -> str | dict[str, Any]:
     """
     Downloads malware artifacts data for the specified UUID as a zip file.
 
@@ -1193,8 +1198,8 @@ def get_artifacts_by_alert_command(
 
 @logger
 def get_reports_command(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, Dict[str, Any]]:
+    client: Client, args: dict[str, Any]
+) -> str | dict[str, Any]:
     """
     Returns reports on selected alerts by specifying a time_frame value or a start_time and end_time
     of the search range.
@@ -1236,10 +1241,10 @@ def get_reports_command(
 @logger
 def get_alerts_command(
     client: Client,
-    args: Dict[str, Any],
+    args: dict[str, Any],
     replace_alert_url: bool,
     instance_url: str,
-) -> Union[str, CommandResults]:
+) -> str | CommandResults:
     """
     Retrieve list of alerts based on various argument(s).
 
@@ -1296,7 +1301,7 @@ def get_alerts_command(
 @logger
 def fetch_incidents(
     **kwargs,
-) -> Tuple[Union[Dict[str, Any], None], Union[List[Dict[str, Any]], None]]:
+) -> tuple[dict[str, Any] | None, list[dict[str, Any]] | None]:
     """
     This function retrieves new incidents every interval.
 
@@ -1304,37 +1309,54 @@ def fetch_incidents(
     :return: Tuple containing two elements. incidents list and timestamp.
     """
     # Retrieving last run time if not none, otherwise first_fetch will be considered.
-    start_time = kwargs['last_run'].get('start_time')
+    last_run = kwargs['last_run']
+    start_time = last_run.get('start_time')
     start_time = int(start_time) if start_time else kwargs['first_fetch']
-
-    next_run = {'start_time': datetime.now(timezone.utc).timestamp()}
+    next_run = {}
+    demisto.debug(f"Last run time: {start_time}")
 
     incidents = []
     fetch_count = 0
-    if 'IPS Events' in kwargs['fetch_type']:
+    if 'IPS Events' in (kwargs['fetch_type'] or []):
         incidents, fetch_count = get_incidents_for_event(
             kwargs['client'],
             start_time,
             kwargs['fetch_limit'],
             kwargs['mvx_correlated'],
+            last_run
         )
+        if incidents:
+            demisto.debug(f"FireeyeNX IPS Events: {incidents}")
+            incidents.sort(key=lambda x: x.get("occurred"))
+            last_event = incidents[-1]
+            next_run["events"] = {"start_time": last_event.get("occurred"),
+                                  "last_incident_name": last_event.get("name")}
 
-    if 'Alerts' in kwargs['fetch_type'] and (
+    if 'Alerts' in (kwargs['fetch_type'] or []) and (
         fetch_count < kwargs['fetch_limit']
     ):
-        incidents.extend(
-            get_incidents_for_alert(
-                client=kwargs['client'],
-                malware_type=kwargs['malware_type'],
-                start_time=start_time,
-                fetch_limit=kwargs['fetch_limit'],
-                replace_alert_url=kwargs['replace_alert_url'],
-                instance_url=kwargs['instance_url'],
-                is_test=kwargs['is_test'],
-                fetch_artifacts=kwargs['fetch_artifacts'],
-                fetch_count=fetch_count,
-            )
+        alert_incidents = get_incidents_for_alert(
+            client=kwargs['client'],
+            malware_type=kwargs['malware_type'],
+            start_time=start_time,
+            fetch_limit=kwargs['fetch_limit'],
+            replace_alert_url=kwargs['replace_alert_url'],
+            instance_url=kwargs['instance_url'],
+            is_test=kwargs['is_test'],
+            fetch_artifacts=kwargs['fetch_artifacts'],
+            fetch_count=fetch_count,
+            last_run=last_run
         )
+
+        if alert_incidents:
+            demisto.debug(f"FireeyeNX Alerts: {alert_incidents}")
+            alert_incidents.sort(key=lambda x: x.get("occurred"))
+            last_incident = alert_incidents[-1]
+            next_run["alerts"] = {"start_time": last_incident.get("occurred"),
+                                  "last_incident_id": last_incident.get("name")}
+            incidents.extend(
+                alert_incidents
+            )
 
     if kwargs['is_test']:
         return None, None
@@ -1343,8 +1365,8 @@ def fetch_incidents(
 
 @logger
 def get_events_command(
-    client: Client, args: Dict[str, Any]
-) -> Union[str, CommandResults]:
+    client: Client, args: dict[str, Any]
+) -> str | CommandResults:
     """
     Retrieve list of events based on various argument(s).
     Will raise an exception if validation fails.
@@ -1440,9 +1462,7 @@ def main() -> None:
 
             # Set first fetch time as default if user leave empty
             first_fetch_time = (
-                DEFAULT_FIRST_FETCH
-                if not first_fetch_time
-                else first_fetch_time
+                first_fetch_time if first_fetch_time else DEFAULT_FIRST_FETCH
             )
 
             malware_type = demisto.params().get('malware_type')
@@ -1482,9 +1502,7 @@ def main() -> None:
 
             # Set first fetch time as default if user leave empty
             first_fetch_time = (
-                DEFAULT_FIRST_FETCH
-                if not first_fetch_time
-                else first_fetch_time
+                first_fetch_time if first_fetch_time else DEFAULT_FIRST_FETCH
             )
 
             fetch_limit = demisto.params().get('max_fetch')
