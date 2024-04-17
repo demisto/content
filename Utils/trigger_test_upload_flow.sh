@@ -73,7 +73,7 @@ while [[ "$#" -gt 0 ]]; do
     shift;;
 
   -gb4|--bucket_xsoar_saas)
-  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-saas-dist" ]; then
+  if [ "$(echo "$2" | tr '[:upper:]' '[:lower:]')" == "marketplace-saas-dist-private" ]; then
     echo "Only test buckets are allowed to use. Using marketplace-saas-dist-dev-private instead."
   else
     _bucket_xsoar_saas=$2
