@@ -691,7 +691,7 @@ class Client(BaseClient):
     def reference_set_delete(self, ref_name: str, purge_only: Optional[str] = None, fields: Optional[str] = None):
         return self.http_request(
             method='DELETE',
-            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}',
+            url_suffix=f'/reference_data/sets/{parse.quote(parse.quote(ref_name, safe=""), safe="")}',
             params=assign_params(purge_only=purge_only, fields=fields)
         )
 
@@ -704,9 +704,11 @@ class Client(BaseClient):
         )
 
     def reference_set_value_delete(self, ref_name: str, value: str):
+        double_encoded_value = parse.quote(parse.quote(value, safe=""), safe="")
+        double_encoded_ref_name = parse.quote(parse.quote(ref_name, safe=""), safe="")
         return self.http_request(
             method='DELETE',
-            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}/{value}'
+            url_suffix=f'/reference_data/sets/{double_encoded_ref_name}/{double_encoded_value}'
         )
 
     def domains_list(self, domain_id: Optional[int] = None, range_: Optional[str] = None, filter_: Optional[str] = None,
@@ -3337,8 +3339,7 @@ def qradar_reference_set_value_delete_command(client: Client, args: dict) -> Com
     original_value = value
 
     if date_value:
-        value = get_time_parameter(original_value, epoch_format=True)
-
+        value = str(get_time_parameter(original_value, epoch_format=True))
     # if this call fails, raise an error and stop command execution
     try:
         response = client.reference_set_value_delete(ref_name, value)
@@ -4164,6 +4165,7 @@ def qradar_search_retrieve_events_command(
     interval_in_secs = int(args.get('interval_in_seconds', 30))
     search_id = args.get('search_id')
     is_polling = argToBoolean(args.get('polling', True))
+    timeout_in_secs = int(args.get('timeout_in_seconds', 600))
     search_command_results = None
     if not search_id:
         search_command_results = qradar_search_create_command(client, params, args)
@@ -4204,14 +4206,15 @@ def qradar_search_retrieve_events_command(
             # return scheduled command result without search id to search again
             polling_args = {
                 'interval_in_seconds': interval_in_secs,
+                'timeout_in_seconds': timeout_in_secs,
                 'success': True,
                 **args
             }
-
             scheduled_command = ScheduledCommand(
                 command='qradar-search-retrieve-events',
                 next_run_in_seconds=interval_in_secs,
                 args=polling_args,
+                timeout_in_seconds=timeout_in_secs
             )
             return CommandResults(scheduled_command=scheduled_command if is_polling else None,
                                   readable_output='Not all events were fetched. Searching again.',
@@ -4233,11 +4236,13 @@ def qradar_search_retrieve_events_command(
     polling_args = {
         'search_id': search_id,
         'interval_in_seconds': interval_in_secs,
+        'timeout_in_seconds': timeout_in_secs,
         **args
     }
     scheduled_command = ScheduledCommand(
         command='qradar-search-retrieve-events',
         next_run_in_seconds=interval_in_secs,
+        timeout_in_seconds=timeout_in_secs,
         args=polling_args,
     )
     outputs = {'ID': search_id, 'Status': QueryStatus.WAIT}

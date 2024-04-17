@@ -105,7 +105,7 @@ class Client(CrowdStrikeClient):
         params = assign_params(credentials=credentials,
                                server_url=base_url,
                                insecure=insecure,
-                               ok_codes=tuple(),
+                               ok_codes=(),
                                proxy=proxy,
                                timeout=timeout)
         super().__init__(params)
@@ -128,6 +128,16 @@ class Client(CrowdStrikeClient):
             timeout=30
         )
         return response
+
+    def get_actors_names_request(self, params_string):
+        response = self._http_request(
+            method='GET',
+            url_suffix=f'intel/entities/actors/v1?{params_string}',
+            timeout=30
+        )
+        if 'resources' not in response:
+            raise DemistoException("Get actors request completed. Parse error: could not find resources in response.")
+        return response['resources']
 
     def fetch_indicators(self,
                          limit: int,
@@ -195,9 +205,11 @@ class Client(CrowdStrikeClient):
                 demisto.info(f'set last_run to: {new_last_marker_time}')
 
             indicators.extend(self.create_indicators_from_response(response,
+                                                                   self.get_actors_names_request,
                                                                    self.tlp_color,
                                                                    self.feed_tags,
-                                                                   self.create_relationships))
+                                                                   self.create_relationships,
+                                                                   ))
         return indicators
 
     def handle_first_fetch_context_or_pre_2_1_0(self, filter_string: str) -> tuple[str, list[dict]]:
@@ -236,6 +248,7 @@ class Client(CrowdStrikeClient):
             demisto.debug(f'Importing the indicator marker in first time: {_marker=}')
             last_run = f"_marker:>'{_marker}'"
             parse_indicator = self.create_indicators_from_response(response,
+                                                                   self.get_actors_names_request,
                                                                    self.tlp_color,
                                                                    self.feed_tags,
                                                                    self.create_relationships)
@@ -264,7 +277,8 @@ class Client(CrowdStrikeClient):
         return params
 
     @staticmethod
-    def create_indicators_from_response(raw_response, tlp_color=None, feed_tags=None, create_relationships=True) -> list:
+    def create_indicators_from_response(raw_response, get_actors_names_request_func, tlp_color=None, feed_tags=None,
+                                        create_relationships=True) -> list:
         """ Builds indicators from API raw response
 
             Args:
@@ -308,7 +322,7 @@ class Client(CrowdStrikeClient):
             if feed_tags:
                 indicator['fields']['tags'].extend(feed_tags)
             if create_relationships:
-                relationships = create_and_add_relationships(indicator, resource)
+                relationships = create_and_add_relationships(indicator, resource, get_actors_names_request_func)
                 indicator['relationships'] = relationships
             parsed_indicators.append(indicator)
 
@@ -327,7 +341,7 @@ class Client(CrowdStrikeClient):
 
         if 'ALL' in types_list:
             # Replaces "ALL" for all types supported on XSOAR.
-            crowdstrike_types = [f"type:'{type}'" for type in CROWDSTRIKE_TO_XSOAR_TYPES.keys()]
+            crowdstrike_types = [f"type:'{type}'" for type in CROWDSTRIKE_TO_XSOAR_TYPES]
         else:
             crowdstrike_types = [f"type:'{XSOAR_TYPES_TO_CROWDSTRIKE.get(type.lower())}'" for type in types_list if
                                  type.lower() in XSOAR_TYPES_TO_CROWDSTRIKE]
@@ -336,7 +350,7 @@ class Client(CrowdStrikeClient):
         return result
 
 
-def create_and_add_relationships(indicator: dict, resource: dict) -> list:
+def create_and_add_relationships(indicator: dict, resource: dict, get_actors_names_request_func) -> list:
     """
     Creates and adds relationships to indicators for each CrowdStrike relationships type.
 
@@ -352,12 +366,14 @@ def create_and_add_relationships(indicator: dict, resource: dict) -> list:
 
     for field in CROWDSTRIKE_INDICATOR_RELATION_FIELDS:
         if field in resource and resource[field]:
-            relationships.extend(create_relationships(field, indicator, resource))
+            relationships.extend(create_relationships(field, indicator, resource, get_actors_names_request_func))
 
     return relationships
 
 
-def create_relationships(field: str, indicator: dict, resource: dict) -> list:
+def create_relationships(
+    field: str, indicator: dict, resource: dict, get_actors_names_request_func
+) -> List:
     """
     Creates indicator relationships.
 
@@ -370,6 +386,8 @@ def create_relationships(field: str, indicator: dict, resource: dict) -> list:
         List of relationships objects.
     """
     relationships = []
+    if field == 'actors' and resource['actors']:
+        resource['actors'] = change_actors_from_id_to_name(resource['actors'], get_actors_names_request_func)
     for relation in resource[field]:
         if field == 'relations' and not CROWDSTRIKE_TO_XSOAR_TYPES.get(relation.get('type')):
             demisto.debug(f"The related indicator type {relation.get('type')} is not supported in XSOAR.")
@@ -392,8 +410,28 @@ def create_relationships(field: str, indicator: dict, resource: dict) -> list:
         ).to_indicator()
 
         relationships.append(indicator_relation)
-
     return relationships
+
+
+def change_actors_from_id_to_name(indicator_actors_array: List[str], get_name_of_actors__func):
+    integration_context = get_integration_context()
+    actors_to_convert = []
+    converted_actors_array = []
+    for actor in indicator_actors_array:
+        if converted_actor := integration_context.get(actor, None):
+            converted_actors_array.append(converted_actor)
+        else:
+            actors_to_convert.append(actor)
+    if actors_to_convert:
+        actor_ids_params = 'ids=' + '&ids='.join(actors_to_convert) + '&fields=name'
+        actors_response = get_name_of_actors__func(actor_ids_params)
+        converted_actors_from_request = []
+        for actor_dict in actors_response:
+            converted_actors_from_request.append(actor_dict.get('name'))
+        zipped_actors_list_to_context = dict(zip(actors_to_convert, converted_actors_from_request))
+        update_integration_context(zipped_actors_list_to_context)
+        converted_actors_array += converted_actors_from_request
+    return converted_actors_array
 
 
 def auto_detect_indicator_type_from_cs(value: str, crowdstrike_resource_type: str) -> str | None:
