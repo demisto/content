@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Email addresses in context are now saved correctly under Accounts.Email and not under Email."
+}
