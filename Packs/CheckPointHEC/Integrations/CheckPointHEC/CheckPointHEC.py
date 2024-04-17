@@ -202,7 +202,7 @@ class Client(BaseClient):
                       cp_quarantined_state: str = None, ms_quarantined_state: str = None, quarantined_state_op: str = None,
                       name_contains: str = None, name_match: str = None, client_ip: str = None, attachment_md5: str = None):
         entity_filter = {
-            'saas': saas or SAAS_NAMES[0],
+            'saas': saas,
             'startDate': start_date,
         }
         if end_date:
@@ -525,8 +525,10 @@ def checkpointhec_search_emails(client: Client, date_last: str = None, date_from
             email = entity['entityPayload']
             email['entityId'] = entity['entityInfo']['entityId']
             emails.append(email)
+        human_readable = tableToMarkdown('emails', emails, removeNull=True)
         return CommandResults(
             outputs_prefix='CheckPointHEC.Entity',
+            readable_output=human_readable,
             outputs=emails
         )
     else:
@@ -624,11 +626,19 @@ def main() -> None:  # pragma: no cover
             entity = args.get('entity')
             return_results(checkpointhec_get_scan_info(client, entity))
         elif command == 'checkpointhec-search-emails':
+            if saas := args.get('saas'):
+                saas = SAAS_APPS_TO_SAAS_NAMES.get(saas)
+            else:  # If no saas, we default to the first one from params
+                if saas := argToList(params.get('saas_apps')):
+                    saas = SAAS_APPS_TO_SAAS_NAMES.get(saas[0])
+                else:  # If no params, we default to the first one from SAAS_NAMES
+                    saas = SAAS_NAMES[0]
+
             kwargs = {
                 'date_last': args.get('date_last'),
                 'date_from': args.get('date_from'),
                 'date_to': args.get('date_to'),
-                'saas': SAAS_APPS_TO_SAAS_NAMES.get(args.get('saas')) if args.get('saas') else None,
+                'saas': saas,
                 'direction': args.get('direction'),
                 'subject_contains': args.get('subject_contains'),
                 'subject_match': args.get('subject_match'),

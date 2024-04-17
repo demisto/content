@@ -9,7 +9,7 @@ This integration was integrated and tested with version 1.1.0 of CheckPointHEC
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Smart API URL (e.g. https://smart-api-dev-1-us.avanan-dev.net) |  | True |
+    | Smart API URL or Check Point Infinity API URL |  | True |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Client ID |  | True |
