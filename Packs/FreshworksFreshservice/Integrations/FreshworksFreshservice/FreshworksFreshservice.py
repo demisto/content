@@ -1959,7 +1959,6 @@ def list_freshservice_ticket_command(
     request_args = remove_empty_elements(command_args_dict)
 
     response = freshservice_request(**request_args)
-
     updated_response = convert_response_properties(
         response.get(command_response_key),
         TICKET_PROPERTIES_BY_TYPE[entity_name],
@@ -1977,7 +1976,7 @@ def list_freshservice_ticket_command(
                           outputs_prefix=f'Freshservice.{output_prefix}',
                           outputs_key_field='id',
                           outputs=updated_response,
-                          raw_response=updated_response)
+                          raw_response=response)
 
 
 def create_update_freshservice_ticket_command(
