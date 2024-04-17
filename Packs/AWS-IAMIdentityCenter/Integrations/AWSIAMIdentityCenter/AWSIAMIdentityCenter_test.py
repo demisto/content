@@ -538,6 +538,6 @@ def test_list_group_memberships(mocker):
     list_group_memberships(args, client, IDENTITY_STORE_ID)
     contents = demisto.results.call_args[0][0]
 
-    assert {'GroupId': 'GROUP_ID', 'GroupMemberships': [{'MembershipId': 'MEMBERSHIP_ID', 'UserId': 'USER_ID'}]} in contents.get(
-        'EntryContext').values()
+    assert {'GroupId': 'GROUP_ID', 'GroupMemberships': [{'MembershipId': 'MEMBERSHIP_ID', 'UserId': 'USER_ID'}],
+            'GroupMembershipNextToken': 'NEXT_TOKEN'} in contents.get('EntryContext').values()
     assert 'AWS IAM Identity Center Groups' in contents.get('HumanReadable')
