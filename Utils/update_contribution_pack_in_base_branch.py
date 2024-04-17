@@ -27,7 +27,7 @@ def main():
         username, branch, pr_number, repo, github_token
     )
     if packs_dir_names:
-        print('Successfully updated the base branch '
+        print('Successfully updated the base branch '  # noqa: T201
               'with the following contrib packs: Packs/'
               f'{", Packs/".join(packs_dir_names)}')
 
