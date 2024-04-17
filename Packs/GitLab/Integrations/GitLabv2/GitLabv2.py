@@ -976,7 +976,7 @@ def file_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
         with open(file_path_entry_id, 'rb') as f:
             file_content = f.read()
     elif file_path:
-        file_path = urllib.parse.quote(file_path, safe='')
+        file_path = encode_file_path_if_needed(file_path)
     response = client.file_create_request(file_path, branch, commit_msg, author_email, author_name,
                                           file_content, execute_filemode)
     return CommandResults(
