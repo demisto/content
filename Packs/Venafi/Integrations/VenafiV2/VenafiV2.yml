@@ -3,17 +3,22 @@ commonfields:
   id: VenafiV2
   version: -1
 configuration:
-- defaultvalue: ""
+- defaultvalue: "https://ao-tlspd.dev.ven-eco.com"
   display: Server URL (e.g. https://192.168.0.1)
   name: server
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
+  section: Connect
+- displaypassword: Password
   name: credentials
   required: true
-  hiddenusername: true
   type: 9
+  display: Client ID
+- display: User Name
+  name: username
+  required: true
+  type: 0
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
