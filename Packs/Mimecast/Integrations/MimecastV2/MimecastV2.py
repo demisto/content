@@ -47,7 +47,7 @@ USE_OAUTH2 = demisto.params().get("use_oauth2")
 TOKEN_OAUTH2 = ""
 DEFAULT_POLICY_TYPE = 'blockedsenders'
 LOG(f"command is {demisto.command()}")
-PAGE_SIZE_MAX = 2000
+PAGE_SIZE_MAX = 100
 DEFAULT_PAGE_SIZE = 50
 
 # default query xml template for test module
@@ -171,8 +171,11 @@ def request_with_pagination_api2(api_endpoint: str, data: list, limit: int, page
                 'pageSize': page_size
             }
         },
-        'data': data
     }
+    
+    if data != [{}]:
+        payload['data'] = data
+
     response = http_request('POST', api_endpoint, payload, headers=headers)
 
     len_of_results = 0
@@ -3242,6 +3245,35 @@ def mimecast_get_view_logs_command(args: dict) -> CommandResults:
         outputs=response
     )
 
+def mimecast_list_account_command(args: dict) -> CommandResults:
+    account_name = args.get('account_name', '')
+    account_code = args.get('account_code', '')
+    admin_email = args.get('admin_email', '')
+    region = args.get('region', '')
+    user_count =  arg_to_number(args.get('user_count', ''))
+    
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get('limit'))
+
+    data = [{}]
+    if account_name:
+        data[0]['accountCode'] = account_name
+    if account_code:
+        data[0]['accountCode'] = account_code
+    if admin_email:
+        data[0]['adminEmail'] = admin_email
+    if region:
+        data[0]['region'] = region
+    if user_count:
+        data[0]['userCount'] = user_count
+
+    response = request_with_pagination_api2('/api/account/get-account', data, limit, page, page_size)  # type: ignore
+
+    return CommandResults(
+        outputs_prefix='Mimecast.Account',
+        outputs=response
+    )
 
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
@@ -3342,6 +3374,9 @@ def main():
             return_results(get_search_logs_command(args))
         elif command == 'mimecast-get-view-logs':
             return_results(mimecast_get_view_logs_command(args))
+        elif command == 'mimecast-list-account':
+            return_results(mimecast_list_account_command(args))
+            
 
     except Exception as e:
         return_error(e)

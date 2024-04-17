@@ -2106,12 +2106,39 @@ script:
       description: Page number for pagination.
       type: Number
     - name: page_size
-      description: Number of items per page for pagination.
+      description: Number of items per page for pagination. Default value is '50'.
       type: Number
     - name: limit
-      description: The maximum number of items to return.
+      description: The maximum number of items to return. Default value is '50'.
       type: Number
       defaultValue: 50
+  - name: mimecast-list-account
+    description: This endpoint returns the summary details for an account in Mimecast.
+    arguments:
+    - name: account_name
+      description: The account name.
+      type: String
+    - name: account_code
+      description: The unique Mimecast account code for the customer.
+      type: String
+    - name: admin_email
+      description: The email address of the first administrator created on the account.
+      type: String
+    - name: region
+      description: The region where the account is hosted.
+      type: String
+    - name: user_count
+      description: The number of user licenses on the account.
+      type: Number
+    - name: page
+      description: Page number for pagination.
+      type: Number
+    - name: page_size
+      description: Number of items per page for pagination. Default value is '50'.
+      type: Number
+    - name: limit
+      description: The maximum number of items to return. Default value is '50'.
+      type: Number
   - name: mimecast-get-view-logs
     description: Retrieves the email view logs.
     arguments:
@@ -2133,7 +2160,6 @@ script:
     - name: limit
       description: The maximum number of items to return.
       type: Number
-      # defaultValue: 50  
   isfetch: true
   runonce: false
   script: '-'
