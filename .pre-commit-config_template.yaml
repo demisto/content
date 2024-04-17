@@ -204,7 +204,9 @@ repos:
     name: validate-conf-json
     description: validate conf.json
     files: Tests/conf.json
-    skip:commit: true
+    skip: true
+    skip:nightly: false
+    skip:ci: false
     entry: validate-conf-json
     pass_filenames: false
     language: system
