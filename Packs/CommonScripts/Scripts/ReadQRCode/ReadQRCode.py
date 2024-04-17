@@ -25,9 +25,11 @@ def read_qr_code(filename: str) -> list:
 
 
 def extract_indicators_from_text(text: list) -> dict:
-    return json.loads(demisto.executeCommand(
-        'extractIndicators', {'text': text}
-    )[0]['Contents'])  # type: ignore
+    res = demisto.executeCommand('extractIndicators', {'text': text})
+    if is_error(res):
+        demisto.debug(f'Error in "extractIndicators": {get_error(res)}')
+        return {}
+    return json.loads(res[0]['Contents'])  # type: ignore
 
 
 def extract_info_from_qr_code(entry_id: str) -> CommandResults:
