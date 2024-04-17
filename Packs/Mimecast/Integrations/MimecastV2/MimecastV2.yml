@@ -2247,6 +2247,91 @@ script:
     - contextPath: Mimecast.Policy.Receiver.Type
       description: The receiver type.
       type: String
+  - name: mimecast-update-block-sender-policy
+    description: Updates the specified policy.
+    arguments:
+    - description: The ID of the policy to update.
+      name: policy_id
+      required: true
+    - description: A new description for the policy.
+      name: description
+    - auto: PREDEFINED
+      description: The sender type by which to block senders in the policy. This argument must match the fromValue argument. For example, if you specify email_domain, the fromValue must be an email domain.
+      name: fromType
+      predefined:
+      - everyone
+      - internal_addresses
+      - external_addresses
+      - email_domain
+      - profile_group
+      - address_attribute_value
+      - individual_email_address
+      - free_mail_domains
+      - header_display_name
+    - auto: PREDEFINED
+      description: The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email domain.
+      name: toType
+      predefined:
+      - everyone
+      - internal_addresses
+      - external_addresses
+      - email_domain
+      - profile_group
+      - individual_email_address
+    - auto: PREDEFINED
+      description: The block action.
+      name: option
+      predefined:
+      - no_action
+      - block_sender
+    - description: The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email domain.
+      name: fromValue
+    - description: The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email domain.
+      name: toValue
+    - auto: PREDEFINED
+      description: The part from where addresses are pulled.
+      name: fromPart
+      predefined:
+      - envelope_from
+      - header_from
+      - both  
+    outputs:
+    - contextPath: Mimecast.Policy.ID
+      description: Policy ID.
+      type: string
+    - contextPath: Mimecast.Policy.Sender.Address
+      description: Block sender by email address value.
+      type: string
+    - contextPath: Mimecast.Policy.Sender.Domain
+      description: Block sender by domain value.
+      type: string
+    - contextPath: Mimecast.Policy.Sender.Group
+      description: Block sender by group value.
+      type: string
+    - contextPath: Mimecast.Policy.Bidirectional
+      description: Whether the blocked policy is bidirectional.
+      type: boolean
+    - contextPath: Mimecast.Policy.Receiver.Address
+      description: Block emails to receiver type address.
+      type: string
+    - contextPath: Mimecast.Policy.Receiver.Domain
+      description: Block emails to receiver type domain.
+      type: string
+    - contextPath: Mimecast.Policy.Receiver.Group
+      description: Block emails to receiver type group.
+      type: string
+    - contextPath: Mimecast.Policy.Fromdate
+      description: The policy validation start date.
+      type: date
+    - contextPath: Mimecast.Policy.Todate
+      description: The policy expiration date.
+      type: date
+    - contextPath: Mimecast.Policy.Sender.Type
+      description: The sender type.
+      type: String
+    - contextPath: Mimecast.Policy.Receiver.Type
+      description: The receiver type.
+      type: String
   isfetch: true
   runonce: false
   script: '-'
