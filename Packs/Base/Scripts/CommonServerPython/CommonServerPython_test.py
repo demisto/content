@@ -9674,36 +9674,9 @@ def test_sleep_exceeds_ttl(mocker):
     mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
     setattr(CommonServerPython, 'SAFE_SLEEP_START_TIME', datetime(2024, 4, 10, 10, 0, 0))  # Set stub in your_script
 
-    log_warning = mocker.patch.object(demisto, 'info')
-
-    safe_sleep(duration_seconds=350)
-
-    assert log_warning.call_args[0][0] == "Requested a sleep of 350 seconds, but time left until docker timeout is 300 seconds."
-
-
-@freeze_time(datetime(2024, 4, 10, 10, 0, 10))
-def test_sleep_exceeds_ttl_with_adjusted(mocker):
-    """
-   Given:  a sleep duration exceeding the remaining TTL.
-
-    When: The `sleep` method is called with that duration.
-
-   Then:
-    - A warning should be outputed indicating that the requested sleep exceeds the TTL.
-    - A sleep should be called with the remaining time until timeout.
-  """
-    mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
-    setattr(CommonServerPython, 'SAFE_SLEEP_START_TIME', datetime(2024, 4, 10, 10, 0, 0))  # Set stub in your_script
-
-    log_warning = mocker.patch.object(demisto, 'info')
-    sleep_mocker = mocker.patch('time.sleep')
-
-    safe_sleep(duration_seconds=350, adjust_sleep_time=True)
-
-    assert "Requested a sleep of 350 seconds, but time left until docker timeout is 300 seconds." in \
-           log_warning.call_args_list[0][0]
-    assert "adjust_sleep_time is set to True, sleeping until container timeout - 285.0." in log_warning.call_args_list[1][0]
-    assert sleep_mocker.call_count == 1
+    with pytest.raises(ValueError) as excinfo:
+        safe_sleep(duration_seconds=350)
+    assert str(excinfo.value) == "Requested a sleep of 350 seconds, but time left until docker timeout is 300 seconds."
 
 
 def test_sleep_mocked_time(mocker):

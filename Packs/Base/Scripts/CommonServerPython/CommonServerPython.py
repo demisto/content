@@ -11926,28 +11926,21 @@ def comma_separated_mapping_to_dict(raw_text):
     return mapping_dict
 
 
-def safe_sleep(duration_seconds, adjust_sleep_time=False ):
+def safe_sleep(duration_seconds):
     """
     Sleeps for the given duration, but raises an error if it would exceed the TTL.
 
         :type duration_seconds: ``float``
         :param duration_seconds: The desired sleep duration in seconds.
 
-        :type adjust_sleep_time: ``boolean``
-        :param adjust_sleep_time: If set to true, the sleep duration will be the time left until container timeout.
-
         :return: None
         :rtype: ``None``
     """
-    global SAFE_SLEEP_START_TIME
     run_duration = demisto.callingContext.get('context', {}).get('runDuration', 5) * 60
     time_left = run_duration - (datetime.now() - SAFE_SLEEP_START_TIME).total_seconds()
     if duration_seconds > time_left:
-        demisto.info("Requested a sleep of {} seconds, but time left until docker timeout is {} seconds.".format(duration_seconds,
-                                                                                                                run_duration))
-        if adjust_sleep_time:
-            demisto.info("adjust_sleep_time is set to True, sleeping until container timeout - {}.".format(time_left - 5))
-            time.sleep(time_left - 5)
+        raise ValueError("Requested a sleep of {} seconds, but time left until docker timeout is {} seconds."
+                               .format(duration_seconds, run_duration))
     else:
         time.sleep(duration_seconds)
 

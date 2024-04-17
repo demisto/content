@@ -1041,7 +1041,8 @@
         },
         {
             "integrations": "Have I Been Pwned? V2",
-            "playbookID": "Pwned v2 test"
+            "playbookID": "Pwned v2 test",
+            "timeout": 700
         },
         {
             "integrations": "Alexa Rank Indicator",
@@ -2877,7 +2878,8 @@
         },
         {
             "playbookID": "EmailReputationTest",
-            "integrations": "Have I Been Pwned? V2"
+            "integrations": "Have I Been Pwned? V2",
+            "timeout": 700
         },
         {
             "integrations": "Symantec Deepsight Intelligence",
