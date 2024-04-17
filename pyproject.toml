@@ -10,7 +10,7 @@ package-mode = false
 python = ">=3.10,<3.11"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = { git = "https://github.com/demisto/demisto-sdk.git", rev = "support-python-311" }
+demisto-sdk = { git = "https://github.com/demisto/demisto-sdk.git", rev = "1f049059841b3df69d5e6935ecf0a7b54f7e2515" }
 requests = "^2.31.0"
 pre-commit = "^3.5.0"
 dateparser = "^1.1.8"
