@@ -1304,7 +1304,7 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
     "qualys-virtual-host-manage": {
         "args": ["action", "ip", "network_id", "port", "fqdn"],
     },
-    "test-module": {"args": []},
+    "test-module": {"args": ["launched_after_datetime"]},
     "qualys-host-list-detection": {
         "args": [
             "ids",
@@ -3048,7 +3048,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    build_args_dict(None, COMMANDS_ARGS_DATA["test-module"], False)
+    build_args_dict({'launched_after_datetime': 'one day'}, COMMANDS_ARGS_DATA["test-module"], False)
     client.command_http_request(COMMANDS_API_DATA["test-module"])
 
     if params.get('isFetchEvents'):
