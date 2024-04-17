@@ -22,3 +22,6 @@
 !msg-list-ediscovery-searchs case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5
 !msg-purge-ediscovery-data case_id=84abfff1-dd69-4559-8f4e-8225e0d505c5 search_id=e7282eff-ba81-43cb-9027-522a343f6692
 !msg-auth-test permission_type=ediscovery
+!msg-advanced-hunting query=AlertInfo limit=1
+!msg-list-security-incident limit=1
+!msg-update-security-incident incident_id=12345
