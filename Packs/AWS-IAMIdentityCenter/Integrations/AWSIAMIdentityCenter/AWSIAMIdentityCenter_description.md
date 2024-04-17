@@ -1,11 +1,14 @@
-AWS IAM Identity Center
-
-Author: Sameh El-Hakim
-
-With AWS IAM Identity Center (successor to AWS Single Sign-On), you can manage sign-in security for your workforce identities, also known as workforce users. IAM Identity Center provides one place where you can create or connect workforce users and manage their access centrally across all their AWS accounts and applications. IAM Identity Center is the recommended approach for workforce authentication and authorization in AWS, for organizations of any size and type.
-
+Use AWS IAM Identity Center to manage access to your AWS resources securely. With IAM Identity Center, you can define and enforce permissions for users and resources across your AWS account.
+#### Configure the AWS IAM Identity Center Integration
+- AWS Default Region: The AWS Region for this instance of the integration. For example, us-west-2.
+- Role Arn: The Amazon Resource Name (ARN) role used for authentication. If this is used, an access key and secret key are not required.
+- Role Session Name: A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION.
+- Role Session Duration: The maximum length of each session in seconds. Default: 900 seconds. The integration will have the permissions assigned only when the session is initiated and for the defined duration.
+- Access Key: The access key ID used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required.
+- Secret Key: The secret key used for authentication, that was configured during IAM user configuration. If this is used, Role ARN is not required.
+- Identity Store Id: The Identity Store Id parameter is required for API requests. It can be provided as a parameter or as an argument.
 
 ---
 
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/aws-iam-identitycenter)
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/aws---iam-identity-center)
 

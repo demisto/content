@@ -23,11 +23,10 @@ def create_user(args, client, IdentityStoreId):
     title = args.get('title')
     region = args.get('region')
     primaryEmail = args.get('userEmailAddressPrimary')
-    emailData = {}
-    if userEmail:
-        emailData['Value'] = userEmail
-        if primaryEmail:
-            emailData['Primary'] = argToBoolean(primaryEmail)
+    if primaryEmail and not userEmail:
+        return_error('Error: When specifying userEmailAddressPrimary, userEmailAddress must also be provided.')
+    if primaryEmail:
+        primaryEmail = argToBoolean(primaryEmail)
     
     kwargs = {
         'IdentityStoreId':IdentityStoreId,
@@ -37,7 +36,10 @@ def create_user(args, client, IdentityStoreId):
             'GivenName': givenName
         },
         'Emails':[
-            emailData
+            {
+            'Value': userEmail,
+            'Primary': primaryEmail
+            }
         ],
         'DisplayName':userDisplayName,
         'UserType':userType,
@@ -76,6 +78,54 @@ def get_userId_by_username(args, client, IdentityStoreId):
     )
     return response_id.get('UserId')
 
+
+def get_user_operations_list(args):
+    primary = args.get('userEmailAddressPrimary')
+    if primary and not args.get('userEmailAddress'):
+        return_error('Error: When specifying userEmailAddressPrimary, userEmailAddress must also be provided.')
+    if primary:
+        primary = argToBoolean(primary)
+    path_and_value = {
+        'name.familyName': args.get('familyName'),
+        'name.givenName': args.get('givenName'),
+        'emails': [{
+            'value': args.get('userEmailAddress'),
+            'primary': primary
+        }],
+        'displayName': args.get('displayName'),
+        'userType': args.get('userType'),
+        'profileUrl': args.get('profileUrl'),
+        'title': args.get('title'),
+        'addresses': [{
+            'region': args.get('region')
+        }]
+    }
+    path_and_value = remove_empty_elements(path_and_value)
+    to_update = []
+    for var in path_and_value:
+        to_update.append({
+            'AttributePath': var,
+            'AttributeValue': path_and_value[var]
+        })
+    return to_update
+    
+    
+def update_user(args, client, IdentityStoreId):
+    userName = args.get('userName')
+    user_id = get_userId_by_username(args, client, IdentityStoreId)
+    operations = get_user_operations_list(args)
+    kwargs = {
+        "IdentityStoreId": IdentityStoreId,
+        "UserId": user_id,
+        "Operations": operations
+    }
+    response = client.update_user(**kwargs)
+    hr_data = f'User {userName} has been successfully updated'
+    result = CommandResults(
+        readable_output=hr_data
+    )
+    return_results(result)
+    
 
 def delete_user(args, client, IdentityStoreId):
     userId = get_userId_by_username(args, client, IdentityStoreId)
@@ -140,6 +190,7 @@ def get_user_by_email(args, client, IdentityStoreId):
                     }
                     hr_data = user_details
                     context_data = user
+        
     human_readable = tableToMarkdown('AWS IAM Identity Center Users ', hr_data, removeNull=True)
     result = CommandResults(
         outputs_prefix=PREFIXUSER,
@@ -156,6 +207,7 @@ def get_limit(args):
         limit = arg_to_number(args.get('limit'))
         if limit and limit < 50:
             return limit
+        
     return 50
 
 def list_users(args, client, IdentityStoreId):
@@ -210,6 +262,7 @@ def list_groups(args, client, IdentityStoreId):
         }
         hr_data.append(group_details)
         context_data.append(group)
+        
     outputs = {f'{PREFIXGROUP}(val.GroupId === obj.GroupId)': context_data,
                f'{PREFIX}(true)': {'GroupNextToken': response.get('NextToken')}}
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
@@ -269,6 +322,26 @@ def get_groupId_by_displayName(args, client, IdentityStoreId):
     )
     return response_id.get('GroupId')
 
+    
+def update_group(args, client, IdentityStoreId):
+    displayName = args.get('displayName')
+    group_id = get_groupId_by_displayName(args, client, IdentityStoreId)
+    kwargs = {
+        "IdentityStoreId": IdentityStoreId,
+        "GroupId": group_id,
+        "Operations": [{
+            'AttributePath': "description",
+            'AttributeValue': args.get('description')
+        }]
+    }
+    response = client.update_group(**kwargs)
+    hr_data = f'Group {displayName} has been successfully updated'
+    result = CommandResults(
+        readable_output=hr_data
+    )
+    return_results(result)
+
+
 
 def get_group(args, client, IdentityStoreId):
     response_id = get_groupId_by_displayName(args, client, IdentityStoreId)
@@ -316,6 +389,7 @@ def list_groups_for_user(args, client, IdentityStoreId):
             'GroupId': group.get('GroupId'),
             'MembershipId': group.get('MembershipId')
         })
+        
     context_data['UserId'] = userID
     context_data['GroupMemberships'] = groups
     outputs = {f'{PREFIXUSER}(val.UserId === obj.UserId)': context_data,
@@ -361,6 +435,7 @@ def get_group_memberships_for_member(args, client, IdentityStoreId):
     groups_response = client.list_group_memberships_for_member(**kwargs)
     for group in groups_response.get('GroupMemberships', []):
         membershipsOfMember.append(group.get('MembershipId'))
+        
     return membershipsOfMember
 
 
@@ -382,6 +457,7 @@ def delete_group_membership(args, client, IdentityStoreId):
                 IdentityStoreId=IdentityStoreId,
                 MembershipId=member
             )
+            
         if response['ResponseMetadata']['HTTPStatusCode'] == 200:
             hr_data = f'The membership with ids {membershipsToDelete} have been deleted.'
             result = CommandResults(
@@ -414,6 +490,7 @@ def list_group_memberships(args, client, IdentityStoreId):
             'MembershipId': membership.get('MembershipId'),
             'UserId': membership.get('MemberId', {}).get('UserId')
         })
+        
     context_data['GroupId'] = groupId
     context_data['GroupMemberships'] = memberships
     outputs = {f'{PREFIXGROUP}(val.GroupId === obj.GroupId)': context_data,
@@ -433,6 +510,7 @@ def test_module(args, client, IdentityStoreId):    # pragma: no cover
                      included as an argument in every command. For testing the integration instance without specifiend `Identity\
                      Store ID` as a parameter you can execute `list_users` command specifieng\
                      `Identity Store ID` argument in xsoar cli.")
+        
     response = client.list_users(
         IdentityStoreId=IdentityStoreId,
     )
@@ -453,26 +531,25 @@ def main():     # pragma: no cover
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout')
     retries = params.get('retries') or 5
-
-    validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
+    command = demisto.command()
+    
+    try:
+        validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
                     aws_secret_access_key)
 
-    aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
-                           None, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
-                           retries)
+        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
+                            None, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
+                            retries)
 
-    command = demisto.command()
-    args = demisto.args()
+        client = aws_client.aws_session(
+            service=SERVICE,
+            region=args.get('region'),
+            role_arn=args.get('roleArn'),
+            role_session_name=args.get('roleSessionName'),
+            role_session_duration=args.get('roleSessionDuration'),
+        )
 
-    client = aws_client.aws_session(
-        service=SERVICE,
-        region=args.get('region'),
-        role_arn=args.get('roleArn'),
-        role_session_name=args.get('roleSessionName'),
-        role_session_duration=args.get('roleSessionDuration'),
-    )
 
-    try:
         demisto.debug(f'Command being called is {command}')
         if command == 'test-module':
             test_module(args, client, IdentityStoreId)
@@ -502,11 +579,18 @@ def main():     # pragma: no cover
             delete_group_membership(args, client, IdentityStoreId)
         elif command == 'aws-iam-identitycenter-list-memberships':
             list_group_memberships(args, client, IdentityStoreId)
+        elif command == 'aws-iam-identitycenter-update-user':
+            update_user(args, client, IdentityStoreId)
+        elif command == 'aws-iam-identitycenter-update-group':
+            update_group(args, client, IdentityStoreId)
+        else:
+            raise NotImplementedError(f'Command {command} is not implemented in AWS - IAM Identity Center integration.')
 
+        
+    # Log exceptions and return errors
     except Exception as e:
-        # demisto.info(e)
-        return_error('Error has occurred in the AWS IAM Identity Center Integration: {code}\n {message}'.format(
-            code=type(e), message=str(e)))
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+
        
 
 

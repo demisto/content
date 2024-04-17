@@ -1,9 +1,8 @@
 commonfields:
-  id: AWS - IAM Identity Center - TEST
+  id: AWS - IAM Identity Center
   version: -1
 category: IT Services
 sectionOrder:
-- Collect
 - Connect
 configuration:
 - display: Role Arn
@@ -38,7 +37,7 @@ configuration:
   - us-gov-east-1
   - us-gov-west-1
   required: true
-  section: Collect
+  section: Connect
   type: 15
 - display: Role Session Duration
   section: Connect
@@ -69,15 +68,15 @@ configuration:
   displaypassword: Secret Key
   section: Connect
   required: false
-- additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
+- additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
   defaultvalue: 60,10
   display: Timeout
   name: timeout
   type: 0
   section: Connect
   required: false
-- additionalinfo: 'The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.'
-  defaultvalue: "5"
+- additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  defaultvalue: 5
   display: Retries
   name: retries
   type: 0
@@ -88,13 +87,9 @@ configuration:
   required: false
   section: Connect
   type: 8
-- display: Use system proxy settings
-  name: proxy
-  section: Connect
-  type: 8
 description: Amazon Web Services IAM Identity Center.
-display: AWS - IAM Identity Center - TEST
-name: AWS - IAM Identity Center - TEST
+display: AWS - IAM Identity Center
+name: AWS - IAM Identity Center
 script:
   commands:
   - arguments:
@@ -116,7 +111,7 @@ script:
     - description: The profile URL of the user to create.
       name: profileUrl
       required: false
-    - description: Is this the primary email address for the associated resource. 
+    - description: Is this the primary email address for the associated resource? 
       name: userEmailAddressPrimary
       required: false
       auto: PREDEFINED
@@ -344,7 +339,7 @@ script:
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
-    - description: Number of results to display.
+    - description: Number of results to return. Default is 50.
       defaultValue: '50'
       name: limit
       required: false
@@ -490,7 +485,7 @@ script:
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
-    - description: Number of results to display.
+    - description: Number of results to return. Default is 50.
       defaultValue: '50'
       name: limit
       required: false
@@ -555,7 +550,7 @@ script:
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
-    - description: Number of results to display.
+    - description: Number of results to return. Default is 50.
       defaultValue: '50'
       name: limit
       required: false
@@ -852,7 +847,7 @@ script:
     - description: The name of the user to remove.
       name: userName
       required: true
-    description: Removes the entered user.
+    description: Removes the specified user from the AWS IAM Identity Center. 
     name: aws-iam-identitycenter-delete-user
   - arguments:
     - auto: PREDEFINED
@@ -940,7 +935,7 @@ script:
     - description: The name of the group to remove.
       name: groupName
       required: true
-    description: Removes the entered group.
+    description: Removes the specified group from the IAM Identity Center.
     name: aws-iam-identitycenter-delete-group
   - arguments:
     - auto: PREDEFINED
@@ -979,7 +974,7 @@ script:
     - description: The name of the user to delete from all groups.
       name: userName
       required: false
-    - description: Comma seperated list of membership Ids to delete.
+    - description: Comma-separated list of membership IDs to delete.
       name: membershipId
       required: false
     description: Deletes a user from all groups if a username is provided, or deletes multiple memberships if a list of memberships is provided.
@@ -1018,7 +1013,7 @@ script:
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
-    - description: Number of results to display.
+    - description: Number of results to return.
       defaultValue: '50'
       name: limit
       required: false
@@ -1046,6 +1041,115 @@ script:
     - contextPath: AWS.IAMIdentityCenter.GroupMembershipNextToken
       description: The pagination token.
       type: String
+  - arguments:
+    - description: The username of the user to update.
+      name: userName
+      required: true
+    - description: The family name of the user to update.
+      name: familyName
+      required: false
+    - description: The First name of the user to update.
+      name: givenName
+      required: false
+    - description: Is this the primary email address for the associated resource. 
+      name: userEmailAddressPrimary
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - yes
+      - no
+    - description: The email address of the user to update.
+      name: userEmailAddress
+      required: false
+    - description: The display name of the user to update.
+      name: displayName
+      required: false
+    - description: The profile URL of the user to update.
+      name: profileUrl
+      required: false
+    - description: The type of the user to update.
+      name: userType
+      required: false
+    - description: The title of the user to update.
+      name: title
+      required: false
+    - auto: PREDEFINED
+      description: The AWS Region, if not specified the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: Role Arn.
+      name: roleArn
+      required: false
+    - description: Role Session Duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role Session Name.
+      name: roleSessionName
+      required: false 
+    - description: Identity Store ID.
+      name: IdentityStoreId
+      required: false
+    description: Updates an IAM Identity Center user for your AWS account.
+    name: aws-iam-identitycenter-update-user
+  - arguments:
+    - auto: PREDEFINED
+      description: The AWS Region, if not specified the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+      required: false
+    - description: Role Arn.
+      name: roleArn
+      required: false
+    - description: Role Session Duration.
+      name: roleSessionDuration
+      required: false
+    - description: Role Session Name.
+      name: roleSessionName
+      required: false 
+    - description: Identity Store ID.
+      name: IdentityStoreId
+      required: false
+    - description: The name of the group to update.
+      name: displayName
+      required: true
+    - description: The description of the group to update.
+      name: description
+      required: true
+    description: Updates an IAM Identity Center group for your AWS account.
+    name: aws-iam-identitycenter-update-group
   dockerimage: demisto/boto3py3:1.0.0.76002
   runonce: false
   script: ''
