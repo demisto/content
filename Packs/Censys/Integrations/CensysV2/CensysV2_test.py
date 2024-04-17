@@ -225,7 +225,10 @@ def test_ip_command_malicious_ip(requests_mock, client):
     from CensysV2 import ip_command
     mock_response = util_load_json('test_data/ip_command_response.json')
     args = {"ip": ['8.8.8.8']}
-    params = {'premium_access':True ,'malicious_labels': ['database','email','file-sharing','iot','login-page'], 'malicious_labels_threshold': 1}
+    params = {
+        'premium_access':True,
+        'malicious_labels': ['database','email','file-sharing','iot','login-page'],
+        'malicious_labels_threshold': 1}
     requests_mock.get("/api/v2/hosts/search?q=ip=8.8.8.8", json=mock_response)
     response = ip_command(client, args, params)
     assert response[0].indicator.dbot_score.score == 3

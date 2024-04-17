@@ -234,12 +234,15 @@ def search_certs_command(client: Client, args: dict[str, Any], query: str, limit
 
 def ip_command(client: Client, args: dict, params: dict):
     fields = [
-        "labels", "autonomous_system.asn", "autonomous_system.name", "autonomous_system.bgp_prefix",
-        "autonomous_system.country_code", "autonomous_system.description",
-        "location.country_code", "location.timezone", "location.province", "location.postal_code",
-        "location.coordinates.latitude", "location.coordinates.longitude", "location.city",
-        "location.continent", "location.country", "services.service_name", "services.port",
-        "services.transport_protocol", "services.extended_service_name", "last_updated_at"
+        "labels", "autonomous_system.asn", "autonomous_system.name",
+        "autonomous_system.bgp_prefix", "autonomous_system.country_code",
+        "autonomous_system.description", "location.country_code",
+        "location.timezone", "location.province", "location.postal_code",
+        "location.coordinates.latitude", "location.coordinates.longitude",
+        "location.city","location.continent", "location.country", "services.service_name",
+        "services.port", "services.transport_protocol", "services.extended_service_name",
+        "services.certificate", "last_updated_at", "dns.reverse_dns.names",
+        "operating_system.source", "operating_system.part", "operating_system.version"
     ] if params.get('premium_access') else None
 
     ips: list = argToList(args.get('ip'))
@@ -298,8 +301,14 @@ def ip_command(client: Client, args: dict, params: dict):
 
 
 def domain_command(client: Client, args: dict, params: dict):
-    fields = ['labels', 'autonomous_system.description', 'last_updated_at', 'dns.reverse_dns.names',
-              'location.country', 'services.port'] if params.get('premium_access') else None
+    fields = ["labels", "autonomous_system.description", "last_updated_at",
+            "dns.reverse_dns.names", "location.country", "location.city",
+            "location.province", "location.postal_code", "location.coordinates.latitude",
+            "location.coordinates.longitude", "location.timezone", "location.continent",
+            "location.country_code", "services.port", "services.transport_protocol",
+            "services.extended_service_name", "services.certificate", "autonomous_system.name",
+            "autonomous_system.bgp_prefix", "autonomous_system.country_code",
+            "autonomous_system.asn", "ip"] if params.get('premium_access') else None
     domains: list = argToList(args.get('domain'))
     results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
@@ -364,13 +373,13 @@ def handle_exceptions(e: Exception, results: list[CommandResults], execution_met
         results.append(CommandResults(readable_output=f"Quota exceeded. Error: {message}"))
         return True
     
-    if status_code == 429:
+    elif status_code == 429:
         #Handle rate limits error
         execution_metrics.general_error += 1
         results.append(CommandResults(readable_output=f"Too many requests. Error: {message}"))
         return True
     
-    if status_code == 403 and 'specific fields' in message:
+    elif status_code == 403 and 'specific fields' in message:
         # Handle non-premium access error
         raise DemistoException(
             "Your user does not have permission for premium features. "
@@ -412,8 +421,7 @@ def main() -> None:
     params = demisto.params()
     username = params.get('credentials', {}).get('identifier')
     password = params.get('credentials', {}).get('password')
-    # verify_certificate = not params.get('insecure', False)
-    verify_certificate = False
+    verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     base_url = params.get("server_url") or 'https://search.censys.io'
 

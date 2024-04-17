@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: CensysV2 -dev
+  id: CensysV2
   version: -1
 configuration:
 - display: Server URL
@@ -56,7 +56,7 @@ configuration:
   - voip
   - web.control-panel.hosting
   additionalinfo: |-
-    Used when `Determine IP score by labels` is set. 
+    Used only when `Determine IP score by labels` is set. 
     Labels to classify IP as Malicious. 
     Input can be an array or comma-separated values.
   section: Collect-  advanced
@@ -92,11 +92,13 @@ configuration:
   type: 0
   required: false
   additionalinfo: Determines the minimum number of labels returned that are classified as malicious for IP.
+  section: Collect-  advanced
 - display: Suspicious labels threshold
   name: suspicious_labels_threshold
   type: 0
   required: false
   additionalinfo: Determines the minimum number of labels returned that are classified as suspicious for IP.
+  section: Collect-  advanced
 - display: Source Reliability
   name: integration_reliability
   defaultvalue: C - Fairly reliable
@@ -111,10 +113,10 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data.
-  section: Connect
+  section: collect
 description: Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the internet. Driven by internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, and certificates are configured and deployed.
-display: Censys v2 -dev
-name: CensysV2 -dev
+display: Censys v2
+name: CensysV2
 script:
   commands:
   - arguments:
