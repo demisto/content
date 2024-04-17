@@ -67,21 +67,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: be76e8b9-ae9a-4c30-88e0-c6e65c30f47d
+    taskid: 174d2a27-6aa6-49ff-8bfa-3affe0682ed8
     type: regular
     task:
-      id: be76e8b9-ae9a-4c30-88e0-c6e65c30f47d
+      id: 174d2a27-6aa6-49ff-8bfa-3affe0682ed8
       version: -1
       name: Find Similar Alerts
-      description: |-
-        Finds similar incidents by common incident keys, labels, custom fields or context keys.
-        It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
-        For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: FindSimilarIncidents
+      description: Find past similar alerts based on alert fields' similarity. Includes an option to also display indicators similarity.
+      scriptName: DBotFindSimilarAlerts
       type: regular
       iscommand: false
       brand: ""
@@ -89,16 +82,31 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      filterQuery:
-        simple: alert.closeReason:"Resolved - False Positive" or alert.closeReason:"Resolved - Known Issue"
-      hoursBack:
-        simple: "168"
-      ignoreClosedIncidents:
-        simple: "no"
-      incidentFieldsAppliedCondition:
-        simple: AND
-      similarIncidentFields:
-        simple: alert.name,alert.initiatedby,alert.remoteport,alert.initiatorcmd,alert.osparentcmd,alert.remoteip,alert.remotehost,alert.cgocmd,alert.cgosha256,alert.osparentsha256,alert.username,alert.initiatorsha256,alert.cgoname,alert.osparentname,alert.appid,
+      fieldExactMatch:
+        simple: alert.name,alert.rawName
+      fieldsToDisplay:
+        simple: ${alert.closeNotes}
+      fromDate:
+        simple: 2 months ago
+      minimunIncidentSimilarity:
+        simple: "0.8"
+      query:
+        complex:
+          root: alert.closeReason
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alert.closeReason
+                iscontext: true
+              right:
+                value:
+                  simple: Resolved
+              ignorecase: true
+      similarCategoricalField:
+        simple: alert.appid,alert.remoteport,alert.initiatorsha256,alert.cgosha256,alert.osparentsha256
+      similarTextField:
+        simple: alert.initiatedby,alert.remoteport,alert.initiatorcmd,alert.osparentcmd,alert.remoteip,alert.remotehost,alert.cgocmd,alert.cgosha256,alert.osparentsha256,alert.username,alert.initiatorsha256,alert.cgoname,alert.osparentname
     separatecontext: false
     continueonerrortype: ""
     view: |-

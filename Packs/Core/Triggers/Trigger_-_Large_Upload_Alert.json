@@ -4,6 +4,7 @@
   "suggestion_reason": "Recommended for large upload alerts",
   "description": "This trigger is responsible for handling \"core - Large Upload\" alerts",
   "trigger_name": "Large Upload Alert",
+  "fromVersion": "6.10.0",
   "alerts_filter": {
     "filter": {
       "AND": [
