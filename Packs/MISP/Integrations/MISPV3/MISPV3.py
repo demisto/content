@@ -680,20 +680,16 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
         try:
             response = PYMISP.search(eventid=event_id, pythonify=True)
         except Exception as e:
-            demisto.error(f'Got error {e} when searching for event {event_id} with pythonify=True')
+            demisto.error(f'Got error {e} when searching for event {event_id}, retrying')
             response = PYMISP.search(eventid=event_id, pythonify=True)
-        demisto.debug(f'Got response {response} successfully for event: {event_id}')
+        demisto.debug(f'Successfully retrieved event {event_id}')
         if not response:
             raise DemistoException(
                 f"Error: An event with the given id: {event_id} was not found in MISP. please check it once again")
         new_event = response[0]  # response[0] is MISP event
 
-    demisto.debug(f'adding attribute with {attributes_args}')
     new_event.add_attribute(**attributes_args)
-    demisto.debug(f'finished adding attribute with {attributes_args}')
-    demisto.debug(f'updating event {new_event}')
     PYMISP.update_event(event=new_event)
-    demisto.debug(f'finished updating event {new_event}')
     if internal:
         return None
 
@@ -702,12 +698,9 @@ def add_attribute(event_id: int = None, internal: bool = False, demisto_args: di
     try:
         updated_event = PYMISP.search(eventid=new_event.id, controller='attributes', value=value)
     except Exception as e:
-        demisto.error(f'Got error {e} when searching for event {new_event.id} with controller=attributes')
-        try:
-            updated_event = PYMISP.search(eventid=new_event.id, controller='attributes', value=value)
-        except Exception as e:
-            demisto.error(f'Got another error {e} when searching for event {new_event.id} with controller=attributes')
-            updated_event = PYMISP.search(eventid=event_id)
+        demisto.error(f'Got error {e} when searching for event {new_event.id} with controller=attributes, retrying')
+        updated_event = PYMISP.search(eventid=new_event.id, controller='attributes', value=value)
+
     demisto.debug(f'finished searching event with ID {new_event.id} before command results')
     human_readable = f"## MISP add attribute\nNew attribute: {value} was added to event id {new_event.id}.\n"
     return CommandResults(
