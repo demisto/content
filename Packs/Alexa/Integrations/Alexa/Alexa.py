@@ -10,7 +10,7 @@ import re
 requests.packages.urllib3.disable_warnings()
 
 """COMMAND FUNCTIONS"""
-
+a =24
 
 def alexa_fallback_command(domain, use_ssl, proxies):
     headers = {
