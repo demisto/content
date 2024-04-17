@@ -30,32 +30,45 @@ class Client(BaseClient):
         except Exception as e:
             raise Exception(f'Failed to get token. Error: {str(e)}')
         
-    #TODO: fix this copied code
-    def generate_token(self) -> tuple[str, int]:
+    
+    def generate_token(self) -> str:
         """
-        Generates a token using client credentials.
+        Generates an OAuth 2.0 token using client credentials.
         """
-        resp = self._http_request(method='POST', url_suffix="/api/v1/oauth/token", data={
-            'client_id': self.client_id,
-            'grant_type': 'client_credentials',
-            'client_secret': self.client_secret},
-            headers={"Content-Type": "application/x-www-form-urlencoded"}, resp_type='json')
+        url = f"https://{self.tenant}.api.identitynow.com/oauth/token"  #TODO maybe use self.base_url instead of hardcoding
+        resp = self._http_request(
+            method='POST',
+            url_suffix=url,
+            data={
+                'client_id': self.client_id,
+                'grant_type': 'client_credentials',
+                'client_secret': self.client_secret
+            },
+            headers = {"scope": "sp:scope:all"}
+        )
+
         token = resp.get('access_token')
         now_timestamp = arg_to_datetime('now').timestamp()  # type:ignore
         expiration_time = now_timestamp + resp.get('expires_in')
-         
+
         integration_context = get_integration_context()
         integration_context.update({'token': token})
-        # subtract 60 seconds from the expiration time to make sure the token is still valid
+        # Subtract 60 seconds from the expiration time to make sure the token is still valid
         integration_context.update({'expires': expiration_time - 60})
         set_integration_context(integration_context)
-        return token, expiration_time
+
+        return token
+
     
     
     def get_token(self) -> str:
         """
-       
+        Obtains token from integration context if available and still valid.
+        After expiration, new token are generated and stored in the integration context.
+        Returns:
+            str: token that will be added to authorization header.
         """
+
         integration_context = get_integration_context()
         token = integration_context.get('token', '')
         valid_until = integration_context.get('expires')
