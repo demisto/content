@@ -172,7 +172,7 @@ def request_with_pagination_api2(api_endpoint: str, data: list, limit: int, page
             }
         },
     }
-    
+
     if data != [{}]:
         payload['data'] = data
 
@@ -3245,20 +3245,21 @@ def mimecast_get_view_logs_command(args: dict) -> CommandResults:
         outputs=response
     )
 
+
 def mimecast_list_account_command(args: dict) -> CommandResults:
     account_name = args.get('account_name', '')
     account_code = args.get('account_code', '')
     admin_email = args.get('admin_email', '')
     region = args.get('region', '')
-    user_count =  arg_to_number(args.get('user_count', ''))
-    
+    user_count = arg_to_number(args.get('user_count', ''))
+
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
     data = [{}]
     if account_name:
-        data[0]['accountCode'] = account_name
+        data[0]['accountName'] = account_name
     if account_code:
         data[0]['accountCode'] = account_code
     if admin_email:
@@ -3274,6 +3275,7 @@ def mimecast_list_account_command(args: dict) -> CommandResults:
         outputs_prefix='Mimecast.Account',
         outputs=response
     )
+
 
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
@@ -3376,7 +3378,6 @@ def main():
             return_results(mimecast_get_view_logs_command(args))
         elif command == 'mimecast-list-account':
             return_results(mimecast_list_account_command(args))
-            
 
     except Exception as e:
         return_error(e)
