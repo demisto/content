@@ -312,7 +312,6 @@ def find_all_open_prs_by_user(content_repo, pr_creator, pr_number):
     similar_prs = []
     print(f'Number of all open PRs is: {all_prs.totalCount}')
     print(f'pr_number from main pr: {pr_number}')
-    print(f'pr_id from going over all prs: {pr_}')
     for pr in all_prs:
         if pr.id == pr_number:
             continue
