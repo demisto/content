@@ -354,21 +354,23 @@ def encode_file_path_if_needed(file_path: str) -> str:
     Returns:
         str: Return the file path as is if already URL encoded, else, returns the encoding it.
     """
-    file_path_suffix = './' if file_path.startswith('./') else ''
+    file_path_prefix = './' if file_path.startswith('./') else ''
     # If starts with ./, then we don't want to encode the suffix, only the rest
-    file_path_to_encode = file_path[2:] if file_path.startswith('./') else file_path
+    file_path_to_encode = file_path[2:] if file_path_prefix else file_path
     encoded_file_path = ''
 
     # To decode file_path_to_encode
     decoded_file_path = urllib.parse.unquote(file_path_to_encode)
 
     if decoded_file_path == file_path_to_encode:
-        # file_path_to_encode is not encoded, we can go ahead and encode it
+        # If they are equal, that means file_path_to_encode is not encoded,
+        # since we tried to decode it, and we got the same value
+        # We can go ahead and encode it
         encoded_file_path = urllib.parse.quote(file_path_to_encode, safe='')
     else:
         # file_path_to_encode is already encoded, no need to encode it
         encoded_file_path = file_path_to_encode
-    return f"{file_path_suffix}{encoded_file_path}"
+    return f"{file_path_prefix}{encoded_file_path}"
 
 
 def check_args_for_update(args: dict, optional_params: list) -> dict:
