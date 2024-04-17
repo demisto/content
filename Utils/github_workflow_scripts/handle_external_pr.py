@@ -283,14 +283,14 @@ def get_user_from_ui_pr(pr):
     """
     try:
         body = pr.body
-        print(f'PR from ui is: {pr}')
-        print(f'pr body: {pr.body}')
+        #print(f'PR from ui is: {pr}')
+        #print(f'pr body: {pr.body}')
         index_of_user = body.find("Contributor\n@")
-        print(f'index of user: {index_of_user}')
+        #print(f'index of user: {index_of_user}')
         substring_user = body[index_of_user+len("Contributor\n@"):]
-        print(f'substring user: {substring_user}')
+        #print(f'substring user: {substring_user}')
         user_in_list = substring_user.split("\n")[0]
-        print(f'searched user is: {user_in_list}')
+        #print(f'searched user is: {user_in_list}')
         #user_in_list = re.findall("Contributor\s(\S+)", body)
         #user = str(user_in_list[0])
         return user_in_list
@@ -307,15 +307,18 @@ def find_all_open_prs_by_user(content_repo, pr_creator):
     :param pr_creator:
     :return:
     """
+    print(f'pr creator is: {pr_creator}')
     all_prs = content_repo.get_pulls()
-    similar_prs= []
+    similar_prs = []
     print(f'Number of all open PRs is: {all_prs.totalCount}')
     for pr in all_prs:
         if pr.user.login == "xsoar-bot":
             pr_creator_from_body = get_user_from_ui_pr(pr)
+            print(f'pr creator from body is: {pr_creator_from_body}')
             if pr_creator_from_body == pr_creator:
                 similar_prs.append(pr)
         elif pr.user.login == pr_creator:
+            print(f'pr creator from login: {pr.user.login}')
             similar_prs.append(pr)
         else:
             continue
@@ -339,8 +342,7 @@ def find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number):
     else:
         pr_creator = pr.user.login
 
-    #other_prs_by_same_user = find_all_open_prs_by_user(content_repo, pr_creator)
-    other_prs_by_same_user = find_all_open_prs_by_user(content_repo, "djangelic")
+    other_prs_by_same_user = find_all_open_prs_by_user(content_repo, pr_creator)
     return other_prs_by_same_user
     #if other_prs_by_same_user:
     #    pr_reviewer = get_reviewer(other_prs_by_same_user)
