@@ -64,6 +64,7 @@ class Client(BaseClient):
 
     def _create_new_token(self, url_suffix: str, json_data: dict) -> str:
         try:
+            print(json_data)
             access_token_obj = self._http_request(
                 method="POST",
                 url_suffix=url_suffix,
@@ -187,7 +188,7 @@ def main() -> None:
     username = demisto_params.get('credentials')['identifier']
     password = demisto_params.get('credentials')['password']
     client_id = demisto_params.get('client_id')
-
+    print(client_id)
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
