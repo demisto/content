@@ -32,6 +32,8 @@ def filter_content_items_to_run_on(
     content_items_by_docker_image: list[dict[str, Any]],
     target_docker_tag: str,
     nightly_packs: list[str],
+    docker_image: str,
+    benchmark_docker_tags: dict[str, str]
 ) -> dict[str, Any]:
     """Collect the content items with respect to the batch config.
 
@@ -63,10 +65,13 @@ def filter_content_items_to_run_on(
             logging.info(f"Pack path {content_item_pack_path} for {content_item} is not in nightly, skipping.")
             continue
 
-        if Version(content_item_docker_image_tag) >= Version(target_docker_tag):
-            # If current content item tag is larger or equal than the target tag, skip
-            logging.info(f"{content_item_docker_image_tag = } >= {target_docker_tag = }, skipping.")
-            continue
+        if docker_image in benchmark_docker_tags:
+            docker_image_tag_benchmark = benchmark_docker_tags[docker_image]
+            if Version(content_item_docker_image_tag) > Version(docker_image_tag_benchmark):
+                # If content item's docker tag is larger than the benchmark docker tag, then we
+                # don't need to update the content item, skipping
+                logging.info(f"Content item of {content_item_path} has tag {content_item_docker_image_tag} > {docker_image_tag_benchmark = }, skipping.")
+                continue
 
         # If content item is not in coverage report, then we consider it's coverage to be 0
         content_item_cov = content_items_coverage.get(str(content_item_path), 0)
@@ -156,6 +161,7 @@ def get_affected_content_items_by_docker_image(
     content_items_by_docker_image: dict[str, list[dict[str, Any]]],
     images_tag: dict[str, str],
     nightly_packs: list[str],
+    benchmark_docker_tags: dict[str, str],
 ) -> dict[str, dict[str, Any]]:
     """Returns the affected content items with respect to the configurations of the current
     batch.
@@ -178,6 +184,7 @@ def get_affected_content_items_by_docker_image(
     affected_content_items_by_docker_image: dict[str, Any] = {}
     custom_images: list[str] = list(image_custom_configs.keys())
     for docker_image in affected_docker_images:
+        logging.info(f"Getting content items for {docker_image = }")
         affected_content_items: dict[str, Any] = {}
         docker_image_target_tag = get_docker_image_target_tag(docker_image=docker_image, images_tag=images_tag)
         docker_batch_config = get_docker_batch_config(
@@ -194,6 +201,8 @@ def get_affected_content_items_by_docker_image(
                 content_items_by_docker_image=content_items_by_docker_image[docker_image],
                 target_docker_tag=docker_image_target_tag,
                 nightly_packs=nightly_packs,
+                docker_image=docker_image,
+                benchmark_docker_tags=benchmark_docker_tags
             )
         else:
             logging.info(f"No batch config was found for {docker_image = }, and {current_batch_index = }")
@@ -287,7 +296,7 @@ def get_content_items_by_docker_image() -> dict[str, list[dict[str, Any]]]:
                     # Since the docker image returned will include the tag, we only need the image
                     docker_image_split = docker_image.split(":")
                     docker_image_without_tag = docker_image_split[0]
-                    docker_image_tag = docker_image_without_tag[1]
+                    docker_image_tag = docker_image_split[1]
                     content_images[docker_image_without_tag].append(
                         {
                             "content_item": content_item_py,
@@ -411,6 +420,7 @@ def get_affected_content_items(
         content_items_by_docker_image=content_items_by_docker_image,
         images_tag=images_tag,
         nightly_packs=nightly_packs,
+        benchmark_docker_tags=benchmark_docker_tags
     )
 
     docker_images_target_tag = {
