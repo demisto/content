@@ -5,7 +5,8 @@ import traceback
 from typing import Any
 
 BRAND_NAME = "IPinfo"  # matches context output path for faster caching
-
+IS_TIME_SENSITIVE = hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
+demisto.debug(f'Is time sensitive: {IS_TIME_SENSITIVE}')
 
 class Client(BaseClient):
     def __init__(self, api_key: str, base_url: str, verify_certificate: bool, proxy: bool, reliability: str):
@@ -15,6 +16,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify_certificate)
         self.api_key = api_key
         self.reliability = reliability
+        self.timeout = 2 if IS_TIME_SENSITIVE else 20
 
     def ipinfo_ip(self, ip: str) -> dict[str, Any]:
         return self.http_request(ip)
@@ -24,7 +26,7 @@ class Client(BaseClient):
         return self._http_request(method='GET',
                                   url_suffix=f'{ip}/json',
                                   params=assign_params(token=self.api_key),
-                                  timeout=20)
+                                  timeout=self.timeout)
 
 
 def test_module(client: Client) -> str:
