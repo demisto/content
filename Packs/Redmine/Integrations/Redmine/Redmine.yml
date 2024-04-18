@@ -386,4 +386,4 @@ script:
   type: python
 fromversion: 6.10.0
 tests:
-- Redmine-Test
+- Redmine_Test
