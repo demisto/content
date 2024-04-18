@@ -93,17 +93,12 @@ def filter_content_items_to_run_on(
             affected_content_items.append(str(content_item_path.with_suffix(".yml")))
         else:
             logging.info(f"{content_item} not within coverage, skipping")
-
-    return (
-        {
+    return {
             "content_items": affected_content_items,
             "pr_labels": batch_config.get("pr_labels", []),
             "target_tag": target_docker_tag,
             "coverage": f"{min_cov}-{max_cov}",
         }
-        if affected_content_items
-        else {}
-    )
 
 
 def get_docker_image_target_tag(docker_image: str, images_tag: dict[str, str]) -> str:
@@ -206,10 +201,10 @@ def get_affected_content_items_by_docker_image(
             )
         else:
             logging.info(f"No batch config was found for {docker_image = }, and {current_batch_index = }")
-        if affected_content_items:
-            affected_content_items_by_docker_image[docker_image] = affected_content_items
-        else:
+
+        if not affected_content_items["content_items"]:
             logging.info(f"{docker_image = } does not have any content items to update")
+        affected_content_items_by_docker_image[docker_image] = affected_content_items
     return affected_content_items_by_docker_image
 
 
@@ -407,7 +402,8 @@ def get_affected_content_items(
         images_to_exclude=images_to_exclude,
         all_docker_images=list(content_items_by_docker_image.keys()),
     )
-    if set(benchmark_docker_tags.keys()) != set(affected_docker_images):
+
+    if benchmark_docker_tags and set(benchmark_docker_tags.keys()) != set(affected_docker_images):
         raise Exception("Dockers configured in benchmark_docker_tags should match the dockers of the docker_images_arg argument")
 
     default_batches: list[dict[str, Any]] = image_configs["default"]["batches"]
@@ -435,7 +431,12 @@ def get_affected_content_items(
     # Output the affected content items
     affected_content_items_path = batch_dir / Path("affected_content_items.json")
     affected_content_items_path.touch(exist_ok=True)
-    affected_content_items_path.write_text(json.dumps(affected_content_items_by_docker_image))
+    # Only dump docker images that have content items to update
+    docker_images_to_dump = {
+        docker_image: affected_items
+        for docker_image, affected_items in affected_content_items_by_docker_image.items() if affected_items["content_items"]
+    }
+    affected_content_items_path.write_text(json.dumps(docker_images_to_dump))
 
 
 def main():
