@@ -745,9 +745,9 @@ def add_log_header(logged_edl_data: str, request_args: RequestArguments, created
     log_line_format = log_indicator_line('Raw Indicator', 'Indicator', 'Action', 'Reason', [])[0]
 
     header = f"# Created new EDL at {created.isoformat()}\n\n" \
+             f"## Configuration Arguments: {request_args.to_context_json()}\n\n" \
              f"## EDL stats: {total_count} indicators in total, {modified_count} modified, {dropped_count} dropped, " \
              f"{added_count} added.\n\n" \
-             f"## Request Args: {request_args.to_context_json()}\n\n" \
              f"{log_line_format}"
     return f"{header}\n{logged_edl_data}"
 
@@ -1061,6 +1061,40 @@ def authenticate_app(params: dict, request_headers: Any) -> Optional[Response]:
     return None
 
 
+def get_edl_log_file() -> str:
+    """Check if edl log file exists, if it does return its contents (str)."""
+    edl_data_log = ''
+    if os.path.exists(EDL_FULL_LOG_PATH):
+        demisto.debug("found log file")
+        with open(EDL_FULL_LOG_PATH, 'r') as log_file:
+            log_file.seek(0)
+            edl_data_log = log_file.read()
+            log_file.seek(0)
+
+    return edl_data_log
+
+
+def prepare_response_data(data: str, prepend_str: str, append_str: str) -> str:
+    """Prepare data for app response.
+
+    Args:
+        data (str): The raw data.
+        prepend_str (str): The string to prepend to the data.
+        append_str (str): The string to append to the data.
+
+    Returns:
+        (str) The prepared data.
+    """
+    if append_str:
+        append_str = append_str.replace("\\n", "\n")
+        data = f"{data}{append_str}"
+    if prepend_str:
+        prepend_str = prepend_str.replace("\\n", "\n")
+        data = f"{prepend_str}\n{data}"
+
+    return data
+
+
 @APP.route('/', methods=['GET'])
 def route_edl() -> Response:
     """
@@ -1094,16 +1128,9 @@ def route_edl() -> Response:
 
     # if the case there are strings to add to the EDL, add them if the output type is text
     elif request_args.out_format == FORMAT_TEXT:
-        append_str = params.get("append_string")
-        prepend_str = params.get("prepend_string")
-
-        if append_str:
-            append_str = append_str.replace("\\n", "\n")
-            edl_data = f"{edl_data}{append_str}"
-
-        if prepend_str:
-            prepend_str = prepend_str.replace("\\n", "\n")
-            edl_data = f"{prepend_str}\n{edl_data}"
+        edl_data = prepare_response_data(data=edl_data,
+                                         append_str=params.get("append_string"),
+                                         prepend_str=params.get("prepend_string"))
 
     mimetype = get_outbound_mimetype(request_args)
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
@@ -1137,30 +1164,16 @@ def route_edl_log() -> Response:
     if auth_resp:
         return auth_resp
 
-    created = datetime.now(timezone.utc)
-    request_args = get_request_args(request.args, params)
     demisto.debug("Getting log file to show")
-    edl_data_log = ''
-    if os.path.exists(EDL_FULL_LOG_PATH):
-        demisto.debug("found log file")
-        with open(EDL_FULL_LOG_PATH, 'r') as log_file:
-            log_file.seek(0)
-            edl_data_log = log_file.read()
-            log_file.seek(0)
 
-    if len(edl_data_log) == 0:
-        edl_data_log = '# Empty'
+    edl_data_log = get_edl_log_file() or '# Empty'
+    request_args = get_request_args(request.args, params)
+    if request_args.out_format == FORMAT_TEXT and edl_data_log != '# Empty':
+        edl_data_log = prepare_response_data(data=edl_data_log,
+                                             append_str=params.get("append_string"),
+                                             prepend_str=params.get("prepend_string"))
 
-    elif request_args.out_format == FORMAT_TEXT:
-        append_str = params.get("append_string")
-        prepend_str = params.get("prepend_string")
-        if append_str:
-            append_str = append_str.replace("\\n", "\n")
-            edl_data_log = f"{edl_data_log}{append_str}"
-        if prepend_str:
-            prepend_str = prepend_str.replace("\\n", "\n")
-            edl_data_log = f"{prepend_str}\n{edl_data_log}"
-
+    created = datetime.now(timezone.utc)
     etag = f'"{hashlib.sha3_256(edl_data_log.encode()).hexdigest()}"'
     headers = [
         ('X-EDL-LOG-Request-Created', created.isoformat()),
@@ -1169,8 +1182,10 @@ def route_edl_log() -> Response:
     headers_str = f'{[f"{header[0]}: {header[1]}" for header in headers]}'
     demisto.debug(f'edl: Returning log response with the following headers:\n{headers_str}')
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
-    mimetype = get_outbound_mimetype(request_args)
+    if edl_data_log == '# Empty':
+        max_age = min(max_age, 15)
 
+    mimetype = get_outbound_mimetype(request_args)
     resp = Response(edl_data_log, status=200, mimetype=mimetype, headers=headers)
     resp.cache_control.max_age = max_age
     # number of seconds we are willing to serve stale content when there is an error

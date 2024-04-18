@@ -138,13 +138,13 @@ class TestHelperFunctions:
             assert actual_edl == expected_edl == cached_edl
 
         expected_edl_log = f"# Created new EDL at {created_time.isoformat()}\n\n" \
-                           f"## EDL stats: 1 indicators in total, 0 modified, 0 dropped, 1 added.\n\n" \
-                           f"## Request Args: {{'last_query': '*', 'out_format': 'PAN-OS (text)', 'last_limit': 10000, " \
-                           f"'last_offset': 0, 'drop_invalids': False, 'url_port_stripping': False, " \
+                           f"## Configuration Arguments: {{'last_query': '*', 'out_format': 'PAN-OS (text)', " \
+                           f"'last_limit': 10000, 'last_offset': 0, 'drop_invalids': False, 'url_port_stripping': False, " \
                            f"'collapse_ips': \"Don't Collapse\", 'add_comment_if_empty': True, 'mwg_type': 'string', " \
                            f"'bc_category': 'bc_category', 'category_attribute': [], 'fields_to_present': 'name,type', " \
                            f"'csv_text': False, 'url_protocol_stripping': False, 'url_truncate': False, " \
                            f"'maximum_cidr_size': 8, 'no_wildcard_tld': False}}\n\n" \
+                           f"## EDL stats: 1 indicators in total, 0 modified, 0 dropped, 1 added.\n\n" \
                            f"Action | Indicator | Raw Indicator | Reason\n{edl_log_line}"
 
         with open(edl.EDL_FULL_LOG_PATH) as f:

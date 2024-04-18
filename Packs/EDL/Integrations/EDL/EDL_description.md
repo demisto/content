@@ -99,7 +99,7 @@ Make sure you run the ***!export-indicators-list-update*** command for the first
 
 ## Troubleshoot
 
-To view logs concerning the creation of the indicator list add the `/log` suffix to the list url.
+To view logs concerning the creation of the indicator list and its current status add the `/log` suffix to the list URL.
 
 <~XSOAR_SAAS>
 `https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>/log`
@@ -108,5 +108,5 @@ To view logs concerning the creation of the indicator list add the `/log` suffix
 `https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
 </~XSOAR_ON_PREM>
 <~XSIAM>
-`https://edl-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>`
+`https://edl-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log`
 </~XSIAM>
