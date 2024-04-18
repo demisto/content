@@ -1,7 +1,7 @@
 This pack is part of the [Rapid Breach Response](https://cortex.marketplace.pan.dev/marketplace/details/MajorBreachesInvestigationandResponse/) pack.
 
 #### Executive Summary 
-On March 29, 2023, CrowdStrike [released a blog](https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/) discussing a supply chain attack involving a software-based phone application called [3CXDesktopApp](https://www.3cx.com/). 
+On March 29, 2023, CrowdStrike [released a blog](https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/) discussing a supply chain attack involving a software-based phone application called 3CXDesktopApp. 
 
 As of March 30, the 3CXDesktopApp installer hosted on the developer’s website will install the application with two malicious libraries included. The malicious libraries will ultimately run shellcode to load a backdoor on the system that allows actors to install additional malware on the victim machine.
 

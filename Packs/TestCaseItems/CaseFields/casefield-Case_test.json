@@ -1,7 +1,6 @@
 {
   "associatedToAll": false,
   "associatedTypes": [
-    "TheHive"
   ],
   "caseInsensitive": true,
   "cliName": "test11111",
@@ -13,7 +12,7 @@
   "id": "case_test11111",
   "isReadOnly": false,
   "locked": false,
-  "name": "TheHive Case PAP",
+  "name": "case_test11111",
   "neverSetAsRequired": false,
   "ownerOnly": false,
   "required": false,
