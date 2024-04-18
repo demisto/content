@@ -90,7 +90,11 @@ ATP_REDIRECTS = [
      '3000%7C%7C%7C&sdata=%2FwfuIapNXRbZBgLVK651uTH%2FwXrSZFqwdvhvWK6Azwk%3D&reserved=0',  # disable-secrets-detection
      'http://i.ms00.net/subscribe?server_action=Unsubscribe&list=valintry2&'  # disable-secrets-detection
      'sublist=*&msgid=1703700099.20966'  # disable-secrets-detection
-     '&email_address=paulameixner@curo.com')  # disable-secrets-detection
+     '&email_address=paulameixner@curo.com'),  # disable-secrets-detection
+    ('hxxps://nam10.safelinks.protection.outlook.com/ap/w-59523e83/?url=hxxps://test.com/test&data=',
+     'https://test.com/test'),
+    ('hxxps://nam10.safelinks.protection.office365.us/ap/w-59523e83/?url=hxxps://test.com/test&data=',
+     'https://test.com/test')
 ]
 
 PROOF_POINT_REDIRECTS = [
