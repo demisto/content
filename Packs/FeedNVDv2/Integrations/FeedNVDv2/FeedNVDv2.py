@@ -350,7 +350,7 @@ def retrieve_cves(client, start_date: Any, end_date: Any, publish_date: bool):
     """
     url_suffix = "/rest/json/cves/2.0/"
     results_per_page = 2000
-    param = {'startIndex': 0, 'resultsPerPage': results_per_page, 'noRejected': None}
+    param: dict[str, str | int] = {'startIndex': 0, 'resultsPerPage': results_per_page, 'noRejected': ''}
     raw_cves = []  # type: ignore
     more_to_process = True
 
@@ -377,7 +377,7 @@ def retrieve_cves(client, start_date: Any, end_date: Any, publish_date: bool):
             if total_results:
                 raw_cves += res.get('vulnerabilities')
 
-                param['startIndex'] += results_per_page
+                param['startIndex'] += int(results_per_page)  # type: ignore
 
             if (param['startIndex'] >= total_results):
                 more_to_process = False
@@ -414,25 +414,25 @@ def fetch_indicators_command(client: Client) -> list[dict]:
     if command == 'nvd-get-indicators':
         history = parse_date_range(f'{demisto.getArg("history")}', DATE_FORMAT)
         client.keyword_search = f'{demisto.getArg("keyword")}'
-        start_date = parse(history[0])
+        start_date: datetime | None = parse(history[0])  # type: ignore
         publish_date = True
         demisto.debug(f'Retrieving last {demisto.getArg("history")} days of CVEs using nvd-get-indicators')
 
     elif last_run_data:
         # Interval run
-        start_date: datetime | None = parse(last_run_data.get("lastRun", ""))
+        start_date = parse(last_run_data.get("lastRun", ""))
 
     else:
         # First run for the feed
         first_fetch: tuple[Any, Any] = parse_date_range(client.first_fetch, DATE_FORMAT)
-        start_date = parse(first_fetch[0])
+        start_date = parse(first_fetch[0])  # type: ignore
         publish_date = True
         demisto.debug(f'Running Feed NVD for the first time catching CVEs since {first_fetch}')
 
     start_index = start_date
 
     while exceeds_span and start_index:
-        temp_cves: list = []
+        temp_cves = []
         raw_cves: list = []
 
         iteration += 1
@@ -454,7 +454,7 @@ def fetch_indicators_command(client: Client) -> list[dict]:
         start_index = end_date
 
     set_feed_last_run({"lastRun": end_date.strftime(DATE_FORMAT)})
-    demisto.debug(f'Time: ({start_date.strftime(DATE_FORMAT)})-({end_date.strftime(DATE_FORMAT)}), '
+    demisto.debug(f'Time: ({start_date.strftime(DATE_FORMAT)})-({end_date.strftime(DATE_FORMAT)}), '  # type: ignore
                   f'Fetched {total_results} indicators.')
     return raw_cves
 
