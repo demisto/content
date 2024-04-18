@@ -420,10 +420,10 @@ def get_incidents_for_alert(**kwargs) -> list:
             )
 
         count = kwargs['fetch_count']
-        last_incident_name = last_run.get('alerts', {}).get('last_incident_name')
+        last_incident_start_time = last_run.get('alerts', {}).get('start_time')
         for alert in resp.get('alert', []):
             # remove duplicate incident
-            if last_incident_name and alert.get('ruleName', '') == last_incident_name:
+            if last_incident_start_time and last_incident_start_time == alert.get('occurred', ''):
                 continue
             # set incident
             context_alert = remove_empty_entities(alert)
@@ -502,10 +502,10 @@ def get_incidents_for_event(
     total_records = len(resp.get('events', []))
     count = 0
     if total_records > 0:
-        last_incident_name = last_run.get('events', {}).get('last_incident_name')
+        last_incident_start_time = last_run.get('events', {}).get('start_time')
         for event in resp.get('events', []):
-            # remove duplicate incident
-            if last_incident_name and event.get('ruleName', '') == last_incident_name:
+            # skip on duplicate incident
+            if last_incident_start_time and last_incident_start_time == event.get('occurred', ''):
                 continue
             # set incident
             context_event = remove_empty_entities(event)
@@ -1311,31 +1311,38 @@ def fetch_incidents(
     """
     # Retrieving last run time if not none, otherwise first_fetch will be considered.
     last_run = kwargs['last_run']
-    start_time = last_run.get('start_time')
-    start_time = int(start_time) if start_time else kwargs['first_fetch']
+    start_time = kwargs['first_fetch']
     next_run = {}
-    demisto.debug(f"Last run time: {start_time}")
 
     incidents = []
     fetch_count = 0
     if 'IPS Events' in (kwargs['fetch_type'] or []):
+        if events_start_time := last_run.get('events', {}).get('start_time'):
+            start_time = int(events_start_time)
+        demisto.debug(f"FireeyeNX IPS Events Start Time: {start_time}")
         incidents, fetch_count = get_incidents_for_event(
             kwargs['client'],
             start_time,
             kwargs['fetch_limit'],
             kwargs['mvx_correlated'],
-            last_run
+            last_run,
         )
         if incidents:
-            demisto.debug(f"FireeyeNX IPS Events: {incidents}")
             incidents.sort(key=lambda x: x.get("occurred"))
+            parsed_incidents_str = [f"Incident name: {incident.get('name')} Incident date: {incident.get('occurred')}\n" for
+                                    incident in incidents]
+            demisto.debug(
+                f"FireeyeNX IPS Events: {parsed_incidents_str}")
             last_event = incidents[-1]
-            next_run["events"] = {"start_time": last_event.get("occurred"),
-                                  "last_incident_name": last_event.get("name")}
-
+            next_run["events"] = {"start_time": last_event.get("occurred")}
+    # reset start time before next fetch type
+    start_time = kwargs['first_fetch']
     if 'Alerts' in (kwargs['fetch_type'] or []) and (
         fetch_count < kwargs['fetch_limit']
     ):
+        if alerts_start_time := last_run.get('alerts', {}).get('start_time'):
+            start_time = int(alerts_start_time)
+        demisto.debug(f"FireeyeNX Alerts Start Time: {start_time}")
         alert_incidents = get_incidents_for_alert(
             client=kwargs['client'],
             malware_type=kwargs['malware_type'],
@@ -1346,15 +1353,16 @@ def fetch_incidents(
             is_test=kwargs['is_test'],
             fetch_artifacts=kwargs['fetch_artifacts'],
             fetch_count=fetch_count,
-            last_run=last_run
+            last_run=last_run,
         )
 
         if alert_incidents:
-            demisto.debug(f"FireeyeNX Alerts: {alert_incidents}")
             alert_incidents.sort(key=lambda x: x.get("occurred"))
+            parsed_incidents_str = [f"Incident name: {incident.get('name')} Incident date: {incident.get('occurred')}\n" for
+                                    incident in alert_incidents]
+            demisto.debug(f"FireeyeNX Alerts: {parsed_incidents_str}")
             last_incident = alert_incidents[-1]
-            next_run["alerts"] = {"start_time": last_incident.get("occurred"),
-                                  "last_incident_id": last_incident.get("name")}
+            next_run["alerts"] = {"start_time": last_incident.get("occurred")}
             incidents.extend(
                 alert_incidents
             )
@@ -1550,7 +1558,7 @@ def main() -> None:
                 is_test=False,
             )
             # saves next_run for the time fetch-incidents is invoked.
-            demistomock.debug(f"FireEyeNX setting next run to: {next_run}")
+            demisto.debug(f"FireEyeNX setting next run to: {next_run}")
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
