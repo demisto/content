@@ -464,7 +464,7 @@ def weed_rasterize_errors(urls: list[str], res_rasterize: list[dict]):
         demisto.debug(f'{res_rasterize=}')
         raise DemistoException('Unexpected response from the "rasterise" command.'
                                'Please make sure the Rasterize pack is up-to-date and functional')
-    error_idx = [i for (i, res) in enumerate(res_rasterize) if isinstance(res['Contents'], str)]
+    error_idx = [i for (i, res) in enumerate(res_rasterize) if isinstance(res['Contents'], str)][::-1]
     if error_idx:
         return_results(CommandResults(readable_output=tableToMarkdown(
             'The following URLs failed rasterize and were skipped:',
