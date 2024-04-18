@@ -8,9 +8,9 @@
     - if: '$CI_PIPELINE_SOURCE =~ /^(schedule|trigger)$/ && $DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
       when: always
 
-test-native-candidate:run-lint-with-native-candidate:
+test-native-candidate:run-pre-commit-with-native-candidate:
   extends:
-    - .unittests-and-lint-settings
+    - .pre-commit-settings
     - .test-native-candidate-rule
   script:
     - section_start "Versions"
@@ -28,7 +28,7 @@ test-native-candidate:run-lint-with-native-candidate:
     - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
     - gcloud auth configure-docker ${DOCKER_IO_DOMAIN} >> "${ARTIFACTS_FOLDER}/logs/configure_docker_with_registry.log" 2>&1
     - section_end "Revoking GCP Auth and Configure Docker"
-    - section_start "Run Lint with Native Candidate"
+    - section_start "Run pre-commit with Native Candidate"
     - |
       mkdir ./unit-tests
       if [[ "$NATIVE_CANDIDATE_IMAGE" == "latest" ]]; then
@@ -39,13 +39,9 @@ test-native-candidate:run-lint-with-native-candidate:
       echo "----------Running lint on specific native candidate image $NATIVE_CANDIDATE_IMAGE----------"
       touch $ARTIFACTS_FOLDER/native_candidate_image.txt
       echo "$NATIVE_CANDIDATE_IMAGE" >> $ARTIFACTS_FOLDER/native_candidate_image.txt
-
-      demisto-sdk lint --console-log-threshold DEBUG -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image native:target --docker-image-target "$NATIVE_CANDIDATE_IMAGE"
-      if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
-        demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --allowed-coverage-degradation-percentage 100
-      fi
+      demisto-sdk pre-commit -a --mode=nightly --docker-image native:candidate --image-ref "$NATIVE_CANDIDATE_IMAGE"
       echo "Native candidate full image name was: $NATIVE_CANDIDATE_IMAGE"
-    - section_end "Run Lint with Native Candidate"
+    - section_end "Run pre-commit with Native Candidate"
     - job-done
 
 
