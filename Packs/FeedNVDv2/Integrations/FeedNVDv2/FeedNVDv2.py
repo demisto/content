@@ -56,7 +56,8 @@ class Client(BaseClient):
         param_string = self.build_param_string(params)
 
         try:
-            resp = self._http_request('GET', url_suffix=path, headers=headers, params=param_string, resp_type='json', timeout=300)
+            resp = self._http_request('GET', url_suffix=path, headers=headers, params=param_string, resp_type='json', timeout=300,
+                                      retries=3)
 
         except Exception as e:
             demisto.debug(e)
