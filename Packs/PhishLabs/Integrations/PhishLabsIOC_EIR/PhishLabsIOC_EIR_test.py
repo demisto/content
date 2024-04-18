@@ -490,7 +490,9 @@ def test_duplicated_incident(mocker):
     )
 
     assert len(incident_report) == 3
-    assert '1' and '2' and '3' in new_last_run.get('lastIds')
+    assert '1'
+    assert '2'
+    assert '3' in new_last_run.get('lastIds')
 
     incidents = [{'id': '1', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
                  {'id': '2', 'created': '2023-09-20T03:44:55Z', 'details': {'subClassification': "No Threat Detected"}},
