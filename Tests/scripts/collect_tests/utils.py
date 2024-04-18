@@ -218,7 +218,7 @@ class ContentItem(DictFileBased):
                 return self['trigger_id']
             if self.path.parent.parent.name == 'XDRCTemplates':
                 return self['content_global_id']
-            if self.path.parent.name == 'LayoutRules':
+            if self.path.parent.name == 'LayoutRules' or self.path.parent.name == 'CaseLayoutRules':
                 return self['rule_id']
         return self['id']
 
