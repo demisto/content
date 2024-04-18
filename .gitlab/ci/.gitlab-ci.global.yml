@@ -469,6 +469,10 @@
         fi
       fi
     - |
+      if [[ -f coverage_report ]]; then
+        cp -r coverage_report artifacts/coverage_report
+      fi
+    - |
       if [[ -n "${NIGHTLY}" && "$CI_COMMIT_BRANCH" == "master" ]]; then
         python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name "${ARTIFACTS_FOLDER}/coverage_report/coverage.json" --minimal_file_name "${ARTIFACTS_FOLDER}/coverage_report/coverage-min.json"
       fi
