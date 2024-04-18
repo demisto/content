@@ -944,7 +944,7 @@ def parse_json_response(response: requests.Response):
                       'Attempting to fix invalid escape sequences and parse the response again.')
 
         # Replace triple backslashes (where the last one doesn't escape anything) with two backslashes.
-        fixed_response_text = re.sub(r'[^\\]\\\\\\(?P<escaped_char>[^\"\\])', r'\\\\\g<escaped_char>', response.text)
+        fixed_response_text = re.sub(r'(?<!\\)((\\\\)*)\\(?!\\)', r'\1\\\\', response.text)
 
         try:
             fixed_response_json = json.loads(fixed_response_text)
