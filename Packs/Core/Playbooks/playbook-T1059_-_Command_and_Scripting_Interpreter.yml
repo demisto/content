@@ -1425,38 +1425,83 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "60":
-    id: "60"
-    taskid: 395af71d-9832-46a5-853a-e51948b9f62a
+  "61":
+    id: "61"
+    taskid: 6c95fc1f-ffd0-4de4-818f-41e07987c215
     type: condition
     task:
-      id: 395af71d-9832-46a5-853a-e51948b9f62a
+      id: 6c95fc1f-ffd0-4de4-818f-41e07987c215
       version: -1
       name: Is the CMD defined?
-      description: Checks the existence of a command line parameter.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "16"
+      - "62"
       "yes":
-      - "55"
+      - "47"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isExists
+      - - operator: isNotEmpty
           left:
             value:
-              simple: commandline.original
+              simple: Core.DynamicAnalysis.internals.attributes.content
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.DynamicAnalysis.internals.attributes.scriptblock_text
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.DynamicAnalysis.internals.attributes.original_command_line
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.targetprocesscmd
             iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 720
+          "x": 1140,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 77940295-f899-43d3-8b41-40fef01d6993
+    type: title
+    task:
+      id: 77940295-f899-43d3-8b41-40fef01d6993
+      version: -1
+      name: No CMD Parameters found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 440
         }
       }
     note: false
@@ -1476,15 +1521,15 @@ view: |-
       "48_27_yes": 0.62,
       "48_49_#default#": 0.47,
       "56_16_#default#": 0.46,
-      "60_16_#default#": 0.22,
-      "60_55_yes": 0.55
+      "61_47_yes": 0.5,
+      "61_62_#default#": 0.52
     },
     "paper": {
       "dimensions": {
-        "height": 4405,
-        "width": 1510,
-        "x": 450,
-        "y": -260
+        "height": 4385,
+        "width": 1790,
+        "x": 170,
+        "y": -240
       }
     }
   }
