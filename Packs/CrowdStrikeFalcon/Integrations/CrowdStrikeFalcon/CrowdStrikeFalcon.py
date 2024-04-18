@@ -311,7 +311,8 @@ def generic_http_request(method,
                          params=None,
                          retries=0,
                          resp_type='json',
-                         status_list_to_retry=None
+                         status_list_to_retry=None,
+                         json_data=None
                          ):
     """
         A wrapper for the BaseClient._http_request() method, that allows performing HTTP requests without initiating
@@ -342,6 +343,7 @@ def generic_http_request(method,
                 and the response status code is in ``status_list_to_retry``.
             resp_type (str, optional): Determines which data format to return from the HTTP request. The default
                 is 'json'.
+            json_data (dict, optional): The dictionary to send in a 'POST' request.
         Returns:
             :return: Depends on the resp_type parameter
             :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
@@ -358,7 +360,30 @@ def generic_http_request(method,
                         )
     return client._http_request(method=method, url_suffix=url_suffix, data=data, ok_codes=ok_codes, error_handler=error_handler,
                                 headers=headers, files=files, params=params, retries=retries, resp_type=resp_type,
-                                status_list_to_retry=status_list_to_retry)
+                                status_list_to_retry=status_list_to_retry, json_data=json_data)
+
+
+def error_handler(res):
+    res_json = res.json()
+    reason = res.reason
+    demisto.debug(f'CrowdStrike Falcon error handler {res.status_code=} {reason=}')
+    resources = res_json.get('resources', {})
+    extracted_error_message = ''
+    if resources:
+        if isinstance(resources, list):
+            extracted_error_message += f'\n{str(resources)}'
+        else:
+            for host_id, resource in resources.items():
+                errors = resource.get('errors', []) if isinstance(resource, dict) else ''
+                if errors:
+                    error_message = errors[0].get('message')
+                    extracted_error_message += f'\nHost ID {host_id} - {error_message}'
+    elif res_json.get('errors') and not extracted_error_message:
+        errors = res_json.get('errors', [])
+        for error in errors:
+            extracted_error_message += f"\n{error.get('message')}"
+    reason += extracted_error_message
+    raise DemistoException(f'Error in API call to CrowdStrike Falcon: code: {res.status_code} - reason: {reason}')
 
 
 def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
@@ -420,7 +445,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             files=files,
             params=params,
             resp_type='response',
-            verify=USE_SSL
+            verify=USE_SSL,
+            error_handler=error_handler,
+            json_data=json
         )
     except requests.exceptions.RequestException as e:
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
@@ -435,32 +462,8 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             else:
                 valid_status_codes.add(status_code)
         if res.status_code not in valid_status_codes:
-            res_json = res.json()
-            reason = res.reason
-            demisto.debug(f'In http_request, bad status code {res.status_code=} {reason=}')
-            resources = res_json.get('resources', {})
-            extracted_error_message = ''
-            if resources:
-                if isinstance(resources, list):
-                    extracted_error_message += f'\n{str(resources)}'
-                else:
-                    for host_id, resource in resources.items():
-                        errors = resource.get('errors', []) if isinstance(resource, dict) else ''
-                        if errors:
-                            error_message = errors[0].get('message')
-                            extracted_error_message += f'\nHost ID {host_id} - {error_message}'
-            elif res_json.get('errors') and not extracted_error_message:
-                errors = res_json.get('errors', [])
-                for error in errors:
-                    extracted_error_message += f"\n{error.get('message')}"
-            reason += extracted_error_message
-            err_msg = 'Error in API call to CrowdStrike Falcon: code: {code} - reason: {reason}'.format(
-                code=res.status_code,
-                reason=reason
-            )
             # try to create a new token
             if res.status_code in (401, 403, 429) and get_token_flag:
-                LOG(err_msg)
                 demisto.debug(f'Try to create a new token because {res.status_code=}')
                 token = get_token(new_token=True)
                 headers['Authorization'] = f'Bearer {token}'
@@ -476,11 +479,12 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     retries=5,
                     status_list_to_retry=[429],
                     resp_type='response',
+                    error_handler=error_handler,
+                    json_data=json
                 )
                 return res if no_json else res.json()
             elif safe:
                 return None
-            raise DemistoException(err_msg)
         return res if no_json else res.json()
     except ValueError as exception:
         raise ValueError(
