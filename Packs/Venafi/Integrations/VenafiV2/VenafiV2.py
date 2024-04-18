@@ -95,19 +95,18 @@ class Client(BaseClient):
         expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
         set_integration_context({"token": token, "refresh_token": refresh_token, "expire_date": str(expire_date)})
 
-    def _get_certificates(self, args: Dict[str, Any]) -> List:
+    def _get_certificates(self, args: Dict[str, Any]) -> Dict:
         headers = {
             "Authorization": f"Bearer {self.token}"
         }
 
-        response = self._http_request(
+        certificates = self._http_request(
             method="GET",
             url_suffix="/vedsdk/certificates/",
             headers=headers,
             data=args
         )
 
-        certificates = response.get("Certificates", [])
         return certificates
 
     def _get_certificate_details(self, guid: str) -> Dict:
@@ -116,13 +115,12 @@ class Client(BaseClient):
         }
 
         url_suffix = f"/vedsdk/certificates/{guid}"
-        response = self._http_request(
+        certificate_details = self._http_request(
             method="GET",
             url_suffix=url_suffix,
             headers=headers
         )
 
-        certificate_details = response.get("CertificateDetails", {})
         return certificate_details
 
 
@@ -171,7 +169,23 @@ def get_certificates_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 
 def get_certificate_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    pass
+    print("a")
+    message: List = []
+    guid = args.get('guid')
+    # if not guid?
+    response = client._get_certificate_details(guid)
+    print(response)
+    # if response:
+    #     message = response
+
+    human_readable = ""
+
+    return CommandResults(
+        outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
+        outputs=message,
+        raw_response=response,
+        readable_output=human_readable
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -201,8 +215,8 @@ def main() -> None:
             proxy=proxy)
 
         command = demisto.command()
+        print(f"{command=}")
         args = demisto.args()
-
         if command == 'test-module':
             result = test_module(client)
             return_results(result)
