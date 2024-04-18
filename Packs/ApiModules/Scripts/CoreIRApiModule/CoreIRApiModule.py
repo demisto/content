@@ -188,7 +188,7 @@ class CoreClient(BaseClient):
                 establish a connection to a remote machine before a timeout occurs.
                 can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
         '''
-        if not is_xsiam() or not is_demisto_version_ge(version='8.6.0',build_number='924770'):
+        if not is_xsiam() or not is_demisto_version_ge(version='8.6.0',build_number='957366'):
             return BaseClient._http_request(self, method=method, url_suffix=url_suffix, full_url=full_url, headers=None,
                                             json_data=json_data,params=params, data=data, timeout=timeout,
                                             raise_on_status=raise_on_status)

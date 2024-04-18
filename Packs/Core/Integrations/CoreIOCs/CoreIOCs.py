@@ -13,7 +13,7 @@ from CoreIRApiModule import *
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
-USING_CORE_CLIENT_HTTP_REQUEST = is_xsiam() or is_demisto_version_ge(version='8.6.0',build_number='924770')
+USING_CORE_CLIENT_HTTP_REQUEST = is_xsiam() or is_demisto_version_ge(version='8.6.0',build_number='957366')
 
 core_types_to_demisto: Dict = {
     "DOMAIN_NAME": 'Domain',
