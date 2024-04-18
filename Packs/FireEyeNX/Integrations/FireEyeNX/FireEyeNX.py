@@ -1,4 +1,3 @@
-import demistomock
 from CommonServerPython import *
 
 """ IMPORTS """
@@ -379,7 +378,7 @@ def set_attachment_file(client, incident: dict, uuid: str, headers: dict):
         ]
 
 
-def get_incidents_for_alert(**kwargs) -> list:
+def get_incidents_for_alert(**kwargs) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """
     Return List of incidents for alert.
 
@@ -388,6 +387,8 @@ def get_incidents_for_alert(**kwargs) -> list:
     """
     incidents: list[dict[str, Any]] = []
     last_run = kwargs['last_run']
+    next_run = last_run.get('alerts', {})
+
     headers = {
         'X-FeApi-Token': kwargs['client'].get_api_token(),
         'Accept': CONTENT_TYPE_JSON,
@@ -413,18 +414,24 @@ def get_incidents_for_alert(**kwargs) -> list:
 
     total_records = resp.get('alertsCount', 0)
     if total_records > 0:
-
         if kwargs['replace_alert_url']:
             replace_alert_url_key_domain_to_instance_url(
                 resp.get('alert', []), kwargs['instance_url']
             )
-
         count = kwargs['fetch_count']
-        last_incident_start_time = last_run.get('alerts', {}).get('start_time')
-        for alert in resp.get('alert', []):
-            # remove duplicate incident
-            if last_incident_start_time and last_incident_start_time == alert.get('occurred', ''):
-                continue
+
+        next_incidents_ids = []
+        alerts = resp.get('alert', [])
+        alerts.sort(key=lambda x: x.get("occurred"))
+        last_alert_start_time = last_run.get('alerts', {}).get('start_time')
+        last_alert_ids = last_run.get('alerts', {}).get('alert_ids', [])
+        next_alert_start_time = alerts[-1].get('occurred', '')
+
+        for alert in alerts:
+            # skip on duplicate incident
+            if last_alert_start_time and last_alert_ids:
+                if last_alert_start_time == alert.get('occurred', '') and alert.get('id', '') in last_alert_ids:
+                    continue
             # set incident
             context_alert = remove_empty_entities(alert)
             context_alert['incidentType'] = ALERT_INCIDENT_TYPE
@@ -456,7 +463,13 @@ def get_incidents_for_alert(**kwargs) -> list:
             remove_nulls_from_dictionary(incident)
             incidents.append(incident)
             count += 1
-    return incidents
+
+        parsed_incidents_str = [f"Incident name: {incident.get('name')} Incident date: {incident.get('occurred')}\n" for
+                                incident in incidents]
+        demisto.debug(
+            f"FireeyeNX Alerts: {parsed_incidents_str}")
+        next_run = {'start_time': next_alert_start_time, 'alert_ids': next_incidents_ids}
+    return incidents, next_run
 
 
 def get_incidents_for_event(
@@ -473,6 +486,7 @@ def get_incidents_for_event(
     :return: Incident List for event.
     """
     incidents: list[dict[str, Any]] = []
+    next_run = last_run.get('events', {})
 
     # Preparing header and parameters
     headers = {
@@ -502,17 +516,29 @@ def get_incidents_for_event(
     total_records = len(resp.get('events', []))
     count = 0
     if total_records > 0:
-        last_incident_start_time = last_run.get('events', {}).get('start_time')
-        for event in resp.get('events', []):
+        next_incidents_ids = []
+        events = resp.get('events', [])
+        events.sort(key=lambda x: x.get("occurred"))
+        last_event_start_time = last_run.get('events', {}).get('start_time')
+        last_event_ids = last_run.get('events', {}).get('event_ids', [])
+        next_event_start_time = events[-1].get('occurred', '')
+
+        for event in events:
             # skip on duplicate incident
-            if last_incident_start_time and last_incident_start_time == event.get('occurred', ''):
-                continue
+            if last_event_start_time and last_event_ids:
+                if last_event_start_time == event.get('occurred', '') and event.get('eventId', '') in last_event_ids:
+                    continue
+
             # set incident
             context_event = remove_empty_entities(event)
             context_event['incidentType'] = IPS_EVENT_INCIDENT_TYPE
             if count >= fetch_limit:
                 break
-
+            if event_occurred_time := event.get('occurred'):
+                if next_event_start_time == event_occurred_time:
+                    if event_id := event.get('eventId'):
+                        # Save the event id for the next fetch dedup
+                        next_incidents_ids.append(event_id)
             incident = {
                 'name': context_event.get('ruleName', ''),
                 'occurred': context_event.get('occurred', ''),
@@ -524,7 +550,13 @@ def get_incidents_for_event(
             remove_nulls_from_dictionary(incident)
             incidents.append(incident)
             count += 1
-    return incidents, count
+        parsed_incidents_str = [f"Incident name: {incident.get('name')} Incident date: {incident.get('occurred')}\n" for
+                                incident in incidents]
+        demisto.debug(
+            f"FireeyeNX IPS Events: {parsed_incidents_str}")
+        next_run = {'start_time': next_event_start_time, 'event_ids': next_incidents_ids}
+    return incidents, count, next_run
+
 
 
 def validate_fetch_type(fetch_type):
@@ -1312,7 +1344,7 @@ def fetch_incidents(
     # Retrieving last run time if not none, otherwise first_fetch will be considered.
     last_run = kwargs['last_run']
     start_time = kwargs['first_fetch']
-    next_run = {}
+    next_run = last_run
 
     incidents = []
     fetch_count = 0
@@ -1320,21 +1352,15 @@ def fetch_incidents(
         if events_start_time := last_run.get('events', {}).get('start_time'):
             start_time = int(events_start_time)
         demisto.debug(f"FireeyeNX IPS Events Start Time: {start_time}")
-        incidents, fetch_count = get_incidents_for_event(
+        incidents, fetch_count, next_run_events = get_incidents_for_event(
             kwargs['client'],
             start_time,
             kwargs['fetch_limit'],
             kwargs['mvx_correlated'],
             last_run,
         )
-        if incidents:
-            incidents.sort(key=lambda x: x.get("occurred"))
-            parsed_incidents_str = [f"Incident name: {incident.get('name')} Incident date: {incident.get('occurred')}\n" for
-                                    incident in incidents]
-            demisto.debug(
-                f"FireeyeNX IPS Events: {parsed_incidents_str}")
-            last_event = incidents[-1]
-            next_run["events"] = {"start_time": last_event.get("occurred")}
+        next_run['events'] = next_run_events
+
     # reset start time before next fetch type
     start_time = kwargs['first_fetch']
     if 'Alerts' in (kwargs['fetch_type'] or []) and (
@@ -1343,7 +1369,7 @@ def fetch_incidents(
         if alerts_start_time := last_run.get('alerts', {}).get('start_time'):
             start_time = int(alerts_start_time)
         demisto.debug(f"FireeyeNX Alerts Start Time: {start_time}")
-        alert_incidents = get_incidents_for_alert(
+        alert_incidents, next_run_alerts = get_incidents_for_alert(
             client=kwargs['client'],
             malware_type=kwargs['malware_type'],
             start_time=start_time,
@@ -1355,17 +1381,10 @@ def fetch_incidents(
             fetch_count=fetch_count,
             last_run=last_run,
         )
-
-        if alert_incidents:
-            alert_incidents.sort(key=lambda x: x.get("occurred"))
-            parsed_incidents_str = [f"Incident name: {incident.get('name')} Incident date: {incident.get('occurred')}\n" for
-                                    incident in alert_incidents]
-            demisto.debug(f"FireeyeNX Alerts: {parsed_incidents_str}")
-            last_incident = alert_incidents[-1]
-            next_run["alerts"] = {"start_time": last_incident.get("occurred")}
-            incidents.extend(
-                alert_incidents
-            )
+        incidents.extend(
+            alert_incidents
+        )
+        next_run['alerts'] = next_run_alerts
 
     if kwargs['is_test']:
         return None, None

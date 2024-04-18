@@ -417,9 +417,7 @@ def test_module_success_with_fetch_incident(
     from FireEyeNX import test_function
 
     mock_get_alert.return_value = []
-    mock_last_run = {
-        'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp()
-    }
+    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp(), 'alert_ids': ['1']}}
 
     mock_request.return_value = mock_http_response(
         status=200, headers=AUTHENTICATION_RESP_HEADER, text=''
@@ -1130,9 +1128,8 @@ def test_fetch_incidents_for_alert_success(
     from FireEyeNX import fetch_incidents
 
     # Configure
-    mock_last_run = {
-        'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp()
-    }
+    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp(), 'alert_ids': ['1']}}
+
     dummy_first_fetch = 1
     mock_fetch_limit = 12
     mock_malware_type = 'malware-type'
@@ -1168,7 +1165,7 @@ def test_fetch_incidents_for_alert_success(
 
     # Assert
     assert len(incidents) == mock_fetch_limit
-    assert next_run.get('start_time') is not None
+    assert next_run.get('alerts').get('start_time') is not None
 
 
 @patch('FireEyeNX.Client.http_request')
@@ -1223,9 +1220,7 @@ def test_fetch_incidents_for_event_success(
     from FireEyeNX import fetch_incidents
 
     # Configure
-    mock_last_run = {
-        'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp()
-    }
+    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp(), 'alert_ids': ['1']}}
     dummy_first_fetch = 1
     mock_fetch_limit = 1
     mock_api_token.return_value = API_TOKEN
@@ -1256,4 +1251,4 @@ def test_fetch_incidents_for_event_success(
 
     # Assert
     assert len(incidents) == mock_fetch_limit
-    assert next_run.get('start_time') is not None
+    assert next_run.get('alerts').get('start_time') is not None
