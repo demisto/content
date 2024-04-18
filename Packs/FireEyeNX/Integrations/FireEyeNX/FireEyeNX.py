@@ -42,21 +42,21 @@ MESSAGES: dict[str, str] = {
     'BAD_REQUEST_ERROR': 'An error occurred while fetching the data.',
     'AUTHENTICATION_ERROR': 'Unauthenticated. Check the configured Username and Password.',
     'PROXY_ERROR': "Proxy Error - cannot connect to proxy. Either try clearing the 'Use system proxy' check-box or "
-    'check the host, authentication details and connection details for the proxy.',
+                   'check the host, authentication details and connection details for the proxy.',
     'BLANK_PROXY_ERROR': 'https proxy value is empty. Check XSOAR server configuration ',
     'SSL_CERT_ERROR': "SSL Certificate Verification Failed - try selecting 'Trust any certificate' checkbox in the "
-    'integration configuration.',
+                      'integration configuration.',
     'INTERNAL_SERVER_ERROR': 'The server encountered an internal error for FireEye NX and was unable to complete '
-    'your request.',
+                             'your request.',
     'MISSING_SCHEMA_ERROR': 'Invalid API URL. No schema supplied: http(s).',
     'INVALID_SCHEMA_ERROR': 'Invalid API URL. Supplied schema is invalid, supports http(s).',
     'INVALID_API_URL': 'Invalid API URL.',
     'CONNECTION_ERROR': 'Connectivity failed. Check your internet connection or the API URL.',
     'INVALID_ALERT_DETAILS': 'For fetching Alert Details Report, "infection_id" and "infection_type" '
-    'arguments are required.',
+                             'arguments are required.',
     'INVALID_REPORT_TYPE': 'The given value for report_type is invalid.',
     'INVALID_REPORT_OUTPUT_TYPE': "The given value for the argument type (report's format) is invalid. Valid value("
-    's): {}.',
+                                  's): {}.',
     'NO_RECORDS_FOUND': 'No {} were found for the given argument(s).',
     'INVALID_INT_VALUE': 'The given value for {} is invalid. Expected integer value.',
     'FETCH_LIMIT_VALIDATION': 'Value of Fetch Limit should be an integer and between range 1 to 200.',
@@ -429,9 +429,9 @@ def get_incidents_for_alert(**kwargs) -> tuple[list[dict[str, Any]], dict[str, A
 
         for alert in alerts:
             # skip on duplicate incident
-            if last_alert_start_time and last_alert_ids:
-                if last_alert_start_time == alert.get('occurred', '') and alert.get('id', '') in last_alert_ids:
-                    continue
+            if last_alert_start_time and last_alert_ids and last_alert_start_time == alert.get('occurred', '') and alert.get('id',
+                                                                                                                             '') in last_alert_ids:
+                continue
             # set incident
             context_alert = remove_empty_entities(alert)
             context_alert['incidentType'] = ALERT_INCIDENT_TYPE
@@ -525,16 +525,17 @@ def get_incidents_for_event(
 
         for event in events:
             # skip on duplicate incident
-            if last_event_start_time and last_event_ids:
-                if last_event_start_time == event.get('occurred', '') and event.get('eventId', '') in last_event_ids:
-                    continue
+            if last_event_start_time and last_event_ids and last_event_start_time == event.get('occurred', '') and event.get(
+                'eventId', '') in last_event_ids:
+                continue
 
             # set incident
             context_event = remove_empty_entities(event)
             context_event['incidentType'] = IPS_EVENT_INCIDENT_TYPE
             if count >= fetch_limit:
                 break
-            if (event_occurred_time := event.get('occurred')) and next_event_start_time == event_occurred_time:
+            if ((event_occurred_time := event.get('occurred')) and
+                next_event_start_time == event_occurred_time):
                 if event_id := event.get('eventId'):
                     # Save the event id for the next fetch dedup
                     next_incidents_ids.append(event_id)
@@ -1566,7 +1567,7 @@ def main() -> None:
                 first_fetch=date_to_timestamp(
                     start_time, date_format=DATE_FORMAT
                 )
-                / 1000,
+                            / 1000,
                 fetch_type=fetch_type,
                 mvx_correlated=mvx_correlated,
                 replace_alert_url=replace_alert_url,
