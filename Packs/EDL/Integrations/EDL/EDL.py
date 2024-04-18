@@ -1186,7 +1186,7 @@ def route_edl_log() -> Response:
         # If log file content was not created yet, refresh after 15 seconds.
         # If EDL indicator list refresh rate is less than 30s, refresh the log after half of the time.
         # This way, the corresponding log will be shown after at most 15 seconds.
-        max_age = min(ceil(max_age/2), 15)
+        max_age = min(ceil(max_age / 2), 15)
 
     mimetype = get_outbound_mimetype(request_args)
     resp = Response(edl_data_log, status=200, mimetype=mimetype, headers=headers)
