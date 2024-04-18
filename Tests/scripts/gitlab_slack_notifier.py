@@ -710,10 +710,11 @@ def main():
                 thread_ts: str = data['ts']
                 for slack_msg in threaded_messages:
                     slack_msg = [slack_msg] if not isinstance(slack_msg, list) else slack_msg
-                    slack_client.chat_postMessage(
-                        channel=channel, attachments=slack_msg, username=SLACK_USERNAME,
-                        thread_ts=thread_ts
-                    )
+                    if slack_msg:
+                        slack_client.chat_postMessage(
+                            channel=channel, attachments=slack_msg, username=SLACK_USERNAME,
+                            thread_ts=thread_ts
+                        )
 
             link = build_link_to_message(response)
             logging.info(f'Successfully sent Slack message to channel {channel} link: {link}')
