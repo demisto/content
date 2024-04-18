@@ -7435,3 +7435,28 @@ def test_pan_os_delete_security_profile_group_command(mocker):
     command_results = Panorama.pan_os_delete_security_profile_group_command({"group_name": "test_spg"})
     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
     assert command_results.readable_output == 'Successfully deleted Security Profile Group: "test_spg"'
+
+
+# def test_get_query_by_job_id_request(mocker):
+#     """
+#     Given:
+#         - The security profile groups name to delete.
+#     When:
+#         - Running the pan_os_delete_security_profile_group_command.
+#     Then:
+#         - Ensure the returned response and readable outputs is as expected.
+#     """
+#     from Panorama import get_query_by_job_id_request
+#     import requests
+#     Panorama.URL = 'https://1.1.1.1:443/'
+#     Panorama.API_KEY = 'thisisabogusAPIKEY!'
+#     Panorama.DEVICE_GROUP = 'somedevice'
+#
+#     expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+#
+#     mock_response = MockedResponse(text=expected_text_response, status_code=200)
+#     mocker.patch.object(requests, 'request', return_value=mock_response)
+#
+#     command_results = get_query_by_job_id_request({"log_type": "Correlation", "query": "(severity geq '0')", "max_fetch": 2})
+#     assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+#     assert command_results.readable_output == 'Successfully deleted Security Profile Group: "test_spg"'
