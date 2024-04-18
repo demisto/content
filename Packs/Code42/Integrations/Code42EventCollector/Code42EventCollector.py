@@ -224,6 +224,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
     """
     demisto.debug(f'last run before getting {EventType.FILE} logs: {last_run}')
     new_last_run = last_run.copy()
+    new_last_run.pop("nextTrigger", None)
     file_event_time = dateparser.parse(last_run[FileEventLastRun.TIME]) if FileEventLastRun.TIME in last_run else (
         datetime.now() - timedelta(minutes=240)
     )
@@ -261,7 +262,7 @@ def fetch_audit_logs(client: Client, last_run: dict, max_fetch_audit_events: int
     demisto.debug(f'last run before getting {EventType.AUDIT} logs: {last_run}')
     new_last_run = last_run.copy()
     audit_log_time = dateparser.parse(last_run[AuditLogLastRun.TIME]) if AuditLogLastRun.TIME in last_run else (
-        datetime.now() - timedelta(minutes=240)
+        datetime.now() - timedelta(minutes=1)
     )
     last_fetched_audit_log_ids = set(
         last_run[AuditLogLastRun.FETCHED_IDS]
@@ -304,7 +305,7 @@ def fetch_events(client: Client, last_run: dict, max_fetch_file_events: int, max
     for log in audit_logs:
         log.pop("id", None)
 
-    if file_events or audit_logs:
+    if audit_logs:
         audit_logs_last_run["nextTrigger"] = "30"
 
     last_run.update(audit_logs_last_run)
