@@ -13,10 +13,16 @@ configuration:
   name: credentials
   required: true
   type: 9
-  display: Client ID
+  display: User Name
   section: Connect
-- display: User Name
-  name: username
+#- name: basic_credentials
+#  required: true
+#  type: 9
+#  display: Client ID
+#  section: Connect
+#  hiddenpassword: true
+- display: Client ID
+  name: client_id
   required: true
   type: 0
   section: Connect

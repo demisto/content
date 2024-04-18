@@ -64,7 +64,6 @@ class Client(BaseClient):
 
     def _create_new_token(self, url_suffix: str, json_data: dict) -> str:
         try:
-            print(json_data)
             access_token_obj = self._http_request(
                 method="POST",
                 url_suffix=url_suffix,
@@ -96,7 +95,7 @@ class Client(BaseClient):
         expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
         set_integration_context({"token": token, "refresh_token": refresh_token, "expire_date": str(expire_date)})
 
-    def _get_certificates(self, args: Dict[str, Any]) -> List:
+    def _get_certificates(self, args: Dict[str, Any] = None) -> List:
         headers = {
             "Authorization": f"Bearer {self.token}"
         }
@@ -128,10 +127,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        args = {
-            "CreatedOn": "2018-07-16"
-        }
-        results = client._get_certificates(args)
+        results = client._get_certificates()
         if results:
             message = 'ok'
     except DemistoException as e:
@@ -140,22 +136,6 @@ def test_module(client: Client) -> str:
         else:
             raise e
     return message
-
-
-# # TODO: REMOVE the following dummy command function
-# def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-#     dummy = args.get('dummy', None)
-#     if not dummy:
-#         raise ValueError('dummy not specified')
-#
-#     # Call the Client function and get the raw response
-#     result = client.baseintegration_dummy(dummy)
-#
-#     return CommandResults(
-#         outputs_prefix='BaseIntegration',
-#         outputs_key_field='',
-#         outputs=result,
-#     )
 
 
 def get_certificates_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -184,14 +164,12 @@ def main() -> None:
     :rtype:
     """
     demisto_params = demisto.params()
-    base_url = demisto_params.get('url', "https://ao-tlspd.dev.ven-eco.com")
+    base_url = demisto_params.get('server', "https://ao-tlspd.dev.ven-eco.com")
     username = demisto_params.get('credentials')['identifier']
     password = demisto_params.get('credentials')['password']
-    client_id = demisto_params.get('client_id')
-    print(client_id)
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
-
+    client_id = demisto_params.get("client_id")
+    verify_certificate = demisto_params.get('insecure', False)
+    proxy = demisto_params.get('proxy', False)
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(
