@@ -61,7 +61,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-- display: Policy audits event type
+- display: ElevationRequest - Policy Audit
   additionalinfo: A comma-separated list of policy audits event type to fetch
   name: policy_audits_event_type
   required: false
@@ -84,7 +84,7 @@ configuration:
   - Access
   - Skipped
   section: Collect
-- display: Raw events event type
+- display: ElevationRequest - Detailed Events
   additionalinfo: A comma-separated list of raw events event type to fetch
   name: raw_events_event_type
   required: false
