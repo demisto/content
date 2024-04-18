@@ -534,11 +534,10 @@ def get_incidents_for_event(
             context_event['incidentType'] = IPS_EVENT_INCIDENT_TYPE
             if count >= fetch_limit:
                 break
-            if event_occurred_time := event.get('occurred'):
-                if next_event_start_time == event_occurred_time:
-                    if event_id := event.get('eventId'):
-                        # Save the event id for the next fetch dedup
-                        next_incidents_ids.append(event_id)
+            if (event_occurred_time := event.get('occurred')) and next_event_start_time == event_occurred_time:
+                if event_id := event.get('eventId'):
+                    # Save the event id for the next fetch dedup
+                    next_incidents_ids.append(event_id)
             incident = {
                 'name': context_event.get('ruleName', ''),
                 'occurred': context_event.get('occurred', ''),
@@ -556,7 +555,6 @@ def get_incidents_for_event(
             f"FireeyeNX IPS Events: {parsed_incidents_str}")
         next_run = {'start_time': next_event_start_time, 'event_ids': next_incidents_ids}
     return incidents, count, next_run
-
 
 
 def validate_fetch_type(fetch_type):
