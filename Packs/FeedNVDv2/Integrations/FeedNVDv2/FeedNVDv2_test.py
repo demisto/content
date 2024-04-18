@@ -2,7 +2,7 @@ import json
 import pytest
 from dateparser import parse
 from FeedNVDv2 import parse_cpe_command, build_indicators, Client, calculate_dbotscore, get_cvss_version_and_score
-from FeedNVDv2 import cves_to_war_room, retrieve_cves
+from FeedNVDv2 import cves_to_war_room, retrieve_cves, fetch_indicators_command
 from unittest.mock import patch
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -159,9 +159,15 @@ def test_retrieve_cves(start_date, end_date, publish_date, expected_results):
     # Mocking the client.get_cves method
     with patch('FeedNVDv2.Client.get_cves') as mock_get_cves:
         mock_get_cves.return_value = open_json("./test_data/nist_response.json")
-
-        # Call the retrieve_cves function with mock client and arguments
         raw_cves = retrieve_cves(client, parse(start_date), parse(end_date), publish_date)
-
-        # Assert that the raw_cves obtained from the function matches the expected results
         assert raw_cves[0] == expected_results
+
+
+def test_fetch_indicators_command():
+    with patch('FeedNVDv2.retrieve_cves') as mock_retrieve_cves, patch('FeedNVDv2.demisto') as demisto_mock:
+        expected_result = open_json("./test_data/nist_response.json")["vulnerabilities"][0]
+        mock_retrieve_cves.return_value = [expected_result]
+        demisto_mock.command.return_value = 'nvd-get-indicators'
+        demisto_mock.getArg.return_value = "130 days"
+        fetch_indicators_command(client)
+        assert mock_retrieve_cves.call_count == 2

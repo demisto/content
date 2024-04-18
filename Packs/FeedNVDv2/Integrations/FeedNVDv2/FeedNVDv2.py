@@ -457,6 +457,8 @@ def fetch_indicators_command(client: Client) -> list[dict]:
     return raw_cves
 
 # pragma: no cover
+
+
 def main():
     """
     Main integration function that defines the client object and initiates calls to
@@ -503,6 +505,6 @@ def main():
     except Exception as e:  # pylint: disable=broad-except
         return_error(f'Failed to execute {demisto.command()} command.\nError: \n{str(e)}')
 
-# pragma: no cover
+
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
