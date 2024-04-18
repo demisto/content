@@ -1,7 +1,7 @@
 # pylint: disable=invalid-name,protected-access,unused-wildcard-import,wildcard-import,wrong-import-order
 """
 NVD Feed Integration to retrieve CVEs from NIST NVD and parse them
-into a normalized XSOAR CVE indicator data structure 
+into a normalized XSOAR CVE indicator data structure
 for threat intelligence management
 """
 
@@ -201,7 +201,7 @@ def parse_cpe_command(cpes: list[str], cve_id: str) -> tuple[list[str], list[Ent
     Parses a CPE to return the correct tags and relationships needed for the CVE.
 
     Args:
-        cpe: A list representing a single CPE, see 
+        cpe: A list representing a single CPE, see
         "https://nvlpubs.nist.gov/nistpubs/legacy/ir/nistir7695.pdf" # disable-secrets-detection
 
     Returns:
@@ -338,7 +338,7 @@ def test_module(client: Client):
 def retrieve_cves(client, start_date: Any, end_date: Any, publish_date: bool):
     """
     Iteratively retrieves CVEs from NVD from the specified modification date
-    through the date the fetch-indicators or nvd-get-indicators command is 
+    through the date the fetch-indicators or nvd-get-indicators command is
     called
 
     Args:

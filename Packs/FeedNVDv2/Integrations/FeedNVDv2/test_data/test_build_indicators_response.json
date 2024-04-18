@@ -1,3 +1,4 @@
+# disable-secrets-detection-start
 [
    {
       "value":"CVE-2021-44228",
