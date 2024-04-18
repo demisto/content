@@ -43,6 +43,27 @@ configuration:
   required: false
   section: connect
 
+- display: Max tokens
+  name: max_tokens
+  additionalinfo: "The maximum number of tokens that can be generated for the response. (Allows controlling tokens' consumption)."
+  type: 0
+  required: false
+  section: config
+
+- display: Temperature  
+  name: temperature
+  additionalinfo: "Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both."
+  type: 0
+  required: false
+  section: config
+
+- display: Top_p
+  name: top_p
+  additionalinfo: "Enables nucleus sampling where only the top 'p' percent (0 to 1) of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both."
+  type: 0
+  required: false
+  section: config
+
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -52,6 +73,7 @@ configuration:
   name: proxy
   type: 8
   required: false
+
 script:
   commands:
   - name: gpt-send-message
@@ -77,17 +99,11 @@ script:
       - name: top_p
         required: false
         description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
-    outputs:
-    - contextPath: OpenAIGPT.Conversation
-      description: Entire conversation (if not reset) between the user and the GPT model.
-      type: Dictionary
 
-  - name: gpt-get-cve-info
-    description: Get a brief explanation of a CVE. It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
-    arguments:
-      - name: cve
-        description: CVE to provide information of.
-        required: true
+      - name: verbose
+        required: false
+        description: Whether to display token consumption and queried model
+        type: Boolean
     outputs:
     - contextPath: OpenAIGPT.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.
@@ -103,6 +119,23 @@ script:
       - name: additionalInstructions
         description: Additional instructions or security issue to focus on.
         required: false
+
+      - name: max_tokens
+        required: false
+        description: The maximum number of tokens that can be generated for the response.
+
+      - name: temperature
+        required: false
+        description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+
+      - name: top_p
+        required: false
+        description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+
+      - name: verbose
+        required: false
+        description: Whether to display token consumption and queried model
+        type: Boolean
     outputs:
     - contextPath: OpenAIGPT.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.  It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
@@ -118,16 +151,44 @@ script:
       - name: additionalInstructions
         description: Additional instructions or security issue to focus on.
         required: false
+
+      - name: max_tokens
+        required: false
+        description: The maximum number of tokens that can be generated for the response.
+
+      - name: temperature
+        required: false
+        description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+
+      - name: top_p
+        required: false
+        description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+
+      - name: verbose
+        required: false
+        description: Whether to display token consumption and queried model
+        type: Boolean
     outputs:
     - contextPath: OpenAIGPT.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.
       type: Dictionary
 
+  - name: gpt-get-cve-info
+    description: Get a brief explanation of a CVE. It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
+    arguments:
+      - name: cve
+        description: CVE to provide information of.
+        required: true
+    outputs:
+    - contextPath: OpenAIGPT.Conversation
+      description: Entire conversation (if not reset) between the user and the GPT model.
+      type: Dictionary
   runonce: false
   script: ''
   type: python
   subtype: python3
   dockerimage: demisto/parse-emails:1.0.0.92018
+
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

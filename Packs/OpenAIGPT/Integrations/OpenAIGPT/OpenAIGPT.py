@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 import urllib3
 from typing import Dict
 import parse_emails
-from Packs.CIRCL.Integrations.CirclCVESearch.CirclCVESearch import Client as CveSearchClient, valid_cve_id_format
+# from Packs.CIRCL.Integrations.CirclCVESearch.CirclCVESearch import Client as CveSearchClient, valid_cve_id_format
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -242,15 +242,15 @@ def check_email_part(email_part: str, client: OpenAiClient, args: Dict[str, Any]
     return send_message_command(client, args)
 
 
-def get_cve_data(cve_id: str, cve_search_client: CveSearchClient) -> dict:
-    # TODO - structure and format the cve data properly
-    return cve_search_client.cve(cve_id)
+# def get_cve_data(cve_id: str, cve_search_client: CveSearchClient) -> dict:
+#     # TODO - structure and format the cve data properly
+#     return cve_search_client.cve(cve_id)
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: OpenAiClient) -> str:
+def test_module(client: OpenAiClient, params: dict) -> str:
     """Tests API connectivity and authentication along with model compatability with 'Chat Completions' endpoint.
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -266,7 +266,12 @@ def test_module(client: OpenAiClient) -> str:
     message = ''
     try:
         chat_message = {"role": "user", "content": ""}
-        client.get_chat_completions(chat_context=[chat_message], completion_params={})
+        completion_params = {
+            'max_tokens': params.get('max_tokens', None),
+            'temperature': params.get('temperature', None),
+            'top_p': params.get('top_p', None)
+        }
+        client.get_chat_completions(chat_context=[chat_message], completion_params=completion_params)
         message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
@@ -310,22 +315,20 @@ def check_email_body_command(client: OpenAiClient, args: Dict[str, Any]) -> Comm
     return check_email_part(EmailParts.BODY, client, args)
 
 
-def get_cve_info_command(cve_search_client: CveSearchClient, openai_client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
-    cve_id = args.get('CVE', '')
-    if not valid_cve_id_format(cve_id):
-        raise DemistoException(f"{cve_id} is not a valid cve ID. Cve ID should be of the format 'CVE-2021-1234'")
-
-    cve_data = get_cve_data(cve_id, cve_search_client)
-    cve_info_message = CVE_INFO_PROMPT.format(cve_data)
-    # Starting a new conversation as of a new topic discussed.
-    args.update({'reset_conversation_history': True, 'message': cve_info_message})
-    return CommandResults(outputs_prefix='OpenAIGPT.CVE_INFO',
-        outputs=cve_info_message,
-        replace_existing=True,
-        readable_output=cve_info_message)
-    # return send_message_command(openai_client, args)
-
-
+# def get_cve_info_command(cve_search_client: CveSearchClient, openai_client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
+#     cve_id = args.get('CVE', '')
+#     if not valid_cve_id_format(cve_id):
+#         raise DemistoException(f"{cve_id} is not a valid cve ID. Cve ID should be of the format 'CVE-2021-1234'")
+#
+#     cve_data = get_cve_data(cve_id, cve_search_client)
+#     cve_info_message = CVE_INFO_PROMPT.format(cve_data)
+#     # Starting a new conversation as of a new topic discussed.
+#     args.update({'reset_conversation_history': True, 'message': cve_info_message})
+#     return CommandResults(outputs_prefix='OpenAIGPT.CVE_INFO',
+#                           outputs=cve_info_message,
+#                           replace_existing=True,
+#                           readable_output=cve_info_message)
+#     # return send_message_command(openai_client, args)
 
 
 ''' MAIN FUNCTION '''
@@ -346,9 +349,17 @@ def main() -> None:
     # If a model name was provided within the free text box, it will override the selected one from the model selection box.
     # The provided model will be tested for compatability within the test module.
     model = params.get('model-freetext') if params.get('model-freetext') else params.get('model-select')
+
+    # Using instance params for model configuration, if command args were not provided.
+    if not args.get('max_tokens', None) and params.get('max_tokens', None):
+        args['max_tokens'] = params.get('max_tokens')
+    if not args.get('temperature', None) and params.get('temperature', None):
+        args['temperature'] = params.get('temperature')
+    if not args.get('top_p', None) and params.get('top_p', False):
+        args['top_p'] = params.get('top_p')
+
     verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-
     try:
         client = OpenAiClient(
             api_key=api_key,
@@ -358,15 +369,15 @@ def main() -> None:
         )
 
         if command == 'test-module':
-            return_results(test_module(client))
+            return_results(test_module(client=client, params=params))
 
         elif command == "gpt-send-message":
             return_results(send_message_command(client=client, args=args))
 
-        elif command == "gpt-get-cve-info":
-            # Starting a CveSearchClient for cve data querying.
-            cve_search_client = CveSearchClient(base_url=CIRCLCVE_BASE_URL, verify=verify, proxy=proxy)
-            return_results(get_cve_info_command(cve_search_client=cve_search_client, openai_client=client, args=args))
+        # elif command == "gpt-get-cve-info":
+        #     # Starting a CveSearchClient for cve data querying.
+        #     cve_search_client = CveSearchClient(base_url=CIRCLCVE_BASE_URL, verify=verify, proxy=proxy)
+        #     return_results(get_cve_info_command(cve_search_client=cve_search_client, openai_client=client, args=args))
 
         elif command == "gpt-check-email-header":
             results = check_email_headers_command(client=client, args=args)
