@@ -1433,6 +1433,7 @@ tasks:
       id: 395af71d-9832-46a5-853a-e51948b9f62a
       version: -1
       name: Is the CMD defined?
+      description: Checks the existence of a command line parameter.
       type: condition
       iscommand: false
       brand: ""
