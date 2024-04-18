@@ -236,6 +236,9 @@
             "fromversion": "6.5.0"
         },
         {
+            "playbookID": "MapRangeValuesTest"
+        },
+        {
             "integrations": "McAfeeNSMv2",
             "playbookID": "Test_McAfeeNSMv2_using_v9",
             "fromversion": "6.5.0",
