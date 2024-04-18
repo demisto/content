@@ -9679,6 +9679,28 @@ def test_sleep_exceeds_ttl(mocker):
     assert str(excinfo.value) == "Requested a sleep of 350 seconds, but time left until docker timeout is 300 seconds."
 
 
+def test_sleep_not_supported(mocker):
+    """
+       Given: a sleep duration in not supported server version.
+
+        When: The `sleep` method is called with that duration.
+
+       Then:
+        - A warning should be outputed indicating that the requested sleep exceeds the TTL.
+        - Sleep the requested time.
+      """
+    mocker.patch.object(demisto, 'callingContext', {"context": {}})
+    logger_mocker = mocker.patch.object(demisto, 'info')
+
+    sleep_mocker = mocker.patch('time.sleep')
+
+    safe_sleep(duration_seconds=50)
+
+    # Verify sleep duration based on mocked time difference
+    assert sleep_mocker.call_count == 1
+    assert logger_mocker.call_args[0][0] == "Safe sleep is not supported in this server version, sleeping for the requested time."
+
+
 def test_sleep_mocked_time(mocker):
     """
     Given:  a method using sleep.

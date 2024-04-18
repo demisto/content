@@ -11936,14 +11936,16 @@ def safe_sleep(duration_seconds):
         :return: None
         :rtype: ``None``
     """
-    run_duration = demisto.callingContext.get('context', {}).get('runDuration', 5) * 60
-    time_left = run_duration - (datetime.now() - SAFE_SLEEP_START_TIME).total_seconds()
-    if duration_seconds > time_left:
-        raise ValueError("Requested a sleep of {} seconds, but time left until docker timeout is {} seconds."
-                               .format(duration_seconds, run_duration))
+    context = demisto.callingContext.get('context', {})
+    if 'runDuration' in context:
+        run_duration = int(context.get('runDuration')) * 60
+        time_left = run_duration - (datetime.now() - SAFE_SLEEP_START_TIME).total_seconds()
+        if duration_seconds > time_left:
+            raise ValueError("Requested a sleep of {} seconds, but time left until docker timeout is {} seconds."
+                                   .format(duration_seconds, run_duration))
     else:
-        time.sleep(duration_seconds)
-
+        demisto.info('Safe sleep is not supported in this server version, sleeping for the requested time.')
+    time.sleep(duration_seconds)
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
