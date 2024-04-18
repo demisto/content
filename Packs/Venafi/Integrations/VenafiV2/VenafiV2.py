@@ -95,7 +95,7 @@ class Client(BaseClient):
         expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
         set_integration_context({"token": token, "refresh_token": refresh_token, "expire_date": str(expire_date)})
 
-    def _get_certificates(self, args: Dict[str, Any] = None) -> List:
+    def _get_certificates(self, args: Dict[str, Any]) -> List:
         headers = {
             "Authorization": f"Bearer {self.token}"
         }
@@ -109,6 +109,21 @@ class Client(BaseClient):
 
         certificates = response.get("Certificates", [])
         return certificates
+
+    def _get_certificate_details(self, guid: str) -> Dict:
+        headers = {
+            "Authorization": f"Bearer {self.token}"
+        }
+
+        url_suffix = f"/vedsdk/certificates/{guid}"
+        response = self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            headers=headers
+        )
+
+        certificate_details = response.get("CertificateDetails", {})
+        return certificate_details
 
 
 def test_module(client: Client) -> str:
@@ -127,7 +142,8 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        results = client._get_certificates()
+        test_empty_args = {}
+        results = client._get_certificates(test_empty_args)
         if results:
             message = 'ok'
     except DemistoException as e:
@@ -152,6 +168,10 @@ def get_certificates_command(client: Client, args: Dict[str, Any]) -> CommandRes
         raw_response=response,
         readable_output=human_readable
     )
+
+
+def get_certificate_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    pass
 
 
 ''' MAIN FUNCTION '''
@@ -188,6 +208,9 @@ def main() -> None:
             return_results(result)
         elif command == 'get-certificates':
             result = get_certificates_command(client, args)
+            return_results(result)
+        elif command == 'get-certificate-details':
+            result = get_certificate_details_command(client, args)
             return_results(result)
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
