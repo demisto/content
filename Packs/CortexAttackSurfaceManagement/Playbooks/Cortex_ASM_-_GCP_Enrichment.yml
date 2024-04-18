@@ -100,6 +100,7 @@ tasks:
       - "4"
       - "5"
       - "3"
+      - "31"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -206,8 +207,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 485
+          "x": -600,
+          "y": 495
         }
       }
     note: false
@@ -319,8 +320,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 850
+          "x": -600,
+          "y": 865
         }
       }
     note: false
@@ -350,8 +351,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 700
+          "x": -600,
+          "y": 710
         }
       }
     note: false
@@ -1045,9 +1046,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "40"
+      - "41"
       "yes":
-      - "32"
+      - "63"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1061,8 +1062,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1205
+          "x": 260,
+          "y": 495
         }
       }
     note: false
@@ -1089,7 +1090,7 @@ tasks:
       script: GridFieldSetup
     nexttasks:
       '#none#':
-      - "40"
+      - "65"
     scriptarguments:
       gridfield:
         simple: asmserviceownerunrankedraw
@@ -1118,8 +1119,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1425
+          "x": 260,
+          "y": 865
         }
       }
     note: false
@@ -1520,8 +1521,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1665
+          "x": -600,
+          "y": 1340
         }
       }
     note: false
@@ -1548,6 +1549,7 @@ tasks:
       '#none#':
       - "43"
       - "40"
+      - "64"
     scriptarguments:
       append:
         simple: "true"
@@ -1560,8 +1562,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 520,
-          "y": 1205
+          "x": -180,
+          "y": 1075
         }
       }
     note: false
@@ -1586,7 +1588,7 @@ tasks:
       script: Set
     nexttasks:
       '#none#':
-      - "31"
+      - "40"
     scriptarguments:
       append:
         simple: "true"
@@ -1599,8 +1601,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 100,
-          "y": 1030
+          "x": -600,
+          "y": 1075
         }
       }
     note: false
@@ -2350,11 +2352,111 @@ tasks:
           "y": 2520
         }
       }
+  "63":
+    continueonerrortype: ""
+    id: "63"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 79f1ad51-fb19-4d1d-8bcb-22a7151424d5
+      iscommand: false
+      name: Service Account
+      type: title
+      version: -1
+      description: ''
+    taskid: 79f1ad51-fb19-4d1d-8bcb-22a7151424d5
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 710
+        }
+      }
+  "64":
+    continueonerrortype: ""
+    id: "64"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 34d9f121-780c-4f0f-828b-a27747c78a54
+      iscommand: false
+      name: Service Account - End
+      type: title
+      version: -1
+      description: ''
+    taskid: 34d9f121-780c-4f0f-828b-a27747c78a54
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1340
+        }
+      }
+  "65":
+    continueonerrortype: ""
+    id: "65"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "64"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_gcp
+      value:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 8f779ad1-6ea9-4afc-8809-42eb232bf1b4
+      iscommand: false
+      name: Set true flag for completed enrichment
+      script: Set
+      type: regular
+      version: -1
+    taskid: 8f779ad1-6ea9-4afc-8809-42eb232bf1b4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 1075
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
       "29_18_yes": 0.56,
-      "31_32_yes": 0.68,
       "33_34_yes": 0.5,
       "33_43_#default#": 0.11,
       "35_36_yes": 0.54,
@@ -2369,8 +2471,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 4325,
-        "width": 3152.5,
-        "x": 100,
+        "width": 3852.5,
+        "x": -600,
         "y": 20
       }
     }
