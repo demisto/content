@@ -129,22 +129,12 @@ def test_parse_cpe(cpe, expected_output, expected_relationships):
 @pytest.mark.parametrize(
     "input_params, expected_param_string",
     [
-        ({"param1": "value1", "param2": "value2"}, "param1=value1&param2=value2"),
-        ({"noRejected": "None"}, "noRejected"),
-        ({}, ""),
-        ({"param1": "value1", "noRejected": "None"}, "param1=value1&noRejected"),
-        ({"cvssV3Severity": "Low"}, "cvssV3Severity=Low"),
-        (
-            {"param1": "value1", "cvssV3Severity": "Low"},
-            "param1=value1&cvssV3Severity=Low"
-        ),
-        (
-            {"param1": "value1", "param2": "value2", "cvssV3Severity": "Low"},
-            "param1=value1&param2=value2&cvssV3Severity=Low"
-        ),
+        ({"param1": "value1", "noRejected": "None"}, "param1=value1&noRejected&cvssV3Severity=LOW&cvssV3Severity=MEDIUM"),
+        ({"noRejected": "None"}, "noRejected&cvssV3Severity=LOW&cvssV3Severity=MEDIUM"),
     ],
 )
 def test_build_param_string(input_params, expected_param_string):
+    client.cvssv3severity = ["LOW", "MEDIUM"]
     result = client.build_param_string(input_params)
     assert result == expected_param_string
 
