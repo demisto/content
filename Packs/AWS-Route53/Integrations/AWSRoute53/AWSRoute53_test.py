@@ -226,6 +226,18 @@ def test_list_resource_record_sets(mocker):
 
 
 def test_list_resource_record_sets_no_ttl(mocker):
+    """
+    Given:
+    - A Hosted Zone.
+
+    When:
+    - Calling list_resource_record_sets method.
+    - api returns records without TTLs
+
+    Then:
+    - Ensure we get the list of record sets from the hosted zones.
+    - Ensure parsing is made properly
+    """
     from CommonServerPython import tableToMarkdown
 
     args = TEST_PARAMS
