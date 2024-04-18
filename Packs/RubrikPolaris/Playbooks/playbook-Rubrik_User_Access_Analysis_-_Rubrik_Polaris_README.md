@@ -1,4 +1,4 @@
-This playbook fetches user access information for the provided username or email to increase the incident severity if the fetched user has a high risk.
+This playbook fetches User Intelligence information for the provided username or email, and then increases the incident severity based on the user risk levels.
 
 ## Dependencies
 

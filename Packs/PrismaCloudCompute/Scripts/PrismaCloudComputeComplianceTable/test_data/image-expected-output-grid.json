@@ -1,0 +1,8 @@
+{
+   "cloudmetadata": "accountID: some_account_id\nimage: some_image\nprovider: some_provider\nregion: sa-east-1\nresourceID: some_resource_id\ntype: some_type\nvmImageID: some_vm_image_id",
+   "compliancedistribution": "critical: 2\nhigh: 4\nlow: 0\nmedium: 3\ntotal: 9",
+   "complianceissues": "1337 (high | custom) - title",
+   "hosts": "some_ip_1\n\nsome_ip_2",
+   "imageid": "some_other_id",
+   "imageinstances": "some_image_1\n\nsome_image_2\n\nsome_image_3"
+}
