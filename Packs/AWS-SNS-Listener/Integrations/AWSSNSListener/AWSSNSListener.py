@@ -139,7 +139,7 @@ def is_valid_integration_credentials(credentials, request_headers, token):
 def handle_subscription_confirmation(subscribe_url) -> Response:  # pragma: no cover
     demisto.debug('SubscriptionConfirmation request')
     try:
-        return client.get(full_url=subscribe_url)
+        return client.get(full_url=subscribe_url, resp_type='response')
     except Exception as e:
         demisto.error(f'Failed handling SubscriptionConfirmation: {e}')
         return Response(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -208,7 +208,7 @@ async def handle_post(request: Request,
         demisto.error(f'Error in request parsing: {e}')
         return Response(status_code=status.HTTP_400_BAD_REQUEST, content='Failed parsing request.')
     if not is_valid_sns_message(payload):
-        return 'Validation of SNS message failed.'
+        return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Validation of SNS message failed.')
 
     if type == 'SubscriptionConfirmation':
         demisto.debug('SubscriptionConfirmation request')
