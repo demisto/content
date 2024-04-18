@@ -582,5 +582,5 @@
   "version": -1,
   "fromVersion": "8.6.0",
   "description": "",
-  "marketplaces": ["xsoar"]
+  "marketplaces": ["marketplacev2"]
 }
