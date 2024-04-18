@@ -3850,30 +3850,37 @@ def test_handle_outgoing_issue_closure(args, expected_delta):
                          [
                              ("Other=Other,Duplicate=Other,False Positive=False Positive,Resolved=True Positive",
                               ["resolved_other", "resolved_other", "resolved_false_positive", "resolved_true_positive",
-                               "resolved_security_testing"]),
+                               "resolved_security_testing", "resolved_other"]),
 
                              ("Other=True Positive,Duplicate=Other,False Positive=False Positive,Resolved=True Positive",
                               ["resolved_true_positive", "resolved_other", "resolved_false_positive",
-                               "resolved_true_positive", "resolved_security_testing"]),
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              ("Duplicate=Other", ["resolved_other", "resolved_other", "resolved_false_positive",
-                                                  "resolved_true_positive", "resolved_security_testing"]),
+                                                  "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used when no mapping provided.
-                             ("", list(XSOAR_RESOLVED_STATUS_TO_XDR.values())),
+                             ("", ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                                   "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used when improper mapping is provided.
-                             ("Duplicate=RANDOM1, Other=Random2", list(XSOAR_RESOLVED_STATUS_TO_XDR.values())),
+                             ("Duplicate=RANDOM1, Other=Random2",
+                              ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
-                             ("Random1=Duplicate Incident", list(XSOAR_RESOLVED_STATUS_TO_XDR.values())),
+                             ("Random1=Duplicate Incident",
+                              ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used when improper mapping *format* is provided.
-                             ("Duplicate=Other False Positive=Other", list(XSOAR_RESOLVED_STATUS_TO_XDR.values())),
+                             ("Duplicate=Other False Positive=Other",
+                              ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used for when improper key-value pair *format* is provided.
                              ("Duplicate=Other, False Positive=Other True Positive=Other, Other=True Positive",
                               ["resolved_true_positive", "resolved_other", "resolved_false_positive",
-                               "resolved_true_positive", "resolved_security_testing"]),
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                          ],
                          ids=["case-1", "case-2", "case-3", "empty-case", "improper-input-case-1", "improper-input-case-2",
@@ -3895,8 +3902,8 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
     mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
                                                          "custom_xsoar_to_xdr_close_reason_mapping": custom_mapping})
 
-    all_xsoar_close_reasons = XSOAR_RESOLVED_STATUS_TO_XDR.keys()
-    for i, close_reason in enumerate(all_xsoar_close_reasons):
+    possible_xsoar_close_reasons = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + ["CUSTOM_CLOSE_REASON"]
+    for i, close_reason in enumerate(possible_xsoar_close_reasons):
         remote_args = UpdateRemoteSystemArgs({'delta': {'closeReason': close_reason},
                                               'status': 2,
                                               'inc_status': 2,
