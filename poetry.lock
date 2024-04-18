@@ -1454,8 +1454,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "CIAC-9930-xsiam_content_items"
-resolved_reference = "167a07a26b9b2988f05062ab4e023a7c5208b82d"
+reference = "a3da5eb792863b53337afe7e0701fe7524767ddb"
+resolved_reference = "a3da5eb792863b53337afe7e0701fe7524767ddb"
 
 [[package]]
 name = "deprecated"
@@ -7176,4 +7176,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "729354d474c4afc1434b22e46a2728c648d132186a22b88291b469422340b3d4"
+content-hash = "93f36d419eee438fa505974c35c38f1e2ce20e7728dd1518deb252b74b2519ad"
