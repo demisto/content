@@ -13,7 +13,6 @@ from CoreIRApiModule import *
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = '%Y-%m-%dT%H:%M:%SZ'
-USING_CORE_CLIENT_HTTP_REQUEST = is_xsiam() or is_demisto_version_ge(version='8.6.0',build_number='957366')
 
 core_types_to_demisto: Dict = {
     "DOMAIN_NAME": 'Domain',
@@ -50,7 +49,7 @@ class Client(CoreClient):
     }
 
     def __init__(self, params: Dict):
-        if USING_CORE_CLIENT_HTTP_REQUEST:
+        if self.forward_user_run_RBAC_validation:
             url = "/api/webapp/"
         else:
             url = params.get('url')
@@ -62,8 +61,7 @@ class Client(CoreClient):
         handle_proxy()
 
     def http_request(self, url_suffix: str, requests_kwargs=None) -> Dict:
-        if USING_CORE_CLIENT_HTTP_REQUEST:
-            demisto.debug(f'_base_url {self._base_url} url_suffix:{url_suffix} | {self._base_url + url_suffix}')
+        if self.forward_user_run_RBAC_validation:
             return CoreClient._http_request(self, method='POST', url_suffix=url_suffix, data=requests_kwargs)
         if requests_kwargs is None:
             requests_kwargs = dict()
@@ -109,9 +107,10 @@ def get_headers(params: Dict) -> Dict:
     return headers
 
 
-def get_requests_kwargs(_json=None) -> Dict:
+def get_requests_kwargs(client: Client, _json=None, ) -> Dict:
     if _json is not None:
-        return {'data': json.dumps({"request_data": _json})}
+        return {"request_data": _json} if client.forward_user_run_RBAC_validation else \
+            {'data': json.dumps({"request_data": _json})}
     else:
         return {}
 
@@ -254,7 +253,7 @@ def sync(client: Client):
     try:
         create_file_sync(temp_file_path)
         upload_file_to_bucket(temp_file_path)
-        requests_kwargs = get_requests_kwargs(_json={"path_to_file": temp_file_path})
+        requests_kwargs = get_requests_kwargs(client=client, _json={"path_to_file": temp_file_path})
         client.http_request(url_suffix='sync_tim_iocs', requests_kwargs=requests_kwargs)
     finally:
         os.remove(temp_file_path)
@@ -271,7 +270,7 @@ def iocs_to_keep(client: Client):
     try:
         create_file_iocs_to_keep(temp_file_path)
         upload_file_to_bucket(temp_file_path)
-        requests_kwargs = get_requests_kwargs(_json={"path_to_file": temp_file_path})
+        requests_kwargs = get_requests_kwargs(client=client, _json={"path_to_file": temp_file_path})
         client.http_request(url_suffix='iocs_to_keep', requests_kwargs=requests_kwargs)
     finally:
         os.remove(temp_file_path)
@@ -321,7 +320,7 @@ def tim_insert_jsons(client: Client):
         iocs = get_indicators(indicators)
     if iocs:
         path = 'tim_insert_jsons/'
-        requests_kwargs: Dict = get_requests_kwargs(_json=list(map(lambda ioc: demisto_ioc_to_core(ioc), iocs)))
+        requests_kwargs: Dict = get_requests_kwargs(client=client, _json=list(map(lambda ioc: demisto_ioc_to_core(ioc), iocs)))
         client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
     return_outputs('push done.')
 
@@ -333,7 +332,7 @@ def iocs_command(client: Client):
         path, iocs = prepare_enable_iocs(indicators)
     else:   # command == 'disable'
         path, iocs = prepare_disable_iocs(indicators)
-    requests_kwargs: Dict = get_requests_kwargs(_json=iocs)
+    requests_kwargs: Dict = get_requests_kwargs(client=client, _json=iocs)
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
     return_outputs(f'indicators {indicators} {command}d.')
 
@@ -359,8 +358,7 @@ def core_expiration_to_demisto(expiration) -> Union[str, None]:
 def module_test(client: Client):
     ts = int(datetime.now(timezone.utc).timestamp() * 1000) - 1
     path, requests_kwargs = prepare_get_changes(ts)
-    demisto.debug(f'path {path}')
-    requests_kwargs: Dict = get_requests_kwargs(_json=requests_kwargs)
+    requests_kwargs: Dict = get_requests_kwargs(client=client, _json=requests_kwargs)
     client.http_request(url_suffix=path, requests_kwargs=requests_kwargs).get('reply', [])
     demisto.results('ok')
 

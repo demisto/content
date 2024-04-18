@@ -141,13 +141,18 @@ ALERT_EVENT_AZURE_FIELDS = {
     "resourceType",
     "tenantId",
 }
+RBAC_VALIDATIONS_VERSION = '8.6.0'
+RBAC_VALIDATIONS_BUILD_NUMBER = '957366'
 
 
 class CoreClient(BaseClient):
+    forward_user_run_RBAC_validation = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
+                                                                     build_number=RBAC_VALIDATIONS_BUILD_NUMBER)
 
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
+
     
     def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
                 params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
@@ -182,13 +187,14 @@ class CoreClient(BaseClient):
                     if status falls in ``status_forcelist`` range and retries have
                     been exhausted.
             
+            
             :type timeout: ``float`` or ``tuple``
             :param timeout:
                 The amount of time (in seconds) that a request will wait for a client to
                 establish a connection to a remote machine before a timeout occurs.
                 can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
         '''
-        if not is_xsiam() or not is_demisto_version_ge(version='8.6.0',build_number='957366'):
+        if not self.forward_user_run_RBAC_validation:
             return BaseClient._http_request(self, method=method, url_suffix=url_suffix, full_url=full_url, headers=None,
                                             json_data=json_data,params=params, data=data, timeout=timeout,
                                             raise_on_status=raise_on_status)
@@ -204,7 +210,6 @@ class CoreClient(BaseClient):
                         headers=self._headers,
                         timeout=timeout
                     )
-            demisto.debug(f'res: {response}')
             if ok_codes and response.get('status') not in ok_codes:
                     self._handle_error(error_handler, response, with_metrics)
             return json.loads(response['data'])
