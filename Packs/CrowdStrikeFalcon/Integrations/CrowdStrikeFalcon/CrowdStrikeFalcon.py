@@ -314,7 +314,8 @@ def generic_http_request(method,
                          status_list_to_retry=None
                          ):
     """
-        A wrapper for the BaseClient._http_request() method, that allows performing HTTP requests without initiating a BaseClient object.
+        A wrapper for the BaseClient._http_request() method, that allows performing HTTP requests without initiating
+        a BaseClient object.
         Note: Avoid using this method if unnecessary. It is more recommended to use the BaseClient class.
         Args:
             method (str): HTTP request method (e.g., GET, POST, PUT, DELETE).
@@ -406,7 +407,6 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         token = get_token()
         headers['Authorization'] = f'Bearer {token}'
         demisto.debug(f'In http_request the last 4 chars: {token[-4:]}')
-    url = SERVER + url_suffix
 
     headers['User-Agent'] = 'PANW-XSOAR'
 
