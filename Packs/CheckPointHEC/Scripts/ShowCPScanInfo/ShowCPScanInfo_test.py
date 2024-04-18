@@ -14,11 +14,11 @@ def test_get_scan_info(mocker):
 
     def execute_command(name, args):
         if name == 'checkpointhec-get-scan-info':
-            return [{'Contents': {'av': mock_response['responseData'][0]['entitySecurityResult']['av']}}]
+            return [{'Contents': {'av': json.dumps(mock_response['responseData'][0]['entitySecurityResult']['av'])}}]
 
         raise ValueError(f'Error: Unknown command or command/argument pair: {name} {args!r}')
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
 
     result = get_scan_info('0000')
-    assert result == [{'Contents': {'av': mock_response['responseData'][0]['entitySecurityResult']['av']}}]
+    assert result == json.dumps({'av': mock_response['responseData'][0]['entitySecurityResult']['av']})
