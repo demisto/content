@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 86776180-c880-4d16-8e6b-482b5a992655
+    taskid: a7f4a4df-1d85-4cda-8a12-40806356cb34
     type: start
     task:
-      id: 86776180-c880-4d16-8e6b-482b5a992655
+      id: a7f4a4df-1d85-4cda-8a12-40806356cb34
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: df31f6fd-d7f0-44c1-829f-dc63172cf082
+    taskid: 162b493c-548e-4c93-8ebe-19bb5426b2e7
     type: playbook
     task:
-      id: df31f6fd-d7f0-44c1-829f-dc63172cf082
+      id: 162b493c-548e-4c93-8ebe-19bb5426b2e7
       version: -1
       name: GCP - Enrichment
       description: Given the IP address this playbook enriches GCP and Firewall information.
@@ -85,10 +85,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: dca53ca5-e46c-41b8-8832-e966a16ae3c5
+    taskid: a937c47c-4420-4973-818d-abe4c250d716
     type: title
     task:
-      id: dca53ca5-e46c-41b8-8832-e966a16ae3c5
+      id: a937c47c-4420-4973-818d-abe4c250d716
       version: -1
       name: Set Field
       type: title
@@ -118,10 +118,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 2cde6ffe-7d89-472a-89db-10e0e07be357
+    taskid: 5b2e18a9-e97f-4118-8bf8-66fffd6983ea
     type: condition
     task:
-      id: 2cde6ffe-7d89-472a-89db-10e0e07be357
+      id: 5b2e18a9-e97f-4118-8bf8-66fffd6983ea
       version: -1
       name: Is there VM and IAM information?
       description: Determines if there is EC2 information to set the private IP, cloud, and tags fields.
@@ -165,10 +165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 7990576e-cc8c-4429-882d-28c8f409ea71
+    taskid: 14eb1bb7-8317-41bd-8c6b-4d0f3f650e3a
     type: condition
     task:
-      id: 7990576e-cc8c-4429-882d-28c8f409ea71
+      id: 14eb1bb7-8317-41bd-8c6b-4d0f3f650e3a
       version: -1
       name: Is there IAM information?
       description: Determines if there is IAM information to set in the service owner field.
@@ -219,10 +219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 5bb2044c-229b-4d3f-8c1b-a5ad73912f18
+    taskid: a0e844cb-694d-4582-8e31-0eaa804d1644
     type: condition
     task:
-      id: 5bb2044c-229b-4d3f-8c1b-a5ad73912f18
+      id: a0e844cb-694d-4582-8e31-0eaa804d1644
       version: -1
       name: Is there VM and firewall information?
       description: Determines if there is EC2 and security group information to set in the system IDs field.
@@ -264,12 +264,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 95d5da7a-b449-4207-8ef8-62d2e100689a
+    taskid: fd8a1168-af15-4c3c-8bd6-8f78f88b3f93
     type: regular
     task:
-      id: 95d5da7a-b449-4207-8ef8-62d2e100689a
+      id: fd8a1168-af15-4c3c-8bd6-8f78f88b3f93
       version: -1
-      name: Add service owner (user) to unranked service owner list
+      name: Set service owner grid field
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
@@ -284,7 +284,7 @@ tasks:
       gridfield:
         simple: asmserviceownerunrankedraw
       keys:
-        simple: name,email,source,timestamp
+        simple: name,email,source,timestamp,accounttype
       val1:
         simple: n/a
       val2:
@@ -309,9 +309,11 @@ tasks:
                 value:
                   simple: 'user:'
       val3:
-        simple: GCP-USER-ACCOUNT
+        simple: GCP
       val4:
         simple: TIMESTAMP
+      val5:
+        simple: USER-ACCOUNT
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -330,10 +332,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 9518f5a0-e575-4d40-8d7d-5d5bf16d9ab8
+    taskid: 8bd81e9e-e2d7-4536-8ef6-635513703be2
     type: title
     task:
-      id: 9518f5a0-e575-4d40-8d7d-5d5bf16d9ab8
+      id: 8bd81e9e-e2d7-4536-8ef6-635513703be2
       version: -1
       name: Service Owner
       type: title
@@ -361,10 +363,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 635b316f-35c7-46f2-8154-6874e3336cfb
+    taskid: ed311cd3-4761-418b-8b4b-6f2dfd7141df
     type: regular
     task:
-      id: 635b316f-35c7-46f2-8154-6874e3336cfb
+      id: ed311cd3-4761-418b-8b4b-6f2dfd7141df
       version: -1
       name: Set private IP grid field
       description: |-
@@ -408,10 +410,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 12f0a3a7-8472-4863-8557-483339a937aa
+    taskid: 333606d0-0e81-47a0-8271-e4aea8cf500c
     type: title
     task:
-      id: 12f0a3a7-8472-4863-8557-483339a937aa
+      id: 333606d0-0e81-47a0-8271-e4aea8cf500c
       version: -1
       name: Private IP
       type: title
@@ -439,10 +441,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 5fc2212e-a610-4ecc-8246-91f472d48cdb
+    taskid: e12c58e4-ccb6-4466-864c-c995a51d8263
     type: title
     task:
-      id: 5fc2212e-a610-4ecc-8246-91f472d48cdb
+      id: e12c58e4-ccb6-4466-864c-c995a51d8263
       version: -1
       name: Cloud
       type: title
@@ -470,10 +472,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: c53b374c-2b7b-4682-8a5c-8b4979e42132
+    taskid: c1a2a66d-5801-4b08-89df-5f652b3cf512
     type: regular
     task:
-      id: c53b374c-2b7b-4682-8a5c-8b4979e42132
+      id: c1a2a66d-5801-4b08-89df-5f652b3cf512
       version: -1
       name: Set cloud grid field
       description: |-
@@ -547,10 +549,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: c7cdc306-eddf-4b4b-89d4-561eb30c1963
+    taskid: 0fc1baf0-f47a-479a-8199-67587eab8bc3
     type: title
     task:
-      id: c7cdc306-eddf-4b4b-89d4-561eb30c1963
+      id: 0fc1baf0-f47a-479a-8199-67587eab8bc3
       version: -1
       name: Tags
       type: title
@@ -578,10 +580,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: a1535aea-1ceb-4d44-8077-d874496ebd79
+    taskid: 08ca29ff-e683-466b-878c-ee8f8f9a8c18
     type: regular
     task:
-      id: a1535aea-1ceb-4d44-8077-d874496ebd79
+      id: 08ca29ff-e683-466b-878c-ee8f8f9a8c18
       version: -1
       name: Set tags grid field
       description: |-
@@ -639,10 +641,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: f5c1fd26-5f1a-4f01-8ec3-99e0717bf19c
+    taskid: 894c4730-4a93-4507-8c79-cf6b7c85ad97
     type: title
     task:
-      id: f5c1fd26-5f1a-4f01-8ec3-99e0717bf19c
+      id: 894c4730-4a93-4507-8c79-cf6b7c85ad97
       version: -1
       name: System IDs
       type: title
@@ -670,10 +672,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 38554309-9e27-4aaf-855a-7faeca226aff
+    taskid: 4527aaa0-800d-4ba0-8400-e3ac86961070
     type: regular
     task:
-      id: 38554309-9e27-4aaf-855a-7faeca226aff
+      id: 4527aaa0-800d-4ba0-8400-e3ac86961070
       version: -1
       name: Set system IDs grid field (VPC)
       description: |-
@@ -729,10 +731,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: f4d76f5d-16e5-4ef2-8a33-3d9382a6c541
+    taskid: 291e0df4-8fa2-455a-8f1c-7e5650410df7
     type: regular
     task:
-      id: f4d76f5d-16e5-4ef2-8a33-3d9382a6c541
+      id: 291e0df4-8fa2-455a-8f1c-7e5650410df7
       version: -1
       name: Set system IDs grid field (subnet name)
       description: |-
@@ -778,10 +780,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: ef877865-6535-48ed-8a7b-2965b11b7956
+    taskid: f8a65ca8-ac84-47d7-8824-7ea7b74fa7b7
     type: regular
     task:
-      id: ef877865-6535-48ed-8a7b-2965b11b7956
+      id: f8a65ca8-ac84-47d7-8824-7ea7b74fa7b7
       version: -1
       name: Set system IDs grid field (NIC)
       description: |-
@@ -827,10 +829,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 2e31367e-fcec-44d2-8a22-6aedde8fde20
+    taskid: 7b6dd98e-7ab7-4be9-83f2-010da1920e7a
     type: regular
     task:
-      id: 2e31367e-fcec-44d2-8a22-6aedde8fde20
+      id: 7b6dd98e-7ab7-4be9-83f2-010da1920e7a
       version: -1
       name: Set system IDs grid field (GCE ID)
       description: |-
@@ -876,10 +878,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: a5561453-142a-434e-8415-eae287caefcc
+    taskid: 16b767f4-9546-443c-88a4-3fe414f97515
     type: regular
     task:
-      id: a5561453-142a-434e-8415-eae287caefcc
+      id: 16b767f4-9546-443c-88a4-3fe414f97515
       version: -1
       name: Set system IDs grid field (ZONE)
       description: |-
@@ -935,10 +937,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 2ccfa07d-caae-4f68-8487-58d6063a8bf1
+    taskid: 92592bc9-b6c9-4332-8fb1-105fb18bfde9
     type: regular
     task:
-      id: 2ccfa07d-caae-4f68-8487-58d6063a8bf1
+      id: 92592bc9-b6c9-4332-8fb1-105fb18bfde9
       version: -1
       name: Set system IDs grid field (GCE name)
       description: |-
@@ -984,10 +986,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 9b552ddb-7317-4606-8fee-9ee4d9401056
+    taskid: cafe0fad-1e84-44e7-82d5-62155b7996ca
     type: condition
     task:
-      id: 9b552ddb-7317-4606-8fee-9ee4d9401056
+      id: cafe0fad-1e84-44e7-82d5-62155b7996ca
       version: -1
       name: Are there any tags?
       description: |+
@@ -1031,10 +1033,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: c41eba05-53da-45cf-8217-53b579bccd04
+    taskid: 19477a1f-2d00-41aa-859a-d39358141f0f
     type: condition
     task:
-      id: c41eba05-53da-45cf-8217-53b579bccd04
+      id: 19477a1f-2d00-41aa-859a-d39358141f0f
       version: -1
       name: Is service account field set?
       description: Determines if a service account associated with the Cloud Compute Instance was discovered and set on the alert.
@@ -1072,10 +1074,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 4390fcd8-78ee-43bf-8bb8-d311b55d06db
+    taskid: efaa05b2-b7e8-496e-8327-ab96f0bac60e
     type: regular
     task:
-      id: 4390fcd8-78ee-43bf-8bb8-d311b55d06db
+      id: efaa05b2-b7e8-496e-8327-ab96f0bac60e
       version: -1
       name: Add service account to unranked service owner list
       description: |-
@@ -1092,7 +1094,7 @@ tasks:
       gridfield:
         simple: asmserviceownerunrankedraw
       keys:
-        simple: name,email,source,timestamp
+        simple: name,email,source,timestamp,accounttype
       val1:
         simple: n/a
       val2:
@@ -1106,9 +1108,11 @@ tasks:
                 value:
                   simple: email
       val3:
-        simple: GCP-SERVICE-ACCOUNT
+        simple: GCP
       val4:
         simple: TIMESTAMP
+      val5:
+        simple: SERVICE-ACCOUNT
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1127,10 +1131,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 60f9f321-4711-43dc-89e4-b65fec38dff1
+    taskid: c6687057-c22e-4f73-8f80-8f6e642413d7
     type: condition
     task:
-      id: 60f9f321-4711-43dc-89e4-b65fec38dff1
+      id: c6687057-c22e-4f73-8f80-8f6e642413d7
       version: -1
       name: Is there GCP project hierarchy information?
       description: Determines if there is GCP hierarchy information to set in the system IDs field.
@@ -1179,10 +1183,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: c887886c-5d35-4710-8637-25b7e7a48ac0
+    taskid: 6b7418b0-5146-4568-839b-6111991e4306
     type: regular
     task:
-      id: c887886c-5d35-4710-8637-25b7e7a48ac0
+      id: 6b7418b0-5146-4568-839b-6111991e4306
       version: -1
       name: Set system IDs grid field (Project-Number)
       description: |-
@@ -1243,10 +1247,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 58728ade-8dc7-4c44-85a0-221551e6260d
+    taskid: 936fd977-c6e1-451f-88b5-710fccd7c9ca
     type: condition
     task:
-      id: 58728ade-8dc7-4c44-85a0-221551e6260d
+      id: 936fd977-c6e1-451f-88b5-710fccd7c9ca
       version: -1
       name: Is there GCP folder hierarchy information?
       description: Determines if there is GCP folder hierarchy information to set in the system IDs field.
@@ -1294,10 +1298,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: b56996bd-f7ab-4c00-8f89-c7cbcae16437
+    taskid: e67121bb-d75b-4fcb-8d31-fc8d82046071
     type: regular
     task:
-      id: b56996bd-f7ab-4c00-8f89-c7cbcae16437
+      id: e67121bb-d75b-4fcb-8d31-fc8d82046071
       version: -1
       name: Set system IDs grid field (Folder-Number)
       description: |-
@@ -1357,10 +1361,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 9b37d486-73da-4763-8897-d9f4e88e8061
+    taskid: 2185f514-b618-4943-8d08-b73bf84800be
     type: regular
     task:
-      id: 9b37d486-73da-4763-8897-d9f4e88e8061
+      id: 2185f514-b618-4943-8d08-b73bf84800be
       version: -1
       name: Set Folders
       description: Set a value in context under the key you entered.
@@ -1410,10 +1414,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 64c86389-77cc-452d-8345-b1df8bd472fc
+    taskid: bd4d883b-4ccb-4b16-8dfe-f4ebbe0bd9aa
     type: regular
     task:
-      id: 64c86389-77cc-452d-8345-b1df8bd472fc
+      id: bd4d883b-4ccb-4b16-8dfe-f4ebbe0bd9aa
       version: -1
       name: Set Folders to n/a
       description: Set a value in context under the key you entered.
@@ -1447,10 +1451,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 3e127c56-98cb-4570-8bce-ca2547869e33
+    taskid: 6006ad53-3848-424f-88cd-0099d5d9c0e8
     type: condition
     task:
-      id: 3e127c56-98cb-4570-8bce-ca2547869e33
+      id: 6006ad53-3848-424f-88cd-0099d5d9c0e8
       version: -1
       name: Are there any folders?
       description: Determines if there is GCP folder information to set in the cloud field.
@@ -1498,10 +1502,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 89e994c6-11c1-48a8-8a12-d86f9dcecc57
+    taskid: 4b0cefec-3f9e-4cdd-853e-23124ccf0356
     type: title
     task:
-      id: 89e994c6-11c1-48a8-8a12-d86f9dcecc57
+      id: 4b0cefec-3f9e-4cdd-853e-23124ccf0356
       version: -1
       name: Service Owner - End
       type: title
@@ -1529,10 +1533,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 9edcdd2d-2c60-4668-89ca-05b0028d1632
+    taskid: 92e883bc-8f0b-475c-8563-83c54e67738e
     type: regular
     task:
-      id: 9edcdd2d-2c60-4668-89ca-05b0028d1632
+      id: 92e883bc-8f0b-475c-8563-83c54e67738e
       version: -1
       name: Set false flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1569,10 +1573,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 051320a4-947e-408a-8a69-759160ef5438
+    taskid: d4a8acf0-5ce6-41f6-8303-8380f6987003
     type: regular
     task:
-      id: 051320a4-947e-408a-8a69-759160ef5438
+      id: d4a8acf0-5ce6-41f6-8303-8380f6987003
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1608,10 +1612,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: a65632f3-7ff1-4a8b-892f-8f47d4ddf396
+    taskid: 10062154-9400-408e-82bd-bbcdfdc3426c
     type: title
     task:
-      id: a65632f3-7ff1-4a8b-892f-8f47d4ddf396
+      id: 10062154-9400-408e-82bd-bbcdfdc3426c
       version: -1
       name: System IDs - End
       type: title
@@ -1639,10 +1643,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 043b969e-4de9-4b3d-8c8f-aa3f030445ab
+    taskid: 44d96677-4291-4292-82b3-314126bddbbe
     type: title
     task:
-      id: 043b969e-4de9-4b3d-8c8f-aa3f030445ab
+      id: 44d96677-4291-4292-82b3-314126bddbbe
       version: -1
       name: Complete
       type: title
@@ -1667,10 +1671,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: aa1e2a2d-b974-402e-8a11-d0f91755b5b1
+    taskid: d5f18e36-63f0-4cd6-86fe-87eabda25991
     type: title
     task:
-      id: aa1e2a2d-b974-402e-8a11-d0f91755b5b1
+      id: d5f18e36-63f0-4cd6-86fe-87eabda25991
       version: -1
       name: Closing Steps
       description: |-
@@ -1700,10 +1704,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 71ddd4ef-68fa-4456-8059-d49adae34c33
+    taskid: 7d7fa5d5-761e-40ea-83e8-7d385850c32b
     type: regular
     task:
-      id: 71ddd4ef-68fa-4456-8059-d49adae34c33
+      id: 7d7fa5d5-761e-40ea-83e8-7d385850c32b
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1739,10 +1743,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: f2c45f6f-6589-43e8-8f47-bafc6be584b8
+    taskid: 897b04ae-8a53-4fc3-8795-382575d10131
     type: regular
     task:
-      id: f2c45f6f-6589-43e8-8f47-bafc6be584b8
+      id: 897b04ae-8a53-4fc3-8795-382575d10131
       version: -1
       name: Set false flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1778,10 +1782,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: f32c1f2b-b9e4-400c-8510-0bfebcec5438
+    taskid: b70ac807-5790-4911-8857-6a8ffdb790ba
     type: title
     task:
-      id: f32c1f2b-b9e4-400c-8510-0bfebcec5438
+      id: b70ac807-5790-4911-8857-6a8ffdb790ba
       version: -1
       name: Tags - End
       type: title
@@ -1809,10 +1813,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 466c0920-9554-4b40-8a55-6f04c5944115
+    taskid: af1aed61-69fb-4e57-8356-44b6f20a506a
     type: regular
     task:
-      id: 466c0920-9554-4b40-8a55-6f04c5944115
+      id: af1aed61-69fb-4e57-8356-44b6f20a506a
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1848,10 +1852,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: eee71b79-4d06-47c8-8f73-24e8cdba89f0
+    taskid: aa8a0056-ecda-4b29-8724-685bf5d06e38
     type: title
     task:
-      id: eee71b79-4d06-47c8-8f73-24e8cdba89f0
+      id: aa8a0056-ecda-4b29-8724-685bf5d06e38
       version: -1
       name: Private IP - End
       type: title
@@ -1879,10 +1883,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: bc64686e-a2f1-4a34-8e11-f1d9a5acb9fa
+    taskid: 506d3fe5-bdec-49b2-861c-849b19e0f305
     type: regular
     task:
-      id: bc64686e-a2f1-4a34-8e11-f1d9a5acb9fa
+      id: 506d3fe5-bdec-49b2-861c-849b19e0f305
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1918,10 +1922,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 6aacab45-fe97-4b52-8748-6124ce47778e
+    taskid: e3e7da5f-a1ad-4430-8164-45628affa501
     type: regular
     task:
-      id: 6aacab45-fe97-4b52-8748-6124ce47778e
+      id: e3e7da5f-a1ad-4430-8164-45628affa501
       version: -1
       name: Set true flag for completed enrichment
       description: Set a value in context under the key you entered.
@@ -1957,10 +1961,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 0cf78886-8b9d-4cf0-8a38-d7bf5cb818cc
+    taskid: 81501384-d33f-4d7a-802e-8f74eaf24eb0
     type: title
     task:
-      id: 0cf78886-8b9d-4cf0-8a38-d7bf5cb818cc
+      id: 81501384-d33f-4d7a-802e-8f74eaf24eb0
       version: -1
       name: Cloud - End
       type: title
@@ -1988,10 +1992,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 6aae9deb-0480-46f7-8d20-dcf3a71aae26
+    taskid: e34b7dcb-5b10-4446-8660-6eaea683ec37
     type: regular
     task:
-      id: 6aae9deb-0480-46f7-8d20-dcf3a71aae26
+      id: e34b7dcb-5b10-4446-8660-6eaea683ec37
       version: -1
       name: Set ASM enrichment status to true
       description: |-
@@ -2033,10 +2037,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: f618da33-8e97-4f8d-8508-75f574f80214
+    taskid: 3a2dbe45-2862-4aa4-8b4b-44a1ed6ac1b2
     type: condition
     task:
-      id: f618da33-8e97-4f8d-8508-75f574f80214
+      id: 3a2dbe45-2862-4aa4-8b4b-44a1ed6ac1b2
       version: -1
       name: Was enrichment performed?
       description: Check if enrichment was performed by checking for a value of true in the relevant flag variable.
@@ -2078,10 +2082,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 5ab6ba34-6f32-4225-8de1-05fb3201dcc5
+    taskid: 04e9afaa-2d98-4384-86d6-06985fbed673
     type: regular
     task:
-      id: 5ab6ba34-6f32-4225-8de1-05fb3201dcc5
+      id: 04e9afaa-2d98-4384-86d6-06985fbed673
       version: -1
       name: Set ASM enrichment status to false
       description: |-
@@ -2123,10 +2127,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 993fdcc4-0cb1-4117-8f57-80bd56a9418c
+    taskid: 11662ef5-6612-43ca-84d2-3a9f86bb9eee
     type: regular
     task:
-      id: 993fdcc4-0cb1-4117-8f57-80bd56a9418c
+      id: 11662ef5-6612-43ca-84d2-3a9f86bb9eee
       version: -1
       name: Set system IDs grid field (type)
       description: Sets the type of cloud asset to the grid field for the ASM system IDs object.
@@ -2166,10 +2170,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 5a4ae4fb-b994-4852-87b0-5b5e71d6f71d
+    taskid: 9abad720-b44e-4dac-897a-8a3a52a82612
     type: condition
     task:
-      id: 5a4ae4fb-b994-4852-87b0-5b5e71d6f71d
+      id: 9abad720-b44e-4dac-897a-8a3a52a82612
       version: -1
       name: Is there GCP subnet information?
       description: Determines if there is GCP subnet information to set in the system IDs field.
@@ -2211,10 +2215,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 8db196b2-5d37-46e8-8b43-12f87f115dda
+    taskid: a7181458-aac4-4e37-830c-2244ea8b7d73
     type: regular
     task:
-      id: 8db196b2-5d37-46e8-8b43-12f87f115dda
+      id: a7181458-aac4-4e37-830c-2244ea8b7d73
       version: -1
       name: Set hierarchy field
       description: commands.local.cmd.set.incident
@@ -2286,12 +2290,12 @@ tasks:
     task:
       brand: ""
       description: Determines if there are GCP potential offending firewall rule(s) found.
-      id: c4daf26e-c27f-43ca-8ed7-1351da11ec92
+      id: fb420c9a-7183-4b06-8393-1415ad5a83a1
       iscommand: false
       name: Were GCP offending firewall rule(s) found?
       type: condition
       version: -1
-    taskid: c4daf26e-c27f-43ca-8ed7-1351da11ec92
+    taskid: fb420c9a-7183-4b06-8393-1415ad5a83a1
     timertriggers: []
     type: condition
     view: |-
@@ -2330,13 +2334,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: 5e448108-d0b1-4285-8481-74d16076594a
+      id: d170a931-fa76-44bd-888d-d11c8cee7129
       iscommand: false
       name: Set system IDs grid field (offending firewall rule(s))
       script: GridFieldSetup
       type: regular
       version: -1
-    taskid: 5e448108-d0b1-4285-8481-74d16076594a
+    taskid: d170a931-fa76-44bd-888d-d11c8cee7129
     timertriggers: []
     type: regular
     view: |-
@@ -2384,3 +2388,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}
