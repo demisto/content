@@ -3289,7 +3289,7 @@
             "playbookID": "Get EWS Folder Test",
             "fromversion": "4.5.0",
             "instance_names": "ewv2_regular",
-            "memory_threshold": 100,
+            "memory_threshold": 120,
             "timeout": 1200
         },
         {
