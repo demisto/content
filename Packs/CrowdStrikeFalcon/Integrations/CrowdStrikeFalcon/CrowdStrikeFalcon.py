@@ -434,6 +434,16 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         demisto.debug(f'In http_request the last 4 chars: {token[-4:]}')
 
     headers['User-Agent'] = 'PANW-XSOAR'
+    int_timeout = int(timeout) if timeout else 10  # 10 is the default in generic_http_request
+
+    valid_status_codes = [200, 201, 202, 204]
+    # Handling a case when we want to return an entry for 404 status code.
+    if status_code:
+        # To cover the condition when status_code is a list of status codes
+        if isinstance(status_code, list):
+            valid_status_codes = valid_status_codes + status_code
+        else:
+            valid_status_codes.append(status_code)
 
     try:
         res = generic_http_request(
@@ -447,20 +457,14 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             resp_type='response',
             verify=USE_SSL,
             error_handler=error_handler,
-            json_data=json
+            json_data=json,
+            timeout=int_timeout,
+            ok_codes=valid_status_codes
         )
     except requests.exceptions.RequestException as e:
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
                      f' Exception is {str(e)}.')
     try:
-        valid_status_codes = {200, 201, 202, 204}
-        # Handling a case when we want to return an entry for 404 status code.
-        if status_code:
-            # To cover the condition when status_code is a list of status codes
-            if isinstance(status_code, list):
-                valid_status_codes.update(status_code)
-            else:
-                valid_status_codes.add(status_code)
         if res.status_code not in valid_status_codes:
             # try to create a new token
             if res.status_code in (401, 403, 429) and get_token_flag:
@@ -480,7 +484,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     status_list_to_retry=[429],
                     resp_type='response',
                     error_handler=error_handler,
-                    json_data=json
+                    json_data=json,
+                    timeout=int_timeout,
+                    ok_codes=valid_status_codes
                 )
                 return res if no_json else res.json()
             elif safe:
