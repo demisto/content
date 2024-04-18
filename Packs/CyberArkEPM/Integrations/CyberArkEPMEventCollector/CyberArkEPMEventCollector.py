@@ -25,7 +25,7 @@ XSIAM_EVENT_TYPE = {
 
 class Client(BaseClient):
     def __init__(self, base_url, username, password, application_id, authentication_url=None, application_url=None,
-                 verify=True, proxy=False, event_type=None):
+                 verify=True, proxy=False, policy_audits_event_type=None, raw_events_event_type=None):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._headers = {
             'Accept': 'application/json',
@@ -42,7 +42,8 @@ class Client(BaseClient):
             self.epm_auth_to_cyber_ark()
         else:
             return_error('Either the application id or the authentication url and application url is required to authenticate')
-        self.event_type = event_type
+        self.policy_audits_event_type = policy_audits_event_type
+        self.raw_events_event_type = raw_events_event_type
 
     def epm_auth_to_cyber_ark(self):
         data = {
@@ -97,14 +98,14 @@ class Client(BaseClient):
     def get_policy_audits(self, set_id: str, from_date: str = '', limit: int = MAX_LIMIT, next_cursor: str = 'start') -> dict:
         url_suffix = f'Sets/{set_id}/policyaudits/search?nextCursor={next_cursor}&limit={min(limit, MAX_LIMIT)}'
         data = assign_params(
-            filter=f'arrivalTime GE {from_date} AND eventType IN {",".join(self.event_type)}',
+            filter=f'arrivalTime GE {from_date} AND eventType IN {",".join(self.policy_audits_event_type)}',
         )
         return self._http_request('POST', url_suffix=url_suffix, json_data=data)
 
     def get_events(self, set_id: str, from_date: str = '', limit: int = MAX_LIMIT, next_cursor: str = 'start') -> dict:
         url_suffix = f'Sets/{set_id}/Events/Search?nextCursor={next_cursor}&limit={min(limit, MAX_LIMIT)}'
         data = assign_params(
-            filter=f'arrivalTime GE {from_date} AND eventType IN {",".join(self.event_type)}',
+            filter=f'arrivalTime GE {from_date} AND eventType IN {",".join(self.raw_events_event_type)}',
         )
         return self._http_request('POST', url_suffix=url_suffix, json_data=data)
 
@@ -357,7 +358,8 @@ def main():  # pragma: no cover
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
     set_names = argToList(params.get('set_name'))
-    event_type = argToList(params.get('event_type'))
+    policy_audits_event_type = argToList(params.get('policy_audits_event_type'))
+    raw_events_event_type = argToList(params.get('raw_events_event_type'))
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch') or DEFAULT_LIMIT)
@@ -379,7 +381,8 @@ def main():  # pragma: no cover
             application_id=application_id,
             authentication_url=authentication_url,
             application_url=application_url,
-            event_type=event_type,
+            policy_audits_event_type=policy_audits_event_type,
+            raw_events_event_type=raw_events_event_type,
         )
 
         set_ids = get_set_ids_by_set_names(client, set_names)

@@ -63,7 +63,7 @@ configuration:
   section: Collect
 - display: Policy audits event type
   additionalinfo: A comma-separated list of policy audits event type to fetch
-  name: event_type
+  name: policy_audits_event_type
   required: false
   defaultvalue: AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock
   type: 16
@@ -86,7 +86,7 @@ configuration:
   section: Collect
 - display: Raw events event type
   additionalinfo: A comma-separated list of raw events event type to fetch
-  name: event_type
+  name: raw_events_event_type
   required: false
   defaultvalue: AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock
   type: 16
