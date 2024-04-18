@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": -90
+          "y": -260
         }
       }
     note: false
@@ -54,7 +54,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 95
+          "y": -105
         }
       }
     note: false
@@ -116,7 +116,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 600
+          "y": 400
         }
       }
     note: false
@@ -396,7 +396,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "55"
+      - "60"
       "yes":
       - "57"
     separatecontext: false
@@ -415,7 +415,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 740
+          "y": 540
         }
       }
     note: false
@@ -647,7 +647,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 420
+          "y": 220
         }
       }
     note: false
@@ -1157,7 +1157,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 230
+          "y": 30
         }
       }
     note: false
@@ -1425,6 +1425,46 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 395af71d-9832-46a5-853a-e51948b9f62a
+    type: condition
+    task:
+      id: 395af71d-9832-46a5-853a-e51948b9f62a
+      version: -1
+      name: Is the CMD defined?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "55"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: commandline.original
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1433,14 +1473,17 @@ view: |-
       "28_43_yes": 0.43,
       "34_29_#default#": 0.25,
       "48_27_yes": 0.62,
-      "48_49_#default#": 0.47
+      "48_49_#default#": 0.47,
+      "56_16_#default#": 0.46,
+      "60_16_#default#": 0.22,
+      "60_55_yes": 0.55
     },
     "paper": {
       "dimensions": {
-        "height": 4235,
+        "height": 4405,
         "width": 1510,
         "x": 450,
-        "y": -90
+        "y": -260
       }
     }
   }
