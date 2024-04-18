@@ -457,7 +457,7 @@ def fetch_indicators_command(client: Client) -> list[dict]:
     return raw_cves
 
 
-def main(): # pragma: no cover
+def main():  # pragma: no cover
     """
     Main integration function that defines the client object and initiates calls to
     the user-specified integration command
