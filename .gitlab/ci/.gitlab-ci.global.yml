@@ -469,7 +469,7 @@
         fi
       fi
     - |
-      if [[ -f coverage_report ]]; then
+      if [[ -d coverage_report ]]; then
         cp -r coverage_report artifacts/coverage_report
       fi
     - |
