@@ -61,8 +61,31 @@ configuration:
   required: false
   type: 0
   section: Collect
-- display: Event type
-  additionalinfo: A comma-separated list of Event types to fetch
+- display: Policy audits event type
+  additionalinfo: A comma-separated list of policy audits event type to fetch
+  name: event_type
+  required: false
+  defaultvalue: AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock
+  type: 16
+  options:
+  - AttackAttempt
+  - AttackBlock
+  - SuspiciousActivityAttempt
+  - SuspiciousActivityblock
+  - RestrictAccess
+  - DetectAccess
+  - Ransomware
+  - ElevationRequest
+  - Trust
+  - ManualRequest
+  - Installation
+  - Launch
+  - Block
+  - Access
+  - Skipped
+  section: Collect
+- display: Raw events event type
+  additionalinfo: A comma-separated list of raw events event type to fetch
   name: event_type
   required: false
   defaultvalue: AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock
