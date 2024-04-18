@@ -295,6 +295,71 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 ''' HELPER FUNCTIONS '''
 
 
+def generic_http_request(method,
+                         server_url,
+                         timeout=10,
+                         verify=True,
+                         proxy=False,
+                         client_headers=None,
+                         headers=None,
+                         url_suffix=None,
+                         data=None,
+                         ok_codes=None,
+                         auth=None,
+                         error_handler=None,
+                         files=None,
+                         params=None,
+                         retries=0,
+                         resp_type='json',
+                         status_list_to_retry=None
+                         ):
+    """
+        A wrapper for the BaseClient._http_request() method, that allows performing HTTP requests without initiating a BaseClient object.
+        Note: Avoid using this method if unnecessary. It is more recommended to use the BaseClient class.
+        Args:
+            method (str): HTTP request method (e.g., GET, POST, PUT, DELETE).
+            server_url (str): Base URL of the server.
+            timeout (int, optional): Timeout in seconds for the request (defaults to 10).
+            verify (bool, optional): Whether to verify SSL certificates (defaults to True).
+            proxy (bool or str, optional): Use a proxy server. Can be a boolean (defaults to False)
+                                           or a proxy URL string.
+            client_headers (dict, optional): Additional headers to be included in all requests
+                                             made by the client (overrides headers argument).
+            headers (dict, optional): Additional headers for this specific request.
+            url_suffix (str, optional): Path suffix to be appended to the server URL.
+            data (object, optional): Data to be sent in the request body (e.g., dictionary for POST requests).
+            ok_codes (list of int, optional): A list of HTTP status codes that are considered successful responses
+                                               (defaults to [200]).
+            auth (tuple, optional): Authentication credentials (username, password) for the request.
+            error_handler (callable, optional): Function to handle request errors.
+            files (dict, optional): Dictionary of files to be uploaded (for multipart/form-data requests).
+            params (dict, optional): URL parameters to be included in the request.
+            retries (int, optional): Number of times to retry the request on failure (defaults to 0).
+            retries (int, optional): Number of times to retry the request on failure (defaults to 0).
+            status_list_to_retry (iterable, optional): A set of integer HTTP status codes that we should force a retry on.
+                A retry is initiated if the request method is in ['GET', 'POST', 'PUT']
+                and the response status code is in ``status_list_to_retry``.
+            resp_type (str, optional): Determines which data format to return from the HTTP request. The default
+                is 'json'.
+        Returns:
+            :return: Depends on the resp_type parameter
+            :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
+        Raises:
+            exceptions.RequestException: If an error occurs during the request.
+    """
+    client = BaseClient(base_url=server_url,
+                        verify=verify,
+                        proxy=proxy,
+                        ok_codes=ok_codes,
+                        headers=client_headers,
+                        auth=auth,
+                        timeout=timeout
+                        )
+    return client._http_request(method=method, url_suffix=url_suffix, data=data, ok_codes=ok_codes, error_handler=error_handler,
+                                headers=headers, files=files, params=params, retries=retries, resp_type=resp_type,
+                                status_list_to_retry=status_list_to_retry)
+
+
 def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
                  get_token_flag=True, no_json=False, json=None, status_code=None, timeout=None):
     """
@@ -346,16 +411,16 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     headers['User-Agent'] = 'PANW-XSOAR'
 
     try:
-        res = requests.request(
-            method,
-            url,
-            verify=USE_SSL,
-            params=params,
-            data=data,
+        res = generic_http_request(
+            method=method,
+            server_url=SERVER,
             headers=headers,
+            url_suffix=url_suffix,
+            data=data,
             files=files,
-            json=json,
-            timeout=timeout,
+            params=params,
+            resp_type='response',
+            verify=USE_SSL
         )
     except requests.exceptions.RequestException as e:
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
@@ -400,20 +465,19 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 token = get_token(new_token=True)
                 headers['Authorization'] = f'Bearer {token}'
                 demisto.debug(f'The last 4 chars of new is: {token[-4:]}')
-                return http_request(
+                res = generic_http_request(
                     method=method,
-                    url_suffix=url_suffix,
-                    params=params,
-                    data=data,
+                    server_url=SERVER,
                     headers=headers,
+                    url_suffix=url_suffix,
+                    data=data,
                     files=files,
-                    json=json,
-                    safe=safe,
-                    get_token_flag=False,
-                    status_code=status_code,
-                    no_json=no_json,
-                    timeout=timeout,
+                    params=params,
+                    retries=5,
+                    status_list_to_retry=[429],
+                    resp_type='response',
                 )
+                return res if no_json else res.json()
             elif safe:
                 return None
             raise DemistoException(err_msg)
