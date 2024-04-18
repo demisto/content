@@ -436,7 +436,8 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     headers['User-Agent'] = 'PANW-XSOAR'
     int_timeout = int(timeout) if timeout else 10  # 10 is the default in generic_http_request
 
-    valid_status_codes = [200, 201, 202, 204]
+    # in case of 401,403,429 status codes we want to return the response, generate a new token and try again with retries.
+    valid_status_codes = [200, 201, 202, 204, 401, 403, 429]
     # Handling a case when we want to return an entry for 404 status code.
     if status_code:
         # To cover the condition when status_code is a list of status codes
@@ -465,6 +466,10 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
                      f' Exception is {str(e)}.')
     try:
+        # removing 401,403,429 status codes, now we want to generate a new token and try again
+        valid_status_codes.remove(401)
+        valid_status_codes.remove(403)
+        valid_status_codes.remove(429)
         if res.status_code not in valid_status_codes:
             # try to create a new token
             if res.status_code in (401, 403, 429) and get_token_flag:
@@ -472,6 +477,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 token = get_token(new_token=True)
                 headers['Authorization'] = f'Bearer {token}'
                 demisto.debug(f'The last 4 chars of new is: {token[-4:]}')
+                demisto.debug('calling generic_http_request with retries=5 and status_list_to_retry=[429]')
                 res = generic_http_request(
                     method=method,
                     server_url=SERVER,

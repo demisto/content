@@ -6748,3 +6748,21 @@ def test_get_cve_command(mocker):
 
     results = CrowdStrikeFalcon.get_cve_command(args={'cve': 'CVE-2023-12345'})
     assert len(results) == 2
+
+
+def test_http_request(mocker):
+    from requests import Response
+    from CrowdStrikeFalcon import http_request
+    res_429 = Response()
+    res_429.status_code = 429
+    res_200 = Response()
+    res_200.status_code = 200
+    mock_request_get_token = mocker.patch('CrowdStrikeFalcon.get_token', return_value='token')
+    mock_request_generic_http_request = mocker.patch('CrowdStrikeFalcon.generic_http_request', side_effect=[res_429, res_200])
+    http_request(url_suffix='url_suffix',
+                 method='method',
+                 headers={},
+                 no_json=True)
+    # validate that in a case of 429, we will try again
+    assert mock_request_generic_http_request.call_count == 2
+    assert mock_request_get_token.call_count == 2
