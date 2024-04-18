@@ -280,17 +280,15 @@ def cves_to_war_room(raw_cves):
             return_error(f'{raw_cve}')
         output_list.append(fields)
 
-    return_results(
-        CommandResults(
-            outputs=output_list,
-            outputs_prefix='NistNVDv2.Indicators',
-            readable_output=tableToMarkdown(
-                "CVEs",
-                [{'ID': cve["id"], 'Score': cve["score"], 'Description': cve["description"]} for cve in output_list],
-                headers=['ID', 'Score', 'Description']
-            ),
-            outputs_key_field='Name')
-    )
+    return CommandResults(
+        outputs=output_list,
+        outputs_prefix='NistNVDv2.Indicators',
+        readable_output=tableToMarkdown(
+            "CVEs",
+            [{'ID': cve["id"], 'Score': cve["score"], 'Description': cve["description"]} for cve in output_list],
+            headers=['ID', 'Score', 'Description']
+        ),
+        outputs_key_field='Name')
 
 
 def get_cvss_version_and_score(metrics):
@@ -500,7 +498,7 @@ def main():
         elif command == "fetch-indicators":
             fetch_indicators_command(client)
         elif command == "nvd-get-indicators":
-            cves_to_war_room(fetch_indicators_command(client))
+            return_results(cves_to_war_room(fetch_indicators_command(client)))
 
     except Exception as e:  # pylint: disable=broad-except
         return_error(f'Failed to execute {demisto.command()} command.\nError: \n{str(e)}')

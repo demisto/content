@@ -1,6 +1,9 @@
 import json
 import pytest
+from dateparser import parse
 from FeedNVDv2 import parse_cpe_command, build_indicators, Client, calculate_dbotscore, get_cvss_version_and_score
+from FeedNVDv2 import cves_to_war_room, retrieve_cves
+from unittest.mock import patch
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -36,11 +39,19 @@ def test_build_indicators_command():
     Returns:
         Assertions if the tests fail for tag/relationship parsing of a CPE
     """
-    raw_cve = [open_json('./test_data/test_retrieve_cves_response.json')]
-    response = build_indicators(client, raw_cve)
-    expected_response = open_json('./test_data/test_build_indicators_response.json')
-
+    raw_cve = open_json('./test_data/nist_response.json')
+    cves = raw_cve["vulnerabilities"]
+    response = build_indicators(client, cves)
+    expected_response = open_json('./test_data/indicator.json')
     assert all(item in expected_response[0] for item in response[0]), "BuildIndicators dictionaries are not equal"
+
+
+def test_cves_to_war_room():
+    raw_cve = open_json('./test_data/nist_response.json')
+    cves = raw_cve["vulnerabilities"]
+    entry = cves_to_war_room(cves).to_context()
+    expected_entry = open_json('./test_data/war_room_entry.json')
+    assert entry == expected_entry
 
 
 @pytest.mark.parametrize("cvss_score, expected_result", [
@@ -113,3 +124,44 @@ def test_parse_cpe(cpe, expected_output, expected_relationships):
     tags, relationships = parse_cpe_command(cpe, 'CVE-2022-1111')
     assert set(tags) == set(expected_output)
     assert [relationship.to_context() for relationship in relationships] == expected_relationships
+
+
+@pytest.mark.parametrize(
+    "input_params, expected_param_string",
+    [
+        ({"param1": "value1", "param2": "value2"}, "param1=value1&param2=value2"),
+        ({"noRejected": "None"}, "noRejected"),
+        ({}, ""),
+        ({"param1": "value1", "noRejected": "None"}, "param1=value1&noRejected"),
+        ({"cvssV3Severity": "Low"}, "cvssV3Severity=Low"),
+        (
+            {"param1": "value1", "cvssV3Severity": "Low"},
+            "param1=value1&cvssV3Severity=Low"
+        ),
+        (
+            {"param1": "value1", "param2": "value2", "cvssV3Severity": "Low"},
+            "param1=value1&param2=value2&cvssV3Severity=Low"
+        ),
+    ],
+)
+def test_build_param_string(input_params, expected_param_string):
+    result = client.build_param_string(input_params)
+    assert result == expected_param_string
+
+
+@pytest.mark.parametrize(
+    "start_date, end_date, publish_date, expected_results",
+    [
+        ("2024-01-01T00:00:00Z", "2024-01-04T00:00:00Z", True, open_json("./test_data/nist_response.json")["vulnerabilities"][0]),
+    ],
+)
+def test_retrieve_cves(start_date, end_date, publish_date, expected_results):
+    # Mocking the client.get_cves method
+    with patch('FeedNVDv2.Client.get_cves') as mock_get_cves:
+        mock_get_cves.return_value = open_json("./test_data/nist_response.json")
+
+        # Call the retrieve_cves function with mock client and arguments
+        raw_cves = retrieve_cves(client, parse(start_date), parse(end_date), publish_date)
+
+        # Assert that the raw_cves obtained from the function matches the expected results
+        assert raw_cves[0] == expected_results

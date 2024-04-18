@@ -1,2 +1,0 @@
-['163', 'Application', 'Netease mail master']
-[{'name': 'targets', 'reverseName': 'targeted-by', 'type': 'IndicatorToIndicator', 'entityA': 'CVE-2021-44228', 'entityAFamily': 'Indicator', 'entityAType': 'cve', 'entityB': '163', 'entityBFamily': 'Indicator', 'entityBType': 'identity', 'fields': {}}, {'name': 'targets', 'reverseName': 'targeted-by', 'type': 'IndicatorToIndicator', 'entityA': 'CVE-2021-44228', 'entityAFamily': 'Indicator', 'entityAType': 'cve', 'entityB': 'Netease mail master', 'entityBFamily': 'Indicator', 'entityBType': 'software', 'fields': {}}]
