@@ -750,7 +750,7 @@ def test_add_custom_object(mocker):
 
     result = add_custom_object_command(demisto_args)
     expected_output = {
-        'readable_output': 'Object has been added to MISP event ID {}'.format(event_id),
+        'readable_output': f'Object has been added to MISP event ID {event_id}',
         'outputs': response_add_obj
     }
     assert result.readable_output == expected_output['readable_output']
