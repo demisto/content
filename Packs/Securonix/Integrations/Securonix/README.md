@@ -181,7 +181,7 @@ The following are tips for handling issues with mirroring incidents between Secu
 2. If the `query` arguments contain the special characters, then check and follow the below steps:
    1. Use the XSOAR automation browser to run the command.
    2. Don't add the extra backslashes for the `*`, `?` and `\` characters. This is handled by the command itself. Before upgrading, revert any temporary backslash solutions that may have been provided.
-3. If the `Securonix Violation Spotter Query` incident field is used as a `query` argument, then also pass the `policy_type` argument. The value for the `policy_type` argument should be the same as the value for the `Securonix Policy Type` incident field.
+3. If the `Securonix Policy Type` incident field is one of these (Land Speed, DIRECTIVE, BEACONING, TIER2) then try to execute command again with the additional '`policy_type`' argument. The value for the `policy_type` argument should be the same as the value for the `Securonix Policy Type` incident field.
 
 
 ### The `securonix-list-activity-data` command not returning the activity data
@@ -195,10 +195,10 @@ The following are tips for handling issues with mirroring incidents between Secu
    2. Don't add the extra backslashes for the `*`, `?` and `\` characters. This is handled by the command itself. Before upgrading, revert any temporary backslash solutions that may have been provided.
 
 
-### The command HR or war-room entries are having special characters, or it is breaking the table view
+### Command HR or War room entries are breaking in the table view
 
-1. The command HR or war-room entries are made up of the markdown characters. It may break if there are special characters involved in the response.
-2. To get the correct value, context should be used as a source of truth, as it will not be impacted for the special characters.
+1. There might be some special characters (restricted by Markdown viewer i.e, \\\*\_\{\}\[\]\(\)\#\+\-\!\`\|) in the value of field which is breaking the view.
+2. Impact is in only on the HR output, however user can get exact values from the command context for such fields if any.
 
 
 ## Commands
