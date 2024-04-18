@@ -2,14 +2,18 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 import urllib3
-from typing import Dict, Tuple
+from typing import Dict
 import parse_emails
+from Packs.CIRCL.Integrations.CirclCVESearch.CirclCVESearch import Client as CveSearchClient, valid_cve_id_format
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+
+CIRCLCVE_BASE_URL = 'https://cve.circl.lu/api'
+
 EML_FILE_PREFIX = '.eml'
 
 CHECK_EMAIL_HEADERS_PROMPT = """
@@ -42,6 +46,12 @@ Additional instructions: {}
 Highlight potential security risks, and explain the implications of such risks.
 Make you answer very concise and easily readable, with references to the email body if there are, otherwise do not refer to \
 hypothetical problems.
+"""
+
+CVE_INFO_PROMPT = """
+    %s
+    TODO
+
 """
 
 
@@ -232,10 +242,9 @@ def check_email_part(email_part: str, client: OpenAiClient, args: Dict[str, Any]
     return send_message_command(client, args)
 
 
-def construct_prompt(new_message: str, conversation_context=None, rag_data=""):
-    if not conversation_context:
-        conversation_context = []
-    # TODO - implement this
+def get_cve_data(cve_id: str, cve_search_client: CveSearchClient) -> dict:
+    # TODO - structure and format the cve data properly
+    return cve_search_client.cve(cve_id)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -301,22 +310,22 @@ def check_email_body_command(client: OpenAiClient, args: Dict[str, Any]) -> Comm
     return check_email_part(EmailParts.BODY, client, args)
 
 
-# def get_cve_info_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
-#     cve = args.get('CVE', None)
-#     if not cve:
-#         raise ValueError('CVE not specified')
-#
-#     # TODO - RAG CVE Data
-#     # TODO - construct prompt
-#     # TODO - client.getChatCompletion(prompt)
-#     # TODO - conversation =
-#     # TODO - answer =
-#
-#     return CommandResults(
-#         outputs_prefix='OpenAIGPT',
-#         outputs_key_field='Conversation',
-#         outputs=result,
-#     )
+def get_cve_info_command(cve_search_client: CveSearchClient, openai_client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
+    cve_id = args.get('CVE', '')
+    if not valid_cve_id_format(cve_id):
+        raise DemistoException(f"{cve_id} is not a valid cve ID. Cve ID should be of the format 'CVE-2021-1234'")
+
+    cve_data = get_cve_data(cve_id, cve_search_client)
+    cve_info_message = CVE_INFO_PROMPT.format(cve_data)
+    # Starting a new conversation as of a new topic discussed.
+    args.update({'reset_conversation_history': True, 'message': cve_info_message})
+    return CommandResults(outputs_prefix='OpenAIGPT.CVE_INFO',
+        outputs=cve_info_message,
+        replace_existing=True,
+        readable_output=cve_info_message)
+    # return send_message_command(openai_client, args)
+
+
 
 
 ''' MAIN FUNCTION '''
@@ -354,9 +363,11 @@ def main() -> None:
         elif command == "gpt-send-message":
             return_results(send_message_command(client=client, args=args))
 
-        # elif command == "gpt-get-cve-info":
-        #     return_results(get_cve_info_command(client=client, args=args))
-        #
+        elif command == "gpt-get-cve-info":
+            # Starting a CveSearchClient for cve data querying.
+            cve_search_client = CveSearchClient(base_url=CIRCLCVE_BASE_URL, verify=verify, proxy=proxy)
+            return_results(get_cve_info_command(cve_search_client=cve_search_client, openai_client=client, args=args))
+
         elif command == "gpt-check-email-header":
             results = check_email_headers_command(client=client, args=args)
             return_results(results)
