@@ -554,7 +554,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Investigation Verdict",
-                        "query": "cb7e8f9e-7d87-4e7b-8960-7ff048e40570",
+                        "query": "VerdictResult",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
