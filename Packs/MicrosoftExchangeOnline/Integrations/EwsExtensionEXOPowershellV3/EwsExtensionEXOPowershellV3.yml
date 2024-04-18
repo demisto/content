@@ -314,7 +314,6 @@ script:
       - Tenant
       - AdvancedDelivery
       description: List subtype to add items to.
-      defaultValue: Tenant
     - name: action
       required: true
       auto: PREDEFINED
@@ -399,7 +398,6 @@ script:
       - Tenant
       - AdvancedDelivery
       description: List subtype to retrieve items from.
-      defaultValue: Tenant
     - name: action
       required: true
       auto: PREDEFINED
@@ -482,7 +480,6 @@ script:
       - Tenant
       - AdvancedDelivery
       description: List subtype to retrieve items from.
-      defaultValue: Tenant
     outputs:
     - contextPath: EWS.CurrentListCount.Count
       description: Number of entries presently in the specified list.
@@ -2004,7 +2001,6 @@ script:
       - Tenant
       - AdvancedDelivery
       description: List subtype to remove items from.
-      defaultValue: Tenant
     outputs:
     - contextPath: EWS.RemovedTenantBlocks.Action
       description: Action.
