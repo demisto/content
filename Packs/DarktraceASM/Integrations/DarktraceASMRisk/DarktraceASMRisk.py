@@ -467,7 +467,7 @@ class Client(BaseClient):
         :return: list of Risk dicts.
         :rtype: ``List[Dict[str, Any]]``
         """
-        start_string = start_time.strftime("%Y-%m-%dT%H:%M:%S")
+        start_string = start_time.strftime(DATE_FORMAT)
         query = f'''query allRisks {{
                         allRisks(startedAt:"{start_string}", orderBy:"startedAt") {{
                             edges {{
@@ -678,10 +678,12 @@ def fetch_incidents(client: Client,
 
     for alert in asm_risks:
         # Convert startedAt time to datetime object and add to alert
-        incident_created_time = datetime.strptime(alert['node']['startedAt'][:19], "%Y-%m-%dT%H:%M:%S")
+        # grabbing first 26 characters from start time since that provides ms resolution
+        incident_created_time = datetime.strptime(alert['node']['startedAt'][:26], DATE_FORMAT)
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
         if last_fetch_datetime and incident_created_time <= last_fetch_datetime:
+            demisto.debug(f"Incident created time: {incident_created_time} was part of a previous poll cycle. Last fetch time: {last_fetch_datetime}")
             continue
 
         brand = alert.get('node', {}).get('asset', {}).get('brand')
@@ -692,12 +694,14 @@ def fetch_incidents(client: Client,
 
         # Skip incidents with a lower severity score than the desired minimum
         if xsoar_severity < min_severity:
+            demisto.debug(f"Incident severity: {xsoar_severity} is lower than chosen minimum threshold: {min_severity}")
             continue
 
         incident_type = alert['node']['type'].lower()
 
         # Skip incidents with a type not included in the chosen alert types to ingest
         if incident_type not in alert_types:
+            demisto.debug(f"Alert type {incident_type} is not part of chosen alerts: {alert_types}")
             continue
 
         incident = {
@@ -897,11 +901,6 @@ def main() -> None:     # pragma: no cover
     # API key
     api_token = (demisto.params().get('apikey', ''))
     headers = {"Authorization": f"Token {api_token}"}
-
-    # Collect API tokens
-    # public_api_token = demisto.params().get('publicApiKey', '')
-    # private_api_token = demisto.params().get('privateApiKey', '')
-    # tokens = (public_api_token, private_api_token)
 
     # Client class inherits from BaseClient, so SSL verification is
     # handled out of the box by it. Pass ``verify_certificate`` to
