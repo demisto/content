@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 from AWSApiModule import *
 
 """IMPORTS"""
@@ -299,9 +301,12 @@ def invoke(args, aws_client):
     if 'FunctionError' in response:
         data.update({'FunctionError': response['FunctionError']})
 
-    ec = {'AWS.Lambda.InvokedFunctions(val.FunctionName === obj.FunctionName)': data}
     human_readable = tableToMarkdown('AWS Lambda Invoked Functions', data)
-    return_outputs(human_readable, ec)
+    return CommandResults(
+        outputs=data,
+        readable_output=human_readable,
+        outputs_prefix="AWS.Lambda.InvokedFunctions"
+    )
 
 
 def remove_permission(args, aws_client):

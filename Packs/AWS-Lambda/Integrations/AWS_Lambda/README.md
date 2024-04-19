@@ -14,18 +14,24 @@ Required AWS IAM Permissions and Roles for Lambda are documented [here](https://
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | defaultRegion | AWS Default Region | False |
-    | roleArn | Role Arn | False |
-    | roleSessionName | Role Session Name | False |
-    | sessionDuration | Role Session Duration | False |
-    | access_key | Access Key | False |
-    | secret_key | Secret Key | False |
-    | timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified a default of 10 second will be used. You may also override the value at the aws-lambda-invoke command. | False |
-    | retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. You may also override the value when executing the aws-lambda-invoke command. More details about the retries strategy is available [here](https://boto3.amazonaws.com/v1/documentation/api/latest/guide/retries.html), | False |
-    | insecure | Trust any certificate \(not secure\) | False |
-    | proxy | Use system proxy settings | False |
+    | AWS Default Region |  | True |
+    | Role Arn |  | False |
+    | Role Session Name |  | False |
+    | Role Session Duration |  | False |
+    | Access Key |  | False |
+    | Secret Key |  | False |
+    | Access Key |  | False |
+    | Secret Key |  | False |
+    | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. You may also override the value at the aws-lambda-invoke command. | False |
+    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. You may also override the value when executing the aws-lambda-invoke command. | False |
+    | PrivateLink service URL. |  | False |
+    | STS PrivateLink URL |  | False |
+    | AWS STS Regional Endpoints | Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration. | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -858,7 +864,53 @@ Deletes a Lambda function URL. When you delete a function URL, you can’t recov
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| functionName | The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length. | Required | 
+| qualifier | Specify a version or alias to get details about a published version of the function. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-lambda-delete-function-url-config
+
+***
+Deletes a Lambda function URL. When you delete a function URL, you can’t recover it. Creating a new function URL results in a different URL address.
+
+#### Base Command
+
+`aws-lambda-delete-function-url-config`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 | functionName | The name of the Lambda function, version, or alias. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length. | Required | 
+| qualifier | Specify a version or alias to get details about a published version of the function. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### aws-lambda-delete-function
+
+***
+Deletes a Lambda function. To delete a specific function version, use the Qualifier parameter. Otherwise, all versions and aliases are deleted.
+
+#### Base Command
+
+`aws-lambda-delete-function`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| functionName | The name of the Lambda function, version, or alias. Can be either the function name, ARN or partial ARN. You can append a version number or alias to any of the formats. The length constraint applies only to the full ARN. If you specify only the function name, it is limited to 64 characters in length. | Required | 
 | qualifier | Specify a version or alias to get details about a published version of the function. | Optional | 
 
 #### Context Output
@@ -898,28 +950,28 @@ Creates a Lambda function. To create a function, you need a deployment package a
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                                                                                                                                                                     | **Required** |
-| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| functionName | The name of the Lambda function.                                                                                                                                                                                                                                              | Required | 
-| runtime | The runtime environment for the function.                                                                                                                                                                                                                                     | Required | 
-| role | The Amazon Resource Name (ARN) of the function's.                                                                                                                                                                                                                             | Required | 
-| handler | The name of the method within your code that Lambda calls to execute your function.                                                                                                                                                                                           | Required | 
-| code | Entry ID of the uploaded base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you.                                                                                                                                                   | Optional | 
-| S3-bucket | An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account.                                                                                                                                    | Optional | 
-| description | A description of the function.                                                                                                                                                                                                                                                | Optional | 
-| functionTimeout | The amount of time that Lambda allows a function to run before stopping it.                                                                                                                                                                                                   | Optional | 
-| memorySize | The amount of memory available to the function at runtime.                                                                                                                                                                                                                    | Optional | 
-| publish | Set to true to publish the first version of the function during creation. Possible values are: True, False.                                                                                                                                                                                         | Optional | 
-| vpcConfig | For network connectivity to Amazon Web Services resources in a VPC, specify a list of security groups and subnets in the VPC. A list of VPC subnet IDs. Json formatted string should be given.                                                                                                                      | Optional | 
-| packageType | The type of deployment package. Possible values are: Image, Zip.                                                                                                                                                                                                                                    | Optional | 
-| environment | The environment variables for the function. Should be given as key-value pairs as json string.                                                                                                                                                                                | Optional | 
-| tracingConfig | The tracing configuration for the function. Json formatted string should be given.                                                                                                                                                                                            | Optional | 
-| tags | The list of tags to apply to the function. Json formatted string should be given.                                                                                                                                                                                             | Optional | 
-| layers | A list of function layers to add to the function's execution environment.                                                                                                                                                                                                     | Optional | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| functionName | The name of the Lambda function. Possible values are: . | Required | 
+| runtime | The runtime environment for the function. Possible values are: . | Required | 
+| handler | The name of the method within your code that Lambda calls to execute your function. Example: lambda_function.lambda_handler'. Possible values are: . | Required | 
+| code | Entry ID of the uploaded base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you. Possible values are: . | Optional | 
+| S3-bucket | An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account. Possible values are: . | Optional | 
+| description | A description of the function. Possible values are: . | Optional | 
+| functionTimeout | The amount of time that Lambda allows a function to run before stopping it. Possible values are: . Default is 3. | Optional | 
+| memorySize | The amount of memory available to the function at runtime. Possible values are: . Default is 128. | Optional | 
+| publish | Set to true to publish the first version of the function during creation. Possible values are: True, False. | Optional | 
+| vpcConfig | Json string contains SubnetIds - list of VPC subnet IDs, SecurityGroupIds - A list of VPC security group IDs,  and boolean Ipv6AllowedForDualStack - allows outbound IPv6 traffic. Possible values are: . | Optional | 
+| packageType | The type of deployment package. Possible values are: Image, Zip. | Optional | 
+| environment | The environment variables for the function. Should be given as key-value pairs in a json string. Possible values are: . | Optional | 
+| tracingConfig | The tracing configuration for the function. Set to Active to sample and trace a subset of incoming requests with X-Ray. Possible values are: . Default is Active. | Optional | 
+| tags | The list of tags to apply to the function. Possible values are: . | Optional | 
+| role | The Amazon Resource Name (ARN) of the function’s execution role. Possible values are: . | Required | 
+| layers | A list of function layers to add to the function's execution environment. Possible values are: . | Optional | 
 | region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | The Amazon Resource Name (ARN) of the role to assume.                                                                                                                                                                                                                                               | Optional | 
-| roleSessionName | An identifier for the assumed role session.                                                                                                                                                                                                                                                         | Optional | 
-| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.                                                                                                                                           | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
 #### Context Output
 
@@ -941,6 +993,7 @@ Creates a Lambda function. To create a function, you need a deployment package a
 | AWS.Lambda.Functions.VpcConfig.Ipv6AllowedForDualStack | boolean | Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets. | 
 | AWS.Lambda.Functions.PackageType | string | The type of deployment package. Set to Image for container image and set Zip for .zip file archive. | 
 | AWS.Lambda.Functions.LastModified | string | The date and time that the function was last updated, in ISO-8601 format \(YYYY-MM-DDThh:mm:ss.sTZD\). | 
+
 
 #### Command example
 ```!aws-lambda-create-function code=entry_id functionName=test runtime=nodejs role=test-role handler=test.handler vpcConfig="{\"SubnetIds\": [\"subnet-1\",\"subnet-2\"], \"SecurityGroupIds\":[\"sg-1\"]}" ```
@@ -994,18 +1047,18 @@ Creates an Lambda layer from a ZIP archive.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| layer-name | The name or Amazon Resource Name (ARN) of the layer.  | Required | 
-| description | The description of the version.  | Optional | 
-| s3-bucket | The Amazon S3 bucket of the layer archive.  | Optional | 
-| s3-key | The Amazon S3 key of the layer archive.  | Optional | 
-| s3-object-version | For versioned objects, the version of the layer archive object to use.  | Optional | 
-| zip-file | Entry ID of the base64-encoded contents of the layer archive.  | Optional | 
-| compatible-runtimes |  The name of the method within your code that Lambda calls to execute your function.  | Optional |
-| compatible-architectures |  A list of compatible architectures.  | Optional |
+| layer-name | The name or Amazon Resource Name (ARN) of the layer. Possible values are: . | Required | 
+| description | The description of the version. Possible values are: . | Optional | 
+| s3-bucket | The Amazon S3 bucket of the layer archive. Possible values are: . | Optional | 
+| s3-key | The Amazon S3 key of the layer archive. Possible values are: . | Optional | 
+| s3-object-version | For versioned objects, the version of the layer archive object to use. Possible values are: . | Optional | 
+| zip-file | Entry ID of the base64-encoded contents of the layer archive. Possible values are: . | Optional | 
+| compatible-runtimes |  The name of the method within your code that Lambda calls to execute your function. Possible values are: . | Optional | 
 | region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+| compatible-architectures | A list of compatible architectures. Possible values are: x86_64, arm64. | Optional | 
 
 #### Context Output
 
@@ -1018,6 +1071,7 @@ Creates an Lambda layer from a ZIP archive.
 | AWS.Lambda.Layers.Version | number | The version number. | 
 | AWS.Lambda.Layers.CompatibleRuntimes | list | The layer’s compatible runtimes. | 
 | AWS.Lambda.Layers.CompatibleArchitectures | list | The layer’s compatible architectures. | 
+
 
 #### Command example
 ```!aws-lambda-publish-layer-version layer-name=test zip-file=entry_id description=test-layer-3
@@ -1056,11 +1110,11 @@ Lists the versions of an Lambda layer.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| compatible-runtime | A runtime identifier. For example, java21.  | Optional | 
-| layer-name | The name or Amazon Resource Name (ARN) of the layer.  | Required | 
-| marker | A pagination token returned by a previous call.  | Optional | 
-| max-items | The maximum number of versions to return.  | Optional | 
-| compatible-architecture | The compatible instruction set architecture.  | Optional | 
+| compatible-runtime | A runtime identifier. For example, java21. Possible values are: . | Optional | 
+| layer-name | The name or Amazon Resource Name (ARN) of the layer. Possible values are: . | Required | 
+| token | A pagination token returned by a previous call. Possible values are: . | Optional | 
+| limit | The maximum number of versions to return. Possible values are: . | Optional | 
+| compatible-architecture | The compatible instruction set architecture. Possible values are: . | Optional | 
 | region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
@@ -1078,6 +1132,7 @@ Lists the versions of an Lambda layer.
 | AWS.Lambda.Layers.CompatibleRuntimes | list | The layer’s compatible runtimes. | 
 | AWS.Lambda.Layers.LicenseInfo | string | The layer’s open-source license. | 
 | AWS.Lambda.Layers.CompatibleArchitectures | list | A list of compatible instruction set architectures. | 
+
 
 #### Command example
 ```!aws-lambda-list-layer-version layer-name=test```
@@ -1106,6 +1161,29 @@ Lists the versions of an Lambda layer.
 >| x86_64 | nodejs | 2018-11-27T15:10:45.123+0000 | test | testLayer | test | 1 |
 
 
+### aws-lambda-delete-layer-version
+
+***
+Deletes a version of an Lambda layer.
+
+#### Base Command
+
+`aws-lambda-delete-layer-version`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| version-number | The version number. Possible values are: . | Required | 
+| layer-name | The name or Amazon Resource Name (ARN) of the layer. Possible values are: . | Required | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
 ### aws-lambda-delete-layer-version
 
 ***
