@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 877.5,
-          "y": 20
+          "x": 947.5,
+          "y": -20
         }
       }
     note: false
@@ -72,8 +72,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 877.5,
-          "y": 165
+          "x": 947.5,
+          "y": 125
         }
       }
     note: false
@@ -101,13 +101,14 @@ tasks:
       - "5"
       - "3"
       - "31"
+      - "68"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 877.5,
-          "y": 340
+          "x": 947.5,
+          "y": 300
         }
       }
     note: false
@@ -153,8 +154,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2010,
-          "y": 540
+          "x": 2040,
+          "y": 445
         }
       }
     note: false
@@ -208,7 +209,7 @@ tasks:
       {
         "position": {
           "x": -600,
-          "y": 495
+          "y": 445
         }
       }
     note: false
@@ -252,8 +253,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 877.5,
-          "y": 485
+          "x": 947.5,
+          "y": 445
         }
       }
     note: false
@@ -321,7 +322,7 @@ tasks:
       {
         "position": {
           "x": -600,
-          "y": 865
+          "y": 825
         }
       }
     note: false
@@ -352,7 +353,7 @@ tasks:
       {
         "position": {
           "x": -600,
-          "y": 710
+          "y": 670
         }
       }
     note: false
@@ -398,8 +399,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2402.5,
-          "y": 1005
+          "x": 2322.5,
+          "y": 935
         }
       }
     note: false
@@ -429,8 +430,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2402.5,
-          "y": 865
+          "x": 2322.5,
+          "y": 795
         }
       }
     note: false
@@ -460,7 +461,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1557.5,
+          "x": 1597.5,
           "y": 765
         }
       }
@@ -537,7 +538,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1547.5,
+          "x": 1597.5,
           "y": 1300
         }
       }
@@ -568,8 +569,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2872.5,
-          "y": 820
+          "x": 2822.5,
+          "y": 760
         }
       }
     note: false
@@ -629,8 +630,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2872.5,
-          "y": 1170
+          "x": 2822.5,
+          "y": 1110
         }
       }
     note: false
@@ -1002,6 +1003,7 @@ tasks:
     nexttasks:
       '#default#':
       - "49"
+      - "71"
       "yes":
       - "18"
     separatecontext: false
@@ -1021,8 +1023,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2872.5,
-          "y": 950
+          "x": 2822.5,
+          "y": 890
         }
       }
     note: false
@@ -1062,8 +1064,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 260,
-          "y": 495
+          "x": 240,
+          "y": 445
         }
       }
     note: false
@@ -1119,8 +1121,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 260,
-          "y": 865
+          "x": 240,
+          "y": 815
         }
       }
     note: false
@@ -1490,7 +1492,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1557.5,
+          "x": 1597.5,
           "y": 875
         }
       }
@@ -1521,8 +1523,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -600,
-          "y": 1340
+          "x": -610,
+          "y": 1365
         }
       }
     note: false
@@ -1562,7 +1564,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
+          "x": -190,
           "y": 1075
         }
       }
@@ -1602,7 +1604,7 @@ tasks:
       {
         "position": {
           "x": -600,
-          "y": 1075
+          "y": 995
         }
       }
     note: false
@@ -1771,8 +1773,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2010,
-          "y": 1520
+          "x": 2040,
+          "y": 1655
         }
       }
     note: false
@@ -1802,8 +1804,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2872.5,
-          "y": 1535
+          "x": 2822.5,
+          "y": 1475
         }
       }
     note: false
@@ -1841,8 +1843,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2402.5,
-          "y": 1170
+          "x": 2322.5,
+          "y": 1100
         }
       }
     note: false
@@ -1872,8 +1874,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2402.5,
-          "y": 1370
+          "x": 2322.5,
+          "y": 1325
         }
       }
     note: false
@@ -1911,8 +1913,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2872.5,
-          "y": 1340
+          "x": 2822.5,
+          "y": 1280
         }
       }
     note: false
@@ -1950,8 +1952,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1547.5,
-          "y": 1705
+          "x": 1597.5,
+          "y": 1645
         }
       }
     note: false
@@ -1981,8 +1983,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1547.5,
-          "y": 1870
+          "x": 1597.5,
+          "y": 1800
         }
       }
     note: false
@@ -2253,8 +2255,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1547.5,
-          "y": 1505
+          "x": 1597.5,
+          "y": 1475
         }
       }
     note: false
@@ -2379,8 +2381,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 260,
-          "y": 710
+          "x": 240,
+          "y": 670
         }
       }
   "64":
@@ -2410,8 +2412,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 260,
-          "y": 1340
+          "x": 240,
+          "y": 1375
         }
       }
   "65":
@@ -2449,14 +2451,250 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 260,
-          "y": 1075
+          "x": 240,
+          "y": 995
         }
       }
+  "66":
+    id: "66"
+    taskid: 8cefe8b2-308b-4c4c-8c2d-e8990d6dbf62
+    type: regular
+    task:
+      id: 8cefe8b2-308b-4c4c-8c2d-e8990d6dbf62
+      version: -1
+      name: Set tags grid field
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      scriptName: GridFieldSetup
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      gridfield:
+        simple: asmtags
+      keys:
+        simple: Key,Value,Source
+      val1:
+        complex:
+          root: GCPIAM.TagBindings
+          accessor: key
+      val2:
+        complex:
+          root: GCPIAM.TagBindings
+          accessor: value
+      val3:
+        simple: GCP-project-folder-tags
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3760,
+          "y": 975
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 56b8ffb8-2d9b-4da1-8f4b-548a40413724
+    type: title
+    task:
+      id: 56b8ffb8-2d9b-4da1-8f4b-548a40413724
+      version: -1
+      name: Tags - Project/Folder/Organization Tags
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3760,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 7b04a11e-74ef-453c-860f-e5e6bc1e2b9c
+    type: condition
+    task:
+      id: 7b04a11e-74ef-453c-860f-e5e6bc1e2b9c
+      version: -1
+      name: Is there tagbinding information?
+      description: Determines if there is GCP-IAM tagbindings information to populate tags field.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "71"
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: GCPIAM
+                accessor: TagBindings
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3760,
+          "y": 445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: e49dccfa-8c0a-408b-891e-180eaed2184e
+    type: title
+    task:
+      id: e49dccfa-8c0a-408b-891e-180eaed2184e
+      version: -1
+      name: Project/Folder/Organization Tags - End
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3760,
+          "y": 1315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 60e38ace-498e-4f4e-83eb-8f5045a20a18
+    type: regular
+    task:
+      id: 60e38ace-498e-4f4e-83eb-8f5045a20a18
+      version: -1
+      name: Set true flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_gcp
+      value:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3760,
+          "y": 1135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: ae25e477-1620-46d4-8e72-1a7328216c5a
+    type: regular
+    task:
+      id: ae25e477-1620-46d4-8e72-1a7328216c5a
+      version: -1
+      name: Set false flag for completed enrichment
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_enrichment_flag_gcp
+      value:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3342.5,
+          "y": 1350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "29_18_yes": 0.56,
+      "29_71_#default#": 0.52,
+      "31_41_#default#": 0.47,
       "33_34_yes": 0.5,
       "33_43_#default#": 0.11,
       "35_36_yes": 0.54,
@@ -2464,16 +2702,17 @@ view: |-
       "39_37_yes": 0.63,
       "39_38_#default#": 0.65,
       "3_17_yes": 0.76,
-      "4_41_#default#": 0.31,
+      "4_41_#default#": 0.4,
       "59_22_yes": 0.49,
-      "5_41_#default#": 0.41
+      "5_41_#default#": 0.41,
+      "68_71_#default#": 0.45
     },
     "paper": {
       "dimensions": {
-        "height": 4325,
-        "width": 3852.5,
-        "x": -600,
-        "y": 20
+        "height": 4365,
+        "width": 4750,
+        "x": -610,
+        "y": -20
       }
     }
   }
