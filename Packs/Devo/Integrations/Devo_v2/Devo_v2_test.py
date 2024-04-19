@@ -64,6 +64,31 @@ MOCK_HIGH_CPU_ALERT = {
     '"097",'
     '"eventdate":"2019-09-20+08%3A52%3A14.096","timestamp":"2019-09-20+08%3A52%3A14"}',
 }
+MOCK_HIGH_CPU_ALERT_1 = {
+    "eventdate": time.time() - 20,
+    "alertHost": "backoffice",
+    "domain": "dsteam",
+    "priority": 5.0,
+    "context": "CPU_Usage_Alert",
+    "category": "my.context",
+    "status": 4,
+    "alertId": "6294258",
+    "srcIp": 2130706433,
+    "srcPort": None,
+    "srcHost": None,
+    "dstIp": 2130706234,
+    "dstPort": None,
+    "dstHost": None,
+    "protocol": None,
+    "username": None,
+    "application": None,
+    "engine": "CPU_Usage_Alert",
+    "extraData": '{"cluster":"-","anomaly_score":"100","indices":'
+    '"0%2","_message":"CPU+Usage+Anomaly","instance":"-","payload":'
+    '"2019-09-20+08997","pred":"52.52","message":'
+    '"097",'
+    '"eventdate":"2019-09-20+08%3A52%3A14.096","timestamp":"2019-09-20+08%3A52%3A14"}',
+}
 MOCK_SIMULTANEOUS_LOGIN_ALERT = {
     "eventdate": time.time() - 45,
     "alertHost": "backoffice",
@@ -97,11 +122,45 @@ MOCK_SIMULTANEOUS_LOGIN_ALERT = {
     '"facility":"user","username":"test%40test.com","geolocation":"421%'
     'C2W","timestamp":"2019-09-20+20%3A41%3A37.395"}',
 }
+MOCK_SIMULTANEOUS_LOGIN_ALERT_1 = {
+    "eventdate": time.time() - 45,
+    "alertHost": "backoffice",
+    "domain": "dsteam",
+    "priority": 5.0,
+    "context": "simultaneous_login",
+    "category": "my.context",
+    "status": 4,
+    "alertId": "6306076",
+    "srcIp": 2130706234,
+    "srcPort": None,
+    "srcHost": None,
+    "dstIp": 2130706456,
+    "dstPort": None,
+    "dstHost": None,
+    "protocol": None,
+    "username": None,
+    "application": None,
+    "bar": None,
+    "baz": None,
+    "engine": "simultaneous_login",
+    "extraData": '{"duration_seconds":"null","cluster":"-","prev_timestamp":"null","instance":'
+    '"-","distance":"null","level":"info","city":"Natick","srcHost":"blahip","prev_city":"None","format":'
+    '"output_aaa","prev_geolocation":"None","message":'
+    '"0%2ENEW+RECORD'
+    "test%40test.comNoneNone550.239."
+    '225.14NoneNoneNoneNone","eventdate":"2019-09-20+20%3A41%3A39.688","prev_srcHost":"None","duration":"None",'
+    '"indices":"0%2C1C133","payload":'
+    '"NEW+RECORDtest%40test.comNoneNoneNatic31.'
+    '335.14NoneNoneNoneNone","state":"NEW+RECORD","category":"modelserverdev",'
+    '"facility":"user","username":"test%40test.com","geolocation":"421%'
+    'C2W","timestamp":"2019-09-20+20%3A41%3A37.395"}',
+}
 # Create a dictionary containing the list of alerts
 mock_query_result = {"object": [MOCK_HIGH_CPU_ALERT, MOCK_SIMULTANEOUS_LOGIN_ALERT], "status": 0}
 
 # Convert the dictionary to a JSON string
 MOCK_QUERY_RESULTS = json.dumps(mock_query_result)
+MOCK_QUERY_RESULTS_1 = json.dumps({"object": [MOCK_HIGH_CPU_ALERT_1, MOCK_SIMULTANEOUS_LOGIN_ALERT_1], "status": 0})
 MOCK_LAST_RUN = {"from_time": time.time() - 60}
 MOCK_QUERY_ARGS = {
     "query": "from whatever",
@@ -116,6 +175,13 @@ MOCK_QUERY_ARGS_INVALIDE_COLUMN_NAME = {
     "to": time.time(),
     "writeToContext": "true",
     "filtered_columns": "eventdate,abcd"
+}
+MOCK_QUERY_ARGS_FALSE_IP_AS_STRING = {
+    "query": "from whatever",
+    "from": time.time() - 60,
+    "to": time.time(),
+    "writeToContext": "true",
+    "ip_as_string": "false"
 }
 MOCK_ALERT_ARGS_REPEATED_FIELDS = {
     "filters": MOCK_FETCH_INCIDENTS_FILTER,
@@ -485,6 +551,21 @@ def test_run_query_with_invalid_column_name(mock_query_results, mock_args_result
     mock_args_results.return_value = MOCK_QUERY_ARGS_INVALIDE_COLUMN_NAME
     with pytest.raises(ValueError, match=re.escape("Fields ['abcd'] not found in query result")):
         run_query_command(OFFSET, ITEMS_PER_PAGE)
+
+
+@patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
+@patch("Devo_v2.READER_OAUTH_TOKEN", MOCK_READER_OAUTH_TOKEN, create=True)
+@patch("Devo_v2.demisto.args")
+@patch("Devo_v2.Client.query")
+def test_run_query_with_ip_as_string_false(mock_query_results, mock_args_results):
+    mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS_1)
+    mock_args_results.return_value = MOCK_QUERY_ARGS_FALSE_IP_AS_STRING
+    results = run_query_command(OFFSET, ITEMS_PER_PAGE)
+    assert (results[1]["HumanReadable"]).find("Devo Direct Link") != -1
+    assert len(results) == 2
+    assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
+    assert results[0]["Contents"][0]["srcIp"] == 2130706433
+    assert results[0]["Contents"][1]["srcIp"] == 2130706234
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
