@@ -628,3 +628,5 @@ inputs:
     (optional).
   playbookInputQuery: null
 outputs: []
+tests:
+- No tests
