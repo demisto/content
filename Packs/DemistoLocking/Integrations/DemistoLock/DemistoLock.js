@@ -42,13 +42,12 @@ switch (command) {
         var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
         lockInfo += (args.info) ? ' Additional info: ' + args.info :'';
 
-        var guid = guid();
+        var guid = args.guid || guid();
         var time = 0;
         var lock, version;
 
         // check if the process already holds the lock
         [lock, version] = getLock();
-
         if (lock.guid === guid) {
             var md = '### Demisto Locking Mechanism\n';
             md += 'Lock acquired successfully\n';
@@ -66,14 +65,16 @@ switch (command) {
             }
             return {
                 Type: entryTypes.note,
-                Contents: 'Lock was acquired, Polling.',
+                Contents: 'Lock was not acquired, Polling.',
                 PollingCommand: 'demisto-lock-get',
-                NextRun: '30',
-                PollingArgs: {name: lockName, info: lockInfo, timeout: lockTimeout},
+                NextRun: '5',
+                PollingArgs: {name: lockName, info: args.info, timeout: args.timeout, guid: guid},
                 Timeout: String(lockTimeout)
             }
         }
 
+
+        // vvv XSOAR 6 Implementation vvv
         // do{
         //     [lock, version] = getLock();
         //     if (lock.guid === guid) {
