@@ -74,7 +74,6 @@ switch (command) {
         }
 
 
-        // vvv XSOAR 6 Implementation vvv
         // do{
         //     [lock, version] = getLock();
         //     if (lock.guid === guid) {
