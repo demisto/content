@@ -420,7 +420,7 @@ def get_incidents_for_alert(**kwargs) -> tuple[list[dict[str, Any]], dict[str, A
             )
         count = kwargs['fetch_count']
 
-        next_incidents_ids = []
+        next_incidents_ids: List[str] = []
         alerts = resp.get('alert', [])
         alerts.sort(key=lambda x: x.get("occurred"))
         last_alert_start_time = last_run.get('alerts', {}).get('start_time')
@@ -429,8 +429,10 @@ def get_incidents_for_alert(**kwargs) -> tuple[list[dict[str, Any]], dict[str, A
 
         for alert in alerts:
             # skip on duplicate incident
-            if last_alert_start_time and last_alert_ids and last_alert_start_time == alert.get('occurred', '') and alert.get('id',
-                                                                                                                             '') in last_alert_ids:
+            if (last_alert_start_time
+                and last_alert_ids
+                and last_alert_start_time == alert.get('occurred', '')
+                    and alert.get('id', '') in last_alert_ids):
                 continue
             # set incident
             context_alert = remove_empty_entities(alert)
@@ -526,7 +528,7 @@ def get_incidents_for_event(
         for event in events:
             # skip on duplicate incident
             if last_event_start_time and last_event_ids and last_event_start_time == event.get('occurred', '') and event.get(
-                'eventId', '') in last_event_ids:
+                    'eventId', '') in last_event_ids:
                 continue
 
             # set incident
@@ -534,11 +536,10 @@ def get_incidents_for_event(
             context_event['incidentType'] = IPS_EVENT_INCIDENT_TYPE
             if count >= fetch_limit:
                 break
-            if ((event_occurred_time := event.get('occurred')) and
-                next_event_start_time == event_occurred_time):
-                if event_id := event.get('eventId'):
-                    # Save the event id for the next fetch dedup
-                    next_incidents_ids.append(event_id)
+            if ((event_occurred_time := event.get('occurred'))
+                    and next_event_start_time == event_occurred_time) and (event_id := event.get('eventId')):
+                # Save the event id for the next fetch dedup
+                next_incidents_ids.append(event_id)
             incident = {
                 'name': context_event.get('ruleName', ''),
                 'occurred': context_event.get('occurred', ''),
@@ -1567,7 +1568,7 @@ def main() -> None:
                 first_fetch=date_to_timestamp(
                     start_time, date_format=DATE_FORMAT
                 )
-                            / 1000,
+                / 1000,
                 fetch_type=fetch_type,
                 mvx_correlated=mvx_correlated,
                 replace_alert_url=replace_alert_url,
