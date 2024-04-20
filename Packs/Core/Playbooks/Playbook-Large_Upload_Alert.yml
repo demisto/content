@@ -67,14 +67,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 174d2a27-6aa6-49ff-8bfa-3affe0682ed8
+    taskid: e45fff3d-7245-4cb0-8118-db185b7321f8
     type: regular
     task:
-      id: 174d2a27-6aa6-49ff-8bfa-3affe0682ed8
+      id: e45fff3d-7245-4cb0-8118-db185b7321f8
       version: -1
       name: Find Similar Alerts
-      description: Find past similar alerts based on alert fields' similarity. Includes an option to also display indicators similarity.
-      scriptName: DBotFindSimilarAlerts
+      description: Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
+      scriptName: DBotFindSimilarIncidents
       type: regular
       iscommand: false
       brand: ""
@@ -91,18 +91,7 @@ tasks:
       minimunIncidentSimilarity:
         simple: "0.8"
       query:
-        complex:
-          root: alert.closeReason
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: alert.closeReason
-                iscontext: true
-              right:
-                value:
-                  simple: Resolved
-              ignorecase: true
+        simple: ${alert.closeReason}:Resolve As False Positive or ${alert.closeReason}:Resolved - Duplicate Alert or ${alert.closeReason}:Resolved - Other or ${alert.closeReason}:Resolved - Known Issue or ${alert.closeReason}:Resolved - False Positive
       similarCategoricalField:
         simple: alert.appid,alert.remoteport,alert.initiatorsha256,alert.cgosha256,alert.osparentsha256
       similarTextField:
@@ -310,10 +299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 932a0964-da64-41c3-84c4-e7a392b584f4
+    taskid: 7ba82224-2515-4547-8509-9cee0e41ebef
     type: condition
     task:
-      id: 932a0964-da64-41c3-84c4-e7a392b584f4
+      id: 7ba82224-2515-4547-8509-9cee0e41ebef
       version: -1
       name: Check Uploaded Data Volume
       description: Determines if the amount of data uploaded to an external host exceeds the defined threshold amount.
@@ -341,7 +330,7 @@ tasks:
                     flags: {}
                     groups:
                       value:
-                        simple: "2"
+                        simple: "1"
                     keys: {}
                     regex:
                       value:
@@ -363,7 +352,7 @@ tasks:
                     flags: {}
                     groups:
                       value:
-                        simple: "2"
+                        simple: "1"
                     keys: {}
                     regex:
                       value:
@@ -385,7 +374,7 @@ tasks:
                     flags: {}
                     groups:
                       value:
-                        simple: "1"
+                        simple: "0"
                     keys: {}
                     regex:
                       value:
@@ -395,7 +384,16 @@ tasks:
                     chars:
                       value:
                         simple: MB
-                - operator: SumList
+                - operator: RegexGroups
+                  args:
+                    flags: {}
+                    groups:
+                      value:
+                        simple: "0"
+                    keys: {}
+                    regex:
+                      value:
+                        simple: (\d+)\.
             iscontext: true
           right:
             value:
@@ -3879,7 +3877,8 @@ view: |-
       "48_58_#default#": 0.58,
       "4_56_#default#": 0.41,
       "5_56_#default#": 0.43,
-      "5_6_Yes": 0.13
+      "5_6_Yes": 0.13,
+      "8_59_#default#": 0.23
     },
     "paper": {
       "dimensions": {
@@ -3959,6 +3958,26 @@ inputs:
     simple: ${alert.id}
   required: false
   description: The Cortex XDR alert ID.
+  playbookInputQuery:
+- key: Transferred_Data
+  value:
+    complex:
+      root: alert
+      accessor: details
+      transformers:
+      - operator: RegexGroups
+        args:
+          flags: {}
+          groups:
+            value:
+              simple: "1"
+          keys: {}
+          regex:
+            value:
+              simple: uploaded\s(.*(MB|GB|TB))
+      - operator: SumList
+  required: false
+  description: The amount of uploaded data transferred to an external destination as a result of the large upload activity.
   playbookInputQuery:
 outputs: []
 tests:
