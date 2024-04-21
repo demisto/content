@@ -5,26 +5,26 @@ name: Genians
 display: Genians
 category: Network Security
 description: Use the Genian NAC integration to block IP addresses using the assign tag.
-detaileddescription:
+detaileddescription: null
 configuration:
 - display: Server IP (e.g. 172.29.62.26)
   name: server_ip
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: true
 - display: API Key (e.g. 912fae69-b454-4608-bf4b-fa142353b463)
   name: apikey
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "false"
+  defaultvalue: 'false'
   type: 8
   required: false
 - display: Tag Name (e.g. THREAT, GUEST)
   name: tag_name
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: true
 - display: Fetch indicators
@@ -59,7 +59,7 @@ script:
       description: Tag name
       type: string
     description: Removes the tag(s) from the Node specified.
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.92207
   runonce: false
   script: '-'
   subtype: python3

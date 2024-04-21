@@ -8,12 +8,12 @@ description: The Deep Learning cybersecurity platform, for zero time prevention.
 configuration:
 - display: Base server URL
   name: base_url
-  defaultvalue: "https://my-deep-instinct-path.deepinstinctweb.com"
+  defaultvalue: https://my-deep-instinct-path.deepinstinctweb.com
   type: 0
   required: true
 - display: API Key
   name: apikey
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   required: true
 - display: Fetch incidents
@@ -26,7 +26,7 @@ configuration:
   required: false
 - display: First event ID to fetch from
   name: first_fetch_id
-  defaultvalue: "0"
+  defaultvalue: '0'
   type: 0
   required: false
 script:
@@ -117,7 +117,7 @@ script:
     arguments:
     - name: first_event_id
       description: First event id to get as max events in response can be 50
-      defaultValue: "0"
+      defaultValue: '0'
     outputs:
     - contextPath: DeepInstinct.Events.events.ID
       description: event ID
@@ -309,7 +309,7 @@ script:
       description: comma separeted list of event ids
       isArray: true
     description: close list of events
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   script: '-'
   type: python
