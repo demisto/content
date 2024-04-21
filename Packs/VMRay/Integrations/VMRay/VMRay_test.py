@@ -1,5 +1,5 @@
 import time
-
+from unittest.mock import MagicMock
 
 import demistomock as demisto
 import requests_mock
@@ -214,3 +214,61 @@ def test_get_screenshots_command(requests_mock, mocker):
         file_type=EntryType.IMAGE,
     )
     return_results_mock.assert_called_once_with([file_result_return_value])
+
+
+@pytest.fixture
+def mock_http_request(mocker):
+    """Fixture to mock VMRay.generic_http_request with a specific response."""
+    is_json = MagicMock()
+    is_json.return_value = True
+    mocker.patch('VMRay.is_json', return_value=is_json)
+
+    def mock_request(method=None, url_suffix=None, params=None, files=None, get_raw=False, ignore_errors=False, status_code=200,
+                     response_data=None, text=None):
+        mock_response = MagicMock()
+        mock_response.status_code = status_code
+        if response_data:
+            mock_response.json.return_value = response_data
+        if text:
+            mock_response.text = text
+        mocker.patch('VMRay.generic_http_request', return_value=mock_response)
+        return mock_request
+
+    return mock_request
+
+
+def test_http_request_success_200(mock_http_request):
+    """
+     Given: A successfully http request.
+     When: Making a http request.
+     Then: Assert correct data is returned.
+    """
+    from VMRay import http_request
+
+    # Configure mock_http_request with desired status code and data
+    mock_http_request(status_code=200, response_data={"data": "success"})
+
+    # Call the function
+    response = http_request("GET", "/api/endpoint")
+
+    assert response == {"data": "success"}
+
+
+def test_http_request_rate_limit_exceeded(mocker, mock_http_request):
+    """
+     Given: A failing http request.
+     When: Making a http request.
+     Then: Assert correct error message is returned.
+    """
+    from VMRay import http_request
+
+    error_mock = mocker.patch('VMRay.return_error')
+
+    # Configure mock_http_request for rate limit exceeded (429)
+    mock_http_request(status_code=429, response_data={"message": "Rate limit exceeded"}, text="Rate limit exceeded")
+
+    # Call the function
+    http_request("GET", "/api/endpoint")
+
+    # Assert expected behavior in the error message
+    assert "Rate limit exceeded" in error_mock.call_args[0][0]

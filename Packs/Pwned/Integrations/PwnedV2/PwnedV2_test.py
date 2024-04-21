@@ -3,7 +3,6 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from Packs.Base.Scripts.CommonServerPython import CommonServerPython
 from PwnedV2 import pwned_domain_command, pwned_username_command, pwned_email_command, error_handler
 import PwnedV2
 import demistomock as demisto
