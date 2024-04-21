@@ -179,15 +179,13 @@ def comma_list(raw_data: str) -> list[str]:
 
 @app.command()
 def open_prs_for_content_items(
-    affected_content_items_file: str = typer.Option(
-        help="The affected content items that will have their image tags updated, supplied as a json",
-    ),
     staging_branch: str = typer.Option(
         help="The staging branch, that will act as the base branch for the PRs",
     ),
     batch_dir: str = typer.Option(
         default="",
-        help="The batch directory, that will hold the outputs of the opened PRs",
+        help="The batch directory, holds the input of the script, under the file affected_content_items.json,"
+        " and the output of the current script",
     ),
     prs_limit: str = typer.Option(
         # TODO Change to 10 later
@@ -206,7 +204,7 @@ def open_prs_for_content_items(
     ),
 ):
     prs_limit_int = int(prs_limit)
-    affected_content_items = load_json(affected_content_items_file)
+    affected_content_items = load_json(f"{batch_dir}/affected_content_items.json")
     org_name = "demisto"
     repo_name = "content"
     remote_github_controller = Github(os.getenv("GITHUB_ACCESS_TOKEN"), verify=False)
