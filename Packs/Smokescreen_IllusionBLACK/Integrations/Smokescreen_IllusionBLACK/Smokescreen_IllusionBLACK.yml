@@ -101,7 +101,7 @@ script:
   - arguments:
     - description: Number of events. It can be between 1 and 1000.
       name: limit
-    - description: 'IllusionBLACK query. For example: "attacker.ip is \"1.2.3.4\""'
+    - description: 'IllusionBLACK query. For example: "attacker.ip is \"1.2.3.4\"".'
       name: query
     - description: ISO 8601 formatted date string.
       name: from
@@ -123,7 +123,7 @@ script:
     - contextPath: IllusionBlack.Event
       description: IllusionBLACK Single Event.
       type: Unknown
-    - contextPath: IllusionBlack.Event.attacker.id
+    - contextPath: "IllusionBlack.Event.attacker.id"
       description: IllusionBLACK Event Attacker ID.
       type: Unknown
     - contextPath: IllusionBlack.Event.decoy.id
