@@ -4,7 +4,7 @@ commonfields:
 name: SafewalkReports
 display: Safewalk Reports
 category: Analytics & SIEM
-description: Safewalk server integration
+description: Safewalk server integration.
 configuration:
 - display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
@@ -26,7 +26,7 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: 'false'
+  defaultvalue: "false"
   type: 8
   required: false
 - display: Use system proxy settings
@@ -39,7 +39,7 @@ configuration:
   required: false
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
-  defaultvalue: '1'
+  defaultvalue: "1"
   type: 19
   required: false
 - display: First fetch
@@ -49,7 +49,7 @@ configuration:
   required: false
 - display: Maximum number of incidents per fetch
   name: max_fetch
-  defaultvalue: '50'
+  defaultvalue: "50"
   type: 0
   required: false
 - display: Fetch Query Filter
@@ -121,204 +121,204 @@ script:
   - name: safewalk-get-associated-users
     outputs:
     - contextPath: Safewalk.reports.associated_users.data.id
-      description: users data id
+      description: 'users data id.'
       type: String
     - contextPath: Safewalk.reports.associated_users.data.label
-      description: users data label
+      description: 'users data label.'
       type: String
     arguments:
     - name: devicetype
-      description: devicetype
-    description: safewalk-get-associated-users
+      description: devicetype.
+    description: safewalk-get-associated-users.
   - name: safewalk-get-authentication-methods-distribution
     outputs:
     - contextPath: Safewalk.reports.device_auth_distribution.data.id
-      description: device_auth_distribution.data.id
+      description: 'device_auth_distribution.data.id'
       type: String
     - contextPath: Safewalk.reports.device_auth_distribution.data.label
-      description: device_auth_distribution.data.label
+      description: 'device_auth_distribution.data.label'
       type: String
     - contextPath: Safewalk.reports.device_auth_distribution.data.type
-      description: device_auth_distribution.data.type
+      description: 'device_auth_distribution.data.type'
       type: String
     - contextPath: Safewalk.reports.device_auth_distribution.data
-      description: device_auth_distribution.data
+      description: 'device_auth_distribution.data'
       type: Number
     arguments: []
-    description: safewalk-get-authentication-methods-distribution
+    description: safewalk-get-authentication-methods-distribution.
   - name: safewalk-get-authentication-rate-per-device
     outputs:
     - contextPath: Safewalk.reports.device_auth_rate.data.id
-      description: device_auth_rate.data.id
+      description: 'device_auth_rate.data.id'
       type: String
     - contextPath: Safewalk.reports.device_auth_rate.data.label
-      description: device_auth_rate.data.label
+      description: 'device_auth_rate.data.label'
       type: String
     - contextPath: Safewalk.reports.device_auth_rate.data.type
-      description: device_auth_rate.data.type
+      description: 'device_auth_rate.data.type'
       type: String
     - contextPath: Safewalk.reports.device_auth_rate.data
-      description: device_auth_rate.data
+      description: 'device_auth_rate.data'
       type: Number
     arguments: []
-    description: safewalk-get-authentication-rate-per-device
+    description: safewalk-get-authentication-rate-per-device.
   - name: safewalk-get-least-active-users
     outputs:
     - contextPath: Safewalk.reports.inactive_users.data.id
-      description: inactive_users.data.id
+      description: 'inactive_users.data.id'
       type: String
     - contextPath: Safewalk.reports.inactive_users.data.label
-      description: inactive_users.data.label
+      description: 'inactive_users.data.label'
       type: String
     arguments:
     - name: sincedate
-      description: sincedate
+      description: sincedate.
     - name: userinformation
-      description: userinformation
-    description: safewalk-get-least-active-users
+      description: userinformation.
+    description: safewalk-get-least-active-users.
   - name: safewalk-get-licenses-inventory
     outputs:
     - contextPath: Safewalk.reports.licensesinventory.total
-      description: licenses inventory total
+      description: 'licenses inventory total.'
       type: Number
     - contextPath: Safewalk.reports.licensesinventory.data.id
-      description: icenses inventory data id
+      description: 'icenses inventory data id.'
       type: String
     - contextPath: Safewalk.reports.licensesinventory.data.label
-      description: licenses inventory data label
+      description: 'licenses inventory data label.'
       type: String
     - contextPath: Safewalk.reports.licensesinventory.data.type
-      description: licenses inventory data type
+      description: 'licenses inventory data type.'
       type: String
     - contextPath: Safewalk.reports.licensesinventory.data
-      description: licenses inventory data
+      description: 'licenses inventory data.'
       type: Number
     arguments: []
-    description: safewalk-get-licenses-inventory
+    description: safewalk-get-licenses-inventory.
   - name: safewalk-get-licenses-usage
     outputs:
     - contextPath: Safewalk.reports.licensesusage.total
-      description: licenses usage total
+      description: 'licenses usage total.'
       type: Number
     - contextPath: Safewalk.reports.licensesusage.data.id
-      description: licenses usage data id
+      description: 'licenses usage data id.'
       type: String
     - contextPath: Safewalk.reports.licensesusage.data.label
-      description: licenses usage data label
+      description: 'licenses usage data label.'
       type: String
     - contextPath: Safewalk.reports.licensesusage.data.type
-      description: licenses usage data type
+      description: 'licenses usage data type.'
       type: String
     - contextPath: Safewalk.reports.licensesusage.data
-      description: licenses usage data
+      description: 'licenses usage data.'
       type: Number
     arguments:
     - name: begindate
-      description: begindate
+      description: begindate.
     - name: enddate
-      description: enddate
-    description: safewalk-get-licenses-usage
+      description: enddate.
+    description: safewalk-get-licenses-usage.
   - name: safewalk-get-most-active-users
     outputs:
     - contextPath: Safewalk.reports.mostactiveusers.data.id
-      description: mostactiveusers.data.id
+      description: 'mostactiveusers.data.id'
       type: String
     - contextPath: Safewalk.reports.mostactiveusers.data.label
-      description: mostactiveusers.data.label
+      description: 'mostactiveusers.data.label'
       type: String
     - contextPath: Safewalk.reports.mostactiveusers.data.type
-      description: mostactiveusers.data.type
+      description: 'mostactiveusers.data.type'
       type: String
     - contextPath: Safewalk.reports.mostactiveusers.data
-      description: mostactiveusers.data
+      description: 'mostactiveusers.data'
       type: String
     arguments:
     - name: days
-      description: days
+      description: days.
     - name: limit
-      description: limit
+      description: limit.
     - name: userinformation
-      description: userinformation
-    description: safewalk-get-most-active-users
+      description: userinformation.
+    description: safewalk-get-most-active-users.
   - name: safewalk-get-physical-tokens-inventory
     outputs:
     - contextPath: Safewalk.reports.physicaltokeninventory.total
-      description: physicaltokeninventory.total
+      description: 'physicaltokeninventory.total'
       type: Number
     - contextPath: Safewalk.reports.physicaltokeninventory.data.id
-      description: physicaltokeninventory.data.id
+      description: 'physicaltokeninventory.data.id'
       type: String
     - contextPath: Safewalk.reports.physicaltokeninventory.data.label
-      description: physicaltokeninventory.data.label
+      description: 'physicaltokeninventory.data.label'
       type: String
     - contextPath: Safewalk.reports.physicaltokeninventory.data.type
-      description: physicaltokeninventory.data.type
+      description: 'physicaltokeninventory.data.type'
       type: String
     - contextPath: Safewalk.reports.physicaltokeninventory.data
-      description: physicaltokeninventory.data
+      description: 'physicaltokeninventory.data'
       type: Number
     arguments: []
-    description: safewalk-get-physical-tokens-inventory
+    description: safewalk-get-physical-tokens-inventory.
   - name: safewalk-get-registered-devices-distribution
     outputs:
     - contextPath: Safewalk.reports.registereddevices.total
-      description: registereddevices.total
+      description: 'registereddevices.total'
       type: Number
     - contextPath: Safewalk.reports.registereddevices.data.id
-      description: registereddevices.data.id
+      description: 'registereddevices.data.id'
       type: String
     - contextPath: Safewalk.reports.registereddevices.data.label
-      description: registereddevices.data.label
+      description: 'registereddevices.data.label'
       type: String
     - contextPath: Safewalk.reports.registereddevices.data.type
-      description: registereddevices.data.type
+      description: 'registereddevices.data.type'
       type: String
     - contextPath: Safewalk.reports.registereddevices.data
-      description: registereddevices.data
+      description: 'registereddevices.data'
       type: Number
     arguments: []
-    description: safewalk-get-registered-devices-distribution
+    description: safewalk-get-registered-devices-distribution.
   - name: safewalk-get-registration
     outputs:
     - contextPath: Safewalk.reports.registration.total
-      description: registration.total
+      description: 'registration.total'
       type: Number
     - contextPath: Safewalk.reports.registration.data.id
-      description: registration.data.id
+      description: 'registration.data.id'
       type: String
     - contextPath: Safewalk.reports.registration.data.label
-      description: registration.data.label
+      description: 'registration.data.label'
       type: String
     - contextPath: Safewalk.reports.registration.data.type
-      description: registration.data.type
+      description: 'registration.data.type'
       type: String
     arguments:
     - name: begindate
-      description: begindate
+      description: begindate.
     - name: enddate
-      description: enddate
+      description: enddate.
     - name: userinformation
-      description: userinformation
-    description: safewalk-get-registration
+      description: userinformation.
+    description: safewalk-get-registration.
   - name: safewalk-get-users-associations-indicators
     outputs:
     - contextPath: Safewalk.reports.usersassociations.total
-      description: usersassociations.total
+      description: 'usersassociations.total'
       type: Number
     - contextPath: Safewalk.reports.usersassociations.data.id
-      description: usersassociations.data.id
+      description: 'usersassociations.data.id'
       type: String
     - contextPath: Safewalk.reports.usersassociations.data.label
-      description: usersassociations.data.label
+      description: 'usersassociations.data.label'
       type: String
     - contextPath: Safewalk.reports.usersassociations.data.type
-      description: usersassociations.data.type
+      description: 'usersassociations.data.type'
       type: String
     - contextPath: Safewalk.reports.usersassociations.data
-      description: usersassociations.data
+      description: 'usersassociations.data'
       type: Number
     arguments: []
-    description: safewalk-get-users-associations-indicators
+    description: safewalk-get-users-associations-indicators.
   dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   runonce: false
