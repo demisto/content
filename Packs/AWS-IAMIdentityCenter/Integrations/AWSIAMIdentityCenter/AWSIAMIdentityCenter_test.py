@@ -49,10 +49,10 @@ class Boto3Client:
 
     def list_group_memberships(self):
         pass
-    
+
     def update_user(self):
         pass
-    
+
     def update_group(self):
         pass
 
