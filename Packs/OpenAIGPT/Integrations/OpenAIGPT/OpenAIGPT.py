@@ -299,11 +299,14 @@ def send_message_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandR
     response = client.get_chat_completions(chat_context=conversation, completion_params=completion_params)
     # Also updating the conversation history with the extracted message from the response.
     assistant_message = extract_assistant_message(response, conversation)
+
+    usage = response.get('usage', '') if args.get('verbose', False) else ''
+    verbose_message = f"Model: {response.get('model', '')} Usage: {usage} | '
     return CommandResults(
         outputs_prefix='OpenAIGPT.Conversation',
         outputs=conversation,
         replace_existing=True,
-        readable_output=assistant_message
+        readable_output=str(response) + "\n| $$$$$$$$ |\n" + assistant_message
     )
 
 
