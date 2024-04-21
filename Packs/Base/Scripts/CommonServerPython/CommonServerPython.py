@@ -53,6 +53,7 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 
+
 def register_module_line(module_name, start_end, line, wrapper=0):
     """
         Register a module in the line mapping for the traceback line correction algorithm.
@@ -11942,10 +11943,11 @@ def safe_sleep(duration_seconds):
         time_left = run_duration - (datetime.now() - SAFE_SLEEP_START_TIME).total_seconds()
         if duration_seconds > time_left:
             raise ValueError("Requested a sleep of {} seconds, but time left until docker timeout is {} seconds."
-                                   .format(duration_seconds, run_duration))
+                             .format(duration_seconds, run_duration))
     else:
         demisto.info('Safe sleep is not supported in this server version, sleeping for the requested time.')
     time.sleep(duration_seconds)
+
 
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #

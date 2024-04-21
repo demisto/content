@@ -1,5 +1,10 @@
+import sys
+from unittest.mock import MagicMock
+
 import pytest
-from PwnedV2 import pwned_domain_command, pwned_username_command, pwned_email_command
+
+from Packs.Base.Scripts.CommonServerPython import CommonServerPython
+from PwnedV2 import pwned_domain_command, pwned_username_command, pwned_email_command, error_handler
 import PwnedV2
 import demistomock as demisto
 
@@ -53,16 +58,16 @@ username_req = [
                                           'Usernames', 'Website activity'], 'IsRetired': False, 'IsSpamList':
         False, 'BreachDate': '2011-06-25',
         'IsFabricated': False, 'ModifiedDate': '2014-05-11T10:30:43Z', 'LogoPath': 'https://haveibeenpwned.com/'
-        u'Content/Images/PwnedLogos/HackForums.png',
+                                                                                   u'Content/Images/PwnedLogos/HackForums.png',
         'AddedDate': '2014-05-11T10:30:43Z', 'IsVerified': True,
         'Description': 'In June 2011, the hacktivist group known as "LulzSec" leaked <a href='
-        u'"http://www.forbes.com/sites/andygreenberg/2011/06/25/lulzsec-says-goodbye-'
-        u'dumping-nato-att-gamer-data/" target="_blank" rel="noopener">one final large'
-        u' data breach they titled "50 days of lulz"</a>. The compromised data came from'
-        u' sources such as AT&T, Battlefield Heroes and the <a href="http://hackforums.'
-        u'net" target="_blank" rel="noopener">hackforums.net website</a>. The leaked '
-        u'Hack Forums data included credentials and personal '
-        u'information of nearly 200,000 registered forum users.'
+                       u'"http://www.forbes.com/sites/andygreenberg/2011/06/25/lulzsec-says-goodbye-'
+                       u'dumping-nato-att-gamer-data/" target="_blank" rel="noopener">one final large'
+                       u' data breach they titled "50 days of lulz"</a>. The compromised data came from'
+                       u' sources such as AT&T, Battlefield Heroes and the <a href="http://hackforums.'
+                       u'net" target="_blank" rel="noopener">hackforums.net website</a>. The leaked '
+                       u'Hack Forums data included credentials and personal '
+                       u'information of nearly 200,000 registered forum users.'
     }
 ]
 
@@ -72,16 +77,16 @@ domain_req = [
         'Adobe', 'DataClasses': ['Email addresses', 'Password hints', 'Passwords', 'Usernames'], 'IsRetired':
         False, 'IsSpamList': False, 'BreachDate': '2013-10-04', 'IsFabricated': False, 'ModifiedDate':
         '2013-12-04T00:00:00Z', 'LogoPath': 'https://haveibeenpwned.com/Content/Images/PwnedLogos/Adobe'
-        u'.png', 'AddedDate': '2013-12-04T00:00:00Z', 'IsVerified':
+                                            u'.png', 'AddedDate': '2013-12-04T00:00:00Z', 'IsVerified':
         True, 'Description': 'In October 2013, 153 million Adobe accounts were breached with each'
-        u' containing an internal ID, username, email, <em>encrypted</em> password and'
-                              u' a password hint in plain text. The password cryptography was poorly done'
-                              u' and <a href="http://stricture-group.com/files/adobe-top100.txt" target="_'
-                              u'blank" rel="noopener">many were quickly resolved back to plain text</a>. '
-                              u'The unencrypted hints also <a href="http://www.troyhunt.com/2013/11/adobe-'
-                              u'credentials-and-serious.html" target="_blank" rel="noopener">disclosed much'
-                              u' about the passwords</a> adding further to the risk that hundreds of '
-                              u'millions of Adobe customers already faced.'
+                             u' containing an internal ID, username, email, <em>encrypted</em> password and'
+                             u' a password hint in plain text. The password cryptography was poorly done'
+                             u' and <a href="http://stricture-group.com/files/adobe-top100.txt" target="_'
+                             u'blank" rel="noopener">many were quickly resolved back to plain text</a>. '
+                             u'The unencrypted hints also <a href="http://www.troyhunt.com/2013/11/adobe-'
+                             u'credentials-and-serious.html" target="_blank" rel="noopener">disclosed much'
+                             u' about the passwords</a> adding further to the risk that hundreds of '
+                             u'millions of Adobe customers already faced.'
     }
 ]
 
@@ -202,3 +207,31 @@ def test_valid_emails(mocker):
 
     assert md_list == expected_md_list
     assert ec_list == expected_ec_list
+
+
+def test_error_handler_404():
+    # Mock response object with 404 status code
+    res = MagicMock()
+    res.status_code = 404
+
+    with pytest.raises(Exception) as excinfo:
+        error_handler(res)
+
+    assert str(excinfo.value) == "No result found."
+
+
+def test_error_handler_other_status_code(mocker):
+    # Mock response object with non-404 status code
+    res = MagicMock()
+    res.status_code = 500
+    res.text = "Internal Server Error"
+
+    mocker.patch.object(sys, 'exit')
+    mocker.patch.object(demisto, 'error')
+    mocker.spy(demisto, 'results')
+
+    expected_message = 'Error in API call to Pwned Integration'
+
+    error_handler(res)
+
+    assert expected_message in demisto.results.call_args.args[0].get('Contents')

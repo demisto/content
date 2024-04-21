@@ -1436,7 +1436,7 @@ def vmray_get_license_usage_reports_command():      # pragma: no cover
     return_results(results)
 
 
-def main():
+def main():   # pragma: no cover
     try:
         command = demisto.command()
         if command == 'test-module':

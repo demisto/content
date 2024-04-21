@@ -42,7 +42,6 @@ def error_handler(res):
         demisto.error(
             'Error in API call to Pwned Integration [%d]. Full text: %s' % (res.status_code, res.text))
     return_error('Error in API call to Pwned Integration [%d] - %s' % (res.status_code, res.reason))
-    return
 
 
 def http_request(method, url_suffix, params=None, data=None):
@@ -54,16 +53,16 @@ def http_request(method, url_suffix, params=None, data=None):
     }
     try:
         return generic_http_request(method=method,
-                                server_url=BASE_URL,
-                                verify=USE_SSL,
-                                client_headers=headers,
-                                url_suffix=url_suffix,
-                                data=data,
-                                params=params,
-                                error_handler=error_handler,
-                                status_list_to_retry=[429],
-                                retries=10,
-                                ok_codes=(200,))
+                                    server_url=BASE_URL,
+                                    verify=USE_SSL,
+                                    client_headers=headers,
+                                    url_suffix=url_suffix,
+                                    data=data,
+                                    params=params,
+                                    error_handler=error_handler,
+                                    status_list_to_retry=[429],
+                                    retries=10,
+                                    ok_codes=(200,))
     except DemistoException:
         return None
 
@@ -316,7 +315,7 @@ def pwned_username(username_list):
     return api_res_list
 
 
-def main():
+def main():  # pragma: no cover
     if not API_KEY:
         raise DemistoException('API key must be provided.')
     command = demisto.command()
