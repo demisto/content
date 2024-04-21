@@ -1327,7 +1327,7 @@ def test_update_alerts_in_xdr_command_fail_to_update(mocker):
     args = {"alert_ids": "1,2,3", "severity": "high", "status": "resolved_threat_handled", "comment": "fixed from test"}
     with pytest.raises(DemistoException) as e:
         update_alerts_in_xdr_command(xdrIr_client, args)
-    assert e.value.message == "Could not find alerts to update, please make sure you used a valid alert IDs."
+    assert e.value.message == "Could not find alerts to update, please make sure you used valid alert IDs."
 
 
 def test_update_alerts_in_xdr_command_invalid_response_no_reply(mocker):
@@ -1368,7 +1368,7 @@ def test_update_alerts_in_xdr_command_invalid_response_no_alerts_ids(mocker):
     args = {"alert_ids": "1,2,3", "severity": "high", "status": "resolved_threat_handled", "comment": "fixed from test"}
     with pytest.raises(DemistoException) as e:
         update_alerts_in_xdr_command(xdrIr_client, args)
-    assert e.value.message == "Could not find alerts to update, please make sure you used a valid alert IDs."
+    assert e.value.message == "Could not find alerts to update, please make sure you used valid alert IDs."
 
 
 @pytest.mark.parametrize('incident_changed, delta',
