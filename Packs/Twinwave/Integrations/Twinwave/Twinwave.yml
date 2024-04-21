@@ -15,7 +15,7 @@ configuration:
   name: api-token
   required: true
   type: 4
-- defaultvalue: "10"
+- defaultvalue: '10'
   display: Number of jobs to first fetch
   name: first_fetch
   type: 0
@@ -46,7 +46,7 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: TwinWave’s threat analysis platform analyzes both URLs and files to detect credential phishing and malware threats. Our platform automatically navigates complex attack chains that attackers put in front of threats in order to evade analysis. In addition to detecting threats, the TwinWave platform generates actionable intelligence for threat hunting and other activities.
+description: "TwinWave\u2019s threat analysis platform analyzes both URLs and files to detect credential phishing and malware threats. Our platform automatically navigates complex attack chains that attackers put in front of threats in order to evade analysis. In addition to detecting threats, the TwinWave platform generates actionable intelligence for threat hunting and other activities."
 display: Twinwave
 name: Twinwave
 script:
@@ -60,7 +60,7 @@ script:
       isArray: true
     - description: 'Optional list of parameters to customize behavior during analysis of the job. (E.g., passwords for archives.) {"archive_document_password": "", "decode_rewritten_urls": "true/false"}'
       name: parameters
-    - defaultValue: "10"
+    - defaultValue: '10'
       description: The job's priority relative to other jobs. Jobs with a lower priority value are processed before those with a higher value. (e.g., a priority=1 job will be processed before a priority=2 job.) Valid priority values are between 1 and 255. You may omit this field, in which case a default priority (10) is used.
       name: priority
     - description: An optional profile name that defines the analysis behavior to be used during the analysis for this job. Profiles names map to behaviors like identifying what collection of engines will be used. If no profile name is submitted the system will use the default profile.
@@ -78,7 +78,7 @@ script:
     - description: 'Array of strings (EngineName). List of engines to be used during the analysis. If you''d like to use the default Engines for your account, omit this field or specify the empty array []. '
       name: engines
       isArray: true
-    - defaultValue: "10"
+    - defaultValue: '10'
       description: The job's priority relative to other jobs. Jobs with a lower priority value are processed before those with a higher value. (e.g., a priority=1 job will be processed before a priority=2 job.) Valid priority values are between 1 and 255. You may omit this field, in which case a default priority (10) is used.
       name: priority
     - description: An optional profile name that defines the analysis behavior to be used during the analysis for this job. Profiles names map to behaviors like identifying what collection of engines will be used. If no profile name is submitted the system will use the default profile.
@@ -228,10 +228,10 @@ script:
       description: Job ID
       type: Unknown
   - arguments:
-    - description: |-
-        Throughout the analysis of a Resource, a variety of Artifacts may be generated. These include things like Screenshots, PCAPs, HAR files, etc. This API endpoint generates a temporary URL that can be used to download the contents of an artifact.
+    - description: 'Throughout the analysis of a Resource, a variety of Artifacts may be generated. These include things like Screenshots, PCAPs, HAR files, etc. This API endpoint generates a temporary URL that can be used to download the contents of an artifact.
 
-        After making a call to this endpoint, the URL field will contain a link to a signed URL for the desired Artifact. This link has a limited lifetime, so upon receiving it, you should immediately make a GET request to retrieve the actual Artifact.
+
+        After making a call to this endpoint, the URL field will contain a link to a signed URL for the desired Artifact. This link has a limited lifetime, so upon receiving it, you should immediately make a GET request to retrieve the actual Artifact.'
       name: path
       required: true
     description: Get a Temporary Artifact URL
@@ -240,7 +240,7 @@ script:
     - contextPath: Twinwave.TempArtifactURL.URL
       description: Temporary URL
       type: Unknown
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   script: ''
   subtype: python3

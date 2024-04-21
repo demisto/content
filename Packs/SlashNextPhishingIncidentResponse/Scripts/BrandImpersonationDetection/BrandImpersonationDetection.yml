@@ -2,11 +2,11 @@ args:
 - description: 'Forensic file EntryID '
   name: ForensicFileEntry
   required: true
-comment: Analyzes the forensic data to detect brand impersonation attacks. This script uses the HMRC brand as an example, please modify the attributes associated with your company’s brand.
+comment: "Analyzes the forensic data to detect brand impersonation attacks. This script uses the HMRC brand as an example, please modify the attributes associated with your company\u2019s brand."
 commonfields:
   id: BrandImpersonationDetection
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.14.92207
 enabled: true
 name: BrandImpersonationDetection
 outputs:

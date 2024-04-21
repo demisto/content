@@ -123,7 +123,7 @@ script:
     - contextPath: IllusionBlack.Event
       description: IllusionBLACK Single Event.
       type: Unknown
-    - contextPath: "IllusionBlack.Event.attacker.id"
+    - contextPath: IllusionBlack.Event.attacker.id
       description: IllusionBLACK Event Attacker ID.
       type: Unknown
     - contextPath: IllusionBlack.Event.decoy.id
@@ -138,7 +138,7 @@ script:
     - contextPath: IllusionBlack.Event.type
       description: IllusionBLACK Event Attack Type.
       type: Unknown
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   runonce: false
   script: '-'
