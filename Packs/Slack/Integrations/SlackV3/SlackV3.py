@@ -1030,6 +1030,10 @@ class SlackLogger(IntegrationLogger):
         text = self.encode(message)
         self.messages.append(text)
 
+    def exception(self, message):
+        text = self.encode(message)
+        self.messages.append(text)
+
     def warning(self, message):
         text = self.encode(message)
         self.messages.append(text)
@@ -1477,6 +1481,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
     """
     demisto.debug("Starting to process message")
     if req.envelope_id:
+        demisto.debug(f'Received request: \n{json.dumps(req.to_dict())}\n\n '
+                      f'Replying with envelope_id={req.envelope_id}.')
         response = SocketModeResponse(envelope_id=req.envelope_id)
         await client.send_socket_mode_response(response)
     if req.retry_attempt:
