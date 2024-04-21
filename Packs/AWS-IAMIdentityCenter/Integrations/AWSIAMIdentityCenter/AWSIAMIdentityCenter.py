@@ -108,7 +108,7 @@ def get_user_operations_list(args):
             'AttributePath': var,
             'AttributeValue': path_and_value[var]
         })
-        
+
     return to_update
 
 
@@ -131,7 +131,7 @@ def update_user(args, client, IdentityStoreId):
 
 def delete_user(args, client, IdentityStoreId):
     user_id = get_userId_by_username(args, client, IdentityStoreId)
-    response = client.delete_user(
+    client.delete_user(
         IdentityStoreId=IdentityStoreId,
         UserId=user_id
     )
@@ -299,7 +299,7 @@ def create_group(args, client, IdentityStoreId):
 
 def delete_group(args, client, IdentityStoreId):
     group_id = get_groupId_by_displayName(args, client, IdentityStoreId)
-    response = client.delete_group(
+    client.delete_group(
         IdentityStoreId=IdentityStoreId,
         GroupId=group_id
     )
@@ -394,7 +394,7 @@ def list_groups_for_user(args, client, IdentityStoreId):
     context_data['UserId'] = user_id
     context_data['GroupsUserNextToken'] = response.get('NextToken')
     last_context = demisto.context()
-    last_users = last_context.get('AWS', {}).get('IAMIdentityCenter', {}).get('User',{})
+    last_users = last_context.get('AWS', {}).get('IAMIdentityCenter', {}).get('User', {})
     last_group_memberships = None
     if isinstance(last_users, list):
         for user_data in last_users:
@@ -404,13 +404,13 @@ def list_groups_for_user(args, client, IdentityStoreId):
     else:
         if last_users.get('UserId') == user_id:
             last_group_memberships = last_users.get('GroupMemberships')
-    
+
     if last_group_memberships:
         combined_groups = last_group_memberships + [g for g in groups if g not in last_group_memberships]
         context_data['GroupMemberships'] = combined_groups
     else:
         context_data['GroupMemberships'] = groups
-        
+
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
     result = CommandResults(
         outputs_prefix=PREFIXUSER,
@@ -469,7 +469,7 @@ def delete_group_membership(args, client, IdentityStoreId):
     else:
         return_error("userName or membershipId must be provided.")
     for member in memberships_to_delete:
-        response = client.delete_group_membership(
+        client.delete_group_membership(
             IdentityStoreId=IdentityStoreId,
             MembershipId=member
         )
@@ -480,7 +480,6 @@ def delete_group_membership(args, client, IdentityStoreId):
         readable_output=hr_data
     )
     return_results(result)
-    
 
 
 def list_group_memberships(args, client, IdentityStoreId):
@@ -510,9 +509,9 @@ def list_group_memberships(args, client, IdentityStoreId):
 
     context_data['GroupId'] = group_id
     context_data['GroupMembershipNextToken'] = response.get('NextToken')
-    
+
     last_context = demisto.context()
-    last_groups = last_context.get('AWS', {}).get('IAMIdentityCenter', {}).get('Group',{})
+    last_groups = last_context.get('AWS', {}).get('IAMIdentityCenter', {}).get('Group', {})
     last_group_memberships = None
     if isinstance(last_groups, list):
         for user_data in last_groups:
@@ -522,13 +521,13 @@ def list_group_memberships(args, client, IdentityStoreId):
     else:
         if last_groups.get('GroupId') == group_id:
             last_group_memberships = last_groups.get('GroupMemberships')
-    
+
     if last_group_memberships:
         combined_memberships = last_group_memberships + [g for g in memberships if g not in last_group_memberships]
         context_data['GroupMemberships'] = combined_memberships
     else:
         context_data['GroupMemberships'] = memberships
-    
+
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
     result = CommandResults(
         outputs_prefix=PREFIXGROUP,
@@ -544,7 +543,7 @@ def test_module(args, client, IdentityStoreId):    # pragma: no cover
         return_error("Identity Store ID was not specified - Test failure. The `Identity Store ID` parameter can be left empty and\
                      included as an argument in every command.")
 
-    response = client.list_users(
+    client.list_users(
         IdentityStoreId=IdentityStoreId,
     )
     demisto.results('ok')

@@ -49,6 +49,12 @@ class Boto3Client:
 
     def list_group_memberships(self):
         pass
+    
+    def update_user(self):
+        pass
+    
+    def update_group(self):
+        pass
 
 
 def test_create_user(mocker):
@@ -87,6 +93,66 @@ def test_create_user(mocker):
     assert {'UserId': 'USER_ID', 'IdentityStoreId': IDENTITY_STORE_ID} in contents.get(
         'EntryContext').values()
     assert 'User test_user has been successfully created with user id USER_ID' in contents.get('HumanReadable')
+
+
+def test_update_user(mocker):
+    """
+    Given:
+        Arguments for updating a user
+
+    When:
+        updating a user details using the update-user command
+
+    Then:
+        Verify that the user is updated
+    """
+
+    response_id = {'UserId': 'USER_ID'}
+
+    args = {
+        'userName': 'test_user',
+        'familyName': 'changed_fam',
+    }
+
+    from AWSIAMIdentityCenter import update_user
+    mocker.patch.object(AWSIAMIdentityCenter, "get_userId_by_username", return_value=response_id)
+    mocker.patch.object(Boto3Client, "update_user", return_value={})
+    mocker.patch.object(demisto, 'results')
+
+    client = Boto3Client()
+    update_user(args, client, IDENTITY_STORE_ID)
+    contents = demisto.results.call_args[0][0]
+    assert 'User test_user has been successfully updated' in contents.get('HumanReadable')
+
+
+def test_update_group(mocker):
+    """
+    Given:
+        Arguments for updating a group
+
+    When:
+        updating a group description using the update-group command
+
+    Then:
+        Verify that the group is updated
+    """
+
+    response_id = {'GroupId': 'GROUP_ID'}
+
+    args = {
+        'displayName': 'test_group',
+        'description': 'changed_description',
+    }
+
+    from AWSIAMIdentityCenter import update_group
+    mocker.patch.object(AWSIAMIdentityCenter, "get_groupId_by_displayName", return_value=response_id)
+    mocker.patch.object(Boto3Client, "update_group", return_value={})
+    mocker.patch.object(demisto, 'results')
+
+    client = Boto3Client()
+    update_group(args, client, IDENTITY_STORE_ID)
+    contents = demisto.results.call_args[0][0]
+    assert 'Group test_group has been successfully updated' in contents.get('HumanReadable')
 
 
 def test_create_group(mocker):
