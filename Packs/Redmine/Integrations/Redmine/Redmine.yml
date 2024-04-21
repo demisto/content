@@ -370,7 +370,7 @@ script:
       description: ID of tracker field.
     - contextPath: Redmine.trackers.Name
       description: Name of tracker field.
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.10.14.92207
   isfetch: false
   runonce: false
   script: '-'
