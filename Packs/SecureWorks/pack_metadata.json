@@ -17,5 +17,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSource": "Dell Secureworks"
+    "defaultDataSourceName": "Dell Secureworks"
 }

@@ -29,5 +29,5 @@
         "xsoar",
         "marketplacev2"
     ],
-    "defaultDataSource": "Darktrace"
+    "defaultDataSourceName": "Darktrace"
 }
