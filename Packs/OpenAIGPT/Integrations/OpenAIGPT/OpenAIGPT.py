@@ -301,7 +301,7 @@ def send_message_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandR
     assistant_message = extract_assistant_message(response, conversation)
 
     usage = response.get('usage', '') if args.get('verbose', False) else ''
-    verbose_message = f"Model: {response.get('model', '')} Usage: {usage} | '
+    verbose_message = f"Model: {response.get('model', '')} Usage: {usage}"
     return CommandResults(
         outputs_prefix='OpenAIGPT.Conversation',
         outputs=conversation,
@@ -316,22 +316,6 @@ def check_email_headers_command(client: OpenAiClient, args: Dict[str, Any]) -> C
 
 def check_email_body_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
     return check_email_part(EmailParts.BODY, client, args)
-
-
-# def get_cve_info_command(cve_search_client: CveSearchClient, openai_client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
-#     cve_id = args.get('CVE', '')
-#     if not valid_cve_id_format(cve_id):
-#         raise DemistoException(f"{cve_id} is not a valid cve ID. Cve ID should be of the format 'CVE-2021-1234'")
-#
-#     cve_data = get_cve_data(cve_id, cve_search_client)
-#     cve_info_message = CVE_INFO_PROMPT.format(cve_data)
-#     # Starting a new conversation as of a new topic discussed.
-#     args.update({'reset_conversation_history': True, 'message': cve_info_message})
-#     return CommandResults(outputs_prefix='OpenAIGPT.CVE_INFO',
-#                           outputs=cve_info_message,
-#                           replace_existing=True,
-#                           readable_output=cve_info_message)
-#     # return send_message_command(openai_client, args)
 
 
 ''' MAIN FUNCTION '''
@@ -376,11 +360,6 @@ def main() -> None:
 
         elif command == "gpt-send-message":
             return_results(send_message_command(client=client, args=args))
-
-        # elif command == "gpt-get-cve-info":
-        #     # Starting a CveSearchClient for cve data querying.
-        #     cve_search_client = CveSearchClient(base_url=CIRCLCVE_BASE_URL, verify=verify, proxy=proxy)
-        #     return_results(get_cve_info_command(cve_search_client=cve_search_client, openai_client=client, args=args))
 
         elif command == "gpt-check-email-header":
             results = check_email_headers_command(client=client, args=args)
