@@ -241,6 +241,9 @@
             "fromversion": "6.5.0"
         },
         {
+            "playbookID": "MapRangeValuesTest"
+        },
+        {
             "integrations": "McAfeeNSMv2",
             "playbookID": "Test_McAfeeNSMv2_using_v9",
             "fromversion": "6.5.0",
@@ -3291,7 +3294,7 @@
             "playbookID": "Get EWS Folder Test",
             "fromversion": "4.5.0",
             "instance_names": "ewv2_regular",
-            "memory_threshold": 100,
+            "memory_threshold": 120,
             "timeout": 1200
         },
         {
@@ -3351,11 +3354,6 @@
             "playbookID": "Infoblox Test"
         },
         {
-            "integrations": "BPA",
-            "playbookID": "Test-BPA",
-            "fromversion": "4.5.0"
-        },
-        {
             "playbookID": "GetValuesOfMultipleFIelds Test",
             "fromversion": "4.5.0"
         },
@@ -3375,11 +3373,6 @@
             "memory_threshold": 500,
             "instance_names": "use_default_handler",
             "is_mockable": false
-        },
-        {
-            "integrations": "BPA",
-            "playbookID": "Test-BPA_Integration",
-            "fromversion": "4.5.0"
         },
         {
             "integrations": "AutoFocus Feed",
@@ -3793,9 +3786,8 @@
         },
         {
             "integrations": "Generic Webhook",
-            "instance_name": "Generic Webhook XSOAR on-prem",
+            "instance_names": "Generic Webhook XSOAR on-prem",
             "playbookID": "Generic Webhook - Test",
-            "marketplaces": "xsoar_on_prem",
             "has_api": false
         },
         {
@@ -5674,7 +5666,7 @@
         },
         {
             "integrations": "Redmine",
-            "playbookID": "Redmine-Test"
+            "playbookID": "Redmine_Test"
         },
         {
             "integrations": "Palo Alto Networks AIOps",
