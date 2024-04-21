@@ -350,21 +350,21 @@ script:
     - contextPath: Redmine.Users.mail
       description: A list of users mails.
   - name: redmine-status-id-list
-    description: Display a mapping list from status name to status id.
+    description: Returns a list of statuses (status name to status id).
     outputs:
     - contextPath: Redmine.statuses.ID
       description: ID of status field.
     - contextPath: Redmine.Users.Name
       description: Name of status field.
   - name: redmine-priority-id-list
-    description: Display a mapping list from priority name to priority id.
+    description: Returns a list of priorities (priority name to priority id).
     outputs:
     - contextPath: Redmine.priorities.ID
       description: ID of priority field.
     - contextPath: Redmine.priorities.Name
       description: Name of priority field.
   - name: redmine-tracker-id-list
-    description: Display a mapping list from tracker name to tracker id.
+    description: Returns a list of trackers (tracker name to tracker id).
     outputs:
     - contextPath: Redmine.trackers.ID
       description: ID of tracker field.

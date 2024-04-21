@@ -737,7 +737,7 @@ There are no input arguments for this command.
 ### redmine-priority-id-list
 
 ***
-Display a mapping list from priority name to priority id.
+Returns a list of priorities (priority name to priority id).
 
 #### Base Command
 
@@ -801,7 +801,7 @@ There are no input arguments for this command.
 ### redmine-status-id-list
 
 ***
-Display a mapping list from status name to status id.
+Returns a list of statuses (status name to status id).
 
 #### Base Command
 
@@ -870,7 +870,7 @@ There are no input arguments for this command.
 ### redmine-tracker-id-list
 
 ***
-Display a mapping list from tracker name to tracker id.
+Returns a list of trackers (tracker name to tracker id).
 
 #### Base Command
 
