@@ -112,7 +112,7 @@
             ]
           },
           "crl_distribution_points": [
-            "http://crls.pki.goog/gts1c3/QqFxbi9M48c.crl"
+            "XXXXXX"
           ],
           "_encoding": {
             "authority_key_id": "DISPLAY_HEX",
@@ -195,10 +195,10 @@
           ],
           "authority_info_access": {
             "ocsp_urls": [
-              "http://ocsp.pki.goog/gts1c3"
+              "XXXXXX"
             ],
             "issuer_urls": [
-              "http://pki.goog/repo/certs/gts1c3.der"
+              "XXXXXX"
             ]
           },
           "signed_certificate_timestamps": [

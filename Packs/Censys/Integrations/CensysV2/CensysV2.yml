@@ -561,6 +561,7 @@ script:
     - name: domain
       required: true
       isArray: true
+      default: true
       type: textArea
     description: Return all related IPs as relationships
     outputs:
