@@ -41,16 +41,17 @@ script:
     - name: project_id
       description: The project ID for this issue. If not specified, the value from the integration configuration will be used.
       required: false
-    - name: tracker
+    - name: tracker_id
       description: |-
-        - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).
-        - Note: This argument is case sensitive.
+        - Enter a tracker ID (e.g., 1,2,3).
+        - You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.
+        - If you entered an invalid ID, it will use the default tracker from your Redmine instance.
       required: true
-    - name: priority
+    - name: priority_id
       required: true
       description: |-
-        - Enter a priority ID (e.g., 1,2,3) or a priority name (e.g., Low/High).
-        - Note: This argument is case sensitive.
+        - Enter a priority ID (e.g., 1,2,3).
+        - You can find the mapping from priority_name to priority_id using the command redmine-priority-id-list.
     - name: subject
       required: true
       description: The subject for this issue.
@@ -136,16 +137,16 @@ script:
       description: A subproject ID to display issues of this subproject (you can't use both subproject_id and exclude).
     - name: exclude
       description: A subproject ID to exclude from the list (you can't use both subproject_id and exclude), you need to add a project_id for this field to be included.
-    - name: tracker
+    - name: tracker_id
       description: |-
-        - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).
-        - Note: This argument is case sensitive.
+        - Enter a tracker ID (e.g., 1,2,3).
+        - You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.
     - name: status
       auto: PREDEFINED
       description: |-
-        - The status to display issues related to this status.
-        - You can use Open/Closed/All from the predefined values or use any of your custom status ID (e.g., 1)/ status name(e.g., New).
-        - Note: This argument is case sensitive.
+        - Enter a status ID (e.g., 1,2,3) or use predefined values.
+        - You can find the mapping from status_name to status_id using the command redmine-status-id-list.
+        - You can use Open/Closed/All from the predefined values or use any of your custom status ID (e.g., 1).
       defaultValue: Open
       predefined:
       - Open
@@ -174,18 +175,20 @@ script:
       required: true
     - name: project_id
       description: The ID of the project to associate with the issue. If not specified, the value from the integration configuration will be used if specified.
-    - name: tracker
+    - name: tracker_id
       description: |-
-        - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).
-        - Note: This argument is case sensitive.
-    - name: status
+        - Enter a tracker ID (e.g., 1,2,3).
+        - You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.
+        - If you entered an invalid ID, tracker_id won't be changed but won't raise an error.
+    - name: status_id
       description: |-
-        - Enter a status ID (e.g., 1,2,3) or a status name (e.g., New/Closed).
-        - Note: This argument is case sensitive.
-    - name: priority
+        - Enter a status ID (e.g., 1,2,3).
+        - You can find the mapping from status_name to status_id using the command redmine-status-id-list.
+        - If you entered an invalid ID, status_id won't be changed but won't raise an error.
+    - name: priority_id
       description: |-
-        - Enter a priority ID (e.g., 1,2,3) or a priority name (e.g., Low/High).
-        - Note: This argument is case sensitive.
+        - Enter a priority ID (e.g., 1,2,3).
+        - You can find the mapping from priority_name to priority_id using the command redmine-priority-id-list.
     - name: subject
       description: The subject of the issue.
     - name: description
@@ -346,11 +349,27 @@ script:
       description: A list of users last name.
     - contextPath: Redmine.Users.mail
       description: A list of users mails.
-  - name: redmine-reset-settings
-    description: |-
-      - When using issue-create/issue-update/issue-list commands we save the custom settings in a local database
-      - Use this command to reset the local database in cases of changing the tracker/priority/status in your Redmine instance after your previous instance initialization
-      - This way, XSOAR will be able to use your new definitions of those fields
+  - name: redmine-status-id-list
+    description: Display a mapping list from status name to status id.
+    outputs:
+    - contextPath: Redmine.statuses.ID
+      description: ID of status field.
+    - contextPath: Redmine.Users.Name
+      description: Name of status field.
+  - name: redmine-priority-id-list
+    description: Display a mapping list from priority name to priority id.
+    outputs:
+    - contextPath: Redmine.priorities.ID
+      description: ID of priority field.
+    - contextPath: Redmine.priorities.Name
+      description: Name of priority field.
+  - name: redmine-tracker-id-list
+    description: Display a mapping list from tracker name to tracker id.
+    outputs:
+    - contextPath: Redmine.trackers.ID
+      description: ID of tracker field.
+    - contextPath: Redmine.trackers.Name
+      description: Name of tracker field.
   dockerimage: demisto/python3:3.10.14.91134
   isfetch: false
   runonce: false

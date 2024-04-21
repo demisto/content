@@ -1,4 +1,3 @@
-import demistomock as demisto
 from CommonServerPython import *
 
 from CommonServerUserPython import *
@@ -13,7 +12,8 @@ BASE_DEFAULT_OFFSET_NUMBER = 0
 MAX_LIMIT = 100
 MIN_LIMIT = 0
 
-INVALID_ID_DEMISTO_ERROR = "Invalid ID for one or more fields that request IDs. Please make sure all IDs are correct."
+INVALID_ID_DEMISTO_ERROR = ("This error may be due to Invalid ID for one or more fields that request IDs. "
+                            "Please make sure all IDs are correct.")
 RESPONSE_NOT_IN_FORMAT_ERROR = "The request succeeded, but a parse error occurred."
 
 HR_SHOW_ONLY_NAME = JsonTransformer(keys=['name'], func=lambda hdr: hdr.get('name', ''))
@@ -30,23 +30,17 @@ ISSUE_STATUS_FOR_LIST_COMMAND = {
     'All': '*'
 }
 
-DICT_OF_ISSUE_ARGS = {'trackers': {
-    'url_suffix': '/trackers.json',
-    'key_in_response': 'trackers',
-    'singular': 'tracker'
-},
-    'statuses': {
-    'url_suffix': '/issue_statuses.json',
-    'key_in_response': 'issue_statuses',
-    'singular': 'status'
-},
-    'priorities': {
-    'url_suffix': '/enumerations/issue_priorities.json',
-    'key_in_response': 'issue_priorities',
-    'singular': 'priority'
+DICT_OF_ISSUE_ARGS = {
+    'trackers': {'key_in_response': 'trackers',
+                 'url_suffix': '/trackers.json',
+                 'singular': 'tracker'},
+    'statuses': {'key_in_response': 'issue_statuses',
+                 'url_suffix': '/issue_statuses.json',
+                 'singular': 'status'},
+    'priorities': {'key_in_response': 'issue_priorities',
+                   'url_suffix': '/enumerations/issue_priorities.json',
+                   'singular': 'priority'}
 }
-}
-
 ''' CLIENT CLASS '''
 
 
@@ -83,13 +77,13 @@ class Client(BaseClient):
                                       empty_valid_codes=[204], return_empty_response=True)
         return response
 
-    def get_issues_list_request(self, project_id, tracker_id, status_id, offset_to_dict, limit_to_dict, exclude_subproject,
+    def get_issues_list_request(self, project_id, status_id, offset_to_dict, limit_to_dict, exclude_subproject,
                                 args: dict[str, Any]):
         if exclude_subproject and args.get('subproject_id', None):
             raise DemistoException("Specify only one of the following, subproject_id or exclude.")
         elif exclude_subproject:
             args['subproject_id'] = f'!{exclude_subproject}'
-        params = assign_params(tracker_id=tracker_id, project_id=project_id, status_id=status_id,
+        params = assign_params(project_id=project_id, status_id=status_id,
                                offset=offset_to_dict, limit=limit_to_dict, **args)
         response = self._http_request('GET', '/issues.json', params=params, headers=self._get_header)
         return response
@@ -128,20 +122,10 @@ class Client(BaseClient):
         response = self._http_request('GET', '/users.json', params=args, headers=self._get_header)
         return response
 
-    def get_dict_for_issue_field_request(self, field):
-        integration_context = get_integration_context()
-        if not integration_context.get(field):
-            response = self._http_request('GET', DICT_OF_ISSUE_ARGS.get(field, {}).get('url_suffix', ""),
-                                          headers=self._get_header)
-            key_in_response = DICT_OF_ISSUE_ARGS.get(field, {}).get('key_in_response', "")
-            if key_in_response not in response:
-                singular = DICT_OF_ISSUE_ARGS.get(field, {}).get('singular', "")
-                raise DemistoException(f"Failed to retrieve {singular} IDs due to a parsing error.")
-            integration_context[field] = {}
-            for field_id_name in response[key_in_response]:
-                if field_id_name.get("id") and field_id_name.get("name"):
-                    integration_context[field][field_id_name.get("name")] = str(field_id_name.get("id"))
-            set_integration_context(integration_context)
+    def field_from_name_to_id_list_request(self, field):
+        response = self._http_request('GET', DICT_OF_ISSUE_ARGS.get(field, {}).get('url_suffix', ""),
+                                        headers=self._get_header)
+        return response
 
 
 ''' HELPER FUNCTIONS '''
@@ -180,16 +164,7 @@ def adjust_paging_to_request(page_number, page_size, limit):
     return BASE_DEFAULT_OFFSET_NUMBER, limit, BASE_DEFAULT_PAGE_NUMBER_INT
 
 
-def convert_args_to_request_format(client: Client, args: Dict[str, Any]):
-    if tracker := args.pop('tracker', None):
-        tracker_id = handle_convert_field(client, 'trackers', tracker)
-        args['tracker_id'] = tracker_id
-    if status := args.pop('status', None):
-        status_id = handle_convert_field(client, 'statuses', status)
-        args['status_id'] = status_id
-    if priority := args.pop('priority', None):
-        priority_id = handle_convert_field(client, 'priorities', priority)
-        args['priority_id'] = priority_id
+def format_custom_field_to_request(args: Dict[str, Any]):
     if custom_fields := args.pop('custom_fields', None):
         custom_fields = argToList(custom_fields)
         try:
@@ -298,13 +273,13 @@ def create_issue_command(client: Client, args: dict[str, Any]) -> CommandResults
     if entry_id:
         handle_file_attachment(client, args, entry_id)
     # Change predefined values to id
-    convert_args_to_request_format(client, args)
+    format_custom_field_to_request(args)
     watcher_user_ids = argToList(args.pop('watcher_user_ids', None))
     try:
         response = client.create_issue_request(args, watcher_user_ids, project_id)
     except DemistoException as e:
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
-            raise DemistoException(INVALID_ID_DEMISTO_ERROR)
+            raise DemistoException(f"{INVALID_ID_DEMISTO_ERROR} With error: {e}")
         raise
     if 'issue' not in response:
         raise DemistoException(RESPONSE_NOT_IN_FORMAT_ERROR)
@@ -339,7 +314,7 @@ def update_issue_command(client: Client, args: dict[str, Any]):
     entry_id = args.pop('file_entry_id', None)
     if entry_id:
         handle_file_attachment(client, args, entry_id)
-    convert_args_to_request_format(client, args)
+    format_custom_field_to_request(args)
     watcher_user_ids = args.pop('watcher_user_ids', None)
     if watcher_user_ids:
         watcher_user_ids = argToList(watcher_user_ids)
@@ -348,7 +323,7 @@ def update_issue_command(client: Client, args: dict[str, Any]):
         client.update_issue_request(args, project_id, watcher_user_ids)
     except DemistoException as e:
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
-            raise DemistoException(INVALID_ID_DEMISTO_ERROR)
+            raise DemistoException(f"{INVALID_ID_DEMISTO_ERROR} With error: {e}")
         raise
     command_results = CommandResults(
         readable_output=f'Issue with id {issue_id} was successfully updated.')
@@ -356,16 +331,7 @@ def update_issue_command(client: Client, args: dict[str, Any]):
 
 
 def get_issues_list_command(client: Client, args: dict[str, Any]):
-    def check_args_validity_and_convert_to_id(status: str, tracker: str, custom_field: str):
-        tracker_id = None
-        status_id = None
-        if status:
-            if status in ISSUE_STATUS_FOR_LIST_COMMAND:
-                status_id = ISSUE_STATUS_FOR_LIST_COMMAND[status]
-            else:
-                status_id = handle_convert_field(client, 'statuses', status)
-        if tracker:
-            tracker_id = handle_convert_field(client, 'trackers', tracker)
+    def format_custom_field_to_request(custom_field: str, status: str):
         if custom_field:
             try:
                 cf_in_format = custom_field.split(":", 1)
@@ -374,26 +340,35 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
                 if 'list index out of range' in e.args[0] or 'substring not found' in e.args[0]:
                     raise DemistoException(f"Invalid custom field format, please follow the command description. Error: {e}.")
                 raise
-        return status_id, tracker_id
+        # Search in predefined- not an ID but this is the arg in request
+        status_id = ISSUE_STATUS_FOR_LIST_COMMAND.get(status)
+        # When can not find in predefined
+        if not status_id:
+            status_id = status
+            try:
+                status_num = arg_to_number(status_id)
+            except ValueError as e:
+                raise DemistoException(f"Status argument has to be a predefined value (Open/Closed/All) or a valid status ID but "
+                                    f"got {status_id}. with error: {e}")
+        return status_id
+            
 
     page_number = args.pop('page_number', None)
     page_size = args.pop('page_size', None)
     limit = args.pop('limit', None)
     offset_to_dict, limit_to_dict, page_number_for_header = adjust_paging_to_request(page_number, page_size, limit)
-    status_id = args.pop('status', 'Open')
-    tracker = args.pop('tracker', None)
+    status = args.pop('status', 'Open')
     custom_field = args.pop('custom_field', None)
-    status_id, tracker_id = check_args_validity_and_convert_to_id(status_id, tracker, custom_field)
+    status_id = format_custom_field_to_request(custom_field, status)
     project_id = args.pop('project_id', client._project_id)
     exclude_sub_project = args.pop('exclude', None)
     try:
-        response = client.get_issues_list_request(project_id, tracker_id, status_id,
+        response = client.get_issues_list_request(project_id, status_id,
                                                   offset_to_dict, limit_to_dict, exclude_sub_project, args)
     except DemistoException as e:
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
-            raise DemistoException(INVALID_ID_DEMISTO_ERROR)
+            raise DemistoException(f"{INVALID_ID_DEMISTO_ERROR} With error: {e}")
         raise
-
     try:
         issues_response = response['issues']
     except Exception:
@@ -442,7 +417,7 @@ def get_issue_by_id_command(client: Client, args: dict[str, Any]):
             response = client.get_issue_by_id_request(issue_id, included_fields)
         except DemistoException as e:
             if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
-                raise DemistoException(INVALID_ID_DEMISTO_ERROR)
+                raise DemistoException(f"{INVALID_ID_DEMISTO_ERROR} With error: {e}")
             elif 'Error in API call [403]' in e.message:
                 raise DemistoException(f"{e.message} It can be due to Invalid ID for one or more fields that request IDs, "
                                        "Please make sure all IDs are correct")
@@ -496,7 +471,7 @@ def delete_issue_by_id_command(client: Client, args: dict[str, Any]):
         client.delete_issue_by_id_request(issue_id)
     except DemistoException as e:
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
-            raise DemistoException(INVALID_ID_DEMISTO_ERROR)
+            raise DemistoException(f"{INVALID_ID_DEMISTO_ERROR} With error: {e}")
         raise
     command_results = CommandResults(
         readable_output=f'Issue with id {issue_id} was deleted successfully.')
@@ -510,7 +485,7 @@ def add_issue_watcher_command(client: Client, args: dict[str, Any]):
         client.add_issue_watcher_request(issue_id, watcher_id)
     except DemistoException as e:
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
-            raise DemistoException(INVALID_ID_DEMISTO_ERROR)
+            raise DemistoException(f"{INVALID_ID_DEMISTO_ERROR} With error: {e}")
         elif 'Error in API call [403]' in e.message:
             raise DemistoException(f"{e.message} It can be due to Invalid ID for one or more fields that request IDs, "
                                    "Please make sure all IDs are correct")
@@ -527,7 +502,7 @@ def remove_issue_watcher_command(client: Client, args: dict[str, Any]):
         client.remove_issue_watcher_request(issue_id, watcher_id)
     except DemistoException as e:
         if 'Error in API call [422]' in e.message or 'Error in API call [404]' in e.message:
-            raise DemistoException(INVALID_ID_DEMISTO_ERROR)
+            raise DemistoException(f"{INVALID_ID_DEMISTO_ERROR} With error: {e}")
         elif 'Error in API call [403]' in e.message:
             raise DemistoException(f"{e.message} It can be due to Invalid ID for one or more fields that request IDs, "
                                    "Please make sure all IDs are correct.")
@@ -624,6 +599,22 @@ def get_users_command(client: Client, args: dict[str, Any]):
                                                                      is_auto_json_transform=True))
     return command_results
 
+def field_from_name_to_id_list_command(client, field: str):
+    response = client.field_from_name_to_id_list_request(field)
+    key_in_response = DICT_OF_ISSUE_ARGS.get(field, {}).get('key_in_response', "")
+    if key_in_response not in response:
+        singular = DICT_OF_ISSUE_ARGS.get(field, {}).get('singular', "")
+        raise DemistoException(f"Failed to retrieve {singular} IDs due to a parsing error.")
+    mapping_name_to_id_of_field = [{'ID': item['id'], 'Name': item['name']} for item in response[key_in_response]]
+    command_results = CommandResults(outputs_prefix=f'Redmine.{field}',
+                                    outputs_key_field='ID',
+                                    outputs=mapping_name_to_id_of_field,
+                                    raw_response=mapping_name_to_id_of_field,
+                                    readable_output=tableToMarkdown(f'{field} name to id List:', mapping_name_to_id_of_field,
+                                                                    headers=["ID", "Name"],
+                                                                    removeNull=True,
+                                                                    ))
+    return command_results
 
 def reset_redmine_settings_context():
     """
@@ -672,8 +663,12 @@ def main() -> None:
 
         if command == 'test-module':
             return_results(test_module(client))
-        if command == 'redmine-reset-settings':
-            return_results(reset_redmine_settings_context())
+        elif command == 'redmine-status-id-list':
+            return_results(field_from_name_to_id_list_command(client, 'statuses'))
+        elif command == 'redmine-priority-id-list':
+            return_results(field_from_name_to_id_list_command(client, 'priorities'))
+        elif command == 'redmine-tracker-id-list':
+            return_results(field_from_name_to_id_list_command(client, 'trackers'))
         elif command in commands:
             return_results(commands[command](client, args))
         else:
