@@ -36,9 +36,8 @@ def getAnomaliesByCaseId():
                                 anomaliesChangedCount += 1
                                 break
 
-                    if anomaliesChangedCount == 0:
-                        if len(oldAnomalies) != len(updatedAnomalies):
-                            anomaliesChangedCount = len(updatedAnomalies) - len(oldAnomalies)
+                    if anomaliesChangedCount == 0 and len(oldAnomalies) != len(updatedAnomalies):
+                        anomaliesChangedCount = len(updatedAnomalies) - len(oldAnomalies)
 
                     if anomaliesChangedCount != 0:
                         execute_command("setIncident", {"id": incident['id'], "gracaseanomalydetails": updatedAnomalies})
