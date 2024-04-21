@@ -434,13 +434,7 @@ class Client(CoreClient):
         request_data = {"request_data": {
             "alert_id_list": alerts_ids,
         }}
-        update_data = {}
-        if severity:
-            update_data["severity"] = severity  # type: ignore
-        if status:
-            update_data["status"] = status  # type: ignore
-        if comment:
-            update_data["comment"] = comment  # type: ignore
+        update_data = assign_params(severity=severity, status=status, comment=comment)
         request_data['request_data']['update_data'] = update_data
         response = self._http_request(
             method='POST',
