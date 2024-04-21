@@ -36,7 +36,7 @@ class Client(BaseClient):
         res = self._http_request('GET', url_suffix, json_data=data)
         return res
 
-    def ip_reputation_request(self, ip: str, fields: list| None):
+    def ip_reputation_request(self, ip: str, fields: list | None):
         url_suffix = f"/api/v2/hosts/search?q=ip={ip}"
         if fields:
             url_suffix += f"&fields={','.join(fields)}"
@@ -44,7 +44,7 @@ class Client(BaseClient):
         res = self._http_request('GET', url_suffix)
         return res
 
-    def domain_reputation_request(self, domain: str, fields: list| None):
+    def domain_reputation_request(self, domain: str, fields: list | None):
         url_suffix = f"/api/v2/hosts/search?q=dns.names={domain}"
         if fields:
             url_suffix += f"&fields={','.join(fields)}"
@@ -63,7 +63,7 @@ def test_module(client: Client, params: dict[str, Any]) -> str:
             "The 'Determine IP score by label' feature only works for Censys paid subscribers."
             "if you have paid access select the 'Determine IP score by label' option "
             "to utilize this functionality, or deselect labels")
-        
+
     fields = ['labels'] if params.get('premium_access') else None
 
     try:
@@ -239,7 +239,7 @@ def ip_command(client: Client, args: dict, params: dict):
         "autonomous_system.description", "location.country_code",
         "location.timezone", "location.province", "location.postal_code",
         "location.coordinates.latitude", "location.coordinates.longitude",
-        "location.city","location.continent", "location.country", "services.service_name",
+        "location.city", "location.continent", "location.country", "services.service_name",
         "services.port", "services.transport_protocol", "services.extended_service_name",
         "services.certificate", "last_updated_at", "dns.reverse_dns.names",
         "operating_system.source", "operating_system.part", "operating_system.version"
@@ -256,7 +256,7 @@ def ip_command(client: Client, args: dict, params: dict):
             if not response or not isinstance(response, list):
                 error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {raw_response}"
                 raise ValueError(error_msg)
-            
+
             hit = response[0]
             dbot_score = Common.DBotScore(
                 indicator=ip,
@@ -302,13 +302,13 @@ def ip_command(client: Client, args: dict, params: dict):
 
 def domain_command(client: Client, args: dict, params: dict):
     fields = ["labels", "autonomous_system.description", "last_updated_at",
-            "dns.reverse_dns.names", "location.country", "location.city",
-            "location.province", "location.postal_code", "location.coordinates.latitude",
-            "location.coordinates.longitude", "location.timezone", "location.continent",
-            "location.country_code", "services.port", "services.transport_protocol",
-            "services.extended_service_name", "services.certificate", "autonomous_system.name",
-            "autonomous_system.bgp_prefix", "autonomous_system.country_code",
-            "autonomous_system.asn", "ip"] if params.get('premium_access') else None
+              "dns.reverse_dns.names", "location.country", "location.city",
+              "location.province", "location.postal_code", "location.coordinates.latitude",
+              "location.coordinates.longitude", "location.timezone", "location.continent",
+              "location.country_code", "services.port", "services.transport_protocol",
+              "services.extended_service_name", "services.certificate", "autonomous_system.name",
+              "autonomous_system.bgp_prefix", "autonomous_system.country_code",
+              "autonomous_system.asn", "ip"] if params.get('premium_access') else None
     domains: list = argToList(args.get('domain'))
     results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
@@ -320,7 +320,7 @@ def domain_command(client: Client, args: dict, params: dict):
             if not hits or not isinstance(hits, list):
                 error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {response}"
                 raise ValueError(error_msg)
-            
+
             relationships = [EntityRelationship(
                 name=EntityRelationship.Relationships.RELATED_TO,
                 entity_a=domain,
@@ -328,8 +328,8 @@ def domain_command(client: Client, args: dict, params: dict):
                 entity_b=hit.get('ip'),
                 entity_b_type='IP',
                 reverse_name=EntityRelationship.Relationships.RELATED_TO,
-                brand = 'Censys') for hit in hits]
-            
+                brand='Censys') for hit in hits]
+
             dbot_score = Common.DBotScore(indicator=domain, indicator_type=DBotScoreType.DOMAIN, score=Common.DBotScore.NONE)
             indicator = Common.Domain(domain=domain, dbot_score=dbot_score, relationships=relationships)
 
@@ -372,24 +372,24 @@ def handle_exceptions(e: Exception, results: list[CommandResults], execution_met
         execution_metrics.quota_error += 1
         results.append(CommandResults(readable_output=f"Quota exceeded. Error: {message}"))
         return True
-    
+
     elif status_code == 429:
-        #Handle rate limits error
+        # Handle rate limits error
         execution_metrics.general_error += 1
         results.append(CommandResults(readable_output=f"Too many requests. Error: {message}"))
         return True
-    
+
     elif status_code == 403 and 'specific fields' in message:
         # Handle non-premium access error
         raise DemistoException(
             "Your user does not have permission for premium features. "
             "Please ensure that you deselect the 'Labels premium feature available' option "
             f"for non-premium access. Error: {message}")
-    
-    elif status_code == 401 or status_code == 403 :
+
+    elif status_code == 401 or status_code == 403:
         # Handle unauthorized access error
         raise e
-    
+
     else:
         # Handle general error
         execution_metrics.general_error += 1

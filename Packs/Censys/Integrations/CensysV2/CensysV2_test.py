@@ -9,12 +9,13 @@ from CommonServerPython import DemistoException
 SEARCH_CERTS_OUTPUTS = [{
     "names": ["my-house-vtpvbznpmk.dynamic-m.com"],
     "parsed": {
-      "validity_period": {
-        "not_after": "2024-07-03T13:17:43Z",
-        "not_before": "2024-04-04T13:18:43Z"},
-      "issuer_dn": "C=US, O=IdenTrust, OU=HydrantID Trusted Certificate Service, CN=HydrantID Server CA O1",
-      "subject_dn": "C=US, ST=California, L=San Jose, O=Cisco Systems Inc., CN=my-house-vtpvbznpmk.dynamic-m.com"},
+        "validity_period": {
+            "not_after": "2024-07-03T13:17:43Z",
+            "not_before": "2024-04-04T13:18:43Z"},
+        "issuer_dn": "C=US, O=IdenTrust, OU=HydrantID Trusted Certificate Service, CN=HydrantID Server CA O1",
+        "subject_dn": "C=US, ST=California, L=San Jose, O=Cisco Systems Inc., CN=my-house-vtpvbznpmk.dynamic-m.com"},
     "fingerprint_sha256": "ba534c45586595844fc527130c71219c8fdccbf9fb1881fb03ebc1f01f5b7013"}]
+
 
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
@@ -156,7 +157,6 @@ def test_test_module_valid(requests_mock, client):
     assert test_module(client, {}) == 'ok'
 
 
-
 def test_test_module_invalid(requests_mock, client):
     """
     Given:
@@ -169,7 +169,7 @@ def test_test_module_invalid(requests_mock, client):
     from CensysV2 import test_module
     requests_mock.get(url='https://search.censys.io/api/v2/hosts/search?q=ip=8.8.8.8', status_code=200, json="{}")
 
-    params = {'premium_access':False, 'malicious_labels':True}
+    params = {'premium_access': False, 'malicious_labels': True}
     with pytest.raises(DemistoException):
         test_module(client, params)
 
@@ -189,7 +189,7 @@ def test_ip_command_multiple_ips(requests_mock, client):
     requests_mock.get("/api/v2/hosts/search?q=ip=8.8.8.8", json=mock_response)
     requests_mock.get("/api/v2/hosts/search?q=ip=8.8.8.8", json=mock_response)
     requests_mock.get("/api/v2/hosts/search?q=ip=0.0.0.0", status_code=404, json={})
-    requests_mock.get("/api/v2/hosts/search?q=ip=8.8.4.4", status_code=403, json={'message':'quota'})
+    requests_mock.get("/api/v2/hosts/search?q=ip=8.8.4.4", status_code=403, json={'message': 'quota'})
     response = ip_command(client, args, {})
     assert response[0].outputs == mock_response.get('result', {}).get('hits')[0]
     assert response[1].outputs == mock_response.get('result', {}).get('hits')[0]
@@ -226,8 +226,8 @@ def test_ip_command_malicious_ip(requests_mock, client):
     mock_response = util_load_json('test_data/ip_command_response.json')
     args = {"ip": ['8.8.8.8']}
     params = {
-        'premium_access':True,
-        'malicious_labels': ['database','email','file-sharing','iot','login-page'],
+        'premium_access': True,
+        'malicious_labels': ['database', 'email', 'file-sharing', 'iot', 'login-page'],
         'malicious_labels_threshold': 1}
     requests_mock.get("/api/v2/hosts/search?q=ip=8.8.8.8", json=mock_response)
     response = ip_command(client, args, params)
