@@ -595,7 +595,7 @@ def get_all_incidents_for_time_window_and_exact_match(exact_match_fields: list[s
 
     populate_fields_value = ' , '.join(populate_fields)
     msg_of_values = build_message_of_values([populate_fields_value, from_date, to_date, limit])
-    demisto.debug(f'Calling get_incidents_by_query, {msg_of_values}')
+    demisto.debug(f'DBS: Calling get_incidents_by_query, {msg_of_values}')
     incidents = get_incidents_by_query({
         'query': query,
         'populateFields': populate_fields_value,
@@ -603,6 +603,7 @@ def get_all_incidents_for_time_window_and_exact_match(exact_match_fields: list[s
         'toDate': to_date,
         'limit': limit
     })
+    demisto.debug('DBS: Finished getting incidents by query.')
     if len(incidents) == 0:
         msg += "%s \n" % MESSAGE_NO_INCIDENT_FETCHED
         return None, msg
@@ -679,6 +680,7 @@ def load_current_incident(incident_id: str, populate_fields: list[str], from_dat
         incident = {k: v for k, v in incident.items() if k in populate_fields}
         incident_id = incident['id']
     else:
+        demisto.debug('DBS: Getting incident by ID.')
         incident = get_incident_by_id(incident_id, populate_fields, from_date, to_date)
         if not incident:
             return None, incident_id
@@ -921,7 +923,7 @@ def main():
                                              exact_match_fields, display_fields, from_date, to_date, confidence,
                                              max_incidents, aggregate, limit, incident_id,
                                              ])
-    demisto.debug(f"Starting,\n{fields_values=}")
+    demisto.debug(f"DBS: Starting,\n{fields_values=}")
 
     global_msg = ""
 
@@ -934,7 +936,7 @@ def main():
         return_outputs_error(error_msg="%s \n" % MESSAGE_NO_CURRENT_INCIDENT % incident_id)
         return None, global_msg
 
-    demisto.debug(f'{exact_match_fields=}, {populate_high_level_fields=}')
+    demisto.debug(f'DBS: {exact_match_fields=}, {populate_high_level_fields=}')
 
     # load the related incidents
     populate_fields.remove('id')
@@ -944,17 +946,19 @@ def main():
     global_msg += "%s \n" % msg
 
     if incidents:
-        demisto.debug(f'Found {len(incidents)} {INCIDENT_ALIAS}s for {incident_id=}')
+        demisto.debug(f'DBS: Found {len(incidents)} {INCIDENT_ALIAS}s for {incident_id=}')
     else:
-        demisto.debug(f'No {INCIDENT_ALIAS}s found for {incident_id=}')
+        demisto.debug(f'DBS: No {INCIDENT_ALIAS}s found for {incident_id=}')
         return_outputs_summary(confidence, 0, 0, [], global_msg)
         return_outputs_similar_incidents_empty()
         return None, global_msg
     number_incident_fetched = len(incidents)
 
+    demisto.debug('DBS: Initializing data frame.')
     incidents_df = pd.DataFrame(incidents)
     incidents_df.index = incidents_df.id
 
+    demisto.debug('DBS: Filling nested fields.')
     incidents_df = fill_nested_fields(incidents_df, incidents, similar_text_field, similar_categorical_field)
 
     # Find given fields that does not exist in the incident
@@ -967,13 +971,18 @@ def main():
 
     # Dumps all dict in the current incident
     incident_df = dumps_json_field_in_incident(deepcopy(incident))
+    demisto.debug('DBS: Filling nested fields.')
     incident_df = fill_nested_fields(incident_df, incident, similar_text_field, similar_categorical_field)
 
     # Model prediction
     model = Model(p_transformation=TRANSFORMATION)
+    demisto.debug('DBS: Starting the model prediction')
     model.init_prediction(incident_df, incidents_df, similar_text_field,
                           similar_categorical_field, display_fields, similar_json_field)
+    
     similar_incidents, fields_used = model.predict()
+
+    demisto.debug('DBS: Finished the model prediction')
 
     if len(fields_used) == 0:
         global_msg += "%s \n" % MESSAGE_NO_FIELDS_USED
@@ -983,14 +992,17 @@ def main():
 
     # Get similarity based on indicators
     if include_indicators_similarity == "True":
+        demisto.debug('DBS: Getting similarity based on indicators')
         args_defined_by_user = {key: demisto.args().get(key) for key in KEYS_ARGS_INDICATORS}
         full_args_indicators_script = {**CONST_PARAMETERS_INDICATORS_SCRIPT, **args_defined_by_user}
         similar_incidents = enriched_with_indicators_similarity(full_args_indicators_script, similar_incidents)
 
+    demisto.debug('DBS: Preparing incidents for display.')
     similar_incidents = prepare_incidents_for_display(similar_incidents, confidence, show_distance, max_incidents,
                                                       fields_used, aggregate, include_indicators_similarity)
 
     # Filter incident to investigate
+    demisto.debug('DBS: Preparing incident to investigate.')
     incident_filter = prepare_current_incident(incident_df, display_fields, similar_text_field, similar_json_field,
                                                similar_categorical_field, exact_match_fields)
 
@@ -999,6 +1011,7 @@ def main():
     return_outputs_summary(confidence, number_incident_fetched, number_incidents_found, fields_used, global_msg)
 
     # Create context and outputs
+    demisto.debug('DBS: Creating context and outputs.')
     context = create_context_for_incidents(similar_incidents)
     return_outputs_similar_incidents(show_actual_incident, incident_filter, similar_incidents, context, TAG_INCIDENT)
     return similar_incidents, global_msg
