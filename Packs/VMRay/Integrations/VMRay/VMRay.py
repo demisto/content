@@ -6,7 +6,6 @@ import urllib3
 
 from zipfile import ZipFile
 
-
 ''' GLOBAL PARAMS '''
 API_KEY = demisto.params().get('api_key') or demisto.params().get('credentials', {}).get('password')
 if not API_KEY:
@@ -135,7 +134,7 @@ def http_request(method, url_suffix, params=None, files=None, get_raw=False, ign
         dict: response json
     """
 
-    def find_error(may_be_error_inside):
+    def find_error(may_be_error_inside):  # pragma: no cover
         """Function will search for dict with 'errors' or 'error_msg' key
 
         Args:
@@ -1376,7 +1375,7 @@ def get_screenshots_command():
     return_results(file_results)
 
 
-def vmray_get_license_usage_verdicts_command():     # pragma: no cover
+def vmray_get_license_usage_verdicts_command():  # pragma: no cover
     """
 
     Returns:
@@ -1394,7 +1393,7 @@ def vmray_get_license_usage_verdicts_command():     # pragma: no cover
     entry['PeriodEndDate'] = data.get('end_date')
 
     markdown = tableToMarkdown('VMRay Verdicts Quota Information', entry, headers=[
-                               'VerdictsQuota', 'VerdictsRemaining', 'VerdictsUsage', 'PeriodEndDate'])
+        'VerdictsQuota', 'VerdictsRemaining', 'VerdictsUsage', 'PeriodEndDate'])
 
     results = CommandResults(
         readable_output=markdown,
@@ -1406,7 +1405,7 @@ def vmray_get_license_usage_verdicts_command():     # pragma: no cover
     return_results(results)
 
 
-def vmray_get_license_usage_reports_command():      # pragma: no cover
+def vmray_get_license_usage_reports_command():  # pragma: no cover
     """
 
     Returns:
@@ -1424,7 +1423,7 @@ def vmray_get_license_usage_reports_command():      # pragma: no cover
     entry['PeriodEndDate'] = data.get('end_date')
 
     markdown = tableToMarkdown('VMRay Reports Quota Information', entry, headers=[
-                               'ReportQuota', 'ReportRemaining', 'ReportUsage', 'PeriodEndDate'])
+        'ReportQuota', 'ReportRemaining', 'ReportUsage', 'PeriodEndDate'])
 
     results = CommandResults(
         readable_output=markdown,
@@ -1436,7 +1435,7 @@ def vmray_get_license_usage_reports_command():      # pragma: no cover
     return_results(results)
 
 
-def main():   # pragma: no cover
+def main():  # pragma: no cover
     try:
         command = demisto.command()
         if command == 'test-module':
@@ -1455,9 +1454,9 @@ def main():   # pragma: no cover
         elif command == 'vmray-get-sample-by-hash':
             get_sample_by_hash_command()
         elif command in (
-                'vmray-get-job-by-sample',
-                'get_job_sample',
-                'vmray-get-job-by-id',
+            'vmray-get-job-by-sample',
+            'get_job_sample',
+            'vmray-get-job-by-id',
         ):
             get_job_command()
         elif command == 'vmray-get-threat-indicators':
