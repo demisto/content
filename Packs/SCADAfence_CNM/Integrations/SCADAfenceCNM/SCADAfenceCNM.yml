@@ -8,17 +8,17 @@ description: fetching data from CNM
 configuration:
 - display: API auth secret
   name: APISecret
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   required: true
 - display: API auth key
   name: APIKey
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   required: true
 - display: API url
   name: APIUrl
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: true
 - display: Use system proxy settings
@@ -207,10 +207,10 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
       description: set active=True to make the alert appear on SCADAfence UI
-      defaultValue: "True"
+      defaultValue: 'True'
     outputs:
     - contextPath: SCADAfence.Alert.alertCreated
       description: flag defining alert creation status
@@ -255,7 +255,7 @@ script:
     description: Fetches all connections from the CNM
   isfetch: true
   runonce: false
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.92207
 tests:
 - SCADAfence_test
 fromversion: 5.0.0

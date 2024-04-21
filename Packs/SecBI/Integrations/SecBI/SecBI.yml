@@ -25,7 +25,7 @@ name: SecBI
 script:
   commands:
   - arguments:
-    - description: "The Query for which to filter the incident IDs using Elasticsearch's Query String Syntax. E.g.: \"firstAppearance:[2018-06-01 TO 2018-06-21]\"."
+    - description: 'The Query for which to filter the incident IDs using Elasticsearch''s Query String Syntax. E.g.: "firstAppearance:[2018-06-01 TO 2018-06-21]".'
       name: query
     - default: true
       defaultValue: '100'
@@ -93,7 +93,7 @@ script:
     - contextPath: SecBI.Incident.LastAppearance
       description: The last appearance of data of the SecBI incident.
       type: Date
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.92207
   runonce: false
   script: '-'
   subtype: python3
