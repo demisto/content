@@ -5657,7 +5657,8 @@
         {
             "integrations": "AWS-SNS-Listener",
             "playbookID": "AWS SNS Listener - Test",
-            "instance_names": "AWS-SNS-Listener"
+            "instance_names": "AWS-SNS-Listener",
+            "is_mockable": false
         },
         {
             "integrations": "Redmine",
@@ -5849,7 +5850,6 @@
         "ThreatStream-Test": "Issue CRTX-96526",
         "MSG-Threat-Assessment-test": "API limitation",
         "BambenekConsultingFeed_Test": "Issue CRTX-99480",
-        "AWS SNS Listener - Test": "Cant validate mock msg against AWS-SNS in TBP",
         "VMWare Test": "CIAC-10276"
     },
     "skipped_integrations": {
