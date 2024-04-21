@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": null
+    "breakingChangesNotes": "Adopted integration to XSOAR, resulting in significant breaking changes. See the release notes for more information."
 }
