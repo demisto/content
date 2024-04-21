@@ -656,7 +656,6 @@ def main():
 
             # If the current commit is the last commit in the list, there is no previous commit,
             # since commits are in ascending order
-            was_message_already_sent = was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines)
             if (current_commit_index != len(list_of_commits) - 1):
                 current_pipeline = get_pipeline_by_commit(current_commit, list_of_pipelines)
 
@@ -682,18 +681,20 @@ def main():
                     if pipeline_changed_status is not None: 
                         # if we already sent a shame message for newer commits, we don't want to send another one for older commits,
                         # but we will just add a message to its thread to inform that we fixed it #TODO rewrite
-                        if was_message_already_sent:
+                        if was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines):
                             #get the tread id
+                            get_artifacts = get_artifact_data(ROOT_ARTIFACTS_FOLDER, 'slack_msg.json')
                             thread_id = 1234
-                            special_message = "whatever"
-                            try:
-                                response = slack_client.chat_postMessage(text="",
-                                                                        channel="test_slack_notifier_when_master_is_broken",
-                                                                        attachments=special_message,
-                                                                        username=SLACK_USERNAME, link_names=True,
-                                                                        thread_ts=thread_id)
-                            except Exception:
-                                pass#TODO
+                            if thread_id:
+                                special_message = "whatever"
+                                try:
+                                    response = slack_client.chat_postMessage(text="",
+                                                                            channel="test_slack_notifier_when_master_is_broken",
+                                                                            attachments=special_message,
+                                                                            username=SLACK_USERNAME, link_names=True,
+                                                                            thread_ts=thread_id)
+                                except Exception:
+                                    pass#TODO
                             
                         else:
                             shame_message = create_shame_message(suspicious_commits, pipeline_changed_status,  # type: ignore
