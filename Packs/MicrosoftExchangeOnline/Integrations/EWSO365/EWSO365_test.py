@@ -750,12 +750,13 @@ def test_categories_parse_item_as_dict():
     assert return_value.get("categories") == ['Purple category', 'Orange category']
 
 
-@pytest.mark.parametrize("subject, expected_file_name", [
-    ("test_subject", "test_subject.eml"),
-    ("", "demisto_untitled_eml.eml"),
-    ("another subject", "another subject.eml")
+@pytest.mark.parametrize("subject, expected_content,expected_file_name", [
+    ("test_subject", "Hello", "test_subject.eml"),
+    ("", "Hello", "demisto_untitled_eml.eml"),
+    ("another subject", "Hello", "another subject.eml"),
+    ("another subject", "Holá", "another subject.eml")
 ])
-def test_get_item_as_eml(subject, expected_file_name, mocker):
+def test_get_item_as_eml(subject, expected_content, expected_file_name, mocker):
     """
     Given
         1. An Item Exists in the Target Mailbox
@@ -774,7 +775,7 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
               b'X-FAKE-Header: HVALue\r\n' \
               b'X-Who-header: whovALUE\r\n' \
               b'DATE: 2023-12-16T12:04:45\r\n' \
-              b'\r\nHello'
+              + expected_content.encode()
 
     # headers set in the Item
     item_headers = [
@@ -794,7 +795,7 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
                     'X-Who-header: whovALUE\r\n' \
                     'DATE: 2023-12-16T12:04:45\r\n' \
                     'X-EXTRA-Missed-Header: EXTRA\r\n' \
-                    '\r\nHello'
+                    f'\r\n{expected_content}'
 
     class MockEWSClient:
 
