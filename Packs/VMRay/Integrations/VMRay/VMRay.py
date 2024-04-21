@@ -162,7 +162,7 @@ def http_request(method, url_suffix, params=None, files=None, get_raw=False, ign
                     return err_r
         return None
 
-    def error_handler(res):
+    def error_handler(res):  # pragma: no cover
         if res.status_code == RATE_LIMIT_REACHED and "Retry-After" in res.headers:
             return_error(f"Rate limit exceeded! Please wait {res.headers.get('Retry-After', 0)} seconds and re-run.")
         if res.status_code in {405, 401}:
