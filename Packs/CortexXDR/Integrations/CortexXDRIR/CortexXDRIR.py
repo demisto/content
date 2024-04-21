@@ -978,13 +978,13 @@ def update_remote_system_command(client, args):
 
             update_args['incident_id'] = remote_args.remote_incident_id
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
-            demisto.debug(f"{update_args=} before checking status")
+            demisto.debug(f"Before checking status {update_args=}")
             is_closed = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
                          or update_args.get('resolve_comment') or update_args.get('closingUserId'))
             closed_without_status = not update_args.get('close_reason') and not update_args.get('closeReason')
             if is_closed and closed_without_status:
                 update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
-            demisto.debug(f"{update_args=} after checking status")
+            demisto.debug(f"After checking status {update_args=}")
             update_incident_command(client, update_args)
 
             close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
