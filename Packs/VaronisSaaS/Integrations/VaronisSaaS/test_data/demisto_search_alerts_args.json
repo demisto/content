@@ -1,6 +1,6 @@
 {
     "threat_model_name": "DNS, DNS - Copy(2)",
-    "alert_status": "new,closed",
+    "alert_status": "new|closed",
     "end_time": "2022-02-16T13:59:00+02:00",
     "start_time": "2022-02-16T13:00:00+02:00",
     "alert_severity": "High",
