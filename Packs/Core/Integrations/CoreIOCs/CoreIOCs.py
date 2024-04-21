@@ -52,7 +52,7 @@ class Client:
         self._verify_cert: bool = not params.get('insecure', False)
         self._params = params
         handle_proxy()
-x
+
     def http_request(self, url_suffix: str, requests_kwargs=None) -> Dict:
         if requests_kwargs is None:
             requests_kwargs = dict()

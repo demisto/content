@@ -20,18 +20,16 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorNameResolutionNoResults, RateLimitError,
                                 ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
 from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol, Protocol, NoVerifyHTTPAdapter
+from exchangelib.protocol import BaseProtocol, Protocol
 from exchangelib.services import EWSService
 from exchangelib.services.common import EWSAccountService
 from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
                                  EXCHANGE_2010_SP2, EXCHANGE_2013,
                                  EXCHANGE_2016, EXCHANGE_2019)
-
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
 from exchangelib.version import VERSIONS as EXC_VERSIONS
-import ssl
 
 
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
@@ -50,12 +48,11 @@ def our_fullname(self):  # pragma: no cover
 Version.fullname = our_fullname
 
 
-class exchangelibSSLAdapter(SSLAdapter):  # pragma: no cover
-
+class exchangelibSSLAdapter(SSLAdapter):
     def cert_verify(self, conn, url, verify, cert):
         # We're overriding a method, so we have to keep the signature, although verify is unused
         del verify
-        super().cert_verify(conn=conn, url=url, verify=False, cert=None)
+        super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
 
 
 # Ignore warnings print to stdout
@@ -215,9 +212,7 @@ def prepare_context(credentials):  # pragma: no cover
 def prepare():  # pragma: no cover
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     if NON_SECURE:
-        BaseProtocol.RETRY_WAIT = 20 # type: ignore
-        BaseProtocol.TIMEOUT = 1000 # type: ignore
-        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter #exchangelibSSLAdapter
+        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter
     AUTO_DISCOVERY = not EWS_SERVER
     if AUTO_DISCOVERY:
         credentials = Credentials(username=USERNAME, password=PASSWORD)

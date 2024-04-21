@@ -8753,17 +8753,13 @@ if 'requests' in sys.modules:
                 :rtype: ``None``
             """
             context = create_urllib3_context(ciphers=CIPHERS_STRING)
-            context.suppress_ragged_eofs = True
-            
+
             def __init__(self, verify=True, **kwargs):
                 # type: (bool, dict) -> None
-                self.context.options |= ssl.OP_IGNORE_UNEXPECTED_EOF
                 if not verify and IS_PY3:
                     self.context.check_hostname = False
                 if not verify and ssl.OPENSSL_VERSION_INFO >= (3, 0, 0, 0):
                     self.context.options |= 0x4
-                    self.context.suppress_ragged_eofs = True
-                
                 super().__init__(**kwargs)  # type: ignore[arg-type]
 
             def init_poolmanager(self, *args, **kwargs):
