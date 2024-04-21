@@ -536,9 +536,9 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
 
 
 @pytest.mark.parametrize("mime_content, expected_data, expected_attachmentSHA256", [
-    # (b'\xc400',
-    #  '\r\nÄ00',
-    #  '90daab88e6fac673e12acbbe28879d8d2b60fc2f524f1c2ff02fccb8e3e526a8'),
+    (b'\xc400',
+     '\r\nÄ00',
+     '90daab88e6fac673e12acbbe28879d8d2b60fc2f524f1c2ff02fccb8e3e526a8'),
     ("Hello, this is a sample email with non-ASCII characters: é, ñ, ü.",
      "\r\nHello, this is a sample email with non-ASCII characters: é, ñ, ü.",
      "228d032fb728b3f86c49084b7d99ec37e913789415789084cd44fd94ea4647b7"),
@@ -755,7 +755,7 @@ def test_categories_parse_item_as_dict():
 @pytest.mark.parametrize("subject, expected_file_name", [
     ("test_subject", "test_subject.eml"),
     ("", "demisto_untitled_eml.eml"),
-    ("another subject", "another subject.eml"),
+    ("another subject", "another subject.eml")
 ])
 def test_get_item_as_eml(subject, expected_file_name, mocker):
     """
@@ -771,7 +771,7 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
     """
     content = b'MIME-Version: 1.0\r\n' \
               b'Message-ID:\r\n' \
-              b'<message-test-idRANDOMVALUES@testing.com>' \
+              b '<message-test-idRANDOMVALUES@testing.com>' \
               b'Content-Type: text/plain; charset="us-ascii"\r\n' \
               b'X-FAKE-Header: HVALue\r\n' \
               b'X-Who-header: whovALUE\r\n' \
@@ -817,6 +817,16 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
 
 @pytest.mark.parametrize('message_content', ('Holá', 'À bientôt!', '今日は!'))
 def test_decode_email_data(message_content):
+    """
+    Given a message containing characters in:
+        a. Spanish
+        b. French
+        c. Japanese
+
+    When: decoding the content
+
+    Then make sure the content and characters are decoded correctly.
+    """
     class MockMimeItem:
         mime_content: str = ''
 
