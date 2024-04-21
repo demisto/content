@@ -743,7 +743,7 @@ Runs reputation on Domains.
           },
           "autonomous_system": {
             "description": "AMAZON-02",
-            "bgp_prefix": "54.239.16.0/20",
+            "bgp_prefix": "1.1.1.1",
             "name": "AMAZON-02",
             "country_code": "US",
             "asn": 16509
@@ -757,17 +757,17 @@ Runs reputation on Domains.
             },
             {
               "transport_protocol": "TCP",
-              "certificate": "bb638b53bbde53dff9e8f707b9be32751e84fd865910636281902b204b062a50",
+              "certificate": "XXXXXXX",
               "extended_service_name": "HTTPS",
               "service_name": "HTTP",
               "port": 443
             }
           ],
           "last_updated_at": "2024-04-06T16:57:13.170Z",
-          "ip": "54.239.28.85"
+          "ip": "1.1.1.1."
         },
         {
-          "ip": "205.251.242.103",
+          "ip": "1.1.1.1",
           "services": [
             {
               "port": 80,
@@ -780,7 +780,7 @@ Runs reputation on Domains.
               "transport_protocol": "TCP",
               "extended_service_name": "HTTPS",
               "service_name": "HTTP",
-              "certificate": "bb638b53bbde53dff9e8f707b9be32751e84fd865910636281902b204b062a50"
+              "certificate": "XXXXXXX"
             }
           ],
           "dns": {
@@ -805,7 +805,7 @@ Runs reputation on Domains.
           },
           "autonomous_system": {
             "country_code": "US",
-            "bgp_prefix": "205.251.240.0/22",
+            "bgp_prefix": "1.1.1.1",
             "asn": 16509,
             "description": "AMAZON-02",
             "name": "AMAZON-02"
@@ -831,7 +831,7 @@ Runs reputation on Domains.
             "country_code": "US",
             "asn": 16509,
             "name": "AMAZON-02",
-            "bgp_prefix": "52.94.224.0/20",
+            "bgp_prefix": "1.1.1.1",
             "description": "AMAZON-02"
           },
           "services": [
@@ -844,12 +844,12 @@ Runs reputation on Domains.
             {
               "extended_service_name": "HTTPS",
               "transport_protocol": "TCP",
-              "certificate": "bb638b53bbde53dff9e8f707b9be32751e84fd865910636281902b204b062a50",
+              "certificate": "XXXXXX",
               "service_name": "HTTP",
               "port": 443
             }
           ],
-          "ip": "52.94.236.248"
+          "ip": "1.1.1.1"
         }
       ],
       "links": {

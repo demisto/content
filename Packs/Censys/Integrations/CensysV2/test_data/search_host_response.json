@@ -48,12 +48,12 @@
           ],
           "autonomous_system": {
             "name": "ROSTELECOM-AS",
-            "bgp_prefix": "188.254.0.0/17",
+            "bgp_prefix": "1.1.1.1",
             "country_code": "RU",
             "asn": 12389,
             "description": "ROSTELECOM-AS"
           },
-          "ip": "188.254.0.9",
+          "ip": "1.1.1.1",
           "location": {
             "country": "Russia",
             "province": "Moscow Oblast",

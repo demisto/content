@@ -23,7 +23,7 @@
       "autonomous_system": {
         "asn": 14618,
         "description": "AMAZON-AES",
-        "bgp_prefix": "54.160.0.0/14",
+        "bgp_prefix": "1.1.1.1",
         "name": "AMAZON-AES",
         "country_code": "US"
       },
@@ -45,21 +45,21 @@
             {
               "handle": "AEA8-ARIN",
               "name": "Amazon EC2 Abuse",
-              "email": "abuse@amazonaws.com"
+              "email": ""
             }
           ],
           "admin_contacts": [
             {
               "handle": "IPMAN40-ARIN",
               "name": "IP Management",
-              "email": "ipmanagement@amazon.com"
+              "email": ""
             }
           ],
           "tech_contacts": [
             {
               "handle": "ANO24-ARIN",
               "name": "Amazon EC2 Network Operations",
-              "email": "amzn-noc-contact@amazon.com"
+              "email": ""
             }
           ]
         }
