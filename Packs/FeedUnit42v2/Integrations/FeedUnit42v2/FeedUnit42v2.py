@@ -127,7 +127,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
                         }
                     }
                     if 'fields' not in indicator_obj:
-                        demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key: {indicator_obj}")
+                        demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key: {indicator_obj=}, {indicator_object=}")
                     if "file:hashes.'SHA-256' = '" in pattern:
                         if ioc_value := extract_ioc_value(pattern):
                             indicator_obj['value'] = ioc_value
@@ -195,7 +195,7 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
         report_list = client.parse_report(report_object, '[Unit42 ATOM] ', ignore_reports_relationships=True)
         report = report_list[0]
         if 'fields' not in report:
-            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key parse_report: {report}")
+            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key parse_report: {report=}, {report_object=}")
         report['value'] = f"[Unit42 ATOM] {report_object.get('name')}"
         report['fields']['tags'] = list((set(report_object.get('labels') or [])).union(set(feed_tags)))
         report['fields']['reportedby'] = 'Unit42'
@@ -236,7 +236,7 @@ def parse_campaigns(client: Client, campaigns_objs, feed_tags, tlp_color):
         campaigns_indicator_list = client.parse_campaign(campaigns_obj)
         campaigns_indicator = campaigns_indicator_list[0]
         if 'fields' not in campaigns_indicator:
-            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key parse_campaigns: {campaigns_indicator}")
+            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key parse_campaigns: {campaigns_indicator=}, {campaigns_obj=}")
         campaigns_indicator["fields"]["reportedby"] = 'Unit42'
         campaigns_indicator["fields"]["tags"] = list(feed_tags)
         for field_name in ["aliases", "objective"]:
@@ -308,7 +308,7 @@ def create_attack_pattern_indicator(client: Client, attack_indicator_objects, fe
         attack_indicator_list = client.parse_attack_pattern(attack_indicator_object, ignore_external_id=True)
         attack_indicator = attack_indicator_list[0]
         if 'fields' not in attack_indicator:
-            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key parse_attack_pattern: {attack_indicator}")
+            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key parse_attack_pattern: {attack_indicator=}, {attack_indicator_object=}")
         mitre_id, value = get_attack_id_and_value_from_name(attack_indicator_object)
 
         attack_indicator["value"] = value
@@ -347,7 +347,7 @@ def create_course_of_action_indicators(client: Client, course_of_action_objects,
         coa_indicator_list = client.parse_course_of_action(coa_indicator_object)
         coa_indicator = coa_indicator_list[0]
         if 'fields' not in coa_indicator:
-            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key create_course_of_action_indicators: {coa_indicator}")
+            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key create_course_of_action_indicators: {coa_indicator=}, {coa_indicator_object=}")
         coa_indicator["fields"].update({
             "reportedby": 'Unit42',
             "firstseenbysource": handle_multiple_dates_in_one_field(
@@ -372,7 +372,7 @@ def create_intrusion_sets(client: Client, intrusion_sets_objects, feed_tags, tlp
         intrusion_set_list = client.parse_intrusion_set(intrusion_set_object, ignore_external_id=True)
         intrusion_set = intrusion_set_list[0]
         if 'fields' not in intrusion_set:
-            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key create_intrusion_sets: {intrusion_set}")
+            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key create_intrusion_sets: {intrusion_set=}, {intrusion_set_object=}")
         intrusion_set["fields"].update({
             "reportedby": 'Unit42',
             "firstseenbysource": handle_multiple_dates_in_one_field(
