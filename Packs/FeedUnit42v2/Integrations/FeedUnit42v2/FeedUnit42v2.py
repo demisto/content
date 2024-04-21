@@ -32,7 +32,7 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
 ''' CONSTANTS '''
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 DEFAULT_INDICATOR_SCORE = 3  # default verdict of fetched indicators is malicious
-
+INTEGRATION_NAME = "Unit42v2_Feed"
 from TAXII2ApiModule import *  # noqa: E402
 
 
@@ -126,7 +126,8 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
                             "reportedby": 'Unit42',
                         }
                     }
-
+                    if 'fields' not in indicator_obj:
+                        demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key: {indicator_obj}")
                     if "file:hashes.'SHA-256' = '" in pattern:
                         if ioc_value := extract_ioc_value(pattern):
                             indicator_obj['value'] = ioc_value
@@ -138,7 +139,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
                         indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
                     indicators.append(indicator_obj)
-
+    demisto.debug(f"{INTEGRATION_NAME}: We are in fetch indicator command - parse_indicators inside the function")
     return indicators
 
 
@@ -193,6 +194,8 @@ def parse_reports_and_report_relationships(client: Client, report_objects: list,
             continue
         report_list = client.parse_report(report_object, '[Unit42 ATOM] ', ignore_reports_relationships=True)
         report = report_list[0]
+        if 'fields' not in report:
+            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key parse_report: {report}")
         report['value'] = f"[Unit42 ATOM] {report_object.get('name')}"
         report['fields']['tags'] = list((set(report_object.get('labels') or [])).union(set(feed_tags)))
         report['fields']['reportedby'] = 'Unit42'
@@ -232,6 +235,8 @@ def parse_campaigns(client: Client, campaigns_objs, feed_tags, tlp_color):
     for campaigns_obj in campaigns_objs:
         campaigns_indicator_list = client.parse_campaign(campaigns_obj)
         campaigns_indicator = campaigns_indicator_list[0]
+        if 'fields' not in campaigns_indicator:
+            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key parse_campaigns: {campaigns_indicator}")
         campaigns_indicator["fields"]["reportedby"] = 'Unit42'
         campaigns_indicator["fields"]["tags"] = list(feed_tags)
         for field_name in ["aliases", "objective"]:
@@ -302,6 +307,8 @@ def create_attack_pattern_indicator(client: Client, attack_indicator_objects, fe
     for attack_indicator_object in attack_indicator_objects:
         attack_indicator_list = client.parse_attack_pattern(attack_indicator_object, ignore_external_id=True)
         attack_indicator = attack_indicator_list[0]
+        if 'fields' not in attack_indicator:
+            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key parse_attack_pattern: {attack_indicator}")
         mitre_id, value = get_attack_id_and_value_from_name(attack_indicator_object)
 
         attack_indicator["value"] = value
@@ -337,9 +344,10 @@ def create_course_of_action_indicators(client: Client, course_of_action_objects,
     course_of_action_indicators = []
 
     for coa_indicator_object in course_of_action_objects:
-
         coa_indicator_list = client.parse_course_of_action(coa_indicator_object)
         coa_indicator = coa_indicator_list[0]
+        if 'fields' not in coa_indicator:
+            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key create_course_of_action_indicators: {coa_indicator}")
         coa_indicator["fields"].update({
             "reportedby": 'Unit42',
             "firstseenbysource": handle_multiple_dates_in_one_field(
@@ -350,7 +358,7 @@ def create_course_of_action_indicators(client: Client, course_of_action_objects,
         if 'action_type' in coa_indicator['fields']:
             coa_indicator["fields"].pop("action_type")
         if tlp_color:
-            coa_indicator_object['fields']['trafficlightprotocol'] = tlp_color
+            coa_indicator['fields']['trafficlightprotocol'] = tlp_color
 
         course_of_action_indicators.append(coa_indicator)
 
@@ -363,6 +371,8 @@ def create_intrusion_sets(client: Client, intrusion_sets_objects, feed_tags, tlp
     for intrusion_set_object in intrusion_sets_objects:
         intrusion_set_list = client.parse_intrusion_set(intrusion_set_object, ignore_external_id=True)
         intrusion_set = intrusion_set_list[0]
+        if 'fields' not in intrusion_set:
+            demisto.debug(f"{INTEGRATION_NAME}: Invalid fields key create_intrusion_sets: {intrusion_set}")
         intrusion_set["fields"].update({
             "reportedby": 'Unit42',
             "firstseenbysource": handle_multiple_dates_in_one_field(
@@ -512,6 +522,7 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
     Returns:
         List. Processed indicators from feed.
     """
+    demisto.debug(f"{INTEGRATION_NAME}: We are in fetch indicator command")
     if not feed_tags:
         feed_tags = []
 
@@ -529,12 +540,18 @@ def fetch_indicators(client: Client, feed_tags: Optional[list] = None, tlp_color
         + client.objects_data['course-of-action'] + client.objects_data['intrusion-set']
     }
     client.id_to_object = id_to_object
+    demisto.debug(f"{INTEGRATION_NAME}: We are in fetch indicator command - parse_indicators")
     ioc_indicators = parse_indicators(client.objects_data['indicator'], feed_tags, tlp_color)
+    demisto.debug(f"{INTEGRATION_NAME}: We are in fetch indicator command - parse_reports_and_report_relationships")
     reports = parse_reports_and_report_relationships(client, client.objects_data['report'], feed_tags, tlp_color, id_to_object)
+    demisto.debug(f"{INTEGRATION_NAME}: We are in fetch indicator command - parse_campaigns")
     campaigns = parse_campaigns(client, client.objects_data['campaign'], feed_tags, tlp_color)
+    demisto.debug(f"{INTEGRATION_NAME}: We are in fetch indicator command - create_attack_pattern_indicator")
     attack_patterns = create_attack_pattern_indicator(client, client.objects_data['attack-pattern'],
                                                       feed_tags, tlp_color)
+    demisto.debug(f"{INTEGRATION_NAME}: We are in fetch indicator command - create_intrusion_sets")
     intrusion_sets = create_intrusion_sets(client, client.objects_data['intrusion-set'], feed_tags, tlp_color)
+    demisto.debug(f"{INTEGRATION_NAME}: We are in fetch indicator command - create_course_of_action_indicators")
     course_of_actions = create_course_of_action_indicators(client, client.objects_data['course-of-action'],
                                                            feed_tags, tlp_color)
 
