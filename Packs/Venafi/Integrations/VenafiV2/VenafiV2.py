@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -100,7 +100,7 @@ class Client(BaseClient):
         expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
         set_integration_context({"token": token, "refresh_token": refresh_token, "expire_date": str(expire_date)})
 
-    def _get_certificates(self, args: Dict[str, Any]) -> Dict:
+    def _get_certificates(self, args: dict[str, Any]) -> dict:
         headers = {
             "Authorization": f"Bearer {self.token}"
         }
@@ -114,7 +114,7 @@ class Client(BaseClient):
 
         return certificates
 
-    def _get_certificate_details(self, guid: str) -> Dict:
+    def _get_certificate_details(self, guid: str) -> dict:
         headers = {
             "Authorization": f"Bearer {self.token}"
         }
@@ -145,7 +145,7 @@ def test_module(client: Client) -> str:
 
     message: str = ''
     try:
-        test_empty_args = {}
+        test_empty_args: Dict = {}
         results = client._get_certificates(test_empty_args)
         if results:
             message = 'ok'
@@ -157,8 +157,8 @@ def test_module(client: Client) -> str:
     return message
 
 
-def get_certificates_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    outputs: Dict[str, Any] = dict()
+def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    outputs: dict[str, Any] = {}
     response = client._get_certificates(args)
     if response:
         outputs = edit_response(response)
@@ -188,7 +188,7 @@ def get_certificates_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def edit_response(response: Dict[str, Any]) -> Dict[str, Any]:
+def edit_response(response: dict[str, Any]) -> dict[str, Any]:
     """remove links list from the response
     """
     certificates = response.get('Certificates')
@@ -199,8 +199,8 @@ def edit_response(response: Dict[str, Any]) -> Dict[str, Any]:
     return response
 
 
-def get_certificate_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    outputs: Dict[str, Any] = dict()
+def get_certificate_details_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    outputs: dict[str, Any] = {}
     guid = args.get('guid')
     # if not guid?
     response = client._get_certificate_details(guid)
