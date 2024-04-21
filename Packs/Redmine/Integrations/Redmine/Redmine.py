@@ -124,7 +124,7 @@ class Client(BaseClient):
 
     def field_from_name_to_id_list_request(self, field):
         response = self._http_request('GET', DICT_OF_ISSUE_ARGS.get(field, {}).get('url_suffix', ""),
-                                        headers=self._get_header)
+                                      headers=self._get_header)
         return response
 
 
@@ -174,29 +174,6 @@ def format_custom_field_to_request(args: Dict[str, Any]):
             if 'list index out of range' in e.args[0] or 'substring not found' in e.args[0]:
                 raise DemistoException("Custom fields not in format, please follow the instructions")
             raise
-
-
-def handle_convert_field(client, field: str, field_value: str):
-    try:
-        integration_context = get_integration_context().get(field, {})
-        field_value_id = arg_to_number(field_value)
-        if integration_context and field_value not in integration_context.values():
-            singular = DICT_OF_ISSUE_ARGS.get(field, {}).get('singular', "")
-            raise DemistoException(f"{singular} id {field_value_id} not found, please make sure this {singular} id exists. "
-                                   f"You can provide the {singular} name instead.")
-        return field_value
-    except ValueError:
-        # user can use custom tracker/priority/status so we retrieve the user's dict and save it in context
-        client.get_dict_for_issue_field_request(field)
-        integration_context = get_integration_context().get(field, {})
-        field_value_id = integration_context.get(field_value)
-        if not field_value_id:
-            singular = DICT_OF_ISSUE_ARGS.get(field, {}).get('singular', "")
-            raise DemistoException(f"Could not find {field_value} in your {field} list, please make sure using an existing"
-                                   f" {singular} name.")
-        return field_value_id
-    except DemistoException:
-        raise
 
 
 def get_file_content(entry_id: str) -> bytes:
@@ -349,9 +326,8 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
                 status_num = arg_to_number(status_id)
             except ValueError as e:
                 raise DemistoException(f"Status argument has to be a predefined value (Open/Closed/All) or a valid status ID but "
-                                    f"got {status_id}. with error: {e}")
+                                       f"got {status_id}. with error: {e}.")
         return status_id
-            
 
     page_number = args.pop('page_number', None)
     page_size = args.pop('page_size', None)
@@ -599,6 +575,7 @@ def get_users_command(client: Client, args: dict[str, Any]):
                                                                      is_auto_json_transform=True))
     return command_results
 
+
 def field_from_name_to_id_list_command(client, field: str):
     response = client.field_from_name_to_id_list_request(field)
     key_in_response = DICT_OF_ISSUE_ARGS.get(field, {}).get('key_in_response', "")
@@ -607,14 +584,15 @@ def field_from_name_to_id_list_command(client, field: str):
         raise DemistoException(f"Failed to retrieve {singular} IDs due to a parsing error.")
     mapping_name_to_id_of_field = [{'ID': item['id'], 'Name': item['name']} for item in response[key_in_response]]
     command_results = CommandResults(outputs_prefix=f'Redmine.{field}',
-                                    outputs_key_field='ID',
-                                    outputs=mapping_name_to_id_of_field,
-                                    raw_response=mapping_name_to_id_of_field,
-                                    readable_output=tableToMarkdown(f'{field} name to id List:', mapping_name_to_id_of_field,
-                                                                    headers=["ID", "Name"],
-                                                                    removeNull=True,
-                                                                    ))
+                                     outputs_key_field='ID',
+                                     outputs=mapping_name_to_id_of_field,
+                                     raw_response=mapping_name_to_id_of_field,
+                                     readable_output=tableToMarkdown(f'{field} name to id List:', mapping_name_to_id_of_field,
+                                                                     headers=["ID", "Name"],
+                                                                     removeNull=True,
+                                                                     ))
     return command_results
+
 
 def reset_redmine_settings_context():
     """

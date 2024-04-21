@@ -44,8 +44,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The project ID for this issue. If not specified, the value from the integration configuration will be used. | Optional | 
-| tracker | - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).<br/> - This argument is case sensitive. | Required | 
-| priority | - Enter a priority ID (e.g., 1,2,3) or a priority name (e.g., Low/High).<br/> - This argument is case sensitive.| Required | 
+| tracker_id | - Enter a tracker ID (e.g., 1,2,3).<br/>- You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.<br/>- If you entered an invalid ID, it will use the default tracker from your Redmine instance. | Required | 
+| priority_id | - Enter a priority ID (e.g., 1,2,3).<br/>- You can find the mapping from priority_name to priority_id using the command redmine-priority-id-list. | Required | 
 | subject | The subject for this issue. | Required | 
 | description | A description for this issue. | Optional | 
 | category_id | The category ID for this issue. | Optional | 
@@ -73,7 +73,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 | Redmine.Issue.subject | str | The subject of the issue. | 
 
 #### Command example
-```!redmine-issue-create priority_id=High status=New subject=helloExample tracker=Bug project_id=1 watcher_user_ids=5,6 custom_fields=1:helloCustom priority=1```
+```!redmine-issue-create priority_id=High subject=helloExample tracker_id=1 project_id=1 watcher_user_ids=5,6 custom_fields=1:helloCustom priority_id=1```
 #### Context Example
 ```json
 {
@@ -153,7 +153,7 @@ Display a list of issues
 | issue_id | An array of issue IDs to display -&gt; 1,2,3. | Optional | 
 | project_id | Aa project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed. | Optional | 
 | subproject_id | A subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!name_of_subproject" to exclude subprojects). | Optional | 
-| tracker | - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).<br/> - This argument is case sensitive. | Optional | 
+| tracker_id | - Enter a tracker ID (e.g., 1,2,3).<br/>- You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.<br/>- If you entered an invalid ID, it will use the default tracker from your Redmine instance. | Optional |
 | status | - The status to display issues related to this status.  <br/>- You can use Open/Closed/All from the predefined values or use any of your custom status ids (e.g., 1)/ status names(e.g., New).<br/> - This argument is case sensitive. | Optional | 
 | assigned_to_id | An assigned-to ID to display issues assigned to this user ID. | Optional | 
 | parent_id | A parent ID to display issues that are under this parent ID. | Optional | 
@@ -291,9 +291,9 @@ Update an existing issue. When attaching a file to an issue, include the entry I
 | --- | --- | --- |
 | issue_id | The ID of the issue to be updated. | Required | 
 | project_id | The ID of the project to associate with the issue. If not specified, the value from integration configuration will be taken if specified. | Optional | 
-| tracker | - Enter a tracker ID (e.g., 1,2,3) or a tracker name (e.g., Bug/Task).<br/> - This argument is case sensitive. | Optional | 
-| status | - Enter a status ID (e.g., 1,2,3) or a status name (e.g., New/Closed).<br/> - This argument is case sensitive. | Optional | 
-| priority | - Enter a priority ID (e.g., 1,2,3) or a priority name (e.g., Low/High).<br/> - This argument is case sensitive. | Optional | 
+| tracker_id | - Enter a tracker ID (e.g., 1,2,3).<br/>- You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.<br/>- If you entered an invalid ID, it will use the default tracker from your Redmine instance. | Optional | 
+| priority_id | - Enter a priority ID (e.g., 1,2,3).<br/>- You can find the mapping from priority_name to priority_id using the command redmine-priority-id-list. | Optional | 
+| status | - Enter a status ID (e.g., 1,2,3).<br/> - You can find the mapping from status_name to status_id using the command redmine-status-id-list.<br/>  - If you entered an invalid ID, status_id won't be changed but won't raise an error. | Optional | 
 | subject | The subject of the issue. | Optional | 
 | description | The description of the issue. | Optional | 
 | category_id | The ID of the category to assign to the issue. | Optional | 
@@ -733,16 +733,14 @@ There are no input arguments for this command.
 >| 6 | demiadmin | True | Integration | Test | demiadmin@redmine-test.local | 2024-02-29T10:27:31Z | 2024-02-29T10:55:25Z |
 >| 1 | user | True | UserName | LastName | user@example.com | 2024-02-28T18:34:10Z | 2024-02-29T09:50:10Z |
 
-### reset-redmine_settings
+### redmine-priority-id-list
 
 ***
-- When using issue-create/issue-update/issue-list commands we save the custom settings in a local database
-- Use this command to reset the local database in cases of changing the tracker/priority/status in your Redmine instance after your previous instance initialization
-- This way, XSOAR will be able to use your new definitions of those fields
+Display a mapping list from priority name to priority id.
 
 #### Base Command
 
-`redmine-reset-settings`
+`redmine-priority-id-list`
 
 #### Input
 
@@ -750,4 +748,175 @@ There are no input arguments for this command.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redmine.priorities.ID | str | ID of priority field. | 
+| Redmine.priorities.Name | str | Name of priority field. | 
+
+#### Command example
+```!redmine-priority-id-list```
+#### Context Example
+```json
+{
+    "Redmine": {
+        "priorities": [
+            {
+                "ID": 1,
+                "Name": "Low"
+            },
+            {
+                "ID": 2,
+                "Name": "Normal"
+            },
+            {
+                "ID": 3,
+                "Name": "High"
+            },
+            {
+                "ID": 4,
+                "Name": "Urgent"
+            },
+            {
+                "ID": 5,
+                "Name": "Immediate"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### priorities name to id List:
+>|ID|Name|
+>|---|---|
+>| 1 | Low |
+>| 2 | Normal |
+>| 3 | High |
+>| 4 | Urgent |
+>| 5 | Immediate |
+
+
+### redmine-status-id-list
+
+***
+Display a mapping list from status name to status id.
+
+#### Base Command
+
+`redmine-status-id-list`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redmine.statuses.ID | str | ID of status field. | 
+| Redmine.Users.Name | str | Name of status field. | 
+
+#### Command example
+```!redmine-status-id-list```
+#### Context Example
+```json
+{
+    "Redmine": {
+        "statuses": [
+            {
+                "ID": 1,
+                "Name": "help"
+            },
+            {
+                "ID": 2,
+                "Name": "In Progress"
+            },
+            {
+                "ID": 3,
+                "Name": "Resolved"
+            },
+            {
+                "ID": 4,
+                "Name": "Feedback"
+            },
+            {
+                "ID": 5,
+                "Name": "Closed"
+            },
+            {
+                "ID": 6,
+                "Name": "Rejected"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### statuses name to id List:
+>|ID|Name|
+>|---|---|
+>| 1 | help |
+>| 2 | In Progress |
+>| 3 | Resolved |
+>| 4 | Feedback |
+>| 5 | Closed |
+>| 6 | Rejected |
+
+
+### redmine-tracker-id-list
+
+***
+Display a mapping list from tracker name to tracker id.
+
+#### Base Command
+
+`redmine-tracker-id-list`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Redmine.trackers.ID | str | ID of tracker field. | 
+| Redmine.trackers.Name | str | Name of tracker field. | 
+
+#### Command example
+```!redmine-tracker-id-list```
+#### Context Example
+```json
+{
+    "Redmine": {
+        "trackers": [
+            {
+                "ID": 1,
+                "Name": "Bug111"
+            },
+            {
+                "ID": 2,
+                "Name": "Feature"
+            },
+            {
+                "ID": 3,
+                "Name": "Support"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### trackers name to id List:
+>|ID|Name|
+>|---|---|
+>| 1 | Bug111 |
+>| 2 | Feature |
+>| 3 | Support |
+
+
