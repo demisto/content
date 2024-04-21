@@ -43,6 +43,8 @@ class mock_pull_request:
     def __init__(self, base_ref):
         self.base = Mock(ref=base_ref, return_value=base_ref)
         self.number = 123
+        self.head = Mock()
+        self.head.label = "label"
 
 
 @pytest.fixture
@@ -111,7 +113,9 @@ def test_handle_contribution_prs_exception_handling(
     mock_cancel_active_pipelines.assert_called_once_with(
         mock_gitlab_project, mock_branch
     )
-    mock_logging.info.assert_any_call("--- Handling branch: master. ---")
+    mock_logging.info.assert_any_call(
+        "Trigger build for PR 123|base: master|contrib: label"
+    )
     mock_logging.exception.assert_called_once_with(
         "Failed to trigger pipeline for: master. Error: Test exception"
     )
