@@ -300,13 +300,17 @@ def send_message_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandR
     # Also updating the conversation history with the extracted message from the response.
     assistant_message = extract_assistant_message(response, conversation)
 
-    usage = response.get('usage', '') if args.get('verbose', False) else ''
-    verbose_message = f"Model: {response.get('model', '')} Usage: {usage}"
+    usage = response.get('usage', {}) if args.get('verbose', False) else {}
+    verbose_message = (f"Model: {response.get('model', '')} "
+                       f"Usage: prompt-tokens={usage.get('prompt_tokens', '')}, "
+                       f"completion-tokens={usage.get('completion_tokens', '')}, "
+                       f"total-tokens={usage.get('total_tokens', '')}")
+
     return CommandResults(
         outputs_prefix='OpenAIGPT.Conversation',
         outputs=conversation,
         replace_existing=True,
-        readable_output=str(response) + "\n| $$$$$$$$ |\n" + assistant_message
+        readable_output=assistant_message + "\n--------------------------------------------------------------\n" + verbose_message
     )
 
 
