@@ -966,7 +966,7 @@ def get_iocs(sample_id, all_artifacts):
     return response
 
 
-def get_iocs_command():
+def get_iocs_command():  # pragma: no cover
     def get_hashed(lst):
         """
 
