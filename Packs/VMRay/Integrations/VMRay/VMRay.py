@@ -60,7 +60,7 @@ MAX_RETRIES = 10
 ''' HELPER FUNCTIONS '''
 
 
-def is_json(response):  # pragma: no cover
+def is_json(response):
     """Checks if response is jsonable
 
     Args:
@@ -281,7 +281,7 @@ def build_finished_job(job_id, sample_id):
     return entry
 
 
-def build_analysis_data(analyses):  # pragma: no cover
+def build_analysis_data(analyses):
     """
 
     Args:
@@ -315,7 +315,7 @@ def build_analysis_data(analyses):  # pragma: no cover
     return entry_context
 
 
-def build_upload_params():  # pragma: no cover
+def build_upload_params():
     """Builds params for upload_file
 
     Returns:
