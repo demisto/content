@@ -3855,7 +3855,7 @@ Update one or more alerts. You can update up to 100 alerts per request. Missing 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_ids | Comma-separated list of alert IDs. | Required | 
-| severity | Severity of the incident which was closed. Possible values are: critical, high, medium, low, informational. | Optional | 
+| severity | Severity of the incident which was closed. Possible values are: critical, high, medium, low. | Optional | 
 | status | New status for updated alerts. Possible values are: new, resolved_threat_handled, under_investigation, resolved_security_testing, resolved_auto, resolved_known_issue, resolved_duplicate, resolved_other, resolved_false_positive, resolved_true_positive. | Optional | 
 | comment | Comment to append to updated alerts. | Optional | 
 

@@ -3520,7 +3520,6 @@ script:
       - high
       - medium
       - low
-      - informational
     - auto: PREDEFINED
       description: New status for updated alerts.
       name: status
