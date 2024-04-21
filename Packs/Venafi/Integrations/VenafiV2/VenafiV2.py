@@ -11,6 +11,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 MINUTES_BEFORE_TOKEN_EXPIRED = 2
 CONTEXT_OUTPUT_BASE_PATH = "Venafi.Certificate"
+
 ''' CLIENT CLASS '''
 
 
@@ -159,7 +160,6 @@ def test_module(client: Client) -> str:
 def get_certificates_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     outputs: Dict[str, Any] = dict()
     response = client._get_certificates(args)
-
     if response:
         outputs = edit_response(response)
 
@@ -174,8 +174,7 @@ def get_certificates_command(client: Client, args: Dict[str, Any]) -> CommandRes
             "Name": certificate.get('Name'),
             "ParentDN": certificate.get('ParentDn'),
             "SchemaClass": certificate.get('SchemaClass'),
-            "ID": certificate_id,
-            "X509": certificate.get('X509'),
+            "ID": certificate_id
         }
         human_readable.append(certificate_details)
 
@@ -189,26 +188,6 @@ def get_certificates_command(client: Client, args: Dict[str, Any]) -> CommandRes
     )
 
 
-def get_certificate_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    pass
-    # message: List = []
-    # guid = args.get('guid')
-    # # if not guid?
-    # response = client._get_certificate_details(guid)
-    # if response:
-    #
-    #     message = edit_response(response)
-    #
-    # human_readable = ""
-    #
-    # return CommandResults(
-    #     outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
-    #     outputs=message,
-    #     raw_response=response,
-    #     readable_output=human_readable
-    # )
-
-
 def edit_response(response: Dict[str, Any]) -> Dict[str, Any]:
     """remove links list from the response
     """
@@ -218,6 +197,38 @@ def edit_response(response: Dict[str, Any]) -> Dict[str, Any]:
             del certificate["_links"]
 
     return response
+
+
+def get_certificate_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    outputs: Dict[str, Any] = dict()
+    guid = args.get('guid')
+    # if not guid?
+    response = client._get_certificate_details(guid)
+    if response:
+        outputs = response
+
+    human_readable = []
+    certificate_guid = outputs.get("Guid")
+    certificate_id = certificate_guid[1:-1]
+    certificate_details = {
+        "CreatedOn": outputs.get('CreatedOn'),
+        "DN": outputs.get('DN'),
+        "Name": outputs.get('Name'),
+        "ParentDN": outputs.get('ParentDn'),
+        "SchemaClass": outputs.get('SchemaClass'),
+        "ID": certificate_id
+    }
+    human_readable.append(certificate_details)
+
+    markdown_table = tableToMarkdown('Venafi certificates details', human_readable)
+
+    return CommandResults(
+        outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
+        outputs=outputs,
+        raw_response=response,
+        readable_output=markdown_table
+    )
+
 
 ''' MAIN FUNCTION '''
 
