@@ -6,7 +6,7 @@ script: '-'
 type: python
 tags:
 - dynamic-section
-comment: Retrieve anomalies for specified case id from GRA and update in XSOAR
+comment: Retrieve anomalies for specified case id from GRA and update in XSOAR.
 enabled: true
 scripttarget: 0
 subtype: python3

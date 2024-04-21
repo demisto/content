@@ -12,7 +12,7 @@ enabled: true
 args:
 - name: value
   required: true
-  description: Date to convert
+  description: Date to convert.
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.10.14.92207

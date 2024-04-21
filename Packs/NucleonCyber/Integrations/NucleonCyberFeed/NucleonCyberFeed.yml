@@ -18,13 +18,13 @@ configuration:
   name: credentials
   type: 9
   required: true
-- defaultvalue: usrn
+- defaultvalue: "usrn"
   display: Usrn
   additionalinfo: The given usrn to use for NucleonCyber API connection
   name: usrn
   required: true
   type: 0
-- defaultvalue: clientID
+- defaultvalue: "clientID"
   display: ClientID
   additionalinfo: The given clientID to use for NucleonCyber API connection
   name: clientid
@@ -113,7 +113,7 @@ name: NucleonCyberFeed
 script:
   commands:
   - arguments:
-    - defaultValue: ip
+    - defaultValue: 'ip'
       description: The indicator type (ip, url or hash).
       name: type
       required: true
@@ -136,6 +136,6 @@ script:
   subtype: python3
   type: python
 fromversion: 6.0.0
-description: This is the NucleonCyber Feed  integration
+description: This is the NucleonCyber Feed  integration.
 tests:
 - No tests (auto formatted)
