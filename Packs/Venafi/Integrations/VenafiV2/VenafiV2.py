@@ -21,6 +21,7 @@ class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, username: str, password: str, client_id: str, proxy: bool = False):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.token = self._login(client_id, username, password)
+        demisto.debug(f"in init: {self.token=}")
 
     def _login(self, client_id: str, username: str, password: str) -> str:
         integration_context = get_integration_context()
@@ -28,6 +29,7 @@ class Client(BaseClient):
             expires_date = integration_context.get('expires')
             if expires_date and not self._is_token_expired(expires_date):
                 return token
+
             else:
                 refresh_token = integration_context.get('refresh_token')
                 url_suffix = "/vedauth/authorize/token"
@@ -40,9 +42,9 @@ class Client(BaseClient):
 
         url_suffix = "/vedauth/authorize/oauth"
         json_data = {
+            "client_id": client_id,
             "username": username,
             "password": password,
-            "client_id": client_id,
             "scope": "certificate"
         }
 
@@ -63,13 +65,14 @@ class Client(BaseClient):
         return utc_now < expires_datetime
 
     def _create_new_token(self, url_suffix: str, json_data: dict) -> str:
+        payload = json.dumps(json_data)
         try:
             access_token_obj = self._http_request(
                 method="POST",
                 url_suffix=url_suffix,
-                json_data=json_data,
+                headers={'Content-Type': 'application/json'},
+                data=payload,
             )
-
         except DemistoException as e:
             if "Unauthorized" in str(e):
                 raise DemistoException("Failed to generate a token. Credentials are incorrect.")
@@ -79,6 +82,7 @@ class Client(BaseClient):
         expire_in = arg_to_number(access_token_obj.get("expires_in")) or 1
         refresh_token = access_token_obj.get("refresh_token", "")
         self._store_token_in_context(new_token, refresh_token, expire_in)
+
         return new_token
 
     def _store_token_in_context(self, token: str, refresh_token: str, expire_in: int) -> None:
@@ -104,7 +108,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix="/vedsdk/certificates/",
             headers=headers,
-            data=args
+            params=args
         )
 
         return certificates
@@ -153,40 +157,67 @@ def test_module(client: Client) -> str:
 
 
 def get_certificates_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    message: List = []
+    outputs: Dict[str, Any] = dict()
     response = client._get_certificates(args)
-    if response:
-        message = response
 
-    human_readable = ""
+    if response:
+        outputs = edit_response(response)
+
+    human_readable = []
+    certificates = outputs.get('Certificates')
+    for certificate in certificates:
+        certificate_guid = certificate.get("Guid")
+        certificate_id = certificate_guid[1:-1]
+        certificate_details = {
+            "CreatedOn": certificate.get('CreatedOn'),
+            "DN": certificate.get('DN'),
+            "Name": certificate.get('Name'),
+            "ParentDN": certificate.get('ParentDn'),
+            "SchemaClass": certificate.get('SchemaClass'),
+            "ID": certificate_id,
+            "X509": certificate.get('X509'),
+        }
+        human_readable.append(certificate_details)
+
+    markdown_table = tableToMarkdown('Venafi certificates query response', human_readable)
 
     return CommandResults(
         outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
-        outputs=message,
+        outputs=outputs,
         raw_response=response,
-        readable_output=human_readable
+        readable_output=markdown_table
     )
 
 
 def get_certificate_details_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    print("a")
-    message: List = []
-    guid = args.get('guid')
-    # if not guid?
-    response = client._get_certificate_details(guid)
-    print(response)
+    pass
+    # message: List = []
+    # guid = args.get('guid')
+    # # if not guid?
+    # response = client._get_certificate_details(guid)
     # if response:
-    #     message = response
+    #
+    #     message = edit_response(response)
+    #
+    # human_readable = ""
+    #
+    # return CommandResults(
+    #     outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
+    #     outputs=message,
+    #     raw_response=response,
+    #     readable_output=human_readable
+    # )
 
-    human_readable = ""
 
-    return CommandResults(
-        outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
-        outputs=message,
-        raw_response=response,
-        readable_output=human_readable
-    )
+def edit_response(response: Dict[str, Any]) -> Dict[str, Any]:
+    """remove links list from the response
+    """
+    certificates = response.get('Certificates')
+    for certificate in certificates:
+        if certificate.get("_links"):
+            del certificate["_links"]
 
+    return response
 
 ''' MAIN FUNCTION '''
 
@@ -215,15 +246,14 @@ def main() -> None:
             proxy=proxy)
 
         command = demisto.command()
-        print(f"{command=}")
         args = demisto.args()
         if command == 'test-module':
             result = test_module(client)
             return_results(result)
-        elif command == 'get-certificates':
+        elif command == 'venafi-get-certificates':
             result = get_certificates_command(client, args)
             return_results(result)
-        elif command == 'get-certificate-details':
+        elif command == 'venafi-get-certificate-details':
             result = get_certificate_details_command(client, args)
             return_results(result)
         else:
