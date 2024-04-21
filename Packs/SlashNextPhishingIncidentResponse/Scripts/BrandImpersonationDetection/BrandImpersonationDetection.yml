@@ -1,8 +1,8 @@
 args:
-- description: 'Forensic file EntryID '
+- description: 'Forensic file EntryID.'
   name: ForensicFileEntry
   required: true
-comment: "Analyzes the forensic data to detect brand impersonation attacks. This script uses the HMRC brand as an example, please modify the attributes associated with your company\u2019s brand."
+comment: Analyzes the forensic data to detect brand impersonation attacks. This script uses the HMRC brand as an example, please modify the attributes associated with your company’s brand.
 commonfields:
   id: BrandImpersonationDetection
   version: -1
@@ -11,7 +11,7 @@ enabled: true
 name: BrandImpersonationDetection
 outputs:
 - contextPath: SlashNext.PhishingBrand
-  description: Target brand of phishing URL
+  description: Target brand of phishing URL.
   type: string
 runas: DBotWeakRole
 script: ''
