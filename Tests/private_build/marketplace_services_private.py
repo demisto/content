@@ -127,6 +127,7 @@ class Pack:
         self._is_modified = is_modified
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
+        self._default_data_source_name = None
         self._is_data_source = False
         self._single_integration = True  # pack assumed to have a single integration until processing a 2nd integration
 
@@ -515,6 +516,8 @@ class Pack:
         )
 
     def is_data_source_pack(self, yaml_content):
+        if self._default_data_source_name:
+            retun True
 
         is_data_source = self._is_data_source
         # this's the first integration in the pack, and the pack is in xsiam
@@ -718,6 +721,7 @@ class Pack:
             Metadata.CONTENT_DISPLAYS: self._content_displays_map,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
+            Metadata.DEFAULT_DATA_SOURCE_NAME: self._default_data_source_name,
             Metadata.USE_CASES: self._use_cases,
             Metadata.KEY_WORDS: self._keywords,
             Metadata.DEPENDENCIES: self._parsed_dependencies,

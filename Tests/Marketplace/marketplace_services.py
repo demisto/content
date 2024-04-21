@@ -129,6 +129,7 @@ class Pack:
         self._is_metadata_updated = is_metadata_updated
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
+        self._default_data_source_name = None
         self._is_data_source = False
         self._single_integration = True  # pack assumed to have a single integration until processing a 2nd integration
 
@@ -190,7 +191,7 @@ class Pack:
     @property
     def is_data_source(self):
         """
-        bool: whether the pack is a siem pack
+        bool: whether the pack is a siem pack that has a fetching integration
         """
         return self._is_data_source
 
@@ -433,7 +434,7 @@ class Pack:
 
     @staticmethod
     def organize_integration_images(pack_integration_images: list, pack_dependencies_integration_images_dict: dict,
-                                    pack_dependencies_by_download_count: list):
+                                    pack_dependencies_by_download_count: list, default_data_source_name: str | None):
         """ By Issue #32038
         1. Sort pack integration images by alphabetical order
         2. Sort pack dependencies by download count
@@ -452,11 +453,19 @@ class Pack:
         def sort_by_name(integration_image: dict):
             return integration_image.get('name', '')
 
+        # data source should be first in the list
+        data_source_integration = ([integration
+                                   for integration in pack_integration_images
+                                   if integration.get('name') == default_data_source_name]
+                                   if default_data_source_name else [])
+        if data_source_integration:
+            pack_integration_images.remove(data_source_integration[0])
+
         # sort packs integration images
         pack_integration_images = sorted(pack_integration_images, key=sort_by_name)
 
         # sort pack dependencies integration images
-        all_dep_int_imgs = pack_integration_images
+        all_dep_int_imgs = data_source_integration + pack_integration_images
         for dep_pack_name in pack_dependencies_by_download_count:
             if dep_pack_name in pack_dependencies_integration_images_dict:
                 logging.debug(f'Adding {dep_pack_name} to deps int imgs')
@@ -469,7 +478,7 @@ class Pack:
 
     @staticmethod
     def _get_all_pack_images(index_folder_path, pack_integration_images: list, display_dependencies_images: list,
-                             pack_dependencies_by_download_count):
+                             pack_dependencies_by_download_count, default_data_source_name):
         """ Returns data of uploaded pack integration images and it's path in gcs. Pack dependencies integration images
         are added to that result as well.
 
@@ -503,7 +512,7 @@ class Pack:
                         dependencies_integration_images_dict[dep_pack_name] = [dep_int_img]
 
         return Pack.organize_integration_images(
-            pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count
+            pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count, default_data_source_name
         )
 
     @staticmethod
@@ -1741,6 +1750,7 @@ class Pack:
             self.display_name = pack_metadata.get(Metadata.NAME, '')  # type: ignore[misc]
             self._pack_metadata = pack_metadata
             self._content_items = pack_metadata.get(Metadata.CONTENT_ITEMS, {})
+            self._default_data_source_name = pack_metadata.get(Metadata.DEFAULT_DATA_SOURCE_NAME)
             self._eula_link = pack_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
             self._marketplaces = pack_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = pack_metadata.get(Metadata.MODULES, [])
@@ -1821,7 +1831,7 @@ class Pack:
             self._displayed_integration_images = self.build_integration_images_metadata()
             self._related_integration_images = self._get_all_pack_images(
                 index_folder_path, self._displayed_integration_images, self._displayed_images_dependent_on_packs,
-                pack_dependencies_by_download_count
+                pack_dependencies_by_download_count, self._default_data_source_name
             )
             logging.debug(f"Finished enhancing pack's object attributes for pack '{self.name}'")
             task_status = True
@@ -2100,10 +2110,21 @@ class Pack:
             list[dict]: List of objects with the integration image data
         """
         integration_images_data = self._search_for_images(target_folder=PackFolders.INTEGRATIONS.value)
-        return [{'name': self.remove_contrib_suffix_from_name(image_data.get('display_name')),
-                 'imagePath': urllib.parse.quote(os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name,
-                                                              os.path.basename(image_data.get('image_path'))))}
+        integration_images_metadata = [{'name': self.remove_contrib_suffix_from_name(image_data.get('display_name')),
+                                        'imagePath': urllib.parse.quote(os.path.join(GCPConfig.IMAGES_BASE_PATH, self._pack_name,
+                                                                                     os.path.basename(image_data.get('image_path'))))}
                 for image_data in integration_images_data]
+
+        if self._default_data_source_name:
+            data_source_integration = [integration
+                                       for integration in integration_images_metadata
+                                       if integration.get('name') == self._default_data_source_name]
+            if data_source_integration:
+                integration_images_metadata.remove(data_source_integration[0])
+                integration_images_metadata.insert(0, data_source_integration[0])
+
+        return integration_images_metadata
+
 
     def upload_integration_images(self, storage_bucket, storage_base_path):
         """Searches for integration images and uploads them to gcs.
