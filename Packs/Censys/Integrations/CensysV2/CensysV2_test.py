@@ -249,7 +249,7 @@ def test_domain_command_multiple_domains(requests_mock, client):
     requests_mock.get("/api/v2/hosts/search?q=dns.names=amazon.com", json=mock_response)
     requests_mock.get("/api/v2/hosts/search?q=dns.names=amazon.com", json=mock_response)
     requests_mock.get("/api/v2/hosts/search?q=dns.names=example.com", status_code=404, json={})
-    response = domain_command(client, args, {})
+    response = domain_command(client, args)
     assert response[0].outputs == mock_response.get('result', {}).get('hits')
     assert response[1].outputs == mock_response.get('result', {}).get('hits')
     assert 'An error occurred for item: example.com' in response[2].readable_output
