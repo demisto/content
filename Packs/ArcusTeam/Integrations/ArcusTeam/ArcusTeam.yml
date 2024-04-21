@@ -4,7 +4,7 @@ commonfields:
 name: ArcusTeam
 display: ArcusTeam
 category: Data Enrichment & Threat Intelligence
-description: 'The ArcusTeam API allows the user to inspect connected devices'' attack surface. By feeding device identifiers and the software it runs: DeviceTotal will return a map of the device’s attack surface. DeviceTotal was built from the ground up in order to provide complete visibility into connected devices and mitigate 3rd party risk. DeviceTotal can continuously identify & predict such that the connected device security posture is being assessed, prioritized and mitigated effectively.'
+description: "The ArcusTeam API allows the user to inspect connected devices' attack surface. By feeding device identifiers and the software it runs: DeviceTotal will return a map of the device\u2019s attack surface. DeviceTotal was built from the ground up in order to provide complete visibility into connected devices and mitigate 3rd party risk. DeviceTotal can continuously identify & predict such that the connected device security posture is being assessed, prioritized and mitigated effectively."
 configuration:
 - display: Server URL (e.g. https://web.prod.arcusteam.com)
   name: url
@@ -17,7 +17,7 @@ configuration:
   type: 4
   required: true
   additionalinfo: ' The API Key required to authenticate to the service.'
-- display: 'The client ID'
+- display: The client ID
   name: client_id
   type: 0
   required: true
@@ -78,22 +78,22 @@ script:
     arguments:
     - name: firmware_id
       required: true
-      description: 'ArcusTeam Firmware ID (as returned by the arcusteam-get-devices command)'
+      description: ArcusTeam Firmware ID (as returned by the arcusteam-get-devices command)
     - name: device_id
       required: true
-      description: 'ArcusTeam Device ID (as returned by the arcusteam-get-devices command)'
+      description: ArcusTeam Device ID (as returned by the arcusteam-get-devices command)
     - name: page_size
       description: Page size. Minimum page size is 1, maximum is 100.
-      defaultValue: "10"
+      defaultValue: '10'
     - name: page_number
       description: ' Page number'
-      defaultValue: "1"
+      defaultValue: '1'
     - name: sort_order
       auto: PREDEFINED
       predefined:
       - desc
       - asc
-      description: ' Sorting order (“asc”,”desc”)'
+      description: " Sorting order (\u201Casc\u201D,\u201Ddesc\u201D)"
       defaultValue: desc
     - name: sort_field
       auto: PREDEFINED
@@ -166,7 +166,7 @@ script:
       description: CVE url
       type: string
     description: ' Retrieve CVEs for an ArcusTeam device'
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.92207
   subtype: python3
 fromversion: 6.0.0
 tests:
