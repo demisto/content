@@ -771,7 +771,7 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
     """
     content = b'MIME-Version: 1.0\r\n' \
               b'Message-ID:\r\n' \
-              b '<message-test-idRANDOMVALUES@testing.com>' \
+              b' <message-test-idRANDOMVALUES@testing.com>' \
               b'Content-Type: text/plain; charset="us-ascii"\r\n' \
               b'X-FAKE-Header: HVALue\r\n' \
               b'X-Who-header: whovALUE\r\n' \
