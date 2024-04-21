@@ -5,10 +5,10 @@
 3. Under *My Account*, click the API tab.
 4. Under *API Credentials* copy your **API ID** and the **Secret** and paste it to the integration configuration.
    
-## rate limit
+## Rate limit
 
-1. Censys rate limits to 10 queries a day per IP for unauthenticated clients, and variable numbers per day depending on your pricing tier. <https://search.censys.io/subscriptions>
+Censys rate limits to 10 queries a day per IP for unauthenticated clients, and variable numbers per day depending on your pricing tier. <https://search.censys.io/subscriptions>
 
 ## IP reputation command
 
-1. Censys API provides reputation data exclusively to paying customers. When set to True, the integration will use labels to determinate reputation on IPs.
+Censys API provides reputation data exclusively to paying customers. When set to True, the integration will use labels to determinate reputation on IPs.

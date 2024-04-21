@@ -44,11 +44,8 @@ class Client(BaseClient):
         res = self._http_request('GET', url_suffix)
         return res
 
-    def domain_reputation_request(self, domain: str, fields: list | None):
+    def domain_reputation_request(self, domain: str):
         url_suffix = f"/api/v2/hosts/search?q=dns.names={domain}"
-        if fields:
-            url_suffix += f"&fields={','.join(fields)}"
-
         res = self._http_request('GET', url_suffix)
         return res
 
@@ -300,22 +297,14 @@ def ip_command(client: Client, args: dict, params: dict):
     return results
 
 
-def domain_command(client: Client, args: dict, params: dict):
-    fields = ["labels", "autonomous_system.description", "last_updated_at",
-              "dns.reverse_dns.names", "location.country", "location.city",
-              "location.province", "location.postal_code", "location.coordinates.latitude",
-              "location.coordinates.longitude", "location.timezone", "location.continent",
-              "location.country_code", "services.port", "services.transport_protocol",
-              "services.extended_service_name", "services.certificate", "autonomous_system.name",
-              "autonomous_system.bgp_prefix", "autonomous_system.country_code",
-              "autonomous_system.asn", "ip"] if params.get('premium_access') else None
+def domain_command(client: Client, args: dict):
     domains: list = argToList(args.get('domain'))
     results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
 
     for domain in domains:
         try:
-            response = client.domain_reputation_request(domain, fields).get('result', {})
+            response = client.domain_reputation_request(domain).get('result', {})
             hits = response.get('hits')
             if not hits or not isinstance(hits, list):
                 error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {response}"
@@ -342,6 +331,7 @@ def domain_command(client: Client, args: dict, params: dict):
                 outputs=hits,
                 raw_response=response,
                 indicator=indicator,
+                relationships=relationships
             ))
 
             execution_metrics.success += 1
@@ -445,7 +435,7 @@ def main() -> None:
         elif command == 'ip':
             return_results(ip_command(client, demisto.args(), params))
         elif command == 'domain':
-            return_results(domain_command(client, demisto.args(), params))
+            return_results(domain_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
