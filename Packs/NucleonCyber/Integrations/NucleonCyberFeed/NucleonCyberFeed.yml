@@ -18,13 +18,13 @@ configuration:
   name: credentials
   type: 9
   required: true
-- defaultvalue: "usrn"
+- defaultvalue: usrn
   display: Usrn
   additionalinfo: The given usrn to use for NucleonCyber API connection
   name: usrn
   required: true
   type: 0
-- defaultvalue: "clientID"
+- defaultvalue: clientID
   display: ClientID
   additionalinfo: The given clientID to use for NucleonCyber API connection
   name: clientid
@@ -113,7 +113,7 @@ name: NucleonCyberFeed
 script:
   commands:
   - arguments:
-    - defaultValue: 'ip'
+    - defaultValue: ip
       description: The indicator type (ip, url or hash).
       name: type
       required: true
@@ -129,7 +129,7 @@ script:
     - contextPath: NucleonCyber.Indicators.exp
       description: Indicators exp.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.92207
   feed: true
   runonce: false
   script: '-'
