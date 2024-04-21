@@ -226,7 +226,7 @@ def fetch_file_events(client: Client, last_run: dict, max_fetch_file_events: int
     new_last_run = last_run.copy()
     new_last_run.pop("nextTrigger", None)
     file_event_time = dateparser.parse(last_run[FileEventLastRun.TIME]) if FileEventLastRun.TIME in last_run else (
-        datetime.now() - timedelta(minutes=240)
+        datetime.now() - timedelta(minutes=1)
     )
 
     file_events = client.get_file_events(file_event_time, limit=max_fetch_file_events)  # type: ignore[arg-type]
