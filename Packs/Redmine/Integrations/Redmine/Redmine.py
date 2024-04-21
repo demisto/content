@@ -308,7 +308,7 @@ def update_issue_command(client: Client, args: dict[str, Any]):
 
 
 def get_issues_list_command(client: Client, args: dict[str, Any]):
-    def format_custom_field_to_request(custom_field: str, status: str):
+    def format_and_validate_fields_to_request(custom_field: str, status: str):
         if custom_field:
             try:
                 cf_in_format = custom_field.split(":", 1)
@@ -335,7 +335,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
     offset_to_dict, limit_to_dict, page_number_for_header = adjust_paging_to_request(page_number, page_size, limit)
     status = args.pop('status', 'Open')
     custom_field = args.pop('custom_field', None)
-    status_id = format_custom_field_to_request(custom_field, status)
+    status_id = format_and_validate_fields_to_request(custom_field, status)
     project_id = args.pop('project_id', client._project_id)
     exclude_sub_project = args.pop('exclude', None)
     try:
