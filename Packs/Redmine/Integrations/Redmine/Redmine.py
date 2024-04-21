@@ -323,7 +323,7 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
         if not status_id:
             status_id = status
             try:
-                status_num = arg_to_number(status_id)
+                arg_to_number(status_id)
             except ValueError as e:
                 raise DemistoException(f"Status argument has to be a predefined value (Open/Closed/All) or a valid status ID but "
                                        f"got {status_id}. with error: {e}.")
