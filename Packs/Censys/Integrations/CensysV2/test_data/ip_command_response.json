@@ -15,7 +15,7 @@
               "service_name": "DNS"
             },
             {
-              "certificate": "5a7763efee07b08b18a4af2796bfaac46641a2f15c98e88c3d79fa9a06adfc87",
+              "certificate": "XXXXXXX",
               "extended_service_name": "HTTPS",
               "port": 443,
               "transport_protocol": "TCP",
@@ -31,7 +31,7 @@
               "transport_protocol": "TCP",
               "service_name": "UNKNOWN",
               "port": 853,
-              "certificate": "5a7763efee07b08b18a4af2796bfaac46641a2f15c98e88c3d79fa9a06adfc87",
+              "certificate": "XXXXXXX",
               "extended_service_name": "UNKNOWN"
             }
           ],
@@ -47,7 +47,7 @@
             "country_code": "US",
             "description": "GOOGLE",
             "name": "GOOGLE",
-            "bgp_prefix": "8.8.8.0/24",
+            "bgp_prefix": "8.8.8.8",
             "asn": 15169
           },
           "ip": "8.8.8.8",

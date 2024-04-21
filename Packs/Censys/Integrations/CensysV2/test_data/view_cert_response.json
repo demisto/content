@@ -14,13 +14,13 @@
         "spki_subject_fingerprint_sha256": "DISPLAY_HEX",
         "parent_spki_subject_fingerprint_sha256": "DISPLAY_HEX"
       },
-      "fingerprint_sha256": "699f4928894c7a0e0fdcba2d9d3b89bca5bd5c1d80fff03f940fc20127ad8f86",
-      "fingerprint_sha1": "a4de973ce71e6ac2e7a7ab338ba7afaa7e177b2f",
-      "fingerprint_md5": "059e56b20934ccbf1472d1b1c8e899bd",
-      "tbs_fingerprint_sha256": "42d39a7d5e4e9631f8737f3dc234da3305ccb0f1f60e7fa887f694c0ec5ec317",
-      "tbs_no_ct_fingerprint_sha256": "47f27e2a982bab000ceef9a4cc79997ce3613311e3e1515d0558431d84aeb51f",
-      "spki_fingerprint_sha256": "a1c05f47415d272ac40c55ac3b9291b5379d956f962ef1baf924bb26999b6d9e",
-      "parent_spki_fingerprint_sha256": "80d5582fd9eb2e143be50dec18c98f8e06d97cc2a40d72446e1866b8671f67ac",
+      "fingerprint_sha256": "XXXXXX",
+      "fingerprint_sha1": "XXXXXXX",
+      "fingerprint_md5": "XXXXXXX",
+      "tbs_fingerprint_sha256": "XXXXXXX",
+      "tbs_no_ct_fingerprint_sha256": "XXXXXX",
+      "spki_fingerprint_sha256": "XXXXXXX",
+      "parent_spki_fingerprint_sha256": "XXXXXXX",
       "parsed": {
         "version": 3,
         "serial_number": "190655745167071791176803125260949407349",
@@ -58,7 +58,7 @@
           "_encoding": {
             "fingerprint_sha256": "DISPLAY_HEX"
           },
-          "fingerprint_sha256": "7a2bfd7d3f409c2fbc37924c7991e23c9f730671f6ebf51264e82161258ce2f8",
+          "fingerprint_sha256": "XXXXXX",
           "_key": "rsa"
         },
         "validity_period": {
@@ -105,10 +105,10 @@
             "ip_addresses": [
               "8.8.8.8",
               "8.8.4.4",
-              "2001:4860:4860::8888",
-              "2001:4860:4860::8844",
-              "2001:4860:4860::6464",
-              "2001:4860:4860::64"
+              "1.1.1.1",
+              "1.1.1.1",
+              "1.1.1.1",
+              "1.1.1.1"
             ]
           },
           "crl_distribution_points": [
@@ -118,8 +118,8 @@
             "authority_key_id": "DISPLAY_HEX",
             "subject_key_id": "DISPLAY_HEX"
           },
-          "authority_key_id": "8a747faf85cdee95cd3d9cd0e24614f371351d27",
-          "subject_key_id": "b7066ba5cb66022e0b70bdccdeb1c1b268111f5c",
+          "authority_key_id": "XXXXXX",
+          "subject_key_id": "XXXXXXX",
           "extended_key_usage": {
             "server_auth": true,
             "apple_code_signing": false,
@@ -187,10 +187,10 @@
           },
           "certificate_policies": [
             {
-              "id": "2.23.140.1.2.1"
+              "id": "1.2.3.4.5"
             },
             {
-              "id": "1.3.6.1.4.1.11129.2.5.3"
+              "id": "1.2.3.4.5"
             }
           ],
           "authority_info_access": {
@@ -206,7 +206,7 @@
               "_encoding": {
                 "log_id": "DISPLAY_HEX"
               },
-              "log_id": "b3737707e18450f86386d605a9dc11094a792db1670c0b87dcf0030e7936a59a",
+              "log_id": "XXXXXX",
               "timestamp": "2023-02-08T05:36:33Z",
               "signature": {
                 "hash_algorithm": "SHA256",
@@ -214,7 +214,7 @@
                 "_encoding": {
                   "signature": "DISPLAY_HEX"
                 },
-                "signature": "3046022100cdd707cfc0a321852027850f4779973551da5cc366271ec17092b8c44be2e0d6022100f93dd14c7bb8b0c3e8881c97a4c402a35bc10604cee0b3d51b16f90828ed62cc"
+                "signature": "XXXXXXXX"
               },
               "version": 0
             },
@@ -222,7 +222,7 @@
               "_encoding": {
                 "log_id": "DISPLAY_HEX"
               },
-              "log_id": "adf7befa7cff10c88b9d3d9c1e3e186ab467295dcfb10c24ca858634ebdc828a",
+              "log_id": "XXXXXX",
               "timestamp": "2023-02-08T05:36:33Z",
               "signature": {
                 "hash_algorithm": "SHA256",
@@ -230,7 +230,7 @@
                 "_encoding": {
                   "signature": "DISPLAY_HEX"
                 },
-                "signature": "3046022100bcae8fd65f042047335e2a58bef0a29482b2e26171e41c02bc41f5fd5bee6f6c022100b9d700f5f1da8828ea2313a747c22571ba8426af5375e07f5219233197216550"
+                "signature": "XXXXXXXX"
               },
               "version": 0
             }
@@ -260,8 +260,8 @@
                 "sha256fp": "DISPLAY_HEX"
               },
               "sha256fp": [
-                "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2387522",
-                "d947432abde7b7fa90fc2e6b59101b1280e0e1c7e4e40fa3c6887fff57a7f4cf"
+                "XXXXXXX",
+                "XXXXXXX"
               ]
             },
             {
@@ -269,9 +269,8 @@
                 "sha256fp": "DISPLAY_HEX"
               },
               "sha256fp": [
-                "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2387522",
-                "3ee0278df71fa3c125c4cd487f01d774694e6fc57e0cd94c24efd769133918e5",
-                "ebd41040e4bb3ec742c9e381d31ef2a41a48b6685c96e7cef3c1df6cd4331c99"
+                "XXXXXXX",
+                "XXXXXXX"
               ]
             }
           ],
@@ -279,7 +278,7 @@
             "parents": "DISPLAY_HEX"
           },
           "parents": [
-            "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2387522"
+            "XXXXXXX"
           ],
           "type": "LEAF",
           "is_valid": false,
@@ -295,8 +294,8 @@
                 "sha256fp": "DISPLAY_HEX"
               },
               "sha256fp": [
-                "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2387522",
-                "2a575471e31340bc21581cbd2cf13e158463203ece94bcf9d3cc196bf09a5472"
+                "XXXXXXX",
+                "XXXXXXX"
               ]
             },
             {
@@ -304,9 +303,9 @@
                 "sha256fp": "DISPLAY_HEX"
               },
               "sha256fp": [
-                "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2387522",
-                "3ee0278df71fa3c125c4cd487f01d774694e6fc57e0cd94c24efd769133918e5",
-                "ebd41040e4bb3ec742c9e381d31ef2a41a48b6685c96e7cef3c1df6cd4331c99"
+                "XXXXXXX",
+                "XXXXXXX",
+                "XXXXXXX"
               ]
             }
           ],
@@ -314,7 +313,7 @@
             "parents": "DISPLAY_HEX"
           },
           "parents": [
-            "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2387522"
+            "XXXXXXX"
           ],
           "type": "LEAF",
           "is_valid": false,
@@ -330,8 +329,8 @@
                 "sha256fp": "DISPLAY_HEX"
               },
               "sha256fp": [
-                "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2387522",
-                "2a575471e31340bc21581cbd2cf13e158463203ece94bcf9d3cc196bf09a5472"
+                "XXXXXXX",
+                "XXXXXXX"
               ]
             },
             {
@@ -339,9 +338,9 @@
                 "sha256fp": "DISPLAY_HEX"
               },
               "sha256fp": [
-                "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2387522",
-                "3ee0278df71fa3c125c4cd487f01d774694e6fc57e0cd94c24efd769133918e5",
-                "ebd41040e4bb3ec742c9e381d31ef2a41a48b6685c96e7cef3c1df6cd4331c99"
+                "XXXXXXX",
+                "XXXXXXX",
+                "XXXXXXX"
               ]
             }
           ],
@@ -349,7 +348,7 @@
             "parents": "DISPLAY_HEX"
           },
           "parents": [
-            "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2387522"
+            "XXXXXXX"
           ],
           "type": "LEAF",
           "is_valid": false,
@@ -374,9 +373,9 @@
                 "sha256fp": "DISPLAY_HEX"
               },
               "sha256fp": [
-                "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2387522",
-                "3ee0278df71fa3c125c4cd487f01d774694e6fc57e0cd94c24efd769133918e5",
-                "ebd41040e4bb3ec742c9e381d31ef2a41a48b6685c96e7cef3c1df6cd4331c99"
+                "XXXXXX",
+                "XXXXXXX",
+                "XXXXXXX"
               ]
             }
           ],
@@ -384,7 +383,7 @@
             "parents": "DISPLAY_HEX"
           },
           "parents": [
-            "23ecb03eec17338c4e33a6b48a41dc3cda12281bbc3ff813c0589d6cc2387522"
+            "XXXXXXX"
           ],
           "type": "LEAF",
           "is_valid": false,
@@ -393,7 +392,7 @@
         }
       },
       "ever_seen_in_scan": true,
-      "raw": "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",
+      "raw": "XXXXXXX",
       "added_at": "2023-02-21T23:10:55Z",
       "modified_at": "2024-01-23T14:45:42Z",
       "validated_at": "2023-09-09T02:28:49Z",
@@ -409,8 +408,8 @@
         "errors_present": false,
         "fatals_present": false
       },
-      "spki_subject_fingerprint_sha256": "a1c05f47415d272ac40c55ac3b9291b5379d956f962ef1baf924bb26999b6d9e",
-      "parent_spki_subject_fingerprint_sha256": "80d5582fd9eb2e143be50dec18c98f8e06d97cc2a40d72446e1866b8671f67ac",
+      "spki_subject_fingerprint_sha256": "XXXXXX",
+      "parent_spki_subject_fingerprint_sha256": "XXXXXX",
       "precert": false,
       "revoked": false,
       "labels": [

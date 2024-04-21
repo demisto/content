@@ -27,7 +27,7 @@
               "transport_protocol": "TCP"
             },
             {
-              "certificate": "7c97e272f7e448269690f3129a22afeb6ab13f36e54684d77f56fcd9d00461d2",
+              "certificate": "XXXXXX",
               "extended_service_name": "RDP",
               "port": 3389,
               "transport_protocol": "TCP",
