@@ -1,0 +1,53 @@
+category: "IT Services"
+commonfields:
+  id: AtlassianJiraServiceManagement
+  version: -1
+configuration:
+- defaultvalue: https://api.atlassian.com/jsm/assets/workspace/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- displaypassword: API Token
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Workspace ID
+  additionalinfo: Provide if you are a cloud user. You can get your workspace id by running the `jira-asset-get-workspace` command with your site name.
+  name: workspace_id
+  required: false
+  type: 0
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+description: Use this integration to manage Jira objects and attach files to Jira objects from XSOAR.
+display: Atlassian Jira Service Management
+name: AtlassianJiraServiceManagement
+script:
+  commands:
+  - arguments:
+    - description: To get this value, log in to your Atlassian cloud account and go to your Service Management app. Your site name is the first expression of your URL. e.g https://{{site_name}}.atlassian.net/.
+      name: jira_site_name
+      required: true
+    description: Relevant for cloud users only. Retrieve the workspace id from your Atlassian cloud account
+    name: jira-asset-get-workspace
+    outputs:
+    - contextPath: JiraAsset.Workspace.ID
+      description: The id of the workspace.
+      type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.63474
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
