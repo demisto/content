@@ -9309,7 +9309,16 @@ def generic_http_request(method,
                          params=None,
                          retries=0,
                          resp_type='json',
-                         status_list_to_retry=None
+                         status_list_to_retry=None,
+                         json_data=None,
+                         return_empty_response = False,
+                         backoff_factor = 5,
+                         raise_on_redirect = False,
+                         raise_on_status = False,
+                         empty_valid_codes = None,
+                         params_parser = None,
+                         with_metrics = False,
+                         **kwargs
                          ):
     """
         A wrapper for the BaseClient._http_request() method, that allows performing HTTP requests without initiating a BaseClient object.
@@ -9338,8 +9347,40 @@ def generic_http_request(method,
             status_list_to_retry (int, optional): A set of integer HTTP status codes that we should force a retry on.
                 A retry is initiated if the request method is in ['GET', 'POST', 'PUT']
                 and the response status code is in ``status_list_to_retry``.
-            resp_type (str, optional): Determines which data format to return from the HTTP request. The default
+            resp_type (iterable, optional): Determines which data format to return from the HTTP request. The default
                 is 'json'.
+            json_data (dict, optional): The dictionary to send in a 'POST' request.
+            backoff_factor (float, optional): A backoff factor to apply between attempts after the second try
+                (most errors are resolved immediately by a second try without a
+                delay). urllib3 will sleep for::
+
+                    {backoff factor} * (2 ** ({number of total retries} - 1))
+
+                seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep
+                for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer
+                than :attr:`Retry.BACKOFF_MAX`.
+
+                By default, backoff_factor set to 5
+
+            raise_on_redirect (bool, optional): Whether, if the number of redirects is
+                exhausted, to raise a MaxRetryError, or to return a response with a
+                response code in the 3xx range.
+
+            raise_on_status (bool,optional): Similar meaning to ``raise_on_redirect``:
+                whether we should raise an exception, or return a response,
+                if status falls in ``status_forcelist`` range and retries have
+                been exhausted.
+
+            empty_valid_codes (list, optional): A list of all valid status codes of empty responses (usually only 204, but
+                can vary)
+
+            return_empty_response (bool, optional): Whether to return an empty response body if the response code is in empty_valid_codes
+
+            params_parser (callable, optional): How to quote the params. By default, spaces are replaced with `+` and `/` to `%2F`.
+            see here for more info: https://docs.python.org/3/library/urllib.parse.html#urllib.parse.urlencode
+            Note! supported only in python3.
+
+            with_metrics (bool, optional): Whether or not to calculate execution metrics from the response
 
         Returns:
             :return: Depends on the resp_type parameter
@@ -9356,9 +9397,15 @@ def generic_http_request(method,
                         auth=auth,
                         timeout=timeout
                         )
+
+
     return client._http_request(method=method, url_suffix=url_suffix, data=data, ok_codes=ok_codes, error_handler=error_handler,
                                 headers=headers, files=files, params=params, retries=retries, resp_type=resp_type,
-                                status_list_to_retry=status_list_to_retry)
+                                status_list_to_retry=status_list_to_retry, json_data=json_data,
+                                return_empty_response=return_empty_response, backoff_factor=backoff_factor,
+                                raise_on_redirect=raise_on_redirect, raise_on_status=raise_on_status,
+                                empty_valid_codes=empty_valid_codes, params_parser=params_parser, with_metrics=with_metrics,
+                                **kwargs)
 
 
 def batch(iterable, batch_size=1):
