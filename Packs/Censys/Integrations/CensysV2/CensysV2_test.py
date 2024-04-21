@@ -14,7 +14,7 @@ SEARCH_CERTS_OUTPUTS = [{
             "not_before": "2024-04-04T13:18:43Z"},
         "issuer_dn": "C=US, O=IdenTrust, OU=HydrantID Trusted Certificate Service, CN=HydrantID Server CA O1",
         "subject_dn": "C=US, ST=California, L=San Jose, O=Cisco Systems Inc., CN=my-house-vtpvbznpmk.dynamic-m.com"},
-    "fingerprint_sha256": "ba534c45586595844fc527130c71219c8fdccbf9fb1881fb03ebc1f01f5b7013"}]
+    "fingerprint_sha256": "XXXXXXXXX"}]
 
 
 def util_load_json(path):
