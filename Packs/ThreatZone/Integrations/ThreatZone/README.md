@@ -1,5 +1,5 @@
 ThreatZone malware analysis sandboxing.
-This integration was integrated and tested with version xx of ThreatZone
+This integration was integrated and tested with ThreatZone
 
 ## Configure ThreatZone on Cortex XSOAR
 
