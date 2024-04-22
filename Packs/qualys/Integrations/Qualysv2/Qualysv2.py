@@ -30,6 +30,7 @@ HOST_LAST_FETCH = 'host_last_fetch'
 ASSETS_FETCH_FROM = '90 days'
 MIN_ASSETS_INTERVAL = 59
 HOST_LIMIT = 1000
+TEST_FROM_DATE = 'one day'
 
 ASSETS_DATE_FORMAT = '%Y-%m-%d'
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -1304,7 +1305,7 @@ COMMANDS_ARGS_DATA: dict[str, Any] = {
     "qualys-virtual-host-manage": {
         "args": ["action", "ip", "network_id", "port", "fqdn"],
     },
-    "test-module": {"args": []},
+    "test-module": {"args": ["launched_after_datetime"]},
     "qualys-host-list-detection": {
         "args": [
             "ids",
@@ -3048,23 +3049,27 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    build_args_dict(None, COMMANDS_ARGS_DATA["test-module"], False)
-    client.command_http_request(COMMANDS_API_DATA["test-module"])
+    is_fetch_events = params.get('isFetchEvents') or False
+    is_fetch_assets = params.get('isFetchAssets') or False
 
-    if params.get('isFetchEvents'):
-        fetch_events(
-            client=client,
-            last_run={},
-            first_fetch_time=first_fetch_time,
-            max_fetch=1,
-            fetch_function=get_activity_logs_events,
-            newest_event_field=ACTIVITY_LOGS_NEWEST_EVENT_DATETIME,
-            next_page_field=ACTIVITY_LOGS_NEXT_PAGE,
-            previous_run_time_field=ACTIVITY_LOGS_SINCE_DATETIME_PREV_RUN,
-        )
-    if params.get('isFetchAssets'):
-        since_datetime = arg_to_datetime('3 days').strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
-        fetch_assets(client=client, since_datetime=since_datetime)
+    if is_fetch_assets or is_fetch_events:
+        if is_fetch_events:
+            fetch_events(
+                client=client,
+                last_run={},
+                first_fetch_time=first_fetch_time,
+                max_fetch=1,
+                fetch_function=get_activity_logs_events,
+                newest_event_field=ACTIVITY_LOGS_NEWEST_EVENT_DATETIME,
+                next_page_field=ACTIVITY_LOGS_NEXT_PAGE,
+                previous_run_time_field=ACTIVITY_LOGS_SINCE_DATETIME_PREV_RUN,
+            )
+        if is_fetch_assets:
+            since_datetime = arg_to_datetime('3 days').strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+            fetch_assets(client=client, since_datetime=since_datetime)
+    else:
+        build_args_dict({'launched_after_datetime': TEST_FROM_DATE}, COMMANDS_ARGS_DATA["test-module"], False)
+        client.command_http_request(COMMANDS_API_DATA["test-module"])
 
     return 'ok'
 
