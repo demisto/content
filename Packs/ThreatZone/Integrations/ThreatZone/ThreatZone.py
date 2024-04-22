@@ -46,6 +46,11 @@ class Client(BaseClient):
                 {"metafieldId": "raw_logs", "value": param["raw_logs"]},
                 {"metafieldId": "snapshot", "value": param["snapshot"]},
             ]
+        else:
+            payload = [
+                {"extensionCheck": param['extensionCheck']},
+                {"isPublic": param['private']},
+            ]
         suffix = "/public-api/scan/" + param["scan_type"]
         return self._http_request(method="POST", url_suffix=suffix, data=payload, files=param["files"])
 
@@ -482,8 +487,15 @@ def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) ->
     file_obj = demisto.getFilePath(file_id)
     file_name = encode_file_name(file_obj["name"])
     file_path = file_obj["path"]
+    extensionCheck = args.get('extensionCheck', False)
+    isPublic = args.get('isPublic', True)
     files = [("file", (file_name, open(file_path, "rb"), "application/octet-stream"))]
-    param = {"scan_type": scan_type, "files": files}
+    param = {
+        'scan_type': scan_type,
+        'files': files,
+        'extensionCheck': extensionCheck,
+        'isPublic': isPublic
+    }
 
     result = client.threatzone_add(param=param)
     uuid = result["uuid"]
