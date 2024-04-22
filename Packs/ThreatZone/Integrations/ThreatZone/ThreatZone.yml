@@ -123,9 +123,6 @@ script:
         - contextPath: ThreatZone.Submission.Sandbox.UUID
           description: UUID of sample.
           type: String
-        - contextPath: ThreatZone.Submission.Sandbox.URL
-          description: URL of analysis of sample.
-          type: String
         - contextPath: ThreatZone.Limits.E_Mail
           description: The owner e-mail of current plan.
           type: String
@@ -163,9 +160,6 @@ script:
       outputs:
         - contextPath: ThreatZone.Submission.Static.UUID
           description: UUID of sample.
-          type: String
-        - contextPath: ThreatZone.Submission.Static.URL
-          description: URL of analysis of sample.
           type: String
         - contextPath: ThreatZone.Limits.E_Mail
           description: The owner e-mail of current plan.
@@ -205,9 +199,6 @@ script:
         - contextPath: ThreatZone.Submission.CDR.UUID
           description: UUID of sample.
           type: String
-        - contextPath: ThreatZone.Submission.CDR.URL
-          description: URL of analysis of sample.
-          type: String
         - contextPath: ThreatZone.Limits.E_Mail
           description: The owner e-mail of current plan.
           type: String
@@ -232,9 +223,6 @@ script:
           type: String
         - contextPath: ThreatZone.Analysis.LEVEL
           description: Threat Level of the scanned file. (malicious, suspicious or informative).
-          type: String
-        - contextPath: ThreatZone.Analysis.URL
-          description: The result page url of the submission.
           type: String
         - contextPath: ThreatZone.Analysis.INFO
           description: Contains the file name, scan process status and public status.

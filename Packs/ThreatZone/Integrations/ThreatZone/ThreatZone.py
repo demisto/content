@@ -361,7 +361,6 @@ def threatzone_get_result(client: Client, args: dict[str, Any], only_sanitized: 
                     f"Reason: {stats[status]}\nUUID: {submission_uuid}\nSuggestion: Re-analyze submission or contact us."
                 )
 
-            result_url = f"https://app.threat.zone/submission/{submission_uuid}"
             level = result["level"]
             readable_dict = {
                 "ANALYSIS TYPE": report_type,
@@ -372,7 +371,6 @@ def threatzone_get_result(client: Client, args: dict[str, Any], only_sanitized: 
                 "THREAT_LEVEL": levels[level],
                 "FILE_NAME": result["fileInfo"]["name"],
                 "PRIVATE": result["private"],
-                "SCAN_URL": result_url,
                 "UUID": submission_uuid,
             }
 
@@ -384,7 +382,6 @@ def threatzone_get_result(client: Client, args: dict[str, Any], only_sanitized: 
                 "SHA256": sha256,
                 "LEVEL": level,
                 "INFO": submission_info,
-                "URL": result_url,
                 "UUID": submission_uuid,
                 "REPORT": result["reports"][report_type],
             }
@@ -412,7 +409,7 @@ def threatzone_check_limits(client: Client) -> CommandResults:
     )
 
 
-def threatzone_return_results(scan_type, uuid, url, readable_output, availability) -> List[CommandResults]:
+def threatzone_return_results(scan_type, uuid, readable_output, availability) -> List[CommandResults]:
     """Helper function for returning results with limits."""
     scan_prefix = ""
     if scan_type == "static-scan":
@@ -426,7 +423,7 @@ def threatzone_return_results(scan_type, uuid, url, readable_output, availabilit
             outputs_prefix=f"ThreatZone.Submission.{scan_prefix}",
             readable_output=readable_output,
             outputs_key_field="UUID",
-            outputs={"UUID": uuid, "URL": url},
+            outputs={"UUID": uuid},
         ),
         CommandResults(outputs_prefix="ThreatZone.Limits", outputs_key_field="E_Mail", outputs=availability["Limits"]),
     ]
@@ -478,11 +475,14 @@ def threatzone_sandbox_upload_sample(client: Client, args: dict[str, Any]) -> Li
     }
 
     result = client.threatzone_add(param=param)
-    readable_output = tableToMarkdown("SAMPLE UPLOADED", result)
+    custom_result = {
+        "Message": result["message"],
+        "UUID": result["uuid"],
+    }
+    readable_output = tableToMarkdown("SAMPLE UPLOADED", custom_result)
     uuid = result["uuid"]
-    url = f"https://app.threat.zone/submission/{uuid}"
     availability = client.threatzone_check_limits("sandbox")
-    return threatzone_return_results("sandbox", uuid, url, readable_output, availability)
+    return threatzone_return_results("sandbox", uuid, readable_output, availability)
 
 
 def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) -> List[CommandResults]:
@@ -508,11 +508,10 @@ def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) ->
 
     result = client.threatzone_add(param=param)
     uuid = result["uuid"]
-    url = f"https://app.threat.zone/submission/{uuid}"
-    readable = {"Message": result["message"], "UUID": result["uuid"], "URL": url}
+    readable = {"Message": result["message"], "UUID": result["uuid"]}
     readable_output = tableToMarkdown("SAMPLE UPLOADED", readable)
     availability = client.threatzone_check_limits(scan_type)
-    return threatzone_return_results(scan_type, uuid, url, readable_output, availability)
+    return threatzone_return_results(scan_type, uuid, readable_output, availability)
 
 
 """ MAIN FUNCTION """
