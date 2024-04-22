@@ -18,7 +18,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 
 def bool_converter(bool_as_str: str) -> bool:
-    return bool_as_str.lower() == "true"
+    return (isinstance(bool_as_str, bool) and bool_as_str) or (isinstance(bool_as_str, str) and bool_as_str.lower() == "true")
 
 
 class Client(BaseClient):
@@ -40,9 +40,8 @@ class Client(BaseClient):
         payload = {}
         if param["scan_type"] == "sandbox":
             metafields = [
-
                 {"metafieldId": "environment", "value": param["environment"]},
-                {"metafieldId": "private", "value": param["private"]},
+                {"metafieldId": "private", "value": bool_converter(param["private"])},
                 {"metafieldId": "timeout", "value": int(param["timeout"])},
                 {"metafieldId": "work_path", "value": param["work_path"]},
                 {"metafieldId": "mouse_simulation", "value": bool_converter(param["mouse_simulation"])},
@@ -52,9 +51,7 @@ class Client(BaseClient):
                 {"metafieldId": "snapshot", "value": bool_converter(param["snapshot"])},
             ]
             analyzeConfig = json.dumps(metafields)
-            payload = {
-                "analyzeConfig": analyzeConfig
-            }
+            payload = {"analyzeConfig": analyzeConfig}
         else:
             payload = {
                 "isPublic": param["isPublic"],
@@ -496,14 +493,14 @@ def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) ->
     file_obj = demisto.getFilePath(file_id)
     file_name = encode_file_name(file_obj["name"])
     file_path = file_obj["path"]
-    extensionCheck = args.get('extensionCheck', False)
-    private = args.get('private', True)
+    extensionCheck = args.get("extensionCheck", "false")
+    private = args.get("private", True)
     files = [("file", (file_name, open(file_path, "rb"), "application/octet-stream"))]
     param = {
-        'scan_type': scan_type,
-        'files': files,
-        'extensionCheck': extensionCheck,
-        'isPublic': str(not bool_converter(private)).lower()
+        "scan_type": scan_type,
+        "files": files,
+        "extensionCheck": str(extensionCheck).lower(),
+        "isPublic": str(not bool_converter(private)).lower(),
     }
 
     result = client.threatzone_add(param=param)
@@ -557,7 +554,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        raise e
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """
