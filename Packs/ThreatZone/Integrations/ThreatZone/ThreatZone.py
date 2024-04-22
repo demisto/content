@@ -20,6 +20,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 def bool_converter(bool_as_str: str) -> bool:
     return bool_as_str.lower() == "true"
 
+
 class Client(BaseClient):
     """Client class to interact with the service API
 
@@ -39,17 +40,17 @@ class Client(BaseClient):
         payload = {}
         if param["scan_type"] == "sandbox":
             metafields = [
-                    
-                    {"metafieldId": "environment", "value": param["environment"]},
-                    {"metafieldId": "private", "value": param["private"]},
-                    {"metafieldId": "timeout", "value": int(param["timeout"])},
-                    {"metafieldId": "work_path", "value": param["work_path"]},
-                    {"metafieldId": "mouse_simulation", "value": bool_converter(param["mouse_simulation"])},
-                    {"metafieldId": "https_inspection", "value": bool_converter(param["https_inspection"])},
-                    {"metafieldId": "internet_connection", "value": bool_converter(param["internet_connection"])},
-                    {"metafieldId": "raw_logs", "value": bool_converter(param["raw_logs"])},
-                    {"metafieldId": "snapshot", "value": bool_converter(param["snapshot"])},
-                ]
+
+                {"metafieldId": "environment", "value": param["environment"]},
+                {"metafieldId": "private", "value": param["private"]},
+                {"metafieldId": "timeout", "value": int(param["timeout"])},
+                {"metafieldId": "work_path", "value": param["work_path"]},
+                {"metafieldId": "mouse_simulation", "value": bool_converter(param["mouse_simulation"])},
+                {"metafieldId": "https_inspection", "value": bool_converter(param["https_inspection"])},
+                {"metafieldId": "internet_connection", "value": bool_converter(param["internet_connection"])},
+                {"metafieldId": "raw_logs", "value": bool_converter(param["raw_logs"])},
+                {"metafieldId": "snapshot", "value": bool_converter(param["snapshot"])},
+            ]
             analyzeConfig = json.dumps(metafields)
             payload = {
                 "analyzeConfig": analyzeConfig
