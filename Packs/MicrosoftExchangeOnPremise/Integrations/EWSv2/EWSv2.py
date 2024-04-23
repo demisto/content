@@ -1104,7 +1104,7 @@ def parse_object_as_dict_with_serialized_items(object):
                     json.dumps(v)
                     raw_dict[field.name] = v
             except (TypeError, OverflowError):
-                demisto.debug(f'Data in field {field.name} is not serilizable, skipped field')
+                demisto.debug(f'Data in field {field.name} is not serilizable, skipped field value is \n{v}\n')
                 continue
     return raw_dict
 
@@ -1114,15 +1114,12 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
         raw_dict = {}
         if object is not None:
             for field in object.FIELDS:
-                raw_dict[field.name] = getattr(object, field.name, None)
-        return raw_dict
-
-    def parse_attachment_as_raw_json(attachment):
-        raw_dict = parse_object_as_dict(attachment)
-        if raw_dict['attachment_id']:
-            raw_dict['attachment_id'] = parse_object_as_dict(raw_dict['attachment_id'])
-        if raw_dict['last_modified_time']:
-            raw_dict['last_modified_time'] = raw_dict['last_modified_time'].ewsformat()
+                field_val = getattr(object, field.name, None)
+                try:
+                    json.dumps(field_val)
+                except TypeError:
+                    field_val = parse_object_as_dict(field_val)
+                raw_dict[field.name] = field_val
         return raw_dict
 
     def parse_folder_as_json(folder):  # pragma: no cover
@@ -1275,7 +1272,8 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 # save attachment to incident
                                 incident['attachment'].append({
                                     'path': file_result['FileID'],
-                                    'name': get_attachment_name(attachment.name)
+                                    'name': get_attachment_name(attachment.name),
+                                    "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                                 })
                         except TypeError as e:
                             if str(e) != "must be string or buffer, not None":
@@ -1323,12 +1321,14 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                             # save attachment to incident
                             incident['attachment'].append({
                                 'path': file_result['FileID'],
-                                'name': get_attachment_name(attachment.name) + ".eml"
+                                'name': get_attachment_name(attachment.name) + ".eml",
+                                "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                             })
 
                         else:
                             incident['attachment'].append({
-                                'name': get_attachment_name(attachment.name) + ".eml"
+                                'name': get_attachment_name(attachment.name) + ".eml",
+                                "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                             })
 
                     labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment.name)})
