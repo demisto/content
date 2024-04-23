@@ -4576,6 +4576,9 @@ script:
     - name: ran_once_flag
       description: Flag for the rate limit retry.
       deprecated: true
+    - name: cancel_existing_action
+      description: Whether to cancel an existing operation that is already in progress.
+      defaultValue: 'false'
     outputs:
     - contextPath: MicrosoftATP.LiveResponseAction.id
       description: The machine action ID.
