@@ -1,6 +1,7 @@
 from DBotPredictURLPhishing import *
 import pytest
 import DBotPredictURLPhishing
+from pytest_mock import MockerFixture
 
 DBotPredictURLPhishing.isCommandAvailable = lambda _: True
 CORRECT_DOMAINS = ['google.com']
@@ -315,3 +316,37 @@ def test_extract_created_date_with_empty_entry():
     """
     from DBotPredictURLPhishing import extract_created_date
     assert not extract_created_date({"EntryContext": None, "Type": 1})
+
+
+def test_weed_rasterize_errors(mocker: MockerFixture):
+    """
+    Given: the results from calling rasterize include errors.
+    When: looking for rasterize error responses in the weed_rasterize_errors function.
+    Then: Make sure the correct errors are weeded out and returned to the user and the rest are used.
+    """
+    return_results_mock = mocker.patch('DBotPredictURLPhishing.return_results')
+    urls = ['1', '2', '3']
+    res_rasterize = [
+        {'Contents': 'error 1'},
+        {'Contents': {'success': True}},
+        {'Contents': 'error 3'},
+    ]
+
+    weed_rasterize_errors(urls, res_rasterize)
+
+    assert urls == ['2']
+    assert res_rasterize == [{'Contents': {'success': True}}]
+    assert 'error 1' in return_results_mock.call_args_list[0].args[0].readable_output
+    assert 'error 3' in return_results_mock.call_args_list[0].args[0].readable_output
+
+
+def test_weed_rasterize_errors_bad_rasterize_response():
+    """
+    Given: the results from calling rasterize are less than the amount of URLs given.
+    When: looking for rasterize error responses in the weed_rasterize_errors function.
+    Then: Make sure the correct error is raised.
+    """
+    with pytest.raises(DemistoException, match=(
+        'Unexpected response from the "rasterize" command. Please make sure the Rasterize pack version is above 2.0.7')
+    ):
+        weed_rasterize_errors(['1', '2'], [{}])
