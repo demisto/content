@@ -1,17 +1,17 @@
 register_module_line('Digital Shadows V2', 'start', __line__())
 
+"""Digital Shadows for Cortex XSOAR."""
+
 ''' IMPORTS '''
-from typing import Any, List, Dict
-import json
-import requests
-from time import monotonic, sleep
+import traceback
 from datetime import datetime, timezone, timedelta
+from time import monotonic, sleep
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 from threading import RLock
 import base64
-
+import json
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -25,6 +25,7 @@ THREAT_INTELLIGENCE = "Threat Intelligence"
 AUTO_CLOSED = 'auto-closed'
 
 RISK_TYPE_ALL = "all"
+RISK_LEVEL_ALL = "all"
 
 TRIAGE_ITEM_STATE_REJECTED = 'rejected'
 
@@ -78,6 +79,8 @@ INCIDENT = 'incident'
 TRIAGE_ITEM = 'triage_item'
 
 ALERT_FIELD = 'alert'
+
+DS_BASE_URL = 'https://portal-digitalshadows.com'
 
 
 class Logger(ABC):
@@ -198,6 +201,9 @@ class HttpResponseHeaderRateLimiter:
                 self.last_call = self.clock()
 
 
+'''HttpRequestHandler'''
+
+
 class HttpRequestHandler(ABC):
     """
     Abstract Base Class which provides an interface for HTTP request handlers.
@@ -235,11 +241,82 @@ class HttpRequestHandler(ABC):
         return self.ratelimiter.handle_response(response)
 
 
-########################SearchLightRequestHandler##########################
+'''DSHttpRequestHandler'''
+
+
+class DSHttpRequestHandler(ABC):
+    """
+    Abstract Base Class which provides an interface for HTTP request handlers.
+    """
+
+    def __init__(self, base_url, access_key, secret_key, **kwargs):
+        self.base_url = base_url.rstrip("/")
+        self.access_key = access_key
+        self.secret_key = secret_key
+        self.headers = self.build_auth_headers()
+        self.ratelimiter = HttpResponseHeaderRateLimiter(**kwargs)
+
+    def build_auth_headers(self):
+        """
+        Create the default basic auth and 'searchlight-account-id' headers required for each request
+        """
+        LOG("DSHttpRequestHandler---> build header")
+        headers = {}
+        auth = str(self.access_key) + ':' \
+               + str(self.secret_key)
+        headers['Authorization'] = 'Basic {}'.format(base64.b64encode(auth.encode()).decode())
+        return headers
+
+    @abstractmethod
+    def get(self, url, headers={}, params={}, data=None, **kwargs) -> HttpResponse:
+        pass
+
+    @abstractmethod
+    def post(self, url, headers={}, params={}, data=None, **kwargs) -> HttpResponse:
+        pass
+
+    def rate_limit_response(self, response: HttpResponse):
+        return self.ratelimiter.handle_response(response)
+
+
+'''DSApiRequestHandler'''
+
+
+class DSApiRequestHandler(DSHttpRequestHandler):
+    def __init__(self, base_url, access_key, secret_key, user_agent='unknown', proxies=None, **kwargs):
+        super().__init__(base_url, access_key, secret_key, **kwargs)
+        LOG(f"DSApiRequestHandlerHeader: {self.headers}")
+        self.headers['User-Agent'] = user_agent
+        self.headers['Accept'] = 'application/json'
+        LOG(f"DSApiRequestHandlerHeader after: {self.headers}")
+        self.session = requests.Session()
+        self.session.headers.update(self.headers)
+        self.session.auth = (access_key, secret_key)
+        if proxies:
+            self.session.proxies = proxies
+
+    def get(self, url, headers={}, params={}, data=None, **kwargs) -> HttpResponse:
+        response = self.session.get(
+            self.base_url + url, headers=headers, params=params, data=data, **kwargs)
+        return self.rate_limit_response(response)
+
+    def post(self, url, headers={}, params={}, data=None, **kwargs) -> HttpResponse:
+        response = self.session.post(
+            self.base_url + url, headers=headers, params=params, json=data, **kwargs)
+        return self.rate_limit_response(response)
+
+    def rate_limit_response(self, response: HttpResponse):
+        return self.ratelimiter.handle_response(response)
+
+
+'''SearchLightRequestHandler'''
+
+
 class SearchLightRequestHandler(HttpRequestHandler):
 
     def __init__(self, base_url, account_id, access_key, secret_key, proxies=None, **kwargs):
         super().__init__(base_url, account_id, access_key, secret_key, **kwargs)
+        LOG("inside SearchLightRequestHandler------")
         self.headers['Accept'] = 'application/json'
         self.session = requests.Session()
         self.session.headers.update(self.headers)
@@ -248,6 +325,7 @@ class SearchLightRequestHandler(HttpRequestHandler):
             self.session.proxies = proxies
 
     def get(self, url, headers={}, params={}, **kwargs):
+        LOG(f"SearchLightRequestHandler get--> {headers}")
         r = self.session.get(self.base_url + url, params=params, headers=headers, verify=False, **kwargs)
         return self.rate_limit_response(r)
 
@@ -260,7 +338,8 @@ class SearchLightRequestHandler(HttpRequestHandler):
         return self.rate_limit_response(r)
 
 
-################################### Incidents ###################################
+'''Incidents'''
+
 
 def get_incidents(request_handler: HttpRequestHandler, incident_ids=[], **kwargs) -> List:
     LOG("Fetching incidents for ids: {}".format(incident_ids))
@@ -272,7 +351,9 @@ def get_incidents(request_handler: HttpRequestHandler, incident_ids=[], **kwargs
     return r.json()
 
 
-################################### Assets ###################################
+'''Assets'''
+
+
 def get_assets(request_handler: HttpRequestHandler, asset_ids=[], **kwargs) -> List:
     LOG("Fetching assets for ids: {}".format(asset_ids))
     if not asset_ids:
@@ -286,9 +367,7 @@ def get_assets(request_handler: HttpRequestHandler, asset_ids=[], **kwargs) -> L
     return results
 
 
-################################### Triage ###################################
-
-utc_tzinfo = timezone(timedelta(), name='UTC')
+'''Triage'''
 
 
 def chunks(lst, n):
@@ -365,7 +444,9 @@ def update_triage_item_state(request_handler: HttpRequestHandler, triage_item_id
     return r
 
 
-################################### Alerts ###################################
+'''Alerts'''
+
+
 def get_alerts(request_handler: HttpRequestHandler, alert_ids=[], **kwargs) -> List:
     LOG("Fetching alert ids: {}".format(alert_ids))
     if not alert_ids:
@@ -428,9 +509,7 @@ def get_exposed_access_key_alerts(request_handler: HttpRequestHandler, alert_ids
     return r.json()
 
 
-################################### Indicators ###################################
-
-utc_tzinfo = timezone(timedelta(), name="UTC")
+'''Indicators'''
 
 
 def get_indicator_events(
@@ -474,7 +553,8 @@ def get_indicators(
     return r.json()
 
 
-################################### Indicator grouping ###################################
+'''Indicator grouping'''
+
 
 def get_indicator_grouping_events(
     request_handler: HttpRequestHandler,
@@ -516,6 +596,76 @@ def get_indicator_groupings(
     r = request_handler.get("/v1/indicator-groupings", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
+
+
+'''DS-Find command'''
+
+
+def search_find(request_handler: DSHttpRequestHandler, args):
+    """
+    Perform a textual search against the available record types
+    Arguments:
+      request_handler (HttpRequestHandler): the request handler to use to make HTTP requests
+      args: arguments sent in the command as input
+    """
+    url = '/api/search/find'
+    payload = {
+        "facets": [
+            "RESULTS_TYPE"
+        ],
+        "filter": {
+            "dateRange": "P6M",
+            "tags": [],
+            "types": [
+                "ACTORS",
+                "BLOG_POST",
+                "CAMPAIGNS",
+                "CHAT_MESSAGE",
+                "CLIENT_INCIDENT",
+                "CLOSED_SOURCES",
+                "DOMAIN_WHOIS",
+                "DNS_LOOKUP",
+                "EVENT",
+                "FORUM_POST",
+                "INCIDENTS",
+                "INTEL_INCIDENT",
+                "INTELLIGENCE",
+                "LOCATION",
+                "MARKETPLACE_LISTING",
+                "PASTE",
+                "PHISHING_WEB_PAGE",
+                "MALWARE_DOWNLOAD",
+                "SPECIFIC_TTP",
+                "TECHNICAL_SOURCE",
+                "STIX_PACKAGE",
+                "WEB_PAGE",
+                "WEB_SOURCE",
+                "WHOIS",
+                "IP_WHOIS",
+                "VULNERABILITY",
+                "EXPLOIT",
+                "VULNERABILITY_EXPLOIT",
+                "INDICATOR_FEED",
+                "TECHNIQUE"
+            ]
+        },
+        "pagination": {
+            "offset": 0,
+            "size": 20
+        },
+        "sort": {
+            "direction": "DESCENDING",
+            "property": "relevance"
+        }
+    }
+    payload.update({"query": args.get('query')})
+    r = request_handler.post(url, data=payload)
+    r.raise_for_status()
+    json_data = r.json()
+    return json_data
+
+
+'''HttpRequestHandler'''
 
 
 class HttpRequestHandler(ABC):
@@ -604,6 +754,9 @@ def get_comments_map(triage_item_comments):
                               sorted_comment_map.items()}
 
     return latest_10_comments_map
+
+
+'''SearchLightTriagePoller'''
 
 
 class SearchLightTriagePoller(object):
@@ -711,17 +864,16 @@ class SearchLightTriagePoller(object):
         return data
 
     def stringyfyAlert(self, alert):
-        LOG(f'------stringyfyAlert')
         if alert.get('risk-factors'):
             alert.update({'risk-factors': json.dumps(alert.get('risk-factors'))})
         if alert.get('mitre-attack-mapping'):
             alert.update({'mitre-attack-mapping': json.dumps(alert.get('mitre-attack-mapping'))})
         if alert.get('validation'):
             alert.update({'validation': json.dumps(alert.get('validation'))})
-        LOG(f'------alert: {alert}')
         return alert
 
-    def poll_triage(self, event_num_start=0, limit=100, event_created_after=None, alert_risk_types=[RISK_TYPE_ALL]):
+    def poll_triage(self, event_num_start=0, limit=100, event_created_after=None, alert_risk_types=[RISK_TYPE_ALL],
+                    risk_level=[RISK_LEVEL_ALL]):
         """
         A single poll of the triage API for new events, fully populating any new events found.
 
@@ -734,10 +886,20 @@ class SearchLightTriagePoller(object):
                                                                                                    event_created_after,
                                                                                                    limit))
         risk_types_filter = []
+
         if not RISK_TYPE_ALL in alert_risk_types and len(alert_risk_types) > 0:
             risk_types_filter = alert_risk_types
+
         events = get_triage_item_events(self.request_handler, event_num_after=event_num_start, limit=limit,
                                         event_created_after=event_created_after, risk_types=risk_types_filter)
+        risk_level_filter = []
+        if not RISK_LEVEL_ALL in alert_risk_types and len(risk_level) > 0:
+            risk_level_filter = risk_level
+
+        # filtering events by risk level
+        if risk_level_filter:
+            events = [event for event in events if event[RISK_LEVEL] in risk_level_filter]
+            
         if not events:
             LOG("No events were fetched. Event num start: {}, Event created after: {}, Limit: {}".format(
                 event_num_start, event_created_after, limit))
@@ -775,6 +937,9 @@ class SearchLightTriagePoller(object):
 
         triage_data = self.merge_data(events, triage_items, triage_item_comments, alerts, incidents, assets)
         return PollResult(max_event_num, triage_data)
+
+
+'''SearchLightIndicatorsPoller'''
 
 
 class SearchLightIndicatorsPoller(object):
@@ -875,7 +1040,6 @@ class SearchLightIndicatorsPoller(object):
             return IndicatorsResult(event_num_start, [])
         indicator_grouping_ids = [e["indicator-grouping-id"] for e in events]
         indicator_groups = get_indicator_groupings(self.request_handler, indicator_grouping_ids)
-
         indicators_data = self.merge_data(indicators, indicator_groups)
         return IndicatorsResult(max_event_num, indicators_data)
 
@@ -887,7 +1051,6 @@ class Client(BaseClient):
     """
 
     def __init__(self, *args, **kwargs):
-        LOG("----> inside client constructoire")
         self.base_url = kwargs["base_url"]
         self.account_id = kwargs['account_id']
         self.verify = kwargs["verify"]
@@ -920,24 +1083,8 @@ class Client(BaseClient):
             headers['searchlight-account-id'] = self.account_id
         auth = str(self.access_key) + ':' \
                + str(self.secret_key)
-        LOG(f"auth--------> {auth}")
         headers['Authorization'] = 'Basic {}'.format(base64.b64encode(auth.encode()).decode())
         return headers
-
-    def say_hello(self, name):
-        return f'Hello aaaa {name} '
-
-    def get_incident(self, count="1"):
-        response = requests.request("GET", self.base_url + "?offset=1&limit=50", headers=self.headers,
-                                    verify=self.verify, auth=self.auth)
-        return response.json()
-
-    def say_hello_http_request(self, name):
-        data = self._http_request(
-            method='GET',
-            url_suffix='/hello/' + name
-        )
-        return data.get('result')
 
 
 def test_module(client):
@@ -948,13 +1095,12 @@ def test_module(client):
         return 'Test failed because ......' + message
 
 
-def parse_date(since):
-    try:
-        return datetime.strptime(since, constants.SINCE_DATE_FORMAT)
-    except Exception as e:
-        return datetime.strptime(since, constants.SINCE_DATE_FORMAT_WITH_MILLISECONDS)
-    except Exception as ee:
-        raise Exception(f"Unable to parse date from input: {since}") from ee
+def get_remote_data_command(client, args):
+    remote_args = GetRemoteDataArgs(args)
+
+    LOG(f"remote args {remote_args}")
+    new_incident_data: Dict = client.get_incident_data(parsed_args.remote_incident_id, parsed_args.last_update)
+    LOG(f"new incident data : {new_incident_data}")
 
 
 def main():
@@ -966,9 +1112,12 @@ def main():
     accessKey = demisto.params().get('apiKey').get('identifier')
     account = demisto.params().get('accountId')
     riskTypes = demisto.params().get('riskTypes')
+    riskLevel = demisto.params().get('riskLevel')
 
     if RISK_TYPE_ALL in riskTypes:
         riskTypes = [RISK_TYPE_ALL]
+    if RISK_LEVEL_ALL in riskLevel:
+        riskLevel = [RISK_LEVEL_ALL]
 
     # get the service API url
     base_url = demisto.params()['searchLightUrl']
@@ -995,6 +1144,11 @@ def main():
             limit=limit
         )
         LOG("client initialized ----- test client")
+        search_light_request_handler = SearchLightRequestHandler(base_url,
+                                                                 account,
+                                                                 accessKey,
+                                                                 secretKey)
+        digital_shadows_request_handler = DSApiRequestHandler(DS_BASE_URL, accessKey, secretKey)
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             LOG('calling test module')
@@ -1005,16 +1159,12 @@ def main():
             last_event_num = last_run.get('indicators', {}).get('last_fetch', 0)
             LOG(f"last_event_num indicatores-----> ")
 
-            search_light_request_handler_for_indicators = SearchLightRequestHandler(base_url,
-                                                                                    account,
-                                                                                    accessKey,
-                                                                                    secretKey)
             LOG(f"search_light_request_handler_for_indicators indicatores-----> ")
 
-            search_light_indicators_poller = SearchLightIndicatorsPoller(search_light_request_handler_for_indicators)
+            search_light_indicators_poller = SearchLightIndicatorsPoller(search_light_request_handler)
             LOG(f"search_light_indicators_poller indicatores-----> ")
 
-            poll_result = search_light_indicators_poller.poll_indicators(event_num_start=last_event_num, limit=10)
+            poll_result = search_light_indicators_poller.poll_indicators(event_num_start=last_event_num, limit=2)
             LOG(f"poll_result indicatores-----> ")
 
             data = poll_result.data
@@ -1027,14 +1177,13 @@ def main():
                         'type': item['type'],
                         'fields': {"some": "thing"},
                         'occurred': item["created"],
+                        'value': item["value"],
                         'rawJSON': item
                     }
                     indicators.append(indicator)
-                # check if the version is higher than 6.5.0 so we can use noUpdate parameter
-                if is_demisto_version_ge('6.5.0'):
-                    for b in batch(indicators, batch_size=10):
-                        LOG(f"batch----->{b}")
-                        demisto.createIndicators(b)
+                for b in batch(indicators, batch_size=10):
+                    LOG(f"batch----->{b}")
+                    demisto.createIndicators(b)
 
             demisto.setLastRun({'indicators': {'last_fetch': last_polled_number}})
 
@@ -1042,31 +1191,21 @@ def main():
             LOG(f"inside command ------>{demisto.command()}")
             last_event_num = last_run.get('incidents', {}).get('last_fetch', 0)
             LOG(f"last run  ------> {last_event_num}")
-            search_light_request_handler = SearchLightRequestHandler(base_url,
-                                                                     account,
-                                                                     accessKey,
-                                                                     secretKey)
             LOG(f"before search_light_request_handler ------>")
             search_list_triage_poller = SearchLightTriagePoller(search_light_request_handler)
             LOG(f"after search_list_triage_poller ------>")
 
             poll_result = search_list_triage_poller.poll_triage(event_num_start=last_event_num, limit=2,
-                                                                alert_risk_types=riskTypes)
+                                                                alert_risk_types=riskTypes, risk_level=riskLevel)
             LOG(f"after poll_result ------>")
             data = poll_result.triage_data
             last_polled_number = poll_result.max_event_number
-            # LOG(f"after poll_result {data}")
-            LOG(f"after poll_result {last_polled_number}")
-            # if poll_result.max_event_number == last_event_num:
-            #     LOG(f"Polling done. last_event_num: {last_event_num}")
-            #     demisto.results("")
-            LOG(f"before data------>")
             if data:
                 LOG(f"inside if data")
                 incidents = []
                 for item in data:
                     incident = {
-                        'name': "incident",
+                        'name': item["triage_item"]['title'],
                         'occurred': item["triage_item"]['raised'],
                         'rawJSON': json.dumps(item)
                     }
@@ -1074,16 +1213,19 @@ def main():
                 LOG(f"data------>{incidents}")
                 demisto.incidents(incidents)
             demisto.setLastRun({'incidents': {'last_fetch': last_polled_number}})
-
-        elif demisto.command() == 'helloworld-say-hello':
-            return_outputs(*say_hello_command(searchLightClient, demisto.args()))
-
+        elif demisto.command() == 'ds-search':
+            demisto.results(search_find(digital_shadows_request_handler, demisto.args()))
+        elif demisto.command() == 'get-remote-data':
+            return_results(get_remote_data_command(client, args))
+        else:
+            raise NotImplementedError(f'{demisto.command()} command is not implemented.')
     # Log exceptions
     except Exception as e:
-        LOG(f"error: {str(e)} Error message: {e.message}")
-        return_error(f'Failed to execute {demisto.command()} command. error: {str(e)}')
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(
+            f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
+''' ENTRY POINT '''
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
