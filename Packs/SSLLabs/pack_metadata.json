@@ -1,0 +1,21 @@
+{
+    "name": "SSL Labs",
+    "description": "Analyze a host or a URL using Qualys SSL Labs",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Rich Fontaine",
+    "url": "",
+    "email": "",
+    "created": "2024-04-23T16:03:13Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "edibleShell"
+    ]
+}
