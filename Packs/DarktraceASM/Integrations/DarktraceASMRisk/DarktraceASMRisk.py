@@ -120,7 +120,7 @@ SEVERITY_MAP = {"Low": 1,
                 "Critical": 4
                 }
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 MIN_SEVERITY_TO_FETCH = 1
 MAX_INCIDENTS_TO_FETCH = 50
 ALERT_TYPES = ['gdpr', 'informational', 'misconfiguration', 'reported', 'ssl', 'vulnerable software']
