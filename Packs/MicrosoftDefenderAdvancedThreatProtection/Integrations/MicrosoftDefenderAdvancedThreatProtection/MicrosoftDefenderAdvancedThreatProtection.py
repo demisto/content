@@ -1987,8 +1987,14 @@ class MsClient:
 
     def create_action(self, machine_id, request_body, overwrite_rate_limit_retry=False, response_type="json", ok_codes=None):
         cmd_url = f'machines/{machine_id}/runliveresponse'
-        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body,
-                                               overwrite_rate_limit_retry=overwrite_rate_limit_retry, resp_type=response_type, ok_codes=ok_codes)
+        response = self.ms_client.http_request(
+            method='POST',
+            url_suffix=cmd_url,
+            json_data=request_body,
+            overwrite_rate_limit_retry=overwrite_rate_limit_retry,
+            resp_type=response_type,
+            ok_codes=ok_codes
+        )
         return response
 
     def download_file(self, url_link):
