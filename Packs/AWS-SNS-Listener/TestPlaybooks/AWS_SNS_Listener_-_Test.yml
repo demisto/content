@@ -366,8 +366,8 @@ tasks:
     task:
       id: 571fff3d-701c-4697-87b4-5645267da22c
       version: -1
-      name: GetServerInfo
-      scriptName: GetServerInfo
+      name: GetServerInfo_copy
+      scriptName: GetServerInfo_copy
       type: regular
       iscommand: false
       brand: ""
@@ -581,5 +581,6 @@ view: |-
   }
 inputs: []
 outputs: []
+marketplaces: ["xsoar"]
 fromversion: 6.9.0
 description: ''
