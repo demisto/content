@@ -32,7 +32,7 @@ THREAT_INTEL_TYPE_TO_DEMISTO_TYPES = {
 ''' CONSTANTS '''
 RELATIONSHIP_TYPES = EntityRelationship.Relationships.RELATIONSHIPS_NAMES.keys()
 DEFAULT_INDICATOR_SCORE = 3  # default verdict of fetched indicators is malicious
-INTEGRATION_NAME = "Unit42v2_Feed"
+
 from TAXII2ApiModule import *  # noqa: E402
 
 
@@ -126,6 +126,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
                             "reportedby": 'Unit42',
                         }
                     }
+
                     if "file:hashes.'SHA-256' = '" in pattern:
                         if ioc_value := extract_ioc_value(pattern):
                             indicator_obj['value'] = ioc_value
@@ -137,6 +138,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None,
                         indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
                     indicators.append(indicator_obj)
+
     return indicators
 
 
@@ -335,6 +337,7 @@ def create_course_of_action_indicators(client: Client, course_of_action_objects,
     course_of_action_indicators = []
 
     for coa_indicator_object in course_of_action_objects:
+
         coa_indicator_list = client.parse_course_of_action(coa_indicator_object)
         coa_indicator = coa_indicator_list[0]
         coa_indicator["fields"].update({
