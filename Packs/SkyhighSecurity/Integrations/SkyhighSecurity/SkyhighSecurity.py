@@ -1,9 +1,10 @@
-import json
+import io
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 import traceback
+import csv
 from typing import Dict, Any, Tuple
 
 # Disable insecure warnings
@@ -26,6 +27,18 @@ CategoryToIncidentType = {
 }
 
 ''' CLIENT CLASS '''
+
+
+def csv2json(csv_data: str):
+    """ Converts data from csv to json
+    Args:
+        csv_data: data in csv format
+    Returns:
+        the same data in json formal
+    """
+    reader = csv.DictReader(io.StringIO(csv_data))
+    json_data = list(reader)
+    return json_data
 
 
 class Client(BaseClient):
@@ -54,10 +67,15 @@ class Client(BaseClient):
         ]
         return self._http_request('POST', url_suffix, json_data=data, raise_on_status=True)
 
-    def anomaly_activity_list(self, incident_id: Optional[int]) -> Dict[str, str]:
+    def anomaly_activity_list(self, incident_id: Optional[int]) -> Optional[bytes]:
         url_suffix = '/external/api/v1/queryActivities'
         data = {"incident_id": incident_id}
-        return self._http_request('POST', url_suffix, json_data=data)
+        results = self._http_request('POST', url_suffix, json_data=data, resp_type='response')
+        demisto.debug(f'This is the results from the activity list: {results}')
+
+        activities = results.content
+        demisto.debug(f'This is the content from the activity list: {activities}')
+        return activities
 
     def policy_dictionary_list(self) -> List[Dict]:
         url_suffix = '/dlp/dictionary'
@@ -244,12 +262,17 @@ def anomaly_activity_list_command(client: Client, args: Dict) -> CommandResults:
     anomaly_id = arg_to_number(args.get('anomaly_id'))
 
     result = client.anomaly_activity_list(anomaly_id)
+    if not result:
+        return CommandResults(
+            readable_output="No activities found for anomaly ID " + str(anomaly_id))
+
+    anomaly_results = csv2json(result.decode('utf-8'))
 
     return CommandResults(
         outputs=result,
         outputs_prefix='SkyhighSecurity.Dictionaries',
         outputs_key_field='ID',
-        readable_output=tableToMarkdown('', result),
+        readable_output=tableToMarkdown('Anomaly Activity List', anomaly_results),
         raw_response=result
     )
 
