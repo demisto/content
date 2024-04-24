@@ -1212,7 +1212,7 @@ def main():
                     incidents.append(incident)
                 LOG(f"data------>{incidents}")
                 demisto.incidents(incidents)
-            demisto.setLastRun({'incidents': {'last_fetch': last_polled_number}})
+                demisto.setLastRun({'incidents': {'last_fetch': last_polled_number}})
         elif demisto.command() == 'ds-search':
             demisto.results(search_find(digital_shadows_request_handler, demisto.args()))
         elif demisto.command() == 'get-remote-data':

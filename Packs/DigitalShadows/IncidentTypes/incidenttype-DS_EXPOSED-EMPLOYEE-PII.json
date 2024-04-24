@@ -11,7 +11,7 @@
 	"disabled": false,
 	"extractSettings": {
 		"fieldCliNameToExtractSettings": {},
-		"mode": "Specific"
+		"mode": "All"
 	},
 	"fromServerVersion": "",
 	"hours": 0,
