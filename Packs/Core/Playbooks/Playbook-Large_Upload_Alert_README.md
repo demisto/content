@@ -19,14 +19,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Search and Compare Process Executions - Generic
-* Entity Enrichment - Generic v3
-* Threat Hunting - Generic
-* Command-Line Analysis
-* TIM - Indicator Relationships Analysis
 * Block Indicators - Generic v3
 * User Investigation - Generic
+* Command-Line Analysis
+* Search and Compare Process Executions - Generic
+* Threat Hunting - Generic
+* Entity Enrichment - Generic v3
 * Endpoint Investigation Plan
+* TIM - Indicator Relationships Analysis
 
 ### Integrations
 
@@ -40,9 +40,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * core-get-cloud-original-alerts
-* core-isolate-endpoint
-* setAlert
 * setAlertStatus
+* setAlert
+* core-isolate-endpoint
 
 ## Playbook Inputs
 
@@ -59,7 +59,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Transferred_Data _Threshold | Specify the uploaded data threshold volume \(in MB\) from which large upload alerts should be investigated.<br/>By setting a threshold, you will be able to determine which large upload alerts require investigation.<br/>Default value: 150 \(MB\). | 150 | Required |
 | FWApps_Processes_Whitlist | A list of known and authorized FW application IDs and processes used in the organization. | ip,tcp,udp,ssl,syslog,quic,Chrome.exe,Firefox.exe,Opera.exe,Safari.exe,iexplore.exe,msedge.exe,brave.exe | Optional |
 | Alert_ID | The Cortex XDR alert ID. | ${alert.id} | Optional |
-| Transferred_Data | The amount of uploaded data transferred to an external destination as a result of the large upload activity. | alert.details | Optional |
 
 ## Playbook Outputs
 
