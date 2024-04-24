@@ -164,7 +164,7 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
         outputs = edit_response(response)
 
     human_readable = []
-    certificates = outputs.get('Certificates')
+    certificates = outputs.get('Certificates', [])
     for certificate in certificates:
         certificate_guid = certificate.get("Guid")
         certificate_id = certificate_guid[1:-1]
@@ -191,7 +191,7 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
 def edit_response(response: dict[str, Any]) -> dict[str, Any]:
     """remove links list from the response
     """
-    certificates = response.get('Certificates')
+    certificates = response.get('Certificates', [])
     for certificate in certificates:
         if certificate.get("_links"):
             del certificate["_links"]
@@ -201,14 +201,14 @@ def edit_response(response: dict[str, Any]) -> dict[str, Any]:
 
 def get_certificate_details_command(client: Client, args: dict[str, Any]) -> CommandResults:
     outputs: dict[str, Any] = {}
-    guid = args.get('guid')
+    guid = args.get('guid', "")
     # if not guid?
     response = client._get_certificate_details(guid)
     if response:
         outputs = response
 
     human_readable = []
-    certificate_guid = outputs.get("Guid")
+    certificate_guid = outputs.get("Guid", "")
     certificate_id = certificate_guid[1:-1]
     certificate_details = {
         "CreatedOn": outputs.get('CreatedOn'),
@@ -259,14 +259,14 @@ def main() -> None:
         command = demisto.command()
         args = demisto.args()
         if command == 'test-module':
-            result = test_module(client)
-            return_results(result)
+            test_module_result = test_module(client)
+            return_results(test_module_result)
         elif command == 'venafi-get-certificates':
-            result = get_certificates_command(client, args)
-            return_results(result)
+            command_result = get_certificates_command(client, args)
+            return_results(command_result)
         elif command == 'venafi-get-certificate-details':
-            result = get_certificate_details_command(client, args)
-            return_results(result)
+            command_result = get_certificate_details_command(client, args)
+            return_results(command_result)
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 
