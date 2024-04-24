@@ -13,6 +13,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_INCIDENTS_TO_FETCH = demisto.params().get('max_fetch')
+ty = 3
 FIRST_FETCH = demisto.params().get('first_fetch')
 TENANT_NAME = demisto.params().get('tenantName')
 INSECURE = demisto.params().get('insecure')
