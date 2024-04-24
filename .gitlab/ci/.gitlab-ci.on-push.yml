@@ -79,30 +79,7 @@ stop-running-pipelines:
     - section_end "Stop running pipelines on current branch"
     - job-done
 
-# runs in gitlab for the on-push flow (except for contributors)
-run-unittests-and-lint:
-  extends:
-    - .run-unittests-and-lint
-  rules:
-    - if: '$BUCKET_UPLOAD == "true"'
-      when: never
-    - if: '$SECURITY_SCANS == "true"'
-      when: never
-    - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
-      when: never
-    - if: '$BUILD_MACHINES_CLEANUP == "true"'
-      when: never
-    - if: '$SDK_RELEASE == "true"'
-      when: never
-    - if: '$FORCE_BUCKET_UPLOAD == "true"'
-      when: never
-    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
-      when: never
-    - if: '$DEMISTO_SDK_NIGHTLY != "true"'
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-
 run-pre-commit:
-  allow_failure: true
   extends:
     - .run-pre-commit
   cache:
@@ -119,6 +96,8 @@ run-pre-commit:
     - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
       when: never
     - if: '$TRIGGER_CONTRIBUTION_BUILD == "true"'
+      when: never
+    - if: '$SDK_RELEASE == "true"'
       when: never
     # In sdk nighly we run this separately 
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
@@ -139,7 +118,6 @@ run-validations-new-validate-flow:
   rules:
     - if: '$NIGHTLY'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-  allow_failure: true
 
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
@@ -387,6 +365,11 @@ xpanse-prepare-testing-bucket:
     - echo "Done sleeping!"
     - section_end "Wait Until Server Ready"
     - !reference [.run_tests]
+    - section_start "Get instance ssh-command"
+    - echo "INSTANCE_ROLE -> ${INSTANCE_ROLE}"
+    - INSTANCE_NAME=$(jq -r --arg role "$INSTANCE_ROLE" '.[] | select(.Role == $role) | .InstanceName' ./artifacts/env_results.json)
+    - echo -e "\e[1m gcloud compute ssh --zone \"us-central1-a\" \"${INSTANCE_NAME}\"  --tunnel-through-iap --project "xsoar-content-build" \e[0m"
+    - section_end "Get instance ssh-command"
     - section_start "Cleanup env results from artifacts folder" --collapsed
     - |
       # workaround for the hard-coded value in the sdk
@@ -443,7 +426,7 @@ jobs-done-check-nightly:
     - .jobs-done-check
   needs:
     - cloning-content-repo-last-upload-commit
-    - run-unittests-and-lint
+    - run-pre-commit
     - run-validations
     - trigger-private-build
     - mpv2-prepare-testing-bucket
@@ -486,7 +469,7 @@ jobs-done-check-on-push:
     - .push-rule
     - .jobs-done-check
   needs:
-    - run-unittests-and-lint
+    - run-pre-commit
     - run-validations
     - stop-running-pipelines
     - test-upload-flow
@@ -530,7 +513,7 @@ jobs-done-check-on-merge:
     - .jobs-done-check
   needs:
     - merge-dev-secrets
-    - run-unittests-and-lint
+    - run-pre-commit
     - run-validations
     - test-upload-flow
     - trigger-private-build
