@@ -264,6 +264,7 @@ MOCK_LOOKUP_WRITER_ARGS_action = {
 MOCK_KEYS = {"foo": "bar", "baz": "bug"}
 OFFSET = 0
 ITEMS_PER_PAGE = 10
+IP_AS_STRING = True
 
 ALERT_WITH_MISSING_DATA = {
     "user_prefixcontext": "sample.context.value",
@@ -536,7 +537,7 @@ def test_get_alerts_with_empty_filtered_columns_param(mock_query_results, mock_a
 def test_run_query(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_QUERY_ARGS
-    results = run_query_command(OFFSET, ITEMS_PER_PAGE)
+    results = run_query_command(OFFSET, ITEMS_PER_PAGE, IP_AS_STRING)
     assert (results[1]["HumanReadable"]).find("Devo Direct Link") != -1
     assert len(results) == 2
     assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"
@@ -550,7 +551,7 @@ def test_run_query_with_invalid_column_name(mock_query_results, mock_args_result
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS)
     mock_args_results.return_value = MOCK_QUERY_ARGS_INVALIDE_COLUMN_NAME
     with pytest.raises(ValueError, match=re.escape("Fields ['abcd'] not found in query result")):
-        run_query_command(OFFSET, ITEMS_PER_PAGE)
+        run_query_command(OFFSET, ITEMS_PER_PAGE, IP_AS_STRING)
 
 
 @patch("Devo_v2.READER_ENDPOINT", MOCK_READER_ENDPOINT, create=True)
@@ -560,7 +561,8 @@ def test_run_query_with_invalid_column_name(mock_query_results, mock_args_result
 def test_run_query_with_ip_as_string_false(mock_query_results, mock_args_results):
     mock_query_results.return_value = copy.deepcopy(MOCK_QUERY_RESULTS_1)
     mock_args_results.return_value = MOCK_QUERY_ARGS_FALSE_IP_AS_STRING
-    results = run_query_command(OFFSET, ITEMS_PER_PAGE)
+    IP_AS_STRING = False
+    results = run_query_command(OFFSET, ITEMS_PER_PAGE, IP_AS_STRING)
     assert (results[1]["HumanReadable"]).find("Devo Direct Link") != -1
     assert len(results) == 2
     assert results[0]["Contents"][0]["context"] == "CPU_Usage_Alert"

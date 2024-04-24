@@ -604,9 +604,8 @@ def filter_results_by_fields(results, filtered_columns_string):
     return filtered_results
 
 
-def run_query_command(offset, items):
+def run_query_command(offset, items, ip_as_string):
     to_query = demisto.args()["query"]
-    ip_as_string = (demisto.args().get("ip_as_string", IP_AS_STRING))
     timestamp_from = demisto.args()["from"]
     timestamp_to = demisto.args().get("to", None)
     write_context = demisto.args()["writeToContext"].lower()
@@ -1076,14 +1075,13 @@ def main():
             if items_per_page <= 0:
                 raise ValueError("items_per_page should be a positive non-zero value.")
             total = 0
-            # Validate the ip_as_string param value 
-            argToBoolean(demisto.args().get("ip_as_string", IP_AS_STRING))
+            ip_as_string = argToBoolean(demisto.args().get("ip_as_string", IP_AS_STRING))
             demisto.results(run_query_command(OFFSET, items_per_page))
             total = total + COUNT_SINGLE_TABLE
             while items_per_page == COUNT_SINGLE_TABLE:
                 OFFSET = OFFSET + items_per_page
                 total = total + COUNT_SINGLE_TABLE
-                demisto.results(run_query_command(OFFSET, items_per_page))
+                demisto.results(run_query_command(OFFSET, items_per_page, ip_as_string))
         elif demisto.command() == "devo-get-alerts":
             OFFSET = 0
             items_per_page = int(demisto.args().get("items_per_page", ITEMS_PER_PAGE))
