@@ -68,6 +68,6 @@ script:
   subtype: python3
   type: python
   isFetchSamples: true
-fromversion: 6.10.0
+fromversion: 6.9.0
 tests:
 - AWS SNS Listener - Test
