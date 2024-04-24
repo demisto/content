@@ -368,6 +368,7 @@ class Transformer():
         Fit self.incident_to_match and transform self.incidents_df and self.incident_to_match
         :return:
         """
+        demisto.debug('DBS: Transformer - fit_transform')
         transformation = self.params[self.transformer_type]
         transformer = transformation['transformer'](self.field, transformation['params'], transformation['normalize'],
                                                     self.incident_to_match)
@@ -380,8 +381,10 @@ class Transformer():
         """
         :return: Add one columns 'similarity %s' % self.field to self.incidents_df Dataframe with the score
         """
+        demisto.debug('DBS: Transformer - get_score')
         scoring_function = self.params[self.transformer_type]['scoring_function']
         X_vect, incident_vect = self.fit_transform()
+        demisto.debug(f'DBS: {X_vect=}, {incident_vect=}')
         dist = scoring_function(X_vect, incident_vect)
         self.incidents_df['similarity %s' % self.field] = np.round(dist, 2)
         return self.incidents_df
@@ -427,6 +430,8 @@ class Model:
         :return:
         """
         remove_list = []
+        demisto.debug('DBS: remove_empty_or_short_fields function')
+        demisto.debug(f'DBS: {self.field_for_command_line=}')
         for field in self.field_for_command_line:
             if field not in self.incident_to_match.columns \
                     or not self.incident_to_match[field].values[0] \
@@ -435,26 +440,31 @@ class Model:
                     or self.incident_to_match[field].values[0] == 'None' \
                     or len(self.incident_to_match[field].values[0]) < 2 \
                     or self.incident_to_match[field].values[0] == 'N/A':
+                demisto.debug(f'DBS: removed field {field} from prediction - field_for_command_line')
                 remove_list.append(field)
         self.field_for_command_line = [x for x in self.field_for_command_line if x not in remove_list]
 
         remove_list = []
+        demisto.debug(f'DBS: {self.field_for_potential_exact_match=}')
         for field in self.field_for_potential_exact_match:
             if field not in self.incident_to_match.columns or not self.incident_to_match[field].values[
                 0] or not isinstance(self.incident_to_match[field].values[0], str) or \
                     len(self.incident_to_match[field].values[0]) < 2 or \
                     self.incident_to_match[field].values[0] == 'None' or self.incident_to_match[field].values[
                     0] == 'N/A':
+                demisto.debug(f'DBS: removed field {field} from prediction - field_for_potential_exact_match')
                 remove_list.append(field)
         self.field_for_potential_exact_match = [x for x in self.field_for_potential_exact_match if x not in remove_list]
 
         remove_list = []
+        demisto.debug(f'DBS: {self.field_for_json=}')
         for field in self.field_for_json:
             if field not in self.incident_to_match.columns or not self.incident_to_match[field].values[
                     0] or self.incident_to_match[field].values[0] == 'None' \
                 or len(self.incident_to_match[field].values[0]) < 2 \
                     or self.incident_to_match[field].values[0] == 'N/A' \
                     or all(not x for x in self.incident_to_match[field].values[0]):
+                demisto.debug(f'DBS: removed field {field} from prediction - field_for_json')
                 remove_list.append(field)
                 self.field_for_json = [x for x in self.field_for_json if x not in remove_list]
 
@@ -463,14 +473,22 @@ class Model:
         Apply transformation for each field in possible transformer
         :return:
         """
+        demisto.debug('DBS: get_score function')
+        demisto.debug(f'DBS: {self.incidents_df=}')
+        demisto.debug(f'DBS: {self.incident_to_match=}')
+        demisto.debug(f'DBS: {self.transformation=}')
+        
         for field in self.field_for_command_line:
             t = Transformer('commandline', field, self.incidents_df, self.incident_to_match, self.transformation)
+            demisto.debug(f'DBS: Getting score for field {field} in field_for_command_line')
             t.get_score()
         for field in self.field_for_potential_exact_match:
             t = Transformer('potentialMatch', field, self.incidents_df, self.incident_to_match, self.transformation)
+            demisto.debug(f'DBS: Getting score for field {field} in field_for_potential_exact_match')
             t.get_score()
         for field in self.field_for_json:
             t = Transformer('json', field, self.incidents_df, self.incident_to_match, self.transformation)
+            demisto.debug(f'DBS: Getting score for field {field} in field_for_json')
             t.get_score()
 
     def compute_final_score(self):
@@ -478,11 +496,13 @@ class Model:
         Compute final score based on average of similarity score for each field transformed
         :return:
         """
+        demisto.debug('DBS: compute_final_score')
         col = self.incidents_df.loc[:, ['similarity %s' % field for field in self.field_for_command_line
                                         + self.field_for_json]]
         self.incidents_df[SIMILARITY_COLUNM_NAME] = np.round(col.mean(axis=1), 2)
 
     def prepare_for_display(self):
+        demisto.debug('DBS: prepare_for_display')
         self.compute_final_score()
         display_fields = remove_duplicates(
             self.field_for_display_fields_incidents + self.field_for_command_line
@@ -982,7 +1002,7 @@ def main():
     
     similar_incidents, fields_used = model.predict()
 
-    demisto.debug('DBS: Finished the model prediction')
+    demisto.debug(f'DBS: Finished the model prediction, found {len(similar_incidents)} similar_incidents, used {len(fields_used)} fields.')
 
     if len(fields_used) == 0:
         global_msg += "%s \n" % MESSAGE_NO_FIELDS_USED
