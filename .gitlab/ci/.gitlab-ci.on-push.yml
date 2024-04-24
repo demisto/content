@@ -133,7 +133,7 @@ validate-content-conf:
     - !reference [ .validate_content_test_conf_branch_merged ]
     - job-done
 
-.generic-prepare-testing-bucket:
+.generic-prepare-testing-bucket: # todo
   tags:
     - gke
   extends:
@@ -296,7 +296,7 @@ xpanse-prepare-testing-bucket:
     - .generic-prepare-testing-bucket
 
 .run_tests:
-  - section_start "Run Tests"
+  - section_start "Run Tests" # todo
   - |
     if [[ -n "${NIGHTLY}" && $SERVER_TYPE == "XSOAR SAAS" ]]; then
       ./Tests/scripts/run_tests.sh --generate-empty-result-file
@@ -330,7 +330,7 @@ xpanse-prepare-testing-bucket:
     - job: xsoar-prepare-testing-bucket
   script:
     - EXIT_CODE=0
-    - section_start "Check if should run Instance role"
+    - section_start "Check if should run Instance role" # TODO
     - export INSTANCES_CREATED_FOR_ROLE=$(cat "${ENV_RESULTS_PATH}" | jq -c "map(select(.Role == \"${INSTANCE_ROLE}\")) | length")
     - |
       echo "Instance role:${INSTANCE_ROLE} Product type:${PRODUCT_TYPE} Instances created for role:${INSTANCES_CREATED_FOR_ROLE}"
