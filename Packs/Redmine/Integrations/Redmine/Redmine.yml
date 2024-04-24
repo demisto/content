@@ -376,6 +376,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 6.10.0
+fromversion: 6.9.0
 tests:
 - Redmine_Test
