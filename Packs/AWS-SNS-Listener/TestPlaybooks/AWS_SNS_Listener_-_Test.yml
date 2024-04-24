@@ -581,6 +581,6 @@ view: |-
   }
 inputs: []
 outputs: []
-marketplaces: ["xsoar"]
+marketplaces: ["xsoar_on_prem"]
 fromversion: 6.9.0
 description: ''
