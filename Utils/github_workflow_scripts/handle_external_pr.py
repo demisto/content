@@ -281,24 +281,11 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str) -> bool:
 def get_user_from_ui_pr(pr):
     """
     """
-    try:
-        body = pr.body
-        #print(f'PR from ui is: {pr}')
-        #print(f'pr body: {pr.body}')
-        index_of_user = body.find("Contributor\n@")
-        #print(f'index of user: {index_of_user}')
-        substring_user = body[index_of_user+len("Contributor\n@"):]
-        #print(f'substring user: {substring_user}')
-        user_in_list = substring_user.split("\n")[0]
-        #print(f'searched user is: {user_in_list}')
-        #user_in_list = re.findall("Contributor\s(\S+)", body)
-        #user = str(user_in_list[0])
-        return user_in_list
-    except Exception:
-        user_list = re.findall("Contributor\s(\S+)", body)
-        print(f'the user is: {user_list}')
-        print(f'failed pr is: {pr}')
-        print(f'pr body: {pr.body}')
+    body = pr.body
+    index_of_user = body.find("Contributor\n@")
+    substring_user = body[index_of_user+len("Contributor\n@"):]
+    user_in_list = substring_user.split("\n")[0]
+    return user_in_list
 
 
 def find_all_open_prs_by_user(content_repo, pr_creator, pr_number):
@@ -312,7 +299,7 @@ def find_all_open_prs_by_user(content_repo, pr_creator, pr_number):
     similar_prs = []
     print(f'Number of all open PRs is: {all_prs.totalCount}')
     for pr in all_prs:
-        if pr.number == pr_number:
+        if pr.number == pr_number:  # ג current PR
             continue
         if pr.user.login == "xsoar-bot":
             pr_creator_from_body = get_user_from_ui_pr(pr)
@@ -327,8 +314,19 @@ def find_all_open_prs_by_user(content_repo, pr_creator, pr_number):
             continue
     print(f'similar prs are: {similar_prs}')
     return similar_prs
-    #return pr_opened_by_same_user
 
+
+def filter_prs_by_current_round(other_prs_by_same_user):
+    content_roles = load_json(CONTENT_ROLES_PATH)
+    content_reviewers, __, _ = get_content_reviewers(content_roles)
+    reviewers = []
+    for pr in other_prs_by_same_user:
+        print(f"pr for filter is: {pr}")
+        print(f'reviewers for that pr are{pr.requested_reviewers}')
+        print(f'login for reviewers is: {pr.requested_reviewers.login}')
+        if pr.requested_reviewers.login in content_reviewers:
+            reviewers.append(pr.requested_reviewers.login)
+    return reviewers
 
 def find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number):
     """
@@ -346,7 +344,10 @@ def find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number):
         pr_creator = pr.user.login
 
     other_prs_by_same_user = find_all_open_prs_by_user(content_repo, pr_creator, pr_number)
-    return other_prs_by_same_user
+    reviewers_to_assign = filter_prs_by_current_round(other_prs_by_same_user)
+    return reviewers_to_assign
+
+
     #if other_prs_by_same_user:
     #    pr_reviewer = get_reviewer(other_prs_by_same_user)
     #    if pr_reviewer in content_reviewers:
@@ -438,8 +439,9 @@ def main():
     print(f"Security Reviewer: {security_reviewer}")
     print(f"TIM Reviewer: {tim_reviewer}")
 
-    temp = find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number)
-    print(f'The PR we search is {temp}')
+    found_reviewer = find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number)
+
+    if found_reviewer:
 
     content_reviewer = determine_reviewer(content_reviewers, content_repo)
     pr.add_to_assignees(content_reviewer)
