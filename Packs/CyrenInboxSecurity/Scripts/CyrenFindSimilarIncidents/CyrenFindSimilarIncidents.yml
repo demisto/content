@@ -1,16 +1,18 @@
 args:
 - description: the case id of incidents to return
   name: case_id
-comment: |-
-  Finds similar incidents by Cyren Case ID
+comment: 'Finds similar incidents by Cyren Case ID
+
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
+
   For more information, see the section about permissions here:
-  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations'
 commonfields:
   id: Cyren-Find-Similar-Incidents
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.14.92207
 enabled: true
 name: Cyren-Find-Similar-Incidents
 outputs:
