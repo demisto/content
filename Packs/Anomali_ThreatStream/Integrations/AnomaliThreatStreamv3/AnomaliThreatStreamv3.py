@@ -2494,6 +2494,55 @@ def add_tag_to_model(client: Client, model_id, tags, model="intelligence"):
         raise DemistoException(f'Failed to add {tags} to {model} with {model_id}')
 
 
+def get_indicators_paginated_with_next_url(client: Client, url: str, **kwargs) -> tuple[list, list]:
+    """The recommended way to get paginated results for up to 10,000 records. """
+    res = client.http_request("GET", url, params=kwargs)
+    if not (iocs_list := res.get('objects', None)):
+        return [], []
+    iocs_context = parse_indicators_list(iocs_list)
+    # handle the issue that the API does not return more than 1000 indicators.
+    if kwargs["limit"] > 1000:
+        next_page = res.get('meta', {}).get('next', None)
+        while len(iocs_context) < kwargs["limit"] and next_page:
+            next_page = next_page.replace('api/', '')
+            res = client.http_request("GET", next_page)
+            iocs_list = res.get('objects', None)
+            next_page = res.get('meta', {}).get('next', None)
+            if iocs_list:
+                iocs_context.extend(parse_indicators_list(iocs_list))
+            else:
+                break
+    return iocs_list, iocs_context
+
+
+def get_indicators_paginated_with_update_id(client: Client, url: str, **kwargs) -> tuple[list, list]:
+    """The recommended way to get paginated results for over 10,000 records. """
+    i = 1
+    user_limit = kwargs["limit"]
+    del kwargs["limit"]  # will return up to 1000 per page
+
+    kwargs["update_id__gt"] = 0
+    kwargs["order_by"] = "update_id"
+
+    demisto.debug(f"[TS] API call no. {i}: {kwargs=}, {url=}")
+    res = client.http_request("GET", url, params=kwargs)
+    if not (iocs_list := res.get('objects', None)):
+        return [], []
+    demisto.debug(f"[TS] returned {len(iocs_list)} results")
+    iocs_context = parse_indicators_list(iocs_list)
+    while len(iocs_context) < user_limit and iocs_list:
+        i += 1
+        kwargs["update_id__gt"] = iocs_list[-1]["update_id"]
+        demisto.debug(f"[TS] API call no. {i}: {kwargs=}")
+        res = client.http_request("GET", url, params=kwargs)
+        iocs_list = res.get('objects', None)
+        demisto.debug(f"[TS] returned {len(iocs_list)} results")
+        if iocs_list:
+            iocs_context.extend(parse_indicators_list(iocs_list))
+        demisto.debug(f"[TS] aggregated results count is {len(iocs_context)}")
+    return iocs_list, iocs_context
+
+
 def get_indicators(client: Client, **kwargs):
     """
         Returns filtered indicators by parameters from ThreatStream.
@@ -2511,24 +2560,12 @@ def get_indicators(client: Client, **kwargs):
     url = "v2/intelligence/"
     if 'query' in kwargs:
         url += f"?q={kwargs.pop('query')}"
-    res = client.http_request("GET", url, params=kwargs)
-    iocs_list = res.get('objects', None)
+    if limit < 10000:
+        iocs_list, iocs_context = get_indicators_paginated_with_next_url(client, url, **kwargs)
+    else:
+        iocs_list, iocs_context = get_indicators_paginated_with_update_id(client, url, **kwargs)
     if not iocs_list:
         return 'No indicators found from ThreatStream'
-
-    iocs_context = parse_indicators_list(iocs_list)
-    # handle the issue that the API does not return more than 1000 indicators.
-    if limit > 1000:
-        next_page = res.get('meta', {}).get('next', None)
-        while len(iocs_context) < limit and next_page:
-            next_page = next_page.replace('api/', '')
-            res = client.http_request("GET", next_page)
-            iocs_list = res.get('objects', None)
-            next_page = res.get('meta', {}).get('next', None)
-            if iocs_list:
-                iocs_context.extend(parse_indicators_list(iocs_list))
-            else:
-                break
 
     return CommandResults(
         outputs_prefix=f'{THREAT_STREAM}.Indicators',

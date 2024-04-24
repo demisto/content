@@ -1050,12 +1050,12 @@ class TestGetIndicators:
         assert len(results.outputs) == 50
 
     @staticmethod
-    def test_pagination(mocker):
+    def test_pagination_with_next_url(mocker):
         """
         Given
             a limit above the page size
         When
-            calling the get_indicator command
+            calling the get_indicator command with limit=7000
         Then
             verify that the requested amount is returned.
         """
@@ -1082,6 +1082,45 @@ class TestGetIndicators:
         results = get_indicators(client, limit='7000')
 
         assert len(results.outputs) == 7000
+
+    @staticmethod
+    def test_pagination_with_update_id(mocker):
+        """
+        Given
+            a limit above the page size
+        When
+            calling the get_indicator command with limit=10000
+        Then
+            verify that the requested amount is returned.
+        """
+        indicator = INDICATOR[0].copy()
+        mocker.patch.object(Client, 'http_request', side_effect=[
+            {'objects': [indicator | {"update_id": i} for i in range(1000)]},
+            {'objects': [indicator | {"update_id": i} for i in range(1000, 2000)]},
+            {'objects': [indicator | {"update_id": i} for i in range(2000, 3000)]},
+            {'objects': [indicator | {"update_id": i} for i in range(3000, 4000)]},
+            {'objects': [indicator | {"update_id": i} for i in range(4000, 5000)]},
+            {'objects': [indicator | {"update_id": i} for i in range(5000, 6000)]},
+            {'objects': [indicator | {"update_id": i} for i in range(6000, 7000)]},
+            {'objects': [indicator | {"update_id": i} for i in range(7000, 8000)]},
+            {'objects': [indicator | {"update_id": i} for i in range(8000, 9000)]},
+            {'objects': [indicator | {"update_id": i} for i in range(9000, 10000)]},
+            {'objects': [indicator | {"update_id": i} for i in range(10000, 10150)]},
+        ])
+        client = Client(
+            base_url='',
+            user_name='',
+            api_key='',
+            verify=False,
+            proxy=False,
+            reliability='B - Usually reliable',
+            should_create_relationships=False,
+            remote_api=False,
+        )
+
+        results = get_indicators(client, limit='10000')
+
+        assert len(results.outputs) == 10000
 
 
 def test_search_intelligence(mocker):
