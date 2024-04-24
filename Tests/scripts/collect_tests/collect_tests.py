@@ -155,8 +155,9 @@ class CollectionResult:
 
         except NonNightlyPackInNightlyBuildException as e:
             test_suffix = f', not collecting {test}' if test else ''
-            logger.info(f'{str(e)}{test_suffix} (pack will be installed)')
+            logger.info(f'{str(e)}{test_suffix} (pack will not be installed)')  # pack not in conf.nightly_packs
             test = None
+            return  # TODO
 
         except (SkippedPackException, DeprecatedPackException,) as e:
             logger.warning(str(e))
@@ -168,6 +169,7 @@ class CollectionResult:
 
         if pack:
             if only_to_upload == only_to_install:
+                logger.info(f'Michal {only_to_upload=}, {only_to_install=}')
 
                 if only_to_upload and only_to_install:
                     raise ValueError(f"Packs can be collected for both to install and to upload. {pack=}, {reason}")
@@ -336,6 +338,7 @@ class TestCollector(ABC):
     @property
     def _always_installed_packs(self) -> CollectionResult | None:
         always_installed_packs_list = ALWAYS_INSTALLED_PACKS_MAPPING[self.marketplace]
+        logger.info(f'Michal {len(always_installed_packs_list)=}')
         return CollectionResult.union(tuple(
             CollectionResult(test=None, modeling_rule_to_test=None, pack=pack,
                              reason=CollectionReason.ALWAYS_INSTALLED_PACKS,
@@ -432,6 +435,8 @@ class TestCollector(ABC):
                 else:
                     logger.warning(f'Could not find script {script} in id_set'
                                    f' when searching for integrations the {test_id} test depends on')
+
+        logger.info(f'Michal _collect_test_dependencies {len(result)=}')
 
         return CollectionResult.union(tuple(result))
 
@@ -1316,6 +1321,7 @@ class NightlyTestCollector(TestCollector, ABC):
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException) as e:
                 logger.debug(str(e))
+        logger.info(f'Michal, _id_set_tests_matching_marketplace_value {len(result)=}')
 
         return CollectionResult.union(result)
 
