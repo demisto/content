@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 5e9e0b1d-0914-4277-874e-c035a26cdcfd
+    taskid: 6c7dbcfb-6937-4b34-8f9c-819cbae9ae36
     type: start
     task:
-      id: 5e9e0b1d-0914-4277-874e-c035a26cdcfd
+      id: 6c7dbcfb-6937-4b34-8f9c-819cbae9ae36
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 42c1a166-d133-4890-8f1f-405efe248dde
+    taskid: 8697d08d-678e-464f-835b-1f6ffd24f71a
     type: title
     task:
-      id: 42c1a166-d133-4890-8f1f-405efe248dde
+      id: 8697d08d-678e-464f-835b-1f6ffd24f71a
       version: -1
       name: Check Previous Similar Incidents
       type: title
@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: e45fff3d-7245-4cb0-8118-db185b7321f8
+    taskid: 72d68f27-3f59-4b81-8e76-0672b557a892
     type: regular
     task:
-      id: e45fff3d-7245-4cb0-8118-db185b7321f8
+      id: 72d68f27-3f59-4b81-8e76-0672b557a892
       version: -1
       name: Find Similar Alerts
       description: Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
@@ -91,7 +91,7 @@ tasks:
       minimunIncidentSimilarity:
         simple: "0.8"
       query:
-        simple: ${alert.closeReason}:Resolve As False Positive or ${alert.closeReason}:Resolved - Duplicate Alert or ${alert.closeReason}:Resolved - Other or ${alert.closeReason}:Resolved - Known Issue or ${alert.closeReason}:Resolved - False Positive
+        simple: status:closed -closeReason:New -closeReason:Under Investigation -closeReason:Resolved - True Positive
       similarCategoricalField:
         simple: alert.appid,alert.remoteport,alert.initiatorsha256,alert.cgosha256,alert.osparentsha256
       similarTextField:
@@ -114,10 +114,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 25929536-ed1b-4848-810f-8b2023b1d8fb
+    taskid: c5a5bd0f-7d6e-4e90-8a9c-ee8cc950dcd8
     type: condition
     task:
-      id: 25929536-ed1b-4848-810f-8b2023b1d8fb
+      id: c5a5bd0f-7d6e-4e90-8a9c-ee8cc950dcd8
       version: -1
       name: Found Results?
       description: Determine if previous false positive alerts have been detected with similar characteristics.
@@ -159,10 +159,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: dc4effe6-7a0d-45d2-8301-15c8d4234cd0
+    taskid: 1ec586df-20a7-443a-8739-b444dcd6c8da
     type: condition
     task:
-      id: dc4effe6-7a0d-45d2-8301-15c8d4234cd0
+      id: 1ec586df-20a7-443a-8739-b444dcd6c8da
       version: -1
       name: Investigation Should be Continued?
       description: Determines whether an alert requires further investigation if similar previous false positive incidents were found.
@@ -204,10 +204,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 448fefe4-c69a-45fd-899c-6e138ce31e92
+    taskid: 90f51021-99b9-4ef9-8b52-ebdbc60bf287
     type: condition
     task:
-      id: 448fefe4-c69a-45fd-899c-6e138ce31e92
+      id: 90f51021-99b9-4ef9-8b52-ebdbc60bf287
       version: -1
       name: Alert Investigation Should Continue?
       description: |-
@@ -240,10 +240,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: e2253abd-a716-47b4-8475-796c25442726
+    taskid: 50c117ad-c5ac-462a-8561-d68218a6b8d5
     type: title
     task:
-      id: e2253abd-a716-47b4-8475-796c25442726
+      id: 50c117ad-c5ac-462a-8561-d68218a6b8d5
       version: -1
       name: Enrichment
       type: title
@@ -271,10 +271,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: f53c8abc-04b8-4315-8942-eaf621e1b202
+    taskid: fe568ede-c2ed-49c3-8960-93d68932bc81
     type: title
     task:
-      id: f53c8abc-04b8-4315-8942-eaf621e1b202
+      id: fe568ede-c2ed-49c3-8960-93d68932bc81
       version: -1
       name: Done
       type: title
@@ -299,10 +299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 7ba82224-2515-4547-8509-9cee0e41ebef
+    taskid: aaf85552-310e-44ec-80df-6d13fc74babe
     type: condition
     task:
-      id: 7ba82224-2515-4547-8509-9cee0e41ebef
+      id: aaf85552-310e-44ec-80df-6d13fc74babe
       version: -1
       name: Check Uploaded Data Volume
       description: Determines if the amount of data uploaded to an external host exceeds the defined threshold amount.
@@ -416,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: c59f8c90-7ce9-424a-87b5-e745802ba32b
+    taskid: e4410a4b-63d7-40b7-8a24-81d34e2853bb
     type: playbook
     task:
-      id: c59f8c90-7ce9-424a-87b5-e745802ba32b
+      id: e4410a4b-63d7-40b7-8a24-81d34e2853bb
       version: -1
       name: Entity Enrichment - Generic v3
       description: Enrich entities using one or more integrations.
@@ -544,10 +544,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: f7bd3ea7-e244-455e-8f36-7c451b94632d
+    taskid: 3512a97c-3538-462f-8715-81922998871e
     type: title
     task:
-      id: f7bd3ea7-e244-455e-8f36-7c451b94632d
+      id: 3512a97c-3538-462f-8715-81922998871e
       version: -1
       name: Analysis
       type: title
@@ -580,10 +580,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 8d4bb1b9-fffb-4046-8e9f-1ec6e1410e7c
+    taskid: d9285c68-50eb-40bd-8fd4-759eb210ac87
     type: regular
     task:
-      id: 8d4bb1b9-fffb-4046-8e9f-1ec6e1410e7c
+      id: d9285c68-50eb-40bd-8fd4-759eb210ac87
       version: -1
       name: Set Additional Alerts to Context
       description: Set a value in context under the key you entered.
@@ -639,10 +639,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: cdec4dcd-7050-4fa8-844d-fa41e38be193
+    taskid: ba180592-3db7-47b3-85a0-b67b132defdb
     type: regular
     task:
-      id: cdec4dcd-7050-4fa8-844d-fa41e38be193
+      id: ba180592-3db7-47b3-85a0-b67b132defdb
       version: -1
       name: Check Whether The Source Host Is an FTP Server
       description: Set a value in context under the key you entered.
@@ -692,10 +692,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 53f52398-bf77-412b-8531-b0bd44c4bd92
+    taskid: 8dd7433f-8937-4d38-8eb5-3227abd969df
     type: regular
     task:
-      id: 53f52398-bf77-412b-8531-b0bd44c4bd92
+      id: 8dd7433f-8937-4d38-8eb5-3227abd969df
       version: -1
       name: Check Whether The Source Host Is an SMTP Server
       description: Set a value in context under the key you entered.
@@ -745,10 +745,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: ba04b7de-cc06-421c-8214-bdf67b15c695
+    taskid: feeaab53-6b95-4c8e-8db4-13ca6f651c0e
     type: condition
     task:
-      id: ba04b7de-cc06-421c-8214-bdf67b15c695
+      id: feeaab53-6b95-4c8e-8db4-13ca6f651c0e
       version: -1
       name: An Unusual FW App ID was used?
       description: Checks whether an unusual FW App ID was used.
@@ -807,10 +807,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 71d503fb-7164-4b3c-8ab0-dea9d94a5049
+    taskid: 0fed42d5-2f74-41fd-8a07-f55027ea530d
     type: regular
     task:
-      id: 71d503fb-7164-4b3c-8ab0-dea9d94a5049
+      id: 0fed42d5-2f74-41fd-8a07-f55027ea530d
       version: -1
       name: Set Unusual FW App ID
       description: Set a value in context under the key you entered.
@@ -844,10 +844,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: a035e4ec-f400-459d-8211-101b686e9ca9
+    taskid: b12e6e1d-217c-4762-8e78-4799db5db267
     type: regular
     task:
-      id: a035e4ec-f400-459d-8211-101b686e9ca9
+      id: b12e6e1d-217c-4762-8e78-4799db5db267
       version: -1
       name: Set Unusual Process
       description: Set a value in context under the key you entered.
@@ -881,10 +881,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: c4a64732-9aee-40f1-8f25-70a42ce5a3de
+    taskid: 085d6d0b-264f-4102-8d3f-3d22c8b73b56
     type: condition
     task:
-      id: c4a64732-9aee-40f1-8f25-70a42ce5a3de
+      id: 085d6d0b-264f-4102-8d3f-3d22c8b73b56
       version: -1
       name: An Unusual Process was used?
       description: Checks whether an unusual process was used.
@@ -955,10 +955,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 516d1b67-aaf1-4df4-8870-c1205f523d3f
+    taskid: 217db6e1-9ac4-430e-895a-df13d0530160
     type: regular
     task:
-      id: 516d1b67-aaf1-4df4-8870-c1205f523d3f
+      id: 217db6e1-9ac4-430e-895a-df13d0530160
       version: -1
       name: Set Unsigned Process
       description: Set a value in context under the key you entered.
@@ -992,10 +992,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 7468c298-9201-4639-825e-ac995920296e
+    taskid: 39200c88-ab42-4156-862f-2fcf82f19f10
     type: condition
     task:
-      id: 7468c298-9201-4639-825e-ac995920296e
+      id: 39200c88-ab42-4156-862f-2fcf82f19f10
       version: -1
       name: Unsigned Initiator Process?
       description: Checks whether the initiator process is unsigned.
@@ -1053,10 +1053,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: a2fc4fc9-ba18-403b-8f18-ea5750c66efe
+    taskid: 6b43ad44-ea77-4ba0-8f65-a0492deee1b0
     type: title
     task:
-      id: a2fc4fc9-ba18-403b-8f18-ea5750c66efe
+      id: 6b43ad44-ea77-4ba0-8f65-a0492deee1b0
       version: -1
       name: Containment
       type: title
@@ -1084,10 +1084,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 22fc5159-8bc2-493e-8b0e-5cbc286aa1f2
+    taskid: f3be381d-d9b0-43cb-8b39-88c0b23a9361
     type: condition
     task:
-      id: 22fc5159-8bc2-493e-8b0e-5cbc286aa1f2
+      id: f3be381d-d9b0-43cb-8b39-88c0b23a9361
       version: -1
       name: Malicious Indicators Found?
       description: Checks whether there are any malicious indicators to block.
@@ -1171,10 +1171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 764d892b-eaef-4e5f-8ad9-acfaec43842a
+    taskid: fd553753-a938-48a1-85e5-229e4fead72e
     type: condition
     task:
-      id: 764d892b-eaef-4e5f-8ad9-acfaec43842a
+      id: fd553753-a938-48a1-85e5-229e4fead72e
       version: -1
       name: Early containment enabled?
       description: Checks whether early containment is enabled for this playbook before executing containment.
@@ -1216,10 +1216,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 77a259eb-dfd2-4fa1-8c8c-17f20b43dbab
+    taskid: 9a381545-3837-49c6-8462-0703a4b3a1fc
     type: playbook
     task:
-      id: 77a259eb-dfd2-4fa1-8c8c-17f20b43dbab
+      id: 9a381545-3837-49c6-8462-0703a4b3a1fc
       version: -1
       name: Block Indicators - Generic v3
       description: |-
@@ -1406,10 +1406,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: b562cb5e-b5ef-4b3e-81e9-4f1f2d373dca
+    taskid: dff2d00e-ead5-42af-8925-e9ab4bb392c5
     type: title
     task:
-      id: b562cb5e-b5ef-4b3e-81e9-4f1f2d373dca
+      id: dff2d00e-ead5-42af-8925-e9ab4bb392c5
       version: -1
       name: Investigation
       type: title
@@ -1440,10 +1440,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 36b833c7-86b0-4a2f-8107-3fa9b3c7fdb7
+    taskid: e42cdc09-90b7-4f4c-8932-f1cd98dbce53
     type: playbook
     task:
-      id: 36b833c7-86b0-4a2f-8107-3fa9b3c7fdb7
+      id: e42cdc09-90b7-4f4c-8932-f1cd98dbce53
       version: -1
       name: TIM - Indicator Relationships Analysis
       description: |-
@@ -1492,10 +1492,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 0572b612-e0bd-4a6d-8f41-1c664cfa4568
+    taskid: 80ecf312-6088-4f9f-88b3-99c606b1c5dc
     type: playbook
     task:
-      id: 0572b612-e0bd-4a6d-8f41-1c664cfa4568
+      id: 80ecf312-6088-4f9f-88b3-99c606b1c5dc
       version: -1
       name: User Investigation - Generic
       description: |-
@@ -1565,10 +1565,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: cada9cb1-29b1-41f5-87a0-e2074f839002
+    taskid: 5bf706da-8373-49a6-8d3a-718752ab995e
     type: condition
     task:
-      id: cada9cb1-29b1-41f5-87a0-e2074f839002
+      id: 5bf706da-8373-49a6-8d3a-718752ab995e
       version: -1
       name: Has User to Investigate?
       description: Checks whether an initiator username is available for investigation.
@@ -1609,10 +1609,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: b468a254-4abc-43ac-8d11-5bd8159c7b4e
+    taskid: cc640258-7d81-4d75-8374-a9d7082bbf36
     type: playbook
     task:
-      id: b468a254-4abc-43ac-8d11-5bd8159c7b4e
+      id: cc640258-7d81-4d75-8374-a9d7082bbf36
       version: -1
       name: Endpoint Investigation Plan
       description: "This playbook handles all the endpoint investigation actions by performing the following tasks  on every alert associated with the alert:\n* Pre-defined MITRE Tactics\n* Host fields (Host ID)\n* Attacker fields (Attacker IP, External host)\n* MITRE techniques\n* File hash (currently, the playbook supports only SHA256)  \n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -1749,10 +1749,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: e6743034-2c11-4a24-8870-b391e4b227f6
+    taskid: 9a0966fc-2354-4a7f-84af-8408838bd539
     type: playbook
     task:
-      id: e6743034-2c11-4a24-8870-b391e4b227f6
+      id: 9a0966fc-2354-4a7f-84af-8408838bd539
       version: -1
       name: Command-Line Analysis
       description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check \"For Each Input\"."
@@ -1801,10 +1801,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 8c8cafc8-0cc5-4dd1-8476-fec483aad88d
+    taskid: 8e08bf08-c948-4753-8a76-ac6d34aa874f
     type: playbook
     task:
-      id: 8c8cafc8-0cc5-4dd1-8476-fec483aad88d
+      id: 8e08bf08-c948-4753-8a76-ac6d34aa874f
       version: -1
       name: Search and Compare Process Executions - Generic
       description: |-
@@ -1858,10 +1858,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 41d55db7-0de8-4956-88c3-71b436bc238a
+    taskid: 3b4bb95e-181d-4d4f-8f8d-d5ee3410b7cf
     type: condition
     task:
-      id: 41d55db7-0de8-4956-88c3-71b436bc238a
+      id: 3b4bb95e-181d-4d4f-8f8d-d5ee3410b7cf
       version: -1
       name: Has Command-Line to Investigate?
       description: Checks whether an initiator command-line is available for investigation.
@@ -1912,10 +1912,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 3014f470-ca01-4433-8e13-1d8a5ad6766a
+    taskid: fab649a7-5152-441c-8975-0b21e8452278
     type: condition
     task:
-      id: 3014f470-ca01-4433-8e13-1d8a5ad6766a
+      id: fab649a7-5152-441c-8975-0b21e8452278
       version: -1
       name: Has Command-Line to Investigate?
       description: Checks whether an initiator command-line is available for investigation.
@@ -1999,10 +1999,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: b77e710d-834c-4d32-804e-6ed7d0d5d0b5
+    taskid: 75661c64-aca9-4fec-870a-be6a05dda95c
     type: regular
     task:
-      id: b77e710d-834c-4d32-804e-6ed7d0d5d0b5
+      id: 75661c64-aca9-4fec-870a-be6a05dda95c
       version: -1
       name: Set Malicious Command-Line
       description: Set a value in context under the key you entered.
@@ -2036,10 +2036,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 223c9912-5f72-4a1e-8ccb-1e160e4e3f8e
+    taskid: c1251dbd-a14b-473c-836e-0c81f5667b56
     type: title
     task:
-      id: 223c9912-5f72-4a1e-8ccb-1e160e4e3f8e
+      id: c1251dbd-a14b-473c-836e-0c81f5667b56
       version: -1
       name: Set Verdict
       type: title
@@ -2067,10 +2067,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 1727b34f-8927-4358-8123-19e1cba3dc38
+    taskid: c32e7f2d-5b93-4f70-8305-43f704dfad02
     type: condition
     task:
-      id: 1727b34f-8927-4358-8123-19e1cba3dc38
+      id: c32e7f2d-5b93-4f70-8305-43f704dfad02
       version: -1
       name: Calculate Verdict
       description: Estimate the verdict for the large upload Cortex XDR alerts.
@@ -2752,10 +2752,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: accb23ad-9f93-4d21-8366-f6edbb9dfbab
+    taskid: 6a389912-bd5d-45d5-85d1-c99eaffe7dc7
     type: regular
     task:
-      id: accb23ad-9f93-4d21-8366-f6edbb9dfbab
+      id: 6a389912-bd5d-45d5-85d1-c99eaffe7dc7
       version: -1
       name: Get Alert Extra Data
       description: Returns information about each alert ID.
@@ -2792,10 +2792,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 95f8292e-4a04-44b7-8865-2602c95035fd
+    taskid: 02078163-8f58-4c46-8062-0e1f6fdceb62
     type: title
     task:
-      id: 95f8292e-4a04-44b7-8865-2602c95035fd
+      id: 02078163-8f58-4c46-8062-0e1f6fdceb62
       version: -1
       name: Benign
       type: title
@@ -2823,10 +2823,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: a517ba5d-f0e7-4819-8f9a-fa9722929423
+    taskid: 2847922d-ea7e-4f39-81dd-828d8beaace1
     type: title
     task:
-      id: a517ba5d-f0e7-4819-8f9a-fa9722929423
+      id: 2847922d-ea7e-4f39-81dd-828d8beaace1
       version: -1
       name: Suspicious
       type: title
@@ -2854,10 +2854,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 09ee3adf-c158-4a79-8ec8-7fef13158840
+    taskid: 54b0d9f0-f693-45b4-87ba-11ff89012f78
     type: condition
     task:
-      id: 09ee3adf-c158-4a79-8ec8-7fef13158840
+      id: 54b0d9f0-f693-45b4-87ba-11ff89012f78
       version: -1
       name: Manual Investigation
       description: "Upon review, the playbook did not identify any obvious malicious indicators associated with the alert. However, there are some noteworthy observations that require manual investigation. \n\n**Review the following alert details and determine whether remediation is necessary:**\n1. Verify if previous false positive alerts with similar characteristics have been detected.\n2. Review the additional alerts within the incident, if any exist.\n3. Examine the additional alerts retrieved by the sub-playbooks associated with the initiator account, similar command line, or initiator host.\n4. Check the FW application ID to ensure it is a known and authorized application within the organization (if the activity and application are valid, add the ID to the 'FWApps_Processes_Whitlist' playbook input to avoid false positives).\n5. Check the initiator process to ensure it is a known and authorized process within the organization (if the activity and process are valid, add the process name to the 'FWApps_Processes_Whitlist' playbook input to avoid false positives).\n6. Analyze the command line analysis results and any additional alerts with similar initiator command lines retrieved from the 'Cortex XDR - Search and Compare Process Executions - XDR Alerts' sub-playbook.\n7. Determine whether the user is aware of the upload activity and what caused the massive upload that triggered the alert.\n8. Verify whether the uploaded files contain sensitive information."
@@ -2887,10 +2887,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: da9f4fa8-f808-4933-85cd-88446c7964de
+    taskid: 8c8143f1-a8ab-4af1-88ce-eff1b5432196
     type: title
     task:
-      id: da9f4fa8-f808-4933-85cd-88446c7964de
+      id: 8c8143f1-a8ab-4af1-88ce-eff1b5432196
       version: -1
       name: Malicious
       type: title
@@ -2918,10 +2918,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 4c406235-b217-4490-8456-1b4e94ea0fcc
+    taskid: 34bb8400-7a94-4c18-85a9-23150907eb22
     type: regular
     task:
-      id: 4c406235-b217-4490-8456-1b4e94ea0fcc
+      id: 34bb8400-7a94-4c18-85a9-23150907eb22
       version: -1
       name: Set Alert Verdict - Malicious
       description: commands.local.cmd.set.incident
@@ -2953,10 +2953,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 400f8db0-d4f4-49d4-8c11-86709d2f551a
+    taskid: 607d68dc-d4b9-472a-828a-a0b13f86e62c
     type: title
     task:
-      id: 400f8db0-d4f4-49d4-8c11-86709d2f551a
+      id: 607d68dc-d4b9-472a-828a-a0b13f86e62c
       version: -1
       name: Investigation - Related Indicators Hunt
       type: title
@@ -2984,10 +2984,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 655790f6-c585-4421-89dd-32104c9d2838
+    taskid: d0e78f0e-d8d3-4d15-8af2-115c4658b381
     type: condition
     task:
-      id: 655790f6-c585-4421-89dd-32104c9d2838
+      id: d0e78f0e-d8d3-4d15-8af2-115c4658b381
       version: -1
       name: Found Related Indicators to Hunt?
       description: Checks whether there are any indicators to hunt for.
@@ -3040,10 +3040,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 90579448-cff7-4f20-8cc7-c009d65f3135
+    taskid: 279b4c05-7734-46aa-807a-7fab9fa62905
     type: playbook
     task:
-      id: 90579448-cff7-4f20-8cc7-c009d65f3135
+      id: 279b4c05-7734-46aa-807a-7fab9fa62905
       version: -1
       name: Threat Hunting - Generic
       description: "This playbook enables threat hunting for IOCs in your enterprise. It currently supports the following integrations: \n- Splunk\n- Qradar\n- Pan-os \n- Cortex Data Lake \n- Autofocus\n- Microsoft 365 Defender"
@@ -3305,10 +3305,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 6928766a-dea7-4805-8bf8-b2c3b750399b
+    taskid: 8245e301-48ee-4974-8bcc-ce88eaedb0d8
     type: title
     task:
-      id: 6928766a-dea7-4805-8bf8-b2c3b750399b
+      id: 8245e301-48ee-4974-8bcc-ce88eaedb0d8
       version: -1
       name: Remediation
       type: title
@@ -3337,10 +3337,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 7457343f-900b-4460-816a-490fbae4c836
+    taskid: c49d14ac-14bc-43f0-8be7-852dbbd4f42b
     type: playbook
     task:
-      id: 7457343f-900b-4460-816a-490fbae4c836
+      id: c49d14ac-14bc-43f0-8be7-852dbbd4f42b
       version: -1
       name: Block Indicators - Generic v3
       description: |-
@@ -3638,10 +3638,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 77700718-7a50-42d0-8a46-460016ab2a28
+    taskid: 370de85c-8fbc-4c5b-8fff-84a66629234c
     type: condition
     task:
-      id: 77700718-7a50-42d0-8a46-460016ab2a28
+      id: 370de85c-8fbc-4c5b-8fff-84a66629234c
       version: -1
       name: Found Related Indicators to Hunt?
       description: Determine whether the endpoint should be isolated automatically.
@@ -3688,10 +3688,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 4e3fe882-78c6-4192-866c-a1374cd6b93c
+    taskid: fe091087-beca-4117-8e4c-871838eb6e59
     type: regular
     task:
-      id: 4e3fe882-78c6-4192-866c-a1374cd6b93c
+      id: fe091087-beca-4117-8e4c-871838eb6e59
       version: -1
       name: Core Isolate Endpoint
       description: Isolates the specified endpoint.
@@ -3723,10 +3723,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 27724ae9-c771-4c1d-8188-ad3afcd11d27
+    taskid: bd684ecc-ebd8-4d11-8a82-cbd4a7a2de29
     type: regular
     task:
-      id: 27724ae9-c771-4c1d-8188-ad3afcd11d27
+      id: bd684ecc-ebd8-4d11-8a82-cbd4a7a2de29
       version: -1
       name: Close Alert - Resolve As a Duplicate Alert
       description: commands.local.cmd.set.alert.status
@@ -3758,10 +3758,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 318f3c21-e001-4427-838a-9094fd1757c2
+    taskid: caab875b-9fe2-46df-87c8-7e9947a49d01
     type: regular
     task:
-      id: 318f3c21-e001-4427-838a-9094fd1757c2
+      id: caab875b-9fe2-46df-87c8-7e9947a49d01
       version: -1
       name: Close Alert - Resolve As False Positive
       description: commands.local.cmd.set.alert.status
@@ -3793,10 +3793,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: df644331-858b-45bc-8eb8-7a619e09aa7f
+    taskid: 030d70eb-cb22-4f1f-8f68-7e18df5a5931
     type: regular
     task:
-      id: df644331-858b-45bc-8eb8-7a619e09aa7f
+      id: 030d70eb-cb22-4f1f-8f68-7e18df5a5931
       version: -1
       name: Close Alert - Resolve As True Positive
       description: commands.local.cmd.set.alert.status
@@ -3828,10 +3828,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: b7d7224b-61d5-4130-8e49-eda6fad4eef4
+    taskid: cf6b0725-4237-470a-88db-c526cf0a61de
     type: regular
     task:
-      id: b7d7224b-61d5-4130-8e49-eda6fad4eef4
+      id: cf6b0725-4237-470a-88db-c526cf0a61de
       version: -1
       name: Close Alert - Resolve As Other
       description: commands.local.cmd.set.alert.status
@@ -3878,7 +3878,8 @@ view: |-
       "4_56_#default#": 0.41,
       "5_56_#default#": 0.43,
       "5_6_Yes": 0.13,
-      "8_59_#default#": 0.23
+      "8_36_More Than Threshold": 0.52,
+      "8_59_#default#": 0.77
     },
     "paper": {
       "dimensions": {
@@ -3958,26 +3959,6 @@ inputs:
     simple: ${alert.id}
   required: false
   description: The Cortex XDR alert ID.
-  playbookInputQuery:
-- key: Transferred_Data
-  value:
-    complex:
-      root: alert
-      accessor: details
-      transformers:
-      - operator: RegexGroups
-        args:
-          flags: {}
-          groups:
-            value:
-              simple: "1"
-          keys: {}
-          regex:
-            value:
-              simple: uploaded\s(.*(MB|GB|TB))
-      - operator: SumList
-  required: false
-  description: The amount of uploaded data transferred to an external destination as a result of the large upload activity.
   playbookInputQuery:
 outputs: []
 tests:
