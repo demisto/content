@@ -173,7 +173,7 @@ class CollectionResult:
                     raise ValueError(f"Packs can be collected for both to install and to upload. {pack=}, {reason}")
 
                 self.packs_to_install = {pack}
-                self.packs_to_upload = {pack} # TODO WHY
+                self.packs_to_upload = {pack}  # TODO WHY
                 logger.info(f'collected {pack=}, {reason} ({reason_description}, {version_range=})')
 
             elif only_to_install:
@@ -809,7 +809,7 @@ class BranchTestCollector(TestCollector):
         collect_from = FilesToCollect(changed_files=self._get_private_pack_files(),
                                       pack_ids_files_were_removed_from=()) \
             if self.private_pack_path \
-            else self._get_git_diff() # TODO
+            else self._get_git_diff()  # TODO
 
         return CollectionResult.union([
             self._collect_from_changed_files(collect_from.changed_files),
@@ -1170,7 +1170,7 @@ class BranchTestCollector(TestCollector):
 
         logger.debug(f'Getting changed files for {self.branch_name=}')
 
-        if upload_delta_from_last_upload: # TODO last upload commit is not good - in cases the specific pack was not uploaded
+        if upload_delta_from_last_upload:  # TODO last upload commit is not good - in cases the specific pack was not uploaded
             logger.info('bucket upload: getting last commit from index')
             previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
             current_commit = self.branch_name
@@ -1415,7 +1415,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
         return CollectionResult.union((
             self._id_set_tests_matching_marketplace_value(),
             self._collect_all_marketplace_compatible_packs(is_nightly=True),
-            self._collect_packs_of_content_matching_marketplace_value(), # TODO why
+            self._collect_packs_of_content_matching_marketplace_value(),  # TODO why
             self._collect_modeling_rule_packs(),
             self.sanity_tests,  # XSIAM nightly always collects its sanity test(s)
         ))
@@ -1426,10 +1426,11 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
         super().__init__(marketplace, graph=graph)
 
     def _collect(self) -> CollectionResult | None:
-        return CollectionResult.union((
-            self._id_set_tests_matching_marketplace_value()
-            # self._collect_all_marketplace_compatible_packs(is_nightly=True),
-        ))
+        # return CollectionResult.union(
+        #     self._id_set_tests_matching_marketplace_value()
+        #     self._collect_all_marketplace_compatible_packs(is_nightly=True),
+        # )
+        return self._id_set_tests_matching_marketplace_value()
 
 
 class E2ETestCollector(TestCollector, ABC):
@@ -1617,7 +1618,7 @@ if __name__ == '__main__':
     elif sdk_nightly:
         collector = SDKNightlyTestCollector(marketplace=marketplace, graph=graph)
 
-    elif nightly: # TODO
+    elif nightly:  # TODO
         match marketplace:
             case MarketplaceVersions.XSOAR:
                 collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
