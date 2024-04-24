@@ -900,14 +900,14 @@ def test_build_eql_body():
     assert build_eql_body(None, None, None, None, None, None, None) == {}
     assert build_eql_body("query", "fields", "size", "tiebreaker_field",
                           "timestamp_field", "event_category_field", "filter") == {
-        "query": "query",
-        "fields": "fields",
-        "size": "size",
-        "tiebreaker_field": "tiebreaker_field",
-        "timestamp_field": "timestamp_field",
-        "event_category_field": "event_category_field",
-        "filter": "filter"
-    }
+               "query": "query",
+               "fields": "fields",
+               "size": "size",
+               "tiebreaker_field": "tiebreaker_field",
+               "timestamp_field": "timestamp_field",
+               "event_category_field": "event_category_field",
+               "filter": "filter"
+           }
 
 
 first_case_all_with_empty_string = ('', {'a': {'mappings': {'properties': {'example': {}}}}},
@@ -917,8 +917,8 @@ second_case_with_prefix_and_wildcard = ('.internal.alerts-*',
                                         {'.internal.alerts-security': {'mappings': {'properties': {'example': {}}}},
                                          '.internal': {'mappings': {'properties': {'example': {}}}}},
                                         {'.internal.alerts-security':
-                                            {'_id': 'doc_id', '_index': '.internal.alerts-security',
-                                                '_source': {'example': 'type: '}}}
+                                             {'_id': 'doc_id', '_index': '.internal.alerts-security',
+                                              '_source': {'example': 'type: '}}}
                                         )
 third_regular_case = ('a', {'a': {'mappings': {'properties': {'example': {}}}}},
                       {'a': {'_id': 'doc_id', '_index': 'a', '_source': {'example': 'type: '}}})
@@ -1050,12 +1050,58 @@ def test_index_document_command(mocker):
         'result': MOCK_INDEX_RESPONSE.get('result', '')
     }
     expected_human_readable = "### Indexed document\n" \
-        "|ID|Index name|Version|Result|\n" \
-        "|---|---|---|---|\n" \
-        "| 1 | test-index | 1 | created |\n"
+                              "|ID|Index name|Version|Result|\n" \
+                              "|---|---|---|---|\n" \
+                              "| 1 | test-index | 1 | created |\n"
 
     assert command_result.outputs == expected_index_context
     assert command_result.readable_output == expected_human_readable
     assert command_result.outputs_prefix == 'Elasticsearch.Index'
     assert command_result.raw_response == MOCK_INDEX_RESPONSE
     assert command_result.outputs_key_field == 'id'
+
+
+def test_get_value_by_dot_notation():
+    """
+    GIVEN a dictionary and a key in dot notation
+    WHEN get_value_by_dot_notation is called
+    THEN it should return the value corresponding to the key
+    """
+    dictionary = {
+        'a': {
+            'b': {
+                'c': 123
+            }
+        },
+        'x': {
+            'y': 456
+        }
+    }
+    key = 'a.b.c'
+
+    result = Elasticsearch_v2.get_value_by_dot_notation(dictionary, key)
+
+    assert result == 123
+
+
+def test_key_not_found():
+    """
+    GIVEN a dictionary and a key in dot notation that does not exist
+    WHEN get_value_by_dot_notation is called
+    THEN it should return None
+    """
+    dictionary = {
+        'a': {
+            'b': {
+                'c': 123
+            }
+        },
+        'x': {
+            'y': 456
+        }
+    }
+    key = 'a.b.d'  # Key 'a.b.d' does not exist
+
+    result = Elasticsearch_v2.get_value_by_dot_notation(dictionary, key)
+
+    assert result is None
