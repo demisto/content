@@ -1711,7 +1711,7 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         is_public = is_default_folder(folder_path, is_public)
         folders = [get_folder_by_path(account, folder_path, is_public)]
     else:
-        folders = FolderCollection(account=account, folders=[account.root.tois]).find_folders()
+        folders = FolderCollection(account=account, folders=[account.root.tois]).find_folders() # pylint: disable=E1101
 
     items = []  # type: ignore
     selected_all_fields = (selected_fields == 'all')
