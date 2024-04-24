@@ -9311,13 +9311,13 @@ def generic_http_request(method,
                          resp_type='json',
                          status_list_to_retry=None,
                          json_data=None,
-                         return_empty_response = False,
-                         backoff_factor = 5,
-                         raise_on_redirect = False,
-                         raise_on_status = False,
-                         empty_valid_codes = None,
-                         params_parser = None,
-                         with_metrics = False,
+                         return_empty_response=False,
+                         backoff_factor=5,
+                         raise_on_redirect=False,
+                         raise_on_status=False,
+                         empty_valid_codes=None,
+                         params_parser=None,
+                         with_metrics=False,
                          **kwargs
                          ):
     """
@@ -9397,7 +9397,6 @@ def generic_http_request(method,
                         auth=auth,
                         timeout=timeout
                         )
-
 
     return client._http_request(method=method, url_suffix=url_suffix, data=data, ok_codes=ok_codes, error_handler=error_handler,
                                 headers=headers, files=files, params=params, retries=retries, resp_type=resp_type,
