@@ -40,7 +40,7 @@ switch (command) {
     case 'demisto-lock-get':
         var lockTimeout = args.timeout || params.timeout || 600;
         var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
-        lockInfo += (args.info) ? ' Additional info: ' + args.info :'';
+        lockInfo += (args.info) ? ' Additional info: ' + args.info : '';
 
         var guid = args.guid || guid();
         var time = 0;
@@ -52,27 +52,29 @@ switch (command) {
             var md = '### Demisto Locking Mechanism\n';
             md += 'Lock acquired successfully\n';
             md += 'GUID: ' + guid;
-            return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md } ;
-        }
-        else {
-            // attempt to acquire the lock
-            if (!lock.guid) {
-                try {
-                    setLock(guid, lockInfo, version);
-                } catch(err) {
-                    logDebug(err.message)
-                }
-            }
-            return {
-                Type: entryTypes.note,
-                Contents: 'Lock was not acquired, Polling.',
-                PollingCommand: 'demisto-lock-get',
-                NextRun: '5',
-                PollingArgs: {name: lockName, info: args.info, timeout: args.timeout, guid: guid},
-                Timeout: String(lockTimeout)
-            }
-        }
-
+             return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md };
+         }
+         else {
+             // attempt to acquire the lock
+             if (!lock.guid) {
+                 try {
+                     setLock(guid, lockInfo, version);
+                 } catch (err) {
+                     logDebug(err.message)
+                 }
+             }
+             var timeout_err_msg = 'Timeout waiting for lock\n';
+             timeout_err_msg += 'Lock name: ' + lockName + '\n';
+             timeout_err_msg += 'Lock info: ' + lock.info + '\n';
+             return {
+                 Type: entryTypes.note,
+                 Contents: 'Lock was not acquired, Polling.',
+                 PollingCommand: 'demisto-lock-get',
+                 NextRun: '5',
+                 PollingArgs: { name: lockName, info: args.info, timeout: args.timeout, guid: guid, timeout_err_msg : timeout_err_msg},
+                 Timeout: String(lockTimeout)
+             }
+         }
 
         // do{
         //     [lock, version] = getLock();
