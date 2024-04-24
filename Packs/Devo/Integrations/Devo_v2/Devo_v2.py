@@ -520,9 +520,10 @@ def fetch_incidents():
     for event in final_events:
         if not isinstance(event[extra_data], dict):
             event[extra_data] = json.loads(event[extra_data])
-        for ed in event[extra_data]:
-            if event[extra_data][ed] and isinstance(event[extra_data][ed], str):
-                event[extra_data][ed] = urllib.parse.unquote_plus(event[extra_data][ed])
+        if event[extra_data] is not None:
+            for ed in event[extra_data]:
+                if event[extra_data][ed] and isinstance(event[extra_data][ed], str):
+                    event[extra_data][ed] = urllib.parse.unquote_plus(event[extra_data][ed])
         cur_events.append({event[alert_id]: event[event_date] / 1000})
         inc = alert_to_incident(event, user_prefix)
         incidents.append(inc)
@@ -691,7 +692,6 @@ def get_alerts_command(offset, items):
     timestamp_to = demisto.args().get("to", None)
     alert_filters = demisto.args().get("filters", None)
     write_context = demisto.args()["writeToContext"].lower()
-    int(demisto.args().get("queryTimeout", TIMEOUT))
     linq_base = demisto.args().get("linqLinkBase", None)
     user_alert_table = demisto.args().get("table_name", None)
     user_prefix = demisto.args().get("prefix", "")
@@ -756,8 +756,10 @@ def get_alerts_command(offset, items):
         if not isinstance(res[extra_data], dict):
             res[extra_data] = json.loads(res[extra_data])
 
-        for ed in res[extra_data]:
-            res[extra_data][ed] = urllib.parse.unquote_plus(res[extra_data][ed])
+        if res[extra_data] is not None:
+            for ed in res[extra_data]:
+                if res[extra_data][ed] is not None:
+                    res[extra_data][ed] = urllib.parse.unquote_plus(res[extra_data][ed])
 
     result = filter_results_by_fields(object_data, filtered_columns)
 
@@ -805,7 +807,6 @@ def multi_table_query_command(offset, items):
     timestamp_from = demisto.args()["from"]
     timestamp_to = demisto.args().get("to", None)
     write_context = demisto.args()["writeToContext"].lower()
-    int(demisto.args().get("queryTimeout", TIMEOUT))
     filtered_columns = demisto.args().get("filtered_columns", None)
     global COUNT_MULTI_TABLE
     time_range = get_time_range(timestamp_from, timestamp_to)
@@ -1075,10 +1076,8 @@ def main():
             if items_per_page <= 0:
                 raise ValueError("items_per_page should be a positive non-zero value.")
             total = 0
-            ip_as_string = demisto.args().get("ip_as_string", IP_AS_STRING)
-            demisto.debug("ip_as_string : ", len(ip_as_string))
-            if ip_as_string != "true" and ip_as_string != "false":
-                raise ValueError("\"ip_as_string\" should be true or false")
+            # Validate the ip_as_string param value 
+            argToBoolean(demisto.args().get("ip_as_string", IP_AS_STRING))
             demisto.results(run_query_command(OFFSET, items_per_page))
             total = total + COUNT_SINGLE_TABLE
             while items_per_page == COUNT_SINGLE_TABLE:
