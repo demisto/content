@@ -17,6 +17,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     """
     fetch_time = demisto.params().get('fetch_time', '14 days')
     params: dict = feed.get('filters', {})
+    a=6
     current_indicator_type = feed.get('indicator_type', '')
     start_date, end_date = parse_date_range(fetch_time, utc=True)
     integration_context = get_integration_context()
