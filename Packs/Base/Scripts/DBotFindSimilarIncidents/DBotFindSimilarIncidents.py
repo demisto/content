@@ -368,25 +368,26 @@ class Transformer():
         Fit self.incident_to_match and transform self.incidents_df and self.incident_to_match
         :return:
         """
-        demisto.debug('DBS: Transformer - fit_transform')
+        demisto.debug('DBS: Transformer - fit_transform start')
         transformation = self.params[self.transformer_type]
         transformer = transformation['transformer'](self.field, transformation['params'], transformation['normalize'],
                                                     self.incident_to_match)
         x_vect = transformer.fit_transform(self.incidents_df)
         incident_vect = transformer.transform(self.incident_to_match)
-
+        demisto.debug('DBS: Transformer - fit_transform end')
         return x_vect, incident_vect
 
     def get_score(self):
         """
         :return: Add one columns 'similarity %s' % self.field to self.incidents_df Dataframe with the score
         """
-        demisto.debug('DBS: Transformer - get_score')
+        demisto.debug('DBS: Transformer - get_score start')
         scoring_function = self.params[self.transformer_type]['scoring_function']
         X_vect, incident_vect = self.fit_transform()
         demisto.debug(f'DBS: {X_vect=}, {incident_vect=}')
         dist = scoring_function(X_vect, incident_vect)
         self.incidents_df['similarity %s' % self.field] = np.round(dist, 2)
+        demisto.debug('DBS: Transformer - get_score end')
         return self.incidents_df
 
 
