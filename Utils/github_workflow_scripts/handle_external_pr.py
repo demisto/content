@@ -442,6 +442,7 @@ def main():
     found_reviewer = find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number)
 
     if found_reviewer:
+        print(f'found reviewer is: {found_reviewer}')
 
     content_reviewer = determine_reviewer(content_reviewers, content_repo)
     pr.add_to_assignees(content_reviewer)
