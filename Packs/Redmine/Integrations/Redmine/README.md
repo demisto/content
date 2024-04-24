@@ -30,7 +30,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 
 - Create a new issue.
-- By default, the status of the newly created issue will be set to the status the user set in the Redmine instance as default.
+- By default, the status of the newly created issue will be set to the status you set in the Redmine instance.
 - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
 - To create a custom field, navigate to the server URL with administrative privileges, click **Administration** (located at the top left), select **Custom fields**, and then proceed to create a new custom field. Once created, you can add values as needed
 - To create a category/version, navigate to the server URL > click **Settings** (top bar) > **Versions** tab and **Issue categories** tab.
@@ -294,7 +294,7 @@ Update an existing issue. When attaching a file to an issue, include the entry I
 | project_id | The ID of the project to associate with the issue. If not specified, the value from integration configuration will be taken if specified. | Optional | 
 | tracker_id | - A tracker ID (e.g., 1,2,3).<br/>- You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.<br/>- If you entered an invalid ID, it will use the default tracker from your Redmine instance. | Optional | 
 | priority_id | - A priority ID (e.g., 1,2,3).<br/>- You can find the mapping from priority_name to priority_id using the command redmine-priority-id-list. | Optional | 
-| status | - A status ID (e.g., 1,2,3).<br/> - You can find the mapping from status_name to status_id using the command redmine-status-id-list.<br/>  - If you entered an invalid ID, status_id won't be changed but won't raise an error. | Optional | 
+| status | - A status ID (e.g., 1,2,3).<br/> - You can find the mapping from status_name to status_id using the command redmine-status-id-list.<br/>  - If you entered an invalid ID, status_id won't be changed and won't raise an error. | Optional | 
 | subject | The subject of the issue. | Optional | 
 | description | The description of the issue. | Optional | 
 | category_id | The ID of the category to assign to the issue. | Optional | 
@@ -737,7 +737,7 @@ There are no input arguments for this command.
 ### redmine-priority-id-list
 
 ***
-Returns a list of priorities (priority name to priority id).
+Returns a list of priorities (priority_name to priority_id).
 
 #### Base Command
 
@@ -751,8 +751,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.priorities.ID | str | ID of priority field. | 
-| Redmine.priorities.Name | str | Name of priority field. | 
+| Redmine.priorities.ID | str | ID of the priority field. | 
+| Redmine.priorities.Name | str | Name of the priority field. | 
 
 #### Command example
 ```!redmine-priority-id-list```
@@ -801,7 +801,7 @@ There are no input arguments for this command.
 ### redmine-status-id-list
 
 ***
-Returns a list of statuses (status name to status id).
+Returns a list of statuses (status_name to status_id).
 
 #### Base Command
 
@@ -815,8 +815,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.statuses.ID | str | ID of status field. | 
-| Redmine.Users.Name | str | Name of status field. | 
+| Redmine.statuses.ID | str | ID of the status field. | 
+| Redmine.Users.Name | str | Name of the status field. | 
 
 #### Command example
 ```!redmine-status-id-list```
@@ -870,7 +870,7 @@ There are no input arguments for this command.
 ### redmine-tracker-id-list
 
 ***
-Returns a list of trackers (tracker name to tracker id).
+Returns a list of trackers (tracker_name to tracker_id).
 
 #### Base Command
 
@@ -884,8 +884,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Redmine.trackers.ID | str | ID of tracker field. | 
-| Redmine.trackers.Name | str | Name of tracker field. | 
+| Redmine.trackers.ID | str | ID of the tracker field. | 
+| Redmine.trackers.Name | str | Name of the tracker field. | 
 
 #### Command example
 ```!redmine-tracker-id-list```
