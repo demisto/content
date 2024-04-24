@@ -1125,10 +1125,11 @@ def test_fetch_incidents_for_alert_success(
     """
     When fetch_incidents() method called with fetch_type='Alerts' and pass all required arg it success.
     """
-    from FireEyeNX import fetch_incidents
+    from FireEyeNX import fetch_incidents, API_SUPPORT_DATE_FORMAT
 
     # Configure
-    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp(), 'alert_ids': ['1']}}
+    start_time = datetime.strftime(datetime.now().replace(tzinfo=timezone.utc), API_SUPPORT_DATE_FORMAT)
+    mock_last_run = {'alerts': {'start_time': start_time, 'alert_ids': ['1']}}
 
     dummy_first_fetch = 1
     mock_fetch_limit = 12
