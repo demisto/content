@@ -444,12 +444,12 @@ def main():
 
     if found_reviewer:
         print(f'found reviewer is: {found_reviewer}')
-        pr.add_to_assignees(found_reviewer)
-        reviewers = [found_reviewer]
+        content_reviewer = found_reviewer
     else:
         content_reviewer = determine_reviewer(content_reviewers, content_repo)
-        pr.add_to_assignees(content_reviewer)
-        reviewers = [content_reviewer]
+
+    pr.add_to_assignees(content_reviewer)
+    reviewers = [content_reviewer]
 
     # Add a security architect reviewer if the PR contains security content items
     if is_requires_security_reviewer(pr_files):
