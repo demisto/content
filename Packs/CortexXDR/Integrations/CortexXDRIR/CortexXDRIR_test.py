@@ -612,7 +612,7 @@ def test_get_modified_remote_data_command(requests_mock):
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False)
     args = {
-        'lastUpdate': '2020-11-18T13:16:52.005381+02:00'
+        'lastUpdate': '2020-11-18T13:16:52.00000000005381+02:00'
     }
 
     response = get_modified_remote_data_command(client, args)
