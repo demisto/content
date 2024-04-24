@@ -35,6 +35,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - Insecure OpenSSH
   - OpenSSH
   - SSH Server
+  - SSH Terrapin Attack
   - SNMP Server
   - RDP Server
   - Telnet Server
@@ -53,6 +54,8 @@ Automated remediation is only possible when the right conditions are met.  These
   - Active Directory
   - AWS IAM
   - Azure IAM
+  - Cortex Endpoint (XSIAM/XDR)
+  - Email addresses found in tags
   - GCP IAM
   - Prisma Cloud
   - Rapid7 InsightVM (Nexpose)
