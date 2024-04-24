@@ -65,13 +65,13 @@
                         ]
                     }
                 },
-                "Stellar Cyber Case ID": {
+                "External ID": {
                     "simple": "_id"
                 },
                 "Stellar Cyber Case Score": {
                     "simple": "incident_score"
                 },
-                "Stellar Cyber Case URL": {
+                "External Link": {
                     "simple": "case_url"
                 },
                 "Stellar Cyber Tenant ID": {
