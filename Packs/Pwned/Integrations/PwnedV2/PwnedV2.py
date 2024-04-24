@@ -61,7 +61,7 @@ def http_request(method, url_suffix, params=None, data=None):
                                     params=params,
                                     error_handler=error_handler,
                                     status_list_to_retry=[429],
-                                    retries=10,
+                                    retries=5,
                                     ok_codes=(200,))
     except DemistoException:
         return None
