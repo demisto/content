@@ -2000,12 +2000,7 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma:
     item = client.get_item_from_mailbox(account, item_id)
 
     if item.mime_content:
-        mime_content = item.mime_content
-        email_policy = SMTP if mime_content.isascii() else SMTPUTF8
-        if isinstance(mime_content, bytes):
-            email_content = email.message_from_bytes(mime_content, policy=email_policy)
-        else:
-            email_content = email.message_from_string(mime_content, policy=email_policy)
+        email_content = cast_mime_item_to_message(item)
         if item.headers:
             # compare header keys case-insensitive
             attached_email_headers = [
@@ -2024,7 +2019,8 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma:
                             raise err
 
         eml_name = item.subject if item.subject else "demisto_untitled_eml"
-        file_result = fileResult(eml_name + ".eml", email_content.as_string())
+        email_data = decode_email_data(email_content)
+        file_result = fileResult(eml_name + ".eml", email_data)
         file_result = (
             file_result if file_result else "Failed uploading eml file to war room"
         )
@@ -2084,6 +2080,37 @@ def handle_incorrect_message_id(message_id: str) -> str:
         demisto.debug('Fixed message id {message_id} to {fixed_message_id}')
         return fixed_message_id
     return message_id
+
+
+def decode_email_data(email_obj: Message):
+    attached_email_bytes = email_obj.as_bytes()
+    chardet_detection = chardet.detect(attached_email_bytes)
+    encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
+    try:
+        # Trying to decode using the detected encoding
+        data = attached_email_bytes.decode(encoding)
+    except UnicodeDecodeError:
+        # In case the detected encoding fails apply the default encoding
+        demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
+                     f'using utf-8.\nAttached email:\n{email_obj}')
+        try:
+            data = attached_email_bytes.decode('utf-8')
+        except UnicodeDecodeError:
+            demisto.info('Could not decode attached email using utf-8. returned the content without decoding')
+            data = attached_email_bytes  # type: ignore
+
+    return data
+
+
+def cast_mime_item_to_message(item):
+    mime_content = item.mime_content
+    email_policy = SMTP if mime_content.isascii() else SMTPUTF8
+    if isinstance(mime_content, str) and not mime_content.isascii():
+        mime_content = mime_content.encode()
+    message = email.message_from_bytes(mime_content, policy=email_policy) \
+        if isinstance(mime_content, bytes) \
+        else email.message_from_string(mime_content, policy=email_policy)
+    return message
 
 
 def parse_incident_from_item(item):  # pragma: no cover
@@ -2186,13 +2213,7 @@ def parse_incident_from_item(item):  # pragma: no cover
 
                 # save the attachment
                 if attachment.item.mime_content:
-                    mime_content = attachment.item.mime_content
-                    email_policy = SMTP if mime_content.isascii() else SMTPUTF8
-                    if isinstance(mime_content, str) and not mime_content.isascii():
-                        mime_content = mime_content.encode()
-                    attached_email = email.message_from_bytes(mime_content, policy=email_policy) \
-                        if isinstance(mime_content, bytes) \
-                        else email.message_from_string(mime_content, policy=email_policy)
+                    attached_email = cast_mime_item_to_message(attachment.item)
                     if attachment.item.headers:
                         # compare header keys case-insensitive
                         attached_email_headers = []
@@ -2229,22 +2250,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                                     if "There may be at most" not in str(err):
                                         raise err
 
-                    attached_email_bytes = attached_email.as_bytes()
-                    chardet_detection = chardet.detect(attached_email_bytes)
-                    encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
-                    try:
-                        # Trying to decode using the detected encoding
-                        data = attached_email_bytes.decode(encoding)
-                    except UnicodeDecodeError:
-                        # In case the detected encoding fails apply the default encoding
-                        demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
-                                     f'using utf-8.\nAttached email:\n{attached_email}')
-                        try:
-                            data = attached_email_bytes.decode('utf-8')
-                        except UnicodeDecodeError:
-                            demisto.info('Could not decode attached email using utf-8. returned the content without decoding')
-                            data = attached_email_bytes  # type: ignore
-
+                    data = decode_email_data(attached_email)
                     file_result = fileResult(get_attachment_name(attachment.name, eml_extension=True), data)
 
                 if file_result:
