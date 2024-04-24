@@ -9,34 +9,51 @@ MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
 You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
-
+import importlib
 import json
 import io
 
-
-def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+OpenAIGPT = importlib.import_module("OpenAIGPT")
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+class OpenAiClient:
+    def get_chat_completions(self):
+        pass
 
-    Checks the output of the command function with the expected output.
 
-    No mock is needed here because the say_hello_command does not call
-    any external API.
-    """
-    from BaseIntegration import Client, baseintegration_dummy_command
+def test_extract_assistant_message():
+    """Tests extraction from a valid response with choices and message."""
 
-    client = Client(base_url='some_mock_url', verify=False)
-    args = {
-        'dummy': 'this is a dummy response'
+    from OpenAIGPT import extract_assistant_message
+
+    mock_response = {
+        'id': 'chatcmpl-XXXX',
+        'object': 'chat.completion',
+        'created': 1717171717,
+        'model': 'gpt-4-turbo-2024-04-09',
+        'choices': [
+            {
+                'index': 0,
+                'message': {
+                    'role': 'assistant',
+                    'content': 'Hello! How can I assist you today?'},
+                'logprobs': None,
+                'finish_reason': 'stop'
+            }
+        ],
+        'usage': {
+            'prompt_tokens': 9,
+            'completion_tokens': 9,
+            'total_tokens': 18
+        },
+        'system_fingerprint': 'fp_76f018034d'
     }
-    response = baseintegration_dummy_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
+    conversation = []
+    extracted_message = extract_assistant_message(response=mock_response, conversation=conversation)
 
-    assert response.outputs == mock_response
+    assert extracted_message == "Hello! How can I assist you today?"
+    assert conversation == [{'role': 'assistant', 'content': 'Hello! How can I assist you today?'}]
+
+    # assert response.outputs == mock_response
 # TODO: ADD HERE unit tests for every command

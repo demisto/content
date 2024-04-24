@@ -172,17 +172,6 @@ script:
     - contextPath: OpenAIGPT.Conversation
       description: Entire conversation (if not reset) between the user and the GPT model.
       type: Dictionary
-
-  - name: gpt-get-cve-info
-    description: Get a brief explanation of a CVE. It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
-    arguments:
-      - name: cve
-        description: CVE to provide information of.
-        required: true
-    outputs:
-    - contextPath: OpenAIGPT.Conversation
-      description: Entire conversation (if not reset) between the user and the GPT model.
-      type: Dictionary
   runonce: false
   script: ''
   type: python

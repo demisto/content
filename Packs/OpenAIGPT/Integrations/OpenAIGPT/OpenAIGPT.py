@@ -17,7 +17,7 @@ CIRCLCVE_BASE_URL = 'https://cve.circl.lu/api'
 EML_FILE_PREFIX = '.eml'
 
 CHECK_EMAIL_HEADERS_PROMPT = """
-I have a set of email headers. 
+I have a set of email headers.
 Analyze these headers for any potential security issues such as spoofing, phishing attempts, or other malicious activity.
 Please identify any suspicious fields, explain why they might be concerning, and suggest any further actions that could be taken \
 to investigate or mitigate these issues.
@@ -294,23 +294,26 @@ def send_message_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandR
         'temperature': args.get('temperature', None),
         'top_p': args.get('top_p', None)
     }
-    demisto.debug(f'openai-gpt getting chat completions for: {conversation=} and {completion_params=}')
+    demisto.debug(f'openai-gpt get_chat_completions for: {conversation=} and {completion_params=}')
 
     response = client.get_chat_completions(chat_context=conversation, completion_params=completion_params)
+    demisto.debug(f'openai-gpt get_chat_completions {response=}')
     # Also updating the conversation history with the extracted message from the response.
     assistant_message = extract_assistant_message(response, conversation)
 
-    usage = response.get('usage', {}) if args.get('verbose', False) else {}
+    usage = response.get('usage', {})
     verbose_message = (f"Model: {response.get('model', '')} "
                        f"Usage: prompt-tokens={usage.get('prompt_tokens', '')}, "
                        f"completion-tokens={usage.get('completion_tokens', '')}, "
                        f"total-tokens={usage.get('total_tokens', '')}")
 
+    readable_output = assistant_message
+    readable_output += f"\n\n{verbose_message}" if args.get('verbose', False) else ''
     return CommandResults(
         outputs_prefix='OpenAIGPT.Conversation',
         outputs=conversation,
         replace_existing=True,
-        readable_output=assistant_message + "\n--------------------------------------------------------------\n" + verbose_message
+        readable_output=readable_output
     )
 
 
