@@ -43,14 +43,14 @@ script:
       required: false
     - name: tracker_id
       description: |-
-        - Enter a tracker ID (e.g., 1,2,3).
+        - A tracker ID (e.g., 1,2,3).
         - You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.
         - If you entered an invalid ID, it will use the default tracker from your Redmine instance.
       required: true
     - name: priority_id
       required: true
       description: |-
-        - Enter a priority ID (e.g., 1,2,3).
+        - A priority ID (e.g., 1,2,3).
         - You can find the mapping from priority_name to priority_id using the command redmine-priority-id-list.
     - name: subject
       required: true
@@ -139,12 +139,12 @@ script:
       description: A subproject ID to exclude from the list (you can't use both subproject_id and exclude), you need to add a project_id for this field to be included.
     - name: tracker_id
       description: |-
-        - Enter a tracker ID (e.g., 1,2,3).
+        - A tracker ID (e.g., 1,2,3).
         - You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.
     - name: status
       auto: PREDEFINED
       description: |-
-        - Enter a status ID (e.g., 1,2,3) or use predefined values.
+        - A status ID (e.g., 1,2,3) or use predefined values.
         - You can find the mapping from status_name to status_id using the command redmine-status-id-list.
         - You can use Open/Closed/All from the predefined values or use any of your custom status ID (e.g., 1).
       defaultValue: Open
@@ -177,17 +177,17 @@ script:
       description: The ID of the project to associate with the issue. If not specified, the value from the integration configuration will be used if specified.
     - name: tracker_id
       description: |-
-        - Enter a tracker ID (e.g., 1,2,3).
+        - A tracker ID (e.g., 1,2,3).
         - You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.
         - If you entered an invalid ID, tracker_id won't be changed but won't raise an error.
     - name: status_id
       description: |-
-        - Enter a status ID (e.g., 1,2,3).
+        - A status ID (e.g., 1,2,3).
         - You can find the mapping from status_name to status_id using the command redmine-status-id-list.
         - If you entered an invalid ID, status_id won't be changed but won't raise an error.
     - name: priority_id
       description: |-
-        - Enter a priority ID (e.g., 1,2,3).
+        - A priority ID (e.g., 1,2,3).
         - You can find the mapping from priority_name to priority_id using the command redmine-priority-id-list.
     - name: subject
       description: The subject of the issue.
