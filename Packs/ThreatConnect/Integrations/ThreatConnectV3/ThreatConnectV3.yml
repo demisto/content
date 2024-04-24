@@ -781,6 +781,8 @@ script:
       name: confidence
     - description: A comma-separated list of the tags to apply to the campaign.
       name: tags
+    - description: The description of the indicator.
+      name: description
     description: Adds a new indicator to ThreatConnect.
     name: tc-add-indicator
     outputs:
