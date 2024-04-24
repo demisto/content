@@ -1,0 +1,36 @@
+{
+    "id": "Campaign",
+    "version": -1,
+    "modified": "2021-05-02T14:24:36.151869+03:00",
+    "shouldCommit": false,
+    "regex": "",
+    "details": "Campaign",
+    "prevDetails": "Campaign",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "manualMapping": {
+        "aliases": {
+            "simple": "Campaign.aliases",
+            "complex": null
+        },
+        "description": {
+            "simple": "Campaign.description",
+            "complex": null
+        },
+        "objective": {
+            "simple": "Campaign.objective",
+            "complex": null
+        },
+        "stixid": {
+            "simple": "Campaign.stixid",
+            "complex": null
+        }
+    },
+    "expiration": 0,
+    "layout": "Campaign",
+    "fromVersion": "5.5.0"
+}

@@ -1,0 +1,454 @@
+{
+    "id": "ipRep",
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "modified": "2019-07-18T07:17:53.843554502Z",
+    "sortValues": null,
+    "commitMessage": "",
+    "shouldPublish": false,
+    "shouldCommit": false,
+    "regex": "\\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\\[\\.\\]|\\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\b",
+    "details": "IP",
+    "prevDetails": "IP",
+    "reputationScriptName": "",
+    "reputationCommand": "ip",
+    "enhancementScriptNames": [
+        "IPReputation"
+    ],
+    "system": true,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "formatScript": "UnEscapeIPs",
+    "contextPath": "IP(val.Address \u0026\u0026 val.Address === obj.Address)",
+    "contextValue": "Address",
+    "excludedBrands": [],
+    "expiration": 10080,
+    "defaultMapping": {
+        "asn": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "ASN",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "blocked": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Blocked",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "detectionengines": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "DetectionEngines",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "geocountry": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Geo.Country",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "geolocation": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Geo.Location",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "hostname": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Hostname",
+                "transformers": []
+            }
+        },
+        "internal": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [
+                    [
+                        {
+                            "operator": "IsInCidrRanges",
+                            "left": {
+                                "value": {
+                                    "simple": "IP.Address",
+                                    "complex": null
+                                },
+                                "isContext": true
+                            },
+                            "right": {
+                                "value": {
+                                    "simple": "192.168.0.0/16,172.16.0.0/12,10.0.0.0/8,127.0.0.0/8,169.254.0.0/16",
+                                    "complex": null
+                                },
+                                "isContext": false
+                            },
+                            "ignoreCase": false
+                        }
+                    ]
+                ],
+                "accessor": "Address",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    },
+                    {
+                        "operator": "DT",
+                        "args": {
+                            "dt": {
+                                "value": {
+                                    "simple": ".=Boolean(val)",
+                                    "complex": null
+                                },
+                                "isContext": false
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "positivedetections": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "PositiveDetections",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "port": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Port",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "region": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Region",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "associations": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Associations",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "reportedby": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "ReportedBy",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "threattypes": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "ThreatTypes",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "trafficlightprotocol": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "TrafficLightProtocol",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "asowner": {
+            "simple": "",
+            "complex": {
+                "root": "URL",
+                "filters": [],
+                "accessor": "ASOwner",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "organization": {
+            "simple": "",
+            "complex": {
+                "root": "IP.Organization",
+                "filters": [],
+                "accessor": "Name",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "organizationtype": {
+            "simple": "",
+            "complex": {
+                "root": "IP.Organization",
+                "filters": [],
+                "accessor": "Type",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "registrarabuseaddress": {
+            "simple": "",
+            "complex": {
+                "root": "IP.Registrar.Abuse",
+                "filters": [],
+                "accessor": "Address",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "registrarabusecountry": {
+            "simple": "",
+            "complex": {
+                "root": "IP.Registrar.Abuse",
+                "filters": [],
+                "accessor": "Country",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "registrarabuseemail": {
+            "simple": "",
+            "complex": {
+                "root": "IP.Registrar.Abuse",
+                "filters": [],
+                "accessor": "Email",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "registrarabusename": {
+            "simple": "",
+            "complex": {
+                "root": "IP.Registrar.Abuse",
+                "filters": [],
+                "accessor": "Name",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "registrarabusenetwork": {
+            "simple": "",
+            "complex": {
+                "root": "IP.Registrar.Abuse",
+                "filters": [],
+                "accessor": "Network",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "registrarabusephone": {
+            "simple": "",
+            "complex": {
+                "root": "IP.Registrar.Abuse",
+                "filters": [],
+                "accessor": "Phone",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "feedrelatedindicators": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "FeedRelatedIndicators",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "malwarefamily": {
+          "simple": "",
+          "complex": {
+              "root": "IP",
+              "filters": [],
+              "accessor": "MalwareFamily",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+        },
+        "communitynotes": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "CommunityNotes",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "publications": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Publications",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "tags": {
+            "simple": "",
+            "complex": {
+                "root": "IP",
+                "filters": [],
+                "accessor": "Tags",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        }
+    },
+    "manualMapping": null,
+    "fileHashesPriority": null,
+    "layout": "ipRep"
+}

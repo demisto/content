@@ -1,0 +1,61 @@
+{
+    "contextPath": "",
+    "contextValue": "",
+    "defaultMapping": null,
+    "details": "Attack Pattern",
+    "legacyNames": ["STIX Attack Pattern"],
+    "disabled": false,
+    "enhancementScriptNames": [],
+    "excludedBrands": [],
+    "expiration": 0,
+    "file": false,
+    "fileHashesPriority": null,
+    "formatScript": "ExtractAttackPattern",
+    "id": "Attack Pattern",
+    "locked": false,
+    "manualMapping": {
+        "description": {
+            "simple": "AttackPattern.Description",
+            "complex": null
+        },
+        "firstseenbysource": {
+            "simple": "AttackPattern.FirstSeenBySource",
+            "complex": null
+        },
+        "killchainphases": {
+            "simple": "AttackPattern.KillChainPhases",
+            "complex": null
+        },
+        "mitreid": {
+            "simple": "AttackPattern.MITREID",
+            "complex": null
+        },
+        "operatingsystemrefs": {
+            "simple": "AttackPattern.OperatingSystemRefs",
+            "complex": null
+        },
+        "publications": {
+            "simple": "AttackPattern.Publications",
+            "complex": null
+        },
+        "stixid": {
+            "simple": "AttackPattern.STIXID",
+            "complex": null
+        },
+        "tags": {
+            "simple": "AttackPattern.Tags",
+            "complex": null
+        }
+    },
+    "mergeContext": false,
+    "regex": "\\bT\\d{4}(?:\\.\\d{3})?\\b",
+    "reputationCommand": "",
+    "reputationScriptName": "",
+    "sortValues": null,
+    "system": false,
+    "updateAfter": 0,
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "layout": "STIX Attack Pattern"
+
+}

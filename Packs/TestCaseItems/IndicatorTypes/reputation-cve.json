@@ -1,0 +1,308 @@
+{
+    "id": "cveRep",
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "modified": "2023-05-11T09:59:48.176950855Z",
+    "shouldCommit": false,
+    "regex": "CVE-\\d{4}-\\d{4,7}",
+    "details": "CVE",
+    "prevDetails": "CVE",
+    "reputationScriptName": "cveReputationV2",
+    "reputationCommand": "cve",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "contextPath": "CVE(val.ID && val.ID === obj.ID)",
+    "contextValue": "ID",
+    "expiration": 0,
+    "defaultMapping": {
+        "cvedescription": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "Description",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "cvss": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "CVSS",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "indicatoridentification": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "ID",
+                "transformers": [
+                    {
+                        "operator": "toUpperCase"
+                    },
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "cvemodified": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "Modified",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "published": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "Published",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "associations": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "Associations",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "reportedby": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "ReportedBy",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "threattypes": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "ThreatTypes",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "trafficlightprotocol": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "TrafficLightProtocol",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "tags": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "Tags",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        }
+    },
+    "manualMapping": {
+        "associations": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "Associations",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "cvedescription": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "Description",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "cvemodified": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "Modified",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "cvss": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "CVSS",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "cvssscore": {
+            "complex": {
+                "root": "CVE.CVSS",
+                "filters": [],
+                "accessor": "Score",
+                "transformers": []
+            }
+        },
+        "cvsstable": {
+            "simple": "CVE.CVSS.Table"
+        },
+        "cvssvector": {
+            "simple": "CVE.CVSS.Vector"
+        },
+        "description": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "Description",
+                "transformers": []
+            }
+        },
+        "indicatoridentification": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "ID",
+                "transformers": [
+                    {
+                        "operator": "toUpperCase"
+                    },
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "publications": {
+            "simple": "CVE.Publications"
+        },
+        "published": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "Published",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "reportedby": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "ReportedBy",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "tags": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "Tags",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "threattypes": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "ThreatTypes",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "trafficlightprotocol": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "TrafficLightProtocol",
+                "transformers": [
+                    {
+                        "operator": "uniq"
+                    }
+                ]
+            }
+        },
+        "vulnerableconfigurations": {
+            "simple": "CVE.vulnerableconfigurations"
+        },
+        "vulnerableproducts": {
+            "complex": {
+                "root": "CVE",
+                "filters": [],
+                "accessor": "VulnerableProducts",
+                "transformers": []
+            }
+        }
+    },
+    "layout": "cveRep"
+}

@@ -1,0 +1,490 @@
+{
+    "id": "unifiedFileRep",
+    "fromVersion": "5.5.0",
+    "version": -1,
+    "modified": "2019-07-18T10:59:04.880340103Z",
+    "sortValues": null,
+    "commitMessage": "",
+    "shouldPublish": false,
+    "shouldCommit": false,
+    "regex": "\\b[a-fA-F\\d]{32}\\b|\\b[a-fA-F\\d]{40}\\b|\\b[a-fA-F\\d]{64}\\b|\\b[a-fA-F\\d]{128}\\b",
+    "details": "File",
+    "prevDetails": "File",
+    "reputationScriptName": "",
+    "reputationCommand": "file",
+    "enhancementScriptNames": [
+      "FileReputation"
+    ],
+    "system": true,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "formatScript": "",
+    "contextPath": "File(val.SHA256 && val.SHA256 === obj.SHA256 || val.SHA1 && val.SHA1 === obj.SHA1 || val.MD5 && val.MD5 === obj.MD5 || val.SHA512 && val.SHA512 === obj.SHA512 || val.SSDeep && val.SSDeep === obj.SSDeep)",
+    "contextValue": "",
+    "excludedBrands": [],
+    "expiration": 0,
+    "defaultMapping": {
+      "blocked": {
+        "simple": "File.Blocked",
+        "complex": null
+      },
+      "actor": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Actor",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "associatedfilenames": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Name",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "detectionengines": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "DetectionEngines",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "entryid": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "EntryID",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "fileextension": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Extension",
+          "transformers": [
+            {
+              "operator": "toUpperCase",
+              "args": {}
+            },
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "filetype": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Type",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "md5": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "MD5",
+          "transformers": [
+            {
+              "operator": "toUpperCase",
+              "args": {}
+            },
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "path": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Path",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "positivedetections": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "PositiveDetections",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "quarantined": {
+        "simple": "File.Quarantined",
+        "complex": null
+      },
+      "sha1": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "SHA1",
+          "transformers": [
+            {
+              "operator": "toUpperCase",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "sha256": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "SHA256",
+          "transformers": [
+            {
+              "operator": "toUpperCase",
+              "args": {}
+            },
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "sha512": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "SHA512",
+          "transformers": [
+            {
+              "operator": "toUpperCase",
+              "args": {}
+            },
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "signatureauthentihash": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Signature.Authentihash",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "signaturecopyright": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Signature.Copyright",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "signaturedescription": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Signature.Description",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "signaturefileversion": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Signature.FileVersion",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "signatureinternalname": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Signature.InternalName",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "signatureoriginalname": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Signature.OriginalName",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "signed": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Signed",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "size": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Size",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "ssdeep": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "SSDeep",
+          "transformers": [
+            {
+              "operator": "toUpperCase",
+              "args": {}
+            }
+          ]
+        }
+      },
+      "associations": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Associations",
+          "transformers": [{
+            "operator": "uniq",
+            "args": {}
+          }]
+        }
+      },
+      "reportedby": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "ReportedBy",
+          "transformers": [{
+            "operator": "uniq",
+            "args": {}
+          }]
+        }
+      },
+      "threattypes": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "ThreatTypes",
+          "transformers": [{
+            "operator": "uniq",
+            "args": {}
+          }]
+        }
+      },
+      "trafficlightprotocol": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "TrafficLightProtocol",
+          "transformers": [{
+            "operator": "uniq",
+            "args": {}
+          }]
+        }
+      },
+      "feedrelatedindicators": {
+          "simple": "",
+          "complex": {
+              "root": "File",
+              "filters": [],
+              "accessor": "FeedRelatedIndicators",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+      },
+      "malwarefamily": {
+          "simple": "",
+          "complex": {
+              "root": "File",
+              "filters": [],
+              "accessor": "MalwareFamily",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+      },
+      "communitynotes": {
+          "simple": "",
+          "complex": {
+              "root": "File",
+              "filters": [],
+              "accessor": "CommunityNotes",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+      },
+      "publications": {
+          "simple": "",
+          "complex": {
+              "root": "File",
+              "filters": [],
+              "accessor": "Publications",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+      },
+      "behavior": {
+          "simple": "",
+          "complex": {
+              "root": "File",
+              "filters": [],
+              "accessor": "Behavior",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+      },
+      "tags": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Tags",
+          "transformers": [
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      }
+    },
+    "manualMapping": null,
+    "fileHashesPriority": [
+      "ssdeep",
+      "sha512",
+      "md5",
+      "sha1",
+      "sha256"
+    ],
+    "layout": "unifiedFileRep1"
+}

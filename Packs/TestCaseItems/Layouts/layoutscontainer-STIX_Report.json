@@ -1,0 +1,412 @@
+{
+    "group": "indicator",
+    "id": "STIX Report",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "hidden": false,
+                "id": "vug7e0qild",
+                "name": "Summary",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "ecf2e770-81ad-11ec-a247-cfbd25dcdbb6",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "dcbf9500-b30a-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc"
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "d500b3d0-b30a-11eb-941c-e725acf1fbbc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc"
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "published",
+                                "height": 22,
+                                "id": "d9ab2910-b30a-11eb-941c-e725acf1fbbc",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc"
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "downloadurl",
+                                "height": 22,
+                                "id": "057c7d60-81ae-11ec-a247-cfbd25dcdbb6",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "f47fc070-b30a-11eb-941c-e725acf1fbbc",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "reporttype",
+                                "height": 22,
+                                "id": "d6b393f0-b30a-11eb-941c-e725acf1fbbc",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "f2b8bc10-b30a-11eb-941c-e725acf1fbbc",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "62bd3650-b313-11eb-941c-e725acf1fbbc",
+                                "index": 7,
+                                "name": "Add tags",
+                                "scriptId": "Builtin|||appendIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "65ff41f0-b313-11eb-941c-e725acf1fbbc",
+                                "index": 7,
+                                "listId": "vug7e0qild-e3ab20a0-b30a-11eb-941c-e725acf1fbbc",
+                                "name": "Remove tags",
+                                "scriptId": "Builtin|||removeIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Report Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "vug7e0qild-ea684940-b30a-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 106,
+                                "id": "f8aaa570-b30a-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Report Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0,
+                        "displayType": "ROW",
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false
+                    },
+                    {
+                        "h": 3,
+                        "i": "vug7e0qild-00d25a90-b30b-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "w": 2,
+                        "x": 0,
+                        "y": 3,
+                        "type": "relationshipsTable"
+                    },
+                    {
+                        "h": 3,
+                        "i": "vug7e0qild-09aff230-b30b-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0,
+                        "type": "indicatorTimeline"
+                    },
+                    {
+                        "h": 3,
+                        "i": "vug7e0qild-0ff10d00-b30b-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 3,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "h": 3,
+                        "i": "vug7e0qild-3c670a10-b30b-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 3
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "indicatorsQuickView": {
+        "tabs": [
+            {
+                "hidden": false,
+                "id": "tpxxoxdvo8",
+                "name": "Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "tpxxoxdvo8-59db5290-b30b-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "9e943d00-8a4e-11ec-a1ef-6369524b39c7",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "8717fb00-b30b-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "tpxxoxdvo8-59db5290-b30b-11eb-941c-e725acf1fbbc"
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "802e9240-b30b-11eb-941c-e725acf1fbbc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "published",
+                                "height": 22,
+                                "id": "8491ec60-b30b-11eb-941c-e725acf1fbbc",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "tpxxoxdvo8-59db5290-b30b-11eb-941c-e725acf1fbbc"
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "reporttype",
+                                "height": 22,
+                                "id": "819c5310-b30b-11eb-941c-e725acf1fbbc",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "downloadurl",
+                                "height": 22,
+                                "id": "b5116120-8a4e-11ec-a1ef-6369524b39c7",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "920fe720-b30b-11eb-941c-e725acf1fbbc",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "90370870-b30b-11eb-941c-e725acf1fbbc",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Report Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "tpxxoxdvo8-61b1b360-b30b-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 22,
+                                "id": "8e005250-b30b-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Report Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "tpxxoxdvo8-72910190-b30b-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 6,
+                        "type": "comments"
+                    },
+                    {
+                        "h": 2,
+                        "i": "tpxxoxdvo8-77f21ca0-b30b-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "se889tdxik",
+                "name": "Relationships",
+                "sections": [
+                    {
+                        "h": 8,
+                        "i": "se889tdxik-09585430-979f-11eb-a8d1-098e2c945225",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "Report",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "toVersion": "6.9.9",
+    "description": ""
+}

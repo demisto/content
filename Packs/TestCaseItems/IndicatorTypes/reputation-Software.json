@@ -1,0 +1,60 @@
+{
+    "id": "Software",
+    "version": -1,
+    "modified": "2022-12-29T08:33:10.878587682Z",
+    "shouldCommit": false,
+    "regex": "",
+    "details": "Software",
+    "prevDetails": "Software",
+    "system": false,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "manualMapping": {
+        "cpe": {
+            "simple": "Software.cpe"
+        },
+        "description": {
+            "simple": "Software.Description"
+        },
+        "languages": {
+            "complex": {
+                "root": "Software",
+                "filters": [],
+                "accessor": "Languages",
+                "transformers": [
+                    {
+                        "operator": "split",
+                        "args": {
+                            "delimiter": {
+                                "value": {
+                                    "simple": ","
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "stixid": {
+            "simple": "Software.StixID"
+        },
+        "swid": {
+            "simple": "Software.swid"
+        },
+        "trafficlightprotocol": {
+            "simple": "Software.TLP"
+        },
+        "vendor": {
+            "simple": "Software.Vendor"
+        },
+        "version": {
+            "simple": "Software.Version"
+        }
+    },
+    "expiration": 0,
+    "layout": "Software",
+    "fromVersion": "6.5.0"
+}

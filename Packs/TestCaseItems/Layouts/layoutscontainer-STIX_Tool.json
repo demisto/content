@@ -1,0 +1,499 @@
+{
+    "group": "indicator",
+    "id": "STIX Tool",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "hidden": false,
+                "id": "rsdogskmtv",
+                "name": "Summary",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "rsdogskmtv-84986d50-b311-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "c4aa2120-7ebf-11ec-b7e4-a70f28a44ba6",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "df58b240-b311-11eb-941c-e725acf1fbbc",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "rsdogskmtv-84986d50-b311-11eb-941c-e725acf1fbbc"
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "d098c1a0-b311-11eb-941c-e725acf1fbbc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "rsdogskmtv-84986d50-b311-11eb-941c-e725acf1fbbc"
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "aliases",
+                                "height": 22,
+                                "id": "d58c74e0-b311-11eb-941c-e725acf1fbbc",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "rsdogskmtv-84986d50-b311-11eb-941c-e725acf1fbbc"
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tooltypes",
+                                "height": 22,
+                                "id": "d271c760-b311-11eb-941c-e725acf1fbbc",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "rsdogskmtv-84986d50-b311-11eb-941c-e725acf1fbbc"
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "toolversion",
+                                "height": 22,
+                                "id": "ddb00b50-b311-11eb-941c-e725acf1fbbc",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "rsdogskmtv-84986d50-b311-11eb-941c-e725acf1fbbc"
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "killchainphases",
+                                "height": 22,
+                                "id": "d73542e0-b311-11eb-941c-e725acf1fbbc",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "operatingsystemrefs",
+                                "height": 22,
+                                "id": "d95f75e0-b311-11eb-941c-e725acf1fbbc",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "f3a67340-b311-11eb-941c-e725acf1fbbc",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "ec56a790-b311-11eb-941c-e725acf1fbbc",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "b5b460e0-b313-11eb-941c-e725acf1fbbc",
+                                "index": 10,
+                                "name": "Add tags",
+                                "scriptId": "Builtin|||appendIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "b2b3a400-b313-11eb-941c-e725acf1fbbc",
+                                "index": 10,
+                                "listId": "rsdogskmtv-b9ca4930-b311-11eb-941c-e725acf1fbbc",
+                                "name": "Remove tags",
+                                "scriptId": "Builtin|||removeIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tool Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "rsdogskmtv-93f6e7e0-b311-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 6,
+                        "type": "relatedIncidents"
+                    },
+                    {
+                        "h": 3,
+                        "i": "rsdogskmtv-b413e230-b311-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 2,
+                        "x": 0,
+                        "y": 3
+                    },
+                    {
+                        "h": 3,
+                        "i": "rsdogskmtv-bf817380-b311-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "h": 3,
+                        "i": "rsdogskmtv-c6078690-b311-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 3,
+                        "type": "comments"
+                    },
+                    {
+                        "h": 3,
+                        "i": "rsdogskmtv-15926130-b312-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 106,
+                                "id": "212099e0-b312-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tool Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0,
+                        "displayType": "ROW",
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "zuteowyvsu",
+                "name": "Publications and notes",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 9,
+                        "hideName": false,
+                        "i": "zuteowyvsu-e768a150-7ebf-11ec-b7e4-a70f28a44ba6",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "id": "f6abcbb0-7ebf-11ec-b7e4-a70f28a44ba6",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "communitynotes",
+                                "height": 106,
+                                "id": "f8eb5b70-7ebf-11ec-b7e4-a70f28a44ba6",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Publications and notes",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom",
+                "hidden": false
+            }
+        ]
+    },
+    "indicatorsQuickView": {
+        "tabs": [
+            {
+                "hidden": false,
+                "id": "oqsrwrirwx",
+                "name": "Info",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "hideName": false,
+                        "i": "oqsrwrirwx-4382f050-b312-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "a75605e0-8a67-11ec-b66a-f1cce9b9d7c0",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "7364ef30-b312-11eb-941c-e725acf1fbbc",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "oqsrwrirwx-4382f050-b312-11eb-941c-e725acf1fbbc"
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "64be2be0-b312-11eb-941c-e725acf1fbbc",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "aliases",
+                                "height": 22,
+                                "id": "69d4d070-b312-11eb-941c-e725acf1fbbc",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tooltypes",
+                                "height": 22,
+                                "id": "66643ac0-b312-11eb-941c-e725acf1fbbc",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "toolversion",
+                                "height": 22,
+                                "id": "719b04a0-b312-11eb-941c-e725acf1fbbc",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "oqsrwrirwx-4382f050-b312-11eb-941c-e725acf1fbbc"
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "killchainphases",
+                                "height": 22,
+                                "id": "6b9719e0-b312-11eb-941c-e725acf1fbbc",
+                                "index": 7,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "operatingsystemrefs",
+                                "height": 22,
+                                "id": "6f4fb510-b312-11eb-941c-e725acf1fbbc",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "80a592d0-b312-11eb-941c-e725acf1fbbc",
+                                "index": 9,
+                                "listId": "oqsrwrirwx-4382f050-b312-11eb-941c-e725acf1fbbc",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "7ec428a0-b312-11eb-941c-e725acf1fbbc",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tool Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "oqsrwrirwx-490f8830-b312-11eb-941c-e725acf1fbbc",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "description",
+                                "height": 106,
+                                "id": "7cb82c00-b312-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0,
+                                "dropEffect": "move",
+                                "listId": "oqsrwrirwx-490f8830-b312-11eb-941c-e725acf1fbbc"
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tool Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "oqsrwrirwx-598a9650-b312-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 5,
+                        "type": "relatedIncidents"
+                    },
+                    {
+                        "h": 2,
+                        "i": "oqsrwrirwx-5d0edb10-b312-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 0,
+                        "y": 7
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "hidden": false,
+                "id": "se889tdxik",
+                "name": "Relationships",
+                "sections": [
+                    {
+                        "h": 4,
+                        "i": "se889tdxik-09585430-979f-11eb-a8d1-098e2c945225",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "Tool",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "toVersion": "6.9.9",
+    "description": ""
+}

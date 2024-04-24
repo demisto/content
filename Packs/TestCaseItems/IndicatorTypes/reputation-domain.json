@@ -1,0 +1,544 @@
+{
+    "id": "domainRepUnified",
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "modified": "2021-02-28T15:07:20.215835509Z",
+    "sortValues": null,
+    "commitMessage": "",
+    "shouldCommit": false,
+    "regex": "(?i)(?P<scheme>(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?(?:%[\\da-f][\\da-f])?(?P<domain>(?:[\\p{L}\\d\\-–]+(?:\\.|\\[\\.\\]))+[\\p{L}]{2,})(@|%40)?(?:\\b| |[[:punct:]]|$)",
+    "details": "Domain",
+    "prevDetails": "Domain",
+    "reputationScriptName": "",
+    "reputationCommand": "domain",
+    "enhancementScriptNames": [
+        "DomainReputation"
+    ],
+    "system": true,
+    "locked": false,
+    "disabled": false,
+    "file": false,
+    "updateAfter": 0,
+    "mergeContext": false,
+    "formatScript": "ExtractDomainAndFQDNFromUrlAndEmail",
+    "contextPath": "Domain(val.Name \u0026\u0026 val.Name === obj.Name)",
+    "contextValue": "Name",
+    "excludedBrands": [],
+    "defaultMapping": {
+        "admincountry": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Admin.Country",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "adminemail": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Admin.Email",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "adminname": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Admin.Name",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "adminphone": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Admin.Phone",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "associations": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Associations",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "blocked": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Blocked",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "creationdate": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [
+                    [
+                        {
+                            "operator": "isExists",
+                            "left": {
+                                "value": {
+                                    "simple": "Domain.CreationDate",
+                                    "complex": null
+                                },
+                                "isContext": true
+                            },
+                            "right": null,
+                            "ignoreCase": false
+                        }
+                    ]
+                ],                "accessor": "CreationDate",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    },
+                    {
+                        "operator": "DateStringToISOFormat",
+                        "args": {
+                            "dayfirst": {
+                                "value": null,
+                                "isContext": false
+                            },
+                            "fuzzy": {
+                                "value": null,
+                                "isContext": false
+                            },
+                            "yearfirst": {
+                                "value": null,
+                                "isContext": false
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "detectionengines": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "DetectionEngines",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "dns": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "DNS",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "domainstatus": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "DomainStatus",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "expirationdate": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "ExpirationDate",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "internal": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Internal",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "nameservers": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "NameServers",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "organization": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Admin.Organization",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "positivedetections": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "PositiveDetections",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "registrantcountry": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Registrant.country",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "registrantemail": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Registrant.email",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "registrantname": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Registrant.name",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "registrantphone": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Registrant.phone",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "registrarabuseemail": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Whois.Registrar.AbuseEmail",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "registrarabusephone": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Registrar.AbusePhone",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "registrarname": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Whois.Registrar.Name",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "reportedby": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "ReportedBy",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "subdomains": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Subdomains",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "tags": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "Tags",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+		"communitynotes": {
+			"simple": "",
+			"complex": {
+				"root": "Domain",
+				"filters": [],
+				"accessor": "CommunityNotes",
+				"transformers": [
+					{
+						"operator": "uniq",
+						"args": {}
+					}
+				]
+			}
+		},
+		"publications": {
+			"simple": "",
+			"complex": {
+				"root": "Domain",
+				"filters": [],
+				"accessor": "Publications",
+				"transformers": [
+					{
+						"operator": "uniq",
+						"args": {}
+					}
+				]
+			}
+		},
+        "feedrelatedindicators": {
+          "simple": "",
+          "complex": {
+              "root": "Domain",
+              "filters": [],
+              "accessor": "FeedRelatedIndicators",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+        },
+        "malwarefamily": {
+          "simple": "",
+          "complex": {
+              "root": "Domain",
+              "filters": [],
+              "accessor": "MalwareFamily",
+              "transformers": [
+                  {
+                      "operator": "uniq",
+                      "args": {}
+                  }
+              ]
+          }
+        },
+        "threattypes": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "ThreatTypes",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "trafficlightprotocoltlp": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [],
+                "accessor": "TrafficLightProtocol",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "updateddate": {
+            "simple": "",
+            "complex": {
+                "root": "Domain",
+                "filters": [
+                    [
+                        {
+                            "operator": "isExists",
+                            "left": {
+                                "value": {
+                                    "simple": "Domain.UpdatedDate",
+                                    "complex": null
+                                },
+                                "isContext": true
+                            },
+                            "right": null,
+                            "ignoreCase": false
+                        }
+                    ]
+                ],
+                "accessor": "UpdatedDate",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    },
+                    {
+                        "operator": "DateStringToISOFormat",
+                        "args": {
+                            "dayfirst": {
+                                "value": null,
+                                "isContext": false
+                            },
+                            "fuzzy": {
+                                "value": null,
+                                "isContext": false
+                            },
+                            "yearfirst": {
+                                "value": null,
+                                "isContext": false
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    },
+  "manualMapping": null,
+  "fileHashesPriority": null,
+  "expiration": 20160,
+  "layout": "domainRepUnified"
+}

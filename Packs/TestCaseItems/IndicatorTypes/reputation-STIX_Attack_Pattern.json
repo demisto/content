@@ -1,0 +1,28 @@
+{
+    "contextPath": "",
+    "contextValue": "",
+    "defaultMapping": null,
+    "details": "STIX Attack Pattern",
+    "disabled": false,
+    "enhancementScriptNames": [],
+    "excludedBrands": [],
+    "expiration": 0,
+    "file": false,
+    "fileHashesPriority": null,
+    "formatScript": "",
+    "id": "Attack Pattern",
+    "locked": false,
+    "manualMapping": {},
+    "mergeContext": false,
+    "regex": "",
+    "reputationCommand": "",
+    "reputationScriptName": "",
+    "sortValues": null,
+    "system": false,
+    "updateAfter": 0,
+    "version": -1,
+    "fromVersion": "5.5.0",
+    "toVersion": "6.1.9",
+    "layout": "STIX Attack Pattern"
+
+}
