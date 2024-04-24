@@ -23,13 +23,6 @@ repos:
     args:
     - --check
     files: ^pyproject.toml$
-  - id: poetry-export
-    args:
-    - --with
-    - dev,typing
-    - --without-hashes
-    - -o
-    - requirements.txt
 - repo: https://github.com/hadialqattan/pycln
   rev: v2.1.2
   hooks:
