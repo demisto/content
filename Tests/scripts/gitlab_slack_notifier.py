@@ -367,7 +367,7 @@ def bucket_upload_results(bucket_artifact_folder: Path,
     pack_results_path = bucket_artifact_folder / BucketUploadFlow.PACKS_RESULTS_FILE_FOR_SLACK
 
     logging.info(f'retrieving upload data from "{pack_results_path}"')
-    successful_packs, _, failed_packs, successful_private_packs, _ = get_upload_data(
+    successful_packs, _, failed_packs, _ = get_upload_data(
         pack_results_path.as_posix(), BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
     )
     if successful_packs:

@@ -476,6 +476,7 @@ def main():
                                                                                  storage_base_path)
 
     # content repo client initialized
+    # WHEN DO WE RUN THIS??
     if not is_private_build:
         content_repo = get_content_git_client(CONTENT_ROOT_PATH)
         current_commit_hash, remote_previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
