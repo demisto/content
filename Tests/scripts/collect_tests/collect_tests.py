@@ -147,11 +147,14 @@ class CollectionResult:
             if test:
                 logger.info(f'{pack} support level != XSOAR, not collecting {test}, pack will be installed')
                 test = None
+            return # TODO
+
 
         except InvalidTestException as e:
             suffix = ' (pack will be installed)' if pack else ''
             logger.error(f'{str(e)}, not collecting {test}{suffix}')
             test = None
+            return # TODO
 
         except NonNightlyPackInNightlyBuildException as e:
             test_suffix = f', not collecting {test}' if test else ''
