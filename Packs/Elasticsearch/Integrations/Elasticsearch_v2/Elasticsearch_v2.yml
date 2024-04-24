@@ -59,6 +59,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: The time field on which sorting and limiting is done. If using nested field, separate fields name using a dot.
 - display: Raw Query
   name: raw_query
   type: 12
