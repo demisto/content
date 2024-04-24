@@ -32,8 +32,8 @@ script:
   commands:
   - name: redmine-issue-create
     description: |-
-      - Create a new Issue
-      - The status of the newly created issue will be set to the status the user set in the Redmine instance as default.
+      - Create a new issue.
+      - The status of the newly created issue will be set to the status you set in the Redmine instance.
       - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created.
       - To create a custom field, navigate to the server URL with administrative privileges, click **Administration** (located at the top left), select **Custom fields**,' and then proceed to create a new custom field. Once created, you  can add values as needed.
       - To create a category/version, navigate to the server URL -> Click on the Settings (top bar) -> Versions tab and Issue categories tab.
@@ -146,7 +146,7 @@ script:
       description: |-
         - A status ID (e.g., 1,2,3) or use predefined values.
         - You can find the mapping from status_name to status_id using the command redmine-status-id-list.
-        - You can use Open/Closed/All from the predefined values or use any of your custom status ID (e.g., 1).
+        - You can use Open/Closed/All from the predefined values or use any of your custom status IDs (e.g., 1).
       defaultValue: Open
       predefined:
       - Open
@@ -179,12 +179,12 @@ script:
       description: |-
         - A tracker ID (e.g., 1,2,3).
         - You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.
-        - If you entered an invalid ID, tracker_id won't be changed but won't raise an error.
+        - If you entered an invalid ID, tracker_id won't be changed and won't raise an error.
     - name: status_id
       description: |-
         - A status ID (e.g., 1,2,3).
         - You can find the mapping from status_name to status_id using the command redmine-status-id-list.
-        - If you entered an invalid ID, status_id won't be changed but won't raise an error.
+        - If you entered an invalid ID, status_id won't be changed and won't raise an error.
     - name: priority_id
       description: |-
         - A priority ID (e.g., 1,2,3).
@@ -353,23 +353,23 @@ script:
     description: Returns a list of statuses (status name to status id).
     outputs:
     - contextPath: Redmine.statuses.ID
-      description: ID of status field.
+      description: ID of the status field.
     - contextPath: Redmine.Users.Name
-      description: Name of status field.
+      description: Name of the status field.
   - name: redmine-priority-id-list
     description: Returns a list of priorities (priority name to priority id).
     outputs:
     - contextPath: Redmine.priorities.ID
-      description: ID of priority field.
+      description: ID of the priority field.
     - contextPath: Redmine.priorities.Name
-      description: Name of priority field.
+      description: Name of the priority field.
   - name: redmine-tracker-id-list
     description: Returns a list of trackers (tracker name to tracker id).
     outputs:
     - contextPath: Redmine.trackers.ID
-      description: ID of tracker field.
+      description: ID of the tracker field.
     - contextPath: Redmine.trackers.Name
-      description: Name of tracker field.
+      description: Name of the tracker field.
   dockerimage: demisto/python3:3.10.14.92207
   isfetch: false
   runonce: false
