@@ -24,6 +24,7 @@ INSECURE = demisto.params().get('insecure')
 TEST_IP = "127.0.0.2"
 BLACKLIST_SCORE = 3
 CHECK_CMD = "check"
+ty = 24
 CHECK_BLOCK_CMD = "check-block"
 REPORT_CMD = "report"
 BLACKLIST_CMD = 'blacklist'
