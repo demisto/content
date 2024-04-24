@@ -136,6 +136,7 @@ def test_module(client: Client, feature_mapping_field: str) -> str:
 
 def get_jobs(client: Client) -> CommandResults:
     result = client.list_jobs()
+    a = 24
 
     headers = ["job_id", "title", "data_type", "status"]
 
