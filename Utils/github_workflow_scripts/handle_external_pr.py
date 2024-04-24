@@ -297,18 +297,14 @@ def find_all_open_prs_by_user(content_repo, pr_creator, pr_number):
     print(f'pr creator is: {pr_creator}')
     all_prs = content_repo.get_pulls()
     similar_prs = []
-    print(f'Number of all open PRs is: {all_prs.totalCount}')
     for pr in all_prs:
         if pr.number == pr_number:  # ג current PR
             continue
         if pr.user.login == "xsoar-bot":
             pr_creator_from_body = get_user_from_ui_pr(pr)
-            print(f'pr creator from body is: {pr_creator_from_body}')
             if pr_creator_from_body == pr_creator:
                 similar_prs.append(pr)
         elif pr.user.login == pr_creator:
-            print(f'pr creator from login: {pr.user.login}')
-            print(f'pr_id from going over all prs: {pr.number}')
             similar_prs.append(pr)
         else:
             continue
@@ -320,12 +316,17 @@ def filter_prs_by_current_round(other_prs_by_same_user):
     content_roles = load_json(CONTENT_ROLES_PATH)
     content_reviewers, __, _ = get_content_reviewers(content_roles)
     reviewers = []
+    relevant_reviewers = []
     for pr in other_prs_by_same_user:
         print(f"pr for filter is: {pr}")
         print(f'reviewers for that pr are{pr.requested_reviewers}')
-        print(f'login for reviewers is: {pr.requested_reviewers.login}')
-        if pr.requested_reviewers.login in content_reviewers:
-            reviewers.append(pr.requested_reviewers.login)
+        for reviewer in pr.requested_reviewers:
+            print(f'reviewer of the pr is: {reviewer.login}')
+            reviewers.append(reviewer.login)
+        print(f'login for reviewers is: {reviewers}')
+        for r in reviewers:
+            if r in content_reviewers:
+                reviewers.append(r)
     return reviewers
 
 def find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number):
