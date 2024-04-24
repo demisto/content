@@ -326,8 +326,8 @@ def filter_prs_by_current_round(other_prs_by_same_user):
         print(f'login for reviewers is: {reviewers}')
         for r in reviewers:
             if r in content_reviewers:
-                reviewers.append(r)
-    return reviewers
+                relevant_reviewers.append(r)
+    return relevant_reviewers
 
 def find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number):
     """
