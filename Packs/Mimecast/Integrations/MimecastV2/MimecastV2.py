@@ -36,7 +36,7 @@ FETCH_HELD_MESSAGES = 'Held Messages' in FETCH_PARAMS or FETCH_ALL
 EMAIL_ADDRESS = demisto.params().get('email') or demisto.params().get('credentials', {}).get('identifier', '')
 PASSWORD = demisto.params().get('password') or demisto.params().get('credentials', {}).get('password', '')
 FETCH_DELTA = int(demisto.params().get('fetchDelta', 24))
-
+INTEGRATION_NAME = "MimecastV2"
 
 LOG(f"command is {demisto.command()}")
 
@@ -90,6 +90,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
 
     if use_headers:
         headers = generate_user_auth_headers(api_endpoint)
+    demisto.debug(f"{INTEGRATION_NAME}: {demisto.command()} the request is:, {api_endpoint=}, {payload=}")
     response = http_request('POST', api_endpoint, payload, headers=headers, is_file=is_file)
 
     next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
@@ -113,6 +114,7 @@ def request_with_pagination(api_endpoint: str, data: list, response_param: str =
         pagination = {'page_size': page_size,  # type: ignore
                       'pageToken': next_page}  # type: ignore
         payload['meta']['pagination'] = pagination
+        demisto.debug(f"{INTEGRATION_NAME}: {demisto.command()} the request is:, {api_endpoint=}, {payload=}")
         response = http_request('POST', api_endpoint, payload, headers=headers)
         next_page = str(response.get('meta', {}).get('pagination', {}).get('next', ''))
     if page and page_size:
@@ -1664,6 +1666,7 @@ def fetch_incidents():
     current_fetch = last_fetch
 
     incidents = []  # type: List[Any]
+    demisto.debug(f"{INTEGRATION_NAME}: {FETCH_URL=}, {FETCH_ATTACHMENTS=}, {FETCH_IMPERSONATIONS=}, {FETCH_HELD_MESSAGES=}")
     if FETCH_URL:
         search_params = {
             'from': last_fetch_date_time,
