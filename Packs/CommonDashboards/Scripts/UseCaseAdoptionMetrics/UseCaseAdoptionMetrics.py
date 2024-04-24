@@ -2,7 +2,13 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def check_phishing_incidents():
+def check_phishing_incidents()-> bool:
+    """
+    Checks for phishing incidents.
+
+    Returns:
+        bool: True if phishing incidents are found, False otherwise.
+    """
     try:
         res = demisto.executeCommand("getIncidents", {"type": "Phishing", "size": 1})
         if res:
@@ -12,7 +18,13 @@ def check_phishing_incidents():
         return DemistoException(str(e))
 
 
-def is_rapid_breach_response_installed():
+def is_rapid_breach_response_installed()-> bool:
+    """
+    Checks if Rapid Breach Response is installed.
+
+    Returns:
+        bool: True if Rapid Breach Response is installed, False otherwise.
+    """
     try:
         res = demisto.executeCommand("core-api-get", {"uri": "/contentpacks/metadata/installed"})
         if res:
@@ -22,7 +34,13 @@ def is_rapid_breach_response_installed():
         return DemistoException(str(e))
 
 
-def get_use_cases():
+def get_use_cases()-> Dict[str, Any]:
+    """
+    Retrieves use cases data based on modules in Demisto.
+
+    Returns:
+        dict: A dictionary containing use cases in production and at risk.
+    """
     use_cases_in_production = set()
     at_risk = []
 
