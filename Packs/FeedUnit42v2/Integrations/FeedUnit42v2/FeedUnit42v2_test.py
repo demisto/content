@@ -389,19 +389,20 @@ def test_fetch_indicators_command_with_relationship(mocker):
     assert REPORTS_INDICATORS_WITH_RELATIONSHIPS in indicators
 
 
-def test_create_course_of_action_indicators_with_tlp(mocker):
+def test_create_course_of_action_indicators_with_tlp():
     """
     Given
-    - fetch incidents command
-    - command args
-    - command raw response
+    - fetch indicator command.
+    - mock Client.
     When
-    - mock the Client's get_stix_objects.
+    - call the create_course_of_action_indicators method
     Then
-    - run the fetch incidents command using the Client
-    Validate the amount of indicators fetched
-    Validate that the dummy indicator with the relationships list fetched
+    - run the create_course_of_action_indicators method with TLP
+    - Validate that the TLP value was set correctly.
     """
 
-    client = Client(api_key='1234', verify=False)
-    assert create_course_of_action_indicators(client, COURSE_OF_ACTION_DATA, [], 'WHITE') == COURSE_OF_ACTION_INDICATORS_WITH_TLP
+    client = Client(api_key="1234", verify=False)
+    assert (
+        create_course_of_action_indicators(client, COURSE_OF_ACTION_DATA, [], "WHITE")
+        == COURSE_OF_ACTION_INDICATORS_WITH_TLP
+    )
