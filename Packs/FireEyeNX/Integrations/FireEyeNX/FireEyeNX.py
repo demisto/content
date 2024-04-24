@@ -475,7 +475,7 @@ def get_incidents_for_alert(**kwargs) -> tuple[list[dict[str, Any]], dict[str, A
 
 
 def get_incidents_for_event(
-    client: Client, start_time: int, fetch_limit: int, mvx_correlated: bool, last_run: dict
+    client: Client, start_time: float, fetch_limit: int, mvx_correlated: bool, last_run: dict
 ):
     """
     Return List of incidents for event.
@@ -1350,7 +1350,7 @@ def fetch_incidents(
     fetch_count = 0
     if 'IPS Events' in (kwargs['fetch_type'] or []):
         if events_start_time := last_run.get('events', {}).get('start_time'):
-            start_time = int(events_start_time)
+            start_time = dateparser.parse(events_start_time).timestamp()
         demisto.debug(f"FireeyeNX IPS Events Start Time: {start_time}")
         incidents, fetch_count, next_run_events = get_incidents_for_event(
             kwargs['client'],
@@ -1367,7 +1367,7 @@ def fetch_incidents(
         fetch_count < kwargs['fetch_limit']
     ):
         if alerts_start_time := last_run.get('alerts', {}).get('start_time'):
-            start_time = int(alerts_start_time)
+            start_time = dateparser.parse(alerts_start_time).timestamp()
         demisto.debug(f"FireeyeNX Alerts Start Time: {start_time}")
         alert_incidents, next_run_alerts = get_incidents_for_alert(
             client=kwargs['client'],
