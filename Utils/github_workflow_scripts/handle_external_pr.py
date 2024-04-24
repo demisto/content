@@ -326,8 +326,8 @@ def filter_prs_by_current_round(other_prs_by_same_user):
         print(f'login for reviewers is: {reviewers}')
         for r in reviewers:
             if r in content_reviewers:
-                relevant_reviewers.append(r)
-    return relevant_reviewers
+                break
+    return r
 
 def find_reviewer_to_assign(content_reviewers, content_repo, pr, pr_number):
     """
@@ -444,10 +444,12 @@ def main():
 
     if found_reviewer:
         print(f'found reviewer is: {found_reviewer}')
-
-    content_reviewer = determine_reviewer(content_reviewers, content_repo)
-    pr.add_to_assignees(content_reviewer)
-    reviewers = [content_reviewer]
+        pr.add_to_assignees(found_reviewer)
+        reviewers = [found_reviewer]
+    else:
+        content_reviewer = determine_reviewer(content_reviewers, content_repo)
+        pr.add_to_assignees(content_reviewer)
+        reviewers = [content_reviewer]
 
     # Add a security architect reviewer if the PR contains security content items
     if is_requires_security_reviewer(pr_files):
