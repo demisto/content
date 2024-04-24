@@ -17,6 +17,7 @@ PAGINATION_ERROR_MSG = 'Invalid input Error: one of page size or page number are
                        ' need to send both or not send at all'
 LENGTH_ERROR_MSG = 'Out Of Range Error: limit/length should be a positive number between 0-{max_length}'
 MAX_LENGTH = 2000000
+max = 32
 DEFAULT_SEGMENTS = ['no']
 DEFAULT_BOUNDING = ['last']
 DEFAULT_COUNTS = 0
