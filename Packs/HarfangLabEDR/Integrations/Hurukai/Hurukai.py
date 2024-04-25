@@ -685,7 +685,7 @@ def _adjust_max_fetch_value(max_fetch: int, already_fetched_count: int) -> int:
 
 def _get_fetching_cursor(fetch_history: FetchHistory) -> datetime:
 
-    if not isinstance(fetch_history.last_fetch, (int, float)):
+    if not isinstance(fetch_history.last_fetch, int | float):
         raise ValueError(
             f"Expected an integer value for 'fetch_history.last_fetch', "
             f"get '{fetch_history.last_fetch}'"
@@ -923,16 +923,11 @@ def _fetch_security_event_incidents(
         f"{len(security_events)} security events fetched from {mirror_instance}"
     )
 
-    # define 'count' before the 'for' loop to ensure semantic in
-    # case of empty 'for' loop.
-    count: int = 0
     security_event: SecurityEvent
 
     # fetched security events are expected to be already sorted by time creation,
     # but better be safe
-    for count, security_event in enumerate(
-        sorted(security_events, key=lambda d: d["alert_time"]), start=1
-    ):
+    for security_event in sorted(security_events, key=lambda d: d["alert_time"]):
 
         security_event_id: str = security_event["id"]  # id should be always present
 
@@ -1070,16 +1065,11 @@ def _fetch_threat_incidents(
 
     demisto.info(f"{len(threats)} threats fetched from {mirror_instance}")
 
-    # define 'count' before the 'for' loop to ensure semantic in
-    # case of empty 'for' loop.
-    count: int = 0
     threat: Threat
 
     # fetched threats are expected to be already sorted by time creation,
     # but better be safe
-    for count, threat in enumerate(
-        sorted(threats, key=lambda d: d["creation_date"]), start=1
-    ):
+    for threat in sorted(threats, key=lambda d: d["creation_date"]):
 
         threat_id: int = threat["id"]  # id should be always present
 
@@ -1270,20 +1260,18 @@ def fetch_incidents(
         )
 
     # fetch threats only if every security events has been fetched first
-    if len(incidents) < max_fetch:
-
-        if "Threats" in fetch_types:
-            _fetch_threat_incidents(
-                client=client,
-                fetch_history=last_run.threat,
-                minimum_severity_to_fetch=min_severity,
-                max_fetch=max_fetch,
-                first_fetch_timestamp=past_days_to_fetch_timestamp,
-                mirror_instance=mirror_instance,
-                mirror_direction=MIRROR_DIRECTION_MAPPING[mirror_direction],
-                threat_status=status_to_fetch,
-                incidents=incidents,  # the list will mutate (list.append(...))
-            )
+    if len(incidents) < max_fetch and "Threats" in fetch_types:
+        _fetch_threat_incidents(
+            client=client,
+            fetch_history=last_run.threat,
+            minimum_severity_to_fetch=min_severity,
+            max_fetch=max_fetch,
+            first_fetch_timestamp=past_days_to_fetch_timestamp,
+            mirror_instance=mirror_instance,
+            mirror_direction=MIRROR_DIRECTION_MAPPING[mirror_direction],
+            threat_status=status_to_fetch,
+            incidents=incidents,  # the list will mutate (list.append(...))
+        )
 
     return last_run.as_dict(), incidents
 
@@ -1373,7 +1361,7 @@ def get_frequent_users(client: Client, args: dict[str, Any]) -> CommandResults:
             {
                 "Username": username,
                 "System": system,
-                "Authentication attempts": authentications[(system, username)],
+                "Authentication attempts": auth_count,
             }
         )
         if len(output) >= limit:
@@ -2622,7 +2610,7 @@ def hunt_search_hash(client, args):
         for i in filehash:
             args["hash"] = i
             hunt_search_hash(client, args)
-        return None
+        return
     else:
         data = client.data_hash_search(filehash=filehash)
         prefetchs = []
@@ -3370,7 +3358,7 @@ def get_security_events(
     args = {
         "ordering": ordering,
         "level": ",".join(
-            SEVERITIES[SEVERITIES.index(min_severity) :]  # noqa: E203
+            SEVERITIES[SEVERITIES.index(min_severity):]
         ).lower(),
         "limit": limit,
         "offset": 0,
@@ -3502,7 +3490,7 @@ def get_threats(
         args = {
             "ordering": ordering,
             "level": ",".join(
-                SEVERITIES[SEVERITIES.index(min_severity) :]  # noqa: E203
+                SEVERITIES[SEVERITIES.index(min_severity):]
             ).lower(),
             "limit": limit,
             "offset": 0,
