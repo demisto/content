@@ -20,7 +20,7 @@ https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/Hel
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -53,7 +53,7 @@ class Client(BaseClient):
             url_suffix='objectschema/list'
         )
 
-    def get_workspace(self, jsm_premium_site_name) -> Dict[str, Any]:
+    def get_workspace(self, jsm_premium_site_name) -> dict[str, Any]:
         return self._http_request(
             auth=(),
             method='GET',
@@ -71,7 +71,7 @@ def pascal_case(s: str) -> str:
     return ''.join(word[:1].upper() + word[1:] for word in words)
 
 
-def convert_keys_to_pascal(objects: List[Dict[str, Any]], key_mapping: Optional[Dict[str, str]] = None) -> List[Dict[str, str]]:
+def convert_keys_to_pascal(objects: List[dict[str, Any]], key_mapping: Optional[dict[str, str]] = None) -> List[dict[str, str]]:
     """
     Convert keys of objects in a list to PascalCase, with optional key mapping.
 
@@ -127,7 +127,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-def jira_asset_get_workspace_command(args: Dict[str, Any], params: Dict[str, Any]) -> CommandResults:
+def jira_asset_get_workspace_command(args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
     verify_certificate = not params.get('insecure', True)
     proxy = params.get('proxy', False)
     api_key = params.get('credentials')
@@ -142,7 +142,7 @@ def jira_asset_get_workspace_command(args: Dict[str, Any], params: Dict[str, Any
     )
 
 
-def jira_asset_object_schema_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def jira_asset_object_schema_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     page = args.get('page')
     page_size = int(args.get('page_size', 50))
     limit = args.get('limit')
@@ -167,9 +167,9 @@ def jira_asset_object_schema_list_command(client: Client, args: Dict[str, Any]) 
     outputs = convert_keys_to_pascal(object_schemas, key_mapping)
     readable_outputs = [
         {k: v for k, v in output.items() if
-         k != 'Updated' and
-         k != 'ObjectCount' and
-         k != 'ObjectTypeCount'} for output in outputs]
+         k != 'Updated'
+         and k != 'ObjectCount'
+         and k != 'ObjectTypeCount'} for output in outputs]
     hr_headers = ['ID', 'Name', 'Key', 'Status', 'Description', 'Created']
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Schema',
