@@ -458,6 +458,7 @@ def main():
         content_reviewer = found_reviewer
     else:
         content_reviewer = determine_reviewer(content_reviewers, content_repo)
+        print(f'determined reviewer is: {content_reviewer}')
 
     pr.add_to_assignees(content_reviewer)
     reviewers = [content_reviewer]
