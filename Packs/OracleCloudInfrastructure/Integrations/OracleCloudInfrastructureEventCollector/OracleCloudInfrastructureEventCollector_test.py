@@ -17,7 +17,9 @@ def dummy_client(mocker):
     mocker.patch.object(Client, 'build_audit_base_url', return_value='dummy_audit_base_url')
     return Client(
         verify_certificate=False, proxy=False, region='dummy_region', tenancy_ocid='dummy_tenancy_ocid',
-        private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint')
+        private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint',
+        compartment_id='', private_key_type='PKCS#8'
+    )
 
 
 def mock_demisto(mocker, mock_params, mock_args, command, mock_last_run):
@@ -66,11 +68,13 @@ class TestClientRelatedFunctions:
         mocker.patch.object(Client, 'validate_private_key_syntax', return_value='dummy_validated_private_key')
         client = Client(
             verify_certificate=False, proxy=False, region='dummy_region', tenancy_ocid='dummy_tenancy_ocid',
-            private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint')
+            private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint',
+            compartment_id='', private_key_type='PKCS#8'
+        )
 
         assert client.build_singer_object(
             user_ocid='dummy_use_ocid', private_key='dummy_private_key', key_fingerprint='dummy_key_fingerprint',
-            tenancy_ocid='dummy_tenancy_ocid') == 'dummy_singer_object'
+            tenancy_ocid='dummy_tenancy_ocid', private_key_type='PKCS#8') == 'dummy_singer_object'
 
     def test_build_singer_object_fail(self, mocker):
         """
@@ -88,7 +92,9 @@ class TestClientRelatedFunctions:
         with pytest.raises(DemistoException, match='Could not create a valid OCI singer object'):
             Client(
                 verify_certificate=False, proxy=False, region='dummy_region', tenancy_ocid='dummy_tenancy_ocid',
-                private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint')
+                private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint',
+                compartment_id='', private_key_type='PKCS#8'
+            )
 
     @patch('OracleCloudInfrastructureEventCollector.PORT', '000')
     def test_build_audit_base_url(self, mocker):
@@ -104,7 +110,9 @@ class TestClientRelatedFunctions:
         mocker.patch('OracleCloudInfrastructureEventCollector.is_region', return_value=True)
         client = Client(
             verify_certificate=False, proxy=False, region='dummy_region', tenancy_ocid='dummy_tenancy_ocid',
-            private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint')
+            private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint',
+            compartment_id='', private_key_type='PKCS#8'
+        )
 
         assert client.build_audit_base_url('dummy_region') == 'https://audit.dummy_region.oraclecloud.com/000/auditEvents'
 
@@ -123,30 +131,41 @@ class TestClientRelatedFunctions:
         with pytest.raises(DemistoException, match='Could not create a valid OCI configuration'):
             Client(
                 verify_certificate=False, proxy=False, region='dummy_region', tenancy_ocid='dummy_tenancy_ocid',
-                private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint')
+                private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint',
+                compartment_id='', private_key_type='PKCS#8'
+            )
 
     case_validate_private_key = (
         '-----BEGIN PRIVATE KEY-----\nCONTENT\n-----END PRIVATE KEY-----',
+        'PKCS#8',
         '-----BEGIN PRIVATE KEY-----\nCONTENT\n-----END PRIVATE KEY-----')
     case_doubled_new_line_private_key = (
         '-----BEGIN PRIVATE KEY-----\n\nCONTENT\n\n-----END PRIVATE KEY-----',
+        'PKCS#8',
         '-----BEGIN PRIVATE KEY-----\nCONTENT\n-----END PRIVATE KEY-----')
     case_escaped_private_key = (
         '-----BEGIN PRIVATE KEY-----\\nCONTENT\\n-----END PRIVATE KEY-----',
+        'PKCS#8',
         '-----BEGIN PRIVATE KEY-----\nCONTENT\n-----END PRIVATE KEY-----')
     case_escaped_and_doubled_new_line_private_key = (
         '-----BEGIN PRIVATE KEY-----\\n\nCONTENT\n\\n-----END PRIVATE KEY-----',
+        'PKCS#8',
         '-----BEGIN PRIVATE KEY-----\nCONTENT\n-----END PRIVATE KEY-----')
+    case_validate_private_key_PKCS1 = (
+        '-----BEGIN RSA PRIVATE KEY-----\nCONTENT\n-----END RSA PRIVATE KEY-----',
+        'PKCS#1',
+        '-----BEGIN RSA PRIVATE KEY-----\nCONTENT\n-----END RSA PRIVATE KEY-----')
 
-    @pytest.mark.parametrize('private_key, expected_result',
+    @pytest.mark.parametrize('private_key, private_key_type, expected_result',
                              [case_validate_private_key,
                               case_doubled_new_line_private_key,
                               case_escaped_private_key,
-                              case_escaped_and_doubled_new_line_private_key])
-    def test_validate_private_key_syntax(self, mocker, private_key, expected_result):
+                              case_escaped_and_doubled_new_line_private_key,
+                              case_validate_private_key_PKCS1])
+    def test_validate_private_key_syntax(self, mocker, private_key, private_key_type, expected_result):
         """
         Given:
-            - A private key parameter is provided.
+            - A private key parameter and a private_key_type are provided.
         When:
             - Creating a Client object.
         Then:
@@ -156,9 +175,11 @@ class TestClientRelatedFunctions:
         mocker.patch.object(Client, 'build_audit_base_url', return_value='dummy_audit_base_url')
         client = Client(
             verify_certificate=False, proxy=False, region='dummy_region', tenancy_ocid='dummy_tenancy_ocid',
-            private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint')
+            private_key='dummy_private_key', user_ocid='dummy_use_ocid', key_fingerprint='dummy_key_fingerprint',
+            compartment_id='', private_key_type=private_key_type
+        )
 
-        assert client.validate_private_key_syntax(private_key) == expected_result
+        assert client.validate_private_key_syntax(private_key, private_key_type) == expected_result
 
 
 class TestEventRelatedFunctions:
