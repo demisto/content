@@ -113,7 +113,7 @@ def main():
         create_new_indicator_args = dict(args)
         create_new_indicator_args.pop('indicator_values', None)
         create_new_indicator_args.pop('verbose', None)
-        associate_to_incident = argToBoolean(create_new_indicator_args.pop('associate_to_incident', 'false'))
+        associate_to_incident = argToBoolean(create_new_indicator_args.pop('associate_to_current', 'false'))
         ents = add_new_indicators(indicator_values, create_new_indicator_args, associate_to_incident)
 
         outputs = [assign_params(
