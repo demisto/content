@@ -1,20 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
 
 from CommonServerUserPython import *  # noqa
 
@@ -260,8 +245,6 @@ DEVICE_VULNERABILITY_FIELDS = {
 
 INCIDENT_TIMESTAMP_FIELD = "device_alert_updated_time"
 
-# TODO: move my class defs to a diff file
-
 
 ''' CLIENT CLASS '''
 
@@ -387,7 +370,6 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
 def _device_alert_relation_id(device_alert_relation: Dict) -> Tuple[str, int]:
     return device_alert_relation.get("alert_id"), device_alert_relation.get("device_uid")
 
@@ -465,14 +447,12 @@ def test_module(client: Client) -> str:
         client.get_device_alert_relations(fields=["device_uid", "alert_id"], limit=1)
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
     return message
 
-
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 class XDomeCommand(abc.ABC):
     retired_field_name: str = "retired"
@@ -647,9 +627,9 @@ def fetch_incidents(
             )
             for alert_id, device_uid in last_run_alert_id_device_uid_pairs
         ))
-        # TODO: should be not_equals op but its not working.
+        # should be the 'not_equals' or the 'greater' operation, but they're currently not working.
         # not_last_fetched_time_filter = _simple_filter(INCIDENT_TIMESTAMP_FIELD, "not_equals", start_time)
-        # patch:
+        # patch: use the 'greater_or_equal' operation on value 'Time + 1s'
         not_last_fetched_time_filter = _simple_filter(
             INCIDENT_TIMESTAMP_FIELD,
             "greater_or_equal",
@@ -707,7 +687,6 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
 
-    # TODO: make sure you properly handle authentication
     api_key = params.get('credentials', {}).get('password')
 
     # get the service API url
