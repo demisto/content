@@ -577,18 +577,19 @@ def start_logging():
 """ Helper Functions """
 
 
-def get_attachment_name(attachment_name, eml_extension=False):
+def get_attachment_name(attachment_name, eml_extension=False, attachment_id=None):
     """
     Retrieve attachment name or error string if none is provided
     :param attachment_name: attachment name to retrieve
     :param eml_extension: Indicates whether the eml extension should be added
     :return: string
     """
+    #TODO
     if attachment_name is None or attachment_name == "":
         return "demisto_untitled_attachment.eml" if eml_extension else "demisto_untitled_attachment"
     elif eml_extension and not attachment_name.endswith(".eml"):
-        return f'{attachment_name}.eml'
-    return attachment_name
+        return f'_{attachment_id}_{attachment_name}.eml'
+    return f'_{attachment_id}_{attachment_name}'
 
 
 def get_entry_for_object(title, context_key, obj, headers=None):
@@ -875,7 +876,7 @@ def get_entry_for_file_attachment(item_id, attachment):
     :param attachment: attachment dict
     :return: file entry dict for attachment
     """
-    entry = fileResult(get_attachment_name(attachment.name), attachment.content)
+    entry = fileResult(get_attachment_name(attachment_name=attachment.name, attachment_id=attachment.attachment_id.id), attachment.content)
     entry["EntryContext"] = {
         CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT
         + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id, attachment)
@@ -901,7 +902,7 @@ def parse_attachment_as_dict(item_id, attachment):
         return {
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
             ATTACHMENT_ID: attachment.attachment_id.id,
-            "attachmentName": get_attachment_name(attachment.name),
+            "attachmentName": get_attachment_name(attachment_name=attachment.name, attachment_id=attachment.attachment_id.id),
             "attachmentSHA256": hashlib.sha256(attachment_content).hexdigest()
             if attachment_content
             else None,
@@ -921,7 +922,7 @@ def parse_attachment_as_dict(item_id, attachment):
         return {
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
             ATTACHMENT_ID: attachment.attachment_id.id,
-            "attachmentName": get_attachment_name(attachment.name),
+            "attachmentName": get_attachment_name(attachment_name=attachment.name, attachment_id=attachment.attachment_id.id),
             "attachmentSHA256": None,
             "attachmentContentType": attachment.content_type,
             "attachmentContentId": attachment.content_id,
@@ -948,7 +949,7 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     dict_result.update(
         parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True)
     )
-    title = f'EWS get attachment got item for "{target_email}", "{get_attachment_name(attachment.name)}"'
+    title = f'EWS get attachment got item for "{target_email}", "{get_attachment_name(attachment_name=attachment.name, attachment_id=attachment.attachment_id.id)}"'
 
     return get_entry_for_object(
         title,
@@ -1068,7 +1069,7 @@ def fetch_attachments_for_message(
             if attachment.item.mime_content:
                 entries.append(
                     fileResult(
-                        get_attachment_name(attachment.name, eml_extension=True),
+                        get_attachment_name(attachment_name=attachment.name, eml_extension=True, attachment_id=attachment.attachment_id.id),
                         attachment.item.mime_content,
                     )
                 )
@@ -2177,7 +2178,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                         label_attachment_id_type = "attachmentId"
 
                         # save the attachment
-                        file_name = get_attachment_name(attachment.name)
+                        file_name = get_attachment_name(attachment_name=attachment.name, attachment_id=attachment.attachment_id.id)
                         demisto.debug(f"saving content number {attachment_counter}, "
                                       f"of size {sys.getsizeof(attachment.content)}, of email with id {item.id}")
                         file_result = fileResult(file_name, attachment.content)
@@ -2191,7 +2192,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                         incident["attachment"].append(
                             {
                                 "path": file_result["FileID"],
-                                "name": get_attachment_name(attachment.name),
+                                "name": get_attachment_name(attachment_name=attachment.name, attachment_id=attachment.attachment_id.id),
                                 "description": FileAttachmentType.ATTACHED if not attachment.is_inline else "",
                             }
                         )
@@ -2251,7 +2252,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                                         raise err
 
                     data = decode_email_data(attached_email)
-                    file_result = fileResult(get_attachment_name(attachment.name, eml_extension=True), data)
+                    file_result = fileResult(get_attachment_name(attachment_name=attachment.name, eml_extension=True, attachment_id=attachment.attachment_id.id), data)
 
                 if file_result:
                     # check for error
@@ -2263,7 +2264,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                     incident["attachment"].append(
                         {
                             "path": file_result["FileID"],
-                            "name": get_attachment_name(attachment.name, eml_extension=True),
+                            "name": get_attachment_name(attachment_name=attachment.name, eml_extension=True, attachment_id=attachment.attachment_id.id),
                             "description": FileAttachmentType.ATTACHED if not attachment.is_inline else "",
                         }
                     )
@@ -2271,7 +2272,7 @@ def parse_incident_from_item(item):  # pragma: no cover
             labels.append(
                 {
                     "type": label_attachment_type,
-                    "value": get_attachment_name(attachment.name),
+                    "value": get_attachment_name(attachment_name=attachment.name, attachment_id=attachment.attachment_id.id),
                 }
             )
             labels.append(

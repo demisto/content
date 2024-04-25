@@ -413,7 +413,7 @@ def main():
         get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to)
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
-        time.sleep(5)
+        time.sleep(30)
         files = get_incident_related_files(email_related_incident)
         entry_id_list = get_entry_id_list(attachments, files)
         html_body = create_email_html(email_html, entry_id_list)
