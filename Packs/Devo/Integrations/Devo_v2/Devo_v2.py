@@ -1076,7 +1076,7 @@ def main():
                 raise ValueError("items_per_page should be a positive non-zero value.")
             total = 0
             ip_as_string = argToBoolean(demisto.args().get("ip_as_string", IP_AS_STRING))
-            demisto.results(run_query_command(OFFSET, items_per_page))
+            demisto.results(run_query_command(OFFSET, items_per_page, ip_as_string))
             total = total + COUNT_SINGLE_TABLE
             while items_per_page == COUNT_SINGLE_TABLE:
                 OFFSET = OFFSET + items_per_page
