@@ -443,7 +443,7 @@ class TestAssociateFailures:
         Then:
             - Assert 'add_new_indicator' returns the indicator.
         """
-        from CreateNewIndicatorsOnly import add_new_indicator
+        import CreateNewIndicatorsOnly
         indicator_value = "test"
         new_indicator = {'id': '0', 'value': 'test', 'score': 0, 'indicator_type': 'Unknown', 'CreationStatus': 'new'}
         global tries
@@ -468,8 +468,9 @@ class TestAssociateFailures:
         mocker.patch('CreateNewIndicatorsOnly.execute_command', side_effect=__execute_command)
         mocker.patch.object(demisto, 'incidents', return_value=[{'id': '1'}])
         mocker.patch.object(time, 'sleep', return_value=None)
+        CreateNewIndicatorsOnly.SLEEP_TIME = 0
 
-        result = add_new_indicator(indicator_value, {}, True)
+        result = CreateNewIndicatorsOnly.add_new_indicator(indicator_value, {}, True)
         assert result == new_indicator
 
     def test_add_new_indicator_associate_failed_always(self, mocker):
