@@ -6,7 +6,7 @@ import urllib3
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
-
+rt = 24
 ''' CLIENT CLASS '''
 
 
