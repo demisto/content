@@ -1,0 +1,4 @@
+!venafi-get-certificates Limit="1"
+!venafi-get-certificates CreatedOn="2024-03-18T16:35:00.7592811Z"
+!venafi-get-certificates L="London"
+!venafi-get-certificate-details guid=941e5574-e467-46c4-a735-e5daaa65832b
