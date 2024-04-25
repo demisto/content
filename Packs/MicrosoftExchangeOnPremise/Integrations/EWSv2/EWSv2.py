@@ -19,7 +19,7 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorMailboxMoveInProgress,
                                 ErrorMailboxStoreUnavailable,
                                 ErrorNameResolutionNoResults, RateLimitError,
-                                ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
+                                ResponseMessageError, TransportError, ErrorMimeContentConversionFailed, ErrorAccessDenied)
 from exchangelib.items import Contact, Item, Message
 from exchangelib.protocol import BaseProtocol, Protocol
 from exchangelib.services import EWSService
@@ -680,8 +680,7 @@ def get_folder_by_path(account, path, is_public=False):  # pragma: no cover
         if path in folders_map:
             return account.root._folders_map[path]
 
-    root = account.public_folders_root if is_public else account.root
-    folder = root if path == 'AllItems' else root.tois
+    folder = account.public_folders_root if is_public else account.root.tois
     path = path.replace("/", "\\")
     path = path.split('\\')
     for part in path:
@@ -1863,20 +1862,26 @@ def create_folder(new_folder_name, folder_path, target_mailbox=None):  # pragma:
 
 def find_folders(target_mailbox=None, is_public=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    root_collection = FolderCollection(account=account, folders=[account.root])
+    root = account.root
     if is_public:
-        root_collection = FolderCollection(account=account, folders=[account.public_folders_root])
+        root = account.public_folders_root
+    root_collection = FolderCollection(account=account, folders=[root])
     folders = []
     for f in root_collection.find_folders():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
         folders.append(folder)
-    readable_output = tableToMarkdown(t=folders, name='Available folders')  # pylint: disable=E1101
+
+    try:
+        readable_output = root.tree()
+
+    except ErrorAccessDenied:   # This is temporarily until the exchangelib version will be bumped
+        readable_output = tableToMarkdown(t=folders, name='Available folders')  # pylint: disable=E1101
 
     return {
         'Type': entryTypes['note'],
         'Contents': folders,
         'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
+        'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': readable_output,
         ENTRY_CONTEXT: {
             'EWS.Folders(val.id == obj.id)': folders
