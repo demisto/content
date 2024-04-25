@@ -296,12 +296,14 @@ def get_alert_command(client: Client, args: dict) -> CommandResults:
 
 def test_module_command(client: Client) -> str:
     try:
-        if client.test_incidents():
-            return "ok"
-        else:
-            return "failed"
+        client.test_incidents()  
     except Exception as e:
-        return f"Test failed with the following error: {repr(e)}"
+        if "Unauthorized" in str(e):
+            return "Authorization Error: make sure the credentials and host are correct"
+        else:
+            raise e
+    
+    return "ok"
 
 
 def update_case_command(client: Client, args: dict) -> CommandResults:

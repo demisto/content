@@ -98,7 +98,7 @@
 						"y": 0
 					},
 					{
-						"h": 3,
+						"h": 2,
 						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
 						"maxW": 3,
 						"moved": false,
@@ -138,7 +138,7 @@
 					},
 					{
 						"displayType": "ROW",
-						"h": 3,
+						"h": 2,
 						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
 						"maxW": 3,
 						"moved": false,
@@ -165,7 +165,7 @@
 					},
 					{
 						"displayType": "ROW",
-						"h": 2,
+						"h": 3,
 						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
 						"maxW": 3,
 						"moved": false,
@@ -281,7 +281,7 @@
 					},
 					{
 						"displayType": "CARD",
-						"h": 3,
+						"h": 2,
 						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
 						"isVisible": true,
 						"items": [
@@ -316,12 +316,12 @@
 					},
 					{
 						"displayType": "ROW",
-						"h": 2,
+						"h": 3,
 						"hideName": false,
 						"i": "caseinfoid-97a61050-de65-11ee-8b9a-676a8aec3ac3",
 						"items": [
 							{
-								"endCol": 4,
+								"endCol": 6,
 								"fieldId": "stellarcybercasealerts",
 								"height": 106,
 								"id": "f1d22760-de6c-11ee-aae9-b186686d0c1e",

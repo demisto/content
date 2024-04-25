@@ -31,9 +31,9 @@
             "type": "shortText",
             "orgType": "shortText",
             "required": false,
-            "width": 120,
+            "width": 200,
             "isDefault": true,
-            "isReadOnly": false
+            "isReadOnly": true
         },
         {
             "key": "description",
@@ -41,9 +41,9 @@
             "type": "longText",
             "orgType": "longText",
             "required": false,
-            "width": 300,
+            "width": 400,
             "isDefault": true,
-            "isReadOnly": false
+            "isReadOnly": true
         },
         {
             "key": "alerturl",
@@ -53,7 +53,47 @@
             "required": false,
             "width": 150,
             "isDefault": true,
-            "isReadOnly": false
+            "isReadOnly": true
+        },
+        {
+            "key": "xdrtacticname",
+            "displayName": "Tactic",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "width": 120,
+            "isDefault": true,
+            "isReadOnly": true
+        },
+        {
+            "key": "xdrtechniquename",
+            "displayName": "Technique",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "width": 200,
+            "isDefault": true,
+            "isReadOnly": true
+        },
+        {
+            "key": "detectedfield",
+            "displayName": "Detected Field",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "width": 300,
+            "isDefault": true,
+            "isReadOnly": true
+        },
+        {
+            "key": "detectedvalue",
+            "displayName": "Detected Value",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "width": 300,
+            "isDefault": true,
+            "isReadOnly": true
         }
     ],
     "defaultRows": [],

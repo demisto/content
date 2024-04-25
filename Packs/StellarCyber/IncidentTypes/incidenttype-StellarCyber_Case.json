@@ -17,5 +17,15 @@
     "default": false,
     "disabled": false,
     "layout": "Stellar Cyber Case",
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "details": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            }
+        }
+    },
     "fromVersion": "6.6.0"
 }
