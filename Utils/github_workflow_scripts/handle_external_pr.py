@@ -336,6 +336,7 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user) -> str:
     content_roles = load_json(CONTENT_ROLES_PATH)
     content_reviewers, __, _ = get_content_reviewers(content_roles)
     reviewers = []
+    relevant_reviewer = ''
     for pr in other_prs_by_same_user:
         print(f"pr for filter is: {pr}")
         print(f'reviewers for that pr are{pr.requested_reviewers}')
@@ -343,8 +344,9 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user) -> str:
             print(f'reviewer of the pr is: {reviewer.login}')
             reviewers.append(reviewer.login)
         print(f'login for reviewers is: {reviewers}')
-        for relevant_reviewer in reviewers:
-            if relevant_reviewer in content_reviewers:
+        for reviewer in reviewers:
+            if reviewer in content_reviewers:
+                relevant_reviewer = reviewer
                 break
     return relevant_reviewer
 
