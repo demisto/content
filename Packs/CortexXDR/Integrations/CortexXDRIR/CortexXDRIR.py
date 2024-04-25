@@ -842,7 +842,8 @@ def get_modified_remote_data_command(client, args):
 
     demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
 
-    last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    last_update_utc = dateparser.parse(last_update,
+                                       settings={'TIMEZONE': 'UTC', 'RETURN_AS_TIMEZONE_AWARE': False})  # convert to utc format
     if last_update_utc:
         last_update_without_ms = last_update_utc.isoformat().split('.')[0]
 
