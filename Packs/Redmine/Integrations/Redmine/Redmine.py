@@ -12,7 +12,7 @@ BASE_DEFAULT_OFFSET_NUMBER = 0
 MAX_LIMIT = 100
 MIN_LIMIT = 0
 
-INVALID_ID_DEMISTO_ERROR = ("This error may be due to Invalid ID for one or more fields that request IDs. "
+INVALID_ID_DEMISTO_ERROR = ("Error. This may be due to Invalid ID for one or more fields that request IDs. "
                             "Please make sure all IDs are correct.")
 RESPONSE_NOT_IN_FORMAT_ERROR = "The request succeeded, but a parse error occurred."
 
@@ -317,9 +317,9 @@ def get_issues_list_command(client: Client, args: dict[str, Any]):
                 if 'list index out of range' in e.args[0] or 'substring not found' in e.args[0]:
                     raise DemistoException(f"Invalid custom field format, please follow the command description. Error: {e}.")
                 raise
-        # Search in predefined- not an ID but this is the arg in request
+        # If the user used predefined values, convert to values accepted by the API using ISSUE_STATUS_FOR_LIST_COMMAND
         status_id = ISSUE_STATUS_FOR_LIST_COMMAND.get(status)
-        # When can not find in predefined
+        # If the user did not used predefined values, make sure it is a number
         if not status_id:
             status_id = status
             try:

@@ -33,25 +33,25 @@ script:
   - name: redmine-issue-create
     description: |-
       - Create a new issue.
-      - The status of the newly created issue will be set to the status you set in the Redmine instance.
-      - When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created.
+      - The status of the newly created issue will be set to the default status of the Redmine instance.
+      - When attaching a file to an issue, include the entry ID in the request as file_entry_id=entry ID.
       - To create a custom field, navigate to the server URL with administrative privileges, click **Administration** (located at the top left), select **Custom fields**,' and then proceed to create a new custom field. Once created, you  can add values as needed.
       - To create a category/version, navigate to the server URL -> Click on the Settings (top bar) -> Versions tab and Issue categories tab.
     arguments:
     - name: project_id
-      description: The project ID for this issue. If not specified, the value from the integration configuration will be used.
+      description: The project ID for this issue. If not specified, the value from the instance configuration will be used.
       required: false
     - name: tracker_id
       description: |-
         - A tracker ID (e.g., 1,2,3).
-        - You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.
-        - If you entered an invalid ID, it will use the default tracker from your Redmine instance.
+        - Get the tracker_name to tracker_id mapping by using the command redmine-tracker-id-list.
+        - If an invalid ID was entered, the default tracker from your Redmine instance will be used.
       required: true
     - name: priority_id
       required: true
       description: |-
         - A priority ID (e.g., 1,2,3).
-        - You can find the mapping from priority_name to priority_id using the command redmine-priority-id-list.
+        - Get the priority_name to priority_id mapping by using the command redmine-priority-id-list.
     - name: subject
       required: true
       description: The subject for this issue.
@@ -132,21 +132,21 @@ script:
       description: An array of issue IDs to display -> 1,2,3.
       isArray: true
     - name: project_id
-      description: A project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed.
+      description: A project ID to display issues of this project. If not specified here or in the instance configuration, all projects will be displayed.
     - name: subproject_id
-      description: A subproject ID to display issues of this subproject (you can't use both subproject_id and exclude).
+      description: A subproject ID to display issues of this subproject (Can't use both subproject_id and exclude).
     - name: exclude
-      description: A subproject ID to exclude from the list (you can't use both subproject_id and exclude), you need to add a project_id for this field to be included.
+      description: A subproject ID to exclude from the list (Can't use both subproject_id and exclude), please specify a project_id argument to exclude the subproject_id.
     - name: tracker_id
       description: |-
         - A tracker ID (e.g., 1,2,3).
-        - You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.
+        - Get the tracker_name to tracker_id mapping by using the command redmine-tracker-id-list.
     - name: status
       auto: PREDEFINED
       description: |-
         - A status ID (e.g., 1,2,3) or use predefined values.
-        - You can find the mapping from status_name to status_id using the command redmine-status-id-list.
-        - You can use Open/Closed/All from the predefined values or use any of your custom status IDs (e.g., 1).
+        - Get the status_name to status_id mapping by using the command redmine-status-id-list.
+        - Possible values: Open/Closed/All from the predefined values or use any of your custom status IDs (e.g., 1).
       defaultValue: Open
       predefined:
       - Open
@@ -160,8 +160,8 @@ script:
       description: |-
         - The custom field to filter by. The format is costumFieldID:Value.
         - To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  
-        - You can only filter one custom field at a time. 
-        - Make sure the custom field id you entered is valid, or the request won't fail but will not be filtered correctly.
+        - Can only filter one custom field at a time. 
+        - Make sure the custom field id which was entered is valid, or the request won't fail but will not be filtered correctly.
     outputs:
     - contextPath: Redmine.Issue
       description: A list of issues.
@@ -178,17 +178,17 @@ script:
     - name: tracker_id
       description: |-
         - A tracker ID (e.g., 1,2,3).
-        - You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.
-        - If you entered an invalid ID, tracker_id won't be changed and won't raise an error.
+        - Get the tracker_name to tracker_id mapping by using the command redmine-tracker-id-list.
+        - If an invalid ID was entered, tracker_id won't be changed and won't raise an error.
     - name: status_id
       description: |-
         - A status ID (e.g., 1,2,3).
-        - You can find the mapping from status_name to status_id using the command redmine-status-id-list.
-        - If you entered an invalid ID, status_id won't be changed and won't raise an error.
+        - Get the status_name to status_id mapping by using the command redmine-status-id-list.
+        - If an invalid ID was entered, status_id won't be changed and won't raise an error.
     - name: priority_id
       description: |-
         - A priority ID (e.g., 1,2,3).
-        - You can find the mapping from priority_name to priority_id using the command redmine-priority-id-list.
+        - Get the priority_name to priority_id mapping by using the command redmine-priority-id-list.
     - name: subject
       description: The subject of the issue.
     - name: description
@@ -235,7 +235,7 @@ script:
     description: Show an issue by ID.
     arguments:
     - name: issue_id
-      description: The ID of the issue you want to display.
+      description: The ID of the issue.
       required: true
     - name: include
       description: |
@@ -269,7 +269,7 @@ script:
     description: Delete an issue by its ID.
     arguments:
     - name: issue_id
-      description: The ID of the issue you want to delete.
+      description: The ID of the issue which is about to be deleted.
       required: true
   - name: redmine-issue-watcher-add
     description: Add a watcher to the specified issue. Ensure that the watcher_id is accurate, as the Redmine API does not raise an exception for an incorrect watcher_id.
@@ -376,6 +376,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 6.9.0
+fromversion: 6.10.0
 tests:
 - Redmine_Test

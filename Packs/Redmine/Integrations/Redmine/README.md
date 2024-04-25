@@ -30,8 +30,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 
 - Create a new issue.
-- By default, the status of the newly created issue will be set to the status you set in the Redmine instance.
-- When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created
+- The status of the newly created issue will be set to the default status of the Redmine instance.
+- When attaching a file to an issue, include the entry ID in the request as file_entry_id=entry ID.
 - To create a custom field, navigate to the server URL with administrative privileges, click **Administration** (located at the top left), select **Custom fields**, and then proceed to create a new custom field. Once created, you can add values as needed
 - To create a category/version, navigate to the server URL > click **Settings** (top bar) > **Versions** tab and **Issue categories** tab.
 
@@ -44,9 +44,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The project ID for this issue. If not specified, the value from the integration configuration will be used. | Optional | 
-| tracker_id | - A tracker ID (e.g., 1,2,3).<br/>- You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.<br/>- If you entered an invalid ID, it will use the default tracker from your Redmine instance. | Required | 
-| priority_id | - A priority ID (e.g., 1,2,3).<br/>- You can find the mapping from priority_name to priority_id using the command redmine-priority-id-list. | Required | 
+| project_id | The project ID for this issue. If not specified, the value from the instance configuration will be used. | Optional | 
+| tracker_id | - A tracker ID (e.g., 1,2,3).<br/>- Get the tracker_name to tracker_id mapping by using the command redmine-tracker-id-list.<br/>- If an invalid ID was entered,  the default tracker ID set in the Redmine instance wil be used. | Required | 
+| priority_id | - A priority ID (e.g., 1,2,3).<br/>- Get the priority_name to priority_id mapping by using the command redmine-priority-id-list. | Required | 
 | subject | The subject for this issue. | Required | 
 | description | A description for this issue. | Optional | 
 | category_id | The category ID for this issue. | Optional | 
@@ -152,13 +152,13 @@ Display a list of issues
 | sort | A field by which to sort the results. Append ":desc" to invert the order.<br/>- Possible values:<br/>1. tracker.<br/>2. status.<br/>3. priority.<br/>4. project.<br/>5. subproject.<br/>6. assigned_to.<br/>- For example: sort=tracker:desc.<br/> | Optional | 
 | include | An array of extra fields to fetch.<br/>- Possible values:<br/>    1. attachments.<br/>    2. relations.<br/> | Optional | 
 | issue_id | An array of issue IDs to display -&gt; 1,2,3. | Optional | 
-| project_id | Aa project ID to display issues of this project. If not specified here or in the integration configuration, all projects will be displayed. | Optional | 
+| project_id | Aa project ID to display issues of this project. If not specified here or in the instance configuration, all projects will be displayed. | Optional | 
 | subproject_id | A subproject ID to display issues of this subproject (use "project_id=someID" and "subproject_id=!name_of_subproject" to exclude subprojects). | Optional | 
-| tracker_id | - A tracker ID (e.g., 1,2,3).<br/>- You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list. | Optional |
-| status | - A status ID (e.g., 1,2,3) or use predefined values.  <br/>- You can use Open/Closed/All from the predefined values or use any of your custom status ids (e.g., 1).| Optional | 
+| tracker_id | - A tracker ID (e.g., 1,2,3).<br/>- Get the tracker_name to tracker_id mapping by using the command redmine-tracker-id-list. | Optional |
+| status | - A status ID (e.g., 1,2,3) or use predefined values.  <br/>- Possible values: Open/Closed/All from the predefined values or use any of your custom status ids (e.g., 1).| Optional | 
 | assigned_to_id | An assigned-to ID to display issues assigned to this user ID. | Optional | 
 | parent_id | A parent ID to display issues that are under this parent ID. | Optional | 
-| custom_field | - The custom field to filter by. The format is costumFieldID:Value.<br/>- To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  <br/>- You can only filter one custom field at a time. <br/>- Make sure the custom field ID you entered is valid, or the request won't fail but will not be filtered correctly.   <br/>| Optional | 
+| custom_field | - The custom field to filter by. The format is costumFieldID:Value.<br/>- To filter according to the desired custom field, ensure that it is marked as 'used as a filter' and 'searchable' in your Redmine server settings.  <br/>- You can only filter one custom field at a time. <br/>- Make sure the custom field ID which was entered is valid, or the request won't fail but will not be filtered correctly.   <br/>| Optional | 
 
 #### Context Output
 
@@ -280,7 +280,7 @@ Display a list of issues
 ### redmine-issue-update
 
 ***
-Update an existing issue. When attaching a file to an issue, include the entry ID in the request as file_entry_id=the ID you created. To create a custom field, navigate to the server URL with administrative privileges, click **'Administration** (located at the top left), select **Custom fields**, and proceed to create a new custom field. Once created, you can add values as needed.
+Update an existing issue. When attaching a file to an issue, include the entry ID in the request as file_entry_id=entry ID. To create a custom field, navigate to the server URL with administrative privileges, click **'Administration** (located at the top left), select **Custom fields**, and proceed to create a new custom field. Once created, you can add values as needed.
 
 #### Base Command
 
@@ -292,9 +292,9 @@ Update an existing issue. When attaching a file to an issue, include the entry I
 | --- | --- | --- |
 | issue_id | The ID of the issue to be updated. | Required | 
 | project_id | The ID of the project to associate with the issue. If not specified, the value from integration configuration will be taken if specified. | Optional | 
-| tracker_id | - A tracker ID (e.g., 1,2,3).<br/>- You can find the mapping from tracker_name to tracker_id using the command redmine-tracker-id-list.<br/>- If you entered an invalid ID, it will use the default tracker from your Redmine instance. | Optional | 
-| priority_id | - A priority ID (e.g., 1,2,3).<br/>- You can find the mapping from priority_name to priority_id using the command redmine-priority-id-list. | Optional | 
-| status | - A status ID (e.g., 1,2,3).<br/> - You can find the mapping from status_name to status_id using the command redmine-status-id-list.<br/>  - If you entered an invalid ID, status_id won't be changed and won't raise an error. | Optional | 
+| tracker_id | - A tracker ID (e.g., 1,2,3).<br/>- Get the tracker_name to tracker_id mapping by using the command redmine-tracker-id-list.<br/>- If an invalid ID was entered, tracker_id won't be changed and won't raise an error. | Optional | 
+| priority_id | - A priority ID (e.g., 1,2,3).<br/>- Get the priority_name to priority_id mapping by using the command redmine-priority-id-list. | Optional | 
+| status | - A status ID (e.g., 1,2,3).<br/> - Get the status_name to status_id mapping by using the command redmine-status-id-list.<br/>  - If an invalid ID was entered, status_id won't be changed and won't raise an error. | Optional | 
 | subject | The subject of the issue. | Optional | 
 | description | The description of the issue. | Optional | 
 | category_id | The ID of the category to assign to the issue. | Optional | 
@@ -334,7 +334,7 @@ Show an issue by id
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | The ID of the issue you want to display. | Required | 
+| issue_id | The ID of the wanted issue. | Required | 
 | include | - Fields to add to the response.<br/>- Possible values:<br/>  1.children.<br/>  2.attachments.<br/>  3.relations.<br/>  4.changesets.<br/>  5.journals.<br/>  6.watchers.<br/>  7.allowed_statuses.<br/>- Separate multiple values with comma ONLY.<br/> | Optional | 
 
 #### Context Output
@@ -434,7 +434,7 @@ Delete an issue by its ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | The ID of the issue you want to delete. | Required | 
+| issue_id | The ID of the about to be deleted issue. | Required | 
 
 #### Context Output
 
