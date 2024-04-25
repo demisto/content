@@ -82,7 +82,8 @@ class OpenAiClient(BaseClient):
     def get_chat_completions(self,
                              chat_context: List[Dict[str, str]],
                              completion_params: Dict[str, str | None]) -> Dict[str, any]:
-        """ """
+        """ Gets the response to a chat_completions request using the OpenAI API. """
+
         options = {'model': self.model}
         max_tokens = completion_params.get('max_tokens', None)
         if max_tokens:
@@ -109,14 +110,11 @@ class OpenAiClient(BaseClient):
 
 def get_updated_conversation(reset_conversation_history: bool, message: str) -> List[Dict[str, str]]:
     """
-    Retrieve and update the chat conversation history.
+    Retrieves the existing chat conversation history from the incident context, if exists.
+    If `reset_conversation_history` is True, or if no conversation history exists, it initializes a new conversation list
+    with the given message and returns it.
 
-    This function retrieves the existing chat conversation history from the incident context.
-    If `reset_conversation_history` is True, or if no conversation history exists, it initializes a new conversation list.
-    The function then appends the new message to this conversation history. It is important to note that this
-    function does not write the updated conversation history back to the incident context; it only returns it.
-
-    Parameters:
+    Args:
         reset_conversation_history (bool): Flag to determine whether to reset the existing conversation history.
         message (str): The new message to be added to the conversation.
 
@@ -196,7 +194,7 @@ def get_email_parts(entry_id: str) -> tuple[List[Dict[str, str]] | None, str | N
     return headers, text_body, html_body
 
 
-def check_email_part(email_part: str, client: OpenAiClient, args: Dict[str, Any]):
+def check_email_part(email_part: str, client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
     """
         Checks email parts (headers/body) for potential security issues using predefined prompts
         ('CHECK_EMAIL_HEADERS_PROMPT', 'CHECK_EMAIL_BODY_PROMPT') that are sent to the GPT model.
@@ -242,11 +240,6 @@ def check_email_part(email_part: str, client: OpenAiClient, args: Dict[str, Any]
     return send_message_command(client, args)
 
 
-# def get_cve_data(cve_id: str, cve_search_client: CveSearchClient) -> dict:
-#     # TODO - structure and format the cve data properly
-#     return cve_search_client.cve(cve_id)
-
-
 ''' COMMAND FUNCTIONS '''
 
 
@@ -282,6 +275,9 @@ def test_module(client: OpenAiClient, params: dict) -> str:
 
 
 def send_message_command(client: OpenAiClient, args: Dict[str, Any]) -> CommandResults:
+    """
+        Sending a message with conversation context to an OpenAI GPT model and retrieves the generated response.
+    """
     message = args.get('message', "")
     if not message:
         raise ValueError('Message not provided')

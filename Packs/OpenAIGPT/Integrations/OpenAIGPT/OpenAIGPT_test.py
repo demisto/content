@@ -1,17 +1,7 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
 import importlib
-import json
 import io
+
+from CommonServerPython import *
 
 OpenAIGPT = importlib.import_module("OpenAIGPT")
 
@@ -21,33 +11,22 @@ class OpenAiClient:
         pass
 
 
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+def util_load_text(path: str) -> str:
+    with open(path) as f:
+        return f.read()
+
+
 def test_extract_assistant_message():
     """Tests extraction from a valid response with choices and message."""
 
     from OpenAIGPT import extract_assistant_message
 
-    mock_response = {
-        'id': 'chatcmpl-XXXX',
-        'object': 'chat.completion',
-        'created': 1717171717,
-        'model': 'gpt-4-turbo-2024-04-09',
-        'choices': [
-            {
-                'index': 0,
-                'message': {
-                    'role': 'assistant',
-                    'content': 'Hello! How can I assist you today?'},
-                'logprobs': None,
-                'finish_reason': 'stop'
-            }
-        ],
-        'usage': {
-            'prompt_tokens': 9,
-            'completion_tokens': 9,
-            'total_tokens': 18
-        },
-        'system_fingerprint': 'fp_76f018034d'
-    }
+    mock_response = util_load_json('test_data/mock_response.json')
 
     conversation = []
     extracted_message = extract_assistant_message(response=mock_response, conversation=conversation)
@@ -55,5 +34,17 @@ def test_extract_assistant_message():
     assert extracted_message == "Hello! How can I assist you today?"
     assert conversation == [{'role': 'assistant', 'content': 'Hello! How can I assist you today?'}]
 
-    # assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+
+def test_get_email_parts(mocker):
+    """ Tests email parsing and parts extraction. """
+
+    from OpenAIGPT import get_email_parts
+
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './test_data/attachment_malicious_url.eml',
+                                                              'name': 'attachment_malicious_url.eml'})
+
+    headers, text_body, html_body = get_email_parts(entry_id="0")
+
+    assert headers == util_load_json('./test_data/expected_headers.json')
+    assert text_body == 'Body of the text'
+    assert html_body.replace('\r\n', '\n') == util_load_text('test_data/expected_html_body.txt')
