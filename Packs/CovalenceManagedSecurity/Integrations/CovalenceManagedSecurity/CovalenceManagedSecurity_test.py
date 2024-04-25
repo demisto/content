@@ -94,6 +94,19 @@ def test_get_aros_details(mocker):
     assert 'type' in r[0]
 
 
+def test_comment_aro(mocker):
+    mock_comment_aro = util_load_json('test_data/comment_aro.json')
+
+    import CovalenceManagedSecurity
+    mock_p = CovalenceManagedSecurity.Portal(bearer='gan ceann')
+    mocker.patch.object(CovalenceManagedSecurity, 'Portal', return_value=mock_p)
+    mocker.patch.object(mock_p, 'comment_aro', return_value=mock_comment_aro)
+
+    r = CovalenceManagedSecurity.comment_aro_command()
+
+    assert r == mock_comment_aro
+
+
 def test_list_org(mocker):
     mock_list_org = util_load_json('test_data/get_org.json')
 
