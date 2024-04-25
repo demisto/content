@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: WildFire-v2
+  id: WildFire-v2-test
   version: -1
 configuration:
 - defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
@@ -82,7 +82,7 @@ configuration:
   required: false
 description: Perform malware dynamic analysis.
 display: Palo Alto Networks WildFire v2
-name: WildFire-v2
+name: WildFire-v2-test
 script:
   commands:
   - arguments:
