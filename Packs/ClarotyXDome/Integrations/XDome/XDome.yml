@@ -77,7 +77,7 @@ script:
     description: Gets all device-alert pairs from xDome. You can apply a query-filter.
     arguments:
     - name: fields
-      description: Fields to return. The default value is "all".
+      description: Fields to return.
       required: false
       defaultValue: all
       isArray: true
@@ -280,7 +280,7 @@ script:
     description: Get details of devices with their related vulnerabilities from the database. The data returned by this endpoint for each device corresponds to the vulnerabilities table in the single device page.
     arguments:
     - name: fields
-      description: Fields to return. The default value is "all".
+      description: Fields to return.
       required: false
       defaultValue: all
       isArray: true

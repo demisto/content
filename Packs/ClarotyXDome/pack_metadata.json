@@ -9,13 +9,13 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [
+    "tags": [],
+    "useCases": [],
+    "keywords": [
         "Claroty",
         "xDome",
         "ATD"
     ],
-    "useCases": [],
-    "keywords": [],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
