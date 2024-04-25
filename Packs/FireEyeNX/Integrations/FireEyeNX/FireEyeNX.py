@@ -442,6 +442,11 @@ def get_incidents_for_alert(**kwargs) -> tuple[list[dict[str, Any]], dict[str, A
 
             occurred_date = dateparser.parse(context_alert.get('occurred', ''))
             assert occurred_date is not None
+            if ((alert_occurred_time := alert.get('occurred'))
+                    and next_alert_start_time == alert_occurred_time) and (alert_id := alert.get('eventId')):
+                # Save the alert id for the next fetch dedup
+                next_incidents_ids.append(alert_id)
+
             incident = {
                 'name': context_alert.get('name', ''),
                 'occurred': occurred_date.strftime(
@@ -470,7 +475,8 @@ def get_incidents_for_alert(**kwargs) -> tuple[list[dict[str, Any]], dict[str, A
                                 incident in incidents]
         demisto.debug(
             f"FireeyeNX Alerts: {parsed_incidents_str}")
-        next_run = {'start_time': next_alert_start_time, 'alert_ids': next_incidents_ids}
+        if next_incidents_ids:
+            next_run = {'start_time': next_alert_start_time, 'alert_ids': next_incidents_ids}
     return incidents, next_run
 
 
@@ -555,7 +561,8 @@ def get_incidents_for_event(
                                 incident in incidents]
         demisto.debug(
             f"FireeyeNX IPS Events: {parsed_incidents_str}")
-        next_run = {'start_time': next_event_start_time, 'event_ids': next_incidents_ids}
+        if next_incidents_ids:
+            next_run = {'start_time': next_event_start_time, 'event_ids': next_incidents_ids}
     return incidents, count, next_run
 
 
