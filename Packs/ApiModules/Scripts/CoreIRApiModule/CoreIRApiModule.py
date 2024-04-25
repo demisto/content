@@ -13,7 +13,7 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Other': 'resolved_other',
-    'Duplicate': 'resolved_duplicate_incident',
+    'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive',
     'Resolved': 'resolved_true_positive',
     'Security Testing': 'resolved_security_testing',
@@ -22,6 +22,7 @@ XSOAR_RESOLVED_STATUS_TO_XDR = {
 XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_known_issue': 'Other',
     'resolved_duplicate_incident': 'Duplicate',
+    'resolved_duplicate': 'Duplicate',
     'resolved_false_positive': 'False Positive',
     'resolved_true_positive': 'Resolved',
     'resolved_security_testing': 'Security Testing',
