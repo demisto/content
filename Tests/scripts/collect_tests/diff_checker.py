@@ -5,17 +5,16 @@ import os
 from git import Repo
 from Tests.scripts.collect_tests.exceptions import NotUnderPackException
 
+
 class DiffChecker:
-    def __init__(self, repo_path: Repo, branch_name: str, service_account: str, marketplace: str):
+    def __init__(self, repo_path: Repo, branch_name: str, service_account: str | None, marketplace: str):
         self.repo = repo_path
         self.branch_name = branch_name
         self.service_account = service_account
         self.marketplace = marketplace
 
-
     def get_diff_master_bucket(self):
-        return ['Zoom', 'AHA'] # TODO
-
+        return ['Zoom', 'AHA']  # TODO
 
     def get_git_diff(self) -> FilesToCollect:
         """
@@ -32,7 +31,7 @@ class DiffChecker:
 
         if self.branch_name == 'master':
             current_commit, previous_commit = tuple(self.repo.iter_commits(max_count=2))
-            current_commit = os.getenv("CI_COMMIT_SHA", "") # todo - ask praisler
+            current_commit = os.getenv("CI_COMMIT_SHA", "")  # todo - ask praisler
 
         diff = self.repo.git.diff(f'{previous_commit}...{current_commit}', '--name-status')
         logger.debug(f'raw changed files string:\n{diff}')
@@ -68,7 +67,6 @@ class DiffChecker:
             changed_files.append(file_path)  # non-deleted files (added, modified)
         return FilesToCollect(changed_files=tuple(changed_files),
                               pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
-
 
     def find_pack_file_removed_from(self, old_path: Path, new_path: Path | None = None):
         """

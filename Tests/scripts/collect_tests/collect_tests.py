@@ -147,7 +147,6 @@ class CollectionResult:
                 logger.info(f'{pack} support level != XSOAR, not collecting {test}, pack will be installed')
                 test = None
 
-
         except InvalidTestException as e:
             suffix = ' (pack will be installed)' if pack else ''
             logger.error(f'{str(e)}, not collecting {test}{suffix}')
@@ -263,7 +262,6 @@ class CollectionResult:
 
             if test in conf.private_tests:  # type: ignore[union-attr]
                 raise PrivateTestException(test)
-
 
     @staticmethod
     def __empty_result() -> 'CollectionResult':
@@ -484,7 +482,7 @@ class TestCollector(ABC):
             path: Path,
             version_range: VersionRange | None,
             is_integration: bool,
-    ): # TODO
+    ):  # TODO
         # exception order matters: important tests come first.
         """
         NOTE:
@@ -521,7 +519,7 @@ class TestCollector(ABC):
             is_integration=is_integration,
         )
 
-    def _validate_id_set_item_compatibility(self, id_set_item: IdSetItem, is_integration: bool) -> None: # TODO
+    def _validate_id_set_item_compatibility(self, id_set_item: IdSetItem, is_integration: bool) -> None:  # TODO
         if not (pack_id := id_set_item.pack_id or find_pack_folder(id_set_item.path).name):  # type: ignore[arg-type]
             raise RuntimeError(f'could not find pack of {id_set_item.name}')
         object_id = id_set_item.id_
@@ -747,7 +745,7 @@ class TestCollector(ABC):
                          f'using default={DEFAULT_MARKETPLACES_WHEN_MISSING}')
             content_item_marketplaces = DEFAULT_MARKETPLACES_WHEN_MISSING
 
-        match self.marketplace: # TODO __validate_marketplace_compatibility
+        match self.marketplace:  # TODO __validate_marketplace_compatibility
             case MarketplaceVersions.MarketplaceV2:
                 # For XSIAM machines we collect tests that have not xsoar marketplace.
                 # Tests for the packs that has only mpv2, or mpv2 and xpanse marketplaces,
@@ -800,7 +798,7 @@ class BranchTestCollector(TestCollector):
         collect_from = FilesToCollect(changed_files=self._get_private_pack_files(),
                                       pack_ids_files_were_removed_from=()) \
             if self.private_pack_path \
-            else self._get_git_diff() # todo private packs
+            else self._get_git_diff()  # todo private packs
 
         return CollectionResult.union([
             self._collect_from_changed_files(collect_from.changed_files),
@@ -1290,13 +1288,12 @@ class NightlyTestCollector(TestCollector, ABC):
         """
         result = []
         for playbook in self.id_set.test_playbooks:
-            if (
-                playbook.pack_id not in self.conf.nightly_packs
-                and playbook.id_ not in self.conf.non_api_tests
-            ):
-                raise NonNightlyPackInNightlyBuildException(playbook.pack_id)
-
             try:
+                if (
+                    playbook.pack_id not in self.conf.nightly_packs
+                    and playbook.id_ not in self.conf.non_api_tests
+                ):
+                    raise NonNightlyPackInNightlyBuildException(playbook.pack_id)
                 self._validate_id_set_item_compatibility(playbook, is_integration=False)
                 result.append(CollectionResult(
                     test=playbook.id_,
@@ -1314,14 +1311,13 @@ class NightlyTestCollector(TestCollector, ABC):
 
         return CollectionResult.union(result)
 
-
     def _collect_from_changed_packs_nightly(self, changed_packs: tuple[str, ...]) -> CollectionResult | None:
         result = []
         for pack in changed_packs:
             try:
                 pack_metadata = PACK_MANAGER.get_pack_metadata(pack)
 
-                self._validate_content_item_compatibility(pack_metadata, is_integration=False) # todo is_integration
+                self._validate_content_item_compatibility(pack_metadata, is_integration=False)  # todo is_integration
 
                 result.append(CollectionResult(
                     test=None,
@@ -1332,13 +1328,14 @@ class NightlyTestCollector(TestCollector, ABC):
                     conf=self.conf,
                     id_set=self.id_set,
                     only_to_install=True,
-                    version_range=pack_metadata.version_range # todo dor - not sure
+                    version_range=pack_metadata.version_range  # todo dor - not sure
                 ))
             except (NothingToCollectException, NonXsoarSupportedPackException, NonNightlyPackInNightlyBuildException) as e:
                 logger.debug(str(e))
         logger.info(f'Michal, _collect_from_changed_packs_nightl, {len(result)=}')
 
         return CollectionResult.union(result)
+
 
 class UploadAllCollector(TestCollector):
     def _collect(self) -> CollectionResult | None:
@@ -1349,7 +1346,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
     def __init__(self, graph: bool = False):
         super().__init__(MarketplaceVersions.MarketplaceV2, graph=graph)
 
-    def _collect_packs_of_content_matching_marketplace_value(self) -> CollectionResult | None: # TODO - NOT CLEAR
+    def _collect_packs_of_content_matching_marketplace_value(self) -> CollectionResult | None:  # TODO - NOT CLEAR
         """
         :return: all packs whose under which a content item marketplace field contains self.marketplaces
                 (or is equal to, if only_value is True).
@@ -1367,7 +1364,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
                 try:
                     self._validate_id_set_item_compatibility(item, is_integration='Integrations' in path.parts)
                 except NonXsoarSupportedPackException as e:
-                    logger.info(f'{str(e)} - collecting pack anyway') # todo why?
+                    logger.info(f'{str(e)} - collecting pack anyway')  # todo why?
                 except NothingToCollectException as e:
                     logger.info(e)
                     continue
@@ -1455,6 +1452,7 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
             self._collect_from_changed_packs_nightly(changed_packs),
         ])
 
+
 class XSOAR_SAASNightlyTestCollector(NightlyTestCollector):
     def __init__(self, service_account: str | None, marketplace: MarketplaceVersions = MarketplaceVersions.XSOAR,
                  graph: bool = False,
@@ -1471,6 +1469,7 @@ class XSOAR_SAASNightlyTestCollector(NightlyTestCollector):
             self._collect_from_changed_packs_nightly(changed_packs),
             self._id_set_tests_matching_marketplace_value()
         ])
+
 
 class XPANSENightlyTestCollector(NightlyTestCollector):
     def __init__(self, graph: bool = False):
@@ -1625,9 +1624,11 @@ if __name__ == '__main__':
     elif nightly:
         match marketplace:
             case MarketplaceVersions.XSOAR:
-                collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph)
+                collector = XSOARNightlyTestCollector(marketplace=marketplace, graph=graph,
+                                                      service_account=service_account, branch_name=branch_name)
             case MarketplaceVersions.XSOAR_SAAS:
-                collector = XSOAR_SAASNightlyTestCollector(marketplace=marketplace, graph=graph)
+                collector = XSOAR_SAASNightlyTestCollector(marketplace=marketplace, graph=graph,
+                                                           service_account=service_account, branch_name=branch_name)
             case MarketplaceVersions.MarketplaceV2:
                 collector = XSIAMNightlyTestCollector(graph=graph)
             case MarketplaceVersions.XPANSE:
