@@ -50,6 +50,7 @@ args:
   predefined:
     - "true"
     - "false"
+  defaultValue: "false"
   description: Whether to force the association of the indicator to the current incident.
 - name: verbose
   auto: PREDEFINED

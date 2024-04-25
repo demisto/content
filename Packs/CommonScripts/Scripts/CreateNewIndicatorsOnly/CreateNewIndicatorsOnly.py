@@ -59,7 +59,7 @@ def normalize_indicator_value(indicator_value: Any) -> str:
 
 def add_new_indicator(indicator_value: Any,
                       create_new_indicator_args: dict[str, Any],
-                      associate_to_incident: bool = True) -> dict[str, Any]:
+                      associate_to_incident: bool = False) -> dict[str, Any]:
     indicator_value = normalize_indicator_value(indicator_value)
     escaped_indicator_value = indicator_value.replace('"', r'\"')
 
@@ -96,7 +96,7 @@ def add_new_indicator(indicator_value: Any,
 
 def add_new_indicators(indicator_values: list[Any] | None,
                        create_new_indicator_args: dict[str, Any],
-                       associate_to_incident: bool = True) -> list[dict[str, Any]]:
+                       associate_to_incident: bool = False) -> list[dict[str, Any]]:
     return [add_new_indicator(indicator_value, create_new_indicator_args, associate_to_incident)
             for indicator_value in indicator_values or []]
 
@@ -113,7 +113,7 @@ def main():
         create_new_indicator_args = dict(args)
         create_new_indicator_args.pop('indicator_values', None)
         create_new_indicator_args.pop('verbose', None)
-        associate_to_incident = argToBoolean(create_new_indicator_args.pop('associate_to_incident', 'true'))
+        associate_to_incident = argToBoolean(create_new_indicator_args.pop('associate_to_incident', 'false'))
         ents = add_new_indicators(indicator_values, create_new_indicator_args, associate_to_incident)
 
         outputs = [assign_params(
