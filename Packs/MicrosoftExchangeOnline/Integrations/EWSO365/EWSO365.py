@@ -2130,8 +2130,7 @@ def items(message):
                 if "invalid arguments; address parts cannot contain CR or LF" in str(ex):
                     list_.append((k, message.policy.header_fetch_parse(k, v.replace('\r', '').replace('\n', ''))))
                     
-        return [(k, message.policy.header_fetch_parse(k, v))
-                for k, v in message._headers]
+        return list_
 
 def parse_incident_from_item(item):  # pragma: no cover
     """
