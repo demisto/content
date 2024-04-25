@@ -2247,7 +2247,7 @@ def parse_incident_from_item(item):  # pragma: no cover
                         except ValueError as ex:
                             if "invalid arguments; address parts cannot contain CR or LF" in str(ex):
                                 demisto.debug(f"we got the except: {attached_email=}")
-                        for h, v in attached_email.items():
+                        for h, v in items(attached_email):
                             if not isinstance(v, str):
                                 try:
                                     v = str(v)
