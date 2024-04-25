@@ -10,7 +10,7 @@ from test_data.feed_data import INDICATORS_DATA, ATTACK_PATTERN_DATA, MALWARE_DA
     ATTACK_PATTERN_INDICATOR, COURSE_OF_ACTION_INDICATORS, RELATIONSHIP_OBJECTS, INTRUSION_SET_DATA, \
     DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST, STIX_ATTACK_PATTERN_INDICATOR, SUB_TECHNIQUE_INDICATOR, \
     SUB_TECHNIQUE_DATA, INVALID_ATTACK_PATTERN_STRUCTURE, FETCH_RESULTS, FETCH_MOCK_RESPONSE, \
-    REPORTS_INDICATORS_WITH_RELATIONSHIPS
+    REPORTS_INDICATORS_WITH_RELATIONSHIPS, COURSE_OF_ACTION_INDICATORS_WITH_TLP
 
 
 @pytest.mark.parametrize('command, args, response, length', [
@@ -387,3 +387,22 @@ def test_fetch_indicators_command_with_relationship(mocker):
     assert len(indicators) == 18
     assert DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST in indicators
     assert REPORTS_INDICATORS_WITH_RELATIONSHIPS in indicators
+
+
+def test_create_course_of_action_indicators_with_tlp():
+    """
+    Given
+    - fetch indicator command.
+    - mock Client.
+    When
+    - call the create_course_of_action_indicators method
+    Then
+    - run the create_course_of_action_indicators method with TLP
+    - Validate that the TLP value was set correctly.
+    """
+
+    client = Client(api_key="1234", verify=False)
+    assert (
+        create_course_of_action_indicators(client, COURSE_OF_ACTION_DATA, [], "WHITE")
+        == COURSE_OF_ACTION_INDICATORS_WITH_TLP
+    )
