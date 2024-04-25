@@ -43,6 +43,42 @@ script:
     - contextPath: JiraAsset.Workspace.ID
       description: The id of the workspace.
       type: String
+  - arguments:
+      - description: The page number you want to get. e.g if your page size is 50 then page=1 will return schemas 0-49, page=2 will return schemas 50-99
+        name: page
+        type: Number
+      - description: The number of object schemas that will be returned
+        name: page_size
+        type: Number
+      - description: ''
+        name: limit
+        type: Number
+    name: jira-asset-object-schema-list
+    outputs:
+      - contextPath: JiraAsset.Schema.ID
+        description: The id of the object schema
+        type: Number
+      - contextPath: JiraAsset.Schema.Name
+        description: The name of the object schema
+        type: String
+      - contextPath: JiraAsset.Schema.Key
+        description: The key of the object schema
+        type: String
+      - contextPath: JiraAsset.Schema.Status
+        description: The status of the object schema
+        type: String
+      - contextPath: JiraAsset.Schema.Created
+        description: The date in which this object schema was created
+        type: Date
+      - contextPath: JiraAsset.Schema.Updated
+        description: The date in which this object schema was updated
+        type: Date
+      - contextPath: JiraAsset.Schema.ObjectCount
+        description: The number of objects in the schema
+        type: Number
+      - contextPath: JiraAsset.Schema.ObjectTypeCount
+        description: The number of different object types in the schema
+        type: Number
   runonce: false
   script: '-'
   type: python
