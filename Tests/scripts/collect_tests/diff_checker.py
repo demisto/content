@@ -13,11 +13,11 @@ class DiffChecker:
         self.marketplace = marketplace
 
 
-    def _get_diff_master_bucket(self):
-        pass # TODO
+    def get_diff_master_bucket(self):
+        return ['Zoom', 'AHA'] # TODO
 
 
-    def _get_git_diff(self) -> FilesToCollect:
+    def get_git_diff(self) -> FilesToCollect:
         """
         The method extracts the files based on the diff between the two commits.
 
