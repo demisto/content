@@ -43,12 +43,12 @@ tasks:
     task:
       id: 0a7ca589-107b-48e4-8705-2becca697165
       version: -1
-      name: search_and_delete_emails_-_ews
+      name: Search And Delete Emails - EWS
+      playbookName: Search And Delete Emails - EWS
       description: This playbook searches EWS to identify and delete emails with similar attributes of a malicious email.
       type: playbook
       iscommand: false
       brand: ""
-      playbookId: search_and_delete_emails_-_ews
     nexttasks:
       '#none#':
       - "2"
@@ -1299,5 +1299,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Send Investigation Summary Reports - Test
+ - No tests
 fromversion: 6.1.0
