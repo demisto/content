@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from typing import Any
+import time
 
 
 STATUS_NEW = 'new'
@@ -9,6 +10,9 @@ STATUS_UNAVAILABLE = 'unavailable'
 
 KEY_CREATION_STATUS = 'CreationStatus'
 
+MAX_FIND_INDICATOR_RETRIES = 10
+SLEEP_TIME = 2
+
 
 def associate_indicator_to_incident(indicator_value: Any) -> None:
     """
@@ -16,15 +20,31 @@ def associate_indicator_to_incident(indicator_value: Any) -> None:
     """
 
     incident_id = demisto.incidents()[0].get('id')
+    demisto.debug(f"The incident id is {incident_id}")
 
     cmd_args = {
         'incidentId': incident_id,
         'value': f"{indicator_value}"  # Force an error
     }
 
-    res = execute_command('associateIndicatorToIncident', cmd_args)
+    retry_num = 1
+    res = ''
+    while res != 'done' and retry_num <= MAX_FIND_INDICATOR_RETRIES:
+        try:
+            demisto.debug(f"Executing associateIndicatorToIncident command with retry {retry_num}/{MAX_FIND_INDICATOR_RETRIES}")
+            res = execute_command('associateIndicatorToIncident', cmd_args)
+            demisto.debug(f"The associateIndicatorToIncident response is: {res}")
 
-    if (res != 'done'):
+        except Exception as err:
+            if "For associateIndicatorToIncident found no indicator" not in str(err):
+                raise err
+            # else log and continue with retries after sleeping
+            demisto.debug(f"Failed to find indicator {indicator_value} in the system.")
+            if retry_num != MAX_FIND_INDICATOR_RETRIES:
+                time.sleep(SLEEP_TIME)  # pylint: disable=E9003
+            retry_num += 1
+
+    if res != 'done':
         raise Exception(f"Failed to associate {indicator_value} with incident {incident_id}")
 
 
@@ -38,7 +58,8 @@ def normalize_indicator_value(indicator_value: Any) -> str:
 
 
 def add_new_indicator(indicator_value: Any,
-                      create_new_indicator_args: dict[str, Any]) -> dict[str, Any]:
+                      create_new_indicator_args: dict[str, Any],
+                      associate_to_incident: bool = False) -> dict[str, Any]:
     indicator_value = normalize_indicator_value(indicator_value)
     escaped_indicator_value = indicator_value.replace('"', r'\"')
 
@@ -65,14 +86,18 @@ def add_new_indicator(indicator_value: Any,
             }
         else:
             raise DemistoException(f'Unknown response from createNewIndicator: str{indicator_value}')
-    associate_indicator_to_incident(indicator_value)
+
+    if associate_to_incident:
+        demisto.debug(f"Associating {indicator_value} to incident.")
+        associate_indicator_to_incident(indicator_value)
 
     return indicator
 
 
 def add_new_indicators(indicator_values: list[Any] | None,
-                       create_new_indicator_args: dict[str, Any]) -> list[dict[str, Any]]:
-    return [add_new_indicator(indicator_value, create_new_indicator_args)
+                       create_new_indicator_args: dict[str, Any],
+                       associate_to_incident: bool = False) -> list[dict[str, Any]]:
+    return [add_new_indicator(indicator_value, create_new_indicator_args, associate_to_incident)
             for indicator_value in indicator_values or []]
 
 
@@ -88,7 +113,8 @@ def main():
         create_new_indicator_args = dict(args)
         create_new_indicator_args.pop('indicator_values', None)
         create_new_indicator_args.pop('verbose', None)
-        ents = add_new_indicators(indicator_values, create_new_indicator_args)
+        associate_to_incident = argToBoolean(create_new_indicator_args.pop('associate_to_current', 'false'))
+        ents = add_new_indicators(indicator_values, create_new_indicator_args, associate_to_incident)
 
         outputs = [assign_params(
             ID=ent.get('id'),
