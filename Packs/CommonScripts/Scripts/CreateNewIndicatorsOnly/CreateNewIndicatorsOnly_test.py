@@ -82,6 +82,7 @@ def test_all_indicators_exist_with_single_value(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={
         'indicator_values': '1.1.1.1',
+        'associate_to_current': 'true',
     })
 
     expected_entry_context = {
@@ -133,6 +134,7 @@ def test_all_indicators_exist_with_multiple_value(mocker):
             '1.1.1.1',
             '2.2.2.2'
         ],
+        'associate_to_current': 'true',
     })
 
     expected_entry_context = {
@@ -201,6 +203,7 @@ def test_some_indicators_exist_with_multiple_value(mocker):
             '1.1.1.1',
             '2.2.2.2'
         ],
+        'associate_to_current': 'true',
     })
 
     expected_entry_context = {
@@ -264,6 +267,7 @@ def test_some_indicators_are_excluded(mocker):
             '1.1.1.1',
             '2.2.2.2'
         ],
+        'associate_to_current': 'true',
     })
 
     expected_entry_context = {
@@ -318,6 +322,7 @@ def test_indicator_including_commas(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={
         'indicator_values': 'http://www.paloaltonetworks.com/?q=,123',
+        'associate_to_current': 'true',
     })
 
     expected_entry_context = {
@@ -368,7 +373,8 @@ def test_print_verbose(mocker):
 
     mocker.patch.object(demisto, 'args', return_value={
         'indicator_values': '1.1.1.1',
-        'verbose': 'true'
+        'verbose': 'true',
+        'associate_to_current': 'true',
     })
 
     expected_entry_context = {
@@ -463,7 +469,7 @@ class TestAssociateFailures:
         mocker.patch.object(demisto, 'incidents', return_value=[{'id': '1'}])
         mocker.patch.object(time, 'sleep', return_value=None)
 
-        result = add_new_indicator(indicator_value, {})
+        result = add_new_indicator(indicator_value, {}, True)
         assert result == new_indicator
 
     def test_add_new_indicator_associate_failed_always(self, mocker):
