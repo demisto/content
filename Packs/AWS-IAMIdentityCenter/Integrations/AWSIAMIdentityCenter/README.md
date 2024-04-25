@@ -85,7 +85,7 @@ Creates a new IAM Identity Center user for your AWS account.
 
 #### Human Readable Output
 
->### User 13746842-e011-70fe-14fe-600d496510f0 has been successfully created
+>### User exampleName has been successfully created with user id 13746842-e011-70fe-14fe-600d496510f0
 >|IdentityStoreId|UserId|
 >|---|---|
 >| d-9967750fbd | 13746842-e011-70fe-14fe-600d496510f0 |
@@ -663,7 +663,6 @@ Lists the memberships of the group.
 
 #### Human Readable Output
 
->### Group 03c428a2-a0b1-701f-0f7e-5e137f533231 has been successfully created
 >|GroupId|MembershipId|UserId|
 >|---|---|
 >| a3948882-5051-7090-524c-c8c850bf1919	 | e374b872-9011-7000-c847-55fdcc299204 | c3f438a2-e041-7033-75e8-63eb8c64b0e4 |
@@ -687,7 +686,7 @@ Creates a new IAM Identity Center group for your AWS account.
 | roleSessionDuration | Role Session Duration. | Optional | 
 | roleSessionName | Role Session Name. | Optional | 
 | IdentityStoreId | Identity Store ID. | Optional | 
-| displayName | The name of the group to create. | Optional | 
+| displayName | The name of the group to create. | Required | 
 | description | The description of the group to create. | Optional | 
 
 #### Context Output
@@ -715,7 +714,7 @@ Creates a new IAM Identity Center group for your AWS account.
 
 #### Human Readable Output
 
->### Group 03c428a2-a0b1-701f-0f7e-5e137f533231 has been successfully created
+>### Group NewGroup has been successfully created with id 03c428a2-a0b1-701f-0f7e-5e137f533231
 >|GroupId|IdentityStoreId|
 >|---|---|
 >| 03c428a2-a0b1-701f-0f7e-5e137f533231 | d-9967750fbd |
@@ -809,3 +808,74 @@ There is no context output for this command.
 
 >User is not member of any group.
 
+
+### aws-iam-identitycenter-update-user
+
+***
+Updates an IAM Identity Center user in your AWS account.
+
+#### Base Command
+
+`aws-iam-identitycenter-update-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| userName | The username of the user to update. | Required | 
+| familyName | The family name of the user to update. | Optional | 
+| givenName | The First name of the user to update. | Optional | 
+| userEmailAddress | The email address of the user to update. | Optional | 
+| displayName | The display name of the user to update. | Optional | 
+| profileUrl | The profile URL of the user to update. | Optional | 
+| userType | The type of the user to update. | Optional | 
+| title | The title of the user to update. | Optional | 
+| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | Role Arn. | Optional | 
+| roleSessionDuration | Role Session Duration. | Optional | 
+| roleSessionName | Role Session Name. | Optional | 
+| IdentityStoreId | Identity Store ID. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!aws-iam-identitycenter-update-user userName=example familyName=changed```
+
+#### Human Readable Output
+
+>### User example has been successfully updated
+
+
+### aws-iam-identitycenter-update-group
+
+***
+Updates an IAM Identity Center group in your AWS account.
+
+#### Base Command
+
+`aws-iam-identitycenter-update-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | Role Arn. | Optional | 
+| roleSessionDuration | Role Session Duration. | Optional | 
+| roleSessionName | Role Session Name. | Optional | 
+| IdentityStoreId | Identity Store ID. | Optional | 
+| displayName | The name of the group to update. | Required | 
+| description | The description of the group to update. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!aws-iam-identitycenter-update-group description=changed displayName=NewGroup```
+
+#### Human Readable Output
+
+>### Group NewGroup has been successfully updated

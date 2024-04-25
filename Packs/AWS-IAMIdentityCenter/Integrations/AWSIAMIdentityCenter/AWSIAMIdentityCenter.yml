@@ -1158,4 +1158,4 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-- No tests (auto formatted)
+- AWS-IAMIdentityCenter-Test

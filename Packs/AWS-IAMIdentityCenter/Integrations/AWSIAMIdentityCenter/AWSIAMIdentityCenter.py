@@ -4,16 +4,168 @@ from CommonServerPython import *  # noqa: F401
 from AWSApiModule import *
 
 
-params = demisto.params()
-args = demisto.args()
-
 SERVICE = 'identitystore'
 PREFIX = 'AWS.IAMIdentityCenter'
 PREFIXUSER = 'AWS.IAMIdentityCenter.User'
 PREFIXGROUP = 'AWS.IAMIdentityCenter.Group'
 
+''' HELPER FUNCTIONS '''
 
-def create_user(args, client, IdentityStoreId):
+def get_userId_by_username(args: dict, client, IdentityStoreId: Any) -> str:
+    """
+    Retrieve the User ID associated with a given username from the AWS IAM Identity Center using the provided client.
+
+    Args:
+        args: The command arguments containing the 'userName'.
+        client: The client object used to interact with the Identity Store service.
+        IdentityStoreId: The ID of the Identity Store where the user is registered.
+
+    Returns:
+        str: The User ID associated with the provided username, or None if not found.
+    """
+    user_name = args.get('userName')
+    response_id = client.get_user_id(
+        IdentityStoreId=IdentityStoreId,
+        AlternateIdentifier={
+            'UniqueAttribute': {
+                'AttributePath': 'userName',
+                'AttributeValue': user_name
+            }
+        }
+    )
+    return response_id.get('UserId')
+
+
+def get_user_operations_list(args: dict) -> list:
+    """
+    Generates a list of operations to update user information based on the provided arguments.
+
+    Args:
+        args: A dictionary containing user information.
+
+    Returns:
+        list: A list of dictionaries representing the operations to be performed on user attributes.
+            Each dictionary contains 'AttributePath' and 'AttributeValue' corresponding to the
+            attribute path and its updated value respectively.
+
+    Raises:
+        RuntimeError: If 'userEmailAddressPrimary' is specified without 'userEmailAddress'.
+    """
+    primary = args.get('userEmailAddressPrimary')
+    if primary and not args.get('userEmailAddress'):
+        return_error('Error: When specifying userEmailAddressPrimary, userEmailAddress must also be provided.')
+    if primary:
+        primary = argToBoolean(primary)
+    path_and_value = {
+        'name.familyName': args.get('familyName'),
+        'name.givenName': args.get('givenName'),
+        'emails': [{
+            'value': args.get('userEmailAddress'),
+            'primary': primary
+        }],
+        'displayName': args.get('displayName'),
+        'userType': args.get('userType'),
+        'profileUrl': args.get('profileUrl'),
+        'title': args.get('title'),
+        'addresses': [{
+            'region': args.get('region')
+        }]
+    }
+    path_and_value = remove_empty_elements(path_and_value)
+    to_update = []
+    for var in path_and_value:
+        to_update.append({
+            'AttributePath': var,
+            'AttributeValue': path_and_value[var]
+        })
+
+    return to_update
+
+
+def get_limit(args: dict) -> int:
+    """
+    Get the limit value specified in the arguments.
+
+    Args:
+        args: A dictionary containing the 'limit' argument.
+
+    Returns:
+        int: The limit value if specified and less than 50, otherwise returns 50 as the default limit.
+    """
+    limit_arg = args.get('limit')
+    if limit_arg:
+        limit = arg_to_number(args.get('limit'))
+        if limit and limit < 50:
+            return limit
+
+    return 50
+
+
+def get_groupId_by_displayName(args: dict, client, IdentityStoreId: Any) -> str:
+    """
+    Retrieve the Group ID associated with a given display name or group name from the AWS IAM Identity Center using the provided client.
+
+    Args:
+        args: A dictionary containing the display name or group name to search for.
+        client: The client object used to interact with the Identity Store service.
+        IdentityStoreId: The ID of the Identity Store where the group is registered.
+
+    Returns:
+        str: The Group ID associated with the provided display name or group name.
+    """
+    group_name = args.get('displayName') or args.get('groupName')
+    response_id = client.get_group_id(
+        IdentityStoreId=IdentityStoreId,
+        AlternateIdentifier={
+            'UniqueAttribute': {
+                'AttributePath': 'displayName',
+                'AttributeValue': group_name
+            }
+        }
+    )
+    return response_id.get('GroupId')
+
+
+def get_group_memberships_for_member(args: dict, client, IdentityStoreId: Any) -> list:
+    """
+    Retrieve group memberships for a member (user) from the AWS IAM Identity Center based on the provided arguments.
+
+    Args:
+        args: A dictionary containing information required to identify the member (user).
+        client: The client object used to interact with the IAM Identity Center service.
+        IdentityStoreId: The ID of the Identity Store where the member is registered.
+
+    Returns:
+        list: A list containing the membership IDs of groups to which the member belongs.
+    """
+    memberships_of_member = []
+    user_id = get_userId_by_username(args, client, IdentityStoreId)
+    kwargs = {
+        'IdentityStoreId': IdentityStoreId,
+        'MemberId': {
+            'UserId': user_id
+        }
+    }
+    kwargs = remove_empty_elements(kwargs)
+    groups_response = client.list_group_memberships_for_member(**kwargs)
+    for group in groups_response.get('GroupMemberships', []):
+        memberships_of_member.append(group.get('MembershipId'))
+
+    return memberships_of_member
+
+
+def create_user(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    Creates a user with the provided arguments.
+
+    Args:
+        args: The command arguments
+        client: The client object to interact with the API.
+        IdentityStoreId: The ID of the identity store.
+
+    Returns:
+        None
+    """
     user_name = args.get('userName')
     family_name = args.get('familyName')
     given_name = args.get('givenName')
@@ -66,60 +218,25 @@ def create_user(args, client, IdentityStoreId):
     return_results(result)
 
 
-def get_userId_by_username(args, client, IdentityStoreId):
-    user_name = args.get('userName')
-    response_id = client.get_user_id(
-        IdentityStoreId=IdentityStoreId,
-        AlternateIdentifier={
-            'UniqueAttribute': {
-                'AttributePath': "userName",
-                'AttributeValue': user_name
-            }
-        }
-    )
-    return response_id.get('UserId')
+def update_user(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    Update user information based on the provided arguments.
 
+    Args:
+        args: A dictionary containing user information to be updated.
+        client: The client object used to interact with the Identity Store service.
+        IdentityStoreId: The ID of the Identity Store where the user is registered.
 
-def get_user_operations_list(args):
-    primary = args.get('userEmailAddressPrimary')
-    if primary and not args.get('userEmailAddress'):
-        return_error('Error: When specifying userEmailAddressPrimary, userEmailAddress must also be provided.')
-    if primary:
-        primary = argToBoolean(primary)
-    path_and_value = {
-        'name.familyName': args.get('familyName'),
-        'name.givenName': args.get('givenName'),
-        'emails': [{
-            'value': args.get('userEmailAddress'),
-            'primary': primary
-        }],
-        'displayName': args.get('displayName'),
-        'userType': args.get('userType'),
-        'profileUrl': args.get('profileUrl'),
-        'title': args.get('title'),
-        'addresses': [{
-            'region': args.get('region')
-        }]
-    }
-    path_and_value = remove_empty_elements(path_and_value)
-    to_update = []
-    for var in path_and_value:
-        to_update.append({
-            'AttributePath': var,
-            'AttributeValue': path_and_value[var]
-        })
-
-    return to_update
-
-
-def update_user(args, client, IdentityStoreId):
+    Returns:
+        None
+    """
     user_name = args.get('userName')
     user_id = get_userId_by_username(args, client, IdentityStoreId)
     operations = get_user_operations_list(args)
     kwargs = {
-        "IdentityStoreId": IdentityStoreId,
-        "UserId": user_id,
-        "Operations": operations
+        'IdentityStoreId': IdentityStoreId,
+        'UserId': user_id,
+        'Operations': operations
     }
     client.update_user(**kwargs)
     hr_data = f'User {user_name} has been successfully updated'
@@ -129,7 +246,18 @@ def update_user(args, client, IdentityStoreId):
     return_results(result)
 
 
-def delete_user(args, client, IdentityStoreId):
+def delete_user(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    Delete a user from the AWS IAM Identity Center based on the provided arguments.
+
+    Args:
+        args: A dictionary containing information required to identify the user to be deleted.
+        client: The client object used to interact with the Identity Store service.
+        IdentityStoreId: The ID of the Identity Store where the user is registered.
+
+    Returns:
+        None
+    """
     user_id = get_userId_by_username(args, client, IdentityStoreId)
     client.delete_user(
         IdentityStoreId=IdentityStoreId,
@@ -143,7 +271,18 @@ def delete_user(args, client, IdentityStoreId):
     return_results(result)
 
 
-def get_user(args, client, IdentityStoreId):
+def get_user(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    Retrieve user information from the AWS IAM Identity Center based on the provided arguments.
+
+    Args:
+        args: A dictionary containing information required to identify the user to be retrieved.
+        client: The client object used to interact with the Identity Store service.
+        IdentityStoreId: The ID of the Identity Store where the user is registered.
+
+    Returns:
+        None
+    """
     response_id = get_userId_by_username(args, client, IdentityStoreId)
     response = client.describe_user(
         IdentityStoreId=IdentityStoreId,
@@ -159,6 +298,7 @@ def get_user(args, client, IdentityStoreId):
         emails = []
         for email in response.get('Emails'):
             emails.append(email.get('Value'))
+            
         hr_data['Emails'] = emails
 
     human_readable = tableToMarkdown('AWS IAM Identity Center Users', hr_data, removeNull=True)
@@ -171,7 +311,18 @@ def get_user(args, client, IdentityStoreId):
     return_results(result)
 
 
-def get_user_by_email(args, client, IdentityStoreId):
+def get_user_by_email(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    Retrieve user information from the AWS IAM Identity Center based on the provided email address.
+
+    Args:
+        args: A dictionary containing the email address of the user to be retrieved.
+        client: The client object used to interact with the Identity Store service.
+        IdentityStoreId: The ID of the Identity Store where the user is registered.
+
+    Returns:
+        None
+    """
     email_arg = args.get('emailAddress')
     response = client.list_users(
         IdentityStoreId=IdentityStoreId,
@@ -184,6 +335,7 @@ def get_user_by_email(args, client, IdentityStoreId):
                     emails = []
                     for appendEmail in user_emails:
                         emails.append(appendEmail.get('Value'))
+                        
                     user_details = {
                         'UserName': user.get('UserName'),
                         'UserId': user.get('UserId'),
@@ -203,17 +355,20 @@ def get_user_by_email(args, client, IdentityStoreId):
     return_results(result)
 
 
-def get_limit(args):
-    limit_arg = args.get('limit')
-    if limit_arg:
-        limit = arg_to_number(args.get('limit'))
-        if limit and limit < 50:
-            return limit
-
-    return 50
 
 
-def list_users(args, client, IdentityStoreId):
+def list_users(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    List users from the AWS IAM Identity Center based on the provided arguments.
+
+    Args:
+        args: A dictionary containing optional parameters such as 'limit' and 'nextToken'.
+        client: The client object used to interact with the Identity Store service.
+        IdentityStoreId: The ID of the Identity Store from which users are listed.
+
+    Returns:
+        None
+    """
     context_data = []
     hr_data = []
     kwargs = {
@@ -235,7 +390,9 @@ def list_users(args, client, IdentityStoreId):
             for email in user.get('Emails'):
                 emails.append(email.get('Value'))
             user_details['Emails'] = emails
+            
         hr_data.append(user_details)
+        
     outputs = {f'{PREFIXUSER}(val.UserId === obj.UserId)': context_data,
                f'{PREFIX}(true)': {'UserNextToken': response.get('NextToken')}}
     human_readable = tableToMarkdown('AWS IAM Identity Center Users', hr_data, removeNull=True)
@@ -247,7 +404,18 @@ def list_users(args, client, IdentityStoreId):
     return_results(result)
 
 
-def list_groups(args, client, IdentityStoreId):
+def list_groups(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    List groups from the AWS IAM Identity Center based on the provided arguments.
+
+    Args:
+        args: A dictionary containing optional parameters such as 'limit' and 'nextToken'.
+        client: The client object used to interact with the Identity Store service.
+        IdentityStoreId: The ID of the Identity Store from which groups are listed.
+
+    Returns:
+        None
+    """
     context_data = []
     hr_data = []
     kwargs = {
@@ -277,7 +445,18 @@ def list_groups(args, client, IdentityStoreId):
     return_results(result)
 
 
-def create_group(args, client, IdentityStoreId):
+def create_group(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    Create a group in the Identity Store based on the provided arguments.
+
+    Args:
+        args: A dictionary containing the group information such as 'displayName' and 'description'.
+        client: The client object used to interact with the Identity Store service.
+        IdentityStoreId: The ID of the Identity Store where the group is to be created.
+
+    Returns:
+        None
+    """
     display_name = args.get('displayName')
     kwargs = {
         'IdentityStoreId': IdentityStoreId,
@@ -297,7 +476,18 @@ def create_group(args, client, IdentityStoreId):
     return_results(result)
 
 
-def delete_group(args, client, IdentityStoreId):
+def delete_group(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    Delete a group from the AWS IAM Identity Center based on the provided arguments.
+
+    Args:
+        args: A dictionary containing information required to identify the group to be deleted.
+        client: The client object used to interact with the Identity Store service.
+        IdentityStoreId: The ID of the Identity Store where the group is registered.
+
+    Returns:
+        None
+    """
     group_id = get_groupId_by_displayName(args, client, IdentityStoreId)
     client.delete_group(
         IdentityStoreId=IdentityStoreId,
@@ -311,28 +501,27 @@ def delete_group(args, client, IdentityStoreId):
     return_results(result)
 
 
-def get_groupId_by_displayName(args, client, IdentityStoreId):
-    group_name = args.get('displayName') or args.get('groupName')
-    response_id = client.get_group_id(
-        IdentityStoreId=IdentityStoreId,
-        AlternateIdentifier={
-            'UniqueAttribute': {
-                'AttributePath': "displayName",
-                'AttributeValue': group_name
-            }
-        }
-    )
-    return response_id.get('GroupId')
 
 
-def update_group(args, client, IdentityStoreId):
+def update_group(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    Update group information in the Identity Store based on the provided arguments.
+
+    Args:
+        args: A dictionary containing the group information to be updated, such as 'displayName' and 'description'.
+        client: The client object used to interact with the Identity Store service.
+        IdentityStoreId: The ID of the Identity Store where the group is registered.
+
+    Returns:
+        None
+    """
     display_name = args.get('displayName')
     group_id = get_groupId_by_displayName(args, client, IdentityStoreId)
     kwargs = {
-        "IdentityStoreId": IdentityStoreId,
-        "GroupId": group_id,
-        "Operations": [{
-            'AttributePath': "description",
+        'IdentityStoreId': IdentityStoreId,
+        'GroupId': group_id,
+        'Operations': [{
+            'AttributePath': 'description',
             'AttributeValue': args.get('description')
         }]
     }
@@ -344,7 +533,18 @@ def update_group(args, client, IdentityStoreId):
     return_results(result)
 
 
-def get_group(args, client, IdentityStoreId):
+def get_group(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    Retrieve group information from the AWS IAM Identity Center based on the provided arguments.
+
+    Args:
+        args: A dictionary containing information required to identify the group to be retrieved.
+        client: The client object used to interact with the Identity Store service.
+        IdentityStoreId: The ID of the Identity Store where the group is registered.
+
+    Returns:
+        None
+    """
     response_id = get_groupId_by_displayName(args, client, IdentityStoreId)
     response = client.describe_group(
         IdentityStoreId=IdentityStoreId,
@@ -365,7 +565,18 @@ def get_group(args, client, IdentityStoreId):
     return_results(result)
 
 
-def list_groups_for_user(args, client, IdentityStoreId):
+def list_groups_for_user(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    List groups associated with a user from the AWS IAM Identity Center based on the provided arguments.
+
+    Args:
+        args: A dictionary containing information required to identify the user and optional parameters such as 'limit' and 'nextToken'.
+        client: The client object used to interact with the IAM Identity Center service.
+        IdentityStoreId: The ID of the Identity Store from which groups are listed for the user.
+
+    Returns:
+        None
+    """
     hr_data = []
     context_data = {}
     user_id = get_userId_by_username(args, client, IdentityStoreId)
@@ -401,6 +612,7 @@ def list_groups_for_user(args, client, IdentityStoreId):
             if user_data.get('UserId') == user_id:
                 last_group_memberships = user_data.get('GroupMemberships')
                 break
+            
     else:
         if last_users.get('UserId') == user_id:
             last_group_memberships = last_users.get('GroupMemberships')
@@ -421,7 +633,18 @@ def list_groups_for_user(args, client, IdentityStoreId):
     return_results(result)
 
 
-def add_user_to_group(args, client, IdentityStoreId):
+def add_user_to_group(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    Add a user to a group in the AWS IAM Identity Center based on the provided arguments.
+
+    Args:
+        args: A dictionary containing information required to identify the user and group.
+        client: The client object used to interact with the IAM Identity Center service.
+        IdentityStoreId: The ID of the Identity Store where the user and group are registered.
+
+    Returns:
+        None
+    """
     user_id = get_userId_by_username(args, client, IdentityStoreId)
     Group_id = get_groupId_by_displayName(args, client, IdentityStoreId)
     response = client.create_group_membership(
@@ -439,27 +662,23 @@ def add_user_to_group(args, client, IdentityStoreId):
     return_results(result)
 
 
-def get_group_memberships_for_member(args, client, IdentityStoreId):
-    memberships_of_member = []
-    user_id = get_userId_by_username(args, client, IdentityStoreId)
-    kwargs = {
-        'IdentityStoreId': IdentityStoreId,
-        'MemberId': {
-            'UserId': user_id
-        }
-    }
-    kwargs = remove_empty_elements(kwargs)
-    groups_response = client.list_group_memberships_for_member(**kwargs)
-    for group in groups_response.get('GroupMemberships', []):
-        memberships_of_member.append(group.get('MembershipId'))
-
-    return memberships_of_member
 
 
-def delete_group_membership(args, client, IdentityStoreId):
+def delete_group_membership(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    Delete group memberships for a user in the AWS IAM Identity Center based on the provided arguments.
+
+    Args:
+        args: A dictionary containing information required to identify the user or membership(s) to be deleted.
+        client: The client object used to interact with the IAM Identity Center service.
+        IdentityStoreId: The ID of the Identity Store where the user and group memberships are registered.
+
+    Returns:
+        None
+    """
     memberships_to_delete = []
     if args.get('membershipId') and args.get('userName'):
-        return_error("Please provide one of userName or membershipId.")
+        return_error('Please provide one of userName or membershipId.')
     elif args.get('membershipId'):
         memberships_to_delete = argToList(args.get('membershipId'))
     elif args.get('userName'):
@@ -467,7 +686,7 @@ def delete_group_membership(args, client, IdentityStoreId):
         if memberships_to_delete == []:
             return_error('User is not member of any group.')
     else:
-        return_error("userName or membershipId must be provided.")
+        return_error('userName or membershipId must be provided.')
     for member in memberships_to_delete:
         client.delete_group_membership(
             IdentityStoreId=IdentityStoreId,
@@ -482,7 +701,18 @@ def delete_group_membership(args, client, IdentityStoreId):
     return_results(result)
 
 
-def list_group_memberships(args, client, IdentityStoreId):
+def list_group_memberships(args: dict, client, IdentityStoreId: Any) -> None:
+    """
+    List memberships of a group from the AWS IAM Identity Center based on the provided arguments.
+
+    Args:
+        args: A dictionary containing information required to identify the group and optional parameters such as 'limit' and 'nextToken'.
+        client: The client object used to interact with the IAM Identity Center service.
+        IdentityStoreId: The ID of the Identity Store where the group memberships are registered.
+
+    Returns:
+        None
+    """
     hr_data = []
     context_data = {}
     group_id = get_groupId_by_displayName(args, client, IdentityStoreId)
@@ -518,6 +748,7 @@ def list_group_memberships(args, client, IdentityStoreId):
             if user_data.get('GroupId') == group_id:
                 last_group_memberships = user_data.get('GroupMemberships')
                 break
+            
     else:
         if last_groups.get('GroupId') == group_id:
             last_group_memberships = last_groups.get('GroupMemberships')
@@ -538,10 +769,11 @@ def list_group_memberships(args, client, IdentityStoreId):
     return_results(result)
 
 
-def test_module(args, client, IdentityStoreId):    # pragma: no cover
+def test_module(args: dict, client, IdentityStoreId: Any) -> None:    # pragma: no cover
+    """ Command to test the connection to the API"""
     if not IdentityStoreId:
-        return_error("Identity Store ID was not specified - Test failure. The `Identity Store ID` parameter can be left empty and\
-                     included as an argument in every command.")
+        return_error('Identity Store ID was not specified - Test failure. The `Identity Store ID` parameter can be left empty '
+                    'and included as an argument in every command.')
 
     client.list_users(
         IdentityStoreId=IdentityStoreId,
