@@ -338,12 +338,9 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user) -> str:
     reviewers = []
     relevant_reviewer = ''
     for pr in other_prs_by_same_user:
-        print(f"pr for filter is: {pr}")
-        print(f'reviewers for that pr are{pr.requested_reviewers}')
         for reviewer in pr.requested_reviewers:
             print(f'reviewer of the pr is: {reviewer.login}')
             reviewers.append(reviewer.login)
-        print(f'login for reviewers is: {reviewers}')
         for reviewer in reviewers:
             if reviewer in content_reviewers:
                 relevant_reviewer = reviewer
