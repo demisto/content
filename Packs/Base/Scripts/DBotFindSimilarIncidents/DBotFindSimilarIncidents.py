@@ -381,7 +381,7 @@ class Transformer():
         """
         :return: Add one columns 'similarity %s' % self.field to self.incidents_df Dataframe with the score
         """
-        demisto.debug('DBS: Transformer - get_score start')
+        demisto.debug(F'DBS: Transformer - get_score start, {self.transformer_type=}, {self.field=}')
         scoring_function = self.params[self.transformer_type]['scoring_function']
         X_vect, incident_vect = self.fit_transform()
         demisto.debug(f'DBS: {X_vect=}, {incident_vect=}')
@@ -475,7 +475,8 @@ class Model:
         :return:
         """
         demisto.debug('DBS: get_score function')
-        demisto.debug(f'DBS: {self.incidents_df=}')
+        with pd.option_context('display.max_columns', None):
+            demisto.debug(f'DBS: {self.incidents_df=}')
         demisto.debug(f'DBS: {self.incident_to_match=}')
         demisto.debug(f'DBS: {self.transformation=}')
         
@@ -679,6 +680,8 @@ def get_args():  # type: ignore
     show_actual_incident = demisto.args().get('showCurrentIncident')
     incident_id = demisto.args().get('incidentId')
     include_indicators_similarity = demisto.args().get('includeIndicatorsSimilarity')
+
+    demisto.debug(f'DBS: args: {from_date=},\n{to_date=},\n{show_similarity=},\n{confidence=},\n{max_incidents=},\n{query=},\n{aggregate=},\n{limit=},\n{show_actual_incident=},\n{incident_id=},\n{include_indicators_similarity=},\n{display_fields=},\n{exact_match_fields=},\n{similar_json_field=},\n{similar_categorical_field=},\n{similar_text_field=},\n{use_all_field=}')
 
     return similar_text_field, similar_json_field, similar_categorical_field, exact_match_fields, display_fields, \
         from_date, to_date, show_similarity, confidence, max_incidents, query, aggregate, limit, \
