@@ -1,0 +1,16 @@
+comment: Common code for url formatting.
+commonfields:
+  id: FormatURLApiModule
+  version: -1
+name: FormatURLApiModule
+script: '-'
+subtype: python3
+tags:
+- infra
+- server
+timeout: 0s
+type: python
+dockerimage: demisto/python3:3.10.12.66339
+tests:
+- No Tests
+fromversion: 5.0.0
