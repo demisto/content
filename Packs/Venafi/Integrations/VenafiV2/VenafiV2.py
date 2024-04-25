@@ -63,7 +63,7 @@ class Client(BaseClient):
         """
         utc_now = get_current_time()
         expires_datetime = arg_to_datetime(expires_date)
-        return utc_now < expires_datetime
+        return utc_now > expires_datetime
 
     def _create_new_token(self, url_suffix: str, json_data: dict) -> str:
         payload = json.dumps(json_data)
@@ -233,7 +233,7 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:

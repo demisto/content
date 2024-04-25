@@ -1,0 +1,64 @@
+{
+    "Certificates": [
+        {
+            "CreatedOn": "2024-03-18T16:35:00.7592811Z",
+            "DN": "DN",
+            "Guid": "{first_guid}",
+            "Name": "example.com",
+            "ParentDn": "ParentDn",
+            "SchemaClass": "X509 Server Certificate",
+            "X509": {
+                "CN": "example.com",
+                "SANS": {
+                    "DNS": [
+                        "example.com"
+                    ],
+                    "Email": [],
+                    "IP": [],
+                    "UPN": [],
+                    "URI": []
+                },
+                "Serial": "Serial",
+                "Thumbprint": "Thumbprint",
+                "ValidFrom": "2024-02-02T14:46:46.0000000Z",
+                "ValidTo": "2025-02-02T14:46:46.0000000Z"
+            },
+            "_links": [
+                {
+                    "Details": "path/to/certificate"
+                }
+            ]
+        },
+                {
+            "CreatedOn": "2024-04-18T16:35:00.7592811Z",
+            "DN": "DN",
+            "Guid": "{second_guid}",
+            "Name": "example2.com",
+            "ParentDn": "ParentDn",
+            "SchemaClass": "X509 Server Certificate",
+            "X509": {
+                "CN": "example2.com",
+                "SANS": {
+                    "DNS": [
+                        "example2.com"
+                    ],
+                    "Email": [],
+                    "IP": [],
+                    "UPN": [],
+                    "URI": []
+                },
+                "Serial": "Serial",
+                "Thumbprint": "Thumbprint",
+                "ValidFrom": "2024-02-02T14:46:46.0000000Z",
+                "ValidTo": "2025-02-02T14:46:46.0000000Z"
+            },
+            "_links": [
+                {
+                    "Details": "path/to/certificate"
+                }
+            ]
+        }
+    ],
+    "DataRange": "Certificates 1 - 1",
+    "TotalCount": 1
+}
