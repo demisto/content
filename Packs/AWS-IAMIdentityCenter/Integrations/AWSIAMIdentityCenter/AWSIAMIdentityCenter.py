@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa: F401
 
 from AWSApiModule import *
 
-
 SERVICE = 'identitystore'
 PREFIX = 'AWS.IAMIdentityCenter'
 PREFIXUSER = 'AWS.IAMIdentityCenter.User'
@@ -739,7 +738,6 @@ def list_group_memberships(args: dict, client, IdentityStoreId: Any) -> None:
 
     context_data['GroupId'] = group_id
     context_data['GroupMembershipNextToken'] = response.get('NextToken')
-
     last_context = demisto.context()
     last_groups = last_context.get('AWS', {}).get('IAMIdentityCenter', {}).get('Group', {})
     last_group_memberships = None
@@ -805,7 +803,7 @@ def main():     # pragma: no cover
                                None, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                                retries)
 
-        client = aws_client.aws_session(
+        client: AWSClient = aws_client.aws_session(
             service=SERVICE,
             region=args.get('region'),
             role_arn=args.get('roleArn'),
