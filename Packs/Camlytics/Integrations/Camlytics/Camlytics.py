@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 
-
+a = 12
 class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
