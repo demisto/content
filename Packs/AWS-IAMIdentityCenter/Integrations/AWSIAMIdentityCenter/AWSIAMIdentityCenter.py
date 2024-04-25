@@ -11,6 +11,7 @@ PREFIXGROUP = 'AWS.IAMIdentityCenter.Group'
 
 ''' HELPER FUNCTIONS '''
 
+
 def get_userId_by_username(args: dict, client, IdentityStoreId: Any) -> str:
     """
     Retrieve the User ID associated with a given username from the AWS IAM Identity Center using the provided client.
@@ -103,7 +104,8 @@ def get_limit(args: dict) -> int:
 
 def get_groupId_by_displayName(args: dict, client, IdentityStoreId: Any) -> str:
     """
-    Retrieve the Group ID associated with a given display name or group name from the AWS IAM Identity Center using the provided client.
+    Retrieve the Group ID associated with a given display name or group name
+    from the AWS IAM Identity Center using the provided client.
 
     Args:
         args: A dictionary containing the display name or group name to search for.
@@ -298,7 +300,7 @@ def get_user(args: dict, client, IdentityStoreId: Any) -> None:
         emails = []
         for email in response.get('Emails'):
             emails.append(email.get('Value'))
-            
+
         hr_data['Emails'] = emails
 
     human_readable = tableToMarkdown('AWS IAM Identity Center Users', hr_data, removeNull=True)
@@ -335,7 +337,7 @@ def get_user_by_email(args: dict, client, IdentityStoreId: Any) -> None:
                     emails = []
                     for appendEmail in user_emails:
                         emails.append(appendEmail.get('Value'))
-                        
+
                     user_details = {
                         'UserName': user.get('UserName'),
                         'UserId': user.get('UserId'),
@@ -353,8 +355,6 @@ def get_user_by_email(args: dict, client, IdentityStoreId: Any) -> None:
         outputs=context_data
     )
     return_results(result)
-
-
 
 
 def list_users(args: dict, client, IdentityStoreId: Any) -> None:
@@ -390,9 +390,9 @@ def list_users(args: dict, client, IdentityStoreId: Any) -> None:
             for email in user.get('Emails'):
                 emails.append(email.get('Value'))
             user_details['Emails'] = emails
-            
+
         hr_data.append(user_details)
-        
+
     outputs = {f'{PREFIXUSER}(val.UserId === obj.UserId)': context_data,
                f'{PREFIX}(true)': {'UserNextToken': response.get('NextToken')}}
     human_readable = tableToMarkdown('AWS IAM Identity Center Users', hr_data, removeNull=True)
@@ -501,8 +501,6 @@ def delete_group(args: dict, client, IdentityStoreId: Any) -> None:
     return_results(result)
 
 
-
-
 def update_group(args: dict, client, IdentityStoreId: Any) -> None:
     """
     Update group information in the Identity Store based on the provided arguments.
@@ -570,7 +568,8 @@ def list_groups_for_user(args: dict, client, IdentityStoreId: Any) -> None:
     List groups associated with a user from the AWS IAM Identity Center based on the provided arguments.
 
     Args:
-        args: A dictionary containing information required to identify the user and optional parameters such as 'limit' and 'nextToken'.
+        args: A dictionary containing information required to identify the user
+        and optional parameters such as 'limit' and 'nextToken'.
         client: The client object used to interact with the IAM Identity Center service.
         IdentityStoreId: The ID of the Identity Store from which groups are listed for the user.
 
@@ -612,16 +611,18 @@ def list_groups_for_user(args: dict, client, IdentityStoreId: Any) -> None:
             if user_data.get('UserId') == user_id:
                 last_group_memberships = user_data.get('GroupMemberships')
                 break
-            
+
     else:
-        if last_users.get('UserId') == user_id:
+        if last_users.get('UserId', '') == user_id:
             last_group_memberships = last_users.get('GroupMemberships')
 
     if last_group_memberships:
         combined_groups = last_group_memberships + [g for g in groups if g not in last_group_memberships]
-        context_data['GroupMemberships'] = combined_groups
+        final_groups = combined_groups
     else:
-        context_data['GroupMemberships'] = groups
+        final_groups = groups
+
+    context_data['GroupMemberships'] = final_groups
 
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
     result = CommandResults(
@@ -660,8 +661,6 @@ def add_user_to_group(args: dict, client, IdentityStoreId: Any) -> None:
         readable_output=hr_data
     )
     return_results(result)
-
-
 
 
 def delete_group_membership(args: dict, client, IdentityStoreId: Any) -> None:
@@ -706,7 +705,8 @@ def list_group_memberships(args: dict, client, IdentityStoreId: Any) -> None:
     List memberships of a group from the AWS IAM Identity Center based on the provided arguments.
 
     Args:
-        args: A dictionary containing information required to identify the group and optional parameters such as 'limit' and 'nextToken'.
+        args: A dictionary containing information required to identify the group
+        and optional parameters such as 'limit' and 'nextToken'.
         client: The client object used to interact with the IAM Identity Center service.
         IdentityStoreId: The ID of the Identity Store where the group memberships are registered.
 
@@ -748,17 +748,18 @@ def list_group_memberships(args: dict, client, IdentityStoreId: Any) -> None:
             if user_data.get('GroupId') == group_id:
                 last_group_memberships = user_data.get('GroupMemberships')
                 break
-            
+
     else:
         if last_groups.get('GroupId') == group_id:
             last_group_memberships = last_groups.get('GroupMemberships')
 
     if last_group_memberships:
         combined_memberships = last_group_memberships + [g for g in memberships if g not in last_group_memberships]
-        context_data['GroupMemberships'] = combined_memberships
+        final_memberships = combined_memberships
     else:
-        context_data['GroupMemberships'] = memberships
+        final_memberships = memberships
 
+    context_data['GroupMemberships'] = final_memberships
     human_readable = tableToMarkdown('AWS IAM Identity Center Groups', hr_data, removeNull=True)
     result = CommandResults(
         outputs_prefix=PREFIXGROUP,
@@ -773,7 +774,7 @@ def test_module(args: dict, client, IdentityStoreId: Any) -> None:    # pragma: 
     """ Command to test the connection to the API"""
     if not IdentityStoreId:
         return_error('Identity Store ID was not specified - Test failure. The `Identity Store ID` parameter can be left empty '
-                    'and included as an argument in every command.')
+                     'and included as an argument in every command.')
 
     client.list_users(
         IdentityStoreId=IdentityStoreId,
