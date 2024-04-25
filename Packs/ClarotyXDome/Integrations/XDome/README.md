@@ -1,5 +1,5 @@
 Use the xDome integration to manage assets and alerts.
-This integration was integrated and tested with version xx of XDome.
+This integration was integrated and tested with version 1.0.0 of XDome.
 
 ## Configure xDome on Cortex XSOAR
 

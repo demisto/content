@@ -20,121 +20,121 @@
                 "Device Name": {
                     "simple": "device_name"
                 },
-                "XDome Alert Assignees": {
+                "Claroty xDome Alert Assignees": {
                     "simple": "alert_assignees"
                 },
-                "XDome Alert Category": {
+                "Claroty xDome Alert Category": {
                     "simple": "alert_category"
                 },
-                "XDome Alert Class": {
+                "Claroty xDome Alert Class": {
                     "simple": "alert_class"
                 },
-                "XDome Alert ID": {
+                "Claroty xDome Alert ID": {
                     "simple": "alert_id"
                 },
-                "XDome Alert Labels": {
+                "Claroty xDome Alert Labels": {
                     "simple": "alert_labels"
                 },
-                "XDome Alert Name": {
+                "Claroty xDome Alert Name": {
                     "simple": "alert_name"
                 },
-                "XDome Alert Type": {
+                "Claroty xDome Alert Type": {
                     "simple": "alert_type_name"
                 },
-                "XDome Device Assignees": {
+                "Claroty xDome Device Assignees": {
                     "simple": "device_assignees"
                 },
-                "XDome Device Category": {
+                "Claroty xDome Device Category": {
                     "simple": "device_category"
                 },
-                "XDome Device Effective Likelihood Subscore": {
+                "Claroty xDome Device Effective Likelihood Subscore": {
                     "simple": "device_effective_likelihood_subscore"
                 },
-                "XDome Device Effective Likelihood Subscore Points": {
+                "Claroty xDome Device Effective Likelihood Subscore Points": {
                     "simple": "device_effective_likelihood_subscore_points"
                 },
-                "XDome Device First Seen": {
+                "Claroty xDome Device First Seen": {
                     "simple": "device_first_seen_list"
                 },
-                "XDome Device IP": {
+                "Claroty xDome Device IP": {
                     "simple": "device_ip_list"
                 },
-                "XDome Device Impact Subscore": {
+                "Claroty xDome Device Impact Subscore": {
                     "simple": "device_impact_subscore"
                 },
-                "XDome Device Impact Subscore Points": {
+                "Claroty xDome Device Impact Subscore Points": {
                     "simple": "device_impact_subscore_points"
                 },
-                "XDome Device Insecure Protocols": {
+                "Claroty xDome Device Insecure Protocols": {
                     "simple": "device_insecure_protocols"
                 },
-                "XDome Device Insecure Protocols Points": {
+                "Claroty xDome Device Insecure Protocols Points": {
                     "simple": "device_insecure_protocols_points"
                 },
-                "XDome Device Internet Communication": {
+                "Claroty xDome Device Internet Communication": {
                     "simple": "device_internet_communication"
                 },
-                "XDome Device Known Vulnerabilities": {
+                "Claroty xDome Device Known Vulnerabilities": {
                     "simple": "device_known_vulnerabilities"
                 },
-                "XDome Device Known Vulnerabilities Points": {
+                "Claroty xDome Device Known Vulnerabilities Points": {
                     "simple": "device_known_vulnerabilities_points"
                 },
-                "XDome Device Labels": {
+                "Claroty xDome Device Labels": {
                     "simple": "device_labels"
                 },
-                "XDome Device Last Seen": {
+                "Claroty xDome Device Last Seen": {
                     "simple": "device_last_seen_list"
                 },
-                "XDome Device Likelihood Subscore": {
+                "Claroty xDome Device Likelihood Subscore": {
                     "simple": "device_likelihood_subscore"
                 },
-                "XDome Device Likelihood Subscore Points": {
+                "Claroty xDome Device Likelihood Subscore Points": {
                     "simple": "device_likelihood_subscore_points"
                 },
-                "XDome Device MAC": {
+                "Claroty xDome Device MAC": {
                     "simple": "device_mac_list"
                 },
-                "XDome Device Manufacturer": {
+                "Claroty xDome Device Manufacturer": {
                     "simple": "device_manufacturer"
                 },
-                "XDome Device Name": {
+                "Claroty xDome Device Name": {
                     "simple": "device_name"
                 },
-                "XDome Device Network": {
+                "Claroty xDome Device Network": {
                     "simple": "device_network_list"
                 },
-                "XDome Device Purdue Level": {
+                "Claroty xDome Device Purdue Level": {
                     "simple": "device_purdue_level"
                 },
-                "XDome Device Retired": {
+                "Claroty xDome Device Retired": {
                     "simple": "device_retired"
                 },
-                "XDome Device Risk Score": {
+                "Claroty xDome Device Risk Score": {
                     "simple": "device_risk_score"
                 },
-                "XDome Device Risk Score Points": {
+                "Claroty xDome Device Risk Score Points": {
                     "simple": "device_risk_score_points"
                 },
-                "XDome Device Site Name": {
+                "Claroty xDome Device Site Name": {
                     "simple": "device_site_name"
                 },
-                "XDome Device Subcategory": {
+                "Claroty xDome Device Subcategory": {
                     "simple": "device_subcategory"
                 },
-                "XDome Device Type": {
+                "Claroty xDome Device Type": {
                     "simple": "device_type"
                 },
-                "XDome Device UID": {
+                "Claroty xDome Device UID": {
                     "simple": "device_uid"
                 },
-                "XDome Device-Alert Detected Time": {
+                "Claroty xDome Device-Alert Detected Time": {
                     "simple": "device_alert_detected_time"
                 },
-                "XDome Device-Alert Status": {
+                "Claroty xDome Device-Alert Status": {
                     "simple": "device_alert_status"
                 },
-                "XDome Device-Alert Updated Time": {
+                "Claroty xDome Device-Alert Updated Time": {
                     "simple": "device_alert_updated_time"
                 }
             }
@@ -157,121 +157,121 @@
                 "Device Name": {
                     "simple": "device_name"
                 },
-                "XDome Alert Assignees": {
+                "Claroty xDome Alert Assignees": {
                     "simple": "alert_assignees"
                 },
-                "XDome Alert Category": {
+                "Claroty xDome Alert Category": {
                     "simple": "alert_category"
                 },
-                "XDome Alert Class": {
+                "Claroty xDome Alert Class": {
                     "simple": "alert_class"
                 },
-                "XDome Alert ID": {
+                "Claroty xDome Alert ID": {
                     "simple": "alert_id"
                 },
-                "XDome Alert Labels": {
+                "Claroty xDome Alert Labels": {
                     "simple": "alert_labels"
                 },
-                "XDome Alert Name": {
+                "Claroty xDome Alert Name": {
                     "simple": "alert_name"
                 },
-                "XDome Alert Type": {
+                "Claroty xDome Alert Type": {
                     "simple": "alert_type_name"
                 },
-                "XDome Device Assignees": {
+                "Claroty xDome Device Assignees": {
                     "simple": "device_assignees"
                 },
-                "XDome Device Category": {
+                "Claroty xDome Device Category": {
                     "simple": "device_category"
                 },
-                "XDome Device Effective Likelihood Subscore": {
+                "Claroty xDome Device Effective Likelihood Subscore": {
                     "simple": "device_effective_likelihood_subscore"
                 },
-                "XDome Device Effective Likelihood Subscore Points": {
+                "Claroty xDome Device Effective Likelihood Subscore Points": {
                     "simple": "device_effective_likelihood_subscore_points"
                 },
-                "XDome Device First Seen": {
+                "Claroty xDome Device First Seen": {
                     "simple": "device_first_seen_list"
                 },
-                "XDome Device IP": {
+                "Claroty xDome Device IP": {
                     "simple": "device_ip_list"
                 },
-                "XDome Device Impact Subscore": {
+                "Claroty xDome Device Impact Subscore": {
                     "simple": "device_impact_subscore"
                 },
-                "XDome Device Impact Subscore Points": {
+                "Claroty xDome Device Impact Subscore Points": {
                     "simple": "device_impact_subscore_points"
                 },
-                "XDome Device Insecure Protocols": {
+                "Claroty xDome Device Insecure Protocols": {
                     "simple": "device_insecure_protocols"
                 },
-                "XDome Device Insecure Protocols Points": {
+                "Claroty xDome Device Insecure Protocols Points": {
                     "simple": "device_insecure_protocols_points"
                 },
-                "XDome Device Internet Communication": {
+                "Claroty xDome Device Internet Communication": {
                     "simple": "device_internet_communication"
                 },
-                "XDome Device Known Vulnerabilities": {
+                "Claroty xDome Device Known Vulnerabilities": {
                     "simple": "device_known_vulnerabilities"
                 },
-                "XDome Device Known Vulnerabilities Points": {
+                "Claroty xDome Device Known Vulnerabilities Points": {
                     "simple": "device_known_vulnerabilities_points"
                 },
-                "XDome Device Labels": {
+                "Claroty xDome Device Labels": {
                     "simple": "device_labels"
                 },
-                "XDome Device Last Seen": {
+                "Claroty xDome Device Last Seen": {
                     "simple": "device_last_seen_list"
                 },
-                "XDome Device Likelihood Subscore": {
+                "Claroty xDome Device Likelihood Subscore": {
                     "simple": "device_likelihood_subscore"
                 },
-                "XDome Device Likelihood Subscore Points": {
+                "Claroty xDome Device Likelihood Subscore Points": {
                     "simple": "device_likelihood_subscore_points"
                 },
-                "XDome Device MAC": {
+                "Claroty xDome Device MAC": {
                     "simple": "device_mac_list"
                 },
-                "XDome Device Manufacturer": {
+                "Claroty xDome Device Manufacturer": {
                     "simple": "device_manufacturer"
                 },
-                "XDome Device Name": {
+                "Claroty xDome Device Name": {
                     "simple": "device_name"
                 },
-                "XDome Device Network": {
+                "Claroty xDome Device Network": {
                     "simple": "device_network_list"
                 },
-                "XDome Device Purdue Level": {
+                "Claroty xDome Device Purdue Level": {
                     "simple": "device_purdue_level"
                 },
-                "XDome Device Retired": {
+                "Claroty xDome Device Retired": {
                     "simple": "device_retired"
                 },
-                "XDome Device Risk Score": {
+                "Claroty xDome Device Risk Score": {
                     "simple": "device_risk_score"
                 },
-                "XDome Device Risk Score Points": {
+                "Claroty xDome Device Risk Score Points": {
                     "simple": "device_risk_score_points"
                 },
-                "XDome Device Site Name": {
+                "Claroty xDome Device Site Name": {
                     "simple": "device_site_name"
                 },
-                "XDome Device Subcategory": {
+                "Claroty xDome Device Subcategory": {
                     "simple": "device_subcategory"
                 },
-                "XDome Device Type": {
+                "Claroty xDome Device Type": {
                     "simple": "device_type"
                 },
-                "XDome Device UID": {
+                "Claroty xDome Device UID": {
                     "simple": "device_uid"
                 },
-                "XDome Device-Alert Detected Time": {
+                "Claroty xDome Device-Alert Detected Time": {
                     "simple": "device_alert_detected_time"
                 },
-                "XDome Device-Alert Status": {
+                "Claroty xDome Device-Alert Status": {
                     "simple": "device_alert_status"
                 },
-                "XDome Device-Alert Updated Time": {
+                "Claroty xDome Device-Alert Updated Time": {
                     "simple": "device_alert_updated_time"
                 }
             }
@@ -294,121 +294,121 @@
                 "Device Name": {
                     "simple": "device_name"
                 },
-                "XDome Alert Assignees": {
+                "Claroty xDome Alert Assignees": {
                     "simple": "alert_assignees"
                 },
-                "XDome Alert Category": {
+                "Claroty xDome Alert Category": {
                     "simple": "alert_category"
                 },
-                "XDome Alert Class": {
+                "Claroty xDome Alert Class": {
                     "simple": "alert_class"
                 },
-                "XDome Alert ID": {
+                "Claroty xDome Alert ID": {
                     "simple": "alert_id"
                 },
-                "XDome Alert Labels": {
+                "Claroty xDome Alert Labels": {
                     "simple": "alert_labels"
                 },
-                "XDome Alert Name": {
+                "Claroty xDome Alert Name": {
                     "simple": "alert_name"
                 },
-                "XDome Alert Type": {
+                "Claroty xDome Alert Type": {
                     "simple": "alert_type_name"
                 },
-                "XDome Device Assignees": {
+                "Claroty xDome Device Assignees": {
                     "simple": "device_assignees"
                 },
-                "XDome Device Category": {
+                "Claroty xDome Device Category": {
                     "simple": "device_category"
                 },
-                "XDome Device Effective Likelihood Subscore": {
+                "Claroty xDome Device Effective Likelihood Subscore": {
                     "simple": "device_effective_likelihood_subscore"
                 },
-                "XDome Device Effective Likelihood Subscore Points": {
+                "Claroty xDome Device Effective Likelihood Subscore Points": {
                     "simple": "device_effective_likelihood_subscore_points"
                 },
-                "XDome Device First Seen": {
+                "Claroty xDome Device First Seen": {
                     "simple": "device_first_seen_list"
                 },
-                "XDome Device IP": {
+                "Claroty xDome Device IP": {
                     "simple": "device_ip_list"
                 },
-                "XDome Device Impact Subscore": {
+                "Claroty xDome Device Impact Subscore": {
                     "simple": "device_impact_subscore"
                 },
-                "XDome Device Impact Subscore Points": {
+                "Claroty xDome Device Impact Subscore Points": {
                     "simple": "device_impact_subscore_points"
                 },
-                "XDome Device Insecure Protocols": {
+                "Claroty xDome Device Insecure Protocols": {
                     "simple": "device_insecure_protocols"
                 },
-                "XDome Device Insecure Protocols Points": {
+                "Claroty xDome Device Insecure Protocols Points": {
                     "simple": "device_insecure_protocols_points"
                 },
-                "XDome Device Internet Communication": {
+                "Claroty xDome Device Internet Communication": {
                     "simple": "device_internet_communication"
                 },
-                "XDome Device Known Vulnerabilities": {
+                "Claroty xDome Device Known Vulnerabilities": {
                     "simple": "device_known_vulnerabilities"
                 },
-                "XDome Device Known Vulnerabilities Points": {
+                "Claroty xDome Device Known Vulnerabilities Points": {
                     "simple": "device_known_vulnerabilities_points"
                 },
-                "XDome Device Labels": {
+                "Claroty xDome Device Labels": {
                     "simple": "device_labels"
                 },
-                "XDome Device Last Seen": {
+                "Claroty xDome Device Last Seen": {
                     "simple": "device_last_seen_list"
                 },
-                "XDome Device Likelihood Subscore": {
+                "Claroty xDome Device Likelihood Subscore": {
                     "simple": "device_likelihood_subscore"
                 },
-                "XDome Device Likelihood Subscore Points": {
+                "Claroty xDome Device Likelihood Subscore Points": {
                     "simple": "device_likelihood_subscore_points"
                 },
-                "XDome Device MAC": {
+                "Claroty xDome Device MAC": {
                     "simple": "device_mac_list"
                 },
-                "XDome Device Manufacturer": {
+                "Claroty xDome Device Manufacturer": {
                     "simple": "device_manufacturer"
                 },
-                "XDome Device Name": {
+                "Claroty xDome Device Name": {
                     "simple": "device_name"
                 },
-                "XDome Device Network": {
+                "Claroty xDome Device Network": {
                     "simple": "device_network_list"
                 },
-                "XDome Device Purdue Level": {
+                "Claroty xDome Device Purdue Level": {
                     "simple": "device_purdue_level"
                 },
-                "XDome Device Retired": {
+                "Claroty xDome Device Retired": {
                     "simple": "device_retired"
                 },
-                "XDome Device Risk Score": {
+                "Claroty xDome Device Risk Score": {
                     "simple": "device_risk_score"
                 },
-                "XDome Device Risk Score Points": {
+                "Claroty xDome Device Risk Score Points": {
                     "simple": "device_risk_score_points"
                 },
-                "XDome Device Site Name": {
+                "Claroty xDome Device Site Name": {
                     "simple": "device_site_name"
                 },
-                "XDome Device Subcategory": {
+                "Claroty xDome Device Subcategory": {
                     "simple": "device_subcategory"
                 },
-                "XDome Device Type": {
+                "Claroty xDome Device Type": {
                     "simple": "device_type"
                 },
-                "XDome Device UID": {
+                "Claroty xDome Device UID": {
                     "simple": "device_uid"
                 },
-                "XDome Device-Alert Detected Time": {
+                "Claroty xDome Device-Alert Detected Time": {
                     "simple": "device_alert_detected_time"
                 },
-                "XDome Device-Alert Status": {
+                "Claroty xDome Device-Alert Status": {
                     "simple": "device_alert_status"
                 },
-                "XDome Device-Alert Updated Time": {
+                "Claroty xDome Device-Alert Updated Time": {
                     "simple": "device_alert_updated_time"
                 }
             }
@@ -431,121 +431,121 @@
                 "Device Name": {
                     "simple": "device_name"
                 },
-                "XDome Alert Assignees": {
+                "Claroty xDome Alert Assignees": {
                     "simple": "alert_assignees"
                 },
-                "XDome Alert Category": {
+                "Claroty xDome Alert Category": {
                     "simple": "alert_category"
                 },
-                "XDome Alert Class": {
+                "Claroty xDome Alert Class": {
                     "simple": "alert_class"
                 },
-                "XDome Alert ID": {
+                "Claroty xDome Alert ID": {
                     "simple": "alert_id"
                 },
-                "XDome Alert Labels": {
+                "Claroty xDome Alert Labels": {
                     "simple": "alert_labels"
                 },
-                "XDome Alert Name": {
+                "Claroty xDome Alert Name": {
                     "simple": "alert_name"
                 },
-                "XDome Alert Type": {
+                "Claroty xDome Alert Type": {
                     "simple": "alert_type_name"
                 },
-                "XDome Device Assignees": {
+                "Claroty xDome Device Assignees": {
                     "simple": "device_assignees"
                 },
-                "XDome Device Category": {
+                "Claroty xDome Device Category": {
                     "simple": "device_category"
                 },
-                "XDome Device Effective Likelihood Subscore": {
+                "Claroty xDome Device Effective Likelihood Subscore": {
                     "simple": "device_effective_likelihood_subscore"
                 },
-                "XDome Device Effective Likelihood Subscore Points": {
+                "Claroty xDome Device Effective Likelihood Subscore Points": {
                     "simple": "device_effective_likelihood_subscore_points"
                 },
-                "XDome Device First Seen": {
+                "Claroty xDome Device First Seen": {
                     "simple": "device_first_seen_list"
                 },
-                "XDome Device IP": {
+                "Claroty xDome Device IP": {
                     "simple": "device_ip_list"
                 },
-                "XDome Device Impact Subscore": {
+                "Claroty xDome Device Impact Subscore": {
                     "simple": "device_impact_subscore"
                 },
-                "XDome Device Impact Subscore Points": {
+                "Claroty xDome Device Impact Subscore Points": {
                     "simple": "device_impact_subscore_points"
                 },
-                "XDome Device Insecure Protocols": {
+                "Claroty xDome Device Insecure Protocols": {
                     "simple": "device_insecure_protocols"
                 },
-                "XDome Device Insecure Protocols Points": {
+                "Claroty xDome Device Insecure Protocols Points": {
                     "simple": "device_insecure_protocols_points"
                 },
-                "XDome Device Internet Communication": {
+                "Claroty xDome Device Internet Communication": {
                     "simple": "device_internet_communication"
                 },
-                "XDome Device Known Vulnerabilities": {
+                "Claroty xDome Device Known Vulnerabilities": {
                     "simple": "device_known_vulnerabilities"
                 },
-                "XDome Device Known Vulnerabilities Points": {
+                "Claroty xDome Device Known Vulnerabilities Points": {
                     "simple": "device_known_vulnerabilities_points"
                 },
-                "XDome Device Labels": {
+                "Claroty xDome Device Labels": {
                     "simple": "device_labels"
                 },
-                "XDome Device Last Seen": {
+                "Claroty xDome Device Last Seen": {
                     "simple": "device_last_seen_list"
                 },
-                "XDome Device Likelihood Subscore": {
+                "Claroty xDome Device Likelihood Subscore": {
                     "simple": "device_likelihood_subscore"
                 },
-                "XDome Device Likelihood Subscore Points": {
+                "Claroty xDome Device Likelihood Subscore Points": {
                     "simple": "device_likelihood_subscore_points"
                 },
-                "XDome Device MAC": {
+                "Claroty xDome Device MAC": {
                     "simple": "device_mac_list"
                 },
-                "XDome Device Manufacturer": {
+                "Claroty xDome Device Manufacturer": {
                     "simple": "device_manufacturer"
                 },
-                "XDome Device Name": {
+                "Claroty xDome Device Name": {
                     "simple": "device_name"
                 },
-                "XDome Device Network": {
+                "Claroty xDome Device Network": {
                     "simple": "device_network_list"
                 },
-                "XDome Device Purdue Level": {
+                "Claroty xDome Device Purdue Level": {
                     "simple": "device_purdue_level"
                 },
-                "XDome Device Retired": {
+                "Claroty xDome Device Retired": {
                     "simple": "device_retired"
                 },
-                "XDome Device Risk Score": {
+                "Claroty xDome Device Risk Score": {
                     "simple": "device_risk_score"
                 },
-                "XDome Device Risk Score Points": {
+                "Claroty xDome Device Risk Score Points": {
                     "simple": "device_risk_score_points"
                 },
-                "XDome Device Site Name": {
+                "Claroty xDome Device Site Name": {
                     "simple": "device_site_name"
                 },
-                "XDome Device Subcategory": {
+                "Claroty xDome Device Subcategory": {
                     "simple": "device_subcategory"
                 },
-                "XDome Device Type": {
+                "Claroty xDome Device Type": {
                     "simple": "device_type"
                 },
-                "XDome Device UID": {
+                "Claroty xDome Device UID": {
                     "simple": "device_uid"
                 },
-                "XDome Device-Alert Detected Time": {
+                "Claroty xDome Device-Alert Detected Time": {
                     "simple": "device_alert_detected_time"
                 },
-                "XDome Device-Alert Status": {
+                "Claroty xDome Device-Alert Status": {
                     "simple": "device_alert_status"
                 },
-                "XDome Device-Alert Updated Time": {
+                "Claroty xDome Device-Alert Updated Time": {
                     "simple": "device_alert_updated_time"
                 }
             }
@@ -568,121 +568,121 @@
                 "Device Name": {
                     "simple": "device_name"
                 },
-                "XDome Alert Assignees": {
+                "Claroty xDome Alert Assignees": {
                     "simple": "alert_assignees"
                 },
-                "XDome Alert Category": {
+                "Claroty xDome Alert Category": {
                     "simple": "alert_category"
                 },
-                "XDome Alert Class": {
+                "Claroty xDome Alert Class": {
                     "simple": "alert_class"
                 },
-                "XDome Alert ID": {
+                "Claroty xDome Alert ID": {
                     "simple": "alert_id"
                 },
-                "XDome Alert Labels": {
+                "Claroty xDome Alert Labels": {
                     "simple": "alert_labels"
                 },
-                "XDome Alert Name": {
+                "Claroty xDome Alert Name": {
                     "simple": "alert_name"
                 },
-                "XDome Alert Type": {
+                "Claroty xDome Alert Type": {
                     "simple": "alert_type_name"
                 },
-                "XDome Device Assignees": {
+                "Claroty xDome Device Assignees": {
                     "simple": "device_assignees"
                 },
-                "XDome Device Category": {
+                "Claroty xDome Device Category": {
                     "simple": "device_category"
                 },
-                "XDome Device Effective Likelihood Subscore": {
+                "Claroty xDome Device Effective Likelihood Subscore": {
                     "simple": "device_effective_likelihood_subscore"
                 },
-                "XDome Device Effective Likelihood Subscore Points": {
+                "Claroty xDome Device Effective Likelihood Subscore Points": {
                     "simple": "device_effective_likelihood_subscore_points"
                 },
-                "XDome Device First Seen": {
+                "Claroty xDome Device First Seen": {
                     "simple": "device_first_seen_list"
                 },
-                "XDome Device IP": {
+                "Claroty xDome Device IP": {
                     "simple": "device_ip_list"
                 },
-                "XDome Device Impact Subscore": {
+                "Claroty xDome Device Impact Subscore": {
                     "simple": "device_impact_subscore"
                 },
-                "XDome Device Impact Subscore Points": {
+                "Claroty xDome Device Impact Subscore Points": {
                     "simple": "device_impact_subscore_points"
                 },
-                "XDome Device Insecure Protocols": {
+                "Claroty xDome Device Insecure Protocols": {
                     "simple": "device_insecure_protocols"
                 },
-                "XDome Device Insecure Protocols Points": {
+                "Claroty xDome Device Insecure Protocols Points": {
                     "simple": "device_insecure_protocols_points"
                 },
-                "XDome Device Internet Communication": {
+                "Claroty xDome Device Internet Communication": {
                     "simple": "device_internet_communication"
                 },
-                "XDome Device Known Vulnerabilities": {
+                "Claroty xDome Device Known Vulnerabilities": {
                     "simple": "device_known_vulnerabilities"
                 },
-                "XDome Device Known Vulnerabilities Points": {
+                "Claroty xDome Device Known Vulnerabilities Points": {
                     "simple": "device_known_vulnerabilities_points"
                 },
-                "XDome Device Labels": {
+                "Claroty xDome Device Labels": {
                     "simple": "device_labels"
                 },
-                "XDome Device Last Seen": {
+                "Claroty xDome Device Last Seen": {
                     "simple": "device_last_seen_list"
                 },
-                "XDome Device Likelihood Subscore": {
+                "Claroty xDome Device Likelihood Subscore": {
                     "simple": "device_likelihood_subscore"
                 },
-                "XDome Device Likelihood Subscore Points": {
+                "Claroty xDome Device Likelihood Subscore Points": {
                     "simple": "device_likelihood_subscore_points"
                 },
-                "XDome Device MAC": {
+                "Claroty xDome Device MAC": {
                     "simple": "device_mac_list"
                 },
-                "XDome Device Manufacturer": {
+                "Claroty xDome Device Manufacturer": {
                     "simple": "device_manufacturer"
                 },
-                "XDome Device Name": {
+                "Claroty xDome Device Name": {
                     "simple": "device_name"
                 },
-                "XDome Device Network": {
+                "Claroty xDome Device Network": {
                     "simple": "device_network_list"
                 },
-                "XDome Device Purdue Level": {
+                "Claroty xDome Device Purdue Level": {
                     "simple": "device_purdue_level"
                 },
-                "XDome Device Retired": {
+                "Claroty xDome Device Retired": {
                     "simple": "device_retired"
                 },
-                "XDome Device Risk Score": {
+                "Claroty xDome Device Risk Score": {
                     "simple": "device_risk_score"
                 },
-                "XDome Device Risk Score Points": {
+                "Claroty xDome Device Risk Score Points": {
                     "simple": "device_risk_score_points"
                 },
-                "XDome Device Site Name": {
+                "Claroty xDome Device Site Name": {
                     "simple": "device_site_name"
                 },
-                "XDome Device Subcategory": {
+                "Claroty xDome Device Subcategory": {
                     "simple": "device_subcategory"
                 },
-                "XDome Device Type": {
+                "Claroty xDome Device Type": {
                     "simple": "device_type"
                 },
-                "XDome Device UID": {
+                "Claroty xDome Device UID": {
                     "simple": "device_uid"
                 },
-                "XDome Device-Alert Detected Time": {
+                "Claroty xDome Device-Alert Detected Time": {
                     "simple": "device_alert_detected_time"
                 },
-                "XDome Device-Alert Status": {
+                "Claroty xDome Device-Alert Status": {
                     "simple": "device_alert_status"
                 },
-                "XDome Device-Alert Updated Time": {
+                "Claroty xDome Device-Alert Updated Time": {
                     "simple": "device_alert_updated_time"
                 }
             }
@@ -705,121 +705,121 @@
                 "Device Name": {
                     "simple": "device_name"
                 },
-                "XDome Alert Assignees": {
+                "Claroty xDome Alert Assignees": {
                     "simple": "alert_assignees"
                 },
-                "XDome Alert Category": {
+                "Claroty xDome Alert Category": {
                     "simple": "alert_category"
                 },
-                "XDome Alert Class": {
+                "Claroty xDome Alert Class": {
                     "simple": "alert_class"
                 },
-                "XDome Alert ID": {
+                "Claroty xDome Alert ID": {
                     "simple": "alert_id"
                 },
-                "XDome Alert Labels": {
+                "Claroty xDome Alert Labels": {
                     "simple": "alert_labels"
                 },
-                "XDome Alert Name": {
+                "Claroty xDome Alert Name": {
                     "simple": "alert_name"
                 },
-                "XDome Alert Type": {
+                "Claroty xDome Alert Type": {
                     "simple": "alert_type_name"
                 },
-                "XDome Device Assignees": {
+                "Claroty xDome Device Assignees": {
                     "simple": "device_assignees"
                 },
-                "XDome Device Category": {
+                "Claroty xDome Device Category": {
                     "simple": "device_category"
                 },
-                "XDome Device Effective Likelihood Subscore": {
+                "Claroty xDome Device Effective Likelihood Subscore": {
                     "simple": "device_effective_likelihood_subscore"
                 },
-                "XDome Device Effective Likelihood Subscore Points": {
+                "Claroty xDome Device Effective Likelihood Subscore Points": {
                     "simple": "device_effective_likelihood_subscore_points"
                 },
-                "XDome Device First Seen": {
+                "Claroty xDome Device First Seen": {
                     "simple": "device_first_seen_list"
                 },
-                "XDome Device IP": {
+                "Claroty xDome Device IP": {
                     "simple": "device_ip_list"
                 },
-                "XDome Device Impact Subscore": {
+                "Claroty xDome Device Impact Subscore": {
                     "simple": "device_impact_subscore"
                 },
-                "XDome Device Impact Subscore Points": {
+                "Claroty xDome Device Impact Subscore Points": {
                     "simple": "device_impact_subscore_points"
                 },
-                "XDome Device Insecure Protocols": {
+                "Claroty xDome Device Insecure Protocols": {
                     "simple": "device_insecure_protocols"
                 },
-                "XDome Device Insecure Protocols Points": {
+                "Claroty xDome Device Insecure Protocols Points": {
                     "simple": "device_insecure_protocols_points"
                 },
-                "XDome Device Internet Communication": {
+                "Claroty xDome Device Internet Communication": {
                     "simple": "device_internet_communication"
                 },
-                "XDome Device Known Vulnerabilities": {
+                "Claroty xDome Device Known Vulnerabilities": {
                     "simple": "device_known_vulnerabilities"
                 },
-                "XDome Device Known Vulnerabilities Points": {
+                "Claroty xDome Device Known Vulnerabilities Points": {
                     "simple": "device_known_vulnerabilities_points"
                 },
-                "XDome Device Labels": {
+                "Claroty xDome Device Labels": {
                     "simple": "device_labels"
                 },
-                "XDome Device Last Seen": {
+                "Claroty xDome Device Last Seen": {
                     "simple": "device_last_seen_list"
                 },
-                "XDome Device Likelihood Subscore": {
+                "Claroty xDome Device Likelihood Subscore": {
                     "simple": "device_likelihood_subscore"
                 },
-                "XDome Device Likelihood Subscore Points": {
+                "Claroty xDome Device Likelihood Subscore Points": {
                     "simple": "device_likelihood_subscore_points"
                 },
-                "XDome Device MAC": {
+                "Claroty xDome Device MAC": {
                     "simple": "device_mac_list"
                 },
-                "XDome Device Manufacturer": {
+                "Claroty xDome Device Manufacturer": {
                     "simple": "device_manufacturer"
                 },
-                "XDome Device Name": {
+                "Claroty xDome Device Name": {
                     "simple": "device_name"
                 },
-                "XDome Device Network": {
+                "Claroty xDome Device Network": {
                     "simple": "device_network_list"
                 },
-                "XDome Device Purdue Level": {
+                "Claroty xDome Device Purdue Level": {
                     "simple": "device_purdue_level"
                 },
-                "XDome Device Retired": {
+                "Claroty xDome Device Retired": {
                     "simple": "device_retired"
                 },
-                "XDome Device Risk Score": {
+                "Claroty xDome Device Risk Score": {
                     "simple": "device_risk_score"
                 },
-                "XDome Device Risk Score Points": {
+                "Claroty xDome Device Risk Score Points": {
                     "simple": "device_risk_score_points"
                 },
-                "XDome Device Site Name": {
+                "Claroty xDome Device Site Name": {
                     "simple": "device_site_name"
                 },
-                "XDome Device Subcategory": {
+                "Claroty xDome Device Subcategory": {
                     "simple": "device_subcategory"
                 },
-                "XDome Device Type": {
+                "Claroty xDome Device Type": {
                     "simple": "device_type"
                 },
-                "XDome Device UID": {
+                "Claroty xDome Device UID": {
                     "simple": "device_uid"
                 },
-                "XDome Device-Alert Detected Time": {
+                "Claroty xDome Device-Alert Detected Time": {
                     "simple": "device_alert_detected_time"
                 },
-                "XDome Device-Alert Status": {
+                "Claroty xDome Device-Alert Status": {
                     "simple": "device_alert_status"
                 },
-                "XDome Device-Alert Updated Time": {
+                "Claroty xDome Device-Alert Updated Time": {
                     "simple": "device_alert_updated_time"
                 }
             }
@@ -842,121 +842,121 @@
                 "Device Name": {
                     "simple": "device_name"
                 },
-                "XDome Alert Assignees": {
+                "Claroty xDome Alert Assignees": {
                     "simple": "alert_assignees"
                 },
-                "XDome Alert Category": {
+                "Claroty xDome Alert Category": {
                     "simple": "alert_category"
                 },
-                "XDome Alert Class": {
+                "Claroty xDome Alert Class": {
                     "simple": "alert_class"
                 },
-                "XDome Alert ID": {
+                "Claroty xDome Alert ID": {
                     "simple": "alert_id"
                 },
-                "XDome Alert Labels": {
+                "Claroty xDome Alert Labels": {
                     "simple": "alert_labels"
                 },
-                "XDome Alert Name": {
+                "Claroty xDome Alert Name": {
                     "simple": "alert_name"
                 },
-                "XDome Alert Type": {
+                "Claroty xDome Alert Type": {
                     "simple": "alert_type_name"
                 },
-                "XDome Device Assignees": {
+                "Claroty xDome Device Assignees": {
                     "simple": "device_assignees"
                 },
-                "XDome Device Category": {
+                "Claroty xDome Device Category": {
                     "simple": "device_category"
                 },
-                "XDome Device Effective Likelihood Subscore": {
+                "Claroty xDome Device Effective Likelihood Subscore": {
                     "simple": "device_effective_likelihood_subscore"
                 },
-                "XDome Device Effective Likelihood Subscore Points": {
+                "Claroty xDome Device Effective Likelihood Subscore Points": {
                     "simple": "device_effective_likelihood_subscore_points"
                 },
-                "XDome Device First Seen": {
+                "Claroty xDome Device First Seen": {
                     "simple": "device_first_seen_list"
                 },
-                "XDome Device IP": {
+                "Claroty xDome Device IP": {
                     "simple": "device_ip_list"
                 },
-                "XDome Device Impact Subscore": {
+                "Claroty xDome Device Impact Subscore": {
                     "simple": "device_impact_subscore"
                 },
-                "XDome Device Impact Subscore Points": {
+                "Claroty xDome Device Impact Subscore Points": {
                     "simple": "device_impact_subscore_points"
                 },
-                "XDome Device Insecure Protocols": {
+                "Claroty xDome Device Insecure Protocols": {
                     "simple": "device_insecure_protocols"
                 },
-                "XDome Device Insecure Protocols Points": {
+                "Claroty xDome Device Insecure Protocols Points": {
                     "simple": "device_insecure_protocols_points"
                 },
-                "XDome Device Internet Communication": {
+                "Claroty xDome Device Internet Communication": {
                     "simple": "device_internet_communication"
                 },
-                "XDome Device Known Vulnerabilities": {
+                "Claroty xDome Device Known Vulnerabilities": {
                     "simple": "device_known_vulnerabilities"
                 },
-                "XDome Device Known Vulnerabilities Points": {
+                "Claroty xDome Device Known Vulnerabilities Points": {
                     "simple": "device_known_vulnerabilities_points"
                 },
-                "XDome Device Labels": {
+                "Claroty xDome Device Labels": {
                     "simple": "device_labels"
                 },
-                "XDome Device Last Seen": {
+                "Claroty xDome Device Last Seen": {
                     "simple": "device_last_seen_list"
                 },
-                "XDome Device Likelihood Subscore": {
+                "Claroty xDome Device Likelihood Subscore": {
                     "simple": "device_likelihood_subscore"
                 },
-                "XDome Device Likelihood Subscore Points": {
+                "Claroty xDome Device Likelihood Subscore Points": {
                     "simple": "device_likelihood_subscore_points"
                 },
-                "XDome Device MAC": {
+                "Claroty xDome Device MAC": {
                     "simple": "device_mac_list"
                 },
-                "XDome Device Manufacturer": {
+                "Claroty xDome Device Manufacturer": {
                     "simple": "device_manufacturer"
                 },
-                "XDome Device Name": {
+                "Claroty xDome Device Name": {
                     "simple": "device_name"
                 },
-                "XDome Device Network": {
+                "Claroty xDome Device Network": {
                     "simple": "device_network_list"
                 },
-                "XDome Device Purdue Level": {
+                "Claroty xDome Device Purdue Level": {
                     "simple": "device_purdue_level"
                 },
-                "XDome Device Retired": {
+                "Claroty xDome Device Retired": {
                     "simple": "device_retired"
                 },
-                "XDome Device Risk Score": {
+                "Claroty xDome Device Risk Score": {
                     "simple": "device_risk_score"
                 },
-                "XDome Device Risk Score Points": {
+                "Claroty xDome Device Risk Score Points": {
                     "simple": "device_risk_score_points"
                 },
-                "XDome Device Site Name": {
+                "Claroty xDome Device Site Name": {
                     "simple": "device_site_name"
                 },
-                "XDome Device Subcategory": {
+                "Claroty xDome Device Subcategory": {
                     "simple": "device_subcategory"
                 },
-                "XDome Device Type": {
+                "Claroty xDome Device Type": {
                     "simple": "device_type"
                 },
-                "XDome Device UID": {
+                "Claroty xDome Device UID": {
                     "simple": "device_uid"
                 },
-                "XDome Device-Alert Detected Time": {
+                "Claroty xDome Device-Alert Detected Time": {
                     "simple": "device_alert_detected_time"
                 },
-                "XDome Device-Alert Status": {
+                "Claroty xDome Device-Alert Status": {
                     "simple": "device_alert_status"
                 },
-                "XDome Device-Alert Updated Time": {
+                "Claroty xDome Device-Alert Updated Time": {
                     "simple": "device_alert_updated_time"
                 }
             }
