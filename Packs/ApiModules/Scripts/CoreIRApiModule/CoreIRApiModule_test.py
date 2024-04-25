@@ -3860,21 +3860,21 @@ def test_handle_outgoing_issue_closure(args, expected_delta):
                                                   "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used when no mapping provided.
-                             ("", ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                             ("", ["resolved_other", "resolved_duplicate", "resolved_false_positive",
                                    "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used when improper mapping is provided.
                              ("Duplicate=RANDOM1, Other=Random2",
-                              ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                              ["resolved_other", "resolved_duplicate", "resolved_false_positive",
                                "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              ("Random1=Duplicate Incident",
-                              ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                              ["resolved_other", "resolved_duplicate", "resolved_false_positive",
                                "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used when improper mapping *format* is provided.
                              ("Duplicate=Other False Positive=Other",
-                              ["resolved_other", "resolved_duplicate_incident", "resolved_false_positive",
+                              ["resolved_other", "resolved_duplicate", "resolved_false_positive",
                                "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
 
                              # Expecting default mapping to be used for when improper key-value pair *format* is provided.
