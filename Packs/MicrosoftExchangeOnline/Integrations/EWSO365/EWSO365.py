@@ -2210,10 +2210,8 @@ def parse_incident_from_item(item):  # pragma: no cover
                     demisto.debug(f"{APP_NAME}: we have an mime_content")
                     mime_content = attachment.item.mime_content
                     email_policy = SMTP if mime_content.isascii() else SMTPUTF8
-                    demisto.debug(f"{APP_NAME}:{email_policy=}")
                     if isinstance(mime_content, str) and not mime_content.isascii():
                         mime_content = mime_content.encode()
-                    demisto.debug(f"{APP_NAME}:{mime_content=}")
                     attached_email = email.message_from_bytes(mime_content, policy=email_policy) \
                         if isinstance(mime_content, bytes) \
                         else email.message_from_string(mime_content, policy=email_policy)
@@ -2222,7 +2220,6 @@ def parse_incident_from_item(item):  # pragma: no cover
                         # compare header keys case-insensitive
                         attached_email_headers = []
                         attached_email = handle_attached_email_with_incorrect_message_id(attached_email)
-                        demisto.debug(f"{APP_NAME}: attached_email {attached_email=}")
                         for header in attachment.item.headers:
                             demisto.debug(f"{APP_NAME}: attached_email header {header=}")
                         try:
