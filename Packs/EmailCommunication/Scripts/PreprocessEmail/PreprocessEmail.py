@@ -58,7 +58,10 @@ def create_email_html(email_html='', entry_id_list=None):
         index = email_html.find(marker)
         if index != -1:
             email_html = f'{email_html[:index]}</body></html>'
-
+    #TODO
+    matches = re.findall('(src="cid(.*?))"', email_html)
+    number_of_matches = len(matches)
+    entry_id_list = entry_id_list[-number_of_matches:]
     # Replacing the images' sources
     for image_name, image_entry_id in entry_id_list:
         if re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
