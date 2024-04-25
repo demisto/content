@@ -6,7 +6,7 @@ display: FireEye Detection on Demand
 category: Forensics & Malware Analysis
 description: FireEye Detection On Demand is a threat detection service delivered as an API for integration into the SOC workflow, SIEM analytics, data repositories, or web applications, etc. It delivers flexible file and content analysis to identify malicious behavior wherever the enterprise needs it.
 configuration:
-- display: "DoD hostname"
+- display: DoD hostname
   name: url
   defaultvalue: https://feapi.marketplace.apps.fireeye.com
   type: 0
@@ -15,7 +15,7 @@ configuration:
   name: apikey
   type: 4
   required: true
-  additionalinfo: "Visit https://fireeye.dev/docs/detection-on-demand for more information on generating API keys"
+  additionalinfo: Visit https://fireeye.dev/docs/detection-on-demand for more information on generating API keys
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -27,7 +27,7 @@ configuration:
 script:
   script: ''
   type: python
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.92207
   runonce: false
   subtype: python3
   commands:
@@ -50,7 +50,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
     - contextPath: File.Malicious.Vendor
-      description: "N/A"
+      description: N/A
     - contextPath: File.MD5
       description: The MD5 hash of the file
     - contextPath: FireEyeDoD.engine_results.cache_lookup.sha256
@@ -103,37 +103,37 @@ script:
     - name: screenshot
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
-      defaultValue: "False"
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
       description: Extract screenshot of screen activity during dynamic analysis if true, which later can be downloaded with artifacts api
     - name: video
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
-      defaultValue: "False"
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
       description: Extract video activity during dynamic analysis if true, which later can be downloaded with artifacts api
     - name: fileExtraction
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
-      defaultValue: "False"
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
       description: Extract dropped files from vm during dynamic analysis if true, which later can be downloaded with artifacts api
     - name: memoryDump
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
-      defaultValue: "False"
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
       description: Extract memory dump files from vm during dynamic analysis if true, which later can be downloaded with artifacts api
     - name: pcap
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
-      defaultValue: "False"
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
       description: Extract pcap files from vm during dynamic analysis if true, which later can be downloaded with artifacts api
     outputs:
     - contextPath: FireEyeDoD.Scan.report_id
@@ -166,16 +166,16 @@ script:
       description: If True, additional information will be returned
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
-      defaultValue: "False"
+      - 'True'
+      - 'False'
+      defaultValue: 'False'
     - name: get_screenshot
       auto: PREDEFINED
       predefined:
-      - "True"
-      - "False"
+      - 'True'
+      - 'False'
       description: Whether or not to get screenshot artifacts from the report
-      defaultValue: "False"
+      defaultValue: 'False'
     - name: get_artifact
       auto: PREDEFINED
       predefined:
@@ -228,7 +228,7 @@ script:
     - name: expiration
       default: true
       description: Expiration (in hours) for browser viewable report pre-signed URL link. Default value is 72 hours.  Minimum is 1 hour, and maximum is 8760 hours (365 days).
-      defaultValue: "72"
+      defaultValue: '72'
     description: Generates a pre-signed URL for a report
 fromversion: 6.0.0
 tests:
