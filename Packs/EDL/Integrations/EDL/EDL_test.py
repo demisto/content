@@ -132,7 +132,7 @@ class TestHelperFunctions:
         mocker.patch.object(edl, 'create_new_edl', return_value=(expected_edl, 1, {'Added': 1}))
         created_time = datetime.now(timezone.utc)
 
-        with tempfile.NamedTemporaryFile() as wip_log_file, tempfile.NamedTemporaryFile() as log_file,\
+        with tempfile.NamedTemporaryFile() as wip_log_file, tempfile.NamedTemporaryFile() as log_file, \
                 tempfile.NamedTemporaryFile() as cached_edl_file:
             edl.EDL_FULL_LOG_PATH_WIP = wip_log_file.name
             edl.EDL_FULL_LOG_PATH = log_file.name
