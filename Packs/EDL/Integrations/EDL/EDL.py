@@ -47,7 +47,7 @@ EDL_FULL_LOG_PATH_WIP: str = f'wip_log_{demisto.uniqueFile()}'
 LOGS_ZIP_FILE_PREFIX: str = 'log_download'
 EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE: int = 0
 EDL_SEARCH_LOOP_LIMIT: int = 10
-MAX_DISPLAY_LOG_FILE_SIZE = 1000
+MAX_DISPLAY_LOG_FILE_SIZE = 100000
 LARGE_LOG_DISPLAY_MSG = '# Log exceeds max size. Refresh to download as file.'
 
 ''' REFORMATTING REGEXES '''
