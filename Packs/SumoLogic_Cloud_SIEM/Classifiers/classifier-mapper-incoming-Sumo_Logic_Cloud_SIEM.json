@@ -16,25 +16,6 @@
 				"Assigned User": {
 					"simple": "assignedTo"
 				},
-				"Confidence Score": {
-					"complex": {
-						"filters": [],
-						"root": "confidence",
-						"transformers": [
-							{
-								"args": {
-									"withSign": {
-										"isContext": false,
-										"value": {
-											"simple": "%"
-										}
-									}
-								},
-								"operator": "toPercent"
-							}
-						]
-					}
-				},
 				"Detected IPs": {
 					"complex": {
 						"accessor": "value",
@@ -800,33 +781,6 @@
 						"transformers": []
 					}
 				},
-				"Record Count": {
-					"simple": "recordCount"
-				},
-				"Record Device Event ID": {
-					"complex": {
-						"accessor": "metadata_deviceEventId",
-						"filters": [],
-						"root": "allRecords.[]",
-						"transformers": []
-					}
-				},
-				"Record Event Product": {
-					"complex": {
-						"accessor": "metadata_product",
-						"filters": [],
-						"root": "allRecords.[]",
-						"transformers": []
-					}
-				},
-				"Record Event Vendor": {
-					"complex": {
-						"accessor": "metadata_vendor",
-						"filters": [],
-						"root": "allRecords.[]",
-						"transformers": []
-					}
-				},
 				"Sumo Logic Cloud SIEM Record Fields": {
 					"complex": {
 						"filters": [],
@@ -876,22 +830,6 @@
 								"operator": "replace"
 							}
 						]
-					}
-				},
-				"Record Message ID": {
-					"complex": {
-						"accessor": "metadata_sourceMessageId",
-						"filters": [],
-						"root": "allRecords.[]",
-						"transformers": []
-					}
-				},
-				"Record Source Category": {
-					"complex": {
-						"accessor": "metadata_sourceCategory",
-						"filters": [],
-						"root": "allRecords.[]",
-						"transformers": []
 					}
 				},
 				"Source External IPs": {
