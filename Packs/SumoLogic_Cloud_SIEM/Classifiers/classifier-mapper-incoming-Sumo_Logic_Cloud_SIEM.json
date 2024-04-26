@@ -781,7 +781,7 @@
 						"transformers": []
 					}
 				},
-				"Sumo Logic Cloud SIEM Record Fields": {
+				"Sumo Logic Cloud SIEM Record Fields JSON": {
 					"complex": {
 						"filters": [],
 						"root": "allRecords",
