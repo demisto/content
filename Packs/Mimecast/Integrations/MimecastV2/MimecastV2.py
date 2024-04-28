@@ -17,7 +17,7 @@ from xml.etree import ElementTree
 
 
 ''' GLOBALS/PARAMS '''
-print(demisto.args())
+print('args:', demisto.args())
 BASE_URL = demisto.params().get('baseUrl')
 ACCESS_KEY = demisto.params().get('accessKey')
 SECRET_KEY = demisto.params().get('secretKey')
@@ -198,7 +198,7 @@ def request_with_pagination_api2(api_endpoint: str, limit: int, page: int, page_
         payload['meta']['pagination']['pageToken'] = next_page
         response = http_request('POST', api_endpoint, payload, headers=headers)
 
-    print(len_of_results)
+    print('len_of_results:', len_of_results)
     return results
 
 
@@ -229,7 +229,7 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
 
     LOG('running {} request with url={}\tparams={}\tdata={}\tis user auth={}'.format(
         method, url, json.dumps(params), json.dumps(payload), is_user_auth))
-    print('method:',method,'url:',url,'headers:',headers,'payload:',payload,'data:',data)
+    print('method:', method, 'url:', url, 'headers:', headers, 'payload:', payload, 'data:', data)
     try:
         res = requests.request(
             method,
@@ -3306,7 +3306,7 @@ def mimecast_list_account_command(args: dict) -> CommandResults:
 
 
 def mimecast_list_policies_command(args: dict) -> CommandResults:
-    policy_type = args.get('policyType','blockedsenders')
+    policy_type = args.get('policyType', 'blockedsenders')
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
@@ -3323,6 +3323,74 @@ def mimecast_list_policies_command(args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix='Mimecast.Account',
         outputs=result_list
+    )
+
+
+def mimecast_create_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
+    option = args.get('option')
+    bidirectional = args.get('bidirectional')
+    comment = args.get('comment')
+    conditions = args.get('conditions')
+    description = args.get('description')
+    enabled = args['enabled']
+    enforced = args['enforced']
+    from_attribute_id = args.get('from_attribute_id')
+    from_attribute_name = args.get('from_attribute_name')
+    from_attribute_value = args.get('from_attribute_value')
+    from_date = args.get('from_date')
+    from_eternal = argToBoolean(args['from_eternal'])
+    from_part = args.get('from_part')
+    to_date = args.get('to_date')
+    to_eternal = argToBoolean(args['to_eternal'])
+    override = argToBoolean(args.get('override')) if args.get('override') else None
+
+    data = {'policy': {}}
+
+    if option:
+        data['option'] = option
+    if bidirectional:
+        data['policy']['bidirectional'] = bidirectional
+    if comment:
+        data['policy']['comment'] = comment
+    if description:
+        data['policy']['description'] = description
+    if enabled:
+        data['policy']['enabled'] = enabled
+    if enforced:
+        data['policy']['enforced'] = enforced
+    if from_date:
+        data['policy']['fromDate'] = from_date
+    if from_eternal:
+        data['policy']['fromEternal'] = from_eternal
+    if from_part:
+        data['policy']['fromPart'] = from_part
+    if override:
+        data['policy']['override'] = override
+    if to_date:
+        data['policy']['toDate'] = to_date
+    if to_eternal:
+        data['policy']['toEternal'] = to_eternal
+    if conditions:
+        data['policy']['conditions'] = {}
+        data['policy']['conditions']['sourceIPs'] = conditions
+    if from_attribute_id:
+        data['policy']['from']['attribute']['id'] = from_attribute_id
+    if from_attribute_name:
+        data['policy']['from']['attribute']['name'] = from_attribute_name
+    if from_attribute_value:
+        data['policy']['from']['attribute']['value'] = from_attribute_value
+
+    payload = {"data": [data]}
+    api_endpoint = '/api/policy/antispoofing-bypass/create-policy'
+    response = http_request('POST', api_endpoint, payload)
+    
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+
+    return CommandResults(
+        outputs_prefix='Mimecast.AntispoofingBypassPolicy',
+        outputs=response,
+        readable_output='Anti-Spoofing  Bypass policy was created successfully'
     )
 
 
@@ -3427,6 +3495,11 @@ def main():
             return_results(mimecast_list_account_command(args))
         elif command == 'mimecast-list-policies':
             return_results(mimecast_list_policies_command(args))
+        elif command == 'mimecast-create-antispoofing-bypass-policy':
+            return_results(mimecast_create_antispoofing_bypass_policy_command(args))
+
+        # elif command == 'mimecast-update-antispoofing-bypass-policy':
+        #     return_results(mimecast_update_antispoofing_bypass_policy_command(args))
 
     except Exception as e:
         return_error(e)
