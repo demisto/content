@@ -1149,7 +1149,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "82"
+      - "83"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1166,45 +1166,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "82":
-    id: "82"
-    taskid: d6c5dbc8-24ba-4be5-8bf2-37ad5586688c
-    type: regular
-    task:
-      id: d6c5dbc8-24ba-4be5-8bf2-37ad5586688c
-      version: -1
-      name: Get current time
-      description: |
-        Retrieves the current date and time.
-      type: regular
-      iscommand: false
-      brand: ""
-      script: GetTime
-    nexttasks:
-      '#none#':
-      - "83"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 4700
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 1255573e-ff5b-4389-85f7-c5eb472f5fc7
+    taskid: 618150ab-c218-432b-8453-0f870c7ca88f
     type: regular
     task:
-      id: 1255573e-ff5b-4389-85f7-c5eb472f5fc7
+      id: 618150ab-c218-432b-8453-0f870c7ca88f
       version: -1
       name: Set service owners from Tag grid field
       description: |-
@@ -1270,17 +1237,14 @@ tasks:
                 value:
                   simple: '[\w-\.]+@[\w-]+\.+[\w-]{2,4}'
       val4:
-        complex:
-          root: TimeNowUnix
-          transformers:
-          - operator: TimeStampToDate
+        simple: TIMESTAMP
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 460,
-          "y": 4870
+          "y": 4750
         }
       }
     note: false
