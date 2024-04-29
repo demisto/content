@@ -1,0 +1,10 @@
+{
+    "success": {
+        "args": {},
+        "command": "safebreach-get-simulator-download-links"
+    },
+    "fail": {
+        "args": {},
+        "command": "safebreach-get-simulator-download-links"
+    }
+}
