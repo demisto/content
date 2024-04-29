@@ -382,6 +382,63 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
+    def get_files_exposed_to_email(self, email_account) -> list[dict[str, Any]]:
+        """Get files exposed to email. Returns a list of files exposed to email with analysis."""
+        params = {
+            "getTableRequest": {
+                "tableName": "data_posture_view_files_by_emails_slider",
+                "pageSize": PAGE_SIZE,
+                "fieldSorts": {
+                    "sorts": [
+                        {
+                            "sortBy": "last_access_date",
+                            "sortDirection": "SORT_DIRECTION_DESC"
+                        }
+                    ]
+                },
+                "fieldFilters": {
+                    "relationship": "FILTER_RELATIONSHIP_AND",
+                    "fieldFilterGroups": {
+                        "fieldFilters": [
+                            {
+                                "relationship": "FILTER_RELATIONSHIP_AND",
+                                "fieldFilterGroups": {
+                                    "fieldFilters": [
+                                        {
+                                            "relationship": "FILTER_RELATIONSHIP_AND",
+                                            "filters": {
+                                                "filters": [
+                                                    {
+                                                        "field": "email_account",
+                                                        "stringEquals": {
+                                                            "value": f"{email_account}"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                },
+                                "forceEstimateSize": True
+                            }
+                        ]
+                    },
+                    "forceEstimateSize": True
+                }
+            }
+        }
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/risk-management/get-data-risk-management-table",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps(params),
+            )
+            return extract_response(response)
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
     def get_3rd_parties_risk_list(self, last_interaction_time_before_in_days: int) -> list[dict[str, Any]]:
         formatted_date = self.get_date_time_before_days_formatted(last_interaction_time_before_in_days)
         params = {
@@ -1028,6 +1085,37 @@ def get_sensitive_assets_shared_with_public_link(reco_client: RecoClient) -> Com
     )
 
 
+def get_files_exposed_to_email_command(reco_client: RecoClient, email_account: str) -> CommandResults:
+    """Get files exposed to email. Returns a list of files exposed to email with analysis."""
+    assets = reco_client.get_files_exposed_to_email(email_account)
+    assets_list = []
+    for asset in assets:
+        asset_as_dict = parse_table_row_to_dict(asset.get("cells", {}))
+        assets_list.append(asset_as_dict)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Assets",
+            assets_list,
+            headers=[
+                "asset_id",
+                "asset",
+                "data_category",
+                "data_categories",
+                "last_access_date",
+                "visibility",
+                "location",
+                "email_account",
+                "file_owner"
+            ],
+        ),
+        outputs_prefix="Reco.Assets",
+        outputs_key_field="asset_id",
+        outputs=assets_list,
+        raw_response=assets,
+    )
+
+
+
 def get_3rd_parties_list(reco_client: RecoClient, last_interaction_time_in_days: int) -> CommandResults:
     """Get 3rd parties list from Reco."""
     domains = reco_client.get_3rd_parties_risk_list(last_interaction_time_in_days)
@@ -1197,7 +1285,7 @@ def fetch_incidents(
         incident
         for incident in incidents
         if (incident.get("severity", 0) > DEMISTO_INFORMATIONAL)
-        and (incident.get("dbotMirrorId", None) not in existing_incidents)
+           and (incident.get("dbotMirrorId", None) not in existing_incidents)
     ]  # type: ignore
 
     incidents_sorted = sorted(incidents, key=lambda k: k["occurred"])
@@ -1367,6 +1455,9 @@ def main() -> None:
             return_results(result)
         elif command == "reco-get-user-context-by-email-address":
             result = get_user_context_by_email_address(reco_client, demisto.args()["email_address"])
+            return_results(result)
+        elif command == "reco-get-files-exposed-to-email-address":
+            result = get_files_exposed_to_email_command(reco_client, demisto.args()["email_address"])
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")
