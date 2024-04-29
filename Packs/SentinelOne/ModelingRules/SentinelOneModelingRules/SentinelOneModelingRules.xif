@@ -87,5 +87,11 @@ filter eventType = "Alert"
     xdm.target.file_before.path = json_extract_scalar(targetProcessInfo, "$.tgtFileOldPath"),
     xdm.target.process.command_line = json_extract_scalar(targetProcessInfo, "$.tgtProcCmdLine"),
     xdm.target.process.executable.filename = json_extract_scalar(targetProcessInfo, "$.tgtProcName"),
-    xdm.target.process.integrity_level = to_integer(json_extract_scalar(targetProcessInfo, "$.tgtProcIntegrityLevel")),
+    xdm.target.process.integrity_level = if(json_extract_scalar(targetProcessInfo, "$.tgtProcIntegrityLevel") contains "protected", 20480, 
+                                            json_extract_scalar(targetProcessInfo, "$.tgtProcIntegrityLevel") contains "system", 16384, 
+                                            json_extract_scalar(targetProcessInfo, "$.tgtProcIntegrityLevel") contains "high", 12288, 
+                                            json_extract_scalar(targetProcessInfo, "$.tgtProcIntegrityLevel") contains "medium", 8192, 
+                                            json_extract_scalar(targetProcessInfo, "$.tgtProcIntegrityLevel") contains "low", 4096, 
+                                            json_extract_scalar(targetProcessInfo, "$.tgtProcIntegrityLevel") contains "unknown", 0, 
+                                            to_integer(json_extract_scalar(targetProcessInfo, "$.tgtProcIntegrityLevel"))),
     xdm.target.process.pid = to_integer(json_extract_scalar(targetProcessInfo, "$.tgtProcPid"));
