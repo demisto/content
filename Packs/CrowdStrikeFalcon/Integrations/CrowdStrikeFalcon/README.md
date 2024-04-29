@@ -159,6 +159,7 @@ Searches for a device that matches the query.
 | site_name | The site name of the device. | Optional | 
 | limit | The maximum number of records to return. Default is 50. | Optional | 
 | offset | The offset to begin the list from. For example, start from the 10th record and return the list. Default is 0. | Optional |
+| sort | The property to sort by (e.g. status.desc or hostname.asc). | Optional | 
 
 #### Context Output
 
@@ -2452,6 +2453,7 @@ Gets the list of host group members.
 | filter | The query to filter the devices that belong to the host group. | Optional | 
 | offset | Page offset. | Optional | 
 | limit | The maximum number of results on a page. Default is 50. | Optional | 
+| sort | The property to sort by (e.g. status.desc or hostname.asc). | Optional | 
 
 #### Context Output
 
@@ -4142,6 +4144,7 @@ Gets the RTR extracted file contents for the specified file path.
 | SHA256 | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
 | queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 | timeout | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. | Optional | 
+| polling_timeout | Timeout for polling. Default is 600 seconds. | Optional | 
 
 #### Context Output
 
@@ -6811,3 +6814,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Mobile Detection(s) id_1, id_2 were successfully updated
+
+### Troubleshooting
+When encountering connectivity or authorization errors within Cortex XSOAR 8, 
+it necessary to include the IP corresponding to the relevant region into the CrowdStrike Falcon allow list.

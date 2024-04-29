@@ -24,6 +24,8 @@ from EWSO365 import (
     handle_transient_files,
     parse_incident_from_item,
     parse_item_as_dict,
+    cast_mime_item_to_message,
+    decode_email_data
 )
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
 from exchangelib.attachments import AttachmentId, ItemAttachment
@@ -50,6 +52,8 @@ class TestNormalCommands:
 
     class MockClient:
         class MockAccount:
+            DEFAULT_FOLDER_TRAVERSAL_DEPTH = 3
+
             def __init__(self):
                 self.root = self
                 self.walk_res = []
@@ -99,7 +103,7 @@ class TestNormalCommands:
         def get_folder_by_path(self, path, account=None, is_public=False):
             return ""
 
-    def test_ews_find_folders(self):
+    def test_ews_find_folders(self, mocker):
         """
         This test checks the following normal_command:
             * ews-find-folders
@@ -115,7 +119,6 @@ class TestNormalCommands:
             - the expected result will be the same as the entry context
         """
         command_name = "ews-find-folders"
-
         raw_response = RAW_RESPONSES[command_name]
         expected = COMMAND_OUTPUTS[command_name]
         client = self.MockClient()
@@ -265,10 +268,12 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in messages)
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
+
     from EWSO365 import RECEIVED_FILTER
     client = TestNormalCommands.MockClient()
     client.max_fetch = 1
@@ -306,10 +311,12 @@ def test_fetch_and_mark_as_read(mocker):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in [])
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
+
     from EWSO365 import RECEIVED_FILTER
     client = TestNormalCommands.MockClient()
     client.get_folder_by_path = mock_get_folder_by_path
@@ -463,6 +470,7 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in [Message(), Message(), Message(), Message(), Message()])
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
@@ -513,6 +521,7 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in [Message(), Message(), Message(), Message(), Message()])
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
@@ -768,7 +777,6 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
               b'X-Who-header: whovALUE\r\n' \
               b'DATE: 2023-12-16T12:04:45\r\n' \
               b'\r\nHello'
-
     # headers set in the Item
     item_headers = [
         # these header keys may have different casing than what exists in the raw content
@@ -798,13 +806,36 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
             return "Account"
 
         def get_item_from_mailbox(self, account, item_id):
-
             return Item(mime_content=content, headers=item_headers, subject=subject)
+
     mock_file_result = mocker.patch('EWSO365.fileResult')
 
     get_item_as_eml(MockEWSClient(), "item", "account@test.com")
 
     mock_file_result.assert_called_once_with(expected_file_name, expected_data)
+
+
+@pytest.mark.parametrize('message_content', ('Holá', 'À bientôt!', '今日は!'))
+def test_decode_email_data(message_content):
+    """
+    Given a message containing characters in:
+        a. Spanish
+        b. French
+        c. Japanese
+
+    When: decoding the content
+
+    Then make sure the content and characters are decoded correctly.
+    """
+    class MockMimeItem:
+        mime_content: str = ''
+
+        def __init__(self, message: str):
+            self.mime_content = message
+
+    mime_item = cast_mime_item_to_message(MockMimeItem(message_content))
+    result = decode_email_data(mime_item)
+    assert result == f'\r\n{message_content}'
 
 
 class TestEmailModule(unittest.TestCase):
