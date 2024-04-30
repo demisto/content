@@ -310,7 +310,7 @@
             "fromversion": "6.5.0"
         },
         {
-            "integrations": "AWS - IAM Identity Center",
+            "integrations": "AWS-IAMIdentityCenter",
             "playbookID": "AWS-IAMIdentityCenter-Test"
         },
         {
