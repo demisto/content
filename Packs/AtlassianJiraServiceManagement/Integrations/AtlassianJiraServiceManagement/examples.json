@@ -1,10 +1,1 @@
-{
-    "ID": 1,
-    "Name": "Test For Moishy",
-    "Key": "TFM",
-    "Status": "Ok",
-    "Created": "2024-04-02T16:09:12.000Z",
-    "Updated": "2024-04-02T16:09:12.000Z",
-    "ObjectCount": 12,
-    "ObjectTypeCount": 9
-}
+{"ID": 1, "Name": "Hardware", "Type": 0, "Position": 0, "Created": "2024-04-10T10:34:13.000Z", "Updated": "2024-04-10T10:38:18.000Z", "ObjectCount": 0, "ObjectSchemaId": 1, "Inherited": true, "AbstractObjectType": false, "ParentObjectTypeInherited": false}

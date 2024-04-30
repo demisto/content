@@ -44,15 +44,10 @@ script:
       description: The id of the workspace.
       type: String
   - arguments:
-      - description: The page number you want to get. e.g if your page size is 50 then page=1 will return schemas 0-49, page=2 will return schemas 50-99
-        name: page
-        type: Number
-      - description: The number of object schemas that will be returned
-        name: page_size
-        type: Number
-      - description: ''
+      - description: The amount of schemas to retrieve. Cannot be used alongside the page and page_size arguments.
         name: limit
-        type: Number
+      - description: Whether to retrieve all object schemas with no limit.
+        name: all_results
     name: jira-asset-object-schema-list
     outputs:
       - contextPath: JiraAsset.Schema.ID
@@ -79,6 +74,53 @@ script:
       - contextPath: JiraAsset.Schema.ObjectTypeCount
         description: The number of different object types in the schema
         type: Number
+  - arguments:
+      - description: The schema from which the command will retrieve object types. Values can be received by running the `list-object-schema` command
+        name: schema_id
+        required: true
+      - description: Query to filter on available object types.
+        name: query
+      - description: Object types with that name will be excluded from the results.
+        name: exclude
+      - description: The amount of object types to retrieve.
+        name: limit
+      - all_results: Whether to retrieve all object types with no limit.
+        name: all_results
+    name: jira-asset-object-type-list
+    outputs:
+      - contextPath: JiraAsset.ObjectType.ID
+        description: The id of the object type
+        type: Number
+      - contextPath: JiraAsset.ObjectType.Name
+        description: The name of the object type
+        type: String
+      - contextPath: JiraAsset.ObjectType.Type
+        description: The type of the object type
+        type: Number
+      - contextPath: JiraAsset.ObjectType.Position
+        description: The position of the object type among other object types with the same level in the schema hierarchy
+        type: Number
+      - contextPath: JiraAsset.ObjectType.Created
+        description: The date the object type was created
+        type: Date
+      - contextPath: JiraAsset.ObjectType.Updated
+        description: The date the object type was last updated
+        type: Date
+      - contextPath: JiraAsset.ObjectType.ObjectCount
+        description: The amount of objects listed under this object type
+        type: Number
+      - contextPath: JiraAsset.ObjectType.ObjectSchemaId
+        description: The id of the schema this object type is listed under.
+        type: Number
+      - contextPath: JiraAsset.ObjectType.Inherited
+        description: Is this object type inherits from a parent object type.
+        type: Boolean
+      - contextPath: JiraAsset.ObjectType.AbstractObjectType
+        description: Is this object type abstract (can only be inherited).
+        type: Boolean
+      - contextPath: JiraAsset.ObjectType.ParentObjectTypeInherited
+        description: ''
+        type: Boolean
   runonce: false
   script: '-'
   type: python

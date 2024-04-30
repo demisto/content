@@ -47,10 +47,11 @@ class Client(BaseClient):
         headers = {'Authorization': f'Bearer {api_key}', 'Accept': 'application/json'}
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
 
-    def get_object_schema_list(self):
+    def http_get(self, url_suffix, params=None):
         return self._http_request(
             method='GET',
-            url_suffix='objectschema/list'
+            url_suffix=url_suffix,
+            params=params
         )
 
     def get_workspace(self, jsm_premium_site_name) -> dict[str, Any]:
@@ -100,6 +101,24 @@ def convert_keys_to_pascal(objects: List[dict[str, Any]], key_mapping: Optional[
     return converted_objects
 
 
+def get_object_attribute_string_type(attribute: Dict[str, Any]) -> str:
+    match attribute['type']:
+        case 0:
+            return attribute['defaultType']['name']
+        case 1:
+            return 'Object Reference'
+        case 2:
+            return 'User'
+        case 4:
+            return 'Group'
+        case 6:
+            return 'Project'
+        case 7:
+            return 'Status'
+        case 8:
+            return 'Bitbucket Repository'
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -117,7 +136,7 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
     try:
-        client.get_object_schema_list()
+        client.http_get('objectschema/list')
         return 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
@@ -143,39 +162,105 @@ def jira_asset_get_workspace_command(args: dict[str, Any], params: dict[str, Any
 
 
 def jira_asset_object_schema_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    page = args.get('page')
-    page_size = int(args.get('page_size', 50))
-    limit = args.get('limit')
-    res = client.get_object_schema_list()
+    # page = args.get('page')
+    # page_size = int(args.get('page_size', 50))
+    limit = args.get('limit', 50)
+    all_results = args.get('all_results', False)
+    res = client.http_get('objectschema/list')
     object_schemas = res.get('objectschemas', [])
     key_mapping = {'id': 'ID', 'objectSchemaKey': 'Key'}
 
-    if page:
-        page = int(page)
-        if page < 1 or (page - 1) * page_size >= len(object_schemas):
-            raise ValueError("Invalid page_number. Page does not exist.")
-        start_index = (page - 1) * page_size
-        end_index = min(start_index + page_size, len(object_schemas))
+    # if page:
+    #     page = int(page)
+    #     if page < 1 or (page - 1) * page_size >= len(object_schemas):
+    #         raise ValueError("Invalid page_number. Page does not exist.")
+    #     start_index = (page - 1) * page_size
+    #     end_index = min(start_index + page_size, len(object_schemas))
+    #
+    #     # Retrieve elements for the specified page
+    #     object_schemas = object_schemas[start_index:end_index]
 
-        # Retrieve elements for the specified page
-        object_schemas = object_schemas[start_index:end_index]
-
-    if limit:
+    if not all_results:
         limit = int(limit)
         object_schemas = object_schemas[:limit]
 
     outputs = convert_keys_to_pascal(object_schemas, key_mapping)
-    readable_outputs = [
-        {k: v for k, v in output.items() if
-         k != 'Updated'
-         and k != 'ObjectCount'
-         and k != 'ObjectTypeCount'} for output in outputs]
     hr_headers = ['ID', 'Name', 'Key', 'Status', 'Description', 'Created']
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Schema',
         outputs_key_field='ID',
         outputs=outputs,
-        readable_output=tableToMarkdown('Object Schemas', readable_outputs, headers=hr_headers)
+        readable_output=tableToMarkdown('Object Schemas', outputs, headers=hr_headers)
+    )
+
+
+def jira_asset_object_type_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    schema_id = args.get('schema_id')
+    query = args.get('query')
+    exclude = args.get('exclude')
+    limit = args.get('limit', 50)
+    all_results = args.get('all_results', False)
+    url_suffix = f'objectschema/{schema_id}/objecttypes/flat'
+
+    # build request params
+    params = {}
+    if query:
+        params['query'] = query
+    if exclude:
+        params['exclude'] = exclude
+
+    # build outputs
+    res = client.http_get(url_suffix, params)
+    object_types = convert_keys_to_pascal(list(res), {'id': 'ID', 'parentObjectTypeId': 'ParentTypeID'})
+    if not all_results:
+        limit = int(limit)
+        object_types = object_types[:limit]
+    outputs = [{k: v for k, v in ot.items() if k != 'Icon'} for ot in object_types]
+
+    # build readable outputs
+    hr_headers = ['ID', 'Name', 'ParentTypeID', 'AbstractObjectType']
+
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.ObjectType',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Object Types', outputs, headers=hr_headers)
+    )
+
+
+def jira_asset_object_type_attribute_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    object_type_id = args.get('object_type_id')
+    limit = args.get('limit', 50)
+    all_results = args.get('all_results', False)
+    url_suffix = f'objecttype/{object_type_id}/attributes'
+
+    # build request params
+    params = {
+        'onlyValueEditable': args.get('is_editable', False),
+        'orderByName': args.get('order_by_name', False),
+        'query': args.get('query'),
+        'includeValueExist': args.get('include_value_exist', False),
+        'excludeParentAttributes': args.get('exclude_parent_attributes', False),
+        'includeChildren': args.get('include_children', False),
+        'orderByRequired': args.get('order_by_required', False)
+    }
+
+    # build outputs
+    res = client.http_get(url_suffix, params)
+    outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
+    if not all_results:
+        limit = int(limit)
+        outputs = outputs[:limit]
+
+    # build readable outputs
+    hr_headers = ['ID', 'Name', 'Type', 'Description', 'MinimumCardinality', 'Editable']
+    readable_outputs = [{**attribute, 'Type': get_object_attribute_string_type(attribute)} for attribute in outputs]
+
+    return CommandResults(
+        outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.ObjectType',
+        outputs_key_field='ID',
+        outputs=outputs,
+        readable_output=tableToMarkdown('Object Types', readable_outputs, headers=hr_headers)
     )
 
 
@@ -215,6 +300,10 @@ def main() -> None:
 
         if command == 'jira-asset-object-schema-list':
             result = jira_asset_object_schema_list_command(client, args)
+            return_results(result)
+
+        if command == 'jira-asset-object-type-list':
+            result = jira_asset_object_type_list_command(client, args)
             return_results(result)
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
