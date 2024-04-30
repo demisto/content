@@ -27,17 +27,18 @@ configuration:
   - HIGH
   - MEDIUM
   - LOW
-  defaultvalue: 
+  defaultvalue:
   required: false
   type: 16
 - defaultvalue: 1 year
   display: First fetch time
+  additionalinfo: How far back should the integration fetch in its first run (1 day, 2 weeks, 3 months etc.)
   name: first_fetch
   required: false
   type: 0
 - additionalinfo: 'See the following URL for more information: https://nvd.nist.gov/developers/vulnerabilities#cves-hasKev' # disable-secrets-detection
   defaultvalue: "false"
-  display: Return only CVEs that have a known exploited vulnerability (KEV) associated with them
+  display: Return Known Exploited Vulnerabilities (KEV) only.
   name: hasKev
   required: false
   type: 8
@@ -114,20 +115,7 @@ configuration:
   - WHITE
   type: 15
   required: false
-description: "This feed pulls CVE information from the NIST National Vulnerability Database using v2.0 of the API.\n\nRejected CVEs are not ingested as part of this integration.\n\nThis integration/feed deprecates the original National Vulnerability Database Feed integraiton as v1.0 of the API is being sunsetted in 2023. "
-detaileddescription: |-
-  ## BaseIntegration Help
-
-  Markdown file for integration configuration  help snippet. In this file add:
-
-  - Brief information about how to retrieve the API key of your product
-  - Other useful information on how to configure your integration in XSOAR
-
-  Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
-
-
-  ---
-  [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/feed-nv-dv2)
+description: "This feed pulls CVE information from the NIST National Vulnerability Database using v2.0 of the API.\n\nRejected CVEs are not ingested as part of this integration.\n\nThis integration/feed deprecates the original National Vulnerability Database Feed integraiton as v1.0 of the API is being sunsetted in 2023."
 display: National Vulnerability Database Feed v2
 image: ''
 name: FeedNVDv2
@@ -160,7 +148,7 @@ script:
     - contextPath: CVE.Description
       description: The description of the CVE.
       type: String
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.92207
   feed: true
   runonce: false
   script: ''
