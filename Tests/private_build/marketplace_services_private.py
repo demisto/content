@@ -127,8 +127,8 @@ class Pack:
         self._is_modified = is_modified
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
-        self._default_data_source_name = None  # initialized in load_user_metadata function, prior to setting _is_data_source
-        self._is_data_source = False  # initialized in collect_content_items function
+        self._default_data_source_name = None  # initialized in load_user_metadata function, prior to setting _data_source_name
+        self._data_source_name = None  # initialized in collect_content_items function
         self._single_integration = True  # pack assumed to have a single integration until processing a 2nd integration
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
@@ -203,9 +203,9 @@ class Pack:
     @property
     def is_data_source(self):
         """
-        bool: whether the pack is a siem pack
+        bool: whether the pack is a data source pack
         """
-        return self._is_data_source
+        return bool(self._data_source_name)
 
     @status.setter  # type: ignore[attr-defined,no-redef]
     def status(self, status_value):
@@ -515,17 +515,18 @@ class Pack:
             pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count
         )
 
-    def is_data_source_pack(self, yaml_content):
+    def get_data_source_for_pack(self, yaml_content):
         """
         Checks if the pack is a data source, by verifying:
             1. The pack is in XSIAM
             2. The pack has a default dara source selected, or has a single fetching integration
+
+        Returns the data source integration name in case there is such, or False in case the pack is not a data source.
         """
         if self._default_data_source_name and XSIAM_MP in self.marketplaces:
             logging.info(f"The pack has a default Data Source: {self._default_data_source_name}")
-            return True
+            return self._default_data_source_name
 
-        is_data_source = self._is_data_source
         # this's the first integration in the pack, and the pack is in xsiam
         if self._single_integration and XSIAM_MP in self.marketplaces:
 
@@ -533,15 +534,15 @@ class Pack:
             if yaml_content.get('script', {}).get('isfetchevents', False) or \
                     yaml_content.get('script', {}).get('isfetch', False) is True:
                 logging.info(f"{yaml_content.get('name')} makes the pack a Data Source potential")
-                is_data_source = True
+                return yaml_content.get('name')
         # already has the pack as data source
-        elif not self._single_integration and is_data_source:
+        elif not self._single_integration and self._data_source_name:
 
             # found a second integration in the pack
             logging.info(f"{yaml_content.get('name')} is no longer a Data Source potential")
-            is_data_source = False
+            return False
 
-        return is_data_source
+        return self._data_source_name
 
     def add_pack_type_tags(self, yaml_content, yaml_type):
         """
@@ -561,7 +562,7 @@ class Pack:
             if yaml_content.get('script', {}).get('isfetchevents', False) is True:
                 self._is_siem = True
 
-            self._is_data_source = self.is_data_source_pack(yaml_content)
+            self._data_source_name = self.get_data_source_for_pack(yaml_content)
 
             # already found the first integration in the pack,
             self._single_integration = False
@@ -728,7 +729,7 @@ class Pack:
             Metadata.CONTENT_DISPLAYS: self._content_displays_map,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
-            Metadata.DEFAULT_DATA_SOURCE_NAME: self._default_data_source_name,
+            Metadata.DEFAULT_DATA_SOURCE_NAME: self._data_source_name,
             Metadata.USE_CASES: self._use_cases,
             Metadata.KEY_WORDS: self._keywords,
             Metadata.DEPENDENCIES: self._parsed_dependencies,
@@ -2427,7 +2428,7 @@ class Pack:
         tags |= {PackTags.TRANSFORMER} if self._contains_transformer else set()
         tags |= {PackTags.FILTER} if self._contains_filter else set()
         tags |= {PackTags.COLLECTION} if self._is_siem else set()
-        tags |= {PackTags.DATA_SOURCE} if self._is_data_source and marketplace == XSIAM_MP else set()
+        tags |= {PackTags.DATA_SOURCE} if bool(self._data_source_name) and marketplace == XSIAM_MP else set()
 
         if self._create_date:
             days_since_creation = (datetime.utcnow() - datetime.strptime(self._create_date, Metadata.DATE_FORMAT)).days
