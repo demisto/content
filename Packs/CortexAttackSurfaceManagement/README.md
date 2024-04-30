@@ -50,7 +50,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - Azure Compute Instance
   - GCP Compute Engine (VM)
   - On-prem asset protected with a Palo Alto Networks Firewall
-  - An asset that is not one of these above, but is protected by Cortex Endpoint Security (XSIAM/XDR)
+  - An asset that is not one of the above, but is protected by Cortex Endpoint Security (XSIAM/XDR)
 - Service owner information found through one of the following:
   - Active Directory
   - AWS IAM
