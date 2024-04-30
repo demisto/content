@@ -302,7 +302,7 @@ def test_module_command(client: Client, *_) -> tuple[None, None, str]:
         DemistoException: If test failed.
     """
     results = client.test_module()
-    demisto.debug(str(results))
+
     if 'incidents' in results:
         return None, None, 'ok'
     raise DemistoException(f'Test module failed, {results}')
