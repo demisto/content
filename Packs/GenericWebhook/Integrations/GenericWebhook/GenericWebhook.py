@@ -38,9 +38,9 @@ async def parse_incidents(request: Request) -> list[dict]:
             if isinstance(raw_json, str):
                 demisto.debug('raw_json is string, decoding')
                 raw_json = json.loads(raw_json)
-            incident['raw_json'] = json.loads(raw_json)
+            incident['raw_json'] = raw_json
         else:
-            incident['raw_json'] = incident
+            incident['raw_json'] = copy(incident)
     return incidents
 
 
