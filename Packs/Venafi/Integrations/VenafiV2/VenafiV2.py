@@ -277,7 +277,7 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
 ''' HELPER FUNCTIONS '''
 
 
-def get_human_readable_object(certificate: dict) -> Dict[str, Any]:
+def get_human_readable_object(certificate: dict[str: str]) -> Dict[str, Any]:
     """
     Create a human readable object.
 
