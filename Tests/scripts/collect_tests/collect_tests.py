@@ -168,7 +168,6 @@ class CollectionResult:
 
         if pack:
             if only_to_upload == only_to_install:
-                logger.info(f'Michal {only_to_upload=}, {only_to_install=}')
 
                 if only_to_upload and only_to_install:
                     raise ValueError(f"Packs can be collected for both to install and to upload. {pack=}, {reason}")
