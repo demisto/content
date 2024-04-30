@@ -1872,7 +1872,7 @@ def find_folders(target_mailbox=None, is_public=None):  # pragma: no cover
         folders.append(folder)
 
     try:
-        readable_output = root.tree()
+        readable_output = root.tree()   # pylint: disable=E1101
 
     except ErrorAccessDenied:   # This is temporarily until the exchangelib version will be bumped
         readable_output = tableToMarkdown(t=folders, name='Available folders')  # pylint: disable=E1101
