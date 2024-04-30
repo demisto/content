@@ -129,8 +129,8 @@ class Pack:
         self._is_metadata_updated = is_metadata_updated
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
-        self._default_data_source_name = None
-        self._is_data_source = False
+        self._default_data_source_name = None  # initialized in load_pack_metadata function, prior to setting _data_source_name
+        self._data_source_name = None  # initialized in collect_content_items function
         self._single_integration = True  # pack assumed to have a single integration until processing a 2nd integration
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
@@ -189,11 +189,11 @@ class Pack:
         self._is_siem = is_siem
 
     @property
-    def is_data_source(self):
+    def data_source_name(self):
         """
-        bool: whether the pack is a siem pack that has a fetching integration
+        str: the pack data source name, if the pack has a data source
         """
-        return self._is_data_source
+        return self._data_source_name
 
     @status.setter  # type: ignore[attr-defined,no-redef]
     def status(self, status_value):
@@ -512,7 +512,8 @@ class Pack:
                         dependencies_integration_images_dict[dep_pack_name] = [dep_int_img]
 
         return Pack.organize_integration_images(
-            pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count, default_data_source_name
+            pack_integration_images, dependencies_integration_images_dict, pack_dependencies_by_download_count,
+            default_data_source_name
         )
 
     @staticmethod
@@ -1757,6 +1758,7 @@ class Pack:
             self._tags = set(pack_metadata.get(Metadata.TAGS) or [])
             self._dependencies = pack_metadata.get(Metadata.DEPENDENCIES, {})
             self._certification = pack_metadata.get(Metadata.CERTIFICATION, "")
+            self._default_data_source_name = pack_metadata.get(Metadata.DEFAULT_DATA_SOURCE_NAME)
 
             if 'xsoar' in self.marketplaces:
                 self.marketplaces.append('xsoar_saas')

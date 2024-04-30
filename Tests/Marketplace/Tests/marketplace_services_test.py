@@ -439,7 +439,7 @@ class TestParsingInternalFunctions:
 
         mocker.patch.object(marketplace_services, 'load_json', side_effect=side_effect_load_json)
         all_pack_images = Pack._get_all_pack_images('', pack_integration_images, display_dependencies_images,
-                                                    display_dependencies_images)
+                                                    display_dependencies_images, None or "DummyIntegration")  # todo deside
 
         assert expected == all_pack_images
 
