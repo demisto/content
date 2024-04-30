@@ -26,7 +26,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### venafi-get-certificates
 
 ***
-Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z format. Additional fields can be used in the query by adding them in a key=value format.
+Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z format. Additional fields information at https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-attribute.htm and https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-status.htm
 
 #### Base Command
 
@@ -54,9 +54,9 @@ Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z fo
 | ValidationDisabled | Whether to include only certificates with validation disabled (1) or enabled (0). | Optional | 
 | C | Find certificates by Country attribute of Subject DN. | Optional | 
 | CN | Find certificates by Common name attribute of Subject DN. | Optional | 
-| Issuer | Issuer DN. Note, since most Issuer DNs include commas between DN components, it is important to surround the complete Issuer DN within double quotes (“). In addition, if the Issuer DN includes double quotes, each double quote should be prefixed by another double quote. | Optional | 
+| Issuer | Find certificates by issuer. Use the CN ,O, L, S, and C values from the certificate request. Surround the complete value within double quotes ("). If a value already has double quotes, escape them with a second set of double quotes. For example, OU=""(c) 2020 Entrust, Inc. - for authorized use only"". | Optional | 
 | KeyAlgorithm | Algorithm for the public key in the certificate (e.g., RSA, DSA). | Optional | 
-| KeySize | Comma-separated list of the bit size of the public key in the certificate (e.g., 2048). | Required | 
+| KeySize | Comma-separated list of the bit size of the public key in the certificate (e.g., 2048). | Optional | 
 | KeySizeGreater | The size for which the public key size is greater than. | Optional | 
 | KeySizeLess | The size for which the public key size is less than. | Optional | 
 | L | Find certificates by Locality/City attribute of Subject Distinguished Name (SDN). | Optional | 
@@ -69,7 +69,7 @@ Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z fo
 | ValidTo | Date on which the certificate expires (e.g., 2015-10- 08T19:15:35.6431456Z or 2015-10-08). | Optional | 
 | ValidToGreater | Date after which the certificates expire. | Optional | 
 | ValidToLess | Date before which the certificates expire. | Optional | 
-| Limit | The maximum number of certificates to return. | Optional | 
+| Limit | The maximum number of certificates to return. Default value = 50. | Optional | 
 
 #### Context Output
 
@@ -81,7 +81,7 @@ Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z fo
 | Venafi.Certificate.ParentDN | string | The full path to the parent of the object in Trust Protection Platform. | 
 | Venafi.Certificate.SchemaClass | string | The class name of the certificate object. | 
 | Venafi.Certificate.ID | string | The certificate object GUID. | 
-| Venafi.Certificate.X509 | dictionaryv |  | 
+| Venafi.Certificate.X509 | dictionary | Enrolled or issued certificate information: CN, Issuer, KeyAlgorithm, KeySize, SANS, Serial, Subject, Thumbprint, ValidFrom, ValidTo | 
 
 ### venafi-get-certificate-details
 
@@ -121,26 +121,25 @@ Uses a certificate GUID to extract more details from the cert store.
 | CertificateDetails.Thumbprint | string | The SHA1 thumbprint hash of the certificate. | 
 | CertificateDetails.ValidFrom | string | Certificate validation start date. | 
 | CertificateDetails.ValidTo | string | Certificate validation end time. | 
-| CertificateDetails.AIACAIssuerURL | array |  | 
-| CertificateDetails.CN | string |  | 
-| CertificateDetails.CN | string |  | 
-| CertificateDetails.EnhancedKeyUsage | string |  | 
-| CertificateDetails.KeyAlgorithm | string |  | 
-| CertificateDetails.KeySize | string |  | 
-| CertificateDetails.KeyUsage | string |  | 
-| CertificateDetails.OU | string |  | 
-| CertificateDetails.PublicKeyHash | string |  | 
-| CertificateDetails.SKIKeyIdentifier | string |  | 
-| CertificateDetails.SignatureAlgorithm | string |  | 
-| CertificateDetails.SignatureAlgorithmOID | string |  | 
-| CertificateDetails.StoreAdded | string |  | 
-| CertificateDetails.SubjectAltNameDNS | string |  | 
-| CertificateDetails.SubjectAltNameEmail | string |  | 
-| CertificateDetails.SubjectAltNameOtherNameUPN | string |  | 
-| CertificateDetails.SubjectAltNameIPAddress | string |  | 
-| CertificateDetails.SubjectAltNameURI | string |  | 
-| CreatedBy | string |  | 
+| CertificateDetails.AIACAIssuerURL | array | Available only when the certificate was issued by a well-configured CA. An array of Authority Information Access \(AIA\). Shows the CA issuer link and the CA's certificate details. May also include Online Certificate Status Protocol \(OCSP\) information about revocation. | 
+| CertificateDetails.CN | string | The Common name attribute of Subject Distinguished Name \(DN\). | 
+| CertificateDetails.EnhancedKeyUsage | string | The PKI Server Authentication object identifier \(OID\). | 
+| CertificateDetails.KeyAlgorithm | string | The algorithm for the public key. | 
+| CertificateDetails.KeySize | string | Only available for RSA certificates. The bit size of the public key. | 
+| CertificateDetails.KeyUsage | string | A list of Key Usage extension values that describe the purpose of the public key. | 
+| CertificateDetails.OU | string | An array of Organization Units or names. | 
+| CertificateDetails.PublicKeyHash | string | The public key hash string. Available only when the certificate has a private key. | 
+| CertificateDetails.SKIKeyIdentifier | string | The generated Subject Key Identifier \(SKI\) | 
+| CertificateDetails.SignatureAlgorithm | string | The signature algorithm for signing the certificate. | 
+| CertificateDetails.SignatureAlgorithmOID | string | The Signature Object ID for signing the certificate. | 
+| CertificateDetails.StoreAdded | string | The Date Time stamp when the private key was added to the store. | 
+| CertificateDetails.SubjectAltNameDNS | string | An array of Domain Name System \(DNS\) SANs. | 
+| CertificateDetails.SubjectAltNameEmail | string | An array of Email SANs. Based on RFC 822. | 
+| CertificateDetails.SubjectAltNameOtherNameUPN | string | An array of User Principal Name \(UPN\) SANs. | 
+| CertificateDetails.SubjectAltNameIPAddress | string | An array of IP Address SANs. | 
+| CertificateDetails.SubjectAltNameURI | string | An array of Uniform Resource Indicator \(URI\) SANs. | 
+| CreatedBy | string | The object that initiated enrollment or provisioning changes. The default is Web SDK. | 
 | Origin | string |  | 
-| ProcessingDetails | dictionary |  | 
-| RenewalDetails | dictionary |  | 
-| ValidationDetails | dictionary |  | 
+| ProcessingDetails | dictionary | Absent when the certificate is not currently processing in the Trust Protection Platform lifecycle: InError, InProcess, Stage, Status, TicketDN | 
+| RenewalDetails | dictionary | A list of certificate renewal information | 
+| ValidationDetails | dictionary | A list of host identity information and the overall certificate validation state result. If no validation occurred, only the lastvalidationstateupdate field appears. all other validationdetails fields are absent. | 
