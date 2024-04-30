@@ -6,7 +6,7 @@ from FeedThreatConnect import create_or_query, parse_indicator, set_tql_query, c
 
 
 def load_json_file(path):
-    with open(path, 'r') as _json_file:
+    with open(path) as _json_file:
         return json.load(_json_file)
 
 
@@ -38,7 +38,8 @@ def test_create_or_query():
 
 @pytest.mark.parametrize("params, expected_result, endpoint",
                          [({'indicator_active': False, "indicator_type": ['All'],
-                           'createRelationships': False, "confidence": 0, "threat_assess_score": 0}, '', 'indicators'),
+                           'createRelationships': False, "confidence": 0, "threat_assess_score": 0},
+                           'typeName IN ("EmailAddress","File","Host","URL","ASN","CIDR","Hashtag","Mutex","Registry Key","User Agent","Address")', 'indicators'),  # noqa: E501
                           ({'indicator_active': True, "group_type": ['File'],
                            'createRelationships': False, "confidence": 0, "threat_assess_score": 0},
                            'typeName IN ("File")', 'groups'),

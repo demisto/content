@@ -10,9 +10,9 @@ from CommonServerPython import DBotScoreReliability
 
 
 def create_client(proxy: bool = False, verify: bool = False, fetch_interval_hours: str = "1",
-                  reliability: str = DBotScoreReliability.A_PLUS):
+                  reliability: str = DBotScoreReliability.A_PLUS, username: str = ''):
     return Client(proxy=proxy, verify=verify, fetch_interval_hours=fetch_interval_hours, use_https=False,
-                  reliability=reliability)
+                  reliability=reliability, username=username)
 
 
 @pytest.mark.parametrize('number, output', [("True", False), ('432', True), ("str", False),
@@ -243,3 +243,23 @@ def test_url_command(mocker, data, url, expected_score, expected_table):
     # validate human readable
     hr_ = command_results[0].to_context().get('HumanReadable', {})
     assert hr_ == expected_table
+
+
+@pytest.mark.parametrize('username, expected_headers', [
+    ('test', {'User-Agent': 'phishtank/test'}),
+    ('', {})])
+def test_user_agent_header(mocker, username, expected_headers):
+    """
+    Given:
+        - phishtank username
+
+    When:
+        - After reload or url command
+
+    Then:
+        - validating that the User-Agent header is populated as expected
+    """
+    http_request = mocker.patch.object(Client, "_http_request", return_value='')
+    client = create_client(False, False, "1", DBotScoreReliability.B, username)
+    reload(client)
+    assert http_request.call_args.kwargs['headers'] == expected_headers

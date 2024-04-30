@@ -1,31 +1,41 @@
-Calculates and sets the incident severity based on the combination of the current incident severity, and the severity returned from the `Evaluate Severity - Set By Highest DBotScore` playbook.
+Calculates and sets the incident severity based on the combination of the current incident severity, and the severity returned from the **Calculate Severity By Highest DBotScore** playbook.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
-## Sub-playbooks
-* Evaluate Severity - Set By Highest DBotScore
+### Sub-playbooks
 
-## Integrations
-* Builtin
+Calculate Severity By Highest DBotScore
 
-## Scripts
-* Set
+### Integrations
 
-## Commands
+This playbook does not use any integrations.
+
+### Scripts
+
+Set
+
+### Commands
+
 * setIncident
 
 ## Playbook Inputs
+
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| DBotScore | The list of DBotScores of indicators. | None | DBotScore | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| DBotScoreIndicators | A list of DBotScore indicator values. | DBotScore.Indicator | Optional |
+| DBotScoreMaxScore | The highest score \(number\) that was given to a DBotScore indicator. | DBotScore.Score | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![Calculate_Severity_Standard](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_Standard.png)
+
+![Calculate Severity - Standard](../doc_files/Calculate_Severity_-_Standard.png)

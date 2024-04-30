@@ -1,0 +1,471 @@
+[
+  {
+    "modified": "2024-01-12T16:52:25.358Z",
+    "owner": "test@paloaltonetworks.com",
+    "name": "test-monitor-rule",
+    "previousName": "",
+    "collections": [
+      {
+        "hosts": [
+            "test-worker01",
+            "test-master02",
+            "test-worker02",
+            "test-worker03"
+        ],
+        "images": [
+          "test/test*",
+          "test/test1"
+        ],
+        "labels": [
+          "*"
+        ],
+        "containers": [
+          "*"
+        ],
+        "functions": [
+          "*"
+        ],
+        "namespaces": [
+          "*"
+        ],
+        "appIDs": [
+          "*"
+        ],
+        "accountIDs": [
+          "*"
+        ],
+        "codeRepos": [
+          "*"
+        ],
+        "clusters": [
+          "*"
+        ],
+        "name": "test-test-cer",
+        "owner": "test@paloaltonetworks.com",
+        "modified": "2024-01-12T16:35:54.402Z",
+        "color": "#53EB1C",
+        "system": "False",
+        "prisma": "False"
+      }
+    ],
+    "advancedProtectionEffect": "alert",
+    "processes": {
+      "disabled": "False",
+      "deniedList": {
+        "effect": "disable",
+        "paths": []
+      },
+      "allowedList": [],
+      "modifiedProcessEffect": "alert",
+      "cryptoMinersEffect": "alert",
+      "lateralMovementEffect": "alert",
+      "checkParentChild": "True",
+      "reverseShellEffect": "alert",
+      "suidBinariesEffect": "disable",
+      "defaultEffect": "alert"
+    },
+    "network": {
+      "disabled": "False",
+      "deniedIPsEffect": "disable",
+      "deniedIPs": [],
+      "allowedIPs": [
+        "127.0.0.1"
+      ],
+      "listeningPorts": {
+        "allowed": [],
+        "denied": [],
+        "effect": "disable"
+      },
+      "outboundPorts": {
+        "allowed": [
+          {
+            "start": 111,
+            "end": 111,
+            "deny": "False"
+          }
+        ],
+        "denied": [],
+        "effect": "disable"
+      },
+      "modifiedProcEffect": "alert",
+      "portScanEffect": "alert",
+      "rawSocketsEffect": "alert",
+      "defaultEffect": "alert"
+    },
+    "dns": {
+      "disabled": "True",
+      "defaultEffect": "alert",
+      "domainList": {
+        "allowed": [],
+        "denied": [],
+        "effect": "disable"
+      }
+    },
+    "filesystem": {
+      "disabled": "False",
+      "deniedList": {
+        "effect": "disable",
+        "paths": []
+      },
+      "allowedList": [],
+      "newFilesEffect": "alert",
+      "backdoorFilesEffect": "alert",
+      "encryptedBinariesEffect": "alert",
+      "suspiciousELFHeadersEffect": "alert",
+      "defaultEffect": "alert"
+    },
+    "kubernetesEnforcementEffect": "alert",
+    "cloudMetadataEnforcementEffect": "alert",
+    "wildFireAnalysis": "alert",
+    "skipExecSessions": "True"
+  },
+  {
+    "modified": "2023-12-18T11:51:04.056Z",
+    "owner": "test@paloaltonetworks.com",
+    "name": "test-ubuntu",
+    "previousName": "",
+    "collections": [
+      {
+        "hosts": [
+          "*"
+        ],
+        "images": [
+          "*"
+        ],
+        "labels": [
+          "*"
+        ],
+        "containers": [
+            "*test-ubuntu-test*",
+            "*test1-centos8-test1*"
+        ],
+        "functions": [
+          "*"
+        ],
+        "namespaces": [
+          "*"
+        ],
+        "appIDs": [
+          "*"
+        ],
+        "accountIDs": [
+          "*"
+        ],
+        "codeRepos": [
+          "*"
+        ],
+        "clusters": [
+          "*"
+        ],
+        "name": "test",
+        "owner": "test@paloaltonetworks.com",
+        "modified": "2023-12-18T11:49:14.831Z",
+        "color": "#EAF382",
+        "system": "False",
+        "prisma": "False"
+      }
+    ],
+    "advancedProtectionEffect": "alert",
+    "processes": {
+      "disabled": "False",
+      "deniedList": {
+        "effect": "alert",
+        "paths": [
+          "date"
+        ]
+      },
+      "allowedList": [
+        "mkdir",
+        "sleep",
+        "bash",
+        "dash",
+        "timeout"
+      ],
+      "modifiedProcessEffect": "alert",
+      "cryptoMinersEffect": "alert",
+      "lateralMovementEffect": "alert",
+      "checkParentChild": "True",
+      "reverseShellEffect": "alert",
+      "suidBinariesEffect": "alert",
+      "defaultEffect": "alert"
+    },
+    "network": {
+      "disabled": "False",
+      "deniedIPsEffect": "alert",
+      "deniedIPs": [
+        "1.1.1.1",
+        "1.1.1.0/24"
+      ],
+      "allowedIPs": [
+        "8.8.8.8",
+        "8.8.8.0/24"
+      ],
+      "listeningPorts": {
+        "allowed": [
+          {
+            "start": 1111,
+            "end": 1112,
+            "deny": "False"
+          }
+        ],
+        "denied": [
+          {
+            "start": 9999,
+            "end": 10000,
+            "deny": "False"
+          }
+        ],
+        "effect": "alert"
+      },
+      "outboundPorts": {
+        "allowed": [
+          {
+            "start": 8888,
+            "end": 8889,
+            "deny": "False"
+          }
+        ],
+        "denied": [
+          {
+            "start": 2222,
+            "end": 2223,
+            "deny": "False"
+          }
+        ],
+        "effect": "alert"
+      },
+      "modifiedProcEffect": "alert",
+      "portScanEffect": "alert",
+      "rawSocketsEffect": "alert",
+      "defaultEffect": "alert"
+    },
+    "dns": {
+      "disabled": "False",
+      "defaultEffect": "alert",
+      "domainList": {
+        "allowed": [
+          "www.google.com",
+          "*amazon*"
+        ],
+        "denied": [
+          "www.yahoo.com"
+        ],
+        "effect": "alert"
+      }
+    },
+    "filesystem": {
+      "disabled": "False",
+      "deniedList": {
+        "effect": "alert",
+        "paths": [
+          "/tools/denied"
+        ]
+      },
+      "allowedList": [
+        "/etc"
+      ],
+      "newFilesEffect": "alert",
+      "backdoorFilesEffect": "alert",
+      "encryptedBinariesEffect": "alert",
+      "suspiciousELFHeadersEffect": "alert",
+      "defaultEffect": "alert"
+    },
+    "kubernetesEnforcementEffect": "alert",
+    "cloudMetadataEnforcementEffect": "alert",
+    "wildFireAnalysis": "alert",
+    "skipExecSessions": "False"
+  },
+  {
+    "modified": "2023-12-17T14:50:54.785Z",
+    "owner": "test@paloaltonetworks.com",
+    "name": "test-test-policy",
+    "previousName": "",
+    "collections": [
+      {
+        "hosts": [
+          "*"
+        ],
+        "images": [
+          "*"
+        ],
+        "labels": [
+          "*"
+        ],
+        "containers": [
+          "*"
+        ],
+        "functions": [
+          "*"
+        ],
+        "namespaces": [
+          "*"
+        ],
+        "appIDs": [
+          "*"
+        ],
+        "accountIDs": [
+          "*"
+        ],
+        "codeRepos": [
+          "*"
+        ],
+        "clusters": [
+          "*"
+        ],
+        "name": "test-test-collection",
+        "owner": "test@paloaltonetworks.com",
+        "modified": "2023-03-13T15:48:37.313Z",
+        "color": "#BCE660",
+        "system": "False",
+        "prisma": "False"
+      },
+      {
+        "hosts": [
+          "*"
+        ],
+        "images": [
+          "*"
+        ],
+        "labels": [
+          "*"
+        ],
+        "containers": [
+          "*"
+        ],
+        "functions": [
+          "*"
+        ],
+        "namespaces": [
+          "*"
+        ],
+        "appIDs": [
+          "*"
+        ],
+        "accountIDs": [
+          "*"
+        ],
+        "codeRepos": [
+          "*"
+        ],
+        "clusters": [
+          "*"
+        ],
+        "name": "test-order-test-collection",
+        "owner": "test@paloaltonetworks.com",
+        "modified": "2023-12-06T23:32:52.316Z",
+        "color": "#468763",
+        "system": "False",
+        "prisma": "False"
+      }
+    ],
+    "advancedProtectionEffect": "alert",
+    "processes": {
+      "disabled": "False",
+      "deniedList": {
+        "effect": "disable",
+        "paths": [
+          "test"
+        ]
+      },
+      "allowedList": [],
+      "modifiedProcessEffect": "disable",
+      "cryptoMinersEffect": "disable",
+      "lateralMovementEffect": "disable",
+      "reverseShellEffect": "disable",
+      "suidBinariesEffect": "disable",
+      "defaultEffect": "alert"
+    },
+    "network": {
+      "disabled": "True",
+      "deniedIPsEffect": "disable",
+      "deniedIPs": [
+        "1.1.1.1"
+      ],
+      "allowedIPs": [
+        "0.0.0.0"
+      ],
+      "listeningPorts": {
+        "allowed": [
+          {
+            "start": 222,
+            "end": 333,
+            "deny": "False"
+          }
+        ],
+        "denied": [
+          {
+            "start": 4000,
+            "end": 5000,
+            "deny": "False"
+          },
+          {
+            "start": 111,
+            "end": 222,
+            "deny": "False"
+          }
+        ],
+        "effect": "disable"
+      },
+      "outboundPorts": {
+        "allowed": [
+          {
+            "start": 200,
+            "end": 300,
+            "deny": "False"
+          }
+        ],
+        "denied": [
+          {
+            "start": 5000,
+            "end": 6000,
+            "deny": "False"
+          },
+          {
+            "start": 111,
+            "end": 222,
+            "deny": "False"
+          }
+        ],
+        "effect": "disable"
+      },
+      "modifiedProcEffect": "disable",
+      "portScanEffect": "disable",
+      "rawSocketsEffect": "disable",
+      "defaultEffect": "alert"
+    },
+    "dns": {
+      "disabled": "True",
+      "defaultEffect": "alert",
+      "domainList": {
+        "allowed": [
+          "0.0.0.0"
+        ],
+        "denied": [
+          "1.1.1.1"
+        ],
+        "effect": "disable"
+      }
+    },
+    "filesystem": {
+      "disabled": "True",
+      "deniedList": {
+        "effect": "disable",
+        "paths": [
+          "string"
+        ]
+      },
+      "allowedList": [
+        "string"
+      ],
+      "newFilesEffect": "disable",
+      "backdoorFilesEffect": "disable",
+      "encryptedBinariesEffect": "disable",
+      "suspiciousELFHeadersEffect": "disable",
+      "defaultEffect": "alert"
+    },
+    "kubernetesEnforcementEffect": "alert",
+    "cloudMetadataEnforcementEffect": "alert",
+    "wildFireAnalysis": "alert",
+    "skipExecSessions": "False"
+  }
+]

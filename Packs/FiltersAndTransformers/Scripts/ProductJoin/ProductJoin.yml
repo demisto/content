@@ -22,12 +22,12 @@ args:
   isArray: true
 - name: join
   required: true
-  description: Separator
+  description: Separator.
   defaultValue: '='
 scripttarget: 0
 subtype: python3
 runas: DBotWeakRole
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 tests:
 - No tests (auto formatted)

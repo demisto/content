@@ -1,0 +1,6 @@
+{
+    "statusCode": 400,
+    "success": false,
+    "message": "API Key doesn't exist in our records",
+    "errors": "Invalid API-KEY"
+}

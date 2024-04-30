@@ -1,12 +1,12 @@
 [MODEL: dataset="nginx_nginx_raw"]
-filter _raw_log contains "GET" or _raw_log contains "HEAD" or _raw_log contains "POST" or _raw_log contains "DELETE" or _raw_log contains "CONNECT" or _raw_log contains "OPTIONS" or _raw_log contains "TRACE" or _raw_log contains "PATCH"
+filter _raw_log ~= "GET|HEAD|POST|DELETE|CONNECT|OPTIONS|TRACE|PATCH"
 | alter 
     Source_Ip = arrayindex(regextract(_raw_log, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s)"),0),
     requested_line = arrayindex(regextract(_raw_log,"\"[A-Z]+\s(\S+)\sHTTP"),0),
     User_agent = arrayindex(regextract(_raw_log,"\"\s\"([^\"]+)"),0),
     bytes_size = arrayindex(regextract(_raw_log,"\d\s(\d+)"),0),
-	httpmethod=arrayindex(regextract(_raw_log,"\"([A-Z]+)\s\S+\sHTTP"),0),
-	statuscode=arrayindex(regextract(_raw_log,"HTTP\/\d+\.\d+\"\s(\d+)\s"),0),
+    httpmethod=arrayindex(regextract(_raw_log,"\"([A-Z]+)\s\S+\sHTTP"),0),
+    statuscode=arrayindex(regextract(_raw_log,"HTTP\/\d+\.\d+\"\s(\d+)\s"),0),
 // extract source_ip
     sourceipv4 = arrayindex(regextract(_raw_log, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\s)"),0),
     sourceipv6 = arrayindex(regextract(_raw_log,"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"),0)
@@ -17,11 +17,11 @@ filter _raw_log contains "GET" or _raw_log contains "HEAD" or _raw_log contains 
     xdm.network.http.url = requested_line,
     xdm.target.sent_bytes = to_number(bytes_size),
     xdm.source.ipv4 = source_ip,
-	xdm.network.http.method=httpmethod,
-	xdm.network.http.response_code=statuscode,
+    xdm.network.http.method=httpmethod,
+    xdm.network.http.response_code=statuscode,
     xdm.source.user.username = Username;
-
- alter log_level = arrayindex(regextract(_raw_log,"\[(\w+)\]"),0),
+filter _raw_log !~= "GET|HEAD|POST|DELETE|CONNECT|OPTIONS|TRACE|PATCH"
+| alter log_level = arrayindex(regextract(_raw_log,"\[(\w+)\]"),0),
     Tid = arrayindex(regextract(_raw_log,"\#(\d+)"),0),
     cid = arrayindex(regextract(_raw_log,"\*(\d+)"),0),
     uri = arrayindex(regextract(_raw_log,"open\(\)\s\"?([^\s]+)"),0),

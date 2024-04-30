@@ -1,8 +1,10 @@
+from freezegun import freeze_time
 from JSONFeedApiModule import Client, fetch_indicators_command, jmespath, get_no_update_value
 from CommonServerPython import *
 import pytest
 import requests_mock
 import demistomock as demisto
+import requests
 
 
 def test_json_feed_no_config():
@@ -129,7 +131,7 @@ def test_json_feed_with_config_mapping():
 
 FLAT_LIST_OF_INDICATORS = '''{
     "hooks": [
-    "1.1.1.1",
+    "1.1.1.1:8080",
     "2.2.2.2",
     "3.3.3.3"
     ]
@@ -141,7 +143,8 @@ def test_list_of_indicators_with_no_json_object():
         'Github': {
             'url': 'https://api.github.com/meta',
             'extractor': "hooks",
-            'indicator': None
+            'indicator': None,
+            'remove_ports': "true"
         }
     }
 
@@ -155,7 +158,7 @@ def test_list_of_indicators_with_no_json_object():
         )
 
         indicators, _ = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'],
-                                                 auto_detect=True)
+                                                 auto_detect=True, remove_ports=True)
         assert len(indicators) == 3
         assert indicators[0].get('value') == '1.1.1.1'
         assert indicators[0].get('type') == 'IP'
@@ -167,7 +170,8 @@ def test_post_of_indicators_with_no_json_object():
         'Github': {
             'url': 'https://api.github.com/meta',
             'extractor': "hooks",
-            'indicator': None
+            'indicator': None,
+            'remove_ports': "false"
         }
     }
 
@@ -184,7 +188,7 @@ def test_post_of_indicators_with_no_json_object():
         indicators, _ = fetch_indicators_command(client=client, indicator_type=None, feedTags=['test'], auto_detect=True)
         assert matcher.last_request.text == 'test=1'
         assert len(indicators) == 3
-        assert indicators[0].get('value') == '1.1.1.1'
+        assert indicators[0].get('value') == '1.1.1.1:8080'
         assert indicators[0].get('type') == 'IP'
         assert indicators[1].get('rawJSON') == {'indicator': '2.2.2.2'}
 
@@ -202,6 +206,7 @@ Stam : Ba
     assert len(res) == 3
 
 
+@freeze_time("2023-11-30T13:00:44Z")
 def test_get_no_update_value(mocker):
     """
     Given
@@ -221,7 +226,8 @@ def test_get_no_update_value(mocker):
         'lastRun': '2018-10-24T14:13:20+00:00',
         'feed_name': {
             'last_modified': 'Fri, 30 Jul 2021 00:24:13 GMT',
-            'etag': 'd309ab6e51ed310cf869dab0dfd0d34b'}
+            'etag': 'd309ab6e51ed310cf869dab0dfd0d34b',
+            'last_updated': '2023-11-30T13:00:44Z'}
     }
 
     class MockResponse:
@@ -412,6 +418,53 @@ def test_json_feed_with_config_mapping_with_aws_feed_no_update(mocker):
         assert last_run.call_count == 0
 
 
+@pytest.mark.parametrize('remove_ports, expected_result', [
+    (True, "192.168.1.1"),
+    (False, "192.168.1.1:443")
+])
+def test_remove_ports_threatfox(mocker, remove_ports, expected_result):
+    """
+    Given
+    - Fetch indicators command calling a server with type IPv4 indicators with ports.
+
+    When
+    - Running fetch indicators command
+
+    Then
+    - Ports are either included or removed based on the `remove_ports` parameter.
+    """
+    with open('test_data/threatfox_recent.json') as iocs:
+        iocs = json.load(iocs)
+
+    mocker.patch.object(demisto, 'debug')
+
+    feed_name_to_config = {
+        'THREATFOX': {
+            'url': 'https://threatfox.abuse.ch/export/json/recent/',
+            'extractor': "*[0].ioc_value",
+            'indicator_type': FeedIndicatorType.IP,
+        }
+    }
+    mocker.patch('CommonServerPython.is_demisto_version_ge', return_value=True)
+    mocker.patch('JSONFeedApiModule.is_demisto_version_ge', return_value=True)
+
+    with requests_mock.Mocker() as m:
+        m.get('https://threatfox.abuse.ch/export/json/recent/', json=iocs, status_code=200)
+
+        client = Client(
+            url='https://threatfox.abuse.ch/export/json/recent/',
+            feed_name_to_config=feed_name_to_config,
+            insecure=True
+        )
+
+        indicators = fetch_indicators_command(client=client,
+                                              indicator_type='IP',
+                                              auto_detect=True,
+                                              remove_ports=remove_ports,
+                                              feedTags=["ThreatFox"])
+        assert indicators[0][0]["value"] == expected_result
+
+
 def test_json_feed_with_config_mapping_with_aws_feed_with_update(mocker):
     """
     Given
@@ -465,3 +518,36 @@ def test_json_feed_with_config_mapping_with_aws_feed_with_update(mocker):
         assert demisto.debug.call_args[0][0] == 'New indicators fetched - the Last-Modified value has been updated,' \
             ' createIndicators will be executed with noUpdate=False.'
         assert "AMAZON$$CIDR" in last_run.call_args[0][0]
+
+
+@pytest.mark.parametrize('has_passed_time_threshold_response, expected_result', [
+    (True, {}),
+    (False, {'If-None-Match': 'etag', 'If-Modified-Since': '2023-05-29T12:34:56Z'})
+])
+def test_build_iterator__with_and_without_passed_time_threshold(mocker, has_passed_time_threshold_response, expected_result):
+    """
+    Given
+    - A boolean result from the has_passed_time_threshold function
+    When
+    - Running build_iterator method.
+    Then
+    - Ensure the next request headers will be as expected:
+        case 1: has_passed_time_threshold_response is True, no headers will be added
+        case 2: has_passed_time_threshold_response is False, headers containing 'last_modified' and 'etag' will be added
+    """
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
+    mock_session = mocker.patch.object(requests, 'get')
+    mocker.patch('JSONFeedApiModule.jmespath.search')
+    mocker.patch('JSONFeedApiModule.has_passed_time_threshold', return_value=has_passed_time_threshold_response)
+    mocker.patch('demistomock.getLastRun', return_value={
+        'https://api.github.com/meta': {
+            'etag': 'etag',
+            'last_modified': '2023-05-29T12:34:56Z',
+            'last_updated': '2023-05-05T09:09:06Z'
+        }})
+    client = Client(
+        url='https://api.github.com/meta',
+        credentials={'identifier': 'user', 'password': 'password'})
+
+    client.build_iterator(feed={}, feed_name="https://api.github.com/meta")
+    assert mock_session.call_args[1].get('headers') == expected_result

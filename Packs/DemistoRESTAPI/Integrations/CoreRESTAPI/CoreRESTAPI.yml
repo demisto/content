@@ -11,6 +11,7 @@ configuration:
   defaultvalue: https://127.0.0.1
   type: 0
   required: true
+  additionalinfo: For Cortex XSOAR 8 or Cortex XSIAM, use the Copy API URL button on the API Keys page. For Cortex XSOAR 6, use the server URL.
 - display: API Key ID
   displaypassword: API Key
   name: creds_apikey
@@ -53,46 +54,51 @@ script:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /incident).
+      description: Request endpoint (e.g. /incident or /public_api/v1/incidents/update_incident).
     - name: body
       description: Body of HTTP POST.
-    description: send HTTP POST request.
+    description: Deprecated. Use core-api-post instead.
     execution: true
+    deprecated: true
   - name: demisto-api-get
     arguments:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
-    description: send HTTP GET requests.
+      description: Request endpoint (e.g. /user or /public_api/v1/rbac/get_users).
+    description: Deprecated. Use core-api-get instead.
+    deprecated: true
   - name: demisto-api-put
     arguments:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
+      description: Request endpoint (e.g. /user).
     - name: body
       description: Request body.
-    description: send HTTP PUT request.
+    description: Deprecated. Use core-api-put instead.
     execution: true
+    deprecated: true
   - name: demisto-api-delete
     arguments:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
-    description: send HTTP DELETE request.
+      description: Request endpoint (e.g. /user).
+    description: Deprecated. Use core-api-delete instead.
     execution: true
+    deprecated: true
   - name: demisto-api-download
     arguments:
     - name: uri
       required: true
-      description: Request URI.
+      description: Request endpoint.
     - name: filename
       description: File name of download.
     - name: description
       description: Description of file entry.
-    description: Download files from Demisto server.
+    description: Deprecated. Use core-api-download instead.
+    deprecated: true
   - name: demisto-api-multipart
     arguments:
     - name: uri
@@ -103,7 +109,8 @@ script:
       description: File entry ID.
     - name: body
       description: Request body.
-    description: Send HTTP Multipart request to upload files to Demisto server.
+    description: Deprecated. Use core-api-multipart instead.
+    deprecated: true
   - name: demisto-delete-incidents
     arguments:
     - name: ids
@@ -114,8 +121,9 @@ script:
       description: 'Comma separated list of fields to return, case sensitive. Set "all" for all fields. WARNING: Setting all fields may result in big results.'
       isArray: true
       defaultValue: id,name,type,severity,status
-    description: Delete Demisto incidents.
+    description: Deprecated. Use core-delete-incidents instead.
     execution: true
+    deprecated: true
   - name: demisto-api-install-packs
     arguments:
     - name: packs_to_install
@@ -139,13 +147,14 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Upload packs to Demisto server from url or the marketplace.
+    description: Deprecated. Use core-api-install-packs instead.
+    deprecated: true
   - name: core-api-post
     arguments:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /incident).
+      description: Request endpoint (e.g. /incident or /public_api/v1/incidents/update_incident).
     - name: body
       description: Body of HTTP POST.
     description: send HTTP POST request.
@@ -155,14 +164,14 @@ script:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
+      description: Request endpoint (e.g. /user or /public_api/v1/rbac/get_users).
     description: send HTTP GET requests.
   - name: core-api-put
     arguments:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
+      description: Request endpoint (e.g. /user).
     - name: body
       description: Request body.
     description: send HTTP PUT request.
@@ -172,14 +181,14 @@ script:
     - name: uri
       required: true
       default: true
-      description: Request URI (i.e. /user).
+      description: Request endpoint (e.g. /user).
     description: send HTTP DELETE request.
     execution: true
   - name: core-api-download
     arguments:
     - name: uri
       required: true
-      description: Request URI.
+      description: Request endpoint.
     - name: filename
       description: File name of download.
     - name: description
@@ -189,7 +198,7 @@ script:
     arguments:
     - name: uri
       required: true
-      description: Request URI.
+      description: Request endpoint.
     - name: entryID
       required: true
       description: File entry ID.
@@ -266,9 +275,9 @@ script:
     - name: entry_id
       description: "The War Room entry ID of the file."
       required: true
-    description: Check if the file exists in Cortex XSOAR by entry_id.
+    description: Check if the file exists in Cortex XSOAR (Context) by entry_id.
     outputs:
-    - description: Dictionary with EntryID as the key and boolean if the file exists as a value.
+    - description: Dictionary with EntryID as the key and boolean if the file exists as a value in Context.
       contextPath: IsFileExists
 tests:
 - No tests

@@ -237,3 +237,21 @@ def test_download_message_negative(requests_mock, client):
     requests_mock.get(SERVER_URL + '/quarantine?' + urlencode(args), status_code=404)
     result = download_message(client=client, args=args)
     assert result.readable_output == 'No message found.'
+
+
+def test_test_module_without_health_check(requests_mock, client):
+    """
+    Given:
+        - client
+    When:
+        - Running test-module command
+    Then:
+        - Ensure there is only one http call being made
+    """
+    from ProofpointProtectionServerV2 import test_module
+
+    args = {
+        'subject': 'Test'
+    }
+    requests_mock.get(SERVER_URL + '/quarantine?' + urlencode(args), json={'id': '1'})
+    test_module(client)

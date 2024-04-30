@@ -2396,7 +2396,7 @@ def test_panorama_push_to_device_group_command(mocker, args, expected_request_pa
                                        id='with device'),
                           ])
 def test_panorama_push_to_template_command(
-        mocker, args, expected_request_params, request_result, expected_demisto_result
+    mocker, args, expected_request_params, request_result, expected_demisto_result
 ):
     """
     Given:
@@ -2500,7 +2500,7 @@ def test_panorama_push_to_template_command(
                                  id='with device'),
                          ])
 def test_panorama_push_to_template_stack_command(
-        mocker, args, expected_request_params, request_result, expected_demisto_result
+    mocker, args, expected_request_params, request_result, expected_demisto_result
 ):
     """
     Given:
@@ -3247,6 +3247,20 @@ class TestPanoramaCommand:
         assert result[0].serial
         assert result[0].last_commit_all_state_tpl
 
+    @patch("Panorama.run_op_command")
+    def test_get_template_stacks_without_hostname(self, patched_run_op_command, mock_topology):
+        """Given the output XML for show template-stacks without hostname, assert it is parsed into the dataclasses correctly."""
+        from Panorama import PanoramaCommand
+        patched_run_op_command.return_value = load_xml_root_from_test_file("test_data/show_template_stack_without_hostname.xml")
+        result = PanoramaCommand.get_template_stacks(mock_topology)
+        assert len(result) == 2
+        assert result[0].name
+        assert not result[0].hostname
+        assert result[0].hostid
+        assert result[0].connected
+        assert result[0].serial
+        assert result[0].last_commit_all_state_tpl
+
 
 class TestUniversalCommand:
     """Test all the commands relevant to both Panorama and Firewall devices"""
@@ -3328,16 +3342,16 @@ class TestUniversalCommand:
 
         # We also want to check that if an empty string is passed, an error is returned
         with pytest.raises(
-                DemistoException,
-                match="filter_str  is not the exact ID of a host in this topology; use a more specific filter string."
+            DemistoException,
+            match="filter_str  is not the exact ID of a host in this topology; use a more specific filter string."
         ):
             UniversalCommand.reboot(mock_topology, "")
 
         # Lets also check that if an invalid hostid is given, we also raise.
         with pytest.raises(
-                DemistoException,
-                match="filter_str badserialnumber is not the exact ID of "
-                      "a host in this topology; use a more specific filter string."
+            DemistoException,
+            match="filter_str badserialnumber is not the exact ID of "
+                  "a host in this topology; use a more specific filter string."
         ):
             UniversalCommand.reboot(mock_topology, "badserialnumber")
 
@@ -3566,7 +3580,8 @@ def test_panorama_apply_dns_command2(mocker):
     apply_dns_signature_policy_command({'anti_spyware_profile_name': 'fake_profile_name'})
 
     request_params = request_mock.call_args.kwargs['params']  # The body part of the request
-    assert request_params.get('xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']"  # noqa
+    assert request_params.get(
+        'xpath') == "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='fakeDeviceGroup']/profiles/spyware/entry[@name='fake_profile_name']"  # noqa
 
 
 class TestHygieneFunctions:
@@ -4014,7 +4029,7 @@ def test_pan_os_get_running_config(mocker):
     <response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>
     """
     mocker.patch("Panorama.http_request", return_value=return_mock)
-    created_file = pan_os_get_running_config({"target": "SOME_SERIAL_NUMBER"})
+    created_file = pan_os_get_running_config({"target": "SOME_SERIAL_NUMBER", "filename": "running_config"})
     assert created_file['File'] == 'running_config'
 
 
@@ -4257,7 +4272,8 @@ class TestCreatePanOSNatRuleCommand:
                     'source_translation_type': 'dynamic-ip',
                     'source_translated_address_type': 'translated-address',
                     'source_translated_address': '1.1.1.1,2.2.2.2',
-                    'destination_translation_type': 'none'
+                    'destination_translation_type': 'none',
+                    'audit_comment': 'test comment',
                 },
                 integration_panorama_params,
                 {
@@ -4269,7 +4285,8 @@ class TestCreatePanOSNatRuleCommand:
                     'key': 'thisisabogusAPIKEY!',
                     'type': 'config',
                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
-                             "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']"
+                             "[@name='Lab-Devices']/pre-rulebase/nat/rules/entry[@name='test']",
+                    'audit-comment': 'test comment',
                 }
             ),
             pytest.param(
@@ -4282,7 +4299,8 @@ class TestCreatePanOSNatRuleCommand:
                     'source_translation_type': 'dynamic-ip',
                     'source_translated_address_type': 'translated-address',
                     'source_translated_address': '1.1.1.1,2.2.2.2',
-                    'destination_translation_type': 'none'
+                    'destination_translation_type': 'none',
+                    'audit_comment': 'test comment',
                 },
                 integration_firewall_params,
                 {
@@ -4295,7 +4313,8 @@ class TestCreatePanOSNatRuleCommand:
                     'key': 'thisisabogusAPIKEY!',
                     'type': 'config',
                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/"
-                             "entry[@name='vsys1']/rulebase/nat/rules/entry[@name='test']"
+                             "entry[@name='vsys1']/rulebase/nat/rules/entry[@name='test']",
+                    'audit-comment': 'test comment',
                 }
             ),
         ]
@@ -4656,6 +4675,52 @@ class TestPanOSEditNatRule:
         assert mock_request.call_args.kwargs['params']['xpath'] == expected_url_params['xpath']
         assert mock_request.call_args.kwargs['params'] == expected_url_params
 
+    @staticmethod
+    def test_pan_os_edit_nat_rule_command_audit_comment_main_flow(mocker):
+        """
+        Given
+         - panorama integrations parameters.
+         - pan-os-edit-nat-rule command arguments including device_group.
+         - arguments to edit audit comment of a rule
+
+        When -
+            running the pan-os-edit-nat-rule command through the main flow
+
+        Then
+         - make sure the context output is returned as expected.
+         - make sure the device group gets overriden by the command arguments.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(
+            demisto,
+            'args',
+            return_value={
+                "rulename": "test",
+                "element_to_change": "audit-comment",
+                "element_value": "some string",
+                "pre_post": "pre-rulebase",
+                "device-group": "new device group"
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-nat-rule')
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+        )
+
+        res = mocker.patch('demistomock.results')
+        main()
+
+        assert request_mock.call_args.kwargs['params'] == {
+            'type': 'op',
+            'cmd': "<set><audit-comment><xpath>/config/devices/entry[@name='localhost.localdomain']/device-group"
+                   "/entry[@name='new device group']/pre-rulebase/nat/rules/entry[@name='test']"
+                   "</xpath><comment>some string</comment></audit-comment></set>",
+            'key': 'thisisabogusAPIKEY!'
+        }
+        assert res.call_args.args[0]['Contents'] == TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+
 
 class TestPanOSListVirtualRouters:
 
@@ -4707,7 +4772,7 @@ class TestPanOSListVirtualRouters:
         ]
     )
     def test_pan_os_list_virtual_routers_command_main_flow(
-            self, mocker, args, params, expected_url_params, mocked_response_path
+        self, mocker, args, params, expected_url_params, mocked_response_path
     ):
         """
         Given:
@@ -5432,7 +5497,8 @@ class TestCreatePBFRuleCommand:
                     'nexthop': 'fqdn',
                     'nexthop_value': '1.1.1.1/24',
                     'pre_post': 'pre-rulebase',
-                    'enforce_symmetric_return': 'yes'
+                    'enforce_symmetric_return': 'yes',
+                    'audit_comment': 'test comment',
                 },
                 integration_panorama_params,
                 {
@@ -5446,7 +5512,8 @@ class TestCreatePBFRuleCommand:
                     'key': 'thisisabogusAPIKEY!',
                     'type': 'config',
                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/device-group/entry"
-                             "[@name='Lab-Devices']/pre-rulebase/pbf/rules/entry[@name='test']"
+                             "[@name='Lab-Devices']/pre-rulebase/pbf/rules/entry[@name='test']",
+                    'audit-comment': 'test comment',
                 }
             ),
             pytest.param(
@@ -5457,7 +5524,8 @@ class TestCreatePBFRuleCommand:
                     'egress_interface': 'egress-interface',
                     'source_zone': 'all access zone external',
                     'nexthop': 'none',
-                    'enforce_symmetric_return': 'no'
+                    'enforce_symmetric_return': 'no',
+                    'audit_comment': 'test comment',
                 },
                 integration_firewall_params,
                 {
@@ -5469,7 +5537,9 @@ class TestCreatePBFRuleCommand:
                     'key': 'thisisabogusAPIKEY!',
                     'type': 'config',
                     'xpath': "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']"
-                             "/rulebase/pbf/rules/entry[@name='test']"}
+                             "/rulebase/pbf/rules/entry[@name='test']",
+                    'audit-comment': 'test comment',
+                }
             ),
         ]
     )
@@ -5753,6 +5823,52 @@ class TestPanOSEditPBFRule:
 
         main()
         assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+    @staticmethod
+    def test_pan_os_edit_pbf_rule_command_audit_comment_main_flow(mocker):
+        """
+        Given
+         - panorama integrations parameters.
+         - pan-os-edit-pbf-rule command arguments including device_group.
+         - arguments to edit audit comment of a rule
+
+        When -
+            running the pan-os-edit-pbf-rule command through the main flow
+
+        Then
+         - make sure the context output is returned as expected.
+         - make sure the device group gets overriden by the command arguments.
+        """
+        from Panorama import main
+
+        mocker.patch.object(demisto, 'params', return_value=integration_panorama_params)
+        mocker.patch.object(
+            demisto,
+            'args',
+            return_value={
+                "rulename": "test",
+                "element_to_change": "audit-comment",
+                "element_value": "some string",
+                "pre_post": "pre-rulebase",
+                "device-group": "new device group"
+            }
+        )
+        mocker.patch.object(demisto, 'command', return_value='pan-os-edit-pbf-rule')
+        request_mock = mocker.patch(
+            'Panorama.http_request', return_value=TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
+        )
+
+        res = mocker.patch('demistomock.results')
+        main()
+
+        assert request_mock.call_args.kwargs['params'] == {
+            'type': 'op',
+            'cmd': "<set><audit-comment><xpath>/config/devices/entry[@name='localhost.localdomain']/device-group"
+                   "/entry[@name='new device group']/pre-rulebase/pbf/rules/entry[@name='test']"
+                   "</xpath><comment>some string</comment></audit-comment></set>",
+            'key': 'thisisabogusAPIKEY!'
+        }
+        assert res.call_args.args[0]['Contents'] == TestPanoramaEditRuleCommand.EDIT_AUDIT_COMMENT_SUCCESS_RESPONSE
 
 
 @pytest.mark.parametrize(
@@ -6785,8 +6901,8 @@ def test_filter_fetched_entries(mocker):
     """
     from Panorama import filter_fetched_entries
     raw_entries = {"log_type1": [{'device_name': 'dummy_device1'},
-                   {'device_name': 'dummy_device1', 'seqno': '000000002'},
-                   {'device_name': 'dummy_device2', 'seqno': '000000001'}],
+                                 {'device_name': 'dummy_device1', 'seqno': '000000002'},
+                                 {'device_name': 'dummy_device2', 'seqno': '000000001'}],
                    "log_type2": [{'device_name': 'dummy_device3', 'seqno': '000000004'},
                                  {'seqno': '000000007'}]}
     id_dict = {"log_type1": {'dummy_device1': '000000003', 'dummy_device2': '000000000'}}
@@ -6897,6 +7013,26 @@ def test_panorama_list_rules():
     assert rules['application']['member'][0] == 'dns'
     assert mock_request.last_request.qs['xpath'][0] == \
         "/config/devices/entry/vsys/entry[@name='vsys1']/rulebase/security/rules/entry[(application/member = 'dns')]"
+
+
+def test_prettify_rules():
+    """
+    Given:
+        - rule entry.
+    When:
+        - Running the prettify_rules method.
+    Then:
+        - Ensure no errors are raised.
+    """
+    from Panorama import prettify_rules
+    test_rule = {
+        '@name': 'test',
+        '@uuid': '11111-111-111-11',
+        'source': {'@loc': 'test',
+                   'member': [{'@loc': 'test', '#text': 'text'},
+                              'Failing String']}}
+    prettier_rules = prettify_rules(test_rule)
+    assert 'Failing String' in prettier_rules[0].get('Source')
 
 
 @pytest.mark.parametrize('include_shared', ['No', 'Yes'])
@@ -7176,3 +7312,126 @@ def test_list_device_groups_names(mocker):
 
     assert result.outputs == ['Test-Device', 'Test-Device-2']
     assert result.readable_output == '### Device Group Names:\n|Group Name|\n|---|\n| Test-Device |\n| Test-Device-2 |\n'
+
+
+def test_panorama_list_security_profile_group_command(mocker):
+    """
+    Given:
+        - A Panorama instance with security profile groups.
+    When:
+        - Running the pan_os_list_security_profile_group_command.
+    Then:
+        - Ensure the returned security profile groups list output and HR table is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = ''
+
+    tags_response_xml = """<response status="success" code="19"><result total-count="2" count="2">
+    <entry name="test1" loc="">
+        <virus><member>default</member></virus><spyware><member>default</member></spyware>
+        <vulnerability><member>default</member></vulnerability><url-filtering><member>default</member></url-filtering>
+    </entry>
+    <entry name="test2" loc="">
+        <virus><member>default</member></virus><spyware><member>default</member></spyware>
+        <vulnerability><member>default</member></vulnerability><url-filtering><member>default</member></url-filtering>
+        <wildfire-analysis><member>test wildfire analysis</member></wildfire-analysis><file-blocking>
+        <member>basic file blocking</member></file-blocking><data-filtering><member>test data filtering</member></data-filtering>
+    </entry>
+    </result></response>"""
+
+    mock_response = MockedResponse(text=tags_response_xml, status_code=200)
+    mocker.patch.object(requests, 'request', return_value=mock_response)
+
+    expected_outputs_tags_list = [{'virus': 'default', 'spyware': 'default', 'vulnerability': 'default',
+                                   'url-filtering': 'default', 'name': 'test1', 'location': ''},
+                                  {'virus': 'default', 'spyware': 'default', 'vulnerability': 'default',
+                                   'url-filtering': 'default', 'wildfire-analysis': 'test wildfire analysis',
+                                   'file-blocking': 'basic file blocking', 'data-filtering': 'test data filtering',
+                                   'name': 'test2', 'location': ''}]
+
+    expected_hr_result = '### Security Profile Groups:\n|Name|Location|Antivirus Profile|Anti-Spyware Profile|Vulnerability ' \
+                         'Protection Profile|URL Filtering Profile|File Blocking Profile|Data Filtering Profile|WildFire ' \
+                         'Analysis Profile|\n|---|---|---|---|---|---|---|---|---|\n| test1 |  | default | default | default | ' \
+                         'default |  |  |  |\n| test2 |  | default | default | default | default | basic file blocking | test '\
+                         'data filtering | test wildfire analysis |\n'
+
+    command_results = Panorama.pan_os_list_security_profile_groups_command({})
+
+    assert command_results.outputs == expected_outputs_tags_list
+    assert command_results.readable_output == expected_hr_result
+
+
+def test_pan_os_create_security_profile_group_command(mocker):
+    """
+    Given:
+        - The security profile groups name to create.
+    When:
+        - Running the pan_os_create_security_profile_group_command.
+    Then:
+        - Ensure the returned response and readable outputs is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+
+    mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    mocker.patch.object(requests, 'request', return_value=mock_response)
+
+    command_results = Panorama.pan_os_create_security_profile_group_command({"group_name": "test_spg"})
+
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == 'Successfully created Security Profile Group: "test_spg"'
+
+
+def test_pan_os_edit_security_profile_group_command(mocker):
+    """
+    Given:
+        - The profile_to_change and the value arguments to edit in the security profile groups.
+    When:
+        - Running the pan_os_edit_security_profile_group_command.
+    Then:
+        - Ensure the returned response and readable outputs is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+
+    mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    mocker.patch.object(requests, 'request', return_value=mock_response)
+
+    command_results = Panorama.pan_os_edit_security_profile_group_command({"group_name": "test_spg"})
+
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == 'Successfully edited Security Profile Group: "test_spg"'
+
+
+def test_pan_os_delete_security_profile_group_command(mocker):
+    """
+    Given:
+        - The security profile groups name to delete.
+    When:
+        - Running the pan_os_delete_security_profile_group_command.
+    Then:
+        - Ensure the returned response and readable outputs is as expected.
+    """
+    import Panorama
+    import requests
+    Panorama.URL = 'https://1.1.1.1:443/'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    Panorama.DEVICE_GROUP = 'somedevice'
+
+    expected_text_response = '<response status="success" code="20"><msg>command succeeded</msg></response>'
+
+    mock_response = MockedResponse(text=expected_text_response, status_code=200)
+    mocker.patch.object(requests, 'request', return_value=mock_response)
+
+    command_results = Panorama.pan_os_delete_security_profile_group_command({"group_name": "test_spg"})
+    assert command_results.raw_response == {'response': {'@status': 'success', '@code': '20', 'msg': 'command succeeded'}}
+    assert command_results.readable_output == 'Successfully deleted Security Profile Group: "test_spg"'

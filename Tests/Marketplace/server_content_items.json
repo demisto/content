@@ -58,7 +58,8 @@
         "dbotMirrorTags",
         "dbotMirrorLastSync",
         "timestamp",
-        "slaField"
+        "slaField",
+        "alert_sub_type"
     ],
     "IndicatorField": [
         "name",
@@ -100,7 +101,7 @@
         "verdict",
         "reputation"
     ],
-    "Script": [
+    "BaseScript": [
         "getAPIKeyFromLicense",
         "handleIndicatorFormatterCache",
         "dockerImageUpdate",
@@ -306,7 +307,8 @@
         "associateIndicatorsToAlert",
         "unAssociateIndicatorsFromAlert",
         "generateOTP",
-        "revokeOTP"
+        "revokeOTP",
+        "getServerConfig"
     ],
     "Command": [
         "ad-default-domain",

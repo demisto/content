@@ -62,7 +62,8 @@ def main():
         logging.info(f"\tMax days to reopen: {options.max_days_to_reopen}")
 
         jira_server = JIRA(JIRA_SERVER_URL, token_auth=JIRA_API_KEY, options={'verify': JIRA_VERIFY_SSL})
-        jira_server_information(jira_server)
+        jira_server_info = jira_server_information(jira_server)
+        server_url = jira_server_info["baseUrl"]
         if not (test_modeling_rules_results_files := get_test_results_files(artifacts_path,
                                                                             TEST_MODELING_RULES_REPORT_FILE_NAME)):
             logging.critical(f"Could not find any test modeling rules result files in {artifacts_path}")
@@ -104,7 +105,7 @@ def main():
                     if summary := get_summary_for_test_modeling_rule(properties):
                         jira_tickets_for_modeling_rule[summary] = issue
 
-        write_test_modeling_rule_to_jira_mapping(artifacts_path, jira_tickets_for_modeling_rule)
+        write_test_modeling_rule_to_jira_mapping(server_url, artifacts_path, jira_tickets_for_modeling_rule)
         open(artifacts_path / TEST_MODELING_RULES_TO_JIRA_TICKETS_CONVERTED, "w")
 
         logging.info("Finished creating/updating Jira issues for test modeling rules")

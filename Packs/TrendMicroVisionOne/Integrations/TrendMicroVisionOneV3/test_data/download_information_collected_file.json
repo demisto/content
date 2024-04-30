@@ -1,0 +1,18 @@
+{
+    "id": "00000003",
+    "action": "collectFile",
+    "status": "succeeded",
+    "account": "API key",
+    "password": "p0isy16f",
+    "file_path": "/home/ec2-user/test_folder/test_file.txt",
+    "file_sha1": null,
+    "file_size": null,
+    "agent_guid": "ab673395-9bf9-49fc-b8ac-7fa15467d20a",
+    "description": "Collect File.",
+    "file_sha256": null,
+    "endpoint_name": "ip-172-31-6-62.us-west-2.compute.internal",
+    "created_date_time": "2023-08-29T23:06:17Z",
+    "expired_date_time": "2023-09-08T23:48:54.000Z",
+    "resource_location": "https://upload.xdr.trendmicro.com/customer/da9032e8-b40a-40c1-8512-f89bb504cb0d/arp/CollectedFiles/XDR_ResponseApp_CollectFile_RM-20230829-00015_ab673395-9bf9-49fc-b8ac-7fa15467d20a_20230829T230618Z.7z?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAXQVNLDPDYVQ5MK64%2F20230908%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20230908T234754Z&X-Amz-Expires=60&X-Amz-Signature=4811f8048351e3ac5a9be717829d80d118d0336b1103c073ca487226c2cbe87a&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3D%22XDR_ResponseApp_CollectFile_RM-20230829-00015_ab673395-9bf9-49fc-b8ac-7fa15467d20a_20230829T230618Z.7z%22",
+    "last_action_date_time": "2023-08-29T23:06:25Z"
+}

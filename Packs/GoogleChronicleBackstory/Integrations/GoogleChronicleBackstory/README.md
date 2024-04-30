@@ -6,6 +6,9 @@ Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as 
 **Note:** The `gcb-list-alerts` command would fetch both Asset as well as User alerts depending upon the argument `alert_type`. In this case, the total number of alerts fetched might not match with the value of the page_size argument and this is a known behaviour with respect to the endpoint from which we are fetching the alerts.
 
 **Note:** The `gcb-list-rules` command would filter rules depending upon the argument `live_rule`.In this case, the total number of rules fetched might not match with the value of the page_size argument and this is a known behaviour with respect to the endpoint from which we are fetching the rules.
+
+**Note:** The commands and fetch incidents mechanism will do up to 3 internal retries with a gap of 15, 30, and 60 seconds (exponentially) between the retries.
+
 #### Troubleshoot
 **Note:** If you are expecting a high volume of alerts from Chronicle, you can reduce the time required to fetch them by increasing the "How many incidents to fetch each time" parameter while decreasing the "Incidents Fetch Interval" parameter in the integration configuration.
 
@@ -26,12 +29,12 @@ Duplication of rule detection incidents when fetched from Chronicle.
 ##### Question #1
 If we have 3 rules added in the configuration (R1, R2, R3) and we are getting 429 or 500 errors in R2. Will my integration stop fetching the detections or will it fetch detections of rule R3?
 
-###### Case #1: When HTTP 429 error resumes before 60 retry attempts:
+###### Case #1: When HTTP 429 or 500 error resumes before 60 retry attempts:
 
 - System will re-attempt to fetch the detection after 1 min for the same R2 rule. The system will re-attempt to get the detections for Rule R2, 60 times.
-If 429 error is recovered before 60 attempts, the system will fetch the detections for Rule R2 and then proceed ahead for Rule R3.
+If 429 or 500 error is recovered before 60 attempts, the system will fetch the detections for Rule R2 and then proceed ahead for Rule R3.
 
-###### Case #2: When HTTP 429 error does not resume for 60 retry attempts:
+###### Case #2: When HTTP 429 or 500 error does not resume for 60 retry attempts:
 
 - System will re-attempt after 1 min for the same R2 rule. The system will re-attempt to get the detections for Rule R2 60 times.
 If 429 error does not recover for 60 attempts, the system will skip Rule R2 and then proceed ahead for rule R3 to fetch its detections by adding a log.
@@ -242,6 +245,21 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
             "LastAccessedTime": "2020-02-14T05:59:27Z", 
             "Artifact": "anx.tb.ask.com", 
             "IocIngestTime": "2020-02-06T22:00:00Z"
+        },
+        {
+            "Artifact": "0.0.0.1",
+            "IocIngestTime": "2023-11-30T19:26:41.266555Z",
+            "FirstAccessedTime": "2023-01-17T09:54:19Z",
+            "LastAccessedTime": "2023-01-17T09:54:19Z",
+            "Sources": [
+                {
+                    "Category": "Unwanted",
+                    "IntRawConfidenceScore": 0,
+                    "NormalizedConfidenceScore": "Medium",
+                    "RawSeverity": "Medium",
+                    "Source": "Threat Intelligence"
+                }
+            ]
         }
     ], 
     "Domain": [
@@ -255,9 +273,10 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 ##### Human Readable Output
 
 >### IOC Domain Matches
->|Domain|Category|Source|Confidence|Severity|IOC ingest time|First seen|Last seen|
+>|Artifact|Category|Source|Confidence|Severity|IOC ingest time|First seen|Last seen|
 >|---|---|---|---|---|---|---|---|
 >| anx.tb.ask.com | Spyware Reporting Server | ET Intelligence Rep List | Low | Medium | 7 days ago | a year ago | 3 hours ago |
+>| [0.0.0.1](https://demo.backstory.chronicle.security/destinationIpResults?ip=0.0.0.1) | Unwanted | Threat Intelligence | Medium | Medium | 3 days ago | 10 months ago | 10 months ago |
 
 
 ### 2. gcb-assets

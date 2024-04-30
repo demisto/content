@@ -16,10 +16,15 @@
             "value": "windows-updates.com"
         },
         "fields": {
+            "stixid": "indicator--545928d9-bfe8-4320-bb98-751f38139892",
+            "firstseenbysource": "2018-04-23T17:01:01.248Z",
+            "modified": "2018-04-23T17:01:01.248Z",
+            "description": "",
             "trafficlightprotocol": null,
             "tags": [
                 "malicious-activity"
-            ]
+            ],
+            "publications": []
         }
     },
     {
@@ -221,13 +226,13 @@
             "modified": "2019-10-10T20:25:46.596Z",
             "description": "",
             "malware_types": [],
-            "is_family": false,
+            "ismalwarefamily": false,
             "aliases": [],
             "kill_chain_phases": [],
             "os_execution_envs": [],
-            "architecture_execution_envs": [],
+            "architecture": [],
             "capabilities": [],
-            "sample_refs": [],
+            "samples": [],
             "tags": [
                 "backdoor"
             ]

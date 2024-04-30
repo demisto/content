@@ -1,0 +1,45 @@
+args:
+- default: false
+  description: DomainTools context data for a domain.
+  isArray: false
+  name: domaintools_data
+  required: true
+  secret: false
+- default: false
+  defaultValue: '70'
+  description: Proximity score given based on closeness to other risky domains.
+  isArray: false
+  name: proximity_score_threshold
+  required: false
+  secret: false
+- default: false
+  defaultValue: '7'
+  description: Threshold for domain age as younger domains are riskier.
+  isArray: false
+  name: age_threshold
+  required: false
+  secret: false
+- default: false
+  defaultValue: '70'
+  description: Threshold for threat profile score based on many evidence based findings.
+  isArray: false
+  name: threat_profile_score_threshold
+  required: false
+  secret: false
+comment: Sets Data for a Domain in the Indicator Table.
+commonfields:
+  id: SetIndicatorTableData
+  version: -1
+enabled: false
+name: SetIndicatorTableData
+script: '-'
+system: false
+tags:
+- DomainTools
+timeout: '0'
+type: python
+subtype: python3
+fromversion: 6.6.0
+dockerimage: demisto/python3:3.10.13.87159
+tests:
+- No tests (auto formatted)

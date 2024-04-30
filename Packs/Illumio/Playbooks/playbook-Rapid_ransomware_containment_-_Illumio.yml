@@ -8,15 +8,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: bf52a4d6-e8ce-4b46-8b0e-406bf62940e2
+    taskid: e5c5f7c5-589e-44f8-8d28-480a04a08f5b
     type: start
     task:
-      id: bf52a4d6-e8ce-4b46-8b0e-406bf62940e2
+      id: e5c5f7c5-589e-44f8-8d28-480a04a08f5b
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "20"
@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
-          "y": 40
+          "x": 265,
+          "y": 50
         }
       }
     note: false
@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: fedbbdb3-a2aa-4014-8e9c-763bfc68d089
+    taskid: 269c649a-3b5c-4037-8704-48e70c6e9b47
     type: regular
     task:
-      id: fedbbdb3-a2aa-4014-8e9c-763bfc68d089
+      id: 269c649a-3b5c-4037-8704-48e70c6e9b47
       version: -1
       name: Get traffic analysis
       description: Retrieves traffic flow of a particular port & protocol within the
@@ -55,7 +55,7 @@ tasks:
     scriptarguments:
       end_time:
         complex:
-          root: Enter the necessary inputs.Answers
+          root: TrafficRange.Answers
           accessor: "1"
       extend-context:
         simple: Illumio.TrafficAnalysis.Workload.href=dst.workload.href
@@ -74,14 +74,14 @@ tasks:
           - operator: toLowerCase
       start_time:
         complex:
-          root: Enter the necessary inputs.Answers
+          root: TrafficRange.Answers
           accessor: "0"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": -320,
-          "y": 740
+          "x": 60,
+          "y": 895
         }
       }
     note: false
@@ -93,10 +93,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 96276ec3-f09e-4ddc-81b1-45c3b5ce92b9
+    taskid: 4e8c7018-7f7c-44a3-8380-2153d62e11dc
     type: regular
     task:
-      id: 96276ec3-f09e-4ddc-81b1-45c3b5ce92b9
+      id: 4e8c7018-7f7c-44a3-8380-2153d62e11dc
       version: -1
       name: Create virtual service
       description: Creates a virtual service for a particular port & protocol, which
@@ -162,8 +162,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -520,
-          "y": 1150
+          "x": -200,
+          "y": 1250
         }
       }
     note: false
@@ -175,10 +175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 255a8fb4-698e-448c-8f73-48764a75adcb
+    taskid: e97d1fde-09f8-40f4-89ca-605c47018938
     type: regular
     task:
-      id: 255a8fb4-698e-448c-8f73-48764a75adcb
+      id: e97d1fde-09f8-40f4-89ca-605c47018938
       version: -1
       name: Provision virtual service
       description: A utility method for provisioning policy objects from draft to
@@ -199,8 +199,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -520,
-          "y": 1340
+          "x": -200,
+          "y": 1420
         }
       }
     note: false
@@ -212,10 +212,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a2a4373e-2a37-4e95-8eec-002428859f07
+    taskid: b866b2a3-eb54-4a0d-8d24-4f8e2b4773a9
     type: regular
     task:
-      id: a2a4373e-2a37-4e95-8eec-002428859f07
+      id: b866b2a3-eb54-4a0d-8d24-4f8e2b4773a9
       version: -1
       name: Create service binding
       description: Binds the existing or a new virtual service to the workloads.
@@ -225,7 +225,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+      - "5"
     scriptarguments:
       virtual_service:
         complex:
@@ -239,8 +239,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -520,
-          "y": 1525
+          "x": -200,
+          "y": 1595
         }
       }
     note: false
@@ -252,10 +252,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: d1f56bcf-7102-4ddc-89af-159a05273176
+    taskid: 34f67fe9-3fac-4d5f-832d-5b4e9f275999
     type: regular
     task:
-      id: d1f56bcf-7102-4ddc-89af-159a05273176
+      id: 34f67fe9-3fac-4d5f-832d-5b4e9f275999
       version: -1
       name: Create ruleset
       description: Creates a ruleset with a unique name. Until provisioned with the
@@ -309,8 +309,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -520,
-          "y": 1880
+          "x": -200,
+          "y": 1770
         }
       }
     note: false
@@ -322,10 +322,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 0ba76824-9da4-4291-8491-953ba68b8691
+    taskid: 8b2807c4-7e1f-4237-8833-e50807dfbc69
     type: regular
     task:
-      id: 0ba76824-9da4-4291-8491-953ba68b8691
+      id: 8b2807c4-7e1f-4237-8833-e50807dfbc69
       version: -1
       name: Create rule
       description: Creates & assigns rules to a particular ruleset. Added or updated
@@ -357,8 +357,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -520,
-          "y": 2055
+          "x": -200,
+          "y": 1945
         }
       }
     note: false
@@ -370,10 +370,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 61ca5ec7-e490-45ee-84d3-bd4f0242e973
+    taskid: 944119d5-ff7c-43b2-81a0-b2f55fdb41a6
     type: regular
     task:
-      id: 61ca5ec7-e490-45ee-84d3-bd4f0242e973
+      id: 944119d5-ff7c-43b2-81a0-b2f55fdb41a6
       version: -1
       name: Create enforcement boundary
       description: Creates an enforcement boundary for a particular port/protocol.
@@ -388,7 +388,7 @@ tasks:
       - "10"
     scriptarguments:
       consumers:
-        simple: /orgs/1/sec_policy/draft/ip_lists/1
+        simple: ${Illumio.IPLists.href}
       name:
         complex:
           root: inputs.Protocol
@@ -443,8 +443,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 2460
+          "x": 470,
+          "y": 2315
         }
       }
     note: false
@@ -456,10 +456,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 6836cb8f-4039-4951-8a08-f79ae1a9b68d
+    taskid: 0ddbe7e8-11a5-4f7e-863b-3a3871e4caeb
     type: regular
     task:
-      id: 6836cb8f-4039-4951-8a08-f79ae1a9b68d
+      id: 0ddbe7e8-11a5-4f7e-863b-3a3871e4caeb
       version: -1
       name: Provision enforcement boundary
       description: A utility method for provisioning policy objects from draft to
@@ -480,8 +480,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 2620
+          "x": 470,
+          "y": 2470
         }
       }
     note: false
@@ -493,10 +493,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 0e3c36ef-c941-4d8d-8de8-b13129e0c201
+    taskid: 409cd8ba-98ca-48fc-8a9a-76ed81559e2b
     type: regular
     task:
-      id: 0e3c36ef-c941-4d8d-8de8-b13129e0c201
+      id: 409cd8ba-98ca-48fc-8a9a-76ed81559e2b
       version: -1
       name: Provision ruleset
       description: A utility method for provisioning policy objects from draft to
@@ -517,8 +517,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -520,
-          "y": 2240
+          "x": -200,
+          "y": 2130
         }
       }
     note: false
@@ -530,22 +530,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 64d6bc49-b4b3-4c72-89d4-c158d2cc330f
+    taskid: 6d52bea7-8049-455a-8588-525802b52c10
     type: title
     task:
-      id: 64d6bc49-b4b3-4c72-89d4-c158d2cc330f
+      id: 6d52bea7-8049-455a-8588-525802b52c10
       version: -1
       name: end
+      description: ""
       type: title
       iscommand: false
       brand: ""
-      description: ""
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 3850
+          "x": 265,
+          "y": 3520
         }
       }
     note: false
@@ -557,10 +557,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: c34dad34-ec6f-4c3a-8162-9d9bdc5f0dc2
+    taskid: 8978365e-c45f-42a0-8794-17ee900f0ca2
     type: condition
     task:
-      id: c34dad34-ec6f-4c3a-8162-9d9bdc5f0dc2
+      id: 8978365e-c45f-42a0-8794-17ee900f0ca2
       version: -1
       name: Is update enforcement mode?
       description: Checks if user want to update enforcement mode or not.
@@ -591,8 +591,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 2800
+          "x": 470,
+          "y": 2645
         }
       }
     note: false
@@ -604,10 +604,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: a79bc1ef-7b03-4305-8906-190004c08b96
+    taskid: b8031063-b46b-4e78-8719-ab7784d26658
     type: regular
     task:
-      id: a79bc1ef-7b03-4305-8906-190004c08b96
+      id: b8031063-b46b-4e78-8719-ab7784d26658
       version: -1
       name: Get workloads
       description: Retrieves the list of workloads based on the provided filters.
@@ -633,8 +633,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -520,
-          "y": 3010
+          "x": 920,
+          "y": 2830
         }
       }
     note: false
@@ -646,10 +646,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 268f60e5-e918-434f-8f8d-00bea9233f4f
+    taskid: c7d9d501-9c24-4052-8b55-2ac0da2e2783
     type: condition
     task:
-      id: 268f60e5-e918-434f-8f8d-00bea9233f4f
+      id: c7d9d501-9c24-4052-8b55-2ac0da2e2783
       version: -1
       name: Is traffic allowed?
       description: Checks whether the traffic flow is allowed or not.
@@ -680,8 +680,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -150,
-          "y": 380
+          "x": 470,
+          "y": 530
         }
       }
     note: false
@@ -693,10 +693,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 0238990b-97e2-40da-80a0-eb8d33138c39
+    taskid: b7532b6b-f573-42bb-8316-bf31184f7533
     type: collection
     task:
-      id: 0238990b-97e2-40da-80a0-eb8d33138c39
+      id: b7532b6b-f573-42bb-8316-bf31184f7533
       version: -1
       name: Provide necessary inputs
       description: Get the required information for the commands.
@@ -710,25 +710,29 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -320,
-          "y": 560
+          "x": 60,
+          "y": 720
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     message:
-      to:
-      subject:
+      to: null
+      subject: null
       body:
+        simple: Specify the time range before the incident to search for traffic on
+          the blocked port to allow.
       methods: []
-      format: ''
-      bcc:
-      cc:
+      format: ""
+      bcc: null
+      cc: null
       timings:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
     form:
       questions:
       - id: "0"
@@ -763,7 +767,7 @@ tasks:
           days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ  For
           example: 01 Mar 2021, 01 Feb 2021 04:45:33, 2022-04-17T14:05:44Z'
         readonly: false
-      title: Enter the necessary inputs.
+      title: TrafficRange
       description: ""
       sender: ""
       expired: false
@@ -774,10 +778,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 0ca195bc-9dd4-4bea-8983-1d378284c540
+    taskid: 04a26c98-f9ff-465c-8cd5-0cac072829f6
     type: condition
     task:
-      id: 0ca195bc-9dd4-4bea-8983-1d378284c540
+      id: 04a26c98-f9ff-465c-8cd5-0cac072829f6
       version: -1
       name: Is Illumio Core integration enabled?
       description: Checks whether the IllumioCore integration is enabled or not.
@@ -788,7 +792,7 @@ tasks:
       '#default#':
       - "13"
       "yes":
-      - "18"
+      - "31"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -821,7 +825,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 270,
+          "x": 265,
           "y": 195
         }
       }
@@ -834,10 +838,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: f23f7002-aa97-4902-84f8-36da0930d6bb
+    taskid: ae00c7d3-af70-4d19-87eb-69f971e12827
     type: condition
     task:
-      id: f23f7002-aa97-4902-84f8-36da0930d6bb
+      id: ae00c7d3-af70-4d19-87eb-69f971e12827
       version: -1
       name: Are workloads available?
       description: Checks wether workloads are available or not for a given port and
@@ -864,8 +868,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -320,
-          "y": 925
+          "x": 60,
+          "y": 1070
         }
       }
     note: false
@@ -877,10 +881,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 23cfba50-71c4-43b5-86fc-703c92696ccb
+    taskid: e1d5dda3-6c0d-426e-8732-8773de79de26
     type: condition
     task:
-      id: 23cfba50-71c4-43b5-86fc-703c92696ccb
+      id: e1d5dda3-6c0d-426e-8732-8773de79de26
       version: -1
       name: Are workloads available?
       description: Checks whether the workloads are available or not.
@@ -906,8 +910,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -520,
-          "y": 3180
+          "x": 920,
+          "y": 2985
         }
       }
     note: false
@@ -919,17 +923,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: ede3fd60-482b-4167-8fff-5f48988b3bf1
+    taskid: e0c1d3ef-c185-4636-8087-b5db7a10023a
     type: playbook
     task:
-      id: ede3fd60-482b-4167-8fff-5f48988b3bf1
+      id: e0c1d3ef-c185-4636-8087-b5db7a10023a
       version: -1
       name: Update enforcement mode - Illumio
+      description: Runs update enforcement mode sub-playbook.
       playbookName: Update enforcement mode - Illumio
       type: playbook
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#none#':
       - "26"
@@ -963,8 +967,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -820,
-          "y": 3395
+          "x": 470,
+          "y": 3180
         }
       }
     note: false
@@ -976,10 +980,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: b125fbf2-4d68-48d5-864a-ec1fbd03c0f1
+    taskid: ed413e98-f188-4a8d-8fbc-39ce21fac1a0
     type: regular
     task:
-      id: b125fbf2-4d68-48d5-864a-ec1fbd03c0f1
+      id: ed413e98-f188-4a8d-8fbc-39ce21fac1a0
       version: -1
       name: Workload status
       description: Prints text to war room (Markdown supported)
@@ -1016,8 +1020,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -820,
-          "y": 3600
+          "x": 470,
+          "y": 3345
         }
       }
     note: false
@@ -1029,10 +1033,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: ee1a9bcf-4c7a-44f4-8dac-cc732f3a3919
+    taskid: dcb98b55-a1b7-44ea-81f5-8b3833987ea1
     type: regular
     task:
-      id: ee1a9bcf-4c7a-44f4-8dac-cc732f3a3919
+      id: dcb98b55-a1b7-44ea-81f5-8b3833987ea1
       version: -1
       name: Print message for no workloads
       description: Prints text to war room (Markdown supported)
@@ -1050,8 +1054,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -250,
-          "y": 3395
+          "x": 920,
+          "y": 3345
         }
       }
     note: false
@@ -1063,10 +1067,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 2c7a25cd-202c-46fe-889f-393f8aeb50dd
+    taskid: c178ac0a-962e-4b20-840c-df3d7e046e4c
     type: regular
     task:
-      id: 2c7a25cd-202c-46fe-889f-393f8aeb50dd
+      id: c178ac0a-962e-4b20-840c-df3d7e046e4c
       version: -1
       name: Get ip lists
       description: Retrieves the list of IPs based on the query parameters.
@@ -1076,7 +1080,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "18"
     scriptarguments:
       name:
         simple: Any (0.0.0.0/0 and ::/0)
@@ -1084,8 +1088,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -520,
-          "y": 1700
+          "x": 470,
+          "y": 380
         }
       }
     note: false
@@ -1101,15 +1105,16 @@ view: |-
       "16_13_no": 0.16,
       "16_17_#default#": 0.54,
       "18_9_no": 0.19,
+      "20_13_#default#": 0.41,
       "21_9_#default#": 0.18,
       "22_30_#default#": 0.57
     },
     "paper": {
       "dimensions": {
-        "height": 3875,
-        "width": 1470,
-        "x": -820,
-        "y": 40
+        "height": 3535,
+        "width": 1500,
+        "x": -200,
+        "y": 50
       }
     }
   }
@@ -1118,25 +1123,26 @@ inputs:
   value: {}
   required: true
   description: Provide Port to be blocked.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: Protocol
   value:
     simple: TCP
   required: false
   description: Protocol of Port.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: allow_traffic
   value:
-    simple: Yes
+    simple: "Yes"
   required: false
-  description: Do You want to allow traffic on this port? (Yes or No)
-  playbookInputQuery:
+  description: Do you want to search for traffic on this port before the incident
+    to allow? (Yes or No)
+  playbookInputQuery: null
 - key: update_enforcement_mode
   value:
-    simple: Yes
+    simple: "Yes"
   required: false
   description: Do you want to update the enforcement mode?(Yes or No)
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs: []
 tests:
 - IllumioCore-Test

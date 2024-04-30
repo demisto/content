@@ -74,7 +74,7 @@ tasks:
       {
         "position": {
           "x": -1070,
-          "y": 1260
+          "y": 1470
         }
       }
     note: false
@@ -971,7 +971,7 @@ tasks:
       '#default#':
       - "2"
       "yes":
-      - "48"
+      - "76"
     scriptarguments:
       brandname:
         simple: Active Directory Query v2
@@ -1551,15 +1551,14 @@ tasks:
     scriptarguments:
       username:
         complex:
-          root: Blocklist
-          accessor: Final
+          root: UserAD
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1060,
-          "y": 920
+          "x": 1050,
+          "y": 1290
         }
       }
     note: false
@@ -1608,6 +1607,921 @@ tasks:
         "position": {
           "x": -2230,
           "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 8791822e-5e1e-4b28-82d9-a822aa17108d
+    type: condition
+    task:
+      id: 8791822e-5e1e-4b28-82d9-a822aa17108d
+      version: -1
+      name: Is Slack IAM Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    scriptarguments:
+      brandname:
+        simple: Slack IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2410,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: e2aaa6e8-de1f-4399-8e89-2321fe4fa030
+    type: title
+    task:
+      id: e2aaa6e8-de1f-4399-8e89-2321fe4fa030
+      version: -1
+      name: Slack IAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "53"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2410,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: e8b7f7a8-2b9c-44ef-8eff-ceb494799432
+    type: condition
+    task:
+      id: e8b7f7a8-2b9c-44ef-8eff-ceb494799432
+      version: -1
+      name: Is ServiceNow IAM Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    scriptarguments:
+      brandname:
+        simple: ServiceNow IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2840,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 6a694bcc-610d-46c4-8d22-dec644076b78
+    type: title
+    task:
+      id: 6a694bcc-610d-46c4-8d22-dec644076b78
+      version: -1
+      name: ServiceNow IAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "55"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2840,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 6345f42c-51a8-401f-8099-ecea5a0403c4
+    type: condition
+    task:
+      id: 6345f42c-51a8-401f-8099-ecea5a0403c4
+      version: -1
+      name: Is Salesforce IAM Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    scriptarguments:
+      brandname:
+        simple: Salesforce IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3260,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: dba2b9c1-cb47-41a9-8386-1de15a47de2d
+    type: title
+    task:
+      id: dba2b9c1-cb47-41a9-8386-1de15a47de2d
+      version: -1
+      name: Salesforce IAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3260,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: c6cb894b-65a5-4e85-87f4-debe4d8cdbfe
+    type: condition
+    task:
+      id: c6cb894b-65a5-4e85-87f4-debe4d8cdbfe
+      version: -1
+      name: Is PrismaCloud IAM Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    scriptarguments:
+      brandname:
+        simple: PrismaCloud IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3690,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: de7c1b4f-0ecc-4782-8346-50b679dac66b
+    type: title
+    task:
+      id: de7c1b4f-0ecc-4782-8346-50b679dac66b
+      version: -1
+      name: PrismaCloud IAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3690,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 1a19cd62-eafa-4b66-80aa-b397a439f52c
+    type: condition
+    task:
+      id: 1a19cd62-eafa-4b66-80aa-b397a439f52c
+      version: -1
+      name: Is Microsoft Graph User Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "78"
+    scriptarguments:
+      brandname:
+        simple: Microsoft Graph User
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 31d15f37-d89d-4d09-8009-2a60c76d0b5e
+    type: title
+    task:
+      id: 31d15f37-d89d-4d09-8009-2a60c76d0b5e
+      version: -1
+      name: Microsoft Graph User
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 31592372-486c-4648-8376-8889941df6c8
+    type: condition
+    task:
+      id: 31592372-486c-4648-8376-8889941df6c8
+      version: -1
+      name: Is Zoom IAM Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    scriptarguments:
+      brandname:
+        simple: Zoom_IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4120,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: b98574a0-93fc-423b-87e1-bf888db3881a
+    type: title
+    task:
+      id: b98574a0-93fc-423b-87e1-bf888db3881a
+      version: -1
+      name: Zoom IAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4120,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: deb7235b-0e73-4aa7-8e3e-2b07ad73daf9
+    type: condition
+    task:
+      id: deb7235b-0e73-4aa7-8e3e-2b07ad73daf9
+      version: -1
+      name: Is Atlassian IAM Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    scriptarguments:
+      brandname:
+        simple: Atlassian IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4550,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 5e5c6e1e-8c3a-42b8-85bd-3646e9b01531
+    type: title
+    task:
+      id: 5e5c6e1e-8c3a-42b8-85bd-3646e9b01531
+      version: -1
+      name: Atlassian IAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4550,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 909d3b40-e606-4225-8d09-a83ebdd33b79
+    type: regular
+    task:
+      id: 909d3b40-e606-4225-8d09-a83ebdd33b79
+      version: -1
+      name: Microsoft Graph User - Disable Account
+      description: |-
+        Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+        but does not terminate an existing session. Supported only in a self deployed app flow with the
+        Permission: Directory.AccessAsUser.All(Delegated)
+      script: '|||msgraph-user-account-disable'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      user:
+        complex:
+          root: UserMSGraph
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 909312b6-5f6e-451c-83dd-a00e31c49197
+    type: condition
+    task:
+      id: 909312b6-5f6e-451c-83dd-a00e31c49197
+      version: -1
+      name: Is GitHub IAM Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "33"
+    scriptarguments:
+      brandname:
+        simple: GitHub IAM
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4970,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 4f6321ef-dfb9-41fd-8a72-61bea5cff007
+    type: title
+    task:
+      id: 4f6321ef-dfb9-41fd-8a72-61bea5cff007
+      version: -1
+      name: GitHub IAM
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "70"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -4970,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: a274143d-2455-4679-8064-41a6cc01e1be
+    type: condition
+    task:
+      id: a274143d-2455-4679-8064-41a6cc01e1be
+      version: -1
+      name: Is Google Workspace Admin Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "74"
+    scriptarguments:
+      brandname:
+        simple: GSuiteAdmin
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: fa1e6574-7969-4b44-8593-b2244060cebe
+    type: title
+    task:
+      id: fa1e6574-7969-4b44-8593-b2244060cebe
+      version: -1
+      name: Google Workspace Admin
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 128ca043-fa17-4ebf-82e1-ce3b4812de86
+    type: regular
+    task:
+      id: 128ca043-fa17-4ebf-82e1-ce3b4812de86
+      version: -1
+      name: Google Workspace Admin - Disable Account
+      description: Updates a user.
+      script: '|||gsuite-user-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      suspended:
+        simple: "true"
+      user_key:
+        complex:
+          root: Blocklist
+          accessor: Final
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 4ebe9bf0-210f-4752-83d0-bb2e2a03262a
+    type: regular
+    task:
+      id: 4ebe9bf0-210f-4752-83d0-bb2e2a03262a
+      version: -1
+      name: Get Account IDs From SailPoint
+      description: Fetch accounts by search/filter parameters (id, display_name, last_refresh, native_identity, last_target_agg, identity_name & application_name) using IdentityIQ SCIM APIs.
+      script: '|||identityiq-get-accounts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      display_name:
+        complex:
+          root: Blocklist
+          accessor: Final
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: da02de44-c739-4db1-85bc-3c053f8aa183
+    type: regular
+    task:
+      id: da02de44-c739-4db1-85bc-3c053f8aa183
+      version: -1
+      name: Active Directory - Get User
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
+      script: '|||ad-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      extend-context:
+        simple: UserAD=attributes.sAMAccountName
+      ignore-outputs:
+        simple: "true"
+      username:
+        complex:
+          root: Blocklist
+          accessor: Final
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 419df6f0-2416-4a48-8124-eb64ce5da93a
+    type: condition
+    task:
+      id: 419df6f0-2416-4a48-8124-eb64ce5da93a
+      version: -1
+      name: Does the username exist?
+      description: Verify that the user exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: UserAD
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1050,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: e56d753f-ac0c-417d-83b3-1eec253d740b
+    type: regular
+    task:
+      id: e56d753f-ac0c-417d-83b3-1eec253d740b
+      version: -1
+      name: Microsoft Graph User - Get User
+      description: |-
+        Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0.
+        Permissions: - User.Read (Delegated) - User.Read.All (Application).
+      script: '|||msgraph-user-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      extend-context:
+        simple: UserMSGraph=id
+      ignore-outputs:
+        simple: "true"
+      user:
+        complex:
+          root: Blocklist
+          accessor: Final
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 6a4ebfcb-e506-4333-81b5-8889065e2fbe
+    type: condition
+    task:
+      id: 6a4ebfcb-e506-4333-81b5-8889065e2fbe
+      version: -1
+      name: Does the username exist?
+      description: Verify that the user exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: UserMSGraph
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 1090
         }
       }
     note: false
@@ -2396,7 +3310,6 @@ view: |-
       "59_2_#default#": 0.1,
       "59_33_yes": 0.14,
       "63_2_#default#": 0.1,
-      "63_69_yes": 0.44,
       "65_2_#default#": 0.1,
       "65_33_yes": 0.1,
       "67_2_#default#": 0.1,
@@ -2410,7 +3323,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2775,
+        "height": 2985,
         "width": 8080,
         "x": -5370,
         "y": -1450

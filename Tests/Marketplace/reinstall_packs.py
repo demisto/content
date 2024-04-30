@@ -66,7 +66,7 @@ def reinstall_packs(options: argparse.Namespace, cloud_machine: str) -> bool:
             pack_ids=[pack],
             client=client,
             hostname=host,
-            multithreading=False,
+            install_packs_in_batches=True,
             production_bucket=False
         )
         success &= successful_uninstall & successful_install

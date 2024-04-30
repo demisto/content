@@ -114,7 +114,7 @@ tasks:
       id: dc8e361c-083a-429c-8276-7e488e5874f5
       version: -1
       name: Change Context
-      description: Changing the context 
+      description: Changing the context
       scriptName: ChangeContext
       type: regular
       iscommand: false
@@ -134,11 +134,8 @@ tasks:
       inplace:
         simple: "False"
       input:
-        simple: ${QRadar.Search.Result.events}
-      input_key:
-        simple: ${QRadar.Search.Result}
-      key:
-        simple: ${QRadar.Search.Results}
+        complex:
+          root: QRadar.SearchEvents.Events
       output_key:
         simple: QRadar.Events
     separatecontext: false
@@ -178,8 +175,6 @@ tasks:
     scriptarguments:
       brandname:
         simple: QRadar v3
-    results:
-    - brandInstances
     separatecontext: false
     view: |-
       {
@@ -211,7 +206,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "30"
+      - "46"
     scriptarguments:
       key:
         simple: CRESettings
@@ -233,53 +228,6 @@ tasks:
         "position": {
           "x": 320,
           "y": 330
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "30":
-    id: "30"
-    taskid: a7434a88-e468-4074-8e43-d35ddecc4fcf
-    type: playbook
-    task:
-      id: a7434a88-e468-4074-8e43-d35ddecc4fcf
-      version: -1
-      name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the context.
-      playbookName: QRadarFullSearch
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "39"
-    scriptarguments:
-      interval:
-        simple: "1"
-      query_expression:
-        simple: |-
-          select  ${inputs.Fields} from events WHERE INOFFENSE(${inputs.ID}) ${CRESettings}
-          LIMIT ${inputs.MaxLogsCount}
-          START '${Time}'
-      timeout:
-        simple: "600"
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 320,
-          "y": 480
         }
       }
     note: false
@@ -804,6 +752,46 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 2c668955-ac6c-4387-8062-e263584b5ca9
+    type: regular
+    task:
+      id: 2c668955-ac6c-4387-8062-e263584b5ca9
+      version: -1
+      name: Run Qradar Search
+      description: Polling command to search for events of a specific offense.
+      script: '|||qradar-search-retrieve-events'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      interval_in_seconds:
+        simple: "1"
+      query_expression:
+        simple: |-
+          select  ${inputs.Fields} from events WHERE INOFFENSE(${inputs.ID}) ${CRESettings}
+          LIMIT ${inputs.MaxLogsCount}
+          START '${Time}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -861,7 +849,7 @@ inputs:
   value:
     simple: "17"
   required: false
-  description: The API version for the timestamp format changes between versions 
+  description: The API version for the timestamp format changes between versions
   playbookInputQuery:
 outputs:
 - contextPath: QRadar
@@ -894,3 +882,4 @@ tests:
 fromversion: 6.0.0
 contentitemexportablefields:
   contentitemfields: {}
+system: true

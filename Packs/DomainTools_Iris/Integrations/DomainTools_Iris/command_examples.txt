@@ -1,0 +1,11 @@
+!domain domain=domaintools.com
+!domain domain=domaintools.com include_context=false
+!domaintoolsiris-enrich domain=domaintools.com
+!domaintoolsiris-analytics domain=domaintools.com
+!domaintoolsiris-threat-profile domain=domaintools.com
+!domaintoolsiris-pivot search_hash=U2FsdGVkX1+ruMqEDHciuTRwSr64wfP1NgbBhjeb4tiy3UmC6fAcyZ5Ed6FwXHYtIXf15fy4Cqvm4z295umHpklh2dgs1GlqF0I3B5ScLOeCFeeZj5Voin/WM2VI5SiCDxXcMj9xOevoONM7YV6Zv6yyk9PaFH6oKOE4G/2msOwwwYjcy+29RJe3HkeuZYSBGuu5fxHuhCReso7b4v8FDw==
+!whoisHistory domain=domaintools.com
+!hostingHistory domain=domaintools.com
+!reverseWhois terms=domaintools
+!domainProfile domain=domaintools.com
+!whois query=domaintools.com

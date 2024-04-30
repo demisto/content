@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Command-Line Analysis
-description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: In case you are wishing to run this playbook with a list of command lines, set this playbook to be running in a loop. To do so, navigate to the 'Loop'  and check \"For Each Input\"."
+description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check \"For Each Input\"."
 starttaskid: "0"
 tasks:
   "0":
@@ -250,7 +250,7 @@ tasks:
       {
         "position": {
           "x": 2240,
-          "y": 1250
+          "y": 1260
         }
       }
     note: false
@@ -1107,12 +1107,12 @@ tasks:
         complex:
           root: commandline
           transformers:
-          - operator: append
+          - operator: RemoveEmpty
             args:
-              item:
+              empty_values: { }
+              remove_keys:
                 value:
-                  simple: inputs.Commandline
-                iscontext: true
+                  simple: "true"
     reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
@@ -1452,6 +1452,13 @@ tasks:
       value:
         complex:
           root: inputs.Commandline
+          transformers:
+            - operator: RemoveEmpty
+              args:
+                empty_values: { }
+                remove_keys:
+                  value:
+                    simple: "true"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1566,6 +1573,7 @@ tasks:
     nexttasks:
       '#none#':
       - "38"
+      - "12"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1652,8 +1660,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2240,
-          "y": 1080
+          "x": 1850,
+          "y": 1090
         }
       }
     note: false
@@ -1671,10 +1679,10 @@ tasks:
       id: 3212780f-1634-43cd-8a59-39af8883e672
       version: -1
       name: Found suspicious LOLBIN execution?
+      description: "Found suspicious LOLBIN execution?"
       type: condition
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#default#':
       - "9"
@@ -1780,19 +1788,16 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: MatchRegex
-  description: The regex found in the command line
+  description: The regex found in the command line.
   type: unknown
 - contextPath: Indicators
-  description: Indicators extracted from the command line
+  description: Indicators extracted from the command line.
   type: unknown
 - contextPath: commandline.original
-  description: The original command line
+  description: The original command line.
   type: unknown
 - contextPath: commandline.decoded
-  description: The decoded command line
-  type: unknown
-- contextPath: CommandlineVerdict
-  description: The command line verdict
+  description: The decoded command line.
   type: unknown
 - contextPath: IP
   description: The IP object.
@@ -1806,9 +1811,27 @@ outputs:
 - contextPath: Domain
   description: The domain object.
   type: unknown
+- contextPath: CommandlineVerdict.base64
+  description: Command line verdict base64 was found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.suspiciousParameters
+  description: Command line verdict suspicious parameters found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.AMSI
+  description: Command line verdict AMSI found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.foundIndicators
+  description: Command line verdict foundIndicators found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.maliciousTools
+  description: Command line verdict maliciousTools found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.networkActivity
+  description: Command line verdict networkActivity found. True/False
+  type: unknown
+- contextPath: CommandlineVerdict.SuspiciousLolbinExecution
+  description: Command line verdict SuspiciousLolbinExecution found. True/False
+  type: unknown
 tests:
-- No tests
+  - no tests
 fromversion: 6.0.0
-marketplaces:
-  - xsoar
-  - marketplacev2

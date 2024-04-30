@@ -2567,116 +2567,159 @@ Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro
 >| test | test for demo |  |
 
 
-### core-list-roles
+### core-get-incidents
 
 ***
-Retrieve information about one or more roles created in the environment.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
+Returns a list of incidents, which you can filter by a list of incident IDs (max. 100), the time the incident was last modified, and the time the incident was created.
+If you pass multiple filtering arguments, they will be concatenated using the AND condition. The OR condition is not supported.
+
+##### Required Permissions
+
+Required Permissions For API call:
+`Alerts And Incidents` --> `View`
+Builtin Roles with this permission includes: "Investigator", "Responder", "Privileged Investigator", "Privileged Responder", "Viewer", and "Instance Admin".
 
 #### Base Command
 
-`core-list-roles`
+`core-get-incidents`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| role_names | A comma-separated list of one or more role names in your environment for which you want detailed information. | Required | 
+| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved. | Optional | 
+| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved. | Optional | 
+| lte_modification_time | Filters returned incidents that were created on or before the specified date/time, in the format 2019-12-31T23:59:00. | Optional | 
+| gte_modification_time | Filters returned incidents that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00. | Optional | 
+| incident_id_list | An array or CSV string of incident IDs. | Optional | 
+| since_creation_time | Filters returned incidents that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. | Optional | 
+| since_modification_time | Filters returned incidents that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. | Optional | 
+| sort_by_modification_time | Sorts returned incidents by the date/time that the incident was last modified ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
+| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
+| page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional | 
+| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100. | Optional | 
+| status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. | Optional | 
+| starred | Whether the incident is starred (Boolean value: true or false). Possible values are: true, false. | Optional | 
+| starred_incidents_fetch_window | Starred fetch window timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days. | Optional | 
+
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Core.Role.pretty_name | String | Name of the role as it appears in the management console. | 
-| Core.Role.permissions | array | List of permissions associated with this role. | 
-| Core.Role.insert_time | Number | Timestamp of when the role was created. | 
-| Core.Role.update_time | Number | Timestamp of when the role was last updated. | 
-| Core.Role.created_by | String | Email of the user who created the role. | 
-| Core.Role.description | String | Description of the role, if available. | 
-| Core.Role.groups | array | Group names associated with the role. | 
-| Core.Role.users | array | Email address of users associated with the role. | 
+| **Path** | **Type** | **Description**                                                                                                      |
+| --- | --- |----------------------------------------------------------------------------------------------------------------------|
+| Core.Incident.incident_id | String | Unique ID assigned to each returned incident.                                                                        | 
+| Core.Incident.manual_severity | String | Incident severity assigned by the user. This does not affect the calculated severity. Can be "low", "medium", "high" | 
+| Core.Incident.manual_description | String | Incident description provided by the user.                                                                           | 
+| Core.Incident.assigned_user_mail | String | Email address of the assigned user.                                                                                  | 
+| Core.Incident.high_severity_alert_count | String | Number of alerts with the severity HIGH.                                                                             | 
+| Core.Incident.host_count | number | Number of hosts involved in the incident.                                                                            | 
+| Core.Incident.xdr_url | String | A link to the incident view on Cortex XDR or XSIAM.                                                                  | 
+| Core.Incident.assigned_user_pretty_name | String | Full name of the user assigned to the incident.                                                                      | 
+| Core.Incident.alert_count | number | Total number of alerts in the incident.                                                                              | 
+| Core.Incident.med_severity_alert_count | number | Number of alerts with the severity MEDIUM.                                                                           | 
+| Core.Incident.user_count | number | Number of users involved in the incident.                                                                            | 
+| Core.Incident.severity | String | Calculated severity of the incident. Valid values are:                                                               
+"low","medium","high"
+ | 
+| Core.Incident.low_severity_alert_count | String | Number of alerts with the severity LOW. | 
+| Core.Incident.status | String | Current status of the incident. Valid values are: "new","under_investigation","resolved_known_issue","resolved_duplicate","resolved_false_positive","resolved_true_positive","resolved_security_testing" or "resolved_other".
+ | 
+| Core.Incident.description | String | Dynamic calculated description of the incident. | 
+| Core.Incident.resolve_comment | String | Comments entered by the user when the incident was resolved. | 
+| Core.Incident.notes | String | Comments entered by the user regarding the incident. | 
+| Core.Incident.creation_time | date | Date and time the incident was created on Cortex XDR or XSIAM. | 
+| Core.Incident.detection_time | date | Date and time that the first alert occurred in the incident. | 
+| Core.Incident.modification_time | date | Date and time that the incident was last modified. | 
 
-#### Command example
-```!core-list-roles role_names=dummy```
-#### Context Example
-```json
+
+##### Command Example
+
+```!core-get-incidents gte_creation_time=2010-10-10T00:00:00 limit=3 sort_by_creation_time=desc```
+
+##### Context Example
+
+```
 {
-    "Core": {
-        "Role": [
-            [
-                {
-                    "created_by": "dummy dummy",
-                    "description": "The user(s) have full access.",
-                    "groups": [],
-                    "insert_time": null,
-                    "permissions": [
-                        "dummy"
-                    ],
-                    "pretty_name": "dummy",
-                    "update_time": null,
-                    "users": []
-                }
-            ]
-        ]
-    }
+    "Core.Incident": [
+        {
+            "host_count": 1, 
+            "incident_id": "4", 
+            "manual_severity": "medium", 
+            "description": "5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast  ", 
+            "severity": "medium", 
+            "modification_time": 1579290004178, 
+            "assigned_user_pretty_name": null, 
+            "notes": null, 
+            "creation_time": 1577276587937, 
+            "alert_count": 5, 
+            "med_severity_alert_count": 1, 
+            "detection_time": null, 
+            "assigned_user_mail": null, 
+            "resolve_comment": "This issue was solved in Incident number 192304", 
+            "status": "new", 
+            "user_count": 1, 
+            "xdr_url": "https://some.xdr.url.com/incident-view/4", 
+            "starred": false, 
+            "low_severity_alert_count": 0, 
+            "high_severity_alert_count": 4, 
+            "manual_description": null
+        }, 
+        {
+            "host_count": 1, 
+            "incident_id": "3", 
+            "manual_severity": "medium", 
+            "description": "'test 1' generated by Virus Total - Firewall", 
+            "severity": "medium", 
+            "modification_time": 1579237974014, 
+            "assigned_user_pretty_name": "woo@demisto.com", 
+            "notes": null, 
+            "creation_time": 1576100096594, 
+            "alert_count": 1, 
+            "med_severity_alert_count": 0, 
+            "detection_time": null, 
+            "assigned_user_mail": "woo@demisto.com", 
+            "resolve_comment": null, 
+            "status": "new", 
+            "user_count": 1, 
+            "xdr_url": "https://some.xdr.url.com/incident-view/3", 
+            "starred": false, 
+            "low_severity_alert_count": 0, 
+            "high_severity_alert_count": 1, 
+            "manual_description": null
+        }, 
+        {
+            "host_count": 1, 
+            "incident_id": "2", 
+            "manual_severity": "high", 
+            "description": "'Alert Name Example 333' along with 1 other alert generated by Virus Total - VPN & Firewall-3 and Checkpoint - SandBlast", 
+            "severity": "high", 
+            "modification_time": 1579288790259, 
+            "assigned_user_pretty_name": null, 
+            "notes": null, 
+            "creation_time": 1576062816474, 
+            "alert_count": 2, 
+            "med_severity_alert_count": 0, 
+            "detection_time": null, 
+            "assigned_user_mail": null, 
+            "resolve_comment": null, 
+            "status": "under_investigation", 
+            "user_count": 1, 
+            "xdr_url": "https://some.xdr.url.com/incident-view/2", 
+            "starred": false, 
+            "low_severity_alert_count": 0, 
+            "high_severity_alert_count": 2, 
+            "manual_description": null
+        }
+    ]
 }
 ```
 
-#### Human Readable Output
+##### Human Readable Output
 
->### Roles
->|Role Name|Description|Permissions|Users|Groups|
->|---|---|---|---|---|
->| dummy | The user(s) have full access. | ADMIN |  |  |
+>### Incidents
 
-
-### core-set-user-role
-
-***
-Add one or more users to a role.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
-
-#### Base Command
-
-`core-set-user-role`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user_emails | A comma-separated list of one or more user emails of users you want to add to a role. | Required | 
-| role_name | Name of the role you want to add a user to. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-#### Command example
-```!core-set-user-role role_name=dummy user_emails=dummy```
-#### Human Readable Output
-
->Role was updated successfully for 1 user.
-
-### core-remove-user-role
-
-***
-Remove one or more users from a role.
-Required license: Cortex XDR Pro per Endpoint, Cortex XDR Pro, or Cortex XDR Pro per TB.
-
-#### Base Command
-
-`core-remove-user-role`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| user_emails | A comma-separate list of one or more user emails of users you want to remove from a role. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-#### Command example
-```!core-remove-user-role user_emails=dummy```
-#### Human Readable Output
-
->Role was removed successfully for 1 user.
+>|alert_count|assigned_user_mail|assigned_user_pretty_name|creation_time|description|detection_time|high_severity_alert_count|host_count|incident_id|low_severity_alert_count|manual_description|manual_severity|med_severity_alert_count|modification_time|notes|resolve_comment|severity|starred|status|user_count|xdr_url|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 5 |  |  | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/4` |
+>| 1 | woo@demisto.com | woo@demisto.com | 1576100096594 | 'test 1' generated by Virus Total - Firewall |  | 1 | 1 | 3 | 0 |  | medium | 0 | 1579237974014 |  |  | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/3` |
+>| 2 |  |  | 1576062816474 | 'Alert Name Example 333' along with 1 other alert generated by Virus Total - VPN & Firewall-3 and Checkpoint - SandBlast |  | 2 | 1 | 2 | 0 |  | high | 0 | 1579288790259 |  |  | high | false | under_investigation | 1 | `https://some.xdr.url.com/incident-view/2` 

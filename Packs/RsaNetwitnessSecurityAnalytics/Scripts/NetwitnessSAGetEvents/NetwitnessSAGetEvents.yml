@@ -7,7 +7,7 @@ type: python
 subtype: python3
 tags:
 - RSA NetWitness Security Analytics
-comment: Returns all the RSA NetWitness SA events in the defined time range
+comment: Returns all the RSA NetWitness SA events in the defined time range.
 system: true
 args:
 - name: timeRangeType
@@ -35,38 +35,38 @@ args:
   - LAST_WEEK
   - ALL_DATA
   - CUSTOM
-  description: Filter of time range in which events occured
+  description: Filter of time range in which events occured.
 - name: deviceId
   required: true
-  description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command nw-get-components'
+  description: '[number] Id of the device where the events stored/occurred. In order to get list of available devices/components run command nw-get-components.'
 - name: collectionName
-  description: '[optional]'
+  description: '[optional].'
 - name: predicateIds
-  description: '[optional]'
+  description: '[optional].'
 - name: startDate
-  description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
+  description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument.'
 - name: endDate
-  description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument'
+  description: '[optional datetime] If timeRangeType defined as CUSTOM, set this argument.'
 - name: lastCollectionTime
-  description: '[optional datetime] Last collection time'
+  description: '[optional datetime] Last collection time.'
 - name: mid1
-  description: mID1
+  description: mID1.
 - name: mid2
-  description: mID2
+  description: mID2.
 - name: investigationToken
-  description: '[optional guid] Investigation id token'
+  description: '[optional guid] Investigation id token.'
 - name: page
-  description: '[optional number] Default set to 1. The page number'
+  description: '[optional number] Default set to 1. The page number.'
 - name: start
   description: '[optional number] Default set to 0. The starting index of event in page.'
 - name: limit
-  description: '[optional number] Default set to 25. Limits the number of events per page'
+  description: '[optional number] Default set to 25. Limits the number of events per page.'
 scripttarget: 0
 dependson:
   must:
   - netwitness-im-get-events
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 tests:
 - No tests (auto formatted)

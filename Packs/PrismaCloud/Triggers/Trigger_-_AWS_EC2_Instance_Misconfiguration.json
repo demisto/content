@@ -1,0 +1,18 @@
+{
+  "trigger_id": "44e61bd26eec45c3264a384324567e90",
+  "playbook_id": "Prisma Cloud Remediation - AWS EC2 Instance Misconfiguration v2",
+  "suggestion_reason": "Recommended for AWS EC2 Instance Misconfiguration alerts",
+  "description": "This trigger is responsible for handling AWS EC2 Instance Misconfiguration alerts",
+  "trigger_name": "AWS EC2 Instance Misconfiguration",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "AWS EC2 Instance Misconfiguration"
+        }
+      ]
+    }
+  }
+}

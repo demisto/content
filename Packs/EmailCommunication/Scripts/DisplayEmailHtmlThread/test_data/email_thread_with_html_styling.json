@@ -1,0 +1,36 @@
+[
+    {
+        "EmailBCC": "",
+        "EmailBody": "testing from xsoar",
+        "EmailCC": "",
+        "EmailCommsThreadId": "69433507",
+        "EmailCommsThreadNumber": "0",
+        "EmailFrom": "soc_sender@company.com",
+        "EmailHTML": "<!DOCTYPE html>\\n<html>\\n\\n<p>testing from xsoar</p>\\n\\n</body>\\n</html>\\n",
+        "EmailReceived": "",
+        "EmailReplyTo": "soc_sender@company.com",
+        "EmailSubject": "<69433507> Test Email",
+        "EmailTo": "end_user@company.com",
+        "EmailAttachments": "None",
+        "MessageDirection": "outbound",
+        "MessageID": "",
+        "MessageTime": "2024-01-09T16:56:53UTC"
+    },
+    {
+        "EmailBCC": "",
+        "EmailBody": "reply from ews",
+        "EmailCC": "",
+        "EmailCommsThreadId": "69433508",
+        "EmailCommsThreadNumber": "0",
+        "EmailFrom": "soc_sender@company.com",
+        "EmailHTML": "<html>\\r\\n<head>\\r\\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\\r\\n<meta name=\"Generator\" content=\"Microsoft Exchange Server\">\\r\\n<!-- converted from text --><style><!-- .EmailQuote { margin-left: 1pt; padding-left: 4pt; border-left: #800000 2px solid; } --></style>\\r\\n</head>\\r\\n<body>\\r\\n<meta content=\"text/html; charset=UTF-8\">\\r\\n<style type=\"text/css\" style=\"\">\\r\\n<!--\\r\\np\\r\\n\\t{margin-top:0;\\r\\n\\tmargin-bottom:0}\\r\\n-->\\r\\n</style>\\r\\n<div dir=\"ltr\">\\r\\n<div id=\"x_divtagdefaultwrapper\" dir=\"ltr\" style=\"font-size:12pt; color:#000000; font-family:Calibri,Helvetica,sans-serif\">\\r\\n<p>reply from ews</p>\\r\\n</div>\\r\\n<hr tabindex=\"-1\" style=\"display:inline-block; width:98%\">\\r\\n<div id=\"x_divRplyFwdMsg\" dir=\"ltr\"><font face=\"Calibri, sans-serif\" color=\"#000000\" style=\"font-size:11pt\"><b>From:</b> Administrator<br>\\r\\n<b>Sent:</b> Tuesday, January 9, 2024 6:45:29 PM<br>\\r\\n<b>To:</b> Administrator<br>\\r\\n<b>Subject:</b> &lt;89004550&gt; email thread testing</font>\\r\\n<div>&nbsp;</div>\\r\\n</div>\\r\\n</div>\\r\\n<font size=\"2\"><span style=\"font-size:10pt;\">\\r\\n<div class=\"PlainText\">testing from xsoar</div>\\r\\n</span></font>\\r\\n</body>\\r\\n</html>\\r\\n",
+        "EmailReceived": "",
+        "EmailReplyTo": "soc_sender@company.com",
+        "EmailSubject": "<69433507> Test Email",
+        "EmailTo": "end_user@company.com",
+        "EmailAttachments": "None",
+        "MessageDirection": "outbound",
+        "MessageID": "",
+        "MessageTime": "2024-01-09T16:56:53UTC"
+    }
+]

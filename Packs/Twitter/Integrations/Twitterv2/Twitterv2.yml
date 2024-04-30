@@ -99,7 +99,7 @@ script:
       description: A direct URL to the media file on Twitter.
       type: String
     - contextPath: Twitter.Tweet.media.media_key
-      description: Unique identifier of the expanded media content
+      description: Unique identifier of the expanded media content.
       type: String
     - contextPath: Twitter.Tweet.media.alt_text
       description: A description of an image to enable and support accessibility. Can be up to 1000 characters long.
@@ -119,7 +119,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: "Lookup users by name to display information about them. Search multiple users simultaneously by separating them by commas. Ex: 'name='user1,user2,user3'"
+    description: "Lookup users by name to display information about them. Search multiple users simultaneously by separating them by commas. Ex: 'name='user1,user2,user3'."
     name: twitter-user-get
     outputs:
     - contextPath: Twitter.User.name
@@ -210,7 +210,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.84405
 fromversion: 6.5.0
 tests:
 - playbook-Test_Twitter_v2

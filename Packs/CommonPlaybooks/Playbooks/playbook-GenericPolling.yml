@@ -35,12 +35,19 @@ tasks:
         }
       }
     note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c202a667-b138-4635-819f-56a7396cc7f8
+    taskid: 35c115cc-f926-48db-895a-c10a1dada76e
     type: regular
     task:
-      id: c202a667-b138-4635-819f-56a7396cc7f8
+      id: 35c115cc-f926-48db-895a-c10a1dada76e
       version: -1
       name: Schedule Polling Task
       description: Schedule Polling Task
@@ -68,9 +75,10 @@ tasks:
         simple: ${inputs.PollingCommandName}
       pollingCommandArgName:
         simple: ${inputs.PollingCommandArgName}
-      tag: {}
       timeout:
         simple: ${inputs.Timeout}
+      extractMode:
+        simple: ${inputs.ExtractMode}
     separatecontext: false
     view: |-
       {
@@ -80,12 +88,20 @@ tasks:
         }
       }
     note: false
+    reputationcalc: 1
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 156abdbe-586e-4241-8ae6-364fe3d9d76a
+    taskid: 154b9a55-3d7c-412e-804c-c838cf7431c0
     type: condition
     task:
-      id: 156abdbe-586e-4241-8ae6-364fe3d9d76a
+      id: 154b9a55-3d7c-412e-804c-c838cf7431c0
       version: -1
       name: Waiting for polling to complete (Automated Task)
       description: This task will complete automatically when polling is complete.
@@ -108,12 +124,19 @@ tasks:
         }
       }
     note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: bc152ecc-4c23-4296-844a-d21b32be0ec3
+    taskid: aaa21aff-02c5-4930-81fc-c8f8e9085884
     type: regular
     task:
-      id: bc152ecc-4c23-4296-844a-d21b32be0ec3
+      id: aaa21aff-02c5-4930-81fc-c8f8e9085884
       version: -1
       name: RunPollingCommand
       description: RunPollingCommand
@@ -144,6 +167,14 @@ tasks:
         }
       }
     note: false
+    reputationcalc: 1
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
     taskid: 778e1007-f7ea-4ff6-89c4-cffc067165c4
@@ -165,12 +196,19 @@ tasks:
         }
       }
     note: false
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 62b13486-ae6a-49c1-8988-16765f35f1cc
+    taskid: db74b973-dc4a-499c-8d63-8df213685a1d
     type: regular
     task:
-      id: 62b13486-ae6a-49c1-8988-16765f35f1cc
+      id: db74b973-dc4a-499c-8d63-8df213685a1d
       version: -1
       name: Scheduled Task Failed
       description: Scheduled Task Failed
@@ -190,6 +228,14 @@ tasks:
         }
       }
     note: false
+    reputationcalc: 1
+    continueonerrortype: ""
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -209,37 +255,52 @@ inputs:
   value: {}
   required: true
   description: List of IDs to poll
+  playbookInputQuery:
 - key: PollingCommandName
   value: {}
   required: true
   description: Name of the polling command to run
+  playbookInputQuery:
 - key: PollingCommandArgName
   value:
     simple: ids
   required: true
   description: Argument name of the polling command.
+  playbookInputQuery:
 - key: Interval
   value:
     simple: "1"
   required: true
   description: Frequency that the polling command will run (minutes).
+  playbookInputQuery:
 - key: Timeout
   value:
     simple: "10"
   required: true
   description: Amount of time to poll before declaring a timeout and resuming the playbook (in minutes).
+  playbookInputQuery:
 - key: dt
   value: {}
   required: true
   description: "DT filter for polling IDs. Polling will stop when no results are returned. Use single quotes, for example: WildFire.Report(val.Status!=='Success').SHA256."
+  playbookInputQuery:
 - key: AdditionalPollingCommandArgNames
   value: {}
   required: false
   description: "Names of additional arguments for the polling command, for example: (arg1,arg2,...)."
+  playbookInputQuery:
 - key: AdditionalPollingCommandArgValues
   value: {}
   required: false
   description: "Values of the additional arguments for the polling command, for example: (value1,value2,...)."
+  playbookInputQuery:
+- key: ExtractMode
+  value: {}
+  required: false
+  description: Indicator Extraction mode for the command sequence. (In XSOAR 8 and above, for first run command set manually the RunPollingCommand task in the playbook, Advanced -> Indicator Extraction mode).
+  playbookInputQuery:
 outputs: []
 tests:
 - No test
+contentitemexportablefields:
+  contentitemfields: {}

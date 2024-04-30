@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from collections import defaultdict
 from datetime import datetime, timedelta
 from distutils.util import strtobool
@@ -53,13 +54,34 @@ def jira_file_link(file_name: str) -> str:
     return f"[^{file_name}]"
 
 
+def jira_sanitize_file_name(file_name: str) -> str:
+    return re.sub(r'[^\w-]', '-', file_name).lower()
+
+
+def jira_color_text(text: str, color: str) -> str:
+    return f"{{color:{color}}}{text}{{color}}"
+
+
+def get_transition(jira_server, jira_issue) -> str | None:
+    transitions = jira_server.transitions(jira_issue)
+    unresolved_transition = next(filter(lambda transition: transition['name'] == JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME,
+                                        transitions), None)
+    return unresolved_transition['id'] if unresolved_transition else None
+
+
+def transition_jira_ticket_to_unresolved(jira_server: JIRA, jira_issue: Issue | None, unresolved_transition_id: str | None):
+    if unresolved_transition_id:
+        jira_server.transition_issue(jira_issue, unresolved_transition_id)
+
+
 def find_existing_jira_ticket(jira_server: JIRA,
                               now: datetime,
                               max_days_to_reopen: int,
                               jira_issue: Issue | None,
-                              ) -> tuple[Issue | None, Issue | None, bool]:
+                              ) -> tuple[Issue | None, Issue | None, bool, str | None]:
     link_to_issue = None
     jira_issue_to_use = None
+    unresolved_transition_id = None
     if use_existing_issue := (jira_issue is not None):
         searched_issue: Issue = jira_issue
         if searched_issue.get_field("resolution"):
@@ -67,18 +89,7 @@ def find_existing_jira_ticket(jira_server: JIRA,
             if use_existing_issue := (resolution_date
                                       and (now - resolution_date)
                                       <= timedelta(days=max_days_to_reopen)):  # type: ignore[assignment]
-
-                #  Get the available transitions for the issue
-                transitions = jira_server.transitions(searched_issue)
-
-                # Find the transition with the specified ID
-                unresolved_transition = None
-                for transition in transitions:
-                    if transition['name'] == JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME:
-                        unresolved_transition = transition
-                        break
-                if unresolved_transition:
-                    jira_server.transition_issue(searched_issue, unresolved_transition['id'])
+                if unresolved_transition_id := get_transition(jira_server, jira_issue):
                     jira_issue_to_use = searched_issue
                 else:
                     logging.error(f"Failed to find the '{JIRA_ISSUE_UNRESOLVED_TRANSITION_NAME}' "
@@ -86,12 +97,11 @@ def find_existing_jira_ticket(jira_server: JIRA,
                     jira_issue_to_use = None
                     use_existing_issue = False
                     link_to_issue = searched_issue
-
             else:
                 link_to_issue = searched_issue
         else:
             jira_issue_to_use = searched_issue
-    return jira_issue_to_use, link_to_issue, use_existing_issue
+    return jira_issue_to_use, link_to_issue, use_existing_issue, unresolved_transition_id
 
 
 def generate_build_markdown_link(ci_pipeline_id: str) -> str:
@@ -101,11 +111,12 @@ def generate_build_markdown_link(ci_pipeline_id: str) -> str:
     return ci_pipeline_markdown_link
 
 
-def jira_server_information(jira_server: JIRA):
+def jira_server_information(jira_server: JIRA) -> dict[str, Any]:
     jira_server_info = jira_server.server_info()
     logging.info("Jira server information:")
     for key, value in jira_server_info.items():
         logging.info(f"\t{key}: {value}")
+    return jira_server_info
 
 
 def jira_search_all_by_query(jira_server: JIRA,
@@ -131,8 +142,19 @@ def jira_search_all_by_query(jira_server: JIRA,
     return issues
 
 
-def jira_ticket_to_json_data(jira_ticket: Issue) -> dict[str, Any]:
+def jira_ticket_to_json_data(server_url: str, jira_ticket: Issue) -> dict[str, Any]:
     return {
-        "url": jira_ticket.permalink(),
+        "url": jira_issue_permalink(server_url, jira_ticket),
         "key": jira_ticket.key,
     }
+
+
+def jira_issue_permalink(server_url: str, jira_ticket: Issue):
+    """
+    Get the browsable URL of the issue.
+    We're not using the issue.permalink() method because it returns URL from the proxy, and we need the server Base URL.
+
+    Returns:
+        str: browsable URL of the issue
+    """
+    return f"{server_url}/browse/{jira_ticket.key}"

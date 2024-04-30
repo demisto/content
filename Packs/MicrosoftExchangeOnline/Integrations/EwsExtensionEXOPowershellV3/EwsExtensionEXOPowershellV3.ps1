@@ -90,6 +90,28 @@ function ParseMessageTraceToEntryContext([PSObject]$raw_response) {
     #>
 }
 
+function ParseRawResponse([PSObject]$response) {
+    $items = @()
+    ForEach ($item in $response){
+        if ($item -Is [HashTable])
+            {
+        # Need to convert hashtables to ordered dicts so that the keys/values will be in the same order
+            $item = $item | ConvertTo-OrderedDict
+            }
+        elseif ($item -Is [PsCustomObject]){
+            $newItem = @{}
+            $item.PSObject.Properties | ForEach-Object { $newItem[$_.Name] = $_.Value }
+            $item = $newItem | ConvertTo-OrderedDict
+        }
+
+        if($item.Keys -contains "RuleIdentity"){
+            $item.RuleIdentity = ($item.RuleIdentity).ToString()
+        }
+        $items += $item
+    }
+    return $items
+}
+
 
 class ExchangeOnlinePowershellV3Client
 {
@@ -127,7 +149,7 @@ class ExchangeOnlinePowershellV3Client
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration -WarningAction:SilentlyContinue | Out-Null
+        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems,Get-RemoteDomain,Get-MailboxAuditBypassAssociation,Get-User,Get-FederatedOrganizationIdentifier,Get-FederationTrust,Get-MessageTrace,Set-MailboxJunkEmailConfiguration,Get-Mailbox,Get-MailboxJunkEmailConfiguration,Get-InboxRule,Remove-InboxRule -WarningAction:SilentlyContinue | Out-Null
     }
     DisconnectSession()
     {
@@ -1093,6 +1115,138 @@ class ExchangeOnlinePowershellV3Client
         https://docs.microsoft.com/en-us/powershell/module/exchange/get-remotedomain?view=exchange-ps
         #>
     }
+
+    [PSObject]GetRules(
+        [string]$mailbox,
+        [int]$limit
+    )
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($mailbox) {
+                $cmd_params.Mailbox = $mailbox
+            }
+
+            if ($limit -gt 0){
+                $cmd_params.ResultSize = $limit
+            }
+            $response = Get-InboxRule @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Retrieve information about the Inbox rule properties.
+
+        .PARAMETER mailbox
+        The mailox that contains the Inbox rules
+
+        .PARAMETER limit
+        The amount of rules to return.
+
+        .EXAMPLE
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/get-inboxrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]GetRule(
+        [string]$mailbox,
+        [string]$identity
+    )
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($mailbox) {
+                $cmd_params.Mailbox = $mailbox
+            }
+
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+
+            $response = Get-InboxRule @cmd_params -WarningAction:SilentlyContinue
+
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Retrieve information about the Inbox rule properties.
+
+        .PARAMETER mailbox
+        The mailox that contains the Inbox rule
+
+        .PARAMETER identity
+        The Identity parameter the inbox rule that you want to view.
+
+        .EXAMPLE
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/get-inboxrule?view=exchange-ps
+        #>
+    }
+
+    [PSObject]RemoveRule(
+        [string]$mailbox,
+        [string]$identity
+    )
+    {
+        $response = ""
+        try {
+            # Establish session to remote
+            $this.CreateSession()
+            # Import and Execute command
+            $cmd_params = @{ }
+            if ($mailbox) {
+                $cmd_params.Mailbox = $mailbox
+            }
+
+            if ($identity) {
+                $cmd_params.Identity = $identity
+            }
+            $response = Remove-InboxRule -Confirm:$false @cmd_params -WarningAction:SilentlyContinue
+        } finally {
+            $this.DisconnectSession()
+        }
+        return $response
+        <#
+        .DESCRIPTION
+        Remove an Inbox rule.
+
+        .PARAMETER mailbox
+        The mailbox that contains the Inbox rule
+
+        .PARAMETER identity
+        The Identity parameter the inbox rule that you want to remove.
+
+        .EXAMPLE
+
+        .OUTPUTS
+        PSObject - Raw response
+
+        .LINK
+        https://learn.microsoft.com/en-us/powershell/module/exchange/remove-inboxrule?view=exchange-ps
+        #>
+    }
+
 }
 
 function GetEXORecipientCommand
@@ -1197,9 +1351,14 @@ function EXONewTenantAllowBlockListCommand
     $raw_response = $client.EXONewTenantAllowBlockList(
         $entries, $list_type, $list_subtype, $action, $notes, $no_expiration, $expiration_date
     )
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.NewTenantBlocks" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    if($raw_response -eq $null){
+        Write-Output "No Tenant Allow/Block List items were found."
+    }
+    else{
+        $human_readable = TableToMarkdown $raw_response "Results of $command"
+        $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.NewTenantBlocks" = $raw_response }
+        Write-Output $human_readable, $entry_context, $raw_response
+    }
 
 }
 
@@ -1219,9 +1378,14 @@ function EXOGetTenantAllowBlockListCommand
     $raw_response = $client.EXOGetTenantAllowBlockList(
         $entry, $list_type, $list_subtype, $action, $no_expiration, $expiration_date
     )
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.CurrentTenantBlocks" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    if($raw_response -eq $null){
+        Write-Output "No Tenant Allow/Block List items were found."
+    }
+    else{
+        $human_readable = TableToMarkdown $raw_response "Results of $command"
+        $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.CurrentTenantBlocks" = $raw_response }
+        Write-Output $human_readable, $entry_context, $raw_response
+    }
 }
 
 function EXOCountTenantAllowBlockListCommand
@@ -1239,9 +1403,14 @@ function EXOCountTenantAllowBlockListCommand
         ListSubType = $list_subtype
         Count = $m.Count
     }
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.CurrentListCount" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    if($raw_response -eq $null){
+        Write-Output "No Tenant Allow/Block List items were found."
+    }
+    else{
+        $human_readable = TableToMarkdown $raw_response "Results of $command"
+        $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.CurrentListCount" = $raw_response }
+        Write-Output $human_readable, $entry_context, $raw_response
+    }
 
 }
 
@@ -1263,9 +1432,14 @@ function EXORemoveTenantAllowBlockListCommand
     $raw_response = $client.EXORemoveTenantAllowBlockList(
         $entries, $ids, $list_type, $list_subtype
     )
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.RemovedTenantBlocks" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    if($raw_response -eq $null){
+        Write-Output "No Tenant Allow/Block List items were found."
+    }
+    else{
+        $human_readable = TableToMarkdown $raw_response "Results of $command"
+        $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.RemovedTenantBlocks" = $raw_response }
+        Write-Output $human_readable, $entry_context, $raw_response
+    }
 
 }
 
@@ -1432,8 +1606,62 @@ function GetMailboxAuditBypassAssociationCommand {
     $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.MailboxAuditBypassAssociation(obj.Guid === val.Guid)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
+function ListRulesCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $mailbox = $kwargs.mailbox
+    $limit = ($kwargs.limit -as [int])
+    $raw_response = $client.GetRules($mailbox, $limit)
+    if($raw_response -eq $null){
+        Write-Output "No Rules were found."
+    }
+    else{
+        $parsed_raw_response = ParseRawResponse $raw_response
+        $md_columns = $raw_response | Select-Object -Property Identity, Name, Enabled, Priority, RuleIdentity
+        $human_readable = TableToMarkdown $md_columns "Results of $command"
+        $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule(obj.RuleIdentity === val.RuleIdentity)" = $parsed_raw_response }
+        Write-Output $human_readable, $entry_context, $parsed_raw_response
+    }
+}
+function GetRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $mailbox = $kwargs.mailbox
+    $identity = $kwargs.identity
+    $raw_response = $client.GetRule($mailbox, $identity)
+    if($raw_response -eq $null){
+        Write-Output "No Rule with identity $identity was found."
+    }
+    else{
+        $parsed_raw_response = ParseRawResponse $raw_response
 
+        $md_columns = $raw_response | Select-Object -Property RuleIdentity, Name, Enabled, Priority, Description, StopProcessingRules, IsValid
+        $human_readable = TableToMarkdown $md_columns "Results of $command"
+        $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.Rule(obj.RuleIdentity == val.RuleIdentity)" = $parsed_raw_response }
+        Write-Output $human_readable, $entry_context, $parsed_raw_response
+    }
 
+}
+function RemoveRuleCommand {
+    [CmdletBinding()]
+    param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV3Client]$client,
+        [hashtable]$kwargs
+    )
+    $mailbox = $kwargs.mailbox
+    $identity = $kwargs.identity
+    $result = $client.RemoveRule($mailbox, $identity)
+    $raw_response = @{}
+    $human_readable = "Rule $identity has been deleted successfully"
+    $entry_context = @{}
+    Write-Output $human_readable, $entry_context, $raw_response
+}
 function TestModuleCommand($client)
 {
     try
@@ -1533,6 +1761,15 @@ function Main
             }
             "$script:COMMAND_PREFIX-mailbox-audit-bypass-association-list" {
                 ($human_readable, $entry_context, $raw_response) = GetMailboxAuditBypassAssociationCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-rule-list" {
+                ($human_readable, $entry_context, $raw_response) = ListRulesCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-get-rule" {
+                ($human_readable, $entry_context, $raw_response) = GetRuleCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-remove-rule" {
+                ($human_readable, $entry_context, $raw_response) = RemoveRuleCommand $exo_client $command_arguments
             }
             default {
                 ReturnError "Could not recognize $command"

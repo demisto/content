@@ -35,14 +35,14 @@ args:
   name: contextKeys
 - auto: PREDEFINED
   defaultValue: 'false'
-  description: Remove incident labels
+  description: Remove incident labels.
   name: removeLabels
   predefined:
   - 'true'
   - 'false'
 - description: A comma-separated list of fields in the object to un-poplulate.
   name: unPopulateFields
-- description: Random salt to the hash function
+- description: Random salt to the hash function.
   name: addRandomSalt
 comment: |-
   Hash fields from the incident list.
@@ -65,7 +65,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.12.68714
+dockerimage: demisto/python3:3.10.13.83255
 tests:
 - hashIncidentFields-test
 fromversion: 5.0.0

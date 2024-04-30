@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from datetime import timezone
 import hashlib
 from copy import deepcopy
+from mimetypes import guess_type
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
 
@@ -487,7 +488,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         """
         return self.http_request(
             method='POST',
-            url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/transitions',
+            url_suffix=f'rest/api/{self.api_version}/issue/{issue_id_or_key}/transitions?expand=transitions.fields',
             json_data=json_data,
             resp_type='response',
         )
@@ -759,6 +760,21 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         """
         return self.http_request(
             method='GET', url_suffix=f'rest/api/{self.api_version}/attachment/{attachment_id}'
+        )
+
+    def delete_attachment_file(self, attachment_id: str):
+        """This method is in charge of deleting an attached file.
+
+        Args:
+            attachment_id (str): The id of the attachment file.
+
+        Returns:
+            requests.Response: The raw response of the endpoint.
+        """
+        return self.http_request(
+            method='DELETE',
+            url_suffix=f'rest/api/{self.api_version}/attachment/{attachment_id}',
+            resp_type='response',
         )
 
     @abstractmethod
@@ -1410,6 +1426,26 @@ def get_current_time_in_seconds() -> float:
     return time.time_ns() / (10 ** 9)
 
 
+def create_files_to_upload(file_mime_type: str, file_name: str, file_bytes: bytes, attachment_name: str | None = None) -> tuple:
+    """ Creates the file object to upload to Jira
+        Args:
+            file_mime_type (str): The mime type of the file.
+            file_name (str): The name of the file.
+            file_bytes(bytes): The bytes of the file.
+            attachment_name (str | None): A custom attachment name, if it is empty or None then the attachment's name will be the
+            same one as in XSOAR. Default is None
+
+        Returns:
+            tuple([Dict[tuple(str, bytes, str)]], str): The dift is The file object of new attachment (file name, content in
+            bytes, mime type), and the str is the mime type to upload with the file.
+        """
+    # guess_type can return a None mime type if the type can’t be guessed (missing or unknown suffix). In this case, we should use
+    # a default mime type
+    mime_type_to_upload = file_mime_type if file_mime_type else guess_type(file_name)[0] or 'application-type'
+    demisto.debug(f'In create_files_to_upload {mime_type_to_upload=}')
+    return {'file': (attachment_name or file_name, file_bytes, mime_type_to_upload)}, mime_type_to_upload
+
+
 def create_file_info_from_attachment(client: JiraBaseClient, attachment_id: str, file_name: str = '') -> Dict[str, Any]:
     """Create an XSOAR file entry to return to the server.
 
@@ -1702,52 +1738,56 @@ def get_file_name_and_content(entry_id: str) -> tuple[str, bytes]:
     return file_name, file_bytes
 
 
-def apply_issue_status(client: JiraBaseClient, issue_id_or_key: str, status_name: str) -> requests.Response:
+def apply_issue_status(client: JiraBaseClient, issue_id_or_key: str, status_name: str,
+                       issue_fields: dict[str, Any]) -> requests.Response:
     """This function is in charge of receiving a status of an issue and try to apply it, if it can't, it will throw an error.
 
     Args:
         client (JiraBaseClient): The Jira client.
         issue_id_or_key (str): The issue id or key.
         status_name (str): The name of the status to transition to.
+        issue_fields (dict[str, Any]): Other issue fields to edit while applying the status.
 
     Raises:
         DemistoException: If the given status name was not found or not valid.
 
     Returns:
-        Any: _description_
+        Any: Raw response of the API request.
     """
     res_transitions = client.get_transitions(issue_id_or_key=issue_id_or_key)
     all_transitions = res_transitions.get('transitions', [])
     statuses_name = [transition.get('to', {}).get('name', '') for transition in all_transitions]
     for i, status in enumerate(statuses_name):
         if status.lower() == status_name.lower():
-            json_data = {'transition': {"id": str(all_transitions[i].get('id', ''))}}
+            json_data = {'transition': {"id": str(all_transitions[i].get('id', ''))}} | issue_fields
             return client.transition_issue(
                 issue_id_or_key=issue_id_or_key, json_data=json_data
             )
     raise DemistoException(f'Status "{status_name}" not found. \nValid statuses are: {statuses_name} \n')
 
 
-def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transition_name: str) -> requests.Response:
+def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transition_name: str,
+                           issue_fields: dict[str, Any]) -> requests.Response:
     """In charge of receiving a transition to perform on an issue and try to apply it, if it can't, it will throw an error.
 
     Args:
         client (JiraBaseClient): The Jira client.
         issue_id_or_key (str): The issue id or key.
         transition_name (str): The name of the transition to apply.
+        issue_fields (dict[str, Any]): Other issue fields to edit while applying the transition.
 
     Raises:
         DemistoException: If the given transition was not found or not valid.
 
     Returns:
-        Any: _description_
+        Any: Raw response of the API request.
     """
     res_transitions = client.get_transitions(issue_id_or_key=issue_id_or_key)
     all_transitions = res_transitions.get('transitions', [])
     transitions_name = [transition.get('name', '') for transition in all_transitions]
     for i, transition in enumerate(transitions_name):
         if transition.lower() == transition_name.lower():
-            json_data = {'transition': {"id": str(all_transitions[i].get('id', ''))}}
+            json_data = {'transition': {"id": str(all_transitions[i].get('id', ''))}} | issue_fields
             return client.transition_issue(
                 issue_id_or_key=issue_id_or_key, json_data=json_data
             )
@@ -1933,12 +1973,21 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
+
+    # Validate that no more args are sent when the issue_json arg is used
+    if "issue_json" in args and len(args) > 1:
+        raise DemistoException(
+            "When using the argument `issue_json`, additional arguments cannot be used.ֿֿֿ\n see the argument description"
+        )
+
     args_for_api = deepcopy(args)
     if project_name := args_for_api.get('project_name'):
         args_for_api['project_id'] = get_project_id_from_name(client=client, project_name=project_name)
 
     issue_fields = create_issue_fields(client=client, issue_args=args_for_api,
                                        issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
+    if "summary" not in issue_fields.get("fields", {}):
+        raise DemistoException('The summary argument must be provided.')
     res = client.create_issue(json_data=issue_fields)
     outputs = {'Id': res.get('id', ''), 'Key': res.get('key', '')}
     markdown_dict = outputs | {'Ticket Link': res.get('self', ''),
@@ -1966,42 +2015,82 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    issue_id_or_key = get_issue_id_or_key(issue_id=args.get('issue_id', ''),
-                                          issue_key=args.get('issue_key', ''))
-    status = args.get('status', '')
-    transition = args.get('transition', '')
+    if "issue_json" in args and [
+        k
+        for k in args
+        if k
+        not in ("status", "transition", "action", "issue_id", "issue_key", "issue_json")
+    ]:
+        raise DemistoException(
+            "When using the `issue_json` argument, additional arguments cannot be used "
+            "except `issue_id`, `issue_key`, `status`, `transition`, and `action` arguments.ֿֿֿ"
+            "\n see the argument description"
+        )
+
+    issue_id_or_key = get_issue_id_or_key(
+        issue_id=args.get("issue_id", ""), issue_key=args.get("issue_key", "")
+    )
+    status = args.get("status", "")
+    transition = args.get("transition", "")
     if status and transition:
-        raise DemistoException('Please provide only status or transition, but not both.')
-    elif status:
-        demisto.debug(f'Updating the status to: {status}')
-        apply_issue_status(client=client, issue_id_or_key=issue_id_or_key, status_name=status)
-    elif transition:
-        demisto.debug(f'Updating the status using the transition: {transition}')
-        apply_issue_transition(client=client, issue_id_or_key=issue_id_or_key, transition_name=transition)
-    action = args.get('action', 'rewrite')
-    issue_fields = {}
-    if action == 'rewrite':
-        issue_fields = create_issue_fields(client=client, issue_args=args,
-                                           issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
+        raise DemistoException(
+            "Please provide only status or transition, but not both."
+        )
+
+    # Arrangement of the issue fields
+    action = args.get("action", "rewrite")
+    issue_fields: dict[str, Any] = {}
+    if action == "rewrite":
+        issue_fields = create_issue_fields(
+            client=client,
+            issue_args=args,
+            issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER,
+        )
     else:
         # That means the action was `append`
-        issue_fields = create_issue_fields_for_appending(client=client, issue_args=args,
-                                                         issue_id_or_key=issue_id_or_key)
-    if issue_fields:
-        demisto.debug(f'Updating the issue with the issue fields: {issue_fields}')
-        client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=issue_fields)
-        demisto.debug(f'Issue {issue_id_or_key} was updated successfully')
-        res = client.get_issue(issue_id_or_key=issue_id_or_key)
-        markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=res)
-        return CommandResults(
-            outputs_prefix='Ticket',
-            outputs=outputs,
-            outputs_key_field='Id',
-            readable_output=tableToMarkdown(name=f'Issue {outputs.get("Key", "")}', t=markdown_dict,
-                                            headerTransform=pascalToSpace),
-            raw_response=res
+        issue_fields = create_issue_fields_for_appending(
+            client=client, issue_args=args, issue_id_or_key=issue_id_or_key
         )
-    return CommandResults(readable_output="No issue fields were given to update the issue.")
+
+    demisto.debug(f"Updating the issue with the issue fields: {issue_fields}")
+
+    if status:
+        demisto.debug(f"Updating the status to: {status}")
+        apply_issue_status(
+            client=client,
+            issue_id_or_key=issue_id_or_key,
+            status_name=status,
+            issue_fields=issue_fields,
+        )
+    elif transition:
+        demisto.debug(f"Updating the status using the transition: {transition}")
+        apply_issue_transition(
+            client=client,
+            issue_id_or_key=issue_id_or_key,
+            transition_name=transition,
+            issue_fields=issue_fields,
+        )
+    elif issue_fields:
+        client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=issue_fields)
+    else:
+        return CommandResults(
+            readable_output="No issue fields were given to update the issue."
+        )
+
+    demisto.debug(f"Issue {issue_id_or_key} was updated successfully")
+    res = client.get_issue(issue_id_or_key=issue_id_or_key)
+    markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=res)
+    return CommandResults(
+        outputs_prefix="Ticket",
+        outputs=outputs,
+        outputs_key_field="Id",
+        readable_output=tableToMarkdown(
+            name=f'Issue {outputs.get("Key", "")}',
+            t=markdown_dict,
+            headerTransform=pascalToSpace,
+        ),
+        raw_response=res,
+    )
 
 
 def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
@@ -2021,6 +2110,21 @@ def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
                                           issue_key=args.get('issue_key', ''))
     client.delete_issue(issue_id_or_key=issue_id_or_key)
     return CommandResults(readable_output='Issue deleted successfully.')
+
+
+def delete_attachment_file_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of deleting an attachment file.
+
+    Args:
+        client (JiraBaseClient): The jira client.
+        args (Dict[str, str]): The argument supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    attachment_id = args['attachment_id']
+    client.delete_attachment_file(attachment_id=attachment_id)
+    return CommandResults(readable_output=f'Attachment id {attachment_id} was deleted successfully.')
 
 
 def update_issue_assignee_command(client: JiraBaseClient, args: Dict) -> CommandResults:
@@ -2360,8 +2464,21 @@ def upload_XSOAR_attachment_to_jira(client: JiraBaseClient, entry_id: str,
         List[Dict[str, Any]]: The results of the API, which will hold the newly added attachment.
     """
     file_name, file_bytes = get_file_name_and_content(entry_id=entry_id)
-    files = {'file': (attachment_name or file_name, file_bytes, 'application-type')}
-    return client.upload_attachment(issue_id_or_key=issue_id_or_key, files=files)
+    files, chosen_file_mime_type = create_files_to_upload('', file_name, file_bytes, attachment_name)
+    # try upload the attachment with the specific mime type
+    try:
+        return client.upload_attachment(issue_id_or_key=issue_id_or_key, files=files)
+    except Exception as e:
+        # in case the first call to upload_attachment() failed, check if file_mime_type is the default value,
+        # if yes, we should raise exception
+        if chosen_file_mime_type == 'application-type':
+            raise e
+        # if we used a specific mime type, try upload_attachment() again, with the default type.
+        else:
+            demisto.debug(f'The first call to upload_attachment() with {chosen_file_mime_type=} failed. '
+                          f'Trying again with file_mime_type=application-type')
+            files, _ = create_files_to_upload('application-type', file_name, file_bytes, attachment_name)
+            return client.upload_attachment(issue_id_or_key=issue_id_or_key, files=files)
 
 
 def issue_get_attachment_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Dict[str, Any]]:
@@ -4002,6 +4119,7 @@ def main():  # pragma: no cover
         'jira-epic-issue-list': epic_issues_list_command,
         'jira-issue-link-type-get': get_issue_link_types_command,
         'jira-issue-to-issue-link': link_issue_to_issue_command,
+        'jira-issue-delete-file': delete_attachment_file_command,
     }
     try:
         client: JiraBaseClient

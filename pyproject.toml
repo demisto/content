@@ -4,16 +4,16 @@ version = "0.1.0"
 description = "Cortex XSOAR content"
 authors = ["Cortex XSOAR"]
 license = "MIT"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.22.0"
+demisto-sdk = "1.29.2"
 requests = "^2.22.0"
-pre-commit = "^2.20.0"
-google-cloud-compute = "^1.8.0"
+pre-commit = "^3.5.0"
 dateparser = "^1.1.8"
 
 [tool.poetry.group.linters.dependencies]
@@ -54,6 +54,7 @@ boto3-stubs = { extras = [
     "ssm",
     "wafv2",
 ], version = "^1.28.31" }
+types-protobuf = "^4.24.0.4"
 
 [tool.poetry.group.native]
 # This is the python dependencies from the py3-native docker image.
@@ -127,6 +128,9 @@ tldextract = "*"
 optional = true
 
 [tool.poetry.group.ci.dependencies]
+google-cloud-bigquery = "^3.2.0"
+google-cloud-secret-manager = "^2.13.0"
+google-cloud-compute = "^1.8.0"
 blessings = "^1.7"
 coloredlogs = "^15.0.1"
 pandas = "^1.3.3"
@@ -146,9 +150,7 @@ scp = "^0.14.5"
 humanize = "^4.7.0"
 boto3 = "^1.23.5"
 jsonschema = "^4.6.0"
-google-cloud-bigquery = "^3.2.0"
 db-dtypes = "^1.0.1"
-google-cloud-secret-manager = "^2.13.0"
 json5 = "^0.9.10"
 tqdm = "^4.66.1"
 tabulate = ">=0.8.9,<0.10.0"
@@ -451,6 +453,8 @@ select = [
     "UP037", # quoted-annotation
     "UP038", # non-pep604-isinstance
 
+    "W291", # trailing-whitespace
+
     "YTT101", # sys-version-slice3
     "YTT102", # sys-version2
     "YTT103", # sys-version-cmp-str3
@@ -470,7 +474,7 @@ ignore = [
 
     "W605", # invalid-escape-sequence
 ]
-extend-exclude = ["CommonServerPython", "test_data"]
+extend-exclude = ["CommonServerPython", "test_data", "conftest.py"]
 
 unfixable = [
     "RUF001"  # ambiguous-unicode-character-string
@@ -488,7 +492,6 @@ src = [
 "**/*_test.py" = []
 # Ignore any Python update in ApiModules, until we can proprtly determine their desired version.
 "**/*ApiModule.py"  = [ "UP" ]
-
 [tool.mypy]
 python_version = "3.10"
 check_untyped_defs = true
@@ -513,7 +516,11 @@ exclude = [
 max_line_length = 130
 
 [tool.pytest]
-junit_family = "xunit1"
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+relative_files = true
+omit = ["*/test_data/*", "*_test.py", "demistomock.py", "conftest.py", "**/conftest.py"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

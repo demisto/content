@@ -11,7 +11,7 @@ There are two application authentication methods available:
 
 Depending on the authentication method that you use, the integration parameters might change.
 
-To use the Cortex XSOAR application and allow us access to O365 Outlook Mail (Using Graph API), an admin has to approve our app using an admin consent flow by clicking this [link](https://oproxy.demisto.ninja/ms-graph-mail).
+To use the **Cortex XSOAR application** and allow Cortex XSOAR access to O365 Outlook Mail (Using Graph API), an administrator has to approve our app using an admin consent flow by clicking this **[link](https://oproxy.demisto.ninja/ms-graph-mail)**.
 After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
 
 ### Authentication Based on Azure Managed Identities
@@ -39,19 +39,5 @@ Using a national cloud endpoint is supported by setting the **Server URL** param
 See [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud) for more information.
 
 
-Important to know:
-New commands were added to the integration, which require different application permissions:
-- ***msgraph-mail-create-draft***
-- ***msgraph-mail-send-draft***
-- ***msgraph-mail-reply-to***
-- ***send-mail***
-
 ## Lookback Parameter Notes
 * Setting the lookback parameter will fetch duplicated incidents in the event that incidents that fall out during the given look-back time were already fetched.
-
-
-To use these commands and to fetch incidents,
-you will need to add to your application the **Mail.Send application** permission (not delegated),
-and re-authorize your integration's instance.
-
-If you do not wish to use these commands, you may keep your integration credentials the same.

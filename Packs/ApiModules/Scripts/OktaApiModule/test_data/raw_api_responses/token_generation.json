@@ -1,0 +1,6 @@
+{
+    "token_type": "Bearer",
+    "expires_in": 3600,
+    "access_token": "XXX",
+    "scope": "okta.apps.manage okta.apps.read okta.groups.manage okta.groups.read okta.logs.read okta.networkZones.manage okta.networkZones.read okta.sessions.manage okta.sessions.read okta.users.manage okta.users.read"
+}

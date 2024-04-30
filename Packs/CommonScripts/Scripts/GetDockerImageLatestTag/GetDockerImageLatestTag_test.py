@@ -1,3 +1,4 @@
+import requests_mock
 from GetDockerImageLatestTag import main, find_latest_tag_by_date, lexical_find_latest_tag
 import demistomock as demisto
 import pytest
@@ -56,13 +57,24 @@ MOCK_TAG_LIST = [{
 def test_valid_docker_image(mocker, image):
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+    import os
+    os.environ['HTTP_PROXY'] = ''
+    os.environ['HTTPS_PROXY'] = ''
+    os.environ['http_proxy'] = ''
+    os.environ['https_proxy'] = ''
     demisto_image = 'demisto/' + image
-    args = {'docker_image': demisto_image, 'trust_any_certificate': 'yes'}
+    args = {'docker_image': demisto_image, 'trust_any_certificate': 'yes', 'use_system_proxy': 'no'}
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'results')
     # validate our mocks are good
     assert demisto.args()['docker_image'] == demisto_image
-    main()
+    with requests_mock.Mocker() as m:
+        m.get('https://registry-1.docker.io/v2/', status_code=401,
+              headers={'www-authenticate': 'Bearer realm="https://auth.docker.io/token",service="registry.docker.io"'})
+        m.get(f'https://auth.docker.io/token?scope=repository:{demisto_image}:pull&service=registry.docker.io',
+              status_code=200, json={'token': 123465})
+        m.get(f'https://hub.docker.com/v2/repositories/{demisto_image}/tags', status_code=200, json={'results': MOCK_TAG_LIST})
+        main()
     assert demisto.results.call_count == 1
     # call_args is tuple (args list, kwargs). we only need the first one
     results = demisto.results.call_args[0]
@@ -79,7 +91,13 @@ def test_invalid_docker_image(mocker):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     # validate our mocks are good
     assert demisto.args()['docker_image'] == image_name
-    main()
+    with requests_mock.Mocker() as m:
+        m.get('https://registry-1.docker.io/v2/', status_code=401)
+        m.get('https://auth.docker.io/token?scope=repository:demisto/notrealdockerimage:pull&service=registry.docker.io',
+              status_code=200, json={'token': 123465})
+        m.get('https://hub.docker.com/v2/repositories/demisto/notrealdockerimage/tags', status_code=404)
+        m.get('https://registry-1.docker.io/v2/demisto/notrealdockerimage/tags/list', status_code=401)
+        main()
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]

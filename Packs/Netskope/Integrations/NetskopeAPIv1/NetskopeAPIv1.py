@@ -581,11 +581,11 @@ def get_quarantined_file_command(client: Client, args: Dict[str, str]) -> Comman
 
     quarantine_profile_id = args['quarantine_profile_id']
     file_id = args['file_id']
-
+    file_name = args.get('file_name', file_id)
     response = client.get_quarantined_file_request(quarantine_profile_id=quarantine_profile_id,
                                                    file_id=file_id)
 
-    return fileResult(filename=f'{file_id}.zip', data=response, file_type=EntryType.FILE)
+    return fileResult(filename=file_name, data=response, file_type=EntryType.FILE)
 
 
 def update_quarantined_file_command(client: Client, args: Dict[str, str]) -> CommandResults:

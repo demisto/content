@@ -18,9 +18,10 @@ configuration:
   display: Listen Port
   name: longRunningPort
   type: 0
-  required: true
+  required: false
   section: Connect
-- display: Username
+- additionalinfo: "The username and password is required in XSOAR 8.5 and above"
+  display: Username
   name: credentials
   type: 9
   section: Connect
@@ -56,7 +57,7 @@ display: Generic Webhook
 name: Generic Webhook
 script:
   commands: []
-  dockerimage: demisto/fastapi:1.0.0.76036
+  dockerimage: demisto/fastapi:0.110.3.93571
   longRunning: true
   longRunningPort: true
   script: '-'

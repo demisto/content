@@ -16,10 +16,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cloud Response - Generic
-* Cloud Threat Hunting - Persistence
 * Cloud User Investigation - Generic
+* Cloud Threat Hunting - Persistence
 * Handle False Positive Alerts
+* Cloud Credentials Rotation - Generic
+* Cloud Response - Generic
 
 ### Integrations
 
@@ -27,14 +28,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SearchAlertsV2
+* SearchIncidentsV2
 
 ### Commands
 
-* core-get-IP-analytics-prevalence
-* core-get-cloud-original-alerts
 * ip
 * closeInvestigation
+* core-get-cloud-original-alerts
+* core-get-IP-analytics-prevalence
 
 ## Playbook Inputs
 
@@ -44,6 +45,11 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | autoUserRemediation | Whether to execute the user remediation automatically. \(Default: False\) | False | Optional |
 | autoBlockIndicators | Whether to execute the block remediation automatically. \(Default: False\) | False | Optional |
+| credentialsRemediationType | The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:<br/><br/>Reset: By entering "Reset" in the input, the playbook will execute password reset.<br/>Supports: AWS, MSGraph Users, GCP and GSuite Admin.<br/><br/>Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.<br/>Supports: GCP, GSuite Admin and MSGraph Users.<br/><br/>Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.<br/>Supports: AWS.<br/><br/>ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP. | Reset | Optional |
+| shouldCloneSA | Whether to clone the compromised SA before putting a deny policy to it.<br/>Supports: AWS.<br/>True/False | False | Optional |
+| newInstanceProfileName | The new instance profile name to assign in the clone service account flow. |  | Optional |
+| AWS-newRoleName | The new role name to assign in the clone service account flow. |  | Optional |
+| AWS-roleNameToRestrict | If provided, the role will be attached with a deny policy without the compute instance analysis flow. |  | Optional |
 
 ## Playbook Outputs
 

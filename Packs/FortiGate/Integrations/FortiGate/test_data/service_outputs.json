@@ -1,0 +1,71 @@
+[
+    {
+        "AppServiceType": "disable",
+        "Category": "Network Services",
+        "CheckResetRange": "default",
+        "Comment": "",
+        "FabricObject": "disable",
+        "FQDN": "",
+        "Helper": "auto",
+        "IPRange": "0.0.0.0",
+        "Name": "Pichu",
+        "Ports": {
+            "SCTP": "",
+            "TCP": "53",
+            "UDP": "53"
+        },
+        "Protocol": "TCP/UDP/SCTP",
+        "Proxy": "disable",
+        "SessionTTL": "0",
+        "TCPHalfcloseTimer": 0,
+        "TCPHalfopenTimer": 0,
+        "TCPRSTTimer": 0,
+        "TCPTimewaitTimer": 0,
+        "UDPIdleTimer": 0,
+        "VDOM": "root"
+    },
+    {
+        "AppServiceType": "disable",
+        "Category": "General",
+        "CheckResetRange": "default",
+        "Comment": "",
+        "FabricObject": "disable",
+        "FQDN": "",
+        "Helper": "auto",
+        "IPRange": "0.0.0.0",
+        "Name": "Pikachu",
+        "Protocol": "IP",
+        "ProtocolNumber": 0,
+        "Proxy": "disable",
+        "SessionTTL": "0",
+        "TCPHalfcloseTimer": 0,
+        "TCPHalfopenTimer": 0,
+        "TCPRSTTimer": 0,
+        "TCPTimewaitTimer": 0,
+        "UDPIdleTimer": 0,
+        "VDOM": "root"
+    },
+    {
+        "AppServiceType": "disable",
+        "Category": "Web Proxy",
+        "CheckResetRange": "default",
+        "Comment": "",
+        "FabricObject": "disable",
+        "FQDN": "",
+        "Helper": "auto",
+        "IPRange": "0.0.0.0",
+        "Name": "Riachu",
+        "Ports": {
+            "TCP": "0-65535:0-65535"
+        },
+        "Protocol": "ALL",
+        "Proxy": "enable",
+        "SessionTTL": "0",
+        "TCPHalfcloseTimer": 0,
+        "TCPHalfopenTimer": 0,
+        "TCPRSTTimer": 0,
+        "TCPTimewaitTimer": 0,
+        "UDPIdleTimer": 0,
+        "VDOM": "root"
+    }
+]

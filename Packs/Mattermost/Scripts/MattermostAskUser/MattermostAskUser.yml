@@ -13,10 +13,10 @@ args:
 - name: user
   required: true
   default: true
-  description: The mattermost user to ask - can be either email or mattermost username
+  description: The mattermost user to ask - can be either email or mattermost username.
 - name: message
   required: true
-  description: The message ask the user
+  description: The message ask the user.
 - name: option1
   description: First option for a user reply. "yes" is the default.
 - name: option2
@@ -24,19 +24,19 @@ args:
 - name: task
   description: Which task should we close with the reply. If none then no playbook tasks will be closed.
 - name: replyEntriesTag
-  description: Tag to add on email reply entries
+  description: Tag to add on email reply entries.
 - name: persistent
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: Indicates whether to use one-time entitlement or a persistent one
+  description: Indicates whether to use one-time entitlement or a persistent one.
   defaultValue: "false"
 scripttarget: 0
 dependson:
   must:
   - mattermost-send
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 tests:
 - No tests (auto formatted)

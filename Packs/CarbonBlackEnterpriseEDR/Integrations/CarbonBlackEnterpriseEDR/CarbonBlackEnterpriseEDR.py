@@ -1,12 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Union, Dict, Optional, Any, Tuple, List
 
+from typing import Any
 import dateparser
-
 import requests
 import urllib3
-from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -34,13 +33,13 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix=url_suffix, json_data=body)
 
-    def search_alerts_request(self, group_results: bool = None, minimum_severity: int = None, create_time: Dict = None,
-                              device_os_version: List = None, policy_id: List = None, alert_tag: List = None,
-                              alert_id: List = None, device_username: List = None, device_id: List = None,
-                              device_os: List = None, process_sha256: List = None, policy_name: List = None,
-                              reputation: List = None, alert_type: List = None, alert_category: List = None,
-                              workflow: List = None, device_name: List = None, process_name: List = None,
-                              sort_field: str = None, sort_order: str = None, limit: str = None) -> Dict:
+    def search_alerts_request(self, group_results: bool = None, minimum_severity: int = None, create_time: dict = None,
+                              device_os_version: list = None, policy_id: list = None, alert_tag: list = None,
+                              alert_id: list = None, device_username: list = None, device_id: list = None,
+                              device_os: list = None, process_sha256: list = None, policy_name: list = None,
+                              reputation: list = None, alert_type: list = None, alert_category: list = None,
+                              workflow: list = None, device_name: list = None, process_name: list = None,
+                              sort_field: str = None, sort_order: str = None, limit: str = None) -> dict:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/alerts/_search'
         body = {
             'criteria': assign_params(
@@ -76,7 +75,7 @@ class Client(BaseClient):
         return self._http_request('POST', suffix_url, json_data=body)
 
     def alert_workflow_update_request(self, alert_id: str = None, state: str = None, comment: str = None,
-                                      remediation_state: str = None) -> Dict:
+                                      remediation_state: str = None) -> dict:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/alerts/{alert_id}/workflow'
         body = assign_params(
             state=state,
@@ -86,10 +85,10 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def devices_list_request(self, device_id: List = None, status: List = None, device_os: List = None,
-                             last_contact_time: Dict[str, Optional[Any]] = None, ad_group_id: List = None,
-                             policy_id: List = None, target_priority: List = None, limit: int = None,
-                             sort_field: str = None, sort_order: str = None) -> Dict:
+    def devices_list_request(self, device_id: list = None, status: list = None, device_os: list = None,
+                             last_contact_time: dict[str, Any | None] = None, ad_group_id: list = None,
+                             policy_id: list = None, target_priority: list = None, limit: int = None,
+                             sort_field: str = None, sort_order: str = None) -> dict:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/devices/_search'
 
         body = {
@@ -114,7 +113,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def device_quarantine_request(self, device_id: List = None) -> None:
+    def device_quarantine_request(self, device_id: list = None) -> None:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -127,7 +126,7 @@ class Client(BaseClient):
 
         self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_unquarantine_request(self, device_id: List = None) -> None:
+    def device_unquarantine_request(self, device_id: list = None) -> None:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -140,7 +139,7 @@ class Client(BaseClient):
 
         self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_bypass_request(self, device_id: List = None) -> None:
+    def device_bypass_request(self, device_id: list = None) -> None:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -153,7 +152,7 @@ class Client(BaseClient):
 
         self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_unbypass_request(self, device_id: List = None) -> None:
+    def device_unbypass_request(self, device_id: list = None) -> None:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -166,7 +165,7 @@ class Client(BaseClient):
 
         self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_background_scan_request(self, device_id: List = None) -> None:
+    def device_background_scan_request(self, device_id: list = None) -> None:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -179,7 +178,7 @@ class Client(BaseClient):
 
         self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_background_scan_request_stop(self, device_id: List = None) -> None:
+    def device_background_scan_request_stop(self, device_id: list = None) -> None:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -192,7 +191,7 @@ class Client(BaseClient):
 
         self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_policy_update(self, device_id: List = None, policy_id: str = None) -> None:
+    def device_policy_update(self, device_id: list = None, policy_id: str = None) -> None:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -205,11 +204,11 @@ class Client(BaseClient):
 
         self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def list_watchlists_request(self) -> Dict:
+    def list_watchlists_request(self) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists'
         return self._http_request('GET', suffix_url)
 
-    def get_watchlist_by_id_request(self, watchlist_id: str = None) -> Dict:
+    def get_watchlist_by_id_request(self, watchlist_id: str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}'
         return self._http_request('GET', suffix_url)
 
@@ -217,11 +216,11 @@ class Client(BaseClient):
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}'
         self._http_request('DELETE', suffix_url, resp_type='content')
 
-    def watchlist_alert_status_request(self, watchlist_id: str = None) -> Dict:
+    def watchlist_alert_status_request(self, watchlist_id: str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}/alert'
         return self._http_request('GET', suffix_url)
 
-    def enable_watchlist_alert_request(self, watchlist_id: str = None) -> Dict:
+    def enable_watchlist_alert_request(self, watchlist_id: str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}/alert'
         return self._http_request('PUT', suffix_url)
 
@@ -230,7 +229,7 @@ class Client(BaseClient):
         self._http_request('DELETE', suffix_url, resp_type='content')
 
     def create_watchlist_request(self, watchlist_name: str = None, description: str = None, tags_enabled: bool = None,
-                                 alerts_enabled: bool = None, report_ids: List = None, classifier: Dict = None) -> Dict:
+                                 alerts_enabled: bool = None, report_ids: list = None, classifier: dict = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists'
         body = assign_params(
             name=watchlist_name,
@@ -244,8 +243,8 @@ class Client(BaseClient):
         return self._http_request('POST', suffix_url, json_data=body)
 
     def update_watchlist_request(self, watchlist_id: str = None, watchlist_name: str = None, description: str = None,
-                                 tags_enabled: bool = None, alerts_enabled: bool = None, report_ids: List = None,
-                                 classifier: Dict = None) -> Dict:
+                                 tags_enabled: bool = None, alerts_enabled: bool = None, report_ids: list = None,
+                                 classifier: dict = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}'
         body = assign_params(
             name=watchlist_name,
@@ -257,12 +256,12 @@ class Client(BaseClient):
         )
         return self._http_request('PUT', suffix_url, json_data=body)
 
-    def get_ignore_ioc_status_request(self, report_id: str = None, ioc_id: str = None) -> Dict:
+    def get_ignore_ioc_status_request(self, report_id: str = None, ioc_id: str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id})/iocs/{ioc_id}/ignore'
 
         return self._http_request('GET', suffix_url)
 
-    def ignore_ioc_request(self, report_id: str = None, ioc_id: str = None) -> Dict:
+    def ignore_ioc_request(self, report_id: str = None, ioc_id: str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}/iocs/{ioc_id}/ignore'
 
         return self._http_request('PUT', suffix_url)
@@ -272,13 +271,13 @@ class Client(BaseClient):
 
         self._http_request('DELETE', suffix_url, resp_type='content')
 
-    def get_report_request(self, report_id: str = None) -> Dict:
+    def get_report_request(self, report_id: str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}'
 
         return self._http_request('GET', suffix_url)
 
-    def create_report_request(self, title: str = None, description: str = None, tags: List = None, severity: int = None,
-                              iocs: Dict = None, timestamp: int = None) -> Dict:
+    def create_report_request(self, title: str = None, description: str = None, tags: list = None, severity: int = None,
+                              iocs: dict = None, timestamp: int = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports'
 
         body = assign_params(
@@ -291,7 +290,7 @@ class Client(BaseClient):
         )
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def ignore_report_request(self, report_id: str = None) -> Dict:
+    def ignore_report_request(self, report_id: str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}/ignore'
 
         return self._http_request('PUT', suffix_url)
@@ -301,7 +300,7 @@ class Client(BaseClient):
 
         self._http_request('DELETE', suffix_url, resp_type='content')
 
-    def get_report_ignore_status_request(self, report_id: str = None) -> Dict:
+    def get_report_ignore_status_request(self, report_id: str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}/ignore'
         return self._http_request('GET', suffix_url)
 
@@ -311,8 +310,8 @@ class Client(BaseClient):
         self._http_request('DELETE', suffix_url, resp_type='content')
 
     def update_report_request(self, report_id: str = None, title: str = None, description: str = None,
-                              severity: int = None, iocs: Dict = None, tags: List = None,
-                              timestamp: int = None) -> Dict:
+                              severity: int = None, iocs: dict = None, tags: list = None,
+                              timestamp: int = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}'
         body = assign_params(
             title=title,
@@ -324,15 +323,15 @@ class Client(BaseClient):
         )
         return self._http_request('PUT', suffix_url, json_data=body)
 
-    def get_file_device_summary_request(self, sha256: str = None) -> Dict:
+    def get_file_device_summary_request(self, sha256: str = None) -> dict:
         suffix_url = f'ubs/v1/orgs/{self.cb_org_key}/sha256/{sha256}/summary/device'
         return self._http_request('GET', suffix_url)
 
-    def get_file_metadata_request(self, sha256: str = None) -> Dict:
+    def get_file_metadata_request(self, sha256: str = None) -> dict:
         suffix_url = f'ubs/v1/orgs/{self.cb_org_key}/sha256/{sha256}/metadata'
         return self._http_request('GET', suffix_url)
 
-    def get_file_request(self, sha256: List = None, expiration_seconds: int = None) -> Dict:
+    def get_file_request(self, sha256: list = None, expiration_seconds: int = None) -> dict:
         suffix_url = f'/ubs/v1/orgs/{self.cb_org_key}/file/_download'
         body = assign_params(
             sha256=sha256,
@@ -341,7 +340,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def get_file_path_request(self, sha256: str = None) -> Dict:
+    def get_file_path_request(self, sha256: str = None) -> dict:
         suffix_url = f'/ubs/v1/orgs/{self.cb_org_key}/sha256/{sha256}/summary/file_path'
         return self._http_request('GET', suffix_url)
 
@@ -412,6 +411,40 @@ class Client(BaseClient):
         response = self._http_request('POST', suffix_url, json_data=body)
         return response
 
+    def update_threat_tags(self, threat_id: str = None, tags: list = None) -> dict:
+
+        suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/threats/{threat_id}/tags'
+
+        body = {
+            "tags": tags
+        }
+
+        return self._http_request('POST', suffix_url, json_data=body)
+
+    def create_threat_notes(self, threat_id: str = None, notes: str = None) -> dict:
+
+        suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/threats/{threat_id}/notes'
+        body = {
+            "note": notes
+        }
+        return self._http_request('POST', suffix_url, json_data=body)
+
+    def update_alert_notes(self, alert_id: str = None, notes: str = None) -> dict:
+
+        suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/alerts/{alert_id}/notes'
+
+        body = {
+            "note": notes
+        }
+
+        return self._http_request('POST', suffix_url, json_data=body)
+
+    def get_threat_tags(self, threat_id: str = None) -> dict:
+
+        suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/threats/{threat_id}/tags'
+
+        return self._http_request('GET', suffix_url)
+
 
 def test_module(client):
     """
@@ -427,7 +460,7 @@ def test_module(client):
     return 'ok'
 
 
-def alert_list_command(client: Client, args: Dict) -> Union[CommandResults, str]:
+def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     group_results = args.get('group_results')
     minimum_severity = args.get('minimum_severity')
     create_time = assign_params(
@@ -489,7 +522,7 @@ def alert_list_command(client: Client, args: Dict) -> Union[CommandResults, str]
     return results
 
 
-def alert_workflow_update_command(client: Client, args: Dict) -> CommandResults:
+def alert_workflow_update_command(client: Client, args: dict) -> CommandResults:
     alert_id = args.get('alert_id')
     state = args.get('state')
     comment = args.get('comment')
@@ -517,7 +550,7 @@ def alert_workflow_update_command(client: Client, args: Dict) -> CommandResults:
     return results
 
 
-def list_devices_command(client: Client, args: Dict) -> Union[CommandResults, str]:
+def list_devices_command(client: Client, args: dict) -> CommandResults | str:
     device_id = argToList(args.get('device_id'))
     status = argToList(args.get('status'))
     device_os = argToList(args.get('device_os'))
@@ -579,49 +612,49 @@ def list_devices_command(client: Client, args: Dict) -> Union[CommandResults, st
     return results
 
 
-def device_quarantine_command(client: Client, args: Dict) -> str:
+def device_quarantine_command(client: Client, args: dict) -> str:
     device_id = argToList(args.get('device_id'))
     client.device_quarantine_request(device_id)
 
     return f'The device {device_id} has been quarantined successfully.'
 
 
-def device_unquarantine_command(client: Client, args: Dict) -> str:
+def device_unquarantine_command(client: Client, args: dict) -> str:
     device_id = argToList(args.get('device_id'))
     client.device_unquarantine_request(device_id)
 
     return f'The device {device_id} has been unquarantined successfully.'
 
 
-def device_bypass_command(client: Client, args: Dict) -> str:
+def device_bypass_command(client: Client, args: dict) -> str:
     device_id = argToList(args.get('device_id'))
     client.device_bypass_request(device_id)
 
     return f'The device {device_id} bypass has been enabled successfully.'
 
 
-def device_unbypass_command(client: Client, args: Dict) -> str:
+def device_unbypass_command(client: Client, args: dict) -> str:
     device_id = argToList(args.get('device_id'))
     client.device_unbypass_request(device_id)
 
     return f'The device {device_id} bypass has been disabled successfully.'
 
 
-def device_background_scan_command(client: Client, args: Dict) -> str:
+def device_background_scan_command(client: Client, args: dict) -> str:
     device_id = argToList(args.get('device_id'))
     client.device_background_scan_request(device_id)
 
     return f'The device {device_id} background scan has been enabled successfully.'
 
 
-def device_background_scan_stop_command(client: Client, args: Dict) -> str:
+def device_background_scan_stop_command(client: Client, args: dict) -> str:
     device_id = argToList(args.get('device_id'))
     client.device_background_scan_request_stop(device_id)
 
     return f'The device {device_id} background scan has been disabled successfully.'
 
 
-def device_policy_update_command(client: Client, args: Dict) -> str:
+def device_policy_update_command(client: Client, args: dict) -> str:
     device_id = argToList(args.get('device_id'))
     policy_id = args.get('policy_id')
 
@@ -630,7 +663,7 @@ def device_policy_update_command(client: Client, args: Dict) -> str:
     return f'The policy {policy_id} has been assigned to device {device_id} successfully.'
 
 
-def list_watchlists_command(client: Client) -> Union[CommandResults, str]:
+def list_watchlists_command(client: Client) -> CommandResults | str:
     contents = []
     headers = ['ID', 'Name', 'Description', 'create_timestamp', 'Alerts_enabled', 'Tags_enabled', 'Report_ids',
                'Last_update_timestamp', 'Classifier']
@@ -663,7 +696,7 @@ def list_watchlists_command(client: Client) -> Union[CommandResults, str]:
     return results
 
 
-def get_watchlist_by_id_command(client: Client, args: Dict) -> CommandResults:
+def get_watchlist_by_id_command(client: Client, args: dict) -> CommandResults:
     watchlist_id = args.get('watchlist_id')
     result = client.get_watchlist_by_id_request(watchlist_id)
     headers = ['ID', 'Name', 'Description', 'create_timestamp', 'Alerts_enabled', 'Tags_enabled', 'Report_ids',
@@ -692,7 +725,7 @@ def get_watchlist_by_id_command(client: Client, args: Dict) -> CommandResults:
     return results
 
 
-def watchlist_alert_status_command(client: Client, args: Dict) -> str:
+def watchlist_alert_status_command(client: Client, args: dict) -> str:
     watchlist_id = args.get('watchlist_id')
     result = client.watchlist_alert_status_request(watchlist_id)
 
@@ -702,21 +735,21 @@ def watchlist_alert_status_command(client: Client, args: Dict) -> str:
         return f'Watchlist {watchlist_id} alert status is On'
 
 
-def enable_watchlist_alert_command(client: Client, args: Dict) -> str:
+def enable_watchlist_alert_command(client: Client, args: dict) -> str:
     watchlist_id = args.get('watchlist_id')
     client.enable_watchlist_alert_request(watchlist_id)
 
     return f'Watchlist {watchlist_id} alert was enabled successfully.'
 
 
-def disable_watchlist_alert_command(client: Client, args: Dict) -> str:
+def disable_watchlist_alert_command(client: Client, args: dict) -> str:
     watchlist_id = args.get('watchlist_id')
     client.disable_watchlist_alert_request(watchlist_id)
 
     return f'Watchlist {watchlist_id} alert was disabled successfully.'
 
 
-def create_watchlist_command(client: Client, args: Dict) -> CommandResults:
+def create_watchlist_command(client: Client, args: dict) -> CommandResults:
     watchlist_name = args.get('watchlist_name')
     description = args.get('description')
     tags_enabled = args.get('tags_enabled')
@@ -758,14 +791,14 @@ def create_watchlist_command(client: Client, args: Dict) -> CommandResults:
     return results
 
 
-def delete_watchlist_command(client: Client, args: Dict) -> str:
+def delete_watchlist_command(client: Client, args: dict) -> str:
     watchlist_id = args.get('watchlist_id')
     client.delete_watchlist_request(watchlist_id)
 
     return f'The watchlist {watchlist_id} was deleted successfully.'
 
 
-def update_watchlist_command(client: Client, args: Dict) -> CommandResults:
+def update_watchlist_command(client: Client, args: dict) -> CommandResults:
     watchlist_id = args.get('watchlist_id')
     watchlist_name = args.get('watchlist_name')
     description = args.get('description')
@@ -808,7 +841,7 @@ def update_watchlist_command(client: Client, args: Dict) -> CommandResults:
     return results
 
 
-def get_report_command(client: Client, args: Dict) -> CommandResults:
+def get_report_command(client: Client, args: dict) -> CommandResults:
     report_id = args.get('report_id')
     result = client.get_report_request(report_id)
     headers = ['ID', 'Title', 'Timestamp', 'Description', 'Severity', 'Link', 'IOCs_v2', 'Tags', 'Visibility']
@@ -858,7 +891,7 @@ def get_report_command(client: Client, args: Dict) -> CommandResults:
     return results
 
 
-def get_ignore_ioc_status_command(client: Client, args: Dict) -> str:
+def get_ignore_ioc_status_command(client: Client, args: dict) -> str:
     report_id = args.get('report_id')
     ioc_id = args.get('ioc_id')
 
@@ -870,7 +903,7 @@ def get_ignore_ioc_status_command(client: Client, args: Dict) -> str:
         return f'IOC {ioc_id} status is true'
 
 
-def ignore_ioc_command(client: Client, args: Dict) -> str:
+def ignore_ioc_command(client: Client, args: dict) -> str:
     report_id = args.get('report_id')
     ioc_id = args.get('ioc_id')
 
@@ -879,7 +912,7 @@ def ignore_ioc_command(client: Client, args: Dict) -> str:
     return f'The IOC {ioc_id} for report {report_id} will not match future events for any watchlist.'
 
 
-def reactivate_ioc_command(client: Client, args: Dict) -> str:
+def reactivate_ioc_command(client: Client, args: dict) -> str:
     report_id = args.get('report_id')
     ioc_id = args.get('ioc_id')
 
@@ -888,7 +921,7 @@ def reactivate_ioc_command(client: Client, args: Dict) -> str:
     return f'IOC {ioc_id} for report {report_id} will match future events for all watchlists.'
 
 
-def create_report_command(client: Client, args: Dict) -> CommandResults:
+def create_report_command(client: Client, args: dict) -> CommandResults:
     title = args.get('title')
     description = args.get('description')
     tags = argToList(args.get('tags'))
@@ -955,7 +988,7 @@ def create_report_command(client: Client, args: Dict) -> CommandResults:
     return results
 
 
-def ignore_report_command(client: Client, args: Dict) -> str:
+def ignore_report_command(client: Client, args: dict) -> str:
     report_id = args.get('report_id')
 
     client.ignore_report_request(report_id)
@@ -964,7 +997,7 @@ def ignore_report_command(client: Client, args: Dict) -> str:
            f'for any watchlist.'
 
 
-def reactivate_report_command(client: Client, args: Dict) -> str:
+def reactivate_report_command(client: Client, args: dict) -> str:
     report_id = args.get('report_id')
 
     client.reactivate_report_request(report_id)
@@ -972,7 +1005,7 @@ def reactivate_report_command(client: Client, args: Dict) -> str:
     return f'Report with report_id "{report_id}" and all contained IOCs will match future events for all watchlists.'
 
 
-def get_report_ignore_status_command(client: Client, args: Dict) -> str:
+def get_report_ignore_status_command(client: Client, args: dict) -> str:
     report_id = args.get('report_id')
 
     result = client.get_report_ignore_status_request(report_id)
@@ -983,14 +1016,14 @@ def get_report_ignore_status_command(client: Client, args: Dict) -> str:
         return f'ignore status for report with report_id "{report_id}" is enabled.'
 
 
-def remove_report_command(client: Client, args: Dict) -> str:
+def remove_report_command(client: Client, args: dict) -> str:
     report_id = args.get('report_id')
     client.remove_report_request(report_id)
 
     return f'The report "{report_id}" was deleted successfully.'
 
 
-def update_report_command(client: Client, args: Dict) -> CommandResults:
+def update_report_command(client: Client, args: dict) -> CommandResults:
     report_id = args.get('report_id')
     title = args.get('title')
     description = args.get('description')
@@ -1060,7 +1093,7 @@ def update_report_command(client: Client, args: Dict) -> CommandResults:
     return results
 
 
-def get_file_device_summary(client: Client, args: Dict) -> CommandResults:
+def get_file_device_summary(client: Client, args: dict) -> CommandResults:
     sha256 = args.get('sha256')
     result = client.get_file_device_summary_request(sha256)
     readable_output = tableToMarkdown('The file device summary', result)
@@ -1074,7 +1107,7 @@ def get_file_device_summary(client: Client, args: Dict) -> CommandResults:
     return results
 
 
-def get_file_metadata_command(client: Client, args: Dict) -> CommandResults:
+def get_file_metadata_command(client: Client, args: dict) -> CommandResults:
     sha256 = args.get('sha256')
     result = client.get_file_metadata_request(sha256)
     headers = ['SHA256', 'file_size', 'original_filename', 'internal_name', 'os_type', 'comments']
@@ -1118,7 +1151,7 @@ def get_file_metadata_command(client: Client, args: Dict) -> CommandResults:
     return results
 
 
-def get_file_command(client: Client, args: Dict) -> CommandResults:
+def get_file_command(client: Client, args: dict) -> CommandResults:
     sha256 = argToList(args.get('sha256'))
     expiration_seconds = args.get('expiration_seconds')
     download_to_xsoar = args.get('download_to_xsoar')
@@ -1148,7 +1181,7 @@ def get_file_command(client: Client, args: Dict) -> CommandResults:
     return results
 
 
-def get_file_path_command(client: Client, args: Dict) -> CommandResults:
+def get_file_path_command(client: Client, args: dict) -> CommandResults:
     sha256 = args.get('sha256')
 
     result = client.get_file_path_request(sha256)
@@ -1163,7 +1196,7 @@ def get_file_path_command(client: Client, args: Dict) -> CommandResults:
     return results
 
 
-def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: Dict) -> Tuple[List, Dict]:
+def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: dict) -> tuple[list, dict]:
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
     if not last_fetched_alert_create_time:
@@ -1207,7 +1240,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     return incidents, res
 
 
-def process_search_command(client: Client, args: Dict) -> CommandResults:
+def process_search_command(client: Client, args: dict) -> CommandResults:
     """
     Gets arguments for a process search task, and returns the task's id and status.
     """
@@ -1234,7 +1267,7 @@ def process_search_command(client: Client, args: Dict) -> CommandResults:
                           outputs=output, outputs_key_field='job_id', readable_output=readable_output)
 
 
-def event_by_process_search_command(client: Client, args: Dict) -> CommandResults:
+def event_by_process_search_command(client: Client, args: dict) -> CommandResults:
     """
     Gets arguments for an event-by-process search task, and returns the task's results.
     """
@@ -1271,7 +1304,7 @@ def event_by_process_search_command(client: Client, args: Dict) -> CommandResult
                           raw_response=result, readable_output=readable)
 
 
-def process_search_get_command(client: Client, args: Dict) -> List[CommandResults]:
+def process_search_get_command(client: Client, args: dict) -> list[CommandResults]:
     """
     Gets a process search task's id, and returns the task's results.
     """
@@ -1289,6 +1322,89 @@ def process_search_get_command(client: Client, args: Dict) -> List[CommandResult
                                               raw_response=raw_result,
                                               readable_output=human_readable))
     return job_result_list
+
+
+def add_threat_tags_command(client: Client, args: dict) -> CommandResults:
+    tags = argToList(args.get("tags"))
+    threat_id = args.get("threat_id")
+    result = client.update_threat_tags(threat_id, tags)
+
+    readable_output = tableToMarkdown(f'Successfully updated threat: "{threat_id}"', result, removeNull=True)
+    outputs = {
+        'ThreatID': threat_id,
+        'Tags': result.get('tags')
+    }
+
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.Threat',
+        outputs_key_field='tags',
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=result
+    )
+    return results
+
+
+def add_threat_notes_command(client: Client, args: dict) -> CommandResults:
+    notes = args.get("notes")
+    threat_id = args.get("threat_id")
+    result = client.create_threat_notes(threat_id, notes)
+
+    readable_output = tableToMarkdown(f'Successfully added notes to threat: "{threat_id}"', result, removeNull=True)
+    outputs = {
+        'ThreatID': threat_id,
+        'Notes': notes
+    }
+
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.Threat',
+        outputs_key_field='ThreatID',
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=result
+    )
+    return results
+
+
+def add_alert_notes_command(client: Client, args: dict) -> CommandResults:
+    notes = args.get("notes")
+    alert_id = args.get("alert_id")
+    result = client.update_alert_notes(alert_id, notes)
+
+    readable_output = tableToMarkdown(f'Successfully added notes to alert: "{alert_id}"', result, removeNull=True)
+    outputs = {
+        'AlertID': alert_id,
+        'Notes': notes
+    }
+
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.Threat',
+        outputs_key_field='AlertID',
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=result
+    )
+    return results
+
+
+def get_threat_tags_command(client: Client, args: dict) -> CommandResults:
+    threat_id = args.get("threat_id")
+    result = client.get_threat_tags(threat_id)
+
+    readable_output = tableToMarkdown(f'Successfully sent for threat: "{threat_id}"', result, removeNull=True)
+    outputs = {
+        'ThreatID': threat_id,
+        'Tags': result.get('list')
+    }
+
+    results = CommandResults(
+        outputs_prefix='CarbonBlackEEDR.Threat',
+        outputs_key_field='ThreatID',
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=result
+    )
+    return results
 
 
 def main():
@@ -1434,6 +1550,18 @@ def main():
 
         elif demisto.command() == 'cb-eedr-events-by-process-get':
             return_results(event_by_process_search_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-add-threat-tags':
+            return_results(add_threat_tags_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-add-threat-notes':
+            return_results(add_threat_notes_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-add-alert-notes':
+            return_results(add_alert_notes_command(client, demisto.args()))
+
+        elif demisto.command() == 'cb-eedr-get-threat-tags':
+            return_results(get_threat_tags_command(client, demisto.args()))
 
     # Log exceptions
     except Exception as e:

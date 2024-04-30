@@ -1,10 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 import enum
 import http
 from collections.abc import Callable
 from typing import Any, TypeVar
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 
 BASE_URL = 'https://api.umbrella.com'
 
@@ -83,17 +84,39 @@ class Client(BaseClient):
         Log in to the API using the API key and API secret.
         The access token is stored in the headers of the request.
         """
-        response = self._http_request(
-            method='POST',
-            url_suffix=Client.AUTH_SUFFIX,
-            auth=(self.api_key, self.api_secret),
-        )
+        access_token = self.get_access_token()
+        self._headers['Authorization'] = f'Bearer {access_token}'
 
-        try:
-            access_token = response['access_token']
-            self._headers['Authorization'] = f'Bearer {access_token}'
-        except Exception as e:
-            raise DemistoException(f'Failed logging in: {response}') from e
+    def get_access_token(self):
+        """
+        Get an access token that was previously created if it is still valid, else, generate a new access token from
+        the API key and secret.
+        """
+        # Check if there is an existing valid access token
+        integration_context = get_integration_context()
+        if integration_context.get('access_token') and integration_context.get('expiry_time') > date_to_timestamp(datetime.now()):
+            return integration_context.get('access_token')
+        else:
+            try:
+                res = self._http_request(
+                    method='POST',
+                    url_suffix=Client.AUTH_SUFFIX,
+                    headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                    auth=(self.api_key, self.api_secret),
+                    data={'grant_type': 'client_credentials'}
+                )
+                if res.get('access_token'):
+                    expiry_time = date_to_timestamp(datetime.now(), date_format='%Y-%m-%dT%H:%M:%S')
+                    expiry_time += res.get('expires_in', 0) * 1000 - 10
+                    context = {
+                        'access_token': res.get('access_token'),
+                        'expiry_time': expiry_time
+                    }
+                    set_integration_context(context)
+                    return res.get('access_token')
+            except Exception as e:
+                return_error(f'Error occurred while creating an access token. Please check the instance configuration.'
+                             f'\n\n{e.args[0]}')
 
     def _get_destination_payload(
         self,

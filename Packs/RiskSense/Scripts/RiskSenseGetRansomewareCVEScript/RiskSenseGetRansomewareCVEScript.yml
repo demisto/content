@@ -112,7 +112,7 @@ outputs:
   description: Whether the threat is trending.
   type: boolean
 - contextPath: Date.CurrentDate
-  description: The current date
+  description: The current date.
   type: String
 - contextPath: Date.WeekAgoDate
   description: The date that was 7 days ago starting from current date.
@@ -132,7 +132,7 @@ type: python
 dependson:
   must:
   - '|||risksense-get-host-findings'
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.13.83255
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0

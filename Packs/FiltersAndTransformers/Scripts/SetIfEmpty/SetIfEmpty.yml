@@ -18,14 +18,12 @@ commonfields:
 enabled: true
 name: SetIfEmpty
 script: '-'
-subtype: python3
 tags:
 - transformer
 - general
 - entirelist
 timeout: '0'
-type: python
+type: javascript
 fromversion: 5.0.0
 tests:
-- SetIfEmpty - non-ascii chars - Test
-dockerimage: demisto/python3:3.10.12.63474
+- SetIfEmpty_Test

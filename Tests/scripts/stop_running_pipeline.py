@@ -12,8 +12,8 @@ from Tests.scripts.gcp_instances import InstancesService
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.scripts.utils.log_util import install_logging
 
-GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://code.pan.run')  # disable-secrets-detection
-GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 2596  # the default is the id of the content repo in code.pan.run
+GITLAB_SERVER_URL = os.getenv('CI_SERVER_URL', 'https://gitlab.xdr.pan.local')  # disable-secrets-detection
+GITLAB_PROJECT_ID = os.getenv('CI_PROJECT_ID') or 1061
 GITLAB_CANCEL_TOKEN = os.getenv('GITLAB_CANCEL_TOKEN', '')
 CI_COMMIT_BRANCH = os.getenv('CI_COMMIT_BRANCH', '')
 CI_PIPELINE_ID = os.getenv('CI_PIPELINE_ID', '')
@@ -72,6 +72,13 @@ def delete_all_instances_for_pipeline(instances_service: InstancesService,
         logging.info(f"No instances to delete for pipeline:{pipeline_id}")
 
 
+def delete_test_upload_flow_branch(project: Project, test_upload: str):
+    with contextlib.suppress(Exception):
+        logging.debug(f"Deleting branch:{test_upload}")
+        project.branches.delete(test_upload)
+        logging.success(f"Successfully deleted branch:{test_upload}")
+
+
 def cancel_pipelines_for_branch_name(gitlab_client: Gitlab,
                                      project: Project,
                                      branch_name: str,
@@ -112,6 +119,7 @@ def cancel_pipelines_for_branch_name(gitlab_client: Gitlab,
                 logging.info(f"Trying to cancel pipeline for test upload flow branch:{test_upload}")
                 success &= cancel_pipelines_for_branch_name(gitlab_client, project, test_upload, "trigger",
                                                             instances_service, all_instances, False)
+                delete_test_upload_flow_branch(project, test_upload)
         elif pipeline.id == pipeline_id:
             logging.info(f"Pipeline {pipeline.id} was not canceled as it is the current pipeline")
         else:

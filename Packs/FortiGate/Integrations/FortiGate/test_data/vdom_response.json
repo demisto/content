@@ -1,0 +1,22 @@
+{
+    "http_method": "GET",
+    "revision": "12345",
+    "results": [
+        {
+            "name": "root",
+            "q_origin_key": "root",
+            "short-name": "root",
+            "vcluster-id": 0,
+            "flag": 0
+        }
+    ],
+    "vdom": "root",
+    "path": "system",
+    "name": "vdom",
+    "mkey": "root",
+    "status": "success",
+    "http_status": 200,
+    "serial": "12345",
+    "version": "v7.2.5",
+    "build": 1517
+}

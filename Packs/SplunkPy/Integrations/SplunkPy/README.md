@@ -3,7 +3,7 @@ Use the SplunkPy integration to:
 - Push events from Cortex XSOAR to SplunkPy
 - Fetch SplunkPy ES notable events as Cortex XSOAR incidents.
 
-This integration was integrated and tested with Splunk v7.2.
+This integration was integrated and tested with Splunk Enterprise v9.0.4 and Enterprise Security v7.1.1.
 
 ## Use Cases
 ---
@@ -22,14 +22,14 @@ This integration was integrated and tested with Splunk v7.2.
     | Host - IP (x.x.x.x) |  | True |
     | Username |  | True |
     | Password |  | True |
-    | Port |  | True |
+    | Port | The port in Splunk server which is open to the REST API calls. | True |
     | Fetch events query | The Splunk search query by which to fetch events. The default query fetches ES notable events. You can edit this query to fetch other types of events. Note, that to fetch ES notable events, make sure to include the \\\`notable\\\` macro in your query. | False |
     | Fetch Limit (Max.- 200, Recommended less than 50) |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
-    | Use Splunk Clock Time For Fetch |  | False |
-    | Parse Raw Part of Notable Events |  | False |
-    | Replace with Underscore in Incident Fields |  | False |
+    | Use Splunk Clock Time For Fetch | Whether to use the Splunk clock time from the Splunk server for fetch, or not. | False |
+    | Parse Raw Part of Notable Events | Whether to parse the raw part of the Notables, or not. | False |
+    | Replace with Underscore in Incident Fields | Whether to replace special characters to underscore when parsing the raw data of the Notables, or not. | False |
     | Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled. |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option. | False |
     | Extract Fields - CSV fields that will be parsed out of _raw notable events |  | False |
@@ -47,18 +47,20 @@ This integration was integrated and tested with Splunk v7.2.
     | HEC Token (HTTP Event Collector) |  | False |
     | HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/). |  | False |
     | Enrichment Types | Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual \(without enrichment\). For more info about enrichment types see the integration additional info. | False |
+    | Asset enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Asset enrichment data. | False |
+    | Identity enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Identity enrichment data. | False |
     | Enrichment Timeout (Minutes) | When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False |
     | Number of Events Per Enrichment Type | The limit of how many events to retrieve per each one of the enrichment types \(Drilldown, Asset, and Identity\). To retrieve all events, enter "0" \(not recommended\). | False |
     | Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise. |  | False |
     | Advanced: Fetch backwards window for the events occurrence time (minutes) | The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment. | False |
     | Advanced: Unique ID fields | A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents. | False |
-    | Enable user mapping |  | False |
+    | Enable user mapping | Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py\#configure-user-mapping-between-splunk-and-cortex-xsoar | False |
     | Users Lookup table name | The name of the lookup table in Splunk, containing the username's mapping data. | False |
     | XSOAR user key | The name of the lookup column containing the Cortex XSOAR username. | False |
     | SPLUNK user key | The name of the lookup table containing the Splunk username. | False |
     | Incidents Fetch Interval |  | False |
-
-The (!) *Earliest time to fetch* and *Latest time to fetch* are search parameters options. The search uses *All Time* as the default time range when you run a search from the CLI. Time ranges can be specified using one of the CLI search parameters, such as *earliest_time*, *index_earliest*, or *latest_time*.
+    | Comment tag from Splunk | Add this tag to an entry to mirror it as a comment from Splunk. | False |
+    | Comment tag to Splunk | Add this tag to an entry to mirror it as a comment to Splunk. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -294,7 +296,7 @@ For example:
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### Get results
+### splunk-results
 ***
 Returns the results of a previous Splunk search. This command can be used in conjunction with the `splunk-job-create` command.
 
@@ -317,7 +319,7 @@ There is no context output for this command.
 ##### Command Example
 ``` !splunk-results sid="1566221331.1186" limit="200" ```
 
-### Search for events
+### splunk-search
 ***
 Searches Splunk for events. For human readable output, the table command is supported in the query argument. For example, `query=" * | table field1 field2 field3"` will generate a table with field1, field2, and field3 as headers.
 
@@ -362,7 +364,7 @@ Searches Splunk for events. For human readable output, the table command is supp
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | main~445~66D21DF4-F4FD-4886-A986-82E72ADCBFE9 | 445:897774 | 1585462906 | 1 | InsertedAt="2020-03-29 06:21:43"; EventID="837005"; EventType="Application control"; Action="None"; ComputerName="ACME-code-007"; ComputerDomain="DOMAIN"; ComputerIPAddress="127.0.0.1"; EventTime="2020-03-29 06:21:43"; EventTypeID="5"; Name="LogMeIn"; EventName="LogMeIn"; UserName=""; ActionID="6"; ScanTypeID="200"; ScanType="Unknown"; SubTypeID="23"; SubType="Remote management tool"; GroupName="";\u003cbr\u003e | 2 | ip-172-31-44-193, main | sophos:appcontrol | 2020-03-28T23:21:43.000-07:00 | 127.0.0.1 | main | 2 | eventgen | sophos:appcontrol | ip-172-31-44-193 |
 
-### Create event
+### splunk-submit-event
 ***
 Creates a new event in Splunk.
 
@@ -393,7 +395,7 @@ There is no context output for this command.
 ![image](https://user-images.githubusercontent.com/50324325/63268589-2fda4b00-c29d-11e9-95b5-4b9fcf6c08ee.png)
 
 
-### Print all index names
+### splunk-get-indexes
 ***
 Prints all Splunk index names.
 ##### Base Command
@@ -416,7 +418,7 @@ There is no context output for this command.
 ![image](https://user-images.githubusercontent.com/50324325/63268447-d8d47600-c29c-11e9-88a4-5003971a492e.png)
 
 
-### Update notable events
+### splunk-notable-event-edit
 ***
 Update an existing notable event in Splunk ES.
 
@@ -447,7 +449,7 @@ There is no context output for this command.
 ![image](https://user-images.githubusercontent.com/50324325/63522203-914e2400-c500-11e9-949a-0b55eb2c5871.png)
 
 
-### Create a new job
+### splunk-job-create
 ***
 Creates a new search job in Splunk.
 
@@ -484,7 +486,7 @@ Creates a new search job in Splunk.
 ![image](https://user-images.githubusercontent.com/50324325/63269769-75981300-c29f-11e9-950a-6ca77bcf564c.png)
 
 
-### Parse an event
+### splunk-parse-raw
 ***
 Parses the raw part of the event.
 
@@ -511,7 +513,7 @@ Parses the raw part of the event.
 ``` !splunk-parse-raw ```
 
 
-### Submit an event 
+### splunk-submit-event-hec
 ***
 Sends events to an HTTP event collector using the Splunk platform JSON event protocol.
 ##### Base Command
@@ -528,6 +530,7 @@ Sends events to an HTTP event collector using the Splunk platform JSON event pro
 | source_type | The user-defined event source type. | Optional |
 | source | The user-defined event source. | Optional | 
 | time | The epoch-formatted time. | Optional | 
+| request_channel | A channel identifier (ID) where to send the request, must be a Globally Unique Identifier (GUID). **If the indexer acknowledgment is turned on, a channel is required.** | Optional | 
 
 ##### Context Output
 
@@ -539,7 +542,7 @@ There is no context output for this command.
 ##### Human Readable Output
 The event was sent successfully to Splunk.
 
-### Get job status
+### splunk-job-status
 ***
 Returns the status of a job.
 
@@ -571,7 +574,7 @@ Splank.JobStatus = {
 ##### Human Readable Output
 ![image](https://user-images.githubusercontent.com/50324325/77630707-2b24f600-6f54-11ea-94fe-4bf6c734aa29.png)
 
-### Get Mapping Fields
+### get-mapping-fields
 ***
 Gets one sample alert per alert type. Used only for creating a mapping with `Select Schema`. 
 ##### Base Command
@@ -797,7 +800,7 @@ Lists all data within a specific KV store collection or collections.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| app_name | The name of the Splunk application that contains the KV store collection. The default is "search". | Required | 
+| app_name | The name of the Splunk application that contains the KV store collection. Default is search. | Required | 
 | kv_store_collection_name | A comma-separated list of KV store collections. | Required | 
 | limit | Maximum number of records to return. The default is 50. | Optional | 
 
@@ -806,7 +809,7 @@ Lists all data within a specific KV store collection or collections.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Splunk.KVstoreData | Unknown | An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.&lt;colletion_name&gt; is a list of the data in the collection\). | 
+| Splunk.KVstoreData | Unknown | An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.&lt;collection_name&gt; is a list of the data in the collection. | 
 
 
 #### Command Example
@@ -915,7 +918,7 @@ Searches for specific objects in a store. Search can be a basic key-value pair o
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Splunk.KVstoreData | Unknown | An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.&lt;colletion_name&gt; is a list of the data in the collection\). | 
+| Splunk.KVstoreData | Unknown | An array of collection names. Each collection name will have an array of values, e.g., Splunk.KVstoreData.&lt;collection_name&gt; is a list of the data in the collection. | 
 
 
 #### Command Example
@@ -1130,3 +1133,16 @@ The default port is 8088.
 ## Troubleshooting
 
 In case you encounter HTTP errors (e.g., IncompleteRead), we recommend using Python requests handler.
+
+If you encounter connectivity issues while using **Splunk Cloud** within Cortex XSOAR8 or Cortex XSIAM you may receive the following error:
+
+    requests.exceptions.ConnectTimeout:
+    HTTPSConnectionPool(host='<name>.splunkcloud.com', port=8089)
+    : Max retries exceeded with url: /services/auth/login (Caused by ConnectTimeoutError(<urllib3.connection.HTTPSConnection object at 0x7fc389a4e170>,
+     'Connection to <name>.splunkcloud.com timed out. 
+    (connect timeout=None)'))
+
+To resolve this issue, add the IP addresses of Cortex XSOAR8 or Cortex XSIAM to the Splunk Cloud whitelist.
+You can find the relevant IP addresses at:
+[Cortex XSOAR Administrator Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Enable-Access-to-Cortex-XSOAR) 
+under **Used for communication between Cortex XSOAR and customer resources**. Choose the IP address corresponding to your Cortex XSOAR region.

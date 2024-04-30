@@ -5,7 +5,8 @@ import urllib.parse
 import urllib3
 import hashlib
 import copy
-from typing import List, Dict, Any, Callable, NamedTuple
+from typing import Any, NamedTuple
+from collections.abc import Callable
 from GSuiteApiModule import *  # noqa: E402
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -15,7 +16,7 @@ MAX_PAGE_SIZE = 100
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_LIMIT = 50
 
-MESSAGES: Dict[str, str] = {
+MESSAGES: dict[str, str] = {
     'TEST_FAILED_ERROR': 'Test connectivity failed. Check the configuration parameters provided.',
     'TEST_CONFIGURE_ERROR': ('In order for the test_module to run, an admin_email is required, '
                              'if it is not configured, then each command can receive an admin_email '
@@ -39,7 +40,7 @@ MESSAGES: Dict[str, str] = {
     'LIMIT_ARG_INVALID_ERROR': 'The limit argument can\'t be negative or equal to zero.',
 }
 
-HR_MESSAGES: Dict[str, str] = {
+HR_MESSAGES: dict[str, str] = {
     'MOBILE_UPDATE_SUCCESS': 'Mobile device with resource id - {} updated.',
     'MOBILE_DELETE_SUCCESS': 'Mobile device with resource id - {} deleted.',
     'USER_CREATE': 'User Details',
@@ -66,9 +67,12 @@ HR_MESSAGES: Dict[str, str] = {
     'CHROMEOS_DEVICES_LIST_SUCCESS': 'Google Workspace Admin - ChromeOS Devices List',
     'CHROMEOS_DEVICE_ACTION_SUCCESS': 'ChromeOS device with resource id - {} updated.',
     'USER_SIGNOUT_SESSIONS': 'Signs a {} out of all web and device sessions and reset their sign-in cookies.',
+    'POLICY_LIST': 'Policy Schemas List',
+    'CHROME_BROWSER_LIST': 'Chrome Browser Device List',
+    'POLICY_RESOLVE': 'Resolved Policies'
 }
 
-URL_SUFFIX: Dict[str, str] = {
+URL_SUFFIX: dict[str, str] = {
     'DATA_TRANSFER': 'admin/datatransfer/v1/transfers',
     'USER': 'admin/directory/v1/users',
     'MOBILE_UPDATE': 'admin/directory/v1/customer/{}/devices/mobile/{}/action',
@@ -87,17 +91,20 @@ URL_SUFFIX: Dict[str, str] = {
     'USER_SIGN_OUT': 'admin/directory/v1/users/{}/signOut',
 
 }
-SCOPES: Dict[str, List[str]] = {
+SCOPES: dict[str, list[str]] = {
     'DIRECTORY_USER': ['https://www.googleapis.com/auth/admin.directory.user'],
     'DEVICE_MOBILE': ['https://www.googleapis.com/auth/admin.directory.device.mobile'],
     'GROUP': ['https://www.googleapis.com/auth/admin.directory.group'],
     'ROLE_MANAGEMENT': ['https://www.googleapis.com/auth/admin.directory.rolemanagement'],
     'USER_SECURITY': ['https://www.googleapis.com/auth/admin.directory.user.security'],
     'DATA_TRANSFER': ['https://www.googleapis.com/auth/admin.datatransfer'],
-    'CUSTOM_USER_SCHEMA': ['https://www.googleapis.com/auth/admin.directory.userschema']
+    'CUSTOM_USER_SCHEMA': ['https://www.googleapis.com/auth/admin.directory.userschema'],
+    'CHROME_BROWSERS': ['https://www.googleapis.com/auth/admin.directory.device.chromebrowsers'],
+    'POLICY_MANAGEMENT': ['https://www.googleapis.com/auth/chrome.management.policy'],
+
 }
 
-COMMAND_SCOPES: Dict[str, List[str]] = {
+COMMAND_SCOPES: dict[str, list[str]] = {
     'DATA_TRANSFER_LIST': ['https://www.googleapis.com/auth/admin.datatransfer.readonly', *SCOPES['DATA_TRANSFER']],
     'MOBILE_UPDATE': ['https://www.googleapis.com/auth/admin.directory.device.mobile.action'],
     'USER_ALIAS_ADD': ['https://www.googleapis.com/auth/admin.directory.user.alias',
@@ -109,7 +116,7 @@ COMMAND_SCOPES: Dict[str, List[str]] = {
     'CHROMEOS_DEVICES_LIST': ['https://www.googleapis.com/auth/admin.directory.device.chromeos.readonly'],
 }
 
-OUTPUT_PREFIX: Dict[str, str] = {
+OUTPUT_PREFIX: dict[str, str] = {
     'CREATE_USER': 'GSuite.User',
     'ADD_ALIAS': 'GSuite.UserAlias',
     'GROUP': 'GSuite.Group',
@@ -122,7 +129,10 @@ OUTPUT_PREFIX: Dict[str, str] = {
     'DATA_TRANSFER_LIST_PAGE_TOKEN': 'GSuite.PageToken.DataTransfer',
     'CUSTOM_USER_SCHEMA': 'GSuite.UserSchema',
     'MOBILE_DEVICES_LIST': 'GSuite.MobileDevices',
-    'CHROMEOS_DEVICES_LIST': 'GSuite.ChromeOSDevices'
+    'CHROMEOS_DEVICES_LIST': 'GSuite.ChromeOSDevices',
+    'POLICY SCHEMAS': 'GSuite.PolicySchema',
+    'CHROME_BROWSERS': 'GSuite.ChromeBrowserDevices',
+    'POLICY_RESOLVE': 'GSuite.Policy'
 }
 
 
@@ -153,20 +163,41 @@ class Client(GSuiteClient):
         and subject (admin_email, which can be as a command argument or integration parameter)
     '''
 
-    def __init__(self, service_account_dict: Dict[str, Any], proxy: bool, verify: bool, headers: Optional[Dict[str, str]] = None,
+    def __init__(self, service_account_dict: dict[str, Any], proxy: bool, verify: bool, headers: Optional[dict[str, str]] = None,
                  base_url: str = '', admin_email: str = ''):
         super().__init__(service_account_dict=service_account_dict,
                          base_url=base_url, verify=verify, proxy=proxy,
                          headers=headers)
         self.admin_email = admin_email
 
-    def set_authorized_http(self, scopes: List[str], subject: Optional[str] = None, timeout: int = 60) -> None:
+    def set_authorized_http(self, scopes: list[str], subject: Optional[str] = None, timeout: int = 60) -> None:
         if not subject:
             subject = self.admin_email
         super().set_authorized_http(scopes=scopes, subject=subject, timeout=timeout)
 
 
-def prepare_output_user_alias_add(alias: Dict[str, Any]) -> List[Dict[str, Any]]:
+def return_customer_id(args):
+    if not (customer_id := args.get('customer_id') or demisto.params().get('customer_id')):
+        raise DemistoException("Missing required customer ID - either provide as an argument or set a parameter")
+    return customer_id
+
+
+def return_file_from_entry_id(entry_id):  # pragma: no cover
+    try:
+        file_info = demisto.getFilePath(entry_id)
+
+    except Exception as e:
+        return_error(f"Failed to get the file path for entry: {entry_id} the error message was {str(e)}")
+
+    file_path = file_info.get("path")
+
+    # Open file and read data
+    with open(file_path) as f:  # type: ignore
+        dict_list = json.load(f)
+    return dict_list
+
+
+def prepare_output_user_alias_add(alias: dict[str, Any]) -> list[dict[str, Any]]:
     """
     To create context output for gsuite-user-alias-add.
 
@@ -181,7 +212,7 @@ def prepare_output_user_alias_add(alias: Dict[str, Any]) -> List[Dict[str, Any]]
     })
 
 
-def prepare_args_for_user(args: Dict[str, str]) -> Dict[str, Any]:
+def prepare_args_for_user(args: dict[str, str]) -> dict[str, Any]:
     """
     Prepares and maps argument for gsuite-user-create and gsuite-user-update command.
 
@@ -236,7 +267,7 @@ def prepare_args_for_user(args: Dict[str, str]) -> Dict[str, Any]:
     })
 
 
-def prepare_output_for_user_command(response: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_output_for_user_command(response: dict[str, Any]) -> dict[str, Any]:
     """
     Prepares output for gsuite-user commands.
 
@@ -257,7 +288,7 @@ def prepare_output_for_user_command(response: Dict[str, Any]) -> Dict[str, Any]:
     return GSuiteClient.remove_empty_entities(outputs)
 
 
-def prepare_markdown_from_dictionary(data: Dict[str, Any], ignore_fields: List[str] = []) -> str:
+def prepare_markdown_from_dictionary(data: dict[str, Any], ignore_fields: list[str] = []) -> str:
     """
     Prepares markdown from dictionary.
 
@@ -266,7 +297,7 @@ def prepare_markdown_from_dictionary(data: Dict[str, Any], ignore_fields: List[s
 
     :return: data in markdown format.
     """
-    hr_cell_info: List[str] = []
+    hr_cell_info: list[str] = []
     for key, value in data.items():
         if key not in ignore_fields:
             hr_cell_info.append(
@@ -295,7 +326,7 @@ def prepare_readable_output_for_user_command(outputs):
     return readable_outputs
 
 
-def prepare_args_for_role_assignment_list(args: Dict[str, str]) -> Dict[str, str]:
+def prepare_args_for_role_assignment_list(args: dict[str, str]) -> dict[str, str]:
     """
     Prepares arguments for gsuite-role-assignment-list command.
 
@@ -312,7 +343,7 @@ def prepare_args_for_role_assignment_list(args: Dict[str, str]) -> Dict[str, str
     })
 
 
-def prepare_output_for_role_assignment_list(response: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_output_for_role_assignment_list(response: dict[str, Any]) -> dict[str, Any]:
     """
     prepares context output for gsuite-role-assignment-list.
 
@@ -328,7 +359,7 @@ def prepare_output_for_role_assignment_list(response: Dict[str, Any]) -> Dict[st
     })
 
 
-def prepare_args_for_role_assignment_create(args: Dict[str, str]) -> Dict[str, str]:
+def prepare_args_for_role_assignment_create(args: dict[str, str]) -> dict[str, str]:
     """
     Prepares arguments for gsuite-role-assignment-create command.
 
@@ -344,7 +375,7 @@ def prepare_args_for_role_assignment_create(args: Dict[str, str]) -> Dict[str, s
     })
 
 
-def get_privileges_list_from_string(privileges: str) -> List[Dict[str, str]]:
+def get_privileges_list_from_string(privileges: str) -> list[dict[str, str]]:
     """
     Converts string of form privilegeName:serviceId to a list of object containing privilegeName and serviceId keys
     :param privileges: privileges string
@@ -362,7 +393,7 @@ def get_privileges_list_from_string(privileges: str) -> List[Dict[str, str]]:
         raise ValueError(HR_MESSAGES['ROLE_CREATE_PRIVILEGES_INCORRECT_FORMAT'])
 
 
-def prepare_args_for_datatransfer_list(args: Dict[str, str]) -> Dict[str, str]:
+def prepare_args_for_datatransfer_list(args: dict[str, str]) -> dict[str, str]:
     """
     Prepares arguments for gsuite-datatransfer-list command.
 
@@ -370,8 +401,9 @@ def prepare_args_for_datatransfer_list(args: Dict[str, str]) -> Dict[str, str]:
 
     :return: Prepared arguments.
     """
+    customer_id = return_customer_id(args)
     return GSuiteClient.remove_empty_entities({
-        'customerId': args.get('customer_id'),
+        'customerId': customer_id,
         'maxResults': GSuiteClient.validate_get_int(args.get('max_results'),
                                                     MESSAGES['INTEGER_ERROR'].format('max_results')),
         'newOwnerUserId': args.get('new_owner_user_id'),
@@ -381,7 +413,7 @@ def prepare_args_for_datatransfer_list(args: Dict[str, str]) -> Dict[str, str]:
     })
 
 
-def prepare_output_for_datatransfer_list(response: Dict[str, Any]) -> Dict[str, Any]:
+def prepare_output_for_datatransfer_list(response: dict[str, Any]) -> dict[str, Any]:
     """
     prepares context output for gsuite-datatransfer-list.
 
@@ -397,7 +429,7 @@ def prepare_output_for_datatransfer_list(response: Dict[str, Any]) -> Dict[str, 
     })
 
 
-def prepare_readable_output_for_datatransfer_list(response: Dict[str, Any]) -> str:
+def prepare_readable_output_for_datatransfer_list(response: dict[str, Any]) -> str:
     """
     prepares readable output for gsuite-datatransfer-list.
 
@@ -426,7 +458,7 @@ def prepare_readable_output_for_datatransfer_list(response: Dict[str, Any]) -> s
     return readable_output
 
 
-def prepare_args_for_custom_user_schema(args: Dict[str, str]) -> Dict[str, str]:
+def prepare_args_for_custom_user_schema(args: dict[str, str]) -> dict[str, str]:
     """
     Prepares arguments for gsuite-custom-user-schema-create/update command.
 
@@ -439,7 +471,7 @@ def prepare_args_for_custom_user_schema(args: Dict[str, str]) -> Dict[str, str]:
     if args.get('field_raw_json'):
         field_json = GSuiteClient.safe_load_non_strict_json(args['field_raw_json'])
     elif args.get('field_json_entry_id'):
-        field_json = safe_load_json(args['field_json_entry_id'])
+        field_json = return_file_from_entry_id(args['field_json_entry_id'])
     else:
         raise ValueError(MESSAGES['REQUIRED_ARGS_CUSTOM_SCHEMA'])
 
@@ -451,7 +483,7 @@ def prepare_args_for_custom_user_schema(args: Dict[str, str]) -> Dict[str, str]:
     })
 
 
-def prepare_output_for_custom_user_schema(context_output: Dict[str, Any], readable_output: Dict[str, Any]) -> None:
+def prepare_output_for_custom_user_schema(context_output: dict[str, Any], readable_output: dict[str, Any]) -> None:
     """
     Prepares outputs for custom user schema command.
 
@@ -469,7 +501,7 @@ def prepare_output_for_custom_user_schema(context_output: Dict[str, Any], readab
         field['numericIndexingSpecMaxValue'] = numeric_indexing_spec.get('maxValue')
 
 
-def get_transfer_params_list_from_str(transfer_params_str: str) -> List:
+def get_transfer_params_list_from_str(transfer_params_str: str) -> list:
     """
     Extract transfer parameter list from a string of format "key1:val;key2:val1,val2"
 
@@ -495,7 +527,7 @@ def get_transfer_params_list_from_str(transfer_params_str: str) -> List:
     return transfer_params
 
 
-def prepare_datatransfer_payload_from_arguments(args: Dict[str, str]) -> Dict[str, Any]:
+def prepare_datatransfer_payload_from_arguments(args: dict[str, str]) -> dict[str, Any]:
     """
     Prepares datatransfer payload from command arguments dictionary.
 
@@ -522,7 +554,7 @@ def is_email_valid(email: str) -> bool:
     :return:  True if email is in valid format.
     """
 
-    return True if re.match(emailRegex, email) else False
+    return bool(re.match(emailRegex, email))
 
 
 ''' COMMAND FUNCTIONS '''
@@ -549,7 +581,7 @@ def test_module(client: Client) -> str:
 
 
 @logger
-def mobile_update_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def mobile_update_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Takes an action that affects a mobile device. For example, remotely wiping a device.
 
@@ -559,11 +591,12 @@ def mobile_update_command(client: Client, args: Dict[str, str]) -> CommandResult
     """
 
     client.set_authorized_http(scopes=COMMAND_SCOPES['MOBILE_UPDATE'])
+    customer_id = return_customer_id(args)
     args.pop('admin_email', '')
     resource_id = urllib.parse.quote(args.pop('resource_id', ''))
     try:
         client.http_request(
-            url_suffix=URL_SUFFIX['MOBILE_UPDATE'].format(urllib.parse.quote(args.pop('customer_id', '')), resource_id),
+            url_suffix=URL_SUFFIX['MOBILE_UPDATE'].format(urllib.parse.quote(customer_id), resource_id),
             method='POST', body=args)
 
         return CommandResults(readable_output=HR_MESSAGES['MOBILE_UPDATE_SUCCESS'].format(resource_id))
@@ -575,7 +608,7 @@ def mobile_update_command(client: Client, args: Dict[str, str]) -> CommandResult
 
 
 @logger
-def mobile_delete_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def mobile_delete_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Removes a mobile device. Note that this does not break the device's sync, it simply removes it from the list of
     devices connected to the domain. If the device still has a valid login/authentication, it will be added back on
@@ -586,16 +619,17 @@ def mobile_delete_command(client: Client, args: Dict[str, str]) -> CommandResult
     :return: CommandResults which returns detailed results to war room and sets the context data.
     """
     client.set_authorized_http(scopes=SCOPES['DEVICE_MOBILE'])
+    customer_id = return_customer_id(args)
     resource_id = urllib.parse.quote(args.pop('resource_id', ''))
     client.http_request(
-        url_suffix=URL_SUFFIX['MOBILE_DELETE'].format(urllib.parse.quote(args.pop('customer_id', '')), resource_id),
+        url_suffix=URL_SUFFIX['MOBILE_DELETE'].format(urllib.parse.quote(customer_id), resource_id),
         method='DELETE')
 
     return CommandResults(readable_output=HR_MESSAGES['MOBILE_DELETE_SUCCESS'].format(resource_id))
 
 
 @logger
-def user_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def user_create_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Creates a user.
 
@@ -629,7 +663,7 @@ def user_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def role_assignment_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def role_assignment_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Prints all admin role assignments in the G Suite instance.
 
@@ -639,9 +673,10 @@ def role_assignment_list_command(client: Client, args: Dict[str, Any]) -> Comman
     :return: CommandResults object with context and human-readable.
     """
     arguments = prepare_args_for_role_assignment_list(args)
+    customer_id = return_customer_id(args)
     client.set_authorized_http(scopes=COMMAND_SCOPES['ROLE_ASSIGNMENT'])
     response = client.http_request(
-        url_suffix=URL_SUFFIX['ROLE_ASSIGNMENT'].format(urllib.parse.quote(args.get('customer_id', ''))),
+        url_suffix=URL_SUFFIX['ROLE_ASSIGNMENT'].format(urllib.parse.quote(customer_id)),
         params=arguments)
 
     # Context
@@ -665,7 +700,7 @@ def role_assignment_list_command(client: Client, args: Dict[str, Any]) -> Comman
 
 
 @logger
-def role_assignment_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def role_assignment_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Assigns a role to the customer.
 
@@ -675,10 +710,11 @@ def role_assignment_create_command(client: Client, args: Dict[str, Any]) -> Comm
     :return: CommandResults object with context and human-readable.
     """
     arguments = prepare_args_for_role_assignment_create(args)
+    customer_id = return_customer_id(args)
 
     client.set_authorized_http(scopes=SCOPES['ROLE_MANAGEMENT'])
     response = client.http_request(
-        url_suffix=URL_SUFFIX['ROLE_ASSIGNMENT'].format(urllib.parse.quote(args.get('customer_id', ''))),
+        url_suffix=URL_SUFFIX['ROLE_ASSIGNMENT'].format(urllib.parse.quote(customer_id)),
         body=arguments, method='POST')
 
     # Readable Output
@@ -699,7 +735,7 @@ def role_assignment_create_command(client: Client, args: Dict[str, Any]) -> Comm
 
 
 @logger
-def user_alias_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def user_alias_add_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Adds an alias.
 
@@ -733,7 +769,7 @@ def user_alias_add_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 
 @logger
-def group_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def group_create_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Creates a group with a group name and its description.
 
@@ -766,7 +802,7 @@ def group_create_command(client: Client, args: Dict[str, str]) -> CommandResults
 
 
 @logger
-def group_get_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def group_get_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Get a group information with a group key
 
@@ -799,7 +835,7 @@ def group_get_command(client: Client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def role_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def role_create_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Creates a role with a role name and its description.
 
@@ -810,6 +846,7 @@ def role_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
     """
 
     client.set_authorized_http(scopes=SCOPES['ROLE_MANAGEMENT'])
+    customer_id = return_customer_id(args)
 
     params = {
         'rolePrivileges': get_privileges_list_from_string(args.pop('role_privileges', '')),
@@ -818,7 +855,7 @@ def role_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
     }
 
     response = client.http_request(
-        url_suffix=URL_SUFFIX['ROLE_CREATE'].format(urllib.parse.quote(args.get('customer_id', ''))), body=params,
+        url_suffix=URL_SUFFIX['ROLE_CREATE'].format(urllib.parse.quote(customer_id)), body=params,
         method='POST')
 
     response = GSuiteClient.remove_empty_entities(response)
@@ -843,7 +880,7 @@ def role_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def token_revoke_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def token_revoke_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Delete all access tokens issued by a user for an application.
 
@@ -864,7 +901,7 @@ def token_revoke_command(client: Client, args: Dict[str, str]) -> CommandResults
 
 
 @logger
-def user_signout_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def user_signout_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Signs a user out of all web and device sessions and reset their sign-in cookies.
 
@@ -883,7 +920,7 @@ def user_signout_command(client: Client, args: Dict[str, str]) -> CommandResults
 
 
 @logger
-def datatransfer_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def datatransfer_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Lists the transfers for a customer by source user, destination user, or status.
 
@@ -911,7 +948,7 @@ def datatransfer_list_command(client: Client, args: Dict[str, str]) -> CommandRe
 
 
 @logger
-def custom_user_schema_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def custom_user_schema_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Creates a custom user schema to add custom fields to user profiles.
 
@@ -922,9 +959,10 @@ def custom_user_schema_create_command(client: Client, args: Dict[str, Any]) -> C
     """
     body = prepare_args_for_custom_user_schema(args)
     client.set_authorized_http(scopes=SCOPES['CUSTOM_USER_SCHEMA'])
+    customer_id = return_customer_id(args)
     response = client.http_request(method='POST',
                                    url_suffix=URL_SUFFIX['CUSTOM_USER_SCHEMA'].format(
-                                       urllib.parse.quote(args.get('customer_id', ''))),
+                                       urllib.parse.quote(customer_id)),
                                    body=body)
 
     outputs = copy.deepcopy(response)
@@ -954,7 +992,7 @@ def custom_user_schema_create_command(client: Client, args: Dict[str, Any]) -> C
 
 
 @logger
-def custom_user_schema_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def custom_user_schema_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Updates a custom user schema.
 
@@ -966,12 +1004,12 @@ def custom_user_schema_update_command(client: Client, args: Dict[str, Any]) -> C
     """
     if not args.get('schema_id') and not args.get('schema_name'):
         raise ValueError(MESSAGES['CUSTOM_SCHEMA_UPDATE_REQUIRED_ARGS'])
-
+    customer_id = return_customer_id(args)
     body = prepare_args_for_custom_user_schema(args)
 
     schema_key = args['schema_id'] if args.get('schema_id') else args.get('schema_name', '')
 
-    url_suffix = f"{URL_SUFFIX['CUSTOM_USER_SCHEMA'].format(urllib.parse.quote(args.get('customer_id', '')))}" \
+    url_suffix = f"{URL_SUFFIX['CUSTOM_USER_SCHEMA'].format(urllib.parse.quote(customer_id))}" \
                  f"/{urllib.parse.quote(schema_key)}"
 
     client.set_authorized_http(scopes=SCOPES['CUSTOM_USER_SCHEMA'])
@@ -1009,7 +1047,7 @@ def custom_user_schema_update_command(client: Client, args: Dict[str, Any]) -> C
 
 
 @logger
-def datatransfer_request_create_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def datatransfer_request_create_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Inserts a data transfer request.
 
@@ -1026,7 +1064,7 @@ def datatransfer_request_create_command(client: Client, args: Dict[str, str]) ->
     if args.get('applications_raw_json'):
         app_payload = GSuiteClient.safe_load_non_strict_json(args['applications_raw_json'])
     elif args.get('applications_raw_json_entry_id'):
-        app_payload = safe_load_json(args['applications_raw_json_entry_id'])
+        app_payload = return_file_from_entry_id(args['applications_raw_json_entry_id'])
 
     request_payload = prepare_datatransfer_payload_from_arguments(args)
 
@@ -1060,7 +1098,7 @@ def datatransfer_request_create_command(client: Client, args: Dict[str, str]) ->
 
 
 @logger
-def user_delete_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def user_delete_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Deletes a user.
 
@@ -1078,7 +1116,7 @@ def user_delete_command(client: Client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def user_update_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def user_update_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     updates a user.
 
@@ -1114,7 +1152,7 @@ def user_update_command(client: Client, args: Dict[str, str]) -> CommandResults:
 
 
 @logger
-def user_get_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def user_get_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     get a user details based on user key.
 
@@ -1282,8 +1320,8 @@ def mobile_device_list_create_query_parameters(projection: str, query: str, orde
     return query_params
 
 
-def devices_to_human_readable(devices_data: list[dict], keys: list, keys_mapping: dict[str, str]) -> List[dict]:
-    human_readable: List[dict] = []
+def devices_to_human_readable(devices_data: list[dict], keys: list, keys_mapping: dict[str, str]) -> list[dict]:
+    human_readable: list[dict] = []
     for device in devices_data:
         human_readable_data = {}
         for key in keys:
@@ -1297,7 +1335,7 @@ def devices_to_human_readable(devices_data: list[dict], keys: list, keys_mapping
 
 
 @logger
-def gsuite_mobile_device_list_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def gsuite_mobile_device_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """Retrieves a paginated list that includes company-owned mobile devices.
 
     Args:
@@ -1308,6 +1346,7 @@ def gsuite_mobile_device_list_command(client: Client, args: Dict[str, str]) -> C
         List[CommandResults]: List of CommandResults that hold the data to return to the engine.
     """
     client.set_authorized_http(scopes=COMMAND_SCOPES.get('MOBILE_DEVICES_LIST', []))
+    customer_id = return_customer_id(args)
     query_params = mobile_device_list_create_query_parameters(projection=args.get('projection', 'full'),
                                                               query=args.get('query', ''),
                                                               order_by=args.get('order_by', 'status'),
@@ -1318,7 +1357,7 @@ def gsuite_mobile_device_list_command(client: Client, args: Dict[str, str]) -> C
     mutual_pagination_args = assign_params(
         request_by_device_type=mobile_device_list_request,
         client=client,
-        customer_id=args.get('customer_id', ''),
+        customer_id=customer_id,
         response_devices_list_key=MobileDevicesConfig.response_devices_list_key,
         query_params=query_params,
     )
@@ -1341,7 +1380,7 @@ def gsuite_mobile_device_list_command(client: Client, args: Dict[str, str]) -> C
         num_of_devices = len(context_data)
         markdown = tableToMarkdown(MobileDevicesConfig.table_title, human_readable,
                                    metadata=f'{num_of_devices} {"results" if num_of_devices != 1 else "result"} found')
-    outputs: Dict[str, Any] = {}
+    outputs: dict[str, Any] = {}
     if context_data:
         outputs[(f'{MobileDevicesConfig.outputs_prefix}.'
                  'MobileListObjects(val.resourceId && val.resourceId == obj.resourceId)')] = context_data
@@ -1380,7 +1419,7 @@ def chromeos_device_list_create_query_parameters(projection: str, query: str, in
 
 
 @logger
-def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) -> CommandResults:  # pragma: no cover
+def gsuite_chromeos_device_list_command(client: Client, args: dict[str, str]) -> CommandResults:  # pragma: no cover
     """Retrieves a paginated list that includes company-owned ChromeOS devices.
 
     Args:
@@ -1391,6 +1430,7 @@ def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) ->
         List[CommandResults]: List of CommandResults that hold the data to return to the engine.
     """
     client.set_authorized_http(scopes=COMMAND_SCOPES.get('CHROMEOS_DEVICES_LIST', []))
+    customer_id = return_customer_id(args)
     query_params = chromeos_device_list_create_query_parameters(projection=args.get('projection', 'full'),
                                                                 query=args.get('query', ''),
                                                                 include_child_org_units=argToBoolean(args.get(
@@ -1405,7 +1445,7 @@ def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) ->
     mutual_pagination_args = assign_params(
         request_by_device_type=chromeos_device_list_request,
         client=client,
-        customer_id=args.get('customer_id', ''),
+        customer_id=customer_id,
         response_devices_list_key=ChromeOSDevicesConfig.response_devices_list_key,
         query_params=query_params,
     )
@@ -1429,7 +1469,7 @@ def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) ->
             num_of_devices = len(context_data)
             markdown = tableToMarkdown(ChromeOSDevicesConfig.table_title, human_readable,
                                        metadata=f'{num_of_devices} {"results" if num_of_devices != 1 else "result"} found')
-        outputs: Dict[str, Any] = {}
+        outputs: dict[str, Any] = {}
         if context_data:
             outputs[(f'{ChromeOSDevicesConfig.outputs_prefix}.'
                      'ChromeOSListObjects(val.resourceId && val.resourceId == obj.resourceId)')] = context_data
@@ -1452,7 +1492,7 @@ def gsuite_chromeos_device_list_command(client: Client, args: Dict[str, str]) ->
 
 
 @logger
-def gsuite_chromeos_device_action_command(client: Client, args: Dict[str, str]) -> CommandResults:
+def gsuite_chromeos_device_action_command(client: Client, args: dict[str, str]) -> CommandResults:
     """Executes an action that affects a ChromeOS Device.
 
     Args:
@@ -1467,7 +1507,8 @@ def gsuite_chromeos_device_action_command(client: Client, args: Dict[str, str]) 
     """
     try:
         client.set_authorized_http(scopes=COMMAND_SCOPES.get('CHROMEOS_DEVICE_ACTION', []))
-        chromeos_device_action_request(client=client, customer_id=args.get('customer_id', ''),
+        customer_id = return_customer_id(args)
+        chromeos_device_action_request(client=client, customer_id=customer_id,
                                        resource_id=args.get('resource_id', ''),
                                        action=args.get('action', ''),
                                        deprovision_reason=args.get('deprovision_reason', ''))
@@ -1483,13 +1524,410 @@ def gsuite_chromeos_device_action_command(client: Client, args: Dict[str, str]) 
     return command_results
 
 
+def user_reset_password_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+        reset to user password based on given user_key (email)
+
+        :param client: Client object.
+        :param args: Command arguments.
+
+        :return: Command Result.
+    """
+    client.set_authorized_http(scopes=SCOPES['DIRECTORY_USER'])
+    user_key = args.get('user_key', '')
+    url_suffix = urljoin(URL_SUFFIX['USER'], urllib.parse.quote(user_key))
+    body = {"changePasswordAtNextLogin": True}
+    response = client.http_request(url_suffix=url_suffix, method='PUT', body=body)
+
+    # Context
+    outputs = prepare_output_for_user_command(copy.deepcopy(response))
+    # Output
+    readable_output = tableToMarkdown(HR_MESSAGES['USER_UPDATE'].format(user_key), outputs,
+                                      ['id', 'customerId', 'primaryEmail', 'changePasswordAtNextLogin'],
+                                      headerTransform=pascalToSpace, removeNull=True)
+
+    return CommandResults(outputs_prefix=OUTPUT_PREFIX['CREATE_USER'],
+                          outputs_key_field=['id'],
+                          outputs=outputs,
+                          readable_output=readable_output,
+                          raw_response=response)
+
+
+def chromebrowser_move_ou_command(client: Client, args: dict[str, str]) -> str:
+    """
+        Move Chrome Browser devices assigned to an account from one organization unit to another
+
+        :param client: Client object.
+        :param args: Command arguments - customer_id, resource_ids, org_unit_path - required.
+
+        :return: Message for user upon success
+    """
+    client.set_authorized_http(scopes=SCOPES['CHROME_BROWSERS'])
+    customer_id = return_customer_id(args)
+    resource_ids_list = argToList(args.get('resource_ids', ''))
+    org_unit_path = args.get('org_unit_path', '')
+    full_url = f'https://www.googleapis.com/admin/directory/v1.1beta1/customer/{customer_id}' \
+               f'/devices/chromebrowsers/moveChromeBrowsersToOu'
+    body = {"resource_ids": resource_ids_list, "org_unit_path": org_unit_path}
+    client.http_request(full_url=full_url, method='POST', body=body)
+
+    # Output
+    return f'Chrome browser devices have been moved to the new organization unit {org_unit_path}'
+
+
+def assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_u_path, page_t, page_s):
+    return GSuiteClient.remove_empty_entities({
+        'projection': projection,
+        'query': query,
+        'orderBy': order_by,
+        'sortOrder': sort_order,
+        'orgUnitPath': org_u_path,
+        'pageToken': page_t,
+        'maxResults': page_s
+    })
+
+
+def chromebrowser_list_command(client: Client, args: dict[str, str]) -> CommandResults:
+    '''
+        List chromebrowsers devices
+
+        :param client: Client object.
+        :param args: Command arguments - customer_id (reqyired), device_id, order_by, org_unit_path, projection, query,
+         sort_order, page_size and limit
+        :return: Command Result.
+    '''
+    API_LIMIT = 100
+    client.set_authorized_http(scopes=SCOPES['CHROME_BROWSERS'])
+    customer_id = return_customer_id(args)
+    device_id = args.get('device_id', '')
+    order_by = args.get('order_by', '')
+    org_unit_path = args.get('org_unit_path', '')
+    projection = args.get('projection', '')
+    query = args.get('query', '')
+    sort_order = args.get('sort_order', '')
+    page_size = args.get('page_size', '')
+    page_token = args.get('page_token', '')
+    limit = args.get('limit', '')
+
+    full_url = f'https://www.googleapis.com/admin/directory/v1.1beta1/customer/{customer_id}/devices/chromebrowsers/'
+    cb_list_resp = []
+    if device_id:
+        full_url = full_url + f'{device_id}'
+        params_for_command = GSuiteClient.remove_empty_entities({
+            'projection': projection
+        })
+        response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+        cb_list_resp.append(response)
+    else:
+        if page_size or page_token:
+            if not page_size:
+                page_size = str(DEFAULT_PAGE_SIZE)
+            if int(page_size) > API_LIMIT:
+                page_size = str(API_LIMIT)
+            params_for_command = assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path,
+                                                                  page_token, page_size)
+            response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+            page_token = response.get('nextPageToken', '')
+            cb_list_resp.extend(response.get('browsers', ''))
+        else:
+            while len(cb_list_resp) < int(limit):
+                if int(limit) - len(cb_list_resp) > API_LIMIT:
+                    page_size = str(API_LIMIT)
+                else:
+                    page_size = str(int(limit) - len(cb_list_resp))
+                params_for_command = assign_params_chromebrowser_list(projection, query, order_by, sort_order, org_unit_path,
+                                                                      page_token, page_size)
+                response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+                page_token = response.get('nextPageToken', '')
+                cb_list_resp.extend(response.get('browsers', ''))  # type: ignore
+                if not page_token:
+                    break
+
+    readable_output = tableToMarkdown(HR_MESSAGES['CHROME_BROWSER_LIST'].format(device_id), cb_list_resp,
+                                      ['deviceId', 'osPlatform', 'osVersion', 'machineName', 'serialNumber', 'orgUnitPath'],
+                                      headerTransform=pascalToSpace, removeNull=True)
+    outputs = {
+        'GSuite.ChromeBrowserDevices(val.deviceId && val.deviceId == obj.deviceId)':
+            cb_list_resp,
+        'GSuite(true)': {'ChromeBrowserNextToken': page_token}
+    }
+    return CommandResults(outputs=outputs,
+                          readable_output=readable_output,
+                          raw_response=response)
+
+
+def modify_policy_command(client: Client, args: dict[str, str]) -> str:
+    """
+        get a user details based on user key.
+
+        :param client: Client object.
+        :param args: Command arguments.
+
+        :return: String that confirms request was executed.
+    """
+    client.set_authorized_http(scopes=SCOPES['POLICY_MANAGEMENT'])
+    customer_id = return_customer_id(args)
+    target_type = args.get('target_type', '')
+    policy_raw_json = args.get('policy_raw_json', '')
+    policy_field_json_entry_id = args.get('policy_field_json_entry_id', '')
+    target_resource = args.get('target_resource', '')
+    additional_target_keys = args.get('additional_target_keys', '')
+    policy_schema = args.get('policy_schema', '')
+    policy_value = args.get('policy_value', '')
+    update_mask = args.get('update_mask', '')
+
+    if target_type == 'Group':
+        full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policies/groups:batchModify'
+        target_resource_customized = f'groups/{target_resource}'
+    else:
+        full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policies/orgunits:batchModify'
+        target_resource_customized = f'orgunits/{target_resource}'
+
+    if additional_target_keys:
+        atk_dict = json.loads(additional_target_keys)
+    else:
+        atk_dict = {}
+
+    if policy_raw_json:
+        app_payload = GSuiteClient.safe_load_non_strict_json(policy_raw_json)
+    elif policy_field_json_entry_id:
+        app_payload = return_file_from_entry_id(policy_field_json_entry_id)
+    else:
+        app_payload = {
+            "requests": [
+                {
+                    "policyTargetKey":
+                    {
+                        "targetResource": target_resource_customized,
+                        "additionalTargetKeys": atk_dict
+                    },
+                    "policyValue": {
+                        "policySchema": policy_schema,
+                        "value": {
+                            "appInstallType": policy_value
+                        }
+                    },
+                    "updateMask": update_mask
+                }
+            ]
+        }
+
+    client.http_request(full_url=full_url, method='POST', body=app_payload)
+
+    # Output
+    return f'Policy has been modified for the customer {customer_id}'
+
+
+def policy_resolve_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+        resolve the provided policy and return its details
+
+        :param client: Client object.
+        :param args: Command arguments.
+
+        :return: Command Result.
+    """
+    API_LIMIT = 1000
+    client.set_authorized_http(scopes=SCOPES['POLICY_MANAGEMENT'])
+    customer_id = return_customer_id(args)
+    target_type = args.get('target_type', '')
+    policy_schema_filter = args.get('policy_schema_filter', '')
+    target_resource = args.get('target_resource', '')
+    additional_target_keys = args.get('additional_target_keys', '')
+    page_size = args.get('page_size', '')
+    page_token = args.get('page_token', '')
+    limit = args.get('limit', '')
+
+    if additional_target_keys:
+        atk_dict = json.loads(additional_target_keys)
+    else:
+        atk_dict = {}
+
+    if target_type == 'Group':
+        target_resource_customized = f'groups/{target_resource}'
+    else:
+        target_resource_customized = f'orgunits/{target_resource}'
+
+    app_payload = {
+        "policySchemaFilter": policy_schema_filter,
+        "policyTargetKey": {
+            "targetResource": target_resource_customized,
+            "additionalTargetKeys": atk_dict
+        },
+        "pageSize": page_size,
+        "pageToken": page_token
+    }
+
+    full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policies:resolve'
+
+    policy_resolved_resp = []
+    if page_size or page_token:
+        if not page_size:
+            page_size = str(DEFAULT_PAGE_SIZE)
+        if int(page_size) > API_LIMIT:
+            page_size = str(API_LIMIT)
+        app_payload['pageSize'] = page_size
+        response = client.http_request(full_url=full_url, method='POST', body=app_payload)
+        page_token = response.get('nextPageToken', '')
+        policy_resolved_resp.extend(response.get('resolvedPolicies', ''))  # type: ignore
+    else:
+        while len(policy_resolved_resp) < int(limit):
+            if int(limit) - len(policy_resolved_resp) > API_LIMIT:
+                page_size = str(API_LIMIT)
+            else:
+                page_size = str(int(limit) - len(policy_resolved_resp))
+            app_payload['pageSize'] = page_size
+            app_payload['pageToken'] = page_token
+            response = client.http_request(full_url=full_url, method='POST', body=app_payload)
+            page_token = response.get('nextPageToken', '')
+            policy_resolved_resp.extend(response.get('resolvedPolicies', ''))  # type: ignore
+            if not page_token:
+                break
+
+    hr_from_response = []
+    for res in policy_resolved_resp:
+        customized_resp = {'targetResource': res['targetKey']['targetResource'],  # type: ignore
+                           'additionalTargetKeys': res['targetKey']['additionalTargetKeys'],  # type: ignore
+                           'policySchema': res['value']['policySchema']}  # type: ignore
+        hr_from_response.append(customized_resp)
+    # Readable Output
+    readable_output = tableToMarkdown(HR_MESSAGES['POLICY_RESOLVE'], hr_from_response,
+                                      ['targetResource', 'additionalTargetKeys', 'policySchema'],
+                                      headerTransform=pascalToSpace, removeNull=True)
+    outputs = {
+        'GSuite.Policy(val.targetKey.targetResource && val.targetKey.targetResource == obj.targetKey.targetResource)':
+            policy_resolved_resp,
+        'GSuite(true)': {'PolicyNextToken': page_token}
+    }
+    return CommandResults(outputs=outputs,
+                          readable_output=readable_output,
+                          raw_response=response)
+
+
+def assign_params_policy_schemas(filter, page_size, page_token):
+    return GSuiteClient.remove_empty_entities({
+        'filter': filter,
+        'pageSize': page_size,
+        'pageToken': page_token
+    })
+
+
+def policy_schemas_list_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+        list policy schemas
+
+        :param client: Client object.
+        :param args: Command arguments.
+
+        :return: Command Result.
+    """
+    API_LIMIT = 1000
+    client.set_authorized_http(scopes=SCOPES['POLICY_MANAGEMENT'])
+    customer_id = return_customer_id(args)
+    schema_name = args.get('schema_name', '')
+    filter = args.get('filter', '')
+    page_size = args.get('page_size', '')
+    page_token = args.get('page_token', '')
+    limit = args.get('limit', '')
+
+    full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policySchemas'
+    policy_schemas_resp = []
+    if schema_name:
+        full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policySchemas/{schema_name}'
+        response = client.http_request(full_url=full_url, method='GET')
+        policy_schemas_resp.append(response)  # type: ignore
+    else:
+        if page_size or page_token:
+            if not page_size:
+                page_size = str(DEFAULT_PAGE_SIZE)
+            if int(page_size) > API_LIMIT:
+                page_size = str(API_LIMIT)
+            params_for_command = assign_params_policy_schemas(filter, page_size, page_token)
+            response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+            page_token = response.get('nextPageToken', '')
+            policy_schemas_resp.extend(response.get('policySchemas', ''))  # type: ignore
+        else:
+            while len(policy_schemas_resp) < int(limit):
+                if int(limit) - len(policy_schemas_resp) > API_LIMIT:
+                    page_size = str(API_LIMIT)
+                else:
+                    page_size = str(int(limit) - len(policy_schemas_resp))
+                params_for_command = assign_params_policy_schemas(filter, page_size, page_token)
+                response = client.http_request(full_url=full_url, method='GET', params=params_for_command)
+                page_token = response.get('nextPageToken', '')
+                policy_schemas_resp.extend(response.get('policySchemas', ''))  # type: ignore
+                if not page_token:
+                    break
+
+    # Readable Output
+    readable_output = tableToMarkdown(HR_MESSAGES['POLICY_LIST'], policy_schemas_resp,
+                                      ['name', 'policyDescription', 'schemaName'],
+                                      headerTransform=pascalToSpace, removeNull=True)
+    outputs = {
+        'GSuite.Policy(val.name && val.name == obj.name)':
+            policy_schemas_resp,
+        'GSuite(true)': {'PolicySchemasNextToken': page_token}
+    }
+    return CommandResults(outputs=outputs,
+                          readable_output=readable_output,
+                          raw_response=response)
+
+
+def group_delete_command(client: Client, args: dict[str, str]) -> str:
+    """
+       delete a user_group based on target_id
+
+       :param client: Client object.
+       :param args: Command arguments.
+
+       :return: String that confirms request was executed.
+   """
+    client.set_authorized_http(scopes=SCOPES['POLICY_MANAGEMENT'])
+    customer_id = return_customer_id(args)
+    policy_raw_json = args.get('policy_raw_json', '')
+    policy_field_json_entry_id = args.get('policy_field_json_entry_id', '')
+    target_resource = args.get('target_resource', '')
+    additional_target_keys = args.get('additional_target_keys', '')
+    policy_schema = args.get('policy_schema', '')
+
+    if additional_target_keys:
+        atk_dict = json.loads(additional_target_keys)
+    else:
+        atk_dict = {}
+
+    target_resource_customized = f'groups/{target_resource}'
+    full_url = f'https://chromepolicy.googleapis.com/v1/customers/{customer_id}/policies/groups:batchDelete'
+    if policy_raw_json:
+        app_payload = GSuiteClient.safe_load_non_strict_json(policy_raw_json)
+    elif policy_field_json_entry_id:
+        app_payload = return_file_from_entry_id(policy_field_json_entry_id)
+    else:
+        app_payload = {
+            "requests": [
+                {
+                    "policyTargetKey":
+                        {
+                            "targetResource": target_resource_customized,
+                            "additionalTargetKeys": atk_dict
+                        },
+                    "policySchema": policy_schema,
+                }
+            ]
+        }
+
+    client.http_request(full_url=full_url, method='POST', body=app_payload)
+
+    # Output
+    return f'Policy has been deleted for the customer {customer_id}'
+
+
 def main() -> None:
     """
          PARSE AND VALIDATE INTEGRATION PARAMS
     """
 
     # Commands dictionary
-    commands: Dict[str, Callable] = {
+    commands: dict[str, Callable] = {
         'gsuite-custom-user-schema-update': custom_user_schema_update_command,
         'gsuite-custom-user-schema-create': custom_user_schema_create_command,
         'gsuite-datatransfer-list': datatransfer_list_command,
@@ -1510,7 +1948,14 @@ def main() -> None:
         'gsuite-mobiledevice-list': gsuite_mobile_device_list_command,
         'gsuite-chromeosdevice-action': gsuite_chromeos_device_action_command,
         'gsuite-chromeosdevice-list': gsuite_chromeos_device_list_command,
-        'gsuite-user-signout': user_signout_command
+        'gsuite-user-signout': user_signout_command,
+        'gsuite-user-reset-password': user_reset_password_command,
+        'gsuite-chromebrowserdevice-move-ou': chromebrowser_move_ou_command,
+        'gsuite-chromebrowserdevice-list': chromebrowser_list_command,
+        'gsuite-policy-modify': modify_policy_command,
+        'gsuite-policy-schemas-list': policy_schemas_list_command,
+        'gsuite-policy-resolve': policy_resolve_command,
+        'gsuite-policy-groups-delete': group_delete_command
     }
     command = demisto.command()
     demisto.info(f'Command being called is {command}')

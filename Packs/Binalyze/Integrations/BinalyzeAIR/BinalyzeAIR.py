@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 import urllib3
 
@@ -15,11 +15,43 @@ class Client(BaseClient):
             url_suffix='/api/public/endpoints?filter[organizationIds]=0'
         )
 
-    def air_acquire(self, hostname: str, profile: str, case_id: str, organization_id: int) -> Dict[str, str]:
+    def get_profile_id(self, profile: str, organization_id: Optional[int]) -> str:
+        '''Gets the profile ID based on the profile name and organization ID by making a GET request to the
+        '/api/public/acquisitions/profiles' endpoint.
+        Args:
+        profile (str): The name of the profile to query.
+        organization_id (int): The organization ID associated with the profile.
+        Returns:
+        str: The profile ID obtained from the API response.
+        Raises:
+        DemistoException: If there is an error making the HTTP request or processing the API response.
+        '''
+        preset_profiles = ["browsing-history", "compromise-assessment", "event-logs", "full", "memory-ram-pagefile", "quick"]
+        if profile in preset_profiles:
+            return profile
+        else:
+            result = self._http_request(
+                method='GET',
+                url_suffix=f'/api/public/acquisitions/profiles?filter[name]={profile}&filter[organizationIds]='
+                           f'{organization_id}').get("result", {}).get("entities", [])
+            profile_id = ""
+            for entity in result:
+                if entity.get("name") == profile:
+                    profile_id = entity.get("_id")
+                    if profile_id:
+                        return profile_id
+            # There is no match with profile_id.
+            if not profile_id:
+                return_error(f'The acquisition profile "{profile}" cannot be found. Please ensure that you enter a valid '
+                             f'profile name.')
+            return ""
+
+    def air_acquire(self, hostname: str, profile: str, case_id: str, organization_id: Optional[int]) -> Dict[str, Any]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
 
         :param hostname str: endpoint hostname to start acquisition.
-        :param profile str: predefined 5 acquisiton profile name.
+        :param profile str: get the profile string makes a query, and uses profile_id for mapping correct profile.
+
         :param case_id str: The Case ID to associate with in AIR Server.
         :param organization_id int: Organizsation ID of the endpoint.
 
@@ -37,7 +69,7 @@ class Client(BaseClient):
             "taskConfig": {
                 "choice": "use-policy"
             },
-            "acquisitionProfileId": profile,
+            "acquisitionProfileId": self.get_profile_id(profile, organization_id),
             "filter": {
                 "name": hostname,
                 "organizationIds": [organization_id]
@@ -49,7 +81,7 @@ class Client(BaseClient):
             json_data=payload
         )
 
-    def air_isolate(self, hostname: str, organization_id: int, isolation: str) -> Dict[str, str]:
+    def air_isolate(self, hostname: str, organization_id: Optional[int], isolation: str) -> Dict[str, Any]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
         :param hostname str: endpoint hostname to start acquisition.
         :param isolation str: To isolate enable, to disable isolate use disable
@@ -60,7 +92,7 @@ class Client(BaseClient):
         :rtype Dict[str, Any]
         '''
 
-        payload: Dict[str, Any] = {
+        payload: Dict[Any, Any] = {
             "enabled": True,
             "filter": {
                 "name": hostname,
@@ -100,8 +132,8 @@ def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     case_id = args.get('case_id', '')
     organization_id = args.get('organization_id', '')
 
-    result: Dict[str, Any] = client.air_acquire(hostname, profile, case_id, organization_id)
-    readable_output = tableToMarkdown('Binalyze AIR Isolate Results', result,
+    result: Dict[str, Any] = client.air_acquire(hostname, profile, case_id, arg_to_number(organization_id))
+    readable_output = tableToMarkdown('Binalyze AIR Acquisition Results', result,
                                       headers=('success', 'result', 'statusCode', 'errors'),
                                       headerTransform=string_to_table_header)
 
@@ -126,7 +158,7 @@ def air_isolate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     organization_id = args.get('organization_id', '')
     isolation = args.get('isolation', '')
 
-    result: Dict[str, Any] = client.air_isolate(hostname, organization_id, isolation)
+    result: Dict[Any, Any] = client.air_isolate(hostname, arg_to_number(organization_id), isolation)
     readable_output = tableToMarkdown('Binalyze AIR Isolate Results', result,
                                       headers=('success', 'result', 'statusCode', 'errors'),
                                       headerTransform=string_to_table_header)

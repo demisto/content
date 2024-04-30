@@ -1976,7 +1976,7 @@ class MsClient:
             A response from the API.
         """
         cmd_url = urljoin(indicators_endpoint, indicator_id)
-        return self.indicators_http_request('DELETE', None, full_url=cmd_url, ok_codes=(204,),
+        return self.indicators_http_request('DELETE', None, full_url=cmd_url,
                                             resp_type='response', should_use_security_center=use_security_center)
 
     def get_live_response_result(self, machine_action_id, command_index=0, overwrite_rate_limit_retry=False):

@@ -47,11 +47,11 @@ def get_jira_tickets_for_playbooks(playbook_ids: list[str],
     return playbook_ids_to_jira_tickets
 
 
-def write_test_playbook_to_jira_mapping(artifacts_path: Path, jira_tickets_for_playbooks: dict[str, Issue]):
+def write_test_playbook_to_jira_mapping(server_url: str, artifacts_path: Path, jira_tickets_for_playbooks: dict[str, Issue]):
     test_playbooks_to_jira_mapping = artifacts_path / TEST_PLAYBOOKS_TO_JIRA_MAPPING
     logging.info(f"Writing test_playbooks_to_jira_mapping to {test_playbooks_to_jira_mapping}")
     with open(test_playbooks_to_jira_mapping, "w") as playbook_to_jira_mapping_file:
-        playbook_to_jira_mapping = {playbook_id: jira_ticket_to_json_data(jira_ticket)
+        playbook_to_jira_mapping = {playbook_id: jira_ticket_to_json_data(server_url, jira_ticket)
                                     for playbook_id, jira_ticket in jira_tickets_for_playbooks.items()}
         playbook_to_jira_mapping_file.write(json.dumps(playbook_to_jira_mapping, indent=4, sort_keys=True,
                                                        default=str))

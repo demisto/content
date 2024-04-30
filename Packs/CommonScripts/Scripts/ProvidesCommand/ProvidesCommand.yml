@@ -8,12 +8,12 @@ subtype: python3
 tags:
 - general
 comment: |-
-  Finds which integrations implement a specific Demisto command.  The results will be returned as comma-separated values (CSV).  The "Demisto REST API" integration must first be enabled.
+  Finds which integrations implement a specific Demisto command.  The results will be returned as comma-separated values (CSV).  The "Core REST API" integration must first be enabled.
 enabled: true
 args:
 - name: command
   required: true
-  description: The integration command to find
+  description: The integration command to find.
 - name: enabled
   auto: PREDEFINED
   predefined:
@@ -23,9 +23,9 @@ args:
 scripttarget: 0
 dependson:
   must:
-  - demisto-api-post
-  - demisto-api-get
-dockerimage: demisto/python3:3.10.12.63474
+  - core-api-post
+  - core-api-get
+dockerimage: demisto/python3:3.10.13.86272
 runas: DBotWeakRole
 tests:
 - No test - unit test

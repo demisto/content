@@ -1,0 +1,19 @@
+[
+    {
+        "AssociatedInterface": "",
+        "Comment": "",
+        "EndIP": "0.0.0.0",
+        "Name": "Lior",
+        "StartIP": "0.0.0.0",
+        "Type": "multicastrange",
+        "VDOM": "root"
+    },
+    {
+        "AssociatedInterface": "port7",
+        "Comment": "",
+        "Name": "SB",
+        "Subnet": "0.0.0.0-0.0.0.0",
+        "Type": "broadcastmask",
+        "VDOM": "root"
+    }
+]

@@ -13,3 +13,7 @@
 !aws-ec2-release-hosts host_id="h-00548908djdsgfs"
 !aws-ec2-authorize-security-group-egress-rule groupId=sg-0566450bb5ae17c7d IpPermissionsfromPort=23 IpPermissionsToPort=23 IpPermissionsIpProtocol=TCP
 !aws-ec2-describe-iam-instance-profile-associations
+!aws-ec2-modify-snapshot-permission operationType=remove snapshotId=snap-04b2d21f20d2388f2 userIds=123456789012
+!aws-ec2-get-ipam-discovered-public-addresses IpamResourceDiscoveryId=ipam-res-disco-11111111111111111 AddressRegion=us-east-1 Filters=Name=address,Values=1.1.1.1
+!aws-ec2-describe-ipam-resource-discovery-associations
+!aws-ec2-describe-ipam-resource-discoveries

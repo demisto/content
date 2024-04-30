@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Optional, Set, Dict, Tuple
 from demisto_sdk.commands.common.tools import get_pack_names_from_files
 from git import Repo, GitCommandError
 from github.PullRequest import PullRequest
@@ -16,10 +15,11 @@ from Utils.github_workflow_scripts.utils import load_json, Checkout, timestamped
 print = timestamped_print
 SKIPPING_MESSAGE = "Skipping Auto-Bumping release notes."
 PACKS_DIR = "Packs"
-PACK_METADATA_FILE = Pack.USER_METADATA
+PACK_METADATA_FILE = Pack.PACK_METADATA
 RELEASE_NOTES_DIR = Pack.RELEASE_NOTES
 LAST_SUITABLE_PR_UPDATE_TIME_DAYS = 14
 t = Terminal()
+FAILED_TO_MERGE = 'Failed to merge'
 
 
 class UpdateType(str, Enum):
@@ -44,6 +44,8 @@ class SkipReason:
     DIFFERENT_RN_METADATA_VERSIONS = 'Pack: {} has different rn version {}, and metadata version {}.'
     ALLOWED_BUMP_CONDITION = 'Pack {} version was updated from {} to {} version. Allowed bump only by + 1.'
     UNALLOWED_KEYS_CHANGED = 'Pack {} metadata file has different keys in master and branch: {}.'
+    FAILED_TO_MERGE = 'Cannot git merge this PR. It can happened when no mutual history between branch and master, ' \
+                      'for example in PR from forked repo.'
 
 
 class ConditionResult:
@@ -52,8 +54,8 @@ class ConditionResult:
     def __init__(
         self,
         should_skip: bool,
-        reason: Optional[str] = "",
-        conflicting_packs: Optional[Set] = None,
+        reason: str | None = "",
+        conflicting_packs: set | None = None,
         pack_new_rn_file: Path = None,
         pr_rn_version: Version = None,
         update_type: UpdateType = None,
@@ -125,13 +127,13 @@ class BaseCondition(ABC):
 
     @abstractmethod
     def _check(
-        self, previous_result: Optional[ConditionResult] = None
+        self, previous_result: ConditionResult | None = None
     ) -> ConditionResult:
         """Abstract method. Will be over-written by classes that implements Condition."""
         raise NotImplementedError
 
     def check(
-        self, previous_result: Optional[ConditionResult] = None
+        self, previous_result: ConditionResult | None = None
     ) -> ConditionResult:
         """Checks conditions one after another.
         Checks condition and if it is pass, checks next_condition.
@@ -163,9 +165,9 @@ class MetadataCondition(BaseCondition):
         pack: str,
         pr: PullRequest,
         git_repo: Repo,
-        branch_metadata: Optional[Dict] = None,
-        origin_base_metadata: Optional[Dict] = None,
-        pr_base_metadata: Optional[Dict] = None,
+        branch_metadata: dict | None = None,
+        origin_base_metadata: dict | None = None,
+        pr_base_metadata: dict | None = None,
     ):
         """
         Args:
@@ -246,7 +248,7 @@ class LastModifiedCondition(BaseCondition):
         )
 
     def _check(
-        self, previous_result: Optional[ConditionResult] = None
+        self, previous_result: ConditionResult | None = None
     ) -> ConditionResult:
         """Checks if the PR was updated in last LAST_SUITABLE_UPDATE_TIME_DAYS days.
         Args:
@@ -280,7 +282,7 @@ class LabelCondition(BaseCondition):
         )
 
     def _check(
-        self, previous_result: Optional[ConditionResult] = None
+        self, previous_result: ConditionResult | None = None
     ) -> ConditionResult:
         """Checks if the PR has NOT_UPDATE_RN_LABEL.
         Args:
@@ -307,7 +309,7 @@ class AddedRNFilesCondition(BaseCondition):
         return SkipReason.NO_NEW_RELEASE_NOTES.format(RELEASE_NOTES_DIR)
 
     def _check(
-        self, previous_result: Optional[ConditionResult] = None
+        self, previous_result: ConditionResult | None = None
     ) -> ConditionResult:
         """Checks if there are new Release Notes files in the PR.
         Args:
@@ -337,13 +339,15 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
         """
         if not conflicting_files:
             return SkipReason.NO_CONFLICTING_FILES
+        elif FAILED_TO_MERGE in conflicting_files:
+            return SkipReason.FAILED_TO_MERGE
         else:
             return SkipReason.CONFLICTING_FILES.format(
                 RELEASE_NOTES_DIR, PACK_METADATA_FILE, conflicting_files
             )
 
     def _check(
-        self, previous_result: Optional[ConditionResult] = None
+        self, previous_result: ConditionResult | None = None
     ) -> ConditionResult:
         """Checks if the PR conflicting with origin/master on pack_metadata and release notes only.
         Args:
@@ -359,7 +363,7 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
             if f.status == "added" and RELEASE_NOTES_DIR in Path(f.filename).parts
         ]
         changed_metadata_files = [
-            f.filename for f in pr_files if PACK_METADATA_FILE == Path(f.filename).name
+            f.filename for f in pr_files if Path(f.filename).name == PACK_METADATA_FILE
         ]
         (
             conflict_only_rn_and_metadata,
@@ -378,7 +382,7 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
 
     def _has_conflict_on_given_files(
         self, files_check_to_conflict_with: list
-    ) -> Tuple[bool, list]:
+    ) -> tuple[bool, list]:
         """Checks if a pull request contains merge conflicts with a local branch.
         Arguments:
             files_check_to_conflict_with: files to check if the pr has conflict on given files only.
@@ -391,7 +395,9 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
         try:
             self.git_repo.git.merge(f"origin/{pr_branch}", "--no-ff", "--no-commit")
         except GitCommandError as e:
-            print(f'{e}')
+            print(f'Got git error: {e=}')
+            if 'not something we can merge' in e.stderr:
+                return False, [FAILED_TO_MERGE]
             error = e.stdout
             if error:
                 error = error.replace("stdout: '", "").strip()
@@ -404,16 +410,15 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
                 file_name in files_check_to_conflict_with
                 for file_name in conflicting_files
             )
-        finally:
-            self.git_repo.git.merge("--abort")
-            self.git_repo.git.clean("-f")
+        self.git_repo.git.merge("--abort")
+        self.git_repo.git.clean("-f")
         return bool(conflict_only_with_given_files and conflicting_files), conflicting_files
 
 
 class PackSupportCondition(MetadataCondition):
     ALLOWED_SUPPORT_TYPES = (Metadata.XSOAR_SUPPORT, Metadata.PARTNER_SUPPORT, Metadata.COMMUNITY_SUPPORT)
 
-    def generate_skip_reason(self, support_type: Optional[str], **kwargs) -> str:  # type: ignore[override]
+    def generate_skip_reason(self, support_type: str | None, **kwargs) -> str:  # type: ignore[override]
         """
         Args:
             support_type: pack support type.
@@ -424,7 +429,7 @@ class PackSupportCondition(MetadataCondition):
         )
 
     def _check(
-        self, previous_result: Optional[ConditionResult] = None, **kwargs
+        self, previous_result: ConditionResult | None = None, **kwargs
     ) -> ConditionResult:
         """Checks if the pack is XSOAR supported.
         Args:
@@ -459,7 +464,7 @@ class MajorChangeCondition(MetadataCondition):
         )
 
     def _check(
-        self, previous_result: Optional[ConditionResult] = None, **kwargs
+        self, previous_result: ConditionResult | None = None, **kwargs
     ) -> ConditionResult:
         """Checks if packs major changed.
         Args:
@@ -505,7 +510,7 @@ class MaxVersionCondition(MetadataCondition):
         )
 
     def _check(
-        self, previous_result: Optional[ConditionResult] = None, **kwargs
+        self, previous_result: ConditionResult | None = None, **kwargs
     ) -> ConditionResult:
         """Checks if packs version is 99. (99 is the last supported version number).
         Args:
@@ -549,7 +554,7 @@ class OnlyVersionChangedCondition(MetadataCondition):
         )
 
     def _check(
-        self, previous_result: Optional[ConditionResult] = None, **kwargs
+        self, previous_result: ConditionResult | None = None, **kwargs
     ) -> ConditionResult:
         """Checks if other pack metadata fields changed except ALLOWED CHANGED PACKS.
         Args:
@@ -585,7 +590,7 @@ class OnlyOneRNPerPackCondition(MetadataCondition):
         return SkipReason.MORE_THAN_ONE_RN.format(self.pack, [str(f) for f in rn_files])
 
     def _check(
-        self, previous_result: Optional[ConditionResult] = None, **kwargs
+        self, previous_result: ConditionResult | None = None, **kwargs
     ) -> ConditionResult:
         """Checks that only one release notes files per pack was added.
         Args:
@@ -628,7 +633,7 @@ class SameRNMetadataVersionCondition(MetadataCondition):
         )
 
     def _check(
-        self, previous_result: Optional[ConditionResult] = None, **kwargs
+        self, previous_result: ConditionResult | None = None, **kwargs
     ) -> ConditionResult:
         """Checks if the new Release Notes has the same version as pack metadata version.
         Args:
@@ -640,9 +645,8 @@ class SameRNMetadataVersionCondition(MetadataCondition):
         branch_pack_metadata_version = Version(
             self.branch_metadata.get(Metadata.CURRENT_VERSION, self.DEFAULT_VERSION)
         )
-        assert (
-            previous_result and previous_result.pack_new_rn_file
-        ), "No previous result was supplied to the SameRNMetadataVersionCondition object."
+        assert previous_result, "No previous result was supplied to the SameRNMetadataVersionCondition object."
+        assert previous_result.pack_new_rn_file, "No previous result was supplied to the SameRNMetadataVersionCondition object."
         rn_version_file_name = previous_result.pack_new_rn_file.stem
         rn_version = Version(rn_version_file_name.replace("_", "."))
         if branch_pack_metadata_version != rn_version:
@@ -674,7 +678,7 @@ class AllowedBumpCondition(MetadataCondition):
         )
 
     def _check(
-        self, previous_result: Optional[ConditionResult] = None, **kwargs
+        self, previous_result: ConditionResult | None = None, **kwargs
     ) -> ConditionResult:
         """Checks if the pack version was updated by +1. (The only bump we allow).
         Args:
@@ -710,7 +714,7 @@ class AllowedBumpCondition(MetadataCondition):
     @staticmethod
     def check_update_type(
         prev_version: Version, new_version: Version
-    ) -> Optional[UpdateType]:
+    ) -> UpdateType | None:
         """Checks what was the update type when the release notes were generated.
         Args:
             prev_version: the pack version before updating release notes.

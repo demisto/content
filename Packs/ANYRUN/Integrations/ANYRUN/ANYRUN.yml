@@ -328,6 +328,8 @@ script:
       - Opera
       - Microsoft Edge
       description: Browser name, used only for "url" type.
+    - name: obj_ext_cmd
+      description: Command line, used only if 'obj_type' command argument is 'file' or 'download'. Permitted size is 2-256 characters long.
     - auto: PREDEFINED
       defaultValue: Windows 7
       description: Version of Windows OS.
@@ -373,7 +375,7 @@ script:
     - contextPath: ANYRUN.Task.ID
       description: ID of the task created to analyze the submission.
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.83255
   subtype: python3
   runonce: false
   script: '-'

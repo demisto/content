@@ -148,8 +148,8 @@ class TestRegex:
 
         corepacks_file = {
             "corePacks": [
-                f"https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-ci-build/content/packs/pack_1/1.4.0/pack_1.zip",
-                f"https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-ci-build/content/packs/pack_2/2.2.3/pack_2.zip"
+                "https://storage.googleapis.com/marketplace-ci-build/content/packs/pack_1/1.4.0/pack_1.zip",
+                "https://storage.googleapis.com/marketplace-ci-build/content/packs/pack_2/2.2.3/pack_2.zip"
             ],
             "upgradeCorePacks": [
                 "pack_1"
@@ -168,8 +168,8 @@ class TestRegex:
         # Assert that corepacks.json file was processed and uploaded successfully
         corepacks_expected_data = {
             "corePacks": [
-                f"https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-dist/content/packs/pack_1/1.4.0/pack_1.zip",
-                f"https://storage.googleapis.com/{TEST_XDR_PREFIX}marketplace-dist/content/packs/pack_2/2.2.3/pack_2.zip"
+                "https://storage.googleapis.com/marketplace-dist/content/packs/pack_1/1.4.0/pack_1.zip",
+                "https://storage.googleapis.com/marketplace-dist/content/packs/pack_2/2.2.3/pack_2.zip"
             ],
             "upgradeCorePacks": [
                 "pack_1"

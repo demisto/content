@@ -327,7 +327,7 @@ def test_generate_login_url(mocker: MockerFixture) -> None:
         f"[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?"
         "response_type=code&scope=offline_access%20https://api.loganalytics.io/Data.Read"
         "%20https://management.azure.com/user_impersonation"
-        f"&client_id={client_id}&redirect_uri={redirect_uri})"
+        f"&client_id={client_id}&redirect_uri={redirect_uri}&prompt=consent)"
     )
     res = AzureLogAnalytics.return_results.call_args[0][0].readable_output
     assert expected_url in res

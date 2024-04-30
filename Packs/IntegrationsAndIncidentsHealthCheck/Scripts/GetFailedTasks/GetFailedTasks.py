@@ -3,15 +3,16 @@ from CommonServerPython import *  # noqa: F401
 from typing import Any
 
 
-BRAND = "Demisto REST API"
+
+BRAND = "Core REST API"
 
 
 def get_rest_api_instance_to_use():
     """
-        This function checks if there are more than one instance of demisto rest api.
+        This function checks if there are more than one instance of Core REST API.
 
         Returns:
-            Demisto Rest Api instance to use
+            Core REST API instance to use
     """
     all_instances = demisto.getModules()
     number_of_rest_api_instances = 0
@@ -21,7 +22,7 @@ def get_rest_api_instance_to_use():
             rest_api_instance_to_use = instance_name
             number_of_rest_api_instances += 1
         if number_of_rest_api_instances > 1:
-            return_error("GetFailedTasks: This script can only run with a single instance of the Demisto REST API. "
+            return_error("GetFailedTasks: This script can only run with a single instance of the Core REST API. "
                          "Specify the instance name in the 'rest_api_instance' argument.")
     return rest_api_instance_to_use
 
@@ -86,7 +87,7 @@ def get_incident_tasks_using_rest_api_instance(incident: dict, rest_api_instance
 
         Args:
             incident (dict): An incident object.
-            rest_api_instance (str): A Demisto REST API instance name to use for fetching task details.
+            rest_api_instance (str): A Core REST API instance name to use for fetching task details.
 
         Returns:
             List of the tasks given from the response.
@@ -94,7 +95,7 @@ def get_incident_tasks_using_rest_api_instance(incident: dict, rest_api_instance
     uri = f'investigation/{str(incident["id"])}/workplan/tasks'
 
     response = demisto.executeCommand(
-        "demisto-api-post",
+        "core-api-post",
         {
             "uri": uri,
             "body": {
@@ -107,7 +108,7 @@ def get_incident_tasks_using_rest_api_instance(incident: dict, rest_api_instance
 
     if is_error(response):
         error = f'Failed retrieving tasks for incident ID {incident["id"]}.\n \
-           Make sure that the API key configured in the Demisto REST API integration \
+           Make sure that the API key configured in the Core REST API integration \
 is one with sufficient permissions to access that incident.\n' + get_error(response)
         raise Exception(error)
 
@@ -145,12 +146,12 @@ def get_incident_tasks_using_internal_request(incident: dict):
 def get_incident_data(incident: dict, rest_api_instance: str = None):
     """
         Returns the failing task objects of an incident.
-        The request is done using a Demisto Rest API instance if given,
+        The request is done using a Core REST API instance if given,
         otherwise it will be done using the demisto.internalHttpRequest method.
 
         Args:
             incident (dict): An incident object.
-            rest_api_instance (str): A Demisto REST API instance name to use for fetching task details.
+            rest_api_instance (str): A Core REST API instance name to use for fetching task details.
 
         Returns:
             tuple of context outputs and total amount of related error entries

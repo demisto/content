@@ -117,6 +117,9 @@ ignore=IF100
 [file:incidentfield-Alert_Name.json]
 ignore=IF100
 
+[file:incidentfield-Related_Alerts.json]
+ignore=IF100
+
 [file:incidentfield-Event_Descriptions.json]
 ignore=IF100
 
@@ -199,6 +202,9 @@ ignore=BA111
 ignore=IF115
 
 [file:incidentfield-Alert_Source.json]
+ignore=IF100
+
+[file:incidentfield-Alert_Rules.json]
 ignore=IF100
 
 [file:incidentfield-Use_Case_Description.json]
@@ -288,6 +294,24 @@ ignore=BA101
 [file:incidentfield-Number_Of_Found_Related_Alerts.json]
 ignore=IF100
 
+[file:incidentfield-Tool_Usage_Found.json]
+ignore=IF115
+
+[file:incidentfield-Affected_Hosts.json]
+ignore=IF115
+
+[file:incidentfield-Affected_Users.json]
+ignore=IF115
+
+[file:incidentfield-Last_Mirrored_Time_Stamp.json]
+ignore=IF115
+
+[file:incidentfield-Alert_tags.json]
+ignore=IF100
+
+[file:3_4_9.md]
+ignore=RN115
+
 [known_words]
 SysAid
 longText
@@ -314,4 +338,8 @@ mailto
 Misconfiguration
 CloudTrail
 ThreatCommand
-TLP
+Cyberint
+DN
+PEM
+SPKI
+subkeys

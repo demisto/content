@@ -1084,3 +1084,33 @@ class TestFilePermissionMethods:
                     'user_id': 'test_user_id',
                 }
             )
+
+    @patch(MOCKER_HTTP_METHOD)
+    def test_drive_get_file_parents_success(self, mocker_http_request, gsuite_client):
+        """
+        Scenario: For file_get_parents command successful run.
+
+        Given:
+        - Command args.
+
+        When:
+        - Calling google-drive-get-file-parents command with the parameters provided.
+
+        Then:
+        - Ensure command's raw_response, outputs should be as expected.
+        """
+        from GoogleDrive import file_get_parents
+
+        with open('test_data/get_parents_list.txt', encoding='utf-8') as data:
+            mock_response = json.load(data)
+        mocker_http_request.return_value = mock_response
+
+        args = {
+            'use_domain_admin_access': True,
+            'file_id': 'test',
+            'user_id': 'test'
+        }
+        result: CommandResults = file_get_parents(gsuite_client, args)
+
+        assert len(result.outputs.get('GoogleDrive.File.Parents', [])) == 1  # type: ignore
+        assert result.raw_response == mock_response

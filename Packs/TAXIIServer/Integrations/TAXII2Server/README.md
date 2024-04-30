@@ -37,7 +37,8 @@ You can add a collection description as is done in *collection1_name*, or enter 
 
 To access the TAXII service by instance name, make sure *Instance execute external* is enabled. 
 
-1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
+In Cortex XSOAR 6.x:
+1. Navigate to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the *instance.execute.external* key is set to *true*. If this key does not exist, click **+ Add Server Configuration**, add the *instance.execute.external* and set the value to *true*.
 
 ### How to use HTTPS

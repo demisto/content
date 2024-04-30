@@ -266,7 +266,7 @@ tasks:
       pages_to_pull:
         simple: "2"
       user_id:
-        simple: avishai@demistodev.onmicrosoft.com
+        simple: testbox2@demistodev.onmicrosoft.com
     separatecontext: false
     view: |-
       {

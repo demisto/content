@@ -13,6 +13,7 @@ import urllib
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
 RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
+IS_SYNC_MODE = argToBoolean(demisto.args().get("syncMode", False))
 
 # flake8: noqa
 
@@ -8527,8 +8528,14 @@ def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
     """
 
     ips = demisto.args().get('ip', '1.1.1.1')
-    rate_limit_retry_count: int = int(get_param_or_arg('rate_limit_retry_count',
-                                      'rate_limit_retry_count') or RATE_LIMIT_RETRY_COUNT_DEFAULT)
+    rate_limit_retry_count: int = (
+        RATE_LIMIT_RETRY_COUNT_DEFAULT
+        if IS_SYNC_MODE
+        else int(
+            get_param_or_arg('rate_limit_retry_count', 'rate_limit_retry_count')
+            or RATE_LIMIT_RETRY_COUNT_DEFAULT
+        )
+    )
     rate_limit_wait_seconds: int = int(get_param_or_arg('rate_limit_wait_seconds',
                                        'rate_limit_wait_seconds') or RATE_LIMIT_WAIT_SECONDS_DEFAULT)
     rate_limit_errors_suppressed: bool = bool(get_param_or_arg(

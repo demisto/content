@@ -1,8 +1,8 @@
 args:
-- description: A1000 classification report
+- description: A1000 classification report.
   name: a1000_classification_report
   required: true
-- description: A1000 full report
+- description: A1000 full report.
   name: a1000_full_report
   required: true
 comment: Calculates A1000 final classification based on A1000 classification and A1000 full reports.
@@ -52,7 +52,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.13.83255
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)

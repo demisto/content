@@ -2,7 +2,8 @@
 	"associatedToAll": false,
 	"associatedTypes": [
 		"CrowdStrike Falcon Detection",
-        "CrowdStrike Falcon IDP Detection"
+        "CrowdStrike Falcon IDP Detection",
+        "CrowdStrike Falcon Mobile Detection"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

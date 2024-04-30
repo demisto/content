@@ -18,7 +18,8 @@ def prisma_cloud_v2_client(mocker):
     headers[REQUEST_CSPM_AUTH_HEADER] = AUTH_HEADER
 
     return Client(server_url='https://api.prismacloud.io/', verify=True, proxy=False, headers=headers,
-                  username='username', password='password', mirror_direction=None, close_incident=False, close_alert=False)
+                  username='username', password='password', mirror_direction=None, close_incident=False, close_alert=False,
+                  is_test_module=False)
 
 
 ''' COMMAND FUNCTIONS TESTS '''
@@ -61,7 +62,8 @@ def test_alert_search_command_no_next_token(mocker, prisma_cloud_v2_client):
                                                            {'name': 'policy.remediable', 'operator': '=', 'value': 'true'},
                                                            {'name': 'cloud.type', 'operator': '=', 'value': 'gcp'},
                                                            {'name': 'policy.type', 'operator': '=', 'value': 'config'}],
-                                               'timeRange': {'type': 'relative', 'value': {'amount': 3, 'unit': 'week'}}})
+                                               'timeRange': {'type': 'relative', 'value': {'amount': 3, 'unit': 'week'}}},
+                                    retries=2)
 
 
 def test_alert_search_command_with_next_token(mocker, prisma_cloud_v2_client):
@@ -83,7 +85,7 @@ def test_alert_search_command_with_next_token(mocker, prisma_cloud_v2_client):
     http_request.assert_called_with('POST', 'v2/alert', params={'detailed': 'true'},
                                     json_data={'limit': 10,
                                                'timeRange': {'type': 'relative', 'value': {'amount': 3, 'unit': 'week'}},
-                                               'pageToken': 'TOKEN'})
+                                               'pageToken': 'TOKEN'}, retries=2)
 
 
 def test_alert_get_details_command(mocker, prisma_cloud_v2_client):
@@ -249,7 +251,9 @@ def test_config_search_command(mocker, prisma_cloud_v2_client):
     http_request.assert_called_with('POST', 'search/config',
                                     json_data={'limit': 1, 'query': "config from cloud.resource where cloud.region = 'AWS Ohio' ",
                                                'sort': [{'direction': 'desc', 'field': 'insertTs'}],
-                                               'timeRange': {'type': 'to_now', 'value': 'epoch'}})
+                                               'timeRange': {'type': 'to_now', 'value': 'epoch'},
+                                               'withResourceJson': 'true',
+                                               })
 
 
 def test_event_search_command(mocker, prisma_cloud_v2_client):
@@ -866,6 +870,47 @@ def test_calculate_offset(page_size, page_number, offset):
     assert calculate_offset(page_size, page_number) == (page_size, offset)
 
 
+def test_extract_namespace():
+    """
+    Given:
+        - A response to extract namespace from.
+    When:
+        - Extracting namespaces from resource list items.
+    Then:
+        - The response is updated with the right namespaces.
+    """
+    from PrismaCloudV2 import extract_namespace
+
+    res = [{'id': '1', 'name': 'No namespaces', 'resourceListType': 'TAG',
+            'description': 'some values',
+            'lastModifiedBy': 'name@company.com', 'lastModifiedTs': 1611682405313,
+            'members': [{'env': 'env'}, {'projec': 'project'}, {'securit': 'security'}]},
+           {'id': '2', 'name': 'Members is strings', 'resourceListType': 'RESOURCE_GROUP',
+            'description': '', 'lastModifiedBy': 'name@company.com', 'lastModifiedTs': 1648181381197,
+            'members': ['common']},
+           {'id': '3', 'name': 'Have namespaces',
+            'resourceListType': 'GROUP', 'description': 'Have namespaces',
+            'lastModifiedBy': 'name@company.com', 'lastModifiedTs': 1648507192479,
+            'members': [{'hosts': ['*'], 'appIDs': ['*'], 'images': ['*'], 'labels': ['*'], 'clusters': ['*'],
+                         'codeRepos': ['*'], 'functions': ['*'], 'containers': ['*'], 'namespaces': ['*']}]}]
+    expected_res = [{'id': '1', 'name': 'No namespaces', 'resourceListType': 'TAG',
+                     'description': 'some values',
+                     'lastModifiedBy': 'name@company.com', 'lastModifiedTs': 1611682405313,
+                     'members': [{'env': 'env'}, {'projec': 'project'}, {'securit': 'security'}]},
+                    {'id': '2', 'name': 'Members is strings', 'resourceListType': 'RESOURCE_GROUP',
+                     'description': '', 'lastModifiedBy': 'name@company.com', 'lastModifiedTs': 1648181381197,
+                     'members': ['common']},
+                    {'id': '3', 'name': 'Have namespaces',
+                     'resourceListType': 'GROUP', 'description': 'Have namespaces',
+                     'lastModifiedBy': 'name@company.com', 'lastModifiedTs': 1648507192479,
+                     'members': [{'hosts': ['*'], 'appIDs': ['*'], 'images': ['*'], 'labels': ['*'],
+                                  'clusters': ['*'], 'codeRepos': ['*'], 'functions': ['*'],
+                                  'containers': ['*'], 'namespaces': ['*']}],
+                     'namespaces': ['*']}]
+    extract_namespace(res)
+    assert res == expected_res
+
+
 ''' FETCH HELPER FUNCTIONS TESTS '''
 
 
@@ -1074,7 +1119,7 @@ def prisma_cloud_v2_mirroring_client(mocker):
 
     return Client(server_url='https://api.prismacloud.io/', verify=True, proxy=False, headers=headers,
                   username='username', password='password', mirror_direction="Incoming And Outgoing",
-                  close_incident=True, close_alert=True)
+                  close_incident=True, close_alert=True, is_test_module=False)
 
 
 def test_get_modified_remote_data_command(mocker, prisma_cloud_v2_mirroring_client):
@@ -1478,3 +1523,41 @@ def test_update_remote_system_command(mocker, prisma_cloud_v2_mirroring_client, 
 
     assert mock_update_remote_alert.call_count == expected_call_count
     assert result == 'P-1111111'
+
+
+def test_remove_additional_resource_fields(prisma_cloud_v2_client):
+    """
+        Given
+            - Results of config_search_command.
+        When
+            - Running the config_search_command.
+        Then
+            - Verify that remove_additional_resource_fields removes only the required fields.
+    """
+    from PrismaCloudV2 import remove_additional_resource_fields
+
+    input = {
+        'data': {
+            'items': [{
+                'data': {
+                    'disks': [{"mode": "READ_WRITE", 'shieldedInstanceInitialState': 's_val'}],
+                    'metadata': {'items': [{'key': 'configure-sh', 'value': 'configure_sh_val'},
+                                           {'key': 'not-removed-value', 'value': 'not_removed_value_val'}]},
+                }}
+            ]
+        }
+    }
+    expected = {
+        'data': {
+            'items': [{
+                'data': {
+                    'disks': [{"mode": "READ_WRITE"}],
+                    'metadata': {'items': [{'key': 'not-removed-value', 'value': 'not_removed_value_val'}]},
+                }}
+            ]
+        }
+    }
+
+    remove_additional_resource_fields(input_dict=input)
+
+    assert input == expected

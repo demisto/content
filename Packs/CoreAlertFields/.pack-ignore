@@ -12,3 +12,6 @@ ignore=IF115
 
 [file:incidentfield-User_Risk_level.json]
 ignore=IF115
+
+[file:incidentfield-Alert_Search_Results.json]
+ignore=IF100
