@@ -149,10 +149,10 @@ script:
     - description: Role Arn.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
     - description: Identity Store ID.
