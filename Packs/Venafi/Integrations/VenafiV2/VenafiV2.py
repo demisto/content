@@ -10,7 +10,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 MINUTES_BEFORE_TOKEN_EXPIRED = 2
-CONTEXT_OUTPUT_BASE_PATH = "Venafi.Certificate"
+CONTEXT_OUTPUT_BASE_PATH = 'Venafi.Certificate'
 
 ''' CLIENT CLASS '''
 
@@ -28,8 +28,9 @@ class Client(BaseClient):
         """
         Log into the Venafi API using the provided credentials.
         If it's the first time logging in, it will create a new token, save it to the integration context, and log in.
-        Otherwise, if the token is expired, it will use the refresh token, save it to the integration context, and log in.
-        And if the token is valid, it will log in.
+        Otherwise,
+            - if the token is expired, it will use the refresh token, save it to the integration context, and log in.
+            - if the token is valid, it will log in.
 
         Args:
             client_id (str): The client ID of the user.
@@ -47,19 +48,19 @@ class Client(BaseClient):
                 return token
             else:
                 refresh_token = integration_context.get('refresh_token')
-                url_suffix = "/vedauth/authorize/token"
+                url_suffix = '/vedauth/authorize/token'
                 json_data = {
-                    "client_id": client_id,
-                    "refresh_token": refresh_token
+                    'client_id': client_id,
+                    'refresh_token': refresh_token
                 }
                 return self._create_new_token(url_suffix, json_data)
 
-        url_suffix = "/vedauth/authorize/oauth"
+        url_suffix = '/vedauth/authorize/oauth'
         json_data = {
-            "username": username,
-            "password": password,
-            "client_id": client_id,
-            "scope": "certificate"
+            'username': username,
+            'password': password,
+            'client_id': client_id,
+            'scope': 'certificate'
         }
 
         return self._create_new_token(url_suffix, json_data)
@@ -94,19 +95,19 @@ class Client(BaseClient):
         payload = json.dumps(json_data)
         try:
             access_token_obj = self._http_request(
-                method="POST",
+                method='POST',
                 url_suffix=url_suffix,
                 headers={'Content-Type': 'application/json'},
                 data=payload,
             )
         except DemistoException as e:
-            if "Unauthorized" in str(e):
-                raise DemistoException("Failed to generate a token. Credentials are incorrect.")
+            if 'Unauthorized' in str(e):
+                raise DemistoException('Failed to generate a token. Credentials are incorrect.')
             raise e
 
-        new_token = access_token_obj.get("access_token", "")
-        expire_in = arg_to_number(access_token_obj.get("expires_in")) or 1
-        refresh_token = access_token_obj.get("refresh_token", "")
+        new_token = access_token_obj.get('access_token', '')
+        expire_in = arg_to_number(access_token_obj.get('expires_in')) or 1
+        refresh_token = access_token_obj.get('refresh_token', '')
         self._store_token_in_context(new_token, refresh_token, expire_in)
 
         return new_token
@@ -122,8 +123,13 @@ class Client(BaseClient):
         Returns:
             None
         """
+
         expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
-        set_integration_context({"token": token, "refresh_token": refresh_token, "expire_date": str(expire_date)})
+        set_integration_context({
+            'token': token,
+            'refresh_token': refresh_token,
+            'expire_date': str(expire_date)
+        })
 
     def _get_certificates(self, args: dict[str, Any]) -> dict:
         """
@@ -137,12 +143,12 @@ class Client(BaseClient):
         """
 
         headers = {
-            "Authorization": f"Bearer {self.token}"
+            'Authorization': f'Bearer {self.token}'
         }
 
         certificates = self._http_request(
-            method="GET",
-            url_suffix="/vedsdk/certificates/",
+            method='GET',
+            url_suffix='/vedsdk/certificates/',
             headers=headers,
             params=args
         )
@@ -161,17 +167,20 @@ class Client(BaseClient):
         """
 
         headers = {
-            "Authorization": f"Bearer {self.token}"
+            'Authorization': f'Bearer {self.token}'
         }
 
-        url_suffix = f"/vedsdk/certificates/{guid}"
+        url_suffix = f'/vedsdk/certificates/{guid}'
         certificate_details = self._http_request(
-            method="GET",
+            method='GET',
             url_suffix=url_suffix,
             headers=headers
         )
 
         return certificate_details
+
+
+''' COMMAND FUNCTIONS '''
 
 
 def test_module(client: Client) -> str:
@@ -187,6 +196,7 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
+
     message: str = ''
     try:
         test_empty_args: Dict = {}
@@ -211,6 +221,7 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
     Returns:
         A CommandResult object with an outputs, raw_response and readable table, in case of a successful action.
     """
+
     outputs: dict[str, Any] = {}
     response = client._get_certificates(args)
     if response:
@@ -219,16 +230,7 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
     human_readable = []
     certificates = outputs.get('Certificates', [])
     for certificate in certificates:
-        certificate_guid = certificate.get("Guid")
-        certificate_id = certificate_guid[1:-1]  # Guid represent as {guid}
-        certificate_details = {
-            "CreatedOn": certificate.get('CreatedOn'),
-            "DN": certificate.get('DN'),
-            "Name": certificate.get('Name'),
-            "ParentDN": certificate.get('ParentDn'),
-            "SchemaClass": certificate.get('SchemaClass'),
-            "ID": certificate_id
-        }
+        certificate_details = get_human_readable_object(certificate)
         human_readable.append(certificate_details)
 
     markdown_table = tableToMarkdown('Venafi certificates', human_readable)
@@ -241,23 +243,6 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
     )
 
 
-def delete_links_from_response(response: dict[str, Any]) -> dict[str, Any]:
-    """
-    Delete links list from the response
-
-    Args:
-        response (dict): raw response
-    Returns:
-        response (dict): response without the links list
-    """
-    certificates = response.get('Certificates', [])
-    for certificate in certificates:
-        if certificate.get("_links"):
-            del certificate["_links"]
-
-    return response
-
-
 def get_certificate_details_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get certificate details.
@@ -268,23 +253,15 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
     Returns:
         A CommandResult object with an outputs, raw_response and readable table, in case of a successful action.
     """
+
     outputs: dict[str, Any] = {}
-    guid = args.get('guid', "")
+    guid = args.get('guid', '')
     response = client._get_certificate_details(guid)
     if response:
         outputs = response
 
     human_readable = []
-    certificate_guid = outputs.get("Guid", "")
-    certificate_id = certificate_guid[1:-1]  # Guid represent as {guid}
-    certificate_details = {
-        "CreatedOn": outputs.get('CreatedOn'),
-        "DN": outputs.get('DN'),
-        "Name": outputs.get('Name'),
-        "ParentDN": outputs.get('ParentDn'),
-        "SchemaClass": outputs.get('SchemaClass'),
-        "ID": certificate_id
-    }
+    certificate_details = get_human_readable_object(outputs)
     human_readable.append(certificate_details)
 
     markdown_table = tableToMarkdown('Venafi certificate details', human_readable)
@@ -297,6 +274,51 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
     )
 
 
+''' HELPER FUNCTIONS '''
+
+
+def get_human_readable_object(certificate: dict[str, Any]) -> Dict[str, Any]:
+    """
+    Create a human readable object.
+
+    Args:
+        certificate (dict): An object that contains the certificate information.
+    Returns:
+        certificate_details (dict): Certificate details dictionary.
+    """
+
+    certificate_guid = certificate.get('Guid')
+    certificate_id = certificate_guid[1:-1]  # Guid represented as {guid}
+    certificate_details = {
+        'CreatedOn': certificate.get('CreatedOn'),
+        'DN': certificate.get('DN'),
+        'Name': certificate.get('Name'),
+        'ParentDN': certificate.get('ParentDn'),
+        'SchemaClass': certificate.get('SchemaClass'),
+        'ID': certificate_id
+    }
+
+    return certificate_details
+
+
+def delete_links_from_response(response: dict[str, Any]) -> dict[str, Any]:
+    """
+    Delete links list from the response
+
+    Args:
+        response (dict): raw response
+    Returns:
+        response (dict): response without the links list
+    """
+
+    certificates = response.get('Certificates', [])
+    for certificate in certificates:
+        if certificate.get('_links'):
+            del certificate['_links']
+
+    return response
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -307,11 +329,12 @@ def main() -> None:  # pragma: no cover
     :return:
     :rtype:
     """
+
     demisto_params = demisto.params()
-    base_url = demisto_params.get('server', "https://ao-tlspd.dev.ven-eco.com")
+    base_url = demisto_params.get('server', 'https://ao-tlspd.dev.ven-eco.com')
     username = demisto_params.get('credentials')['identifier']
     password = demisto_params.get('credentials')['password']
-    client_id = demisto_params.get("client_id")
+    client_id = demisto_params.get('client_id')
     verify_certificate = demisto_params.get('insecure', False)
     proxy = demisto_params.get('proxy', False)
     command = demisto.command()

@@ -21,6 +21,7 @@ def test_login_first_time_token_creation(mocker):
     When: Login is called for the first time
     Then: Create a new token and save it to the integration context
     """
+
     from VenafiV2 import Client
 
     mocker.patch("VenafiV2.get_integration_context", return_value={})
@@ -54,6 +55,7 @@ def test_login_with_valid_token(mocker):
     When: Login is called with a valid token
     Then: Fetch the token from the integration context and log in
     """
+
     from VenafiV2 import Client
 
     mocker.patch("VenafiV2.get_integration_context", return_value={
@@ -80,6 +82,7 @@ def test_login_with_invalid_token_refresh_required(mocker):
     When: Login is called with an invalid token
     Then: Request a refresh token and save it to the integration context
     """
+
     from VenafiV2 import Client
 
     mocker.patch("VenafiV2.get_integration_context", return_value={
@@ -111,15 +114,13 @@ def test_login_with_invalid_token_refresh_required(mocker):
     assert client.token == "access_token"
 
 
-"""*****COMMAND FUNCTIONS****"""
-
-
 def test_get_certificates_command(mocker):
     """
     Given: Client details
     When: The "Get certificates" command is called
     Then: Retrieve the user's certificates
     """
+
     from VenafiV2 import Client
     from VenafiV2 import get_certificates_command
     mocker.patch.object(Client, '_login', return_value="access_token")
@@ -152,6 +153,7 @@ def test_get_certificate_details_command(mocker):
     When: The "Get certificate details" command is called
     Then: Retrieve details of a specific certificate
     """
+
     from VenafiV2 import Client
     from VenafiV2 import get_certificate_details_command
     mocker.patch.object(Client, '_login', return_value="access_token")
