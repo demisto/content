@@ -687,17 +687,21 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     if any(field not in data for field in required_fields):
         raise DemistoException(f'Update incident request is missing one of the required fields for the '
                                f'API: {required_fields}')
-
     properties = {
         'title': data.get('title'),
         'description': delta.get('description'),
         'severity': LEVEL_TO_SEVERITY[data.get('severity', '')],
         'status': 'Active',
-        'labels': [{'labelName': label, 'type': 'User'} for label in delta.get('tags', [])],
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
         'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
         'owner': demisto.get(fetched_incident_data, 'properties.owner', {})
     }
+    labels = delta.get('tags')
+    demisto.debug(f'labels: {labels}')
+    if labels:
+        demisto.debug('im here')
+        properties.update({'labels': [{'labelName': label, 'type': 'User'} for label in labels]})
+    demisto.debug(f'Properties: {properties}')
     if close_ticket:
         properties |= {
             'status': 'Closed',
@@ -711,7 +715,9 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         'properties': properties
     }
     demisto.debug(f'Updating incident with remote ID {incident_id} with data: {data}')
-    return client.http_request('PUT', f'incidents/{incident_id}', data=data)
+    response = client.http_request('PUT', f'incidents/{incident_id}', data=data)
+    demisto.debug(f'Response of the call - {response}')
+    return response
 
 
 def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], delta: Dict[str, Any],
@@ -730,6 +736,8 @@ def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], de
 
     elif incident_status == IncidentStatus.ACTIVE:
         demisto.debug(f'Updating incident with remote ID {incident_id} in remote system.')
+        demisto.debug(f'This is the data given: {data}')
+        demisto.debug(f'This is the delta: {delta}')
         return str(update_incident_request(client, incident_id, data, delta))
 
     demisto.debug(f'Incident with remote ID {incident_id} is not Active or Closed, not updating. (status: {incident_status})')

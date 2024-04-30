@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Azure Sentinel
+  id: Azure Sentinel Test
   version: -1
 configuration:
 - defaultvalue: Worldwide
@@ -197,8 +197,8 @@ configuration:
   advanced: true
   required: false
 description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
-display: Microsoft Sentinel
-name: Azure Sentinel
+display: Microsoft Sentinel Test
+name: Azure Sentinel Test
 script:
   commands:
   - arguments:
