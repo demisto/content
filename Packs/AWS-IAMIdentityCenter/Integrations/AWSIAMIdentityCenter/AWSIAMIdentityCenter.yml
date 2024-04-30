@@ -126,7 +126,7 @@ script:
       name: title
       required: false
     - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       name: region
       predefined:
       - us-east-1
