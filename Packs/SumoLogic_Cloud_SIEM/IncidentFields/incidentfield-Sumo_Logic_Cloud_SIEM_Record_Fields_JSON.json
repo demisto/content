@@ -9,7 +9,7 @@
     "content": true,
     "columns": null,
     "defaultRows": null,
-    "description": "Deprecated. Please use Sumo Logic Cloud SIEM Record Fields JSON",
+    "description": "Sumo Logic Cloud SIEM Record Fields",
     "editForm": true,
     "group": 0,
     "hidden": false,

@@ -378,7 +378,7 @@
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "sumologiccloudsiemrecordfields",
+                                "fieldId": "sumologiccloudsiemrecordfieldsjson",
                                 "height": 106,
                                 "id": "9d5d9500-988d-11ed-a46a-4bfa06845bc3",
                                 "index": 0,
