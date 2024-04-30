@@ -38,9 +38,10 @@ def create_widget_entry(similarity_percentage) -> dict:
 
 def main():
     try:
-        similarity_percentage = demisto.get(demisto.context(), 'HTMLSimilarity.SimilarityPercentage')
+        demisto_context = demisto.context()
+        similarity_percentage = demisto.get(demisto_context, 'HTMLSimilarity.SimilarityPercentage')
         if not similarity_percentage:
-            root = demisto.get(demisto.context(), 'HTMLSimilarity')
+            root = demisto.get(demisto_context, 'HTMLSimilarity')
             if isinstance(root, list):
                 similarity_percentage = root[0].get('SimilarityPercentage')
                 return_results(create_widget_entry(similarity_percentage))

@@ -33,11 +33,9 @@ def check_for_phishing_indicators(html_content):
 
 
 def check_html_for_phishing(html_content):
-    try:
-        phishing_indicators = check_for_phishing_indicators(html_content)
-        return phishing_indicators
-    except Exception as e:
-        return_error(f"Error: {str(e)}")
+    phishing_indicators = check_for_phishing_indicators(html_content)
+
+    return phishing_indicators
 
 
 def format_html_response(indicators):
@@ -58,9 +56,10 @@ def format_html_response(indicators):
 
 def main():
     try:
-        html_content = demisto.get(demisto.context(), 'HttpRequest.Response.Body')
+        demisto_context = demisto.context()
+        html_content = demisto.get(demisto_context, 'HttpRequest.Response.Body')
         if not html_content:
-            temp = demisto.get(demisto.context(), 'HttpRequest.Response')
+            temp = demisto.get(demisto_context, 'HttpRequest.Response')
             html_content_root = None
             if isinstance(temp, list):
                 html_content_root = temp[0]

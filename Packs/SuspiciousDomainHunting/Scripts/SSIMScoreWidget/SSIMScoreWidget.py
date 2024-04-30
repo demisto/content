@@ -2,36 +2,37 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def create_widget_entry(mse_score, ssim_score) -> dict:
+def create_widget_entry(ssim_score) -> dict:
+    stats = int(ssim_score*100)
+    if stats >= 0 and stats < 25:
+        color_ssim = "#00cd33"
+    elif stats >= 25 and stats < 75:
+        color_ssim = "#f57d00"
+    else:
+        color_ssim = "#fe1403"
+        
     data = {
         "Type": 17,
         "size": 30,
         "ContentsFormat": "number",
         "Contents": {
-            "stats": (int(ssim_score * 100)),
+            "stats": stats,
             "params": {
                 "layout": "horizontal",
-                "name": "SSIM caclulation",
+                "name": "SSIM Calculation",
+                "description": "The SSIM index calculation between -1/1 - 1 indicates perfect similarity,  \
+                    0 indicates no similarity, and -1 indicates perfect anti-correlation",
                 "sign": "%",
                 "signAlignment": "right",
                 "colors": {
                         "isEnabled": True,
                         "items": {
-                            "#00cd33": {
+                            color_ssim: {
                                 "value": -100
-                            },
-                            "#00cd34": {
-                                "value": 0
-                            },
-                            "#f57d00": {
-                                "value": 50
-                            },
-                            "#fe1403": {
-                                "value": 75
                             }
                         }
                 },
-                "type": "above"
+                "type": "below"
             }
         }
     }
@@ -39,41 +40,16 @@ def create_widget_entry(mse_score, ssim_score) -> dict:
     return data
 
 
-def get_color(num: int | float) -> str:
-    """
-    Gets a CVSS score as an integer\float and sends back the correct hex code for a color as a string.
-
-    Args:
-        num (int\float): A CVE CVSS score.
-
-    Returns:
-        str: The color of the score in hex format
-    """
-    num = int(num)
-    if num < 0 or num > 100:
-        return "Invalid input. Please enter a number between 0 and 100."
-    else:
-        red = int(255 * (num / 100))
-        green = int(255 * ((100 - num) / 100))
-        blue = 0
-        return f"rgb({red}, {green}, {blue})"
-
-
 def main():
     try:
-        mse_score = demisto.get(demisto.context(), 'ImageSimilarity.MSE')
-        ssim_score = demisto.get(demisto.context(), 'ImageSimilarity.SSIM')
-        demisto.callingContext.get('context', 'light').get('User', 'light').get('theme', 'light')
+        ssim_score = demisto.context()['ImageSimilarity']["SSIM"]
 
-        mse_score = 0 if not mse_score else float(mse_score)
+        ssim_score = 100 if not ssim_score else float(ssim_score)
 
-        if not ssim_score:
-            return_results("SSIM Score was not found in the context.")
-        else:
-            return_results(create_widget_entry(mse_score, ssim_score))
+        return_results(create_widget_entry(ssim_score))
 
     except Exception as e:
-        return_error(f"Error: {str(e)}")
+        return_results("SSIM Score was not found in the context.")
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

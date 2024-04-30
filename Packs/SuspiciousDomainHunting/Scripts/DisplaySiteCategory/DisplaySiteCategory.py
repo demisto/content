@@ -9,17 +9,15 @@ def format_value(value):
         for key, val in value.items():
             if key != "URL":
                 formatted_value += f"<li>{format_value(val)}</li>"
-        return formatted_value
     elif isinstance(value, list):
         # If the value is a list (array), recursively format its elements
         formatted_value = ""
         for item in value:
             formatted_value += f"{format_value(item)}"
-        return formatted_value
     else:
         # If the value is not a dictionary or list, return it as is
-        return str(value)
-
+        formatted_value = str(value)
+    return formatted_value
 
 def generate_html_for_context_keys(context_keys):
     html_content = ""

@@ -1,39 +1,31 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from time import sleep
 
 
-def get_entry_id():
+def get_entry_id(demisto_context):
     entry_id = ''
     files = []
 
-    for index in range(1, 4):
-        try:
-            context = demisto.context()
-            files = context['InfoFile']
-            break
-
-        except KeyError:
-            sleep(index * 2)
-
     try:
-        for file in files:
-            if str(file['Name']).startswith('suspicious'):
-                entry_id = file['EntryID']
-                break
+        files = demisto_context['InfoFile']
+        if isinstance(files, list):
+            for file in files:
+                if str(file['Name']).startswith('suspicious'):
+                    entry_id = file['EntryID']
+                    break
+        else:
+            entry_id = files['EntryID']
 
-    except TypeError as e:
-        entry_id = file['Name']
-        demisto.results(f"Error: {e}")
-
-    return entry_id
+        return entry_id
+    except Exception as e:
+        demisto.debug(f"Error: {e}")
 
 
 def main():
 
-    demisto.context()
+    demisto_context = demisto.context()
 
-    entry_id = get_entry_id()
+    entry_id = get_entry_id(demisto_context)
 
     server_url_res = demisto.executeCommand("GetServerURL", {})
     if server_url_res and len(server_url_res) > 0:
@@ -45,7 +37,7 @@ def main():
         html = f"<-:->![pic]({link})\n[Download]({link})"
 
     else:
-        html = "<-:->No Image"
+        html = "<-:->No Image, try to refresh"
 
     demisto.results(
         {
