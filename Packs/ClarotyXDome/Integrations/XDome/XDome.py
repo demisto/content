@@ -17,6 +17,8 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
+SMALLEST_TIME_UNIT = timedelta(seconds=1)
+
 MAX_INCIDENTS_PER_INTERVAL = 50000
 
 MAX_REQUEST_LIMIT = 5000
@@ -277,15 +279,14 @@ class Client(BaseClient):
         last_fetched_items = result.get(items_name, [])
         all_items = last_fetched_items
 
-        has_limit = stop_after is not None
-        while (res_cnt := len(last_fetched_items)) >= batch_size and (len(all_items) < stop_after if has_limit else True):
+        while (res_cnt := len(last_fetched_items)) >= batch_size and (stop_after is None or len(all_items) < stop_after):
             offset += res_cnt
             result = paginated_getter_func(
                 fields=fields, filter_by=filter_by, offset=offset, limit=batch_size, sort_by=sort_by, count=True
             )
             last_fetched_items = result.get(items_name, [])
             all_items.extend(last_fetched_items)
-        return all_items[:stop_after] if has_limit else all_items
+        return all_items[:stop_after] if stop_after is not None else all_items
 
     def get_device_alert_relations(
         self,
@@ -302,7 +303,6 @@ class Client(BaseClient):
         if sort_by:
             body["sort_by"] = sort_by
         return self._http_request("POST", url_suffix="device_alert_relations/", json_data=body)
-
 
     def get_device_vulnerability_relations(
         self,
@@ -370,11 +370,11 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def _device_alert_relation_id(device_alert_relation: Dict) -> Tuple[str, int]:
-    return device_alert_relation.get("alert_id"), device_alert_relation.get("device_uid")
+def _device_alert_relation_id(device_alert_relation: Dict) -> Tuple[int, str]:
+    return device_alert_relation["alert_id"], device_alert_relation["device_uid"]
 
 
-def _device_alert_relation_id_str(device_alert_relation: Dict) -> Tuple[str, int]:
+def _device_alert_relation_id_str(device_alert_relation: Dict) -> str:
     dar_id = _device_alert_relation_id(device_alert_relation)
     return f"{dar_id[0]}↔{dar_id[1]}"
 
@@ -384,12 +384,13 @@ def _split_device_alert_relation_id(device_alert_relation_id: str) -> Tuple[int,
     return int(alert_id), device_uid
 
 
-def _device_alert_relation_name(device_alert_relation: Dict) -> Tuple[str, int]:
+def _device_alert_relation_name(device_alert_relation: Dict) -> str:
     return f"Alert “{device_alert_relation.get('alert_name', '')}” on Device “{device_alert_relation.get('device_name', '')}”"
 
 
 def _format_date(date: Union[str, datetime], format: str = DATE_FORMAT) -> str:
     dt = date if isinstance(date, datetime) else dateparser.parse(date)
+    assert dt is not None
     return dt.strftime(format)
 
 
@@ -401,26 +402,32 @@ def _build_alert_types_filter(alert_types: List[str]) -> Dict[str, Any]:
     return _simple_filter("alert_type_name", "in", [at.strip() for at in alert_types])
 
 
-def _compound_filter(op: str, *filters: Collection[Optional[Dict]]) -> Dict:
+def _compound_filter(op: str, *filters: Optional[Dict]) -> Optional[Dict[str, Any]]:
     filters = [f for f in filters if f]
     return None if not filters else filters[0] if len(filters) == 1 else {"operation": op, "operands": filters}
 
 
-def _and(*filters: Collection[Optional[Dict]]) -> Dict:
+def _and(*filters: Optional[Dict]) -> Optional[Dict[str, Any]]:
     return _compound_filter("and", *filters)
 
 
-def _or(*filters: Collection[Optional[Dict]]) -> Dict:
+def _or(*filters: Optional[Dict]) -> Optional[Dict[str, Any]]:
     return _compound_filter("or", *filters)
 
 
 def _device_alert_relation_to_incident(device_alert_relation: Dict[str, Any]) -> Dict[str, Any]:
     return {
-         "dbotMirrorId": _device_alert_relation_id_str(device_alert_relation),
-         "name": _device_alert_relation_name(device_alert_relation),
-         "occurred": device_alert_relation[INCIDENT_TIMESTAMP_FIELD],
-         "rawJSON": json.dumps(device_alert_relation),
+        "dbotMirrorId": _device_alert_relation_id_str(device_alert_relation),
+        "name": _device_alert_relation_name(device_alert_relation),
+        "occurred": device_alert_relation[INCIDENT_TIMESTAMP_FIELD],
+        "rawJSON": json.dumps(device_alert_relation),
     }
+
+
+def _next_tick(date_time: str) -> str:
+    parsed_time = dateparser.parse(date_time)
+    assert parsed_time is not None
+    return _format_date(parsed_time + SMALLEST_TIME_UNIT)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -464,12 +471,12 @@ class XDomeCommand(abc.ABC):
 
     @classmethod
     def exclude_retired_filter(cls):
-        return _simple_filter(cls.retired_field_name, "in",  [False])
+        return _simple_filter(cls.retired_field_name, "in", [False])
 
     def __init__(
         self,
         client: Client,
-        fields: str,
+        fields: Optional[str],
         filter_by: Optional[str],
         offset: Optional[str],
         limit: Optional[str],
@@ -477,7 +484,7 @@ class XDomeCommand(abc.ABC):
     ):
         self._client = client
         self._raw_args = {"fields": fields, "filter_by": filter_by, "offset": offset, "limit": limit, "sort_by": sort_by}
-        self._fields = self._parse_fields(fields)
+        self._fields = self._parse_fields(fields or "all")
         self._filter_by = self._parse_filter_by(filter_by)
         self._offset = int(offset or 0)
         self._limit = int(limit or DEFAULT_REQUEST_LIMIT)
@@ -486,7 +493,7 @@ class XDomeCommand(abc.ABC):
     def execute(self) -> CommandResults:
         return self._generate_results(self._get_data())
 
-    def _parse_fields(self, raw_fields: str) -> list[str]:
+    def _parse_fields(self, raw_fields: str) -> Collection[str]:
         parsed_fields = [field.strip() for field in raw_fields.split(",")]
         return self.all_fields() if "all" in parsed_fields else parsed_fields
 
@@ -494,7 +501,9 @@ class XDomeCommand(abc.ABC):
         """parse the raw filter input and make sure to always exclude retired devices"""
         if raw_filter_by:
             filter_by = json.loads(raw_filter_by)
-            return _and(filter_by, self.exclude_retired_filter())
+            filter_by = _and(filter_by, self.exclude_retired_filter())
+            assert filter_by
+            return filter_by
         else:
             return self.exclude_retired_filter()
 
@@ -503,7 +512,7 @@ class XDomeCommand(abc.ABC):
         ...
 
     @abc.abstractmethod
-    def _generate_results(self, results: List) -> CommandResults:
+    def _generate_results(self, raw_response: Union[List, Dict]) -> CommandResults:
         ...
 
 
@@ -523,11 +532,10 @@ class XDomeGetDeviceAlertRelationsCommand(XDomeCommand):
             start_from=self._offset if self._raw_args.get("offset") is not None else None,
         )
 
-    def _generate_results(self, raw_response: Dict) -> CommandResults:
+    def _generate_results(self, raw_response: Union[List, Dict]) -> CommandResults:
         device_alert_pairs = raw_response
         outputs = {
             "XDome.DeviceAlert(val.device_uid == obj.device_uid && val.alert_id == obj.alert_id)": device_alert_pairs
-            # "XDome.DeviceAlert(val.DeviceUID == obj.DeviceUID && val.AlertId == obj.AlertId)": device_alert_pairs
         }
         human_readable_output = tableToMarkdown("xDome device-alert-pairs List", device_alert_pairs)
         return CommandResults(
@@ -554,7 +562,7 @@ class XDomeGetDeviceVulnerabilityRelationsCommand(XDomeCommand):
             start_from=self._offset if self._raw_args.get("offset") is not None else None,
         )
 
-    def _generate_results(self, raw_response: Dict) -> CommandResults:
+    def _generate_results(self, raw_response: Union[List, Dict]) -> CommandResults:
         device_vulnerability_pairs = raw_response
         outputs = {
             "XDome.DeviceVulnerability(val.device_uid == obj.device_uid "
@@ -569,7 +577,7 @@ class XDomeGetDeviceVulnerabilityRelationsCommand(XDomeCommand):
         )
 
 
-def get_device_alert_relations_command(client: Client, args: dict) -> CommandResults:
+def get_device_alert_relations_command(client: Client, args: Dict) -> CommandResults:
     cmd = XDomeGetDeviceAlertRelationsCommand(
         client=client,
         fields=args.get("fields"),
@@ -594,15 +602,15 @@ def get_device_vulnerability_relations_command(client: Client, args: dict) -> Co
 
 
 def set_device_alert_relations_command(client: Client, args: dict) -> CommandResults:
-    alert_id = int(args.get("alert_id"))
+    alert_id = int(args["alert_id"])
     device_uids = args.get("device_uids")
     if device_uids:
-        device_uids = [field.strip() for field in args.get("device_uids").split(",")]
-    status = args.get("status")
+        device_uids = [field.strip() for field in device_uids.split(",")]
+    status = args["status"]
 
     res = client.set_device_single_alert_relations(alert_id, device_uids, status)
     if res and "details" in res:
-        return CommandResults(readable_output=res, raw_response=res)
+        return CommandResults(readable_output=res["details"][0].get("msg"), raw_response=res)
     return CommandResults(readable_output="success", raw_response="success")
 
 
@@ -631,9 +639,9 @@ def fetch_incidents(
         # not_last_fetched_time_filter = _simple_filter(INCIDENT_TIMESTAMP_FIELD, "not_equals", start_time)
         # patch: use the 'greater_or_equal' operation on value 'Time + 1s'
         not_last_fetched_time_filter = _simple_filter(
-            INCIDENT_TIMESTAMP_FIELD,
-            "greater_or_equal",
-            _format_date(dateparser.parse(start_time) + timedelta(seconds=1)),
+            field=INCIDENT_TIMESTAMP_FIELD,
+            operation="greater_or_equal",
+            value=_next_tick(start_time),
         )
         no_last_run_dups_filter = _or(not_in_last_fetched_ids_filter, not_last_fetched_time_filter)
     else:
@@ -667,7 +675,7 @@ def fetch_incidents(
             if dar[INCIDENT_TIMESTAMP_FIELD] == next_start_time
         ]
     else:
-        next_start_time = _format_date(dateparser.parse(start_time) + timedelta(seconds=1))
+        next_start_time = _next_tick(start_time)
         next_latest_ids = []
 
     next_run = {"last_fetch": next_start_time, "latest_ids": next_latest_ids}
