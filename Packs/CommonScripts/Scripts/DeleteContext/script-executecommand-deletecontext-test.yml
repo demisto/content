@@ -8,7 +8,7 @@ script: >-
   if is_error(res):
   	error_message = get_error(res)
   	demisto.results(error_message) 
-  `
+
 type: python
 tags: []
 enabled: true
