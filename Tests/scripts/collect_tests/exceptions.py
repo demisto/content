@@ -44,7 +44,7 @@ class SkippedPackException(UnsupportedPackException):
 class NonNightlyPackInNightlyBuildException(Exception):
     def __init__(self, pack_name: str | None):
         self.message = f'Skipping tests for pack {pack_name}: ' \
-                       f'This is a nightly build, and the pack is not in the list of nightly packs'
+                       f'This is a nightly build, and the pack is not in the list of Nightly packs/Non API packs.'
 
     def __str__(self):
         return self.message

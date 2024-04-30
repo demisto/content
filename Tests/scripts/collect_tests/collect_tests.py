@@ -1289,12 +1289,9 @@ class NightlyTestCollector(TestCollector, ABC):
         logger.info(f"TPBs= {self.id_set.test_playbooks=}")
         for playbook in self.id_set.test_playbooks:
             try:
-                if playbook.pack_id == "EDL": # TEST
-                    logger.info(f"MICHAL - {(playbook.pack_id in self.conf.nightly_packs)=}")
-                    logger.info(f"MICHAL - {(playbook.id_ in self.conf.non_api_tests)=}")
-                if (
-                    playbook.pack_id not in self.conf.nightly_packs
-                    and playbook.id_ not in self.conf.non_api_tests
+                if not (
+                    playbook.pack_id in self.conf.nightly_packs
+                    or playbook.id_ in self.conf.non_api_tests
                 ):
                     raise NonNightlyPackInNightlyBuildException(playbook.pack_id)
                 self._validate_id_set_item_compatibility(playbook, is_integration=False)
