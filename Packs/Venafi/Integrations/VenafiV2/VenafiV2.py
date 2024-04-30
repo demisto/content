@@ -19,10 +19,9 @@ class Client(BaseClient):
     """Client class to interact with the service API
     """
 
-    def __init__(self, base_url: str, verify: bool, username: str, password: str, client_id: str, proxy: bool = False):
+    def __init__(self, base_url: str, verify: bool, proxy: bool, username: str, password: str, client_id: str):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.token = self._login(client_id, username, password)
-        demisto.debug(f"in init: {self.token=}")
 
     def _login(self, client_id: str, username: str, password: str) -> str:
         integration_context = get_integration_context()
@@ -30,7 +29,6 @@ class Client(BaseClient):
             expires_date = integration_context.get('expires')
             if expires_date and not self._is_token_expired(expires_date):
                 return token
-
             else:
                 refresh_token = integration_context.get('refresh_token')
                 url_suffix = "/vedauth/authorize/token"
@@ -38,14 +36,13 @@ class Client(BaseClient):
                     "client_id": client_id,
                     "refresh_token": refresh_token
                 }
-
                 return self._create_new_token(url_suffix, json_data)
 
         url_suffix = "/vedauth/authorize/oauth"
         json_data = {
-            "client_id": client_id,
             "username": username,
             "password": password,
+            "client_id": client_id,
             "scope": "certificate"
         }
 
@@ -161,13 +158,13 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
     outputs: dict[str, Any] = {}
     response = client._get_certificates(args)
     if response:
-        outputs = edit_response(response)
+        outputs = delete_links_from_response(response)
 
     human_readable = []
     certificates = outputs.get('Certificates', [])
     for certificate in certificates:
         certificate_guid = certificate.get("Guid")
-        certificate_id = certificate_guid[1:-1]
+        certificate_id = certificate_guid[1:-1]  # Guid represent as {guid}
         certificate_details = {
             "CreatedOn": certificate.get('CreatedOn'),
             "DN": certificate.get('DN'),
@@ -178,7 +175,7 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
         }
         human_readable.append(certificate_details)
 
-    markdown_table = tableToMarkdown('Venafi certificates query response', human_readable)
+    markdown_table = tableToMarkdown('Venafi certificates', human_readable)
 
     return CommandResults(
         outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
@@ -188,8 +185,8 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
     )
 
 
-def edit_response(response: dict[str, Any]) -> dict[str, Any]:
-    """remove links list from the response
+def delete_links_from_response(response: dict[str, Any]) -> dict[str, Any]:
+    """delete links list from the response
     """
     certificates = response.get('Certificates', [])
     for certificate in certificates:
@@ -202,14 +199,13 @@ def edit_response(response: dict[str, Any]) -> dict[str, Any]:
 def get_certificate_details_command(client: Client, args: dict[str, Any]) -> CommandResults:
     outputs: dict[str, Any] = {}
     guid = args.get('guid', "")
-    # if not guid?
     response = client._get_certificate_details(guid)
     if response:
         outputs = response
 
     human_readable = []
     certificate_guid = outputs.get("Guid", "")
-    certificate_id = certificate_guid[1:-1]
+    certificate_id = certificate_guid[1:-1]  # Guid represent as {guid}
     certificate_details = {
         "CreatedOn": outputs.get('CreatedOn'),
         "DN": outputs.get('DN'),
@@ -220,7 +216,7 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
     }
     human_readable.append(certificate_details)
 
-    markdown_table = tableToMarkdown('Venafi certificates details', human_readable)
+    markdown_table = tableToMarkdown('Venafi certificate details', human_readable)
 
     return CommandResults(
         outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
@@ -246,7 +242,8 @@ def main() -> None:  # pragma: no cover
     client_id = demisto_params.get("client_id")
     verify_certificate = demisto_params.get('insecure', False)
     proxy = demisto_params.get('proxy', False)
-    demisto.debug(f'Command being called is {demisto.command()}')
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
             base_url=base_url,
@@ -256,7 +253,6 @@ def main() -> None:  # pragma: no cover
             client_id=client_id,
             proxy=proxy)
 
-        command = demisto.command()
         args = demisto.args()
         if command == 'test-module':
             test_module_result = test_module(client)
@@ -271,7 +267,7 @@ def main() -> None:  # pragma: no cover
             raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

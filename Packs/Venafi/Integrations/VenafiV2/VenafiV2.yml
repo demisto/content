@@ -15,12 +15,6 @@ configuration:
   type: 9
   display: User Name
   section: Connect
-#- name: basic_credentials
-#  required: true
-#  type: 9
-#  display: Client ID
-#  section: Connect
-#  hiddenpassword: true
 - display: Client ID
   name: client_id
   required: true
@@ -177,7 +171,7 @@ script:
       type: string
     - contextPath: Venafi.Certificate.X509
       description: ""
-      type: dictionaryv
+      type: dictionary
   - name: venafi-get-certificate-details
     arguments:
       - name: guid
