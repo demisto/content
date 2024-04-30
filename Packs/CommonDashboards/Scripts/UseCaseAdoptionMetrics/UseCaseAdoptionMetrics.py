@@ -101,10 +101,10 @@ def main():
     headers = ['Use Case Adoption & Coverage', 'Status']
     t = []
     for use_case in use_cases_data['use_cases_in_production']:
-        t.append([use_case, '✅'])
+        t.append({'Use Case Adoption & Coverage': use_case, 'Status': '✅'})
 
-    for use_case, url in use_cases_data['at_risk'].items():
-        t.append([f'[{use_case}]({url})', '❌'])
+    for use_case, _ in use_cases_data['at_risk'].items():
+        t.append({'Use Case Adoption & Coverage': use_case, 'Status': '❌'})
     table = tableToMarkdown(name='Use Case Coverage', t=t, headers=headers)
 
     return return_results(table)
