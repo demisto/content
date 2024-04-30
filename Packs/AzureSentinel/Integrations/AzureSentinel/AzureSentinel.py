@@ -733,8 +733,6 @@ def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], de
 
     elif incident_status == IncidentStatus.ACTIVE:
         demisto.debug(f'Updating incident with remote ID {incident_id} in remote system.')
-        demisto.debug(f'This is the data given: {data}')
-        demisto.debug(f'This is the delta: {delta}')
         return str(update_incident_request(client, incident_id, data, delta))
 
     demisto.debug(f'Incident with remote ID {incident_id} is not Active or Closed, not updating. (status: {incident_status})')
