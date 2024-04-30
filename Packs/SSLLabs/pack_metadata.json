@@ -1,0 +1,21 @@
+{
+    "name": "SSL Labs",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Rich Fontaine",
+    "url": "",
+    "email": "",
+    "created": "2024-04-30T12:21:42Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "edibleShell"
+    ]
+}
