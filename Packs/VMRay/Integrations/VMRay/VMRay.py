@@ -2,13 +2,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import io
 import os
-import random
-import time
 import urllib3
 
 from zipfile import ZipFile
-
-import requests
 
 ''' GLOBAL PARAMS '''
 API_KEY = demisto.params().get('api_key') or demisto.params().get('credentials', {}).get('password')
@@ -22,6 +18,7 @@ SERVER = (
 RETRY_ON_RATE_LIMIT = demisto.params().get("retry_on_rate_limit", True)
 SERVER += '/rest/'
 USE_SSL = not demisto.params().get('insecure', False)
+PROXY = demisto.params().get("proxy", True)
 HEADERS = {'Authorization': f'api_key {API_KEY}', 'User-Agent': 'Cortex XSOAR/1.1.11'}
 ERROR_FORMAT = 'Error in API call to VMRay [{}] - {}'
 RELIABILITY = demisto.params().get('integrationReliability', DBotScoreReliability.C) or DBotScoreReliability.C
@@ -30,9 +27,6 @@ INDEX_LOG_FILENAME_POSITION = 3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
-# Remove proxy
-PROXIES = handle_proxy()
 
 ''' HELPER DICTS '''
 SEVERITY_DICT = {
@@ -126,7 +120,7 @@ def build_errors_string(errors):
     return err_str
 
 
-def http_request(method, url_suffix, params=None, files=None, ignore_errors=False, get_raw=False, retries=0):
+def http_request(method, url_suffix, params=None, files=None, get_raw=False, ignore_errors=False):
     """ General HTTP request.
     Args:
         ignore_errors (bool):
@@ -135,7 +129,6 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
         params: (dict)
         files: (dict)
         get_raw: (bool) return raw data instead of dict
-        retries: (int)
 
     Returns:
         dict: response json
@@ -168,49 +161,31 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
                     return err_r
         return None
 
-    def reset_file_buffer(files):
-        """ The requests library reads the file buffer to the end.
-            If we want to try to submit again, we need to set the file buffer to
-            beginning manually.
-        Args:
-            files: (dict)
-        """
+    def error_handler(res):  # pragma: no cover
+        if res.status_code == RATE_LIMIT_REACHED and "Retry-After" in res.headers:
+            return_error(f"Rate limit exceeded! Please wait {res.headers.get('Retry-After', 0)} seconds and re-run.")
+        if res.status_code in {405, 401}:
+            return_error(ERROR_FORMAT.format(res.status_code, 'Token may be invalid'))
 
-        if not isinstance(files, dict):
-            return
-
-        try:
-            fobj = files["sample_file"][1]
-            fobj.seek(0, 0)
-        except (IndexError, KeyError):
-            return
-
-    url = SERVER + url_suffix
-    r = requests.request(
-        method, url, params=params, headers=HEADERS, files=files, verify=USE_SSL, proxies=PROXIES
-    )
-
-    if RETRY_ON_RATE_LIMIT and retries < MAX_RETRIES \
-            and (r.status_code == RATE_LIMIT_REACHED or "Retry-After" in r.headers):
-        seconds_to_wait = random.uniform(1.0, 5.0)
-        try:
-            seconds_to_wait += float(r.headers.get("Retry-After", 0))
-        except ValueError:
-            pass
-
-        demisto.debug(f"Rate limit exceeded! Waiting {seconds_to_wait} seconds and then retry #{retries}.")
-        time.sleep(seconds_to_wait)  # pylint: disable=sleep-exists
-        reset_file_buffer(files)
-        return http_request(method, url_suffix, params, files, ignore_errors, get_raw, retries + 1)
-
-    # Handle errors
     try:
-        if r.status_code in {405, 401}:
-            return_error(ERROR_FORMAT.format(r.status_code, 'Token may be invalid'))
-        elif not get_raw and not is_json(r):
+        res = generic_http_request(method=method,
+                                   server_url=SERVER,
+                                   verify=USE_SSL,
+                                   proxy=PROXY,
+                                   client_headers=HEADERS,
+                                   url_suffix=url_suffix,
+                                   files=files,
+                                   params=params,
+                                   retries=MAX_RETRIES,
+                                   error_handler=error_handler,
+                                   resp_type='response',
+                                   ok_codes=(200, 201, 202, 204),
+                                   status_list_to_retry=[429])
+
+        if not get_raw and not is_json(res):
             raise ValueError
-        response = r.json() if not get_raw else r.content
-        if r.status_code not in {200, 201, 202, 204} and not ignore_errors:
+        response = res.json() if not get_raw else res.content
+        if res.status_code not in {200, 201, 202, 204} and not ignore_errors:
             if get_raw and isinstance(response, str):
                 # this might be json even if get_raw is True because the API will return errors as json
                 try:
@@ -219,8 +194,8 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
                     pass
             err = find_error(response)
             if not err:
-                err = r.text
-            return_error(ERROR_FORMAT.format(r.status_code, err))
+                err = res.text
+            return_error(ERROR_FORMAT.format(res.status_code, err))
 
         err = find_error(response)
         if err:
@@ -230,11 +205,14 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
                                                         'API key to something other than "Legacy" in the VMRay ' \
                                                         'Web Interface.'
                 err[0]['error_msg'] = err_message
-            return_error(ERROR_FORMAT.format(r.status_code, err))
+            return_error(ERROR_FORMAT.format(res.status_code, err))
+
         return response
     except ValueError:
         # If no JSON is present, must be an error that can't be ignored
-        return_error(ERROR_FORMAT.format(r.status_code, r.text))
+        return_error(ERROR_FORMAT.format(res.status_code, res.text))
+    except Exception as e:
+        return_error(str(e))
 
 
 def dbot_score_by_hash(data):
@@ -988,7 +966,7 @@ def get_iocs(sample_id, all_artifacts):
     return response
 
 
-def get_iocs_command():
+def get_iocs_command():  # pragma: no cover
     def get_hashed(lst):
         """
 
@@ -1397,7 +1375,7 @@ def get_screenshots_command():
     return_results(file_results)
 
 
-def vmray_get_license_usage_verdicts_command():     # pragma: no cover
+def vmray_get_license_usage_verdicts_command():  # pragma: no cover
     """
 
     Returns:
@@ -1407,7 +1385,7 @@ def vmray_get_license_usage_verdicts_command():     # pragma: no cover
     raw_response = http_request('GET', suffix)
     data = raw_response.get('data')
 
-    entry = dict()
+    entry = {}
     entry['VerdictsQuota'] = data.get('verdict_quota')
     entry['VerdictsRemaining'] = data.get('verdict_remaining')
     entry['VerdictsUsage'] = round((100 / float(data.get('verdict_quota')))
@@ -1415,7 +1393,7 @@ def vmray_get_license_usage_verdicts_command():     # pragma: no cover
     entry['PeriodEndDate'] = data.get('end_date')
 
     markdown = tableToMarkdown('VMRay Verdicts Quota Information', entry, headers=[
-                               'VerdictsQuota', 'VerdictsRemaining', 'VerdictsUsage', 'PeriodEndDate'])
+        'VerdictsQuota', 'VerdictsRemaining', 'VerdictsUsage', 'PeriodEndDate'])
 
     results = CommandResults(
         readable_output=markdown,
@@ -1427,7 +1405,7 @@ def vmray_get_license_usage_verdicts_command():     # pragma: no cover
     return_results(results)
 
 
-def vmray_get_license_usage_reports_command():      # pragma: no cover
+def vmray_get_license_usage_reports_command():  # pragma: no cover
     """
 
     Returns:
@@ -1437,7 +1415,7 @@ def vmray_get_license_usage_reports_command():      # pragma: no cover
     raw_response = http_request('GET', suffix)
     data = raw_response.get('data')
 
-    entry = dict()
+    entry = {}
     entry['ReportQuota'] = data.get('report_quota')
     entry['ReportRemaining'] = data.get('report_remaining')
     entry['ReportUsage'] = round((100 / float(data.get('report_quota')))
@@ -1445,7 +1423,7 @@ def vmray_get_license_usage_reports_command():      # pragma: no cover
     entry['PeriodEndDate'] = data.get('end_date')
 
     markdown = tableToMarkdown('VMRay Reports Quota Information', entry, headers=[
-                               'ReportQuota', 'ReportRemaining', 'ReportUsage', 'PeriodEndDate'])
+        'ReportQuota', 'ReportRemaining', 'ReportUsage', 'PeriodEndDate'])
 
     results = CommandResults(
         readable_output=markdown,
@@ -1457,7 +1435,7 @@ def vmray_get_license_usage_reports_command():      # pragma: no cover
     return_results(results)
 
 
-def main():
+def main():  # pragma: no cover
     try:
         command = demisto.command()
         if command == 'test-module':
@@ -1476,9 +1454,9 @@ def main():
         elif command == 'vmray-get-sample-by-hash':
             get_sample_by_hash_command()
         elif command in (
-                'vmray-get-job-by-sample',
-                'get_job_sample',
-                'vmray-get-job-by-id',
+            'vmray-get-job-by-sample',
+            'get_job_sample',
+            'vmray-get-job-by-id',
         ):
             get_job_command()
         elif command == 'vmray-get-threat-indicators':
