@@ -298,18 +298,12 @@ xpanse-prepare-testing-bucket:
 .run_tests:
   - section_start "Run Tests" # todo
   - |
-    if [[ -n "${NIGHTLY}" && $SERVER_TYPE == "XSOAR SAAS" ]]; then
-      ./Tests/scripts/run_tests.sh --generate-empty-result-file
-      cat "${CLOUD_API_KEYS}" > "cloud_api_keys.json"
-      ./Tests/scripts/run_e2e_tests.sh || EXIT_CODE=$?
-    else
-      ./Tests/scripts/run_e2e_tests.sh --generate-empty-result-file
-      if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then
-        cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
-      fi
-      ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
-      rm -f Tests/conf.json
+    if [[ -f "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" ]]; then	
+      cp "${ARTIFACTS_FOLDER_SERVER_TYPE}/conf.json" Tests/conf.json
     fi
+  - |
+    ./Tests/scripts/run_tests.sh || EXIT_CODE=$?
+  - rm -f Tests/conf.json
   - section_end "Run Tests"
 
 .test_content_on_xsoar_server_instances_base:

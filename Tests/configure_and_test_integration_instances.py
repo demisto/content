@@ -640,7 +640,7 @@ class XSOARBuild(Build):
             logging.info('Done restarting servers. Sleeping for 1 minute')
             sleep(60)
 
-    def install_nightly_pack(self) -> bool:
+    def install_nightly_pack(self) -> bool: # todo
         """
         Installs all existing packs in master
         Collects all existing test playbooks, saves them to test_pack.zip
@@ -649,19 +649,42 @@ class XSOARBuild(Build):
             self: A build object
         """
         # Install all existing packs with latest version
-        success, results = self.concurrently_run_function_on_servers(
-            function=install_all_content_packs_for_nightly,
-            service_account=self.service_account,
-            packs_to_install=self.pack_ids_to_install
-        )
-        success &= all(results)
+        # success, results = self.concurrently_run_function_on_servers(
+        #     function=install_all_content_packs_for_nightly,
+        #     service_account=self.service_account,
+        #     packs_to_install=self.pack_ids_to_install
+        # )
+        # success &= all(results)
+        # # creates zip file test_pack.zip witch contains all existing TestPlaybooks
+        # create_test_pack()
+        # # uploads test_pack.zip to all servers
+        # upload_success, upload_results = self.concurrently_run_function_on_servers(function=upload_zipped_packs,
+        #                                                                            pack_path=f'{Build.test_pack_target}'
+        #                                                                                      '/test_pack.zip')
+        # success &= upload_success and all(upload_results)
+        #
+        # logging.info('Sleeping for 45 seconds while installing nightly packs')
+        # sleep(45)
+        # if success:
+        #     logging.success("Finished installing nightly packs")
+        # else:
+        #     logging.error("Failed to install nightly packs")
+        # return success
+        success = self.install_packs(install_packs_in_batches=True, production_bucket=True)
+        if not success:
+            logging.error("Failed to install nightly packs")
+
         # creates zip file test_pack.zip witch contains all existing TestPlaybooks
         create_test_pack()
-        # uploads test_pack.zip to all servers
-        upload_success, upload_results = self.concurrently_run_function_on_servers(function=upload_zipped_packs,
-                                                                                   pack_path=f'{Build.test_pack_target}'
-                                                                                             '/test_pack.zip')
-        success &= upload_success and all(upload_results)
+        # uploads test_pack.zip to all servers (we have only one cloud server)
+        upload_success = True
+        for server in self.servers:
+            upload_success &= upload_zipped_packs(client=server.client,
+                                                  host=server.name,
+                                                  pack_path=f'{Build.test_pack_target}/test_pack.zip')
+        if not upload_success:
+            logging.error("Failed to upload test pack to cloud servers")
+        success &= upload_success
 
         logging.info('Sleeping for 45 seconds while installing nightly packs')
         sleep(45)
@@ -765,7 +788,7 @@ class XSOARBuild(Build):
         env_conf = get_env_conf()
         return get_servers(env_conf, ami_env)
 
-    def concurrently_run_function_on_servers(
+    def concurrently_run_function_on_servers( # TODO
         self, function=None, pack_path=None, service_account=None, packs_to_install=None
     ) -> tuple[bool, list[Any]]:
         if not function:
