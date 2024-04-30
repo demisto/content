@@ -34,6 +34,7 @@ async def parse_incidents(request: Request) -> list[dict]:
     for incident in incidents:
         if not incident.get('rawJson'):
             incident['rawJson'] = copy(incident)
+    return incidents
 
 
 class GenericWebhookAccessFormatter(AccessFormatter):

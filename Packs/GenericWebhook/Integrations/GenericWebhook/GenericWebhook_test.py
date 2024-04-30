@@ -23,7 +23,7 @@ def test_handle_post_single_incident(mocker, client):
     Then: The body is parsed properly
     """
     incident_data = {"name": "Test Incident", "type": "Test Type", "occurred": "2024-03-17T12:00:00Z",
-                     "raw_json": {"key": "value"}}
+                     "rawJson": {"key": "value"}}
     return_incidents = [{'name': 'something'}]
 
     create_incidents = mocker.patch.object(demisto, 'createIncidents', return_value=return_incidents)
@@ -97,7 +97,7 @@ def test_handle_post_with_missing_data(mocker, client):
     mocker.patch.object(demisto, 'error')
     response = client.post('/')
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert 'Request, and raw_json field must be in JSON format' in response.text
+    assert "Request, and rawJson field if exists must be in JSON format" in response.text
 
 
 def test_handle_post_with_invalid_json(mocker, client):
@@ -109,17 +109,17 @@ def test_handle_post_with_invalid_json(mocker, client):
     mocker.patch.object(demisto, 'error')
     response = client.post('/', data='invalid_json')
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert 'Request, and raw_json field must be in JSON format' in response.text
+    assert 'Request, and rawJson field if exists must be in JSON format' in response.text
 
 
 @pytest.mark.parametrize('body', [
-    '''[{"name": "Test Incident 1", "type": "Test Type 1",
-"occurred": "2024-03-17T12:00:00Z",
-"raw_json": {"key": "value"}}]''',
-    json.dumps([
-        {"name": "Test Incident 1", "type": "Test Type 1",
-         "occurred": "2024-03-17T12:00:00Z",
-         "raw_json": "{\"key\" : \"value\"}"}])])
+    {"name": "Test Incident 1", "type": "Test Type 1",
+      "occurred": "2024-03-17T12:00:00Z",
+      "rawJson": {"key": "value"}},
+     {"name": "Test Incident 1", "type": "Test Type 1",
+      "occurred": "2024-03-17T12:00:00Z",
+      "key": "value"}
+     ])
 def test_parse_request(body):
     """
     Given: two inputs, either with raw_json being real json or a string representation of json
@@ -130,9 +130,9 @@ def test_parse_request(body):
     mock_request = MagicMock(spec=Request)
 
     async def mockbody():
-        return body.encode('utf-8')
+        return body
 
-    mock_request.body = mockbody
+    mock_request.json = mockbody
 
     # Call the parse_incidents function with the mock Request
     result = asyncio.run(parse_incidents(mock_request))
@@ -143,7 +143,7 @@ def test_parse_request(body):
     assert result[0]['name'] == 'Test Incident 1'
     assert result[0]['type'] == 'Test Type 1'
     assert result[0]['occurred'] == '2024-03-17T12:00:00Z'
-    assert result[0]['raw_json'] == {'key': 'value'}
+    assert result[0]['rawJson']['key'] == 'value'
 
 
 def test_main_test_module(mocker):
@@ -162,7 +162,7 @@ def test_main_long_running(mocker):
 
     mocker.patch.object(demisto, 'command', return_value="long-running-execution")
     mocker.patch.object(demisto, 'params', return_value={
-                        'longRunningPort': '444', 'certificate': 'something', 'key': 'something'})
+        'longRunningPort': '444', 'certificate': 'something', 'key': 'something'})
     mocker.patch.object(demisto, 'results')
     mocker.patch('time.sleep')
     uvicornmock = MagicMock(side_effect=[Exception('restart once'), Exception('Twice'), BaseException('Hack to get out')])
