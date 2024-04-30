@@ -102,7 +102,6 @@ configuration:
 - display: Source Reliability
   name: integration_reliability
   defaultvalue: C - Fairly reliable
-  required: true
   type: 15
   options:
   - A+ - 3rd party enrichment
