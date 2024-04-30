@@ -11,11 +11,11 @@ configuration:
   section: Connect
   type: 4
 - display: Role Session Name
-  additionalinfo: "A descriptive name for the assumed role session."
   name: roleSessionName
   required: false
   section: Connect
   type: 0
+  additionalinfo: "A descriptive name for the assumed role session."
 - display: AWS Default Region
   name: defaultRegion
   options:
@@ -45,17 +45,17 @@ configuration:
   name: sessionDuration
   type: 0
   required: false
-- display: Identity Store ID
-  additionalinfo: "The Identity Store Id parameter is required for API requests. It can be provided as a parameter or as an argument. Identity Store ID was not specified - Test failure."
+- additionalinfo: "The Identity Store Id parameter is required for API requests. It can be provided as a parameter or as an argument. Identity Store ID was not specified - Test failure."
+  display: Identity Store ID
   name: IdentityStoreId
-  required: false
-  section: Connect
   type: 4
+  section: Connect
+  required: false
 - display: Access Key
   name: access_key
-  required: false
-  section: Connect
   type: 4
+  section: Connect
+  required: false
   hidden: true
 - display: Secret Key
   name: secret_key
@@ -65,24 +65,24 @@ configuration:
   hidden: true
 - display: Access Key
   name: credentials
+  required: false
+  section: Connect
   type: 9
   displaypassword: Secret Key
-  section: Connect
-  required: false
-- additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
-  defaultvalue: 60,10
-  display: Timeout
+- display: Timeout
   name: timeout
-  type: 0
-  section: Connect
   required: false
-- additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
-  defaultvalue: 5
-  display: Retries
+  section: Connect
+  type: 0
+  additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
+  defaultvalue: 60,10
+- display: Retries
   name: retries
-  type: 0
-  section: Connect
   required: false
+  section: Connect
+  type: 0
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  defaultvalue: 5
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -112,7 +112,7 @@ script:
     - description: The profile URL of the user to create.
       name: profileUrl
       required: false
-    - description: Is this the primary email address for the associated resource? 
+    - description: Is this the primary email address for the associated resource?
       name: userEmailAddressPrimary
       required: false
       auto: PREDEFINED
@@ -154,7 +154,7 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
@@ -168,9 +168,10 @@ script:
       description: Identity Store Id.
       type: string
   - arguments:
-    - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
+      required: false
+      auto: PREDEFINED
       predefined:
       - us-east-1
       - us-east-2
@@ -188,7 +189,6 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
     - description: Role Arn.
       name: roleArn
       required: false
@@ -197,14 +197,14 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
     - description: The name of the user to get information about.
       name: userName
       required: true
-    description: Retrieves information about the specified IAM user, including the user creation date, path, unique ID, and ARN.
+    description: Retrieves information about the specified IAM user.
     name: aws-iam-identitycenter-get-user
     outputs:
     - contextPath: AWS.IAMIdentityCenter.User.UserName
@@ -306,7 +306,7 @@ script:
     - contextPath: AWS.IAMIdentityCenter.User.IdentityStoreId
       description: Globally unique identifier for the identity store.
       type: String
-  - arguments: 
+  - arguments:
     - auto: PREDEFINED
       description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -336,7 +336,7 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
@@ -452,7 +452,7 @@ script:
     - contextPath: AWS.IAMIdentityCenter.UserNextToken
       description: Pagination token.
       type: String
-  - arguments: 
+  - arguments:
     - auto: PREDEFINED
       description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -482,7 +482,7 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
@@ -518,9 +518,10 @@ script:
       description: The pagination token used for the ListUsers and ListGroups API operations.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
+      required: false
+      auto: PREDEFINED
       predefined:
       - us-east-1
       - us-east-2
@@ -538,7 +539,6 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
     - description: Role Arn.
       name: roleArn
       required: false
@@ -547,7 +547,7 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
@@ -574,9 +574,10 @@ script:
       description: The stable and unique string identifying the group.
       type: string
   - arguments:
-    - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
+      required: false
+      auto: PREDEFINED
       predefined:
       - us-east-1
       - us-east-2
@@ -594,7 +595,6 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
     - description: Role Arn.
       name: roleArn
       required: false
@@ -603,7 +603,7 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
@@ -616,9 +616,10 @@ script:
     description: Adds the specified user to the specified group.
     name: aws-iam-identitycenter-add-user-to-group
   - arguments:
-    - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
+      required: false
+      auto: PREDEFINED
       predefined:
       - us-east-1
       - us-east-2
@@ -636,7 +637,6 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
     - description: Role Arn.
       name: roleArn
       required: false
@@ -645,7 +645,7 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
@@ -654,7 +654,7 @@ script:
       required: true
     description: Get AWS IAM Identity Center group Information.
     name: aws-iam-identitycenter-get-group
-    outputs: 
+    outputs:
     - contextPath: AWS.IAMIdentityCenter.Group.GroupId
       description: The identifier for a group in the identity store.
       type: String
@@ -674,9 +674,10 @@ script:
       description: The globally unique identifier for the identity store.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
+      required: false
+      auto: PREDEFINED
       predefined:
       - us-east-1
       - us-east-2
@@ -694,7 +695,6 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-      required: false
     - description: Role Arn.
       name: roleArn
       required: false
@@ -703,13 +703,15 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
     - description: The email of the user.
       name: emailAddress
       required: true
+    name: aws-iam-identitycenter-get-user-by-email
+    description: Retrieves information about the specified IAM user.
     outputs:
     - contextPath: AWS.IAMIdentityCenter.User.UserName
       description: The friendly name identifying the user.
@@ -810,11 +812,10 @@ script:
     - contextPath: AWS.IAMIdentityCenter.User.IdentityStoreId
       description: Globally unique identifier for the identity store.
       type: String
-    name: aws-iam-identitycenter-get-user-by-email
   - arguments:
-    - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+    - description: The AWS Region, if not specified the default region will be used.
       name: region
+      auto: PREDEFINED
       predefined:
       - us-east-1
       - us-east-2
@@ -841,14 +842,14 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
     - description: The name of the user to remove.
       name: userName
       required: true
-    description: Removes the specified user from the AWS IAM Identity Center. 
+    description: Removes the specified user from the AWS IAM Identity Center.
     name: aws-iam-identitycenter-delete-user
   - arguments:
     - auto: PREDEFINED
@@ -880,7 +881,7 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
@@ -929,7 +930,7 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
@@ -968,7 +969,7 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
@@ -1010,7 +1011,7 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
@@ -1052,7 +1053,7 @@ script:
     - description: The First name of the user to update.
       name: givenName
       required: false
-    - description: Is this the primary email address for the associated resource. 
+    - description: Is this the primary email address for the associated resource.
       name: userEmailAddressPrimary
       required: false
       auto: PREDEFINED
@@ -1103,7 +1104,7 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
@@ -1139,7 +1140,7 @@ script:
       required: false
     - description: Role Session Name.
       name: roleSessionName
-      required: false 
+      required: false
     - description: Identity Store ID.
       name: IdentityStoreId
       required: false
