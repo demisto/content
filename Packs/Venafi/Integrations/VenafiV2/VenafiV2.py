@@ -22,7 +22,9 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, verify: bool, proxy: bool, username: str, password: str, client_id: str):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        demisto.debug("in client init")
         self.token = self._login(client_id, username, password)
+        demisto.debug(f"end of login, {self.token=}")
 
     def _login(self, client_id: str, username: str, password: str) -> str:
         """
@@ -41,6 +43,7 @@ class Client(BaseClient):
         """
 
         integration_context = get_integration_context()
+        demisto.debug(f"{integration_context=}")
         if token := integration_context.get('token'):
             expires_date = integration_context.get('expires')
             if expires_date and not self._is_token_expired(expires_date):
@@ -122,8 +125,16 @@ class Client(BaseClient):
         Returns:
             None
         """
+
+        integration_context = get_integration_context()
         expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
-        set_integration_context({"token": token, "refresh_token": refresh_token, "expire_date": str(expire_date)})
+        new_authorization_context = {
+            "token": token,
+            "refresh_token": refresh_token,
+            "expire_date": str(expire_date)
+        }
+        integration_context |= new_authorization_context
+        set_integration_context(integration_context)
 
     def _get_certificates(self, args: dict[str, Any]) -> dict:
         """
@@ -187,7 +198,6 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-
     message: str = ''
     try:
         test_empty_args: Dict = {}
@@ -195,7 +205,7 @@ def test_module(client: Client) -> str:
         if results:
             message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
