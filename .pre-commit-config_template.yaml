@@ -74,6 +74,16 @@ repos:
 
 - repo: local
   hooks:
+  # Place graph hooks first
+  - id: validate-conf-json
+    name: validate-conf-json
+    description: validate conf.json
+    files: Tests/conf.json
+    skip:commit: true
+    entry: validate-conf-json
+    pass_filenames: false
+    language: system
+
   - id: xsoar-lint
     name: xsoar-lint
     description: Run xsoar-linter on the code in content packs
