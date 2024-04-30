@@ -23,7 +23,7 @@
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {
-            "suspiciousdomainhuntingfingerprint": {
+            "certstreamfingerprint": {
                 "extractAsIsIndicatorTypeId": "136fd66a-e220-4241-8c3a-78a1e6a25add",
                 "isExtractingAllIndicatorTypes": false,
                 "extractIndicatorTypesIDs": []

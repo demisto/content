@@ -508,7 +508,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "suspiciousdomainhuntingdomainupdateddate",
+                                "fieldId": "domainupdateddate",
                                 "height": 22,
                                 "id": "6de260a0-7eef-11ee-8db9-f7e15ed8d3db",
                                 "index": 2,
@@ -517,7 +517,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "suspiciousdomainhuntingregistrationemail",
+                                "fieldId": "registrationemail",
                                 "height": 22,
                                 "id": "73b6d6f0-7eef-11ee-8db9-f7e15ed8d3db",
                                 "index": 4,
