@@ -48,12 +48,6 @@ Make you answer very concise and easily readable, with references to the email b
 hypothetical problems.
 """
 
-CVE_INFO_PROMPT = """
-    %s
-    TODO
-
-"""
-
 
 class Roles:
     ASSISTANT = 'assistant'
@@ -70,8 +64,6 @@ class EmailParts:
 
 class OpenAiClient(BaseClient):
     CHAT_COMPLETIONS_URL = 'https://api.openai.com/v1/chat/completions'
-    DEFAULT_TEMPERATURE = 1
-    DEFAULT_TOP_P = 1
 
     def __init__(self, api_key: str, model: str, proxy: bool, verify: bool):
         super().__init__(base_url=OpenAiClient.CHAT_COMPLETIONS_URL, proxy=proxy, verify=verify)
@@ -123,12 +115,12 @@ def get_updated_conversation(reset_conversation_history: bool, message: str) -> 
     """
     # Retrieve or initialize conversation history based on the context and reset flag
     conversation = demisto.context().get('OpenAIGPT', {}).get('Conversation')
-    demisto.debug(
-        f'openai-gpt send_message using conversation history from context: [type(conversation)={type(conversation)}]{conversation=}')
-
     if reset_conversation_history or not conversation:
         conversation = []
-        demisto.debug('openai-gpt send_message - Conversation history reset or initialized as empty.')
+        demisto.debug('openai-gpt send_message - conversation history reset or initialized as empty.')
+    else:
+        demisto.debug(f'openai-gpt send_message using conversation history from context:'
+                      f' [type(conversation)={type(conversation)}]{conversation=}')
 
     # Append the new user message to the conversation history
     conversation.append({"role": Roles.USER, "content": message})

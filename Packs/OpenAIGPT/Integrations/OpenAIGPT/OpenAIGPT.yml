@@ -98,7 +98,7 @@ script:
 
       - name: top_p
         required: false
-        description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+        description: (0-1) Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
 
       - name: verbose
         required: false

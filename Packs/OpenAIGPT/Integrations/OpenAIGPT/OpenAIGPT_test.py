@@ -1,6 +1,6 @@
 import importlib
 import io
-
+import pytest
 from CommonServerPython import *
 
 OpenAIGPT = importlib.import_module("OpenAIGPT")
@@ -48,3 +48,36 @@ def test_get_email_parts(mocker):
     assert headers == util_load_json('./test_data/expected_headers.json')
     assert text_body == 'Body of the text'
     assert html_body.replace('\r\n', '\n') == util_load_text('test_data/expected_html_body.txt')
+
+
+@pytest.mark.parametrize('args, expected_outputs',
+                         [
+                             ({
+                                 'reset_conversation_history': True,
+                                 'message': "Hi There!",
+                                 'max_tokens': '100',
+                                 'temperature': '0',
+                                 'top_p': '1'
+                             }, 'TODO - ExpectedOutput1'),
+                             ({
+                                 'reset_conversation_history': True,
+                                 'message': "Hi There!",
+                                 'max_tokens': '100',
+                             }, 'TODO - ExpectedOutput2'),
+                             ({
+                                 'reset_conversation_history': True,
+                                 'message': "TODO - Message",
+                                 'max_tokens': '100',
+                                 'temperature': '0',
+                                 'top_p': '1'
+                             }, 'TODO - ExpectedOutput3')
+                         ], ids=['test-send-message-1', 'test-send-message-2', 'test-send-message-3']
+                         )
+def test_send_message_command(mocker, args, expected_outputs):
+    """ """
+    from OpenAIGPT import OpenAiClient, send_message_command
+    mocker.patch.object(OpenAiClient, '_http_request', return_value=util_load_json('test_data/mock_response.json'))
+    mocker.patch.object(demisto, 'context', return_value={'OpenAIGPT.Conversation': [{'role': 'user', 'message': "Hi There!"}, {}]})
+    client = OpenAiClient(api_key='DUMMY_API_KEY', model='gpt-4', proxy=False, verify=False)
+    res = send_message_command(client=client, args=args)
+    pass
