@@ -305,7 +305,7 @@
                                         "simple": "Report of Abuse ${incident.domain}"
                                     },
                                     "to": {
-                                        "simple": "oitzhak@paloaltonetworks.com"
+                                        "simple": ""
                                     }
                                 },
                                 "buttonClass": "error",
