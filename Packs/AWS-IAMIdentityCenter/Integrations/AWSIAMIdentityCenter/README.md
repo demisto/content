@@ -67,7 +67,7 @@ Creates a new IAM Identity Center user for your AWS account.
 | AWS.IAMIdentityCenter.User.IdentityStoreId | string | Identity Store ID. | 
 
 #### Command example
-```!aws-iam-identitycenter-create-user displayName=example familyName=fam givenName=example userName=exampleName userEmailAddress=test@example.com```
+```!aws-iam-identitycenter-create-user displayName="John Doe" familyName=Doe givenName=John userName=johndoe userEmailAddress=johnDoe@gmail.com```
 #### Context Example
 ```json
 {
@@ -84,7 +84,7 @@ Creates a new IAM Identity Center user for your AWS account.
 
 #### Human Readable Output
 
->### User exampleName has been successfully created with user id 634418e2-20c1-703e-4358-a8312472c85d
+>### User johndoe has been successfully created with user id 634418e2-20c1-703e-4358-a8312472c85d
 >|IdentityStoreId|UserId|
 >|---|---|
 >| d-9967750fbd | 634418e2-20c1-703e-4358-a8312472c85d |
@@ -150,26 +150,26 @@ Retrieves information about the specified IAM user.
 | AWS.IAMIdentityCenter.User.IdentityStoreId | String | Globally unique identifier for the identity store. | 
 
 #### Command example
-```!aws-iam-identitycenter-get-user userName=exampleName```
+```!aws-iam-identitycenter-get-user userName=johndoe```
 #### Context Example
 ```json
 {
     "AWS": {
         "IAMIdentityCenter": {
             "User": {
-                "DisplayName": "example",
+                "DisplayName": "John Doe",
                 "Emails": [
                     {
-                        "Value": "test@example.com"
+                        "Value": "johnDoe@gmail.com"
                     }
                 ],
                 "IdentityStoreId": "d-9967750fbd",
                 "Name": {
-                    "FamilyName": "fam",
-                    "GivenName": "example"
+                    "FamilyName": "Doe",
+                    "GivenName": "John"
                 },
                 "UserId": "634418e2-20c1-703e-4358-a8312472c85d",
-                "UserName": "exampleName"
+                "UserName": "johndoe"
             }
         }
     }
@@ -181,7 +181,7 @@ Retrieves information about the specified IAM user.
 >### AWS IAM Identity Center Users
 >|DisplayName|Emails|UserId|UserName|
 >|---|---|---|---|
->| example | test@example.com | 634418e2-20c1-703e-4358-a8312472c85d | exampleName |
+>| John Doe | johnDoe@gmail.com | 634418e2-20c1-703e-4358-a8312472c85d | johndoe |
 
 
 
@@ -254,19 +254,19 @@ Lists the IAM users, returns all users in the AWS account.
         "IAMIdentityCenter": {
             "User": [
                 {
-                    "DisplayName": "dean",
+                    "DisplayName": "John Doe",
                     "Emails": [
                         {
-                            "Value": "dean@gmail.com"
+                            "Value": "johnDoe@gmail.com"
                         }
                     ],
                     "IdentityStoreId": "d-9967750fbd",
                     "Name": {
-                        "FamilyName": "arbel",
-                        "GivenName": "dean"
+                        "FamilyName": "Doe",
+                        "GivenName": "John"
                     },
                     "UserId": "8374c852-10e1-70e2-8996-5b0d54bf8ccd",
-                    "UserName": "dean"
+                    "UserName": "johndoe"
                 },
             ],
             "UserNextToken": null
@@ -280,7 +280,7 @@ Lists the IAM users, returns all users in the AWS account.
 >### AWS IAM Identity Center Users
 >|DisplayName|Emails|UserId|UserName|
 >|---|---|---|---|
->| dean | dean@gmail.com | 8374c852-10e1-70e2-8996-5b0d54bf8ccd | dean |
+>| johndoe | johnDoe@gmail.com | 8374c852-10e1-70e2-8996-5b0d54bf8ccd | johndoe |
 
 
 
@@ -377,7 +377,7 @@ Lists the IAM Identity Center groups that the specified IAM user belongs to.
 
 
 #### Command example
-```!aws-iam-identitycenter-list-groups-for-user userName=exampleName```
+```!aws-iam-identitycenter-list-groups-for-user userName=johndoe```
 #### Context Example
 ```json
 {
@@ -431,7 +431,7 @@ Adds the specified user to the specified group.
 
 There is no context output for this command.
 #### Command example
-```!aws-iam-identitycenter-add-user-to-group groupName=NewGroup userName=exampleName```
+```!aws-iam-identitycenter-add-user-to-group groupName=NewGroup userName=johndoe```
 #### Human Readable Output
 
 >The membership id 4314c862-b0c1-705e-d5da-ccf59fd045f3 has been successfully created.
@@ -553,28 +553,28 @@ Retrieves information about the specified IAM user.
 
 
 #### Command example
-```!aws-iam-identitycenter-get-user-by-email emailAddress=test@example.com```
+```!aws-iam-identitycenter-get-user-by-email emailAddress=johnDoe@gmail.com```
 #### Context Example
 ```json
 {
     "AWS": {
         "IAMIdentityCenter": {
             "User": {
-                "DisplayName": "example",
+                "DisplayName": "John Doe",
                 "Emails": [
                     {
                         "Primary": true,
                         "Type": "work",
-                        "Value": "test@example.com"
+                        "Value": "johnDoe@gmail.com"
                     }
                 ],
                 "IdentityStoreId": "d-9967750fbd",
                 "Name": {
-                    "FamilyName": "fam",
-                    "GivenName": "example"
+                    "FamilyName": "Doe",
+                    "GivenName": "John"
                 },
                 "UserId": "13746842-e011-70fe-14fe-600d496510f0",
-                "UserName": "exampleName",
+                "UserName": "johndoe",
             }
         }
     }
@@ -586,7 +586,7 @@ Retrieves information about the specified IAM user.
 >### AWS IAM Identity Center Users
 >|DisplayName|Emails|UserId|UserName|
 >|---|---|---|---|
->| example | test@example.com | 13746842-e011-70fe-14fe-600d496510f0 | exampleName |
+>| John Doe | johnDoe@gmail.com | 13746842-e011-70fe-14fe-600d496510f0 | johndoe |
 
 ### aws-iam-identitycenter-list-memberships
 
@@ -673,7 +673,7 @@ Removes the specified user from the AWS IAM Identity Center.
 
 There is no context output for this command.
 #### Command example
-```!aws-iam-identitycenter-delete-user userName=exampleName```
+```!aws-iam-identitycenter-delete-user userName=johndoe```
 #### Human Readable Output
 
 >The User 634418e2-20c1-703e-4358-a8312472c85d has been removed.
@@ -823,11 +823,11 @@ There is no context output for this command.
 
 
 #### Command example
-```!aws-iam-identitycenter-update-user userName=example familyName=changed```
+```!aws-iam-identitycenter-update-user userName=johndoe familyName=changed```
 
 #### Human Readable Output
 
->User example has been successfully updated
+>User johndoe has been successfully updated
 
 ### aws-iam-identitycenter-delete-group-membership
 
@@ -854,7 +854,7 @@ Deletes a user from all groups if a username is provided, or deletes multiple me
 
 There is no context output for this command.
 #### Command example
-```!aws-iam-identitycenter-delete-group-membership userName=exampleName```
+```!aws-iam-identitycenter-delete-group-membership userName=johndoe```
 #### Human Readable Output
 
 >User is not member of any group.
