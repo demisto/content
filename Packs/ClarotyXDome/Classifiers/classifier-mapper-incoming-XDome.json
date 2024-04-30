@@ -107,9 +107,6 @@
                 "Claroty xDome Device Purdue Level": {
                     "simple": "device_purdue_level"
                 },
-                "Claroty xDome Device Retired": {
-                    "simple": "device_retired"
-                },
                 "Claroty xDome Device Risk Score": {
                     "simple": "device_risk_score"
                 },
@@ -243,9 +240,6 @@
                 },
                 "Claroty xDome Device Purdue Level": {
                     "simple": "device_purdue_level"
-                },
-                "Claroty xDome Device Retired": {
-                    "simple": "device_retired"
                 },
                 "Claroty xDome Device Risk Score": {
                     "simple": "device_risk_score"
@@ -381,9 +375,6 @@
                 "Claroty xDome Device Purdue Level": {
                     "simple": "device_purdue_level"
                 },
-                "Claroty xDome Device Retired": {
-                    "simple": "device_retired"
-                },
                 "Claroty xDome Device Risk Score": {
                     "simple": "device_risk_score"
                 },
@@ -517,9 +508,6 @@
                 },
                 "Claroty xDome Device Purdue Level": {
                     "simple": "device_purdue_level"
-                },
-                "Claroty xDome Device Retired": {
-                    "simple": "device_retired"
                 },
                 "Claroty xDome Device Risk Score": {
                     "simple": "device_risk_score"
@@ -655,9 +643,6 @@
                 "Claroty xDome Device Purdue Level": {
                     "simple": "device_purdue_level"
                 },
-                "Claroty xDome Device Retired": {
-                    "simple": "device_retired"
-                },
                 "Claroty xDome Device Risk Score": {
                     "simple": "device_risk_score"
                 },
@@ -792,9 +777,6 @@
                 "Claroty xDome Device Purdue Level": {
                     "simple": "device_purdue_level"
                 },
-                "Claroty xDome Device Retired": {
-                    "simple": "device_retired"
-                },
                 "Claroty xDome Device Risk Score": {
                     "simple": "device_risk_score"
                 },
@@ -928,9 +910,6 @@
                 },
                 "Claroty xDome Device Purdue Level": {
                     "simple": "device_purdue_level"
-                },
-                "Claroty xDome Device Retired": {
-                    "simple": "device_retired"
                 },
                 "Claroty xDome Device Risk Score": {
                     "simple": "device_risk_score"
