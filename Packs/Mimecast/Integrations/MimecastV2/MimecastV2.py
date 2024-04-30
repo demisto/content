@@ -3394,6 +3394,61 @@ def mimecast_create_antispoofing_bypass_policy_command(args: dict) -> CommandRes
     )
 
 
+def  mimecast_update_antispoofing_bypass_policy_command(args: dict) -> CommandResults:
+    description = args.get('description')
+    id = args.get('id')
+    enabled = argToBoolean(args.get('enabled'))
+    from_date = args.get('from_date')
+    from_eternal = argToBoolean(args.get('from_eternal'))
+    from_part = args.get('from_part')
+    to_date = args.get('to_date')
+    to_eternal = argToBoolean(args.get('to_eternal'))
+    if args.get('bidirectional'):
+        bidirectional = argToBoolean(args.get('bidirectional'))
+    option = args.get('option')
+    # page = arg_to_number(args.get('page'))
+    # page_size = arg_to_number(args.get('page_size'))
+    # limit = arg_to_number(args.get('limit'))
+    
+    data = {
+        'id': id,
+        'option': option,
+        'policy': {}
+            }
+    
+    if description:
+        data['policy']['description'] = description
+    if enabled:
+        data['policy']['enabled'] = enabled
+    if from_date:
+        data['policy']['fromDate'] = from_date
+    if from_eternal:
+        data['policy']['fromEternal'] = from_eternal
+    if from_part:
+        data['policy']['fromPart'] = from_part
+    if to_date:
+        data['policy']['toDate'] = to_date
+    if to_eternal:
+        data['policy']['toEternal'] = to_eternal
+    if args.get('bidirectional'):
+        data['policy']['toEternal'] = bidirectional
+    
+    payload = {"data": [data]}
+
+    api_endpoint = '/api/policy/antispoofing-bypass/update-policy'
+    response = http_request('POST', api_endpoint, payload)
+    # response = request_with_pagination_api2(api_endpoint, limit, page, page_size, payload) # type: ignore
+    
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+
+    return CommandResults(
+        outputs_prefix='Mimecast.AntispoofingBypassPolicy',
+        outputs=response,
+        readable_output= f'{id} has been updated successfully'
+    )
+
+
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     # Check if token needs to be refresh, if it does and relevant params are set, refresh.
@@ -3497,9 +3552,8 @@ def main():
             return_results(mimecast_list_policies_command(args))
         elif command == 'mimecast-create-antispoofing-bypass-policy':
             return_results(mimecast_create_antispoofing_bypass_policy_command(args))
-
-        # elif command == 'mimecast-update-antispoofing-bypass-policy':
-        #     return_results(mimecast_update_antispoofing_bypass_policy_command(args))
+        elif command == 'mimecast-update-antispoofing-bypass-policy':
+            return_results(mimecast_update_antispoofing_bypass_policy_command(args))
 
     except Exception as e:
         return_error(e)
