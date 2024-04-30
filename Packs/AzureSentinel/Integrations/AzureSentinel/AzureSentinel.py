@@ -687,17 +687,19 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     if any(field not in data for field in required_fields):
         raise DemistoException(f'Update incident request is missing one of the required fields for the '
                                f'API: {required_fields}')
-
     properties = {
         'title': data.get('title'),
         'description': delta.get('description'),
         'severity': LEVEL_TO_SEVERITY[data.get('severity', '')],
         'status': 'Active',
-        'labels': [{'labelName': label, 'type': 'User'} for label in delta.get('tags', [])],
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
         'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
-        'owner': demisto.get(fetched_incident_data, 'properties.owner', {})
+        'owner': demisto.get(fetched_incident_data, 'properties.owner', {}),
+        'labels': demisto.get(fetched_incident_data, 'properties.labels', [])
     }
+
+    properties['labels'] += [{'labelName': label, 'type': 'User'} for label in delta.get('tags', [])]
+
     if close_ticket:
         properties |= {
             'status': 'Closed',
@@ -711,7 +713,8 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         'properties': properties
     }
     demisto.debug(f'Updating incident with remote ID {incident_id} with data: {data}')
-    return client.http_request('PUT', f'incidents/{incident_id}', data=data)
+    response = client.http_request('PUT', f'incidents/{incident_id}', data=data)
+    return response
 
 
 def update_remote_incident(client: AzureSentinelClient, data: Dict[str, Any], delta: Dict[str, Any],
