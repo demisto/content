@@ -29,11 +29,11 @@
     },
     {
         "orientation": "DEVICE",
-        "id": "00000000-0000-0000-0000-000000fde030@e427e7bf-3942-4769-b943-f22a209ee054",
+        "id": "01",
         "name": "Default settings for the entire organization",
         "assignments": [
             {
-                "id": "00000000-0000-0000-0000-000000000000",
+                "id": "001",
                 "name": "Entire Organization",
                 "type": "ORGANIZATION_ROOT"
             }
@@ -46,11 +46,11 @@
     },
     {
         "orientation": "USER",
-        "id": "00000000-0000-0000-0000-000010fde030",
+        "id": "02",
         "name": "Default settings for the entire organization",
         "assignments": [
             {
-                "id": "00000000-0000-0000-0000-000000000000",
+                "id": "002",
                 "name": "Entire Organization",
                 "type": "ORGANIZATION_ROOT"
             }
@@ -58,57 +58,6 @@
         "comment": "Default settings for the entire organization",
         "connectionState": "CONNECTED",
         "family": "OneCheck",
-        "isDefaultRule": true,
-        "order": 0
-    },
-    {
-        "orientation": "DEVICE",
-        "id": "88abb880-a191-11e0-8264-0800200c9a66",
-        "name": "Global Policy Settings",
-        "assignments": [
-            {
-                "id": "00000000-0000-0000-0000-000000000000",
-                "name": "Entire Organization",
-                "type": "ORGANIZATION_ROOT"
-            }
-        ],
-        "comment": "Common Settings Full Disk Encryption Policy",
-        "connectionState": "CONNECTED",
-        "family": "General Settings",
-        "isDefaultRule": true,
-        "order": 0
-    },
-    {
-        "orientation": "DEVICE",
-        "id": "00000000-0000-0000-0000-000000000003",
-        "name": "Default settings for the entire organization",
-        "assignments": [
-            {
-                "id": "00000000-0000-0000-0000-000000000000",
-                "name": "Entire Organization",
-                "type": "ORGANIZATION_ROOT"
-            }
-        ],
-        "comment": "Default settings for the entire organization",
-        "connectionState": "CONNECTED",
-        "family": "Deployment",
-        "isDefaultRule": true,
-        "order": 0
-    },
-    {
-        "orientation": "DEVICE",
-        "id": "770d1b19-2262-423a-b29a-9d2d70197d6a",
-        "name": "Default settings for the entire organization",
-        "assignments": [
-            {
-                "id": "00000000-0000-0000-0000-000000000000",
-                "name": "Entire Organization",
-                "type": "ORGANIZATION_ROOT"
-            }
-        ],
-        "comment": "Default settings for the entire organization",
-        "connectionState": "CONNECTED",
-        "family": "Agent Settings",
         "isDefaultRule": true,
         "order": 0
     }

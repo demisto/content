@@ -16,10 +16,13 @@ class ScheduleCommandMetadata:
 
     def format_message(self, id):
         return self.message.format(id=id)
-    
 
-REGISTRY_VALUE_TYPE_MAP = {"DWORD (REG_DWORD)" : "DWORD",
-  "STRING (REG_GZ)": "STRING",}
+
+REGISTRY_VALUE_TYPE_MAP = {
+    "DWORD (REG_DWORD)": "DWORD",
+    "STRING (REG_GZ)": "STRING",
+}
+
 MIN_PAGE_NUM = 1
 MAX_PAGE_SIZE = 50
 MIN_PAGE_SIZE = 1
@@ -462,9 +465,9 @@ class Client(BaseClient):
         self,
         page: int,
         page_size: int,
-        ioc_filter: str | None = None,
-        field: str | None = None,
-        sort_direction: str | None = None,
+        ioc_filter: str = None,
+        field: str = None,
+        sort_direction: str = None,
     ) -> dict[str, Any]:
         """Fetch IOCs list.
 
@@ -516,9 +519,9 @@ class Client(BaseClient):
 
     def ioc_create(
         self,
-        ioc_type: str,
-        value: str,
-        comment: str,
+        ioc_type: str | None = None,
+        value: str | None = None,
+        comment: str | None = None,
     ) -> dict[str, Any]:
         """Create an IOC.
 
@@ -1165,7 +1168,7 @@ def job_status_get_command(args: Dict[str, Any], client: Client) -> CommandResul
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
 
-    response = client.job_status_get(job_id=args["job_id"])
+    response = client.job_status_get(job_id=args.get("job_id", ""))
 
     return CommandResults(
         outputs_prefix="Harmony.Job",
@@ -1220,12 +1223,12 @@ def ioc_update_command(args: Dict[str, Any], client: Client) -> CommandResults:
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    ioc_id = args["ioc_id"]
+    ioc_id = args.get("ioc_id", "")
 
     response = client.ioc_update(
-        ioc_type=args["type"],
-        value=args["value"],
-        comment=args["comment"],
+        ioc_type=args.get("type", ""),
+        value=args.get("value", ""),
+        comment=args.get("comment", ""),
         ioc_id=ioc_id,
     )
     readable_output = tableToMarkdown(
@@ -1254,9 +1257,9 @@ def ioc_create_command(args: Dict[str, Any], client: Client) -> CommandResults:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     client.ioc_create(
-        ioc_type=args["type"],
-        value=args["value"],
-        comment=args["comment"],
+        ioc_type=args.get("type"),
+        value=args.get("value"),
+        comment=args.get("comment"),
     )
     return CommandResults(readable_output="IOC was created successfully.")
 
@@ -1273,7 +1276,7 @@ def ioc_delete_command(args: Dict[str, Any], client: Client) -> CommandResults:
     """
 
     ioc_ids = args.get("ids")
-    delete_all = argToBoolean(args["delete_all"])
+    delete_all = argToBoolean(args.get("delete_all"))
 
     client.ioc_delete(ioc_ids=ioc_ids, delete_all=delete_all)
 
@@ -1294,7 +1297,7 @@ def rule_assignments_get_command(args: Dict[str, Any], client: Client) -> Comman
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    rule_id = args["rule_id"]
+    rule_id = args.get("rule_id", "")
 
     response = client.rule_assignments_get(
         rule_id=rule_id,
@@ -1326,8 +1329,8 @@ def rule_assignments_add_command(args: Dict[str, Any], client: Client) -> Comman
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    rule_id = args["rule_id"]
-    entities_ids = argToList(args["entities_ids"])
+    rule_id = args.get("rule_id", "")
+    entities_ids = argToList(args.get("entities_ids"))
 
     client.rule_assignments_add(rule_id=rule_id, entities_ids=entities_ids)
     return CommandResults(readable_output=f"Entities {entities_ids} were assigned to rule {rule_id} successfully.")
@@ -1343,8 +1346,8 @@ def rule_assignments_remove_command(args: Dict[str, Any], client: Client) -> Com
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    rule_id = args["rule_id"]
-    entities_ids = argToList(args["entities_ids"])
+    rule_id = args.get("rule_id", "")
+    entities_ids = argToList(args.get("entities_ids"))
 
     client.rule_assignments_remove(rule_id=rule_id, entities_ids=entities_ids)
     return CommandResults(readable_output=f"Entities {entities_ids} were removed from rule {rule_id} successfully.")
@@ -1394,7 +1397,7 @@ def rule_modifications_get_command(args: Dict[str, Any], client: Client) -> Poll
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
     if not args.get("job_id"):
-        rule_id = args["rule_id"]
+        rule_id = args.get("rule_id", "")
         SCHEDULED_COMMANDS_MAPPER[demisto.command()].message.format(id=rule_id)
         response = client.rule_modifications_get(rule_id=rule_id)
         args["job_id"] = response.get("jobId")
@@ -1492,7 +1495,7 @@ def push_operation_get_command(args: Dict[str, Any], client: Client) -> PollResu
         new_page, new_page_size, _ = get_pagination_args(args)
 
         response = client.push_operation_get(
-            remediation_operation_id=args["remediation_operation_id"],
+            remediation_operation_id=args.get("remediation_operation_id", ""),
             filter_text=args.get("filter_text"),
             new_page=new_page,
             new_page_size=new_page_size,
@@ -1522,7 +1525,7 @@ def push_operation_abort_command(args: Dict[str, Any], client: Client) -> PollRe
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
     if not args.get("job_id"):
-        remediation_operation_id = args["remediation_operation_id"]
+        remediation_operation_id = args.get("remediation_operation_id", "")
         SCHEDULED_COMMANDS_MAPPER[demisto.command()].message = (
             f"Remediation operation {remediation_operation_id} was aborted successfully."
         )
@@ -1643,7 +1646,7 @@ def indicator_analyze_command(args: Dict[str, Any], client: Client) -> PollResul
         }
 
         response = client.indicator_analyze(
-            indicator_type=args["indicator_type"],
+            indicator_type=args.get("indicator_type", ""),
             request_body=request_body,
         )
         args["job_id"] = response.get("jobId")
@@ -1926,7 +1929,7 @@ def process_terminate_command(args: Dict[str, Any], client: Client) -> PollResul
     if not args.get("job_id"):
         request_body = build_request_body(args)
         request_body["operationParameters"] |= {
-            "name": args["name"],
+            "name": args.get("name"),
             "pid": arg_to_number(args.get("pid")),
             "terminateAllInstances": arg_to_bool(args.get("terminate_all_instances")),
         }
@@ -1956,11 +1959,11 @@ def agent_registry_key_add_command(args: Dict[str, Any], client: Client) -> Poll
     if not args.get("job_id"):
         request_body = build_request_body(args)
         request_body["operationParameters"] |= {
-            "hive": args["hive"],
-            "key": args["key"],
-            "valueName": args["value_name"],
-            "valueType": REGISTRY_VALUE_TYPE_MAP[args["value_type"]],
-            "valueData": args["value_data"],
+            "hive": args.get("hive"),
+            "key": args.get("key"),
+            "valueName": args.get("value_name"),
+            "valueType": REGISTRY_VALUE_TYPE_MAP[args.get("value_type", "")],
+            "valueData": args.get("value_data"),
             "isRedirected": arg_to_bool(args.get("is_redirected")),
         }
         response = client.agent_registry_key_add(remove_empty_elements(request_body))
@@ -1989,8 +1992,8 @@ def agent_registry_key_delete_command(args: Dict[str, Any], client: Client) -> P
     if not args.get("job_id"):
         request_body = build_request_body(args)
         request_body["operationParameters"] |= {
-            "hive": args["hive"],
-            "key": args["key"],
+            "hive": args.get("hive"),
+            "key": args.get("key"),
             "valueName": args.get("value_name"),
             "isRedirected": arg_to_bool(args.get("is_redirected")),
         }
@@ -2020,8 +2023,8 @@ def agent_file_copy_command(args: Dict[str, Any], client: Client) -> PollResult:
     if not args.get("job_id"):
         request_body = build_request_body(args)
         request_body["operationParameters"] |= {
-            "sourceAbsolutePath": args["destination_absolute_path"],
-            "destinationAbsolutePath": args["source_absolute_path"],
+            "sourceAbsolutePath": args.get("destination_absolute_path"),
+            "destinationAbsolutePath": args.get("source_absolute_path"),
         }
         response = client.agent_file_copy(remove_empty_elements(request_body))
 
@@ -2050,8 +2053,8 @@ def agent_file_move_command(args: Dict[str, Any], client: Client) -> PollResult:
     if not args.get("job_id"):
         request_body = build_request_body(args)
         request_body["operationParameters"] |= {
-            "sourceAbsolutePath": args["destination_absolute_path"],
-            "destinationAbsolutePath": args["source_absolute_path"],
+            "sourceAbsolutePath": args.get("destination_absolute_path"),
+            "destinationAbsolutePath": args.get("source_absolute_path"),
         }
         response = client.agent_file_move(remove_empty_elements(request_body))
         args["job_id"] = response.get("jobId")
@@ -2081,7 +2084,7 @@ def agent_file_delete_command(args: Dict[str, Any], client: Client) -> PollResul
     if not args.get("job_id"):
         request_body = build_request_body(args)
         request_body["operationParameters"] |= {
-            "targetAbsolutePath": args["target_absolute_path"],
+            "targetAbsolutePath": args.get("target_absolute_path"),
         }
         response = client.agent_file_delete(remove_empty_elements(request_body))
         args["job_id"] = response.get("jobId")
@@ -2110,10 +2113,10 @@ def agent_vpn_site_add_command(args: Dict[str, Any], client: Client) -> PollResu
     if not args.get("job_id"):
         request_body = build_request_body(args)
         request_body["operationParameters"] |= {
-            "remoteAccessGatewayName": args["remote_access_gateway_name"],
-            "fingerprint": args["fingerprint"],
-            "authentication": {"method": args["authentication_method"]},
-            "host": args["host"],
+            "remoteAccessGatewayName": args.get("remote_access_gateway_name"),
+            "fingerprint": args.get("fingerprint"),
+            "authentication": {"method": args.get("authentication_method")},
+            "host": args.get("host"),
             "displayName": args.get("display_name"),
         }
         response = client.agent_vpn_site_add(remove_empty_elements(request_body))
@@ -2142,7 +2145,7 @@ def agent_vpn_site_remove_command(args: Dict[str, Any], client: Client) -> PollR
     if not args.get("job_id"):
         request_body = build_request_body(args)
         request_body["operationParameters"] |= {
-            "displayName": args["display_name"],
+            "displayName": args.get("display_name"),
         }
         response = client.agent_vpn_site_remove(remove_empty_elements(request_body))
         args["job_id"] = response.get("jobId")
@@ -2548,7 +2551,8 @@ def extract_query_filter(args: dict[str, Any]) -> list[dict[str, Any]]:
 
     if not query_filter:
         raise DemistoException(
-            "At least one of the following query arguments are required: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter."
+            '''At least one of the following query arguments are required: computer_ids, computer_names, computer_ips,
+            computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter.'''
         )
 
     return query_filter
@@ -2618,7 +2622,7 @@ def main() -> None:
 
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
-    base_url = params["base_url"]
+    base_url = params.get("base_url", "")
     client_id = dict_safe_get(params, ["credentials", "identifier"])
     secret_key = dict_safe_get(params, ["credentials", "password"])
 

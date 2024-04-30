@@ -802,7 +802,7 @@ def test_schedule_command(
                 "hive": "hive",
                 "key": "key",
                 "value_name": "value_name",
-                "value_type": "value_type",
+                "value_type": "STRING (REG_GZ)",
                 "value_data": "value_data",
                 "inform_user": True,
                 "allow_postpone": True,
