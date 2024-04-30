@@ -1,9 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from UseCaseAdoptionMetrics import check_phishing_incidents, main, is_rapid_breach_response_installed, get_use_cases
+import UseCaseAdoptionMetrics
 
-
-def test_check_phishing_incidents():
+def test_check_phishing_incidents_incidents_not_exists(mocker):
     """
     Given:
         - No incidents fetched from Demisto.
@@ -15,12 +14,36 @@ def test_check_phishing_incidents():
         - No incidents are found.
     """
     # Simulate no incidents fetched
-    demisto.executeCommand = lambda command, args: []
+    mocker.patch.object(
+        demisto,
+        "executeCommand",
+        return_value=[{"Contents": {"data": []}}]
+    )
+    assert not UseCaseAdoptionMetrics.check_phishing_incidents()
+    
 
-    assert not check_phishing_incidents()
+def test_check_phishing_incidents(mocker):
+    """
+    Given:
+        - No incidents fetched from Demisto.
+
+    When:
+        - Checking for phishing incidents.
+
+    Then:
+        - No incidents are found.
+    """
+    mocker.patch.object(
+        demisto,
+        "executeCommand",
+        return_value=[{"Contents": {"data": ['check']}}]
+    )
+    assert UseCaseAdoptionMetrics.check_phishing_incidents()
+    
 
 
-def test_is_rapid_breach_response_installed():
+
+def test_is_rapid_breach_response_installed_packs_not_installed(mocker):
     """
     Given:
         - No content packs are installed.
@@ -32,12 +55,35 @@ def test_is_rapid_breach_response_installed():
         - Rapid Breach Response is not installed.
     """
     # Simulate no content packs installed
-    demisto.executeCommand = lambda command, args: []
+    mocker.patch.object(
+        demisto,
+        "executeCommand",
+        return_value=[{"Contents": {"response": []}}]
+    )
 
-    assert not is_rapid_breach_response_installed()
+    assert not UseCaseAdoptionMetrics.is_rapid_breach_response_installed()
 
 
-def test_get_use_cases():
+def test_is_rapid_breach_response_installed(mocker):
+    """
+    Given:
+        - No content packs are installed.
+
+    When:
+        - Checking if Rapid Breach Response is installed.
+
+    Then:
+        - Rapid Breach Response is not installed.
+    """
+    mocker.patch.object(
+        demisto,
+        "executeCommand",
+        return_value=[{"Contents": {"response": [{"name": "Rapid Breach Response"}]}}]
+    )
+    assert UseCaseAdoptionMetrics.is_rapid_breach_response_installed()
+
+
+def test_get_use_cases(mocker):
     """
     Given:
         - Various modules with different categories and states.
@@ -50,22 +96,28 @@ def test_get_use_cases():
     Then:
         - Use cases in production and at risk are returned correctly.
     """
+    from UseCaseAdoptionMetrics import get_use_cases
     # Simulate modules with different categories and states
-    demisto.getModules = lambda: {
-        '1': {'category': 'Forensic & Malware Analysis', 'brand': 'Brand', 'state': 'active'},
+    mocker.patch.object(demisto, "getModules", return_value = {
+        '1': {'category': 'case management', 'brand': 'Brand', 'state': 'active'},
         '2': {'category': 'Email', 'brand': 'Brand', 'state': 'active', 'incident_types': ['Phishing']},
-        '3': {'category': 'Network Security', 'brand': 'Brand', 'state': 'active'},
-    }
-    # Simulate no phishing incidents fetched
-    demisto.executeCommand = lambda command, args: []
-    # Simulate Rapid Breach Response not installed
-    demisto.executeCommand = lambda command, args: []
+        '3': {'category': 'network security', 'brand': 'Brand', 'state': 'active'},
+        '4': {'category': 'vulnerability management', 'brand': 'Brand', 'state': 'at_risk'}
+    })
+    link = 'https://cortex.marketplace.pan.dev/marketplace/'
+    mocker.patch.object(UseCaseAdoptionMetrics, 'check_phishing_incidents', return_value=False)
+    mocker.patch.object(UseCaseAdoptionMetrics, 'is_rapid_breach_response_installed', return_value=False)
+    res = get_use_cases()
+    assert res == {'use_cases_in_production': {'Case Management', 'Network Security'},
+                   'at_risk': {'Ransomware & Malware Coverage': f'{link}?useCase=Malware',
+                               'Business Email Compromise Coverage': f'{link}?useCase=Phishing',
+                               'Analytics & SIEM': f'{link}?category=Analytics+%26+SIEM',
+                               'Data Enrichment & Threat Intelligence': f'{link}?category=Data+Enrichment+%26+Threat+Intelligence',
+                               'Vulnerability Management': 'https://xsoar.pan.dev/marketplace/?category=Vulnerability%20Management',
+                               'Rapid Breach Response': f'{link}details/MajorBreachesInvestigationandResponse/'}}
 
-    assert get_use_cases() == {'use_cases_in_production': {'Ransomware & Malware Coverage', 'Network Security'},
-                               'at_risk': {'Business Email Compromise Coverage': 'https://xsoar.pan.dev/marketplace/?category=Email%2C%20Messaging'}}
 
-
-def test_main():
+def test_main(mocker):
     """
     Given:
         - Use cases data.
@@ -76,14 +128,13 @@ def test_main():
     Then:
         - Markdown table is generated correctly.
     """
-    # Simulate use cases data
+    import UseCaseAdoptionMetrics
     use_cases_data = {
         'use_cases_in_production': {'Ransomware & Malware Coverage', 'Network Security'},
         'at_risk': {'Business Email Compromise Coverage': 'https://xsoar.pan.dev/marketplace/?category=Email%2C%20Messaging'}
     }
-    # Simulate table generation
-    tableToMarkdown = lambda name, t, headers: f"### {name}\n|{'|'.join(headers)}|\n|{'|'.join(['---'] * len(headers))}|\n" + \
-                                               '\n'.join([f"|{'|'.join(row)}|" for row in t])
-
-    assert main() == "### Use Case Coverage\n|Use Case Adoption & Coverage|Status|\n|---|---|\n|Ransomware & Malware Coverage|✅|\n|Network Security|✅|\n|[Business Email Compromise Coverage](https://xsoar.pan.dev/marketplace/?category=Email%2C%20Messaging)|❌|"
-
+    expected_table = '### Use Case Coverage\n|Use Case Adoption & Coverage|Status|\n|---|---|\n' \
+        '| Ransomware & Malware Coverage | ✅ |\n| Network Security | ✅ |\n| Business Email Compromise Coverage | ❌ |\n'
+    mocker.patch.object(UseCaseAdoptionMetrics, 'get_use_cases', return_value=use_cases_data)
+    res = UseCaseAdoptionMetrics.main()
+    assert res == expected_table

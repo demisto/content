@@ -11,9 +11,7 @@ def check_phishing_incidents()-> bool:
     """
     try:
         res = demisto.executeCommand("getIncidents", {"type": "Phishing", "size": 1})
-        if res:
-            incidents = res[0].get("Contents", {}).get("data")
-            return bool(incidents)
+        return bool(res and res[0].get("Contents", {}).get("data"))
     except DemistoException as e:
         return DemistoException(str(e))
 
@@ -30,6 +28,7 @@ def is_rapid_breach_response_installed()-> bool:
         if res:
             installed_packs = res[0].get("Contents", {}).get("response")
             return any(pack["name"] == "Rapid Breach Response" for pack in installed_packs)
+        return False
     except DemistoException as e:
         return DemistoException(str(e))
 
@@ -107,7 +106,7 @@ def main():
         t.append({'Use Case Adoption & Coverage': use_case, 'Status': '❌'})
     table = tableToMarkdown(name='Use Case Coverage', t=t, headers=headers)
 
-    return return_results(table)
+    return table
 
 
 ''' ENTRY POINT '''
