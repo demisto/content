@@ -392,16 +392,16 @@ class Build(ABC):
         tests_for_iteration: list[dict]
         if Build.run_environment == Running.CI_RUN:
             filtered_tests = BuildContext._extract_filtered_tests()
-            if self.is_nightly:
-                # skip test button testing
-                logging.debug('Not running instance tests in nightly flow')
+            # if self.is_nightly: # TODO
+            #     # skip test button testing
+            #     logging.debug('Not running instance tests in nightly flow')
+            #     tests_for_iteration = []
+            # else:
+            # if not filtered_tests in cloud, we not running tests at all
+            if self.is_cloud and not filtered_tests:
                 tests_for_iteration = []
             else:
-                # if not filtered_tests in cloud, we not running tests at all
-                if self.is_cloud and not filtered_tests:
-                    tests_for_iteration = []
-                else:
-                    tests_for_iteration = list(filter(lambda test: test.get('playbookID', '') in filtered_tests, tests))
+                tests_for_iteration = list(filter(lambda test: test.get('playbookID', '') in filtered_tests, tests))
             tests_for_iteration = filter_tests_with_incompatible_version(tests_for_iteration, server_numeric_version)
             return tests_for_iteration
 
@@ -1986,7 +1986,8 @@ def main():
     build.configure_servers_and_restart()
     build.disable_instances()
 
-    if build.is_nightly or build.is_sdk_nightly:
+    # if build.is_nightly or build.is_sdk_nightly:
+    if build.is_sdk_nightly:
         success = build.install_nightly_pack()
     else:
         packs_to_install_in_pre_update, packs_to_install_in_post_update = get_packs_to_install(build)

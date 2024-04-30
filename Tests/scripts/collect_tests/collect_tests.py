@@ -1446,7 +1446,7 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
         self.diff_checker = DiffChecker(repo_path, self.branch_name, self.service_account, marketplace)
 
     def _collect(self) -> CollectionResult | None:
-        changed_packs = self.diff_checker.get_diff_master_bucket()
+        changed_packs = self.diff_checker.get_git_diff()
         return CollectionResult.union([
             self._collect_from_changed_packs_nightly(changed_packs),
         ])
@@ -1463,7 +1463,7 @@ class XSOAR_SAASNightlyTestCollector(NightlyTestCollector):
         self.diff_checker = DiffChecker(repo_path, self.branch_name, self.service_account, marketplace)
 
     def _collect(self) -> CollectionResult | None:
-        changed_packs = self.diff_checker.get_diff_master_bucket()
+        changed_packs = self.diff_checker.get_git_diff()
         return CollectionResult.union([
             self._collect_from_changed_packs_nightly(changed_packs),
             self._id_set_tests_matching_marketplace_value()

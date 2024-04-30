@@ -4,6 +4,7 @@ from pathlib import Path
 import os
 from git import Repo
 from Tests.scripts.collect_tests.exceptions import NotUnderPackException
+from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 
 
 class DiffChecker:
@@ -16,7 +17,7 @@ class DiffChecker:
     def get_diff_master_bucket(self):
         return ['Zoom', 'AHA']  # TODO
 
-    def get_git_diff(self) -> FilesToCollect:
+    def get_git_diff(self) -> FilesToCollect: #TODO ADD rshunim upload_delta_from_last_upload
         """
         The method extracts the files based on the diff between the two commits.
 
@@ -29,9 +30,16 @@ class DiffChecker:
 
         logger.debug(f'Getting changed files for {self.branch_name=}')
 
-        if self.branch_name == 'master':
+        if os.getenv('NIGHTLY'):
+            logger.info('NIGHTLY: getting failed packs from the previous upload')
+            # TODO
+            logger.info('NIGHTLY: getting last commit from index')
+            previous_commit = get_last_commit_from_index(self.service_account, self.marketplace)
+            if self.branch_name == 'master':
+                current_commit = os.getenv("CI_COMMIT_SHA", "")
+
+        elif self.branch_name == 'master':
             current_commit, previous_commit = tuple(self.repo.iter_commits(max_count=2))
-            current_commit = os.getenv("CI_COMMIT_SHA", "")  # todo - ask praisler
 
         diff = self.repo.git.diff(f'{previous_commit}...{current_commit}', '--name-status')
         logger.debug(f'raw changed files string:\n{diff}')
