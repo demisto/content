@@ -1,5 +1,4 @@
 import asyncio
-import json
 from http import HTTPStatus
 from unittest.mock import MagicMock
 # import demistomock as demisto
@@ -114,12 +113,12 @@ def test_handle_post_with_invalid_json(mocker, client):
 
 @pytest.mark.parametrize('body', [
     {"name": "Test Incident 1", "type": "Test Type 1",
-      "occurred": "2024-03-17T12:00:00Z",
-      "rawJson": {"key": "value"}},
-     {"name": "Test Incident 1", "type": "Test Type 1",
-      "occurred": "2024-03-17T12:00:00Z",
-      "key": "value"}
-     ])
+     "occurred": "2024-03-17T12:00:00Z",
+     "rawJson": {"key": "value"}},
+    {"name": "Test Incident 1", "type": "Test Type 1",
+     "occurred": "2024-03-17T12:00:00Z",
+     "key": "value"}
+])
 def test_parse_request(body):
     """
     Given: two inputs, either with raw_json being real json or a string representation of json

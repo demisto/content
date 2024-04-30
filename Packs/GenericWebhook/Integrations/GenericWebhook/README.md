@@ -51,6 +51,10 @@ The request payload does not have to contain the fields mentioned above, and may
 
 `curl -POST https://my.demisto.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '{"string_field":"string_field_value","array_field":["item1","item2"]}'`
 
+Multiple inicidents can be created in one request by sending an array as the request body:
+
+`curl -POST https://my.demisto.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '[{"name":"incident1","rawJson":{"some_field":"some_value"}}, {"name":"incident2","rawJson":{"some_field":"some_value"}}]'`
+
 The payload could then be mapped in the [Cortex XSOAR mapping wizard](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Create-a-Mapper):
 
 - Note that the *Store sample events for mapping* parameter needs to be set.

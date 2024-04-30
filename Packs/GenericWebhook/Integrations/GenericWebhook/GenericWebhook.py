@@ -16,9 +16,7 @@ from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.security.api_key import APIKey, APIKeyHeader
 from uvicorn.logging import AccessFormatter
 
-
 sample_events_to_store = deque(maxlen=20)  # type: ignore[var-annotated]
-
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
@@ -65,7 +63,8 @@ async def handle_post(
         incidents = await parse_incidents(request)
     except JSONDecodeError as e:
         demisto.error(f'could not decode request {e}')
-        return Response(status_code=status.HTTP_400_BAD_REQUEST, content='Request, and rawJson field if exists must be in JSON format')
+        return Response(status_code=status.HTTP_400_BAD_REQUEST,
+                        content='Request, and rawJson field if exists must be in JSON format')
     header_name = None
     request_headers = dict(request.headers)
 
@@ -124,11 +123,11 @@ async def handle_post(
 
 def setup_credentials():
     if credentials_param := demisto.params().get('credentials'):
-        if username := credentials_param.get('identifier'):
-            if username.startswith('_header:'):
-                header_name = username.split(':')[1]
-                demisto.debug(f'Overwriting Authorization parameter with {username}')
-                token_auth.model.name = header_name
+        username = credentials_param.get('identifier')
+        if username and username.startswith('_header:'):
+            header_name = username.split(':')[1]
+            demisto.debug(f'Overwriting Authorization parameter with {username}')
+            token_auth.model.name = header_name
 
 
 def fetch_samples() -> None:
@@ -162,7 +161,7 @@ def main() -> None:
                 certificate_path = ''
                 private_key_path = ''
                 try:
-                    ssl_args = dict()
+                    ssl_args = {}
 
                     if certificate and private_key:
                         certificate_file = NamedTemporaryFile(delete=False)
