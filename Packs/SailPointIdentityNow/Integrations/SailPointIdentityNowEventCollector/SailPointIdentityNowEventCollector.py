@@ -27,6 +27,11 @@ class Client(BaseClient):
 
         try:
             self.token = self.get_token()
+            self.headers = {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': f'Bearer {self.token}'
+            }
         except Exception as e:
             raise Exception(f'Failed to get token. Error: {str(e)}')
         
@@ -35,7 +40,7 @@ class Client(BaseClient):
         """
         Generates an OAuth 2.0 token using client credentials.
         """
-        url = f"https://{self.tenant}.api.identitynow.com/oauth/token"  #TODO maybe use self.base_url instead of hardcoding
+        url = urljoin(self._base_url, "oauth/token")
         resp = self._http_request(
             method='POST',
             url_suffix=url,
@@ -59,8 +64,7 @@ class Client(BaseClient):
 
         return token
 
-    
-    
+
     def get_token(self) -> str:
         """
         Obtains token from integration context if available and still valid.
@@ -86,62 +90,28 @@ class Client(BaseClient):
     
     
 
-    def search_events(self, prev_id: int, alert_status: None | str, limit: int, from_date: str | None = None, default_Protocol: str = 'UDP') -> List[Dict]:  # noqa: E501
+    def search_events(self, prev_id: int, limit: int, from_date: str | None = None) -> List[Dict]:  # noqa: E501
         """
-        Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
-
-        Args:
-            prev_id: previous id that was fetched.
-            alert_status:
-            limit: limit.
-            from_date: get events from from_date.
-
-        Returns:
-            List[Dict]: the next event
         """
-        # use limit & from date arguments to query the API
-        return [{
-            'id': prev_id + 1,
-            'created_time': datetime.now().isoformat(),
-            'description': f'This is test description {prev_id + 1}',
-            'alert_status': alert_status,
-            'protocol': default_Protocol,
-            't_port': prev_id + 1,
-            'custom_details': {
-                'triggered_by_name': f'Name for id: {prev_id + 1}',
-                'triggered_by_uuid': str(uuid.uuid4()),
-                'type': 'customType',
-                'requested_limit': limit,
-                'requested_From_date': from_date
-            }
-        }]
+        query = {"indices": ["events"],
+        "queryType": "SAILPOINT",
+        "queryVersion": "5.2",
+        "query":
+        { "query": "type:*" }
+        }
+        return self._http_request(method='POST', url_suffix='/v3/search', data=query)
 
 
-def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
+
+def test_module(client: Client, first_fetch_time: str) -> str:
     """
-    Tests API connectivity and authentication
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-    successful.
-    Raises exceptions if something goes wrong.
-
-    Args:
-        client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
-        first_fetch_time(str): The first fetch time as configured in the integration params.
-
-    Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
 
     try:
-        alert_status = params.get('alert_status', None)
-
         fetch_events(
             client=client,
             last_run={},
             first_fetch_time=first_fetch_time,
-            alert_status=alert_status,
             max_events_per_fetch=1,
         )
 
@@ -154,12 +124,11 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
     return 'ok'
 
 
-def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict], CommandResults]:
-    limit = args.get('limit', 50)
+def get_events(client: Client, args: dict) -> tuple[List[Dict], CommandResults]:
+    limit = args.get('limit') or 50
     from_date = args.get('from_date')
     events = client.search_events(
         prev_id=0,
-        alert_status=alert_status,
         limit=limit,
         from_date=from_date,
     )
@@ -168,19 +137,9 @@ def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict
 
 
 def fetch_events(client: Client, last_run: dict[str, int],
-                 first_fetch_time, alert_status: str | None, max_events_per_fetch: int
+                 first_fetch_time, max_events_per_fetch: int
                  ) -> tuple[Dict, List[Dict]]:
     """
-    Args:
-        client (Client): HelloWorld client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time: If last_run is None (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching events.
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
-        max_events_per_fetch (int): number of events per fetch
-    Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
     """
     prev_id = last_run.get('prev_id', None)
     if not prev_id:
@@ -188,7 +147,6 @@ def fetch_events(client: Client, last_run: dict[str, int],
 
     events = client.search_events(
         prev_id=prev_id,
-        alert_status=alert_status,
         limit=max_events_per_fetch,
         from_date=first_fetch_time,
     )
@@ -227,34 +185,31 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
     client_id = params.get('credentials', {}).get('identifier')
     client_secret = params.get('credentials', {}).get('password')
-    base_url = urljoin(params.get('url'), '/api/v1')
+    base_url = params['url']
     verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     # How much time before the first fetch to retrieve events
     first_fetch_time = datetime.now().isoformat()
-    proxy = params.get('proxy', False)
-    alert_status = params.get('alert_status', None)
-    max_events_per_fetch = params.get('max_events_per_fetch', 1000)
+    max_events_per_fetch = params.get('max_events_per_fetch') or 50000
 
     demisto.debug(f'Command being called is {command}')
     try:
-        headers = {
-            'Authorization': f'Bearer {api_key}'
-        }
         client = Client(
+            client_id=client_id,
+            client_secret=client_secret,
             base_url=base_url,
             verify=verify_certificate,
-            headers=headers,
             proxy=proxy)
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_time)
+            result = test_module(client, first_fetch_time)
             return_results(result)
 
         elif command == 'identitynow-get-events':
             should_push_events = argToBoolean(args.pop('should_push_events'))
-            events, results = get_events(client, alert_status, demisto.args())
+            events, results = get_events(client, args=args)
             return_results(results)
             if should_push_events:
                 add_time_to_events(events)
@@ -270,7 +225,6 @@ def main() -> None:  # pragma: no cover
                 client=client,
                 last_run=last_run,
                 first_fetch_time=first_fetch_time,
-                alert_status=alert_status,
                 max_events_per_fetch=max_events_per_fetch,
             )
 
