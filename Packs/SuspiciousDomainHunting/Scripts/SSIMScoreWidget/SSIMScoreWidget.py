@@ -48,7 +48,7 @@ def main():
 
         return_results(create_widget_entry(ssim_score))
 
-    except Exception as e:
+    except Exception:
         return_results("SSIM Score was not found in the context.")
 
 

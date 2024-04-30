@@ -68,7 +68,7 @@ def main():
             else:
                 html_content = html_content_root.get('Body')
 
-        if html_content:
+        else:
             phishing_indicators = check_html_for_phishing(html_content)
             html_response = format_html_response(phishing_indicators)
             demisto.results({
@@ -76,8 +76,6 @@ def main():
                 'Type': entryTypes['note'],
                 'Contents': html_response,
             })
-        else:
-            return_results("No HTML content provided.")
 
     except Exception as e:
         return_error(f"Error: {str(e)}")

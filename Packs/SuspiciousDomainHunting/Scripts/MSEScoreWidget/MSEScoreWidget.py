@@ -47,7 +47,7 @@ def main():
 
         return_results(create_widget_entry(mse_score))
 
-    except Exception as e:
+    except Exception:
         return_results("MSE Score was not found in the context.")
 
 
