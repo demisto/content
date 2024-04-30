@@ -768,6 +768,72 @@ COURSE_OF_ACTION_INDICATORS = [{'fields': {'description': '',
                                 'value': 'Ensure that all zones have Zone Protection Profiles with all '
                                          'Reconnaissance Protection settings enabled.'}]
 
+COURSE_OF_ACTION_INDICATORS_WITH_TLP = [
+    {
+        "fields": {
+            "description": "",
+            "firstseenbysource": "2020-06-23T19:50:31.722Z",
+            "modified": "2020-09-04T13:59:35.883Z",
+            "publications": [],
+            "reportedby": "Unit42",
+            "stixid": "course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5",
+            "tags": [],
+            "trafficlightprotocol": "WHITE",
+        },
+        "rawJSON": {
+            "type": "course-of-action",
+            "id": "course-of-action--00d97976-e97e-4878-b530-9f37d7a3e2e5",
+            "name": "Deploy XSOAR Playbook - Phishing Investigation - Generic V2",
+            "created": "2020-06-23T19:50:31.722Z",
+            "modified": "2020-09-04T13:59:35.883Z",
+        },
+        "score": 0,
+        "type": "Course of Action",
+        "value": "Deploy XSOAR Playbook - Phishing Investigation - Generic V2",
+    },
+    {
+        "fields": {
+            "description": "Enable all three scan options in a Zone "
+            "Protection profile.",
+            "firstseenbysource": "2020-06-23T19:50:31.722Z",
+            "modified": "2020-06-26T19:00:21.151Z",
+            "publications": [],
+            "reportedby": "Unit42",
+            "stixid": "course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2",
+            "tags": [],
+            "trafficlightprotocol": "WHITE",
+        },
+        "rawJSON": {
+            "type": "course-of-action",
+            "id": "course-of-action--02d40837-4b7a-4bd1-a3c6-1cb4695e02e2",
+            "name": "Ensure that all zones have Zone Protection Profiles with all Reconnaissance Protection settings enabled.",
+            "created": "2020-06-23T19:50:31.722Z",
+            "modified": "2020-06-26T19:00:21.151Z",
+            "description": "Enable all three scan options in a Zone Protection profile.",
+            "x_panw_coa_bp_section_number": "6",
+            "x_panw_coa_bp_recommendation_number": "6.18",
+            "x_panw_coa_bp_title": "Ensure that all zones have Zone Protection Profiles.",
+            "x_panw_coa_bp_status": "published",
+            "x_panw_coa_bp_scoring_status": "full",
+            "x_panw_coa_bp_description": "Enable all three scan options in a Zone Protection profile.",
+            "x_panw_coa_bp_remediation_procedure": "Navigate to `Network > Network Profiles > Zone Protection.",
+            "x_panw_coa_bp_rationale_statement": "Port scans and host sweeps are common in the reconnaissance phase.",
+            "x_panw_coa_bp_audit_procedure": "Navigate to `Network > Network Profiles > Zone Protection.",
+            "x_panw_coa_bp_impact_statement": "Not configuring a Network Zone Protection Profile leaves an organization.",
+            "x_panw_coa_bp_cis_controls": [
+                "TITLE:Boundary Defense CONTROL:v7 12 DESCRIPTION:Boundary."
+            ],
+            "x_panw_coa_bp_references": [
+                "network-network-profiles-zone-protection/reconnaissance-protection."
+            ],
+        },
+        "score": 0,
+        "type": "Course of Action",
+        "value": "Ensure that all zones have Zone Protection Profiles with all "
+        "Reconnaissance Protection settings enabled.",
+    },
+]
+
 DUMMY_INDICATOR_WITH_RELATIONSHIP_LIST = {
     'relationships': [{'entityA': '0f11fb955df07afc1912312f276c7fa3794ab85cd9f03b197c8bdbefb215fe92',
                        'entityAFamily': 'Indicator',
