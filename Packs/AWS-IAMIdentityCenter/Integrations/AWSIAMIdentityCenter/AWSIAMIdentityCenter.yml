@@ -74,7 +74,7 @@ configuration:
   required: false
   section: Connect
   type: 0
-  additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
+  additionalinfo: "The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 seconds will be used."
   defaultvalue: 60,10
 - display: Retries
   name: retries
