@@ -50,7 +50,7 @@ def test_get_email_parts(mocker):
     assert html_body.replace('\r\n', '\n') == util_load_text('test_data/expected_html_body.txt')
 
 
-@pytest.mark.parametrize('args, expected_outputs',
+@pytest.mark.parametrize('args, expected_conversation',
                          [
                              ({
                                  'reset_conversation_history': True,
@@ -58,26 +58,26 @@ def test_get_email_parts(mocker):
                                  'max_tokens': '100',
                                  'temperature': '0',
                                  'top_p': '1'
-                             }, 'TODO - ExpectedOutput1'),
+                             }, [{'content': 'Hi There!', 'role': 'user'},
+                                 {'content': 'Hello! How can I assist you today?', 'role': 'assistant'}]),
                              ({
                                  'reset_conversation_history': True,
                                  'message': "Hi There!",
-                                 'max_tokens': '100',
-                             }, 'TODO - ExpectedOutput2'),
+                             }, [{'content': 'Hi There!', 'role': 'user'},
+                                 {'content': 'Hello! How can I assist you today?', 'role': 'assistant'}]),
                              ({
-                                 'reset_conversation_history': True,
-                                 'message': "TODO - Message",
-                                 'max_tokens': '100',
-                                 'temperature': '0',
-                                 'top_p': '1'
-                             }, 'TODO - ExpectedOutput3')
-                         ], ids=['test-send-message-1', 'test-send-message-2', 'test-send-message-3']
+                                 'reset_conversation_history': False,
+                                 'message': "Hi There!",
+                             }, [{'content': 'Hi There!', 'role': 'user'},
+                                 {'content': 'Hello! How can I assist you today?', 'role': 'assistant'}]),
+                         ], ids=['test-send-message-with-params', 'test-send-message-no-params', 'test-send-message-no-reset']
                          )
-def test_send_message_command(mocker, args, expected_outputs):
+def test_send_message_command(mocker, args, expected_conversation):
     """ """
     from OpenAIGPT import OpenAiClient, send_message_command
     mocker.patch.object(OpenAiClient, '_http_request', return_value=util_load_json('test_data/mock_response.json'))
     mocker.patch.object(demisto, 'context', return_value={'OpenAIGPT.Conversation': [{'role': 'user', 'message': "Hi There!"}, {}]})
     client = OpenAiClient(api_key='DUMMY_API_KEY', model='gpt-4', proxy=False, verify=False)
     res = send_message_command(client=client, args=args)
+    assert res.outputs == expected_conversation
     pass
