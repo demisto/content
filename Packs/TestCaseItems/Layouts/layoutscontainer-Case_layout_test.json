@@ -1,60 +1,43 @@
 {
-    "id": "aaa2",
-    "version": -1,
-    "name": "aaa2",
-    "system": false,
-    "group": "case",
     "detailsV2": {
         "tabs": [
             {
-                "id": "caseinfoid",
-                "name": "Incident Info",
-                "sections": [
-                    {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-                        "isVisible": true,
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "name",
-                                "height": 26,
-                                "id": "generic-name-field",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "type",
-                                "height": 26,
-                                "id": "generic-type-field",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Fields",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 0
-                    }
-                ],
-                "type": "custom"
+                "id": "overview",
+                "name": "Overview",
+                "type": "overview"
             },
             {
-                "hidden": false,
-                "id": "rfsgrvrm2h",
-                "name": "New tab",
-                "sections": [],
-                "type": "custom"
+                "id": "keyAssets",
+                "name": "Key Assets \u0026 Artifacts",
+                "type": "keyAssets"
+            },
+            {
+                "id": "alertInsights",
+                "name": "Alerts \u0026 Insights",
+                "type": "alertInsights"
+            },
+            {
+                "id": "timeline",
+                "name": "Timeline",
+                "type": "timeline"
+            },
+            {
+                "id": "warRoom",
+                "name": "Incident War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "executions",
+                "name": "Executions",
+                "type": "executions"
             }
         ]
     },
+    "group": "case",
+    "id": "Default",
+    "name": "Default",
+    "system": false,
+    "version": -1,
     "fromVersion": "6.10.0",
     "description": ""
 }
