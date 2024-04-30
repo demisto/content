@@ -409,7 +409,8 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                 token = get_token(new_token=True)
                 headers['Authorization'] = f'Bearer {token}'
                 demisto.debug(f'The last 4 chars of new is: {token[-4:]}')
-                demisto.debug('calling generic_http_request with retries=5 and status_list_to_retry=[429]')
+                status_list_to_retry = [429]
+                demisto.debug(f'calling generic_http_request with retries=5 and status_list_to_retry={status_list_to_retry}')
                 res = generic_http_request(
                     method=method,
                     server_url=SERVER,
@@ -419,7 +420,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     files=files,
                     params=params,
                     retries=5,
-                    status_list_to_retry=[429],
+                    status_list_to_retry=status_list_to_retry,
                     resp_type='response',
                     error_handler=error_handler,
                     json_data=json,
