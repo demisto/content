@@ -45,7 +45,7 @@ configuration:
   name: sessionDuration
   type: 0
   required: false
-- additionalinfo: "The Identity Store Id parameter is required for API requests. It can be provided as a parameter or as an argument. Identity Store ID was not specified - Test failure."
+- additionalinfo: "The Identity Store ID parameter is required for API requests. It can be provided as a parameter or as an argument. If the Identity Store ID was not specified - Test failure."
   display: Identity Store ID
   name: IdentityStoreId
   type: 4
