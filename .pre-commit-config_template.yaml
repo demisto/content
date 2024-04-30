@@ -49,28 +49,6 @@ repos:
     - --config=nightly_ruff.toml
     args:ci:
     - --config=nightly_ruff.toml
-- repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: v2.0.4
-  hooks:
-  - id: autopep8
-    exclude_support_level:ci:
-    - community
-    exclude_support_level:nightly:
-    - community
-- repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v0.982
-  hooks:
-  - id: mypy
-    min_py_version: '3.7'
-    args:
-    - --ignore-missing-imports
-    - --check-untyped-defs
-    - --show-error-codes
-    - --follow-imports=silent
-    - --allow-redefinition
-    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py
-    language: system
-    entry: mypy
 
 - repo: local
   hooks:
@@ -340,6 +318,28 @@ repos:
     - '100'
     needs:
     - pytest-in-docker
+- repo: https://github.com/pre-commit/mirrors-autopep8
+  rev: v2.0.4
+  hooks:
+  - id: autopep8
+    exclude_support_level:ci:
+    - community
+    exclude_support_level:nightly:
+    - community
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v0.982
+  hooks:
+  - id: mypy
+    min_py_version: '3.7'
+    args:
+    - --ignore-missing-imports
+    - --check-untyped-defs
+    - --show-error-codes
+    - --follow-imports=silent
+    - --allow-redefinition
+    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py
+    language: system
+    entry: mypy
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.6.0
   hooks:

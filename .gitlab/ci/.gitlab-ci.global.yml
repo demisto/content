@@ -465,9 +465,6 @@
             demisto-sdk pre-commit -a --mode=nightly || PRE_COMMIT_SUCCESS=1
           else
             echo "Pre Commit only changed files"
-            demisto-sdk graph update
-            demisto-sdk pre-commit -i Tests/conf.json validate-conf-json
-
             demisto-sdk pre-commit --mode=ci || PRE_COMMIT_SUCCESS=1
           fi
         fi
