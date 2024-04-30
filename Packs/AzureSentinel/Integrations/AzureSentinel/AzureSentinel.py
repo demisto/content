@@ -694,14 +694,12 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
         'status': 'Active',
         'firstActivityTimeUtc': delta.get('firstActivityTimeUtc'),
         'lastActivityTimeUtc': delta.get('lastActivityTimeUtc'),
-        'owner': demisto.get(fetched_incident_data, 'properties.owner', {})
+        'owner': demisto.get(fetched_incident_data, 'properties.owner', {}),
+        'labels': demisto.get(fetched_incident_data, 'properties.labels', [])
     }
-    labels = delta.get('tags')
-    demisto.debug(f'labels: {labels}')
-    if labels:
-        demisto.debug('im here')
-        properties.update({'labels': [{'labelName': label, 'type': 'User'} for label in labels]})
-    demisto.debug(f'Properties: {properties}')
+
+    properties['labels'] += [{'labelName': label, 'type': 'User'} for label in delta.get('tags', [])]
+
     if close_ticket:
         properties |= {
             'status': 'Closed',
@@ -716,7 +714,6 @@ def update_incident_request(client: AzureSentinelClient, incident_id: str, data:
     }
     demisto.debug(f'Updating incident with remote ID {incident_id} with data: {data}')
     response = client.http_request('PUT', f'incidents/{incident_id}', data=data)
-    demisto.debug(f'Response of the call - {response}')
     return response
 
 
