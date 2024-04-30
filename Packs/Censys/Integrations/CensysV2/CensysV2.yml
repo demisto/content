@@ -482,6 +482,7 @@ script:
   - name: ip
     arguments: 
     - name: ip
+      description: IP address to check.
       required: true
       isArray: true
       type: textArea
@@ -583,6 +584,7 @@ script:
   - name: domain
     arguments: 
     - name: domain
+      description: Domain to check.
       required: true
       isArray: true
       default: true
@@ -659,19 +661,19 @@ script:
       description: The domain
       type: string.
     - contextPath: Domain.Relationships.EntityA
-      decision: The domain name
+      description: The domain name
       type: string.
     - contextPath: Domain.Relationships.EntityAType
       description: The entity type 
       type: string.
     - contextPath: Domain.Relationships.EntityB
-      decision: The entity B
+      description: The entity B
       type: string.
     - contextPath: Domain.Relationships.EntityBType
-      decision: The entity B type
+      description: The entity B type
       type: string.
     - contextPath: Domain.Relationships.Relationship
-      decision: the relationship type 
+      description: the relationship type 
       type: string.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested. 
