@@ -287,7 +287,7 @@ def get_human_readable_object(certificate: dict[str, Any]) -> Dict[str, Any]:
         certificate_details (dict): Certificate details dictionary.
     """
 
-    certificate_guid = certificate.get('Guid')
+    certificate_guid = certificate.get('Guid', '')
     certificate_id = certificate_guid[1:-1]  # Guid represented as {guid}
     certificate_details = {
         'CreatedOn': certificate.get('CreatedOn'),
