@@ -556,6 +556,30 @@ script:
     - contextPath: Censys.IP.last_updated_at
       description: The date and time when the information about the IP address was last updated.
       type: Date
+    - contextPath: IP.Address
+      description: The IP address.
+    - contextPath: IP.ASN
+      description: The IP ASN.
+    - contextPath: IP.Geo.Country
+      description: The IP country.
+    - contextPath: IP.Geo.Location
+      description: The IP location.
+    - contextPath: IP.UpdatedDate
+      description: The IP last update
+    - contextPath: IP.Port
+      description: The IP port
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
   - name: domain
     arguments: 
     - name: domain
@@ -631,6 +655,32 @@ script:
     - contextPath: Censys.Domain.dns.reverse_dns.names
       description: The reverse DNS names associated with the domain.
       type: String
+    - contextPath: Domain.Name
+      description: The domain
+      type: string.
+    - contextPath: Domain.Relationships.EntityA
+      decision: The domain name
+      type: string.
+    - contextPath: Domain.Relationships.EntityAType
+      description: The entity type 
+      type: string.
+    - contextPath: Domain.Relationships.EntityB
+      decision: The entity B
+      type: string.
+    - contextPath: Domain.Relationships.EntityBType
+      decision: The entity B type
+      type: string.
+    - contextPath: Domain.Relationships.Relationship
+      decision: the relationship type 
+      type: string.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested. 
+    - contextPath: DBotScore.Type
+      description: The indicator type
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
   dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
