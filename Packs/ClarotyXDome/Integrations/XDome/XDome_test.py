@@ -13,11 +13,11 @@ you are implementing with your integration
 import json
 import io
 import pytest
-# import demistomock as demisto
+import demistomock as demisto
 from XDome import Client
 
 
-integration_params = {
+INTEGRATION_PARAMS = {
     "url": "https://test.io",
     "credentials": {"password": "some_api_key"},
     "initial_fetch_time": "7 days",
@@ -26,9 +26,9 @@ integration_params = {
 }
 
 
-# @pytest.fixture(autouse=True)
-# def set_mocks(mocker):
-#     mocker.patch.object(demisto, 'params', return_value=integration_params)
+@pytest.fixture(autouse=True)
+def set_mocks(mocker):
+    mocker.patch.object(demisto, 'params', return_value=INTEGRATION_PARAMS)
 
 
 def util_load_json(path):
