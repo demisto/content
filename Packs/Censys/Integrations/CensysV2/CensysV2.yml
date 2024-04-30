@@ -5,15 +5,15 @@ commonfields:
 configuration:
 - display: Server URL
   name: server_url
-  defaultvalue: https://search.censys.io
-  type: 0
   required: true
+  type: 0
+  defaultvalue: https://search.censys.io
   section: Connect
 - display: App ID
-  displaypassword: Secret
   name: credentials
-  required: true
   type: 9
+  required: true
+  displaypassword: Secret
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -480,13 +480,14 @@ script:
       description: Distinguished name of the entity that has signed and issued the certificate.
       type: String
   - name: ip
-    arguments: 
+    arguments:
     - name: ip
       description: IP address to check.
       required: true
       isArray: true
       type: textArea
-    description: Runs reputation on IPs
+      default: true
+    description: Runs reputation on IPs.
     outputs:
     - contextPath: Censys.IP.services.port
       description: The port number associated with the service running on the IP.
@@ -566,9 +567,9 @@ script:
     - contextPath: IP.Geo.Location
       description: The IP location.
     - contextPath: IP.UpdatedDate
-      description: The IP last update
+      description: The IP last update.
     - contextPath: IP.Port
-      description: The IP port
+      description: The IP port.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type
@@ -582,14 +583,14 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
   - name: domain
-    arguments: 
+    arguments:
     - name: domain
       description: Domain to check.
       required: true
       isArray: true
       default: true
       type: textArea
-    description: Return all related IPs as relationships
+    description: Return all related IPs as relationships.
     outputs:
     - contextPath: Censys.Domain.location.postal_code
       description: The postal code of the location associated with the domain.
@@ -658,32 +659,32 @@ script:
       description: The reverse DNS names associated with the domain.
       type: String
     - contextPath: Domain.Name
-      description: The domain
+      description: The domain.
       type: string.
     - contextPath: Domain.Relationships.EntityA
-      description: The domain name
+      description: The domain name.
       type: string.
     - contextPath: Domain.Relationships.EntityAType
-      description: The entity type 
+      description: The entity type.
       type: string.
     - contextPath: Domain.Relationships.EntityB
-      description: The entity B
+      description: The entity B.
       type: string.
     - contextPath: Domain.Relationships.EntityBType
-      description: The entity B type
+      description: The entity B type.
       type: string.
     - contextPath: Domain.Relationships.Relationship
-      description: the relationship type 
+      description: the relationship type.
       type: string.
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested. 
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The indicator type
+      description: The indicator type.
     - contextPath: DBotScore.Score
       description: The actual score.
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.14.92207
   runonce: false
   script: '-'
   subtype: python3
