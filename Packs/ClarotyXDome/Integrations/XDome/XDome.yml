@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://api.claroty.com/
-  display: XDome public API base URL
+  display: xDome API Base URL
   name: url
   required: true
   type: 0
@@ -23,7 +23,7 @@ configuration:
   type: 8
   required: false
 - defaultvalue: 7 days
-  display: The initial time to fetch from
+  display: Initial Incidents Fetch Time
   name: initial_fetch_time
   required: true
   type: 0
