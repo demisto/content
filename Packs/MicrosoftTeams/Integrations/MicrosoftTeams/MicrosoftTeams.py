@@ -30,6 +30,7 @@ class FormType(Enum):  # Used for 'send-message', and by the MicrosoftTeamsAsk s
 
 
 ''' GLOBAL VARIABLES'''
+INTEGRATION_NAME = "Microsoft Teams"
 EXTERNAL_FORM_URL_DEFAULT_HEADER = 'Microsoft Teams Form'
 PARAMS: dict = demisto.params()
 BOT_ID: str = PARAMS.get('credentials', {}).get('identifier', '') or PARAMS.get('bot_id', '')
@@ -2015,21 +2016,24 @@ def send_message():
     message: str = demisto.args().get('message', '')
     external_form_url_header: str | None = demisto.args().get(
         'external_form_url_header') or demisto.params().get('external_form_url_header')
-    demisto.debug(f"in send message with message type: {message_type}, and channel name:{demisto.args().get('channel')}")
+    demisto.debug(f"{INTEGRATION_NAME}: in send message with message type: {message_type=}, and channel name:{demisto.args().get('channel')}")
+    demisto.debug(f"{INTEGRATION_NAME}: {message=}")
+    demisto.debug(f"{INTEGRATION_NAME}: {message_type=}")
+    demisto.debug(f"{INTEGRATION_NAME}: {original_message=}")
     try:
         adaptive_card: dict = json.loads(demisto.args().get('adaptive_card', '{}'))
     except ValueError:
         raise ValueError('Given adaptive card is not in valid JSON format.')
 
     if message_type == MESSAGE_TYPES['mirror_entry'] and ENTRY_FOOTER in original_message:
-        demisto.debug(f"the message '{message}' was already mirrored, skipping it")
+        demisto.debug(f"{INTEGRATION_NAME}: the message '{message=}' was already mirrored, skipping it")
         # Got a message which was already mirrored - skipping it
         return
     channel_name: str = demisto.args().get('channel', '')
 
     if (not channel_name and message_type in {MESSAGE_TYPES['status_changed'], MESSAGE_TYPES['incident_opened']}) \
             or channel_name == INCIDENT_NOTIFICATIONS_CHANNEL:
-        demisto.debug("Got a notification from server.")
+        demisto.debug(f"{INTEGRATION_NAME}: Got a notification from server.")
         # Got a notification from server
         channel_name = demisto.params().get('incident_notifications_channel', 'General')
         severity: float = float(demisto.args().get('severity'))
@@ -2039,7 +2043,7 @@ def send_message():
             disable_auto_notifications = argToBoolean(disable_auto_notifications)
         else:
             disable_auto_notifications = False
-
+        demisto.debug(f"{INTEGRATION_NAME}: {disable_auto_notifications=}")
         if not disable_auto_notifications:
             severity_threshold: float = translate_severity(demisto.params().get('min_incident_severity', 'Low'))
             if severity < severity_threshold:
@@ -2048,9 +2052,9 @@ def send_message():
             return
 
     team_member: str = demisto.args().get('team_member', '') or demisto.args().get('to', '')
+    
     if re.match(r'\b[^@]+@[^@]+\.[^@]+\b', team_member):  # team member is an email
         team_member = team_member.lower()
-
     if not (team_member or channel_name):
         raise ValueError('No channel or team member to send message were provided.')
 
@@ -2073,7 +2077,7 @@ def send_message():
         personal_conversation_id = create_personal_conversation(integration_context, team_member_id)
 
     recipient: str = channel_id or personal_conversation_id
-
+    demisto.debug(f"{INTEGRATION_NAME}: {recipient=}")
     conversation: dict
 
     if message:
@@ -2085,13 +2089,13 @@ def send_message():
                 'type': 'message',
                 'attachments': [adaptive_card]
             }
-            demisto.debug(f"The following Adaptive Card will be used:\n{json.dumps(adaptive_card)}")
+            demisto.debug(f"{INTEGRATION_NAME}: The following Adaptive Card will be used:\n{json.dumps(adaptive_card)}")
         else:
             # Sending regular message
             formatted_message: str = urlify_hyperlinks(message, external_form_url_header)
             mentioned_users, formatted_message_with_mentions = process_mentioned_users_in_message(formatted_message)
             entities = mentioned_users_to_entities(mentioned_users, integration_context)
-            demisto.info(f'msg: {formatted_message_with_mentions}, ent: {entities}')
+            demisto.info(f'{INTEGRATION_NAME}: msg: {formatted_message_with_mentions}, ent: {entities}')
             conversation = {
                 'type': 'message',
                 'text': formatted_message_with_mentions,
