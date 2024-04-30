@@ -34,10 +34,11 @@ async def parse_incidents(request: Request) -> list[dict]:
     incidents = json_body if isinstance(json_body, list) else [json_body]
     demisto.debug(f'received create incidents request of length {len(incidents)}')
     for incident in incidents:
-        if (raw_json := (incident.get('raw_json') or incident.get('rawJson'))):
-            if isinstance(raw_json, str)
+        if raw_json := (incident.get('raw_json') or incident.get('rawJson')):
+            if isinstance(raw_json, str):
                 demisto.debug('raw_json is string, decoding')
-                incident['raw_json'] = json.loads(raw_json)
+                raw_json = json.loads(raw_json)
+            incident['raw_json'] = json.loads(raw_json)
         else:
             incident['raw_json'] = incident
     return incidents
