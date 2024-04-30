@@ -37,7 +37,7 @@ os.environ['no_proxy'] = 'localhost,127.0.0.1'
 os.environ['HOME'] = tempfile.gettempdir()
 
 CHROME_EXE = os.getenv('CHROME_EXE', '/opt/google/chrome/google-chrome')
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64" \
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0" \
              " Safari/537.36"
 CHROME_OPTIONS = ["--headless",
                   "--disable-gpu",
@@ -204,9 +204,15 @@ class PychromeEventHandler:
 
     def page_frame_started_loading(self, frameId):
         demisto.debug(f'PychromeEventHandler.page_frame_started_loading, {frameId=}')
-        if not self.start_frame:
-            self.start_frame = frameId
-            demisto.debug(f'Frame started loading: {frameId}')
+        self.start_frame = frameId
+        if self.request_id:
+            # We're in redirect
+            demisto.debug(f'Frame (reload) started loading: {frameId}, clearing {self.request_id=}')
+            self.request_id = None
+            self.response_received = False
+            self.start_frame = None
+        else:
+            demisto.debug(f'Frame started loading: {frameId}, no request_id')
 
     def network_data_received(self, requestId, timestamp, dataLength, encodedDataLength):  # noqa: F841
         demisto.debug(f'PychromeEventHandler.network_data_received, {requestId=}')
@@ -521,18 +527,19 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     # Page source, if needed
     response_body = None
     if include_source:
-        request_id, operation_time = backoff(tab_event_handler.request_id)
-        demisto.debug(f'screenshot_image, {include_source=}, {request_id=}, {operation_time=}')
+        demisto.debug('screenshot_image, include_source, waiting for request_id')
+        request_id, request_id_operation_time = backoff(tab_event_handler.request_id)
         if request_id:
-            demisto.debug(f"request_id available after {operation_time} seconds.")
+            demisto.debug(f"request_id available after {request_id_operation_time} seconds.")
         else:
-            demisto.info(f"request_id not available available after {operation_time} seconds.")
-        demisto.debug(f"Got {request_id=} after {operation_time} seconds.")
+            demisto.info(f"request_id not available available after {request_id_operation_time} seconds.")
+        demisto.debug(f"Got {request_id=} after {request_id_operation_time} seconds.")
 
         try:
             response_body = tab.Network.getResponseBody(requestId=request_id, _timeout=navigation_timeout)['body']
             demisto.debug(f'screenshot_image, {include_source=}, {response_body=}')
         except Exception as ex:  # This exception is raised when a non-existent URL is provided.
+            demisto.info(f'Exception when calling Network.getResponseBody with {request_id=}, {ex=}')
             if return_errors:
                 return str(ex)
             demisto.info(f'Failed to get page body due to {ex}')
