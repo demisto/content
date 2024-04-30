@@ -1,4 +1,4 @@
-
+This dashboard is meant to provide a high level overview on the usage of XSOAR. It contains datapoints and metrics on enriched and observed threat intelligence, playbook and automation executions, and data sources being ingested into xsoar. It is useful for determining automation maturity and overall return on investment. 
 
 ## Script Data
 
