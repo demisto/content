@@ -146,7 +146,7 @@ script:
       - eu-north-1
       - eu-west-3
       required: false
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
     - description: Role session duration.
@@ -155,20 +155,20 @@ script:
     - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
     description: Creates a new IAM Identity Center user for your AWS account.
     name: aws-iam-identitycenter-create-user
     outputs:
     - contextPath: AWS.IAMIdentityCenter.User.UserId
-      description: The user Id.
+      description: The user ID.
       type: string
     - contextPath: AWS.IAMIdentityCenter.User.IdentityStoreId
-      description: Identity Store Id.
+      description: Identity Store ID.
       type: string
   - arguments:
-    - description: The AWS Region, if not specified the default region will be used.
+    - description: The AWS Region. If not specified, the default region will be used.
       name: region
       required: false
       auto: PREDEFINED
@@ -189,16 +189,16 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
     - description: The name of the user to get information about.
@@ -308,7 +308,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       name: region
       predefined:
       - us-east-1
@@ -328,19 +328,19 @@ script:
       - eu-north-1
       - eu-west-3
       required: false
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
-    - description: Number of results to return. Default is 50.
+    - description: Number of results to return. 
       defaultValue: '50'
       name: limit
       required: false
@@ -454,7 +454,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       name: region
       predefined:
       - us-east-1
@@ -474,19 +474,19 @@ script:
       - eu-north-1
       - eu-west-3
       required: false
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
-    - description: Number of results to return. Default is 50.
+    - description: Number of results to return. 
       defaultValue: '50'
       name: limit
       required: false
@@ -518,7 +518,7 @@ script:
       description: The pagination token used for the ListUsers and ListGroups API operations.
       type: String
   - arguments:
-    - description: The AWS Region, if not specified the default region will be used.
+    - description: The AWS Region. If not specified, the default region will be used.
       name: region
       required: false
       auto: PREDEFINED
@@ -539,19 +539,19 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
-    - description: Number of results to return. Default is 50.
+    - description: Number of results to return. 
       defaultValue: '50'
       name: limit
       required: false
@@ -565,7 +565,7 @@ script:
     name: aws-iam-identitycenter-list-groups-for-user
     outputs:
     - contextPath: AWS.IAMIdentityCenter.User.UserId
-      description: User Id.
+      description: User ID.
       type: string
     - contextPath: AWS.IAMIdentityCenter.User.GroupMemeberships.MembershipId
       description: The friendly name that identifies the group.
@@ -574,7 +574,7 @@ script:
       description: The stable and unique string identifying the group.
       type: string
   - arguments:
-    - description: The AWS Region, if not specified the default region will be used.
+    - description: The AWS Region. If not specified, the default region will be used.
       name: region
       required: false
       auto: PREDEFINED
@@ -595,16 +595,16 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
     - description: The name of the user to add.
@@ -616,7 +616,7 @@ script:
     description: Adds the specified user to the specified group.
     name: aws-iam-identitycenter-add-user-to-group
   - arguments:
-    - description: The AWS Region, if not specified the default region will be used.
+    - description: The AWS Region. If not specified, the default region will be used.
       name: region
       required: false
       auto: PREDEFINED
@@ -637,16 +637,16 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
     - description: The name of the group to search.
@@ -674,7 +674,7 @@ script:
       description: The globally unique identifier for the identity store.
       type: String
   - arguments:
-    - description: The AWS Region, if not specified the default region will be used.
+    - description: The AWS Region. If not specified, the default region will be used.
       name: region
       required: false
       auto: PREDEFINED
@@ -695,16 +695,16 @@ script:
       - sa-east-1
       - eu-north-1
       - eu-west-3
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
     - description: The email of the user.
@@ -813,7 +813,7 @@ script:
       description: Globally unique identifier for the identity store.
       type: String
   - arguments:
-    - description: The AWS Region, if not specified the default region will be used.
+    - description: The AWS Region. If not specified, the default region will be used.
       name: region
       auto: PREDEFINED
       predefined:
@@ -834,16 +834,16 @@ script:
       - eu-north-1
       - eu-west-3
       required: false
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
     - description: The name of the user to remove.
@@ -853,7 +853,7 @@ script:
     name: aws-iam-identitycenter-delete-user
   - arguments:
     - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       name: region
       predefined:
       - us-east-1
@@ -873,16 +873,16 @@ script:
       - eu-north-1
       - eu-west-3
       required: false
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
     - description: The name of the group to create.
@@ -895,14 +895,14 @@ script:
     name: aws-iam-identitycenter-create-group
     outputs:
     - contextPath: AWS.IAMIdentityCenter.Group.GroupId
-      description: The user Id.
+      description: The user ID.
       type: string
     - contextPath: AWS.IAMIdentityCenter.Group.IdentityStoreId
-      description: Identity Store Id.
+      description: Identity store ID.
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       name: region
       predefined:
       - us-east-1
@@ -922,16 +922,16 @@ script:
       - eu-north-1
       - eu-west-3
       required: false
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
     - description: The name of the group to remove.
@@ -941,7 +941,7 @@ script:
     name: aws-iam-identitycenter-delete-group
   - arguments:
     - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       name: region
       predefined:
       - us-east-1
@@ -961,16 +961,16 @@ script:
       - eu-north-1
       - eu-west-3
       required: false
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
     - description: The name of the user to delete from all groups.
@@ -983,7 +983,7 @@ script:
     name: aws-iam-identitycenter-delete-group-membership
   - arguments:
     - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       name: region
       predefined:
       - us-east-1
@@ -1003,16 +1003,16 @@ script:
       - eu-north-1
       - eu-west-3
       required: false
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
     - description: Number of results to return.
@@ -1050,7 +1050,7 @@ script:
     - description: The family name of the user to update.
       name: familyName
       required: false
-    - description: The First name of the user to update.
+    - description: The first name of the user to update.
       name: givenName
       required: false
     - description: Is this the primary email address for the associated resource.
@@ -1076,7 +1076,7 @@ script:
       name: title
       required: false
     - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       name: region
       predefined:
       - us-east-1
@@ -1096,23 +1096,23 @@ script:
       - eu-north-1
       - eu-west-3
       required: false
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
     description: Updates an IAM Identity Center user for your AWS account.
     name: aws-iam-identitycenter-update-user
   - arguments:
     - auto: PREDEFINED
-      description: The AWS Region, if not specified the default region will be used.
+      description: The AWS Region. If not specified, the default region will be used.
       name: region
       predefined:
       - us-east-1
@@ -1132,16 +1132,16 @@ script:
       - eu-north-1
       - eu-west-3
       required: false
-    - description: Role Arn.
+    - description: The Amazon Resource Name.
       name: roleArn
       required: false
-    - description: Role Session Duration.
+    - description: Role session duration.
       name: roleSessionDuration
       required: false
-    - description: Role Session Name.
+    - description: Role session name.
       name: roleSessionName
       required: false
-    - description: Identity Store ID.
+    - description: Identity store ID.
       name: IdentityStoreId
       required: false
     - description: The name of the group to update.
