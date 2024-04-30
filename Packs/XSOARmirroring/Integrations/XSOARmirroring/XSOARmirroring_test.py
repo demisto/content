@@ -129,16 +129,18 @@ def test_fetch_incidents(mocker):
         - Ensure the incidents result and the last_fetch in the LastRun object as expected.
     """
     mocker.patch.object(Client, 'search_incidents', return_value=INCIDENTS)
+    mock_integration_context = mocker.patch('XSOARmirroring.set_to_integration_context_with_retries')
 
     first_fetch = dateparser.parse('3 days').strftime(XSOAR_DATE_FORMAT)
     client = Client("")
 
     next_run, incidents_result = fetch_incidents(client=client, max_results=3, last_run={}, last_fetch=first_fetch,
                                                  first_fetch_time=first_fetch,
-                                                 query='', mirror_direction='None', mirror_tag=[])
+                                                 query='', mirror_direction='None', mirror_tag=[], fetch_incident_history=True)
 
     assert len(incidents_result) == 3
     assert dateparser.parse(next_run['last_fetch']) == dateparser.parse(INCIDENTS[-1]['created'])
+    assert mock_integration_context.call_args.kwargs['context'] == {'XSOARMirror_mirror_reset': {1: True, 2: True, 3: True}}
 
 
 @pytest.mark.parametrize('mirror_playbook_id', (True, False))
