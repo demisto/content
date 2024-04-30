@@ -236,6 +236,9 @@
             "fromversion": "6.5.0"
         },
         {
+            "playbookID": "MapRangeValuesTest"
+        },
+        {
             "integrations": "McAfeeNSMv2",
             "playbookID": "Test_McAfeeNSMv2_using_v9",
             "fromversion": "6.5.0",
@@ -1041,7 +1044,8 @@
         },
         {
             "integrations": "Have I Been Pwned? V2",
-            "playbookID": "Pwned v2 test"
+            "playbookID": "Pwned v2 test",
+            "timeout": 1500
         },
         {
             "integrations": "Alexa Rank Indicator",
@@ -2877,7 +2881,8 @@
         },
         {
             "playbookID": "EmailReputationTest",
-            "integrations": "Have I Been Pwned? V2"
+            "integrations": "Have I Been Pwned? V2",
+            "timeout": 1500
         },
         {
             "integrations": "Symantec Deepsight Intelligence",
@@ -3286,7 +3291,7 @@
             "playbookID": "Get EWS Folder Test",
             "fromversion": "4.5.0",
             "instance_names": "ewv2_regular",
-            "memory_threshold": 100,
+            "memory_threshold": 120,
             "timeout": 1200
         },
         {
@@ -3778,9 +3783,8 @@
         },
         {
             "integrations": "Generic Webhook",
-            "instance_name": "Generic Webhook XSOAR on-prem",
+            "instance_names": "Generic Webhook XSOAR on-prem",
             "playbookID": "Generic Webhook - Test",
-            "marketplaces": "xsoar_on_prem",
             "has_api": false
         },
         {
@@ -5655,11 +5659,12 @@
         {
             "integrations": "AWS-SNS-Listener",
             "playbookID": "AWS SNS Listener - Test",
-            "instance_names": "AWS-SNS-Listener"
+            "instance_names": "AWS-SNS-Listener",
+            "is_mockable": false
         },
         {
             "integrations": "Redmine",
-            "playbookID": "Redmine-Test"
+            "playbookID": "Redmine_Test"
         },
         {
             "integrations": "Palo Alto Networks AIOps",
@@ -5847,7 +5852,6 @@
         "ThreatStream-Test": "Issue CRTX-96526",
         "MSG-Threat-Assessment-test": "API limitation",
         "BambenekConsultingFeed_Test": "Issue CRTX-99480",
-        "AWS SNS Listener - Test": "Cant validate mock msg against AWS-SNS in TBP",
         "VMWare Test": "CIAC-10276"
     },
     "skipped_integrations": {
