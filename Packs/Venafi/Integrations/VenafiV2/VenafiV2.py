@@ -16,7 +16,8 @@ CONTEXT_OUTPUT_BASE_PATH = "Venafi.Certificate"
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
+    """
+    Client class to interact with the service API
     """
 
     def __init__(self, base_url: str, verify: bool, proxy: bool, username: str, password: str, client_id: str):
@@ -24,6 +25,21 @@ class Client(BaseClient):
         self.token = self._login(client_id, username, password)
 
     def _login(self, client_id: str, username: str, password: str) -> str:
+        """
+        Log into the Venafi API using the provided credentials.
+        If it's the first time logging in, it will create a new token, save it to the integration context, and log in.
+        Otherwise, if the token is expired, it will use the refresh token, save it to the integration context, and log in.
+        And if the token is valid, it will log in.
+
+        Args:
+            client_id (str): The client ID of the user.
+            username (str): The username of the user.
+            password (str): The password of the user.
+
+       Returns:
+            str: The token of the user.
+        """
+
         integration_context = get_integration_context()
         if token := integration_context.get('token'):
             expires_date = integration_context.get('expires')
@@ -58,11 +74,23 @@ class Client(BaseClient):
         Returns:
             bool: True if the token is expired, False otherwise.
         """
+
         utc_now = get_current_time()
         expires_datetime = arg_to_datetime(expires_date)
         return utc_now > expires_datetime
 
     def _create_new_token(self, url_suffix: str, json_data: dict) -> str:
+        """
+        This method creates a new token.
+
+        Args:
+            url_suffix (str): The url to use in the http request.
+            json_data (dict): The data that contain user credentials.
+
+        Returns:
+            str: The new token
+        """
+
         payload = json.dumps(json_data)
         try:
             access_token_obj = self._http_request(
@@ -98,6 +126,16 @@ class Client(BaseClient):
         set_integration_context({"token": token, "refresh_token": refresh_token, "expire_date": str(expire_date)})
 
     def _get_certificates(self, args: dict[str, Any]) -> dict:
+        """
+        This method creates the HTTP request to retrieve the certificates the user has.
+
+        Args:
+            args (dict): The arguments for the command passed to the request.
+
+        Returns:
+            dict: The certificates.
+        """
+
         headers = {
             "Authorization": f"Bearer {self.token}"
         }
@@ -112,6 +150,16 @@ class Client(BaseClient):
         return certificates
 
     def _get_certificate_details(self, guid: str) -> dict:
+        """
+        This method creates the HTTP request to retrieve certificate details.
+
+        Args:
+            guid (str): The GUID of the certificate.
+
+        Returns:
+            dict: The certificate details.
+        """
+
         headers = {
             "Authorization": f"Bearer {self.token}"
         }
@@ -155,6 +203,15 @@ def test_module(client: Client) -> str:
 
 
 def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Get all the certificates belong to a user.
+
+    Args:
+        client (Client): A Venafi client.
+        args (dict): The arguments for the command passed to the request.
+    Returns:
+        A CommandResult object with an outputs, raw_response and readable table, in case of a successful action.
+    """
     outputs: dict[str, Any] = {}
     response = client._get_certificates(args)
     if response:
@@ -186,7 +243,13 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
 
 
 def delete_links_from_response(response: dict[str, Any]) -> dict[str, Any]:
-    """delete links list from the response
+    """
+    Delete links list from the response
+
+    Args:
+        response (dict): raw response
+    Returns:
+        response (dict): response without the links list
     """
     certificates = response.get('Certificates', [])
     for certificate in certificates:
@@ -197,6 +260,15 @@ def delete_links_from_response(response: dict[str, Any]) -> dict[str, Any]:
 
 
 def get_certificate_details_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    Get certificate details.
+
+    Args:
+        client (Client): A Venafi client.
+        args (dict): The arguments for the command passed to the request.
+    Returns:
+        A CommandResult object with an outputs, raw_response and readable table, in case of a successful action.
+    """
     outputs: dict[str, Any] = {}
     guid = args.get('guid', "")
     response = client._get_certificate_details(guid)
@@ -230,7 +302,8 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
 
 
 def main() -> None:  # pragma: no cover
-    """main function, parses params and runs command functions
+    """
+    main function, parses params and runs command functions
 
     :return:
     :rtype:
