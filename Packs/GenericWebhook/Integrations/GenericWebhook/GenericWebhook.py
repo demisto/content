@@ -101,9 +101,9 @@ async def handle_post(
         'rawJSON': json.dumps(incident.get('rawJson'))
     } for incident in incidents]
 
-    demisto.debug('returning incidents')
+    demisto.debug('creating incidents')
     return_incidents = demisto.createIncidents(incidents)
-    demisto.debug('returned incidents')
+    demisto.debug('created incidents')
     if demisto.params().get('store_samples'):
         try:
             sample_events_to_store.extend(incidents)
