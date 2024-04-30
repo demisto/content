@@ -125,16 +125,8 @@ class Client(BaseClient):
         Returns:
             None
         """
-
-        integration_context = get_integration_context()
         expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
-        new_authorization_context = {
-            "token": token,
-            "refresh_token": refresh_token,
-            "expire_date": str(expire_date)
-        }
-        integration_context |= new_authorization_context
-        set_integration_context(integration_context)
+        set_integration_context({"token": token, "refresh_token": refresh_token, "expire_date": str(expire_date)})
 
     def _get_certificates(self, args: dict[str, Any]) -> dict:
         """
