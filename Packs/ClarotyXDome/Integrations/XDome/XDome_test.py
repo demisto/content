@@ -16,7 +16,6 @@ import pytest
 import demistomock as demisto
 from XDome import Client
 
-
 INTEGRATION_PARAMS = {
     "url": "https://test.io",
     "credentials": {"password": "some_api_key"},
@@ -47,7 +46,6 @@ DEVICE_ALERT_ERROR_RESPONSE = {
         }
     ]
 }
-
 
 DEVICE_ALERT_SUCCESS_RESPONSE = {
     "devices_alerts": [
@@ -94,71 +92,131 @@ DEVICE_ALERT_SUCCESS_RESPONSE = {
     ]
 }
 
-
 DEVICE_VULNERABILITY_ERROR_RESPONSE = DEVICE_ALERT_ERROR_RESPONSE
 
-
 DEVICE_VULNERABILITY_SUCCESS_RESPONSE = {
-  "devices_vulnerabilities": [
-    {
-      "device_assignees": [],
-      "device_category": "Medical",
-      "device_labels": [],
-      "device_network_list": [
-        "Corporate"
-      ],
-      "device_purdue_level": "Level 4",
-      "device_retired": False,
-      "device_risk_score": "Medium",
-      "device_site_name": "Main Campus",
-      "device_subcategory": "Clinical IoT",
-      "device_type": "Nurse Call",
-      "device_uid": "811997e7-cb4f-448f-9b68-68022d745404",
-      "vulnerability_affected_products": "* All the Wi-Fi devices\n* Aruba:\n    - ArubaOS 6.4.x: prior to 6.4.4.25\n    - ArubaOS 6.5.x: prior to 6.5.4.19\n    - ArubaOS 8.3.x: prior to 8.3.0.15\n    - ArubaOS 8.5.x: prior to 8.5.0.12\n    - ArubaOS 8.6.x: prior to 8.6.0.8\n    - ArubaOS 8.7.x: prior to 8.7.1.2\n    - Aruba instant AP\n* SUSE:\n    - SUSE Linux Enterprise Server 15\n    - SUSE Linux Enterprise Desktop 15\n    - SUSE Linux Enterprise Server 12\n    - SUSE Linux Enterprise Desktop 12\n    - SUSE Linux Enterprise Server 11\n    - SUSE Linux Enterprise Desktop 11\n* Synology:\n    - RT2600ac\n    - MR2200ac\n    - RT1900ac\n* Microsoft - according to the affected versions detailed in the attached advisories.\n* Juniper:\n    * the following models affected in specific versions and see attached advisory:\n        - AP12 / AP21 / AP32 / AP33 / AP41 / AP43 / AP61 / AP63 / SRX series",
-      "vulnerability_cve_ids": [
-        "CVE-2020-24586",
-        "CVE-2020-24587",
-        "CVE-2020-24588",
-        "CVE-2020-26139",
-        "CVE-2020-26140",
-        "CVE-2020-26141",
-        "CVE-2020-26142",
-        "CVE-2020-26143",
-        "CVE-2020-26144",
-        "CVE-2020-26145",
-        "CVE-2020-26146",
-        "CVE-2020-26147"
-      ],
-      "vulnerability_cvss_v2_exploitability_subscore": 6.5,
-      "vulnerability_cvss_v2_score": 3.3,
-      "vulnerability_cvss_v3_exploitability_subscore": 2.8,
-      "vulnerability_cvss_v3_score": 6.5,
-      "vulnerability_description": "A collection of new 12 security vulnerabilities that affect Wi-Fi devices.\nAn adversary that is within range of a victim's Wi-Fi network can abuse these vulnerabilities to\nsteal user information or attack devices.\nThree of the discovered vulnerabilities are design flaws in the Wi-Fi standard and therefore\naffect most devices. On top of this, several other vulnerabilities were discovered that are\ncaused by widespread programming mistakes in Wi-Fi products.\nExperiments indicate that every Wi-Fi product is affected by at least one vulnerability\nand that most products are affected by several vulnerabilities.\nThe discovered vulnerabilities affect all modern security protocols of Wi-Fi, including the\nlatest WPA3.\nThe design flaws are hard to abuse because doing so requires user interaction or is only possible\nwhen using uncommon network settings. As a result, in practice the biggest concern are the\nprogramming mistakes in Wi-Fi products since several of them are trivial to exploit.\nWhen a website is configured with HSTS to always use HTTPS as an extra layer of security,\nthe transmitted data cannot be stolen",
-      "vulnerability_id": "ALKIFVSA",
-      "vulnerability_is_known_exploited": False,
-      "vulnerability_last_updated": "2019-08-24T18:56:24.888211+00:00",
-      "vulnerability_name": "FragAttacks",
-      "vulnerability_published_date": "2021-05-12T00:00:00.485000+00:00",
-      "vulnerability_recommendations": "See the following advisories released by the vendors,\nwhich details what mitigation steps should be done:\n* Aruba - https://www.arubanetworks.com/assets/alert/ARUBA-PSA-2021-011.txt\n* Arista - https://www.arista.com/en/support/advisories-notices/security-advisories/12602-security\n* Canonical (Ubuntu) - https://ubuntu.com/security/CVE-2020-24587\n* Cisco - https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-wifi-faf\n* Debian - https://security-tracker.debian.org/tracker/CVE-2020-24587\n* Intel - https://www.intel.com/content/www/us/en/security-center/advisory/intel-sa-00473.html\n* Juniper Networks - https://kb.juniper.net/InfoCenter/index?page=content&id=JSA11170&cat=SIRT_1\n* Lenovo - https://support.lenovo.com/us/en/product_security/LEN-57316\n* Synology - https://www.synology.com/tr-tr/security/advisory/Synology_SA_21_20\n* SUSE - https://www.suse.com/support/kb/doc/?id=000020244\n* Wi-Fi Alliance - https://www.wi-fi.org/security-update-fragmentation",
-      "vulnerability_relevance": "Potentially Relevant",
-      "vulnerability_relevance_sources": [
-        "Claroty"
-      ],
-      "vulnerability_sources": [
+    "devices_vulnerabilities": [
         {
-          "name": "vanhoefm",
-          "url": "https://www.fragattacks.com/#intro"
+            "device_assignees": [],
+            "device_category": "Medical",
+            "device_labels": [],
+            "device_network_list": [
+                "Corporate"
+            ],
+            "device_purdue_level": "Level 4",
+            "device_retired": False,
+            "device_risk_score": "Medium",
+            "device_site_name": "Main Campus",
+            "device_subcategory": "Clinical IoT",
+            "device_type": "Nurse Call",
+            "device_uid": "811997e7-cb4f-448f-9b68-68022d745404",
+            "vulnerability_affected_products": "* All the Wi-Fi devices\n"
+                                               "* Aruba:\n"
+                                               "    - ArubaOS 6.4.x: prior to 6.4.4.25\n"
+                                               "    - ArubaOS 6.5.x: prior to 6.5.4.19\n"
+                                               "    - ArubaOS 8.3.x: prior to 8.3.0.15\n"
+                                               "    - ArubaOS 8.5.x: prior to 8.5.0.12\n"
+                                               "    - ArubaOS 8.6.x: prior to 8.6.0.8\n"
+                                               "    - ArubaOS 8.7.x: prior to 8.7.1.2\n"
+                                               "    - Aruba instant AP\n"
+                                               "* SUSE:\n"
+                                               "    - SUSE Linux Enterprise Server 15\n"
+                                               "    - SUSE Linux Enterprise Desktop 15\n"
+                                               "    - SUSE Linux Enterprise Server 12\n"
+                                               "    - SUSE Linux Enterprise Desktop 12\n"
+                                               "    - SUSE Linux Enterprise Server 11\n"
+                                               "    - SUSE Linux Enterprise Desktop 11\n"
+                                               "* Synology:\n"
+                                               "    - RT2600ac\n"
+                                               "    - MR2200ac\n"
+                                               "    - RT1900ac\n"
+                                               "* Microsoft - according to the affected versions detailed in the attached "
+                                               "advisories.\n"
+                                               "* Juniper:\n"
+                                               "    * the following models affected in specific versions and see attached "
+                                               "advisory:\n"
+                                               "        - AP12 / AP21 / AP32 / AP33 / AP41 / AP43 / AP61 / AP63 / SRX series",
+            "vulnerability_cve_ids": [
+                "CVE-2020-24586",
+                "CVE-2020-24587",
+                "CVE-2020-24588",
+                "CVE-2020-26139",
+                "CVE-2020-26140",
+                "CVE-2020-26141",
+                "CVE-2020-26142",
+                "CVE-2020-26143",
+                "CVE-2020-26144",
+                "CVE-2020-26145",
+                "CVE-2020-26146",
+                "CVE-2020-26147"
+            ],
+            "vulnerability_cvss_v2_exploitability_subscore": 6.5,
+            "vulnerability_cvss_v2_score": 3.3,
+            "vulnerability_cvss_v3_exploitability_subscore": 2.8,
+            "vulnerability_cvss_v3_score": 6.5,
+            "vulnerability_description": "A collection of new 12 security vulnerabilities that affect Wi-Fi devices.\n"
+                                         "An adversary that is within range of a victim's Wi-Fi network can abuse these "
+                                         "vulnerabilities to\n"
+                                         "steal user information or attack devices.\n"
+                                         "Three of the discovered vulnerabilities are design flaws in the Wi-Fi standard and "
+                                         "therefore\n"
+                                         "affect most devices. On top of this, several other vulnerabilities were discovered that"
+                                         " are\n"
+                                         "caused by widespread programming mistakes in Wi-Fi products.\n"
+                                         "Experiments indicate that every Wi-Fi product is affected by at least one "
+                                         "vulnerability\n"
+                                         "and that most products are affected by several vulnerabilities.\n"
+                                         "The discovered vulnerabilities affect all modern security protocols of Wi-Fi, including"
+                                         " the\n"
+                                         "latest WPA3.\n"
+                                         "The design flaws are hard to abuse because doing so requires user interaction or is "
+                                         "only possible\n"
+                                         "when using uncommon network settings. As a result, in practice the biggest concern are "
+                                         "the\n"
+                                         "programming mistakes in Wi-Fi products since several of them are trivial to exploit.\n"
+                                         "When a website is configured with HSTS to always use HTTPS as an extra layer of "
+                                         "security,\n"
+                                         "the transmitted data cannot be stolen",
+            "vulnerability_id": "ALKIFVSA",
+            "vulnerability_is_known_exploited": False,
+            "vulnerability_last_updated": "2019-08-24T18:56:24.888211+00:00",
+            "vulnerability_name": "FragAttacks",
+            "vulnerability_published_date": "2021-05-12T00:00:00.485000+00:00",
+            "vulnerability_recommendations": "See the following advisories released by the vendors,\n"
+                                             "which details what mitigation steps should be done:\n"
+                                             "* Aruba - https://www.arubanetworks.com/assets/alert/ARUBA-PSA-2021-011.txt\n"
+                                             "* Arista - https://www.arista.com/en/support/advisories-notices/security-advisories"
+                                             "/12602-security\n"
+                                             "* Canonical (Ubuntu) - https://ubuntu.com/security/CVE-2020-24587\n"
+                                             "* Cisco - https://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/"
+                                             "cisco-sa-wifi-faf\n"
+                                             "* Debian - https://security-tracker.debian.org/tracker/CVE-2020-24587\n"
+                                             "* Intel - https://www.intel.com/content/www/us/en/security-center/advisory/"
+                                             "intel-sa-00473.html\n"
+                                             "* Juniper Networks - https://kb.juniper.net/InfoCenter/index?page=content&id="
+                                             "JSA11170&cat=SIRT_1\n"
+                                             "* Lenovo - https://support.lenovo.com/us/en/product_security/LEN-57316\n"
+                                             "* Synology - https://www.synology.com/tr-tr/security/advisory/Synology_SA_21_20\n"
+                                             "* SUSE - https://www.suse.com/support/kb/doc/?id=000020244\n"
+                                             "* Wi-Fi Alliance - https://www.wi-fi.org/security-update-fragmentation",
+            "vulnerability_relevance": "Potentially Relevant",
+            "vulnerability_relevance_sources": [
+                "Claroty"
+            ],
+            "vulnerability_sources": [
+                {
+                    "name": "vanhoefm",
+                    "url": "https://www.fragattacks.com/#intro"
+                }
+            ],
+            "vulnerability_type": "Platform"
         }
-      ],
-      "vulnerability_type": "Platform"
-    }
-  ]
+    ]
 }
 
 
 @pytest.fixture
 def xdome_client_mock(mocker):
-
     def _xdome_client_mock():
         client = Client(base_url="https://not.really.api.claroty.com/api/v1/")
         mocker.patch.object(client, "get_device_alert_relations", return_value=DEVICE_ALERT_SUCCESS_RESPONSE)
@@ -232,4 +290,3 @@ def test_resolve_device_alert_relations(xdome_client_mock):
     cmd_res = set_device_alert_relations_command(xdome_client_mock(), RESOLVE_DEVICE_ALERT_VALID_RAW_ARGS)
     assert cmd_res.raw_response == "success"
     assert cmd_res.readable_output == "success"
-
