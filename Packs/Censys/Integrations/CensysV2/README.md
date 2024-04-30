@@ -591,6 +591,17 @@ Runs reputation on IPs.
 | Censys.IP.location.city | String | City name of the location associated with the IP address. |
 | Censys.IP.location.country_code | String   | Country code of the location associated with the IP address. |
 | Censys.IP.last_updated_at | Date | The date and time when the information about the IP address was last updated. |
+| IP.Address | unknown | The IP address. | 
+| IP.ASN | unknown | The IP ASN. | 
+| IP.Geo.Country | unknown | The IP country. | 
+| IP.Geo.Location | unknown | The IP location. | 
+| IP.UpdatedDate | unknown | The IP last update | 
+| IP.Port | unknown | The IP port | 
+| DBotScore.Indicator | unknown | The indicator that was tested. | 
+| DBotScore.Type | unknown | The indicator type. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
 
 #### Command example
 
@@ -672,7 +683,7 @@ Runs reputation on IPs.
 ### domain
 
 ***
-Runs reputation on Domains.
+Return all related IPs as relationships
 
 #### Base Command
 
@@ -682,7 +693,7 @@ Runs reputation on Domains.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Domain Address or a list of Domains to assess reputation. | Required | 
+| domain | Domain to check. | Required | 
 
 #### Context Output
 
@@ -710,7 +721,16 @@ Runs reputation on Domains.
 | Censys.Domain.last_updated_at | Date | The date and time when the information about the domain was last updated. |
 | Censys.Domain.ip | String | The IP address associated with the domain. |
 | Censys.Domain.dns.reverse_dns.names | String | The reverse DNS names associated with the domain. |
-
+| Domain.Name | string. | The domain | 
+| Domain.Relationships.EntityA | string. | The domain name | 
+| Domain.Relationships.EntityAType | string. | The entity type | 
+| Domain.Relationships.EntityB | string. | The entity B | 
+| Domain.Relationships.EntityBType | string. | The entity B type | 
+| Domain.Relationships.Relationship | string. | the relationship type | 
+| DBotScore.Indicator | unknown | The indicator that was tested. | 
+| DBotScore.Type | unknown | The indicator type | 
+| DBotScore.Score | unknown | The actual score. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
 
 #### Command example
 
