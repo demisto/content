@@ -3,11 +3,11 @@ commonfields:
   version: -1
 name: test-executecommand-deletecontext
 script: >-
-  res = demisto.executeCommand('DeleteContext', {'key': 'key1'});
+  res = demisto.executeCommand('DeleteContext', {'key': 'key1'})
   print(res)
   if is_error(res):
-  	error_message = get_error(res)
-  	demisto.results(error_message) 
+    error_message = get_error(res)
+    demisto.results(error_message) 
 
 type: python
 tags: []
