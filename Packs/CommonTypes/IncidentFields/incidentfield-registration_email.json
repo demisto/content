@@ -1,10 +1,10 @@
 {
-    "id": "incident_suspiciousdomainhuntingregistrationemail",
+    "id": "incident_registrationemail",
     "version": -1,
     "modified": "2023-12-04T15:12:42.699253313Z",
-    "name": "Suspicious Domain Hunting Registration Email",
+    "name": "Registration Email",
     "ownerOnly": false,
-    "cliName": "suspiciousdomainhuntingregistrationemail",
+    "cliName": "registrationemail",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
