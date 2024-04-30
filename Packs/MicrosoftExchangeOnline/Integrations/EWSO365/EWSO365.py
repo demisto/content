@@ -584,9 +584,9 @@ def get_attachment_name(attachment_name, eml_extension=False, attachment_id=None
     :param eml_extension: Indicates whether the eml extension should be added
     :return: string
     """
-    #TODO
+    #TODO- how to test no name and what to do if no attachment_id
     if attachment_name is None or attachment_name == "":
-        return "demisto_untitled_attachment.eml" if eml_extension else "demisto_untitled_attachment"
+        return f"_{attachment_id}_demisto_untitled_attachment.eml" if eml_extension else f"_{attachment_id}_demisto_untitled_attachment"
     elif eml_extension and not attachment_name.endswith(".eml"):
         return f'_{attachment_id}_{attachment_name}.eml'
     return f'_{attachment_id}_{attachment_name}'
@@ -1049,6 +1049,7 @@ def fetch_attachments_for_message(
     :param (Optional) attachment_ids: attachment ids
     :return: list of parsed entries
     """
+    demisto.debug(f"in fetch_attachments_for_message func {attachment_ids=}")
     account = client.get_account(target_mailbox)
     attachments = client.get_attachments_for_item(item_id, account, attachment_ids)
     entries = []

@@ -43,6 +43,13 @@ def get_query_window():
                       'default query time - 60 days')
         return '60 days'
 
+def remove_html_conversation_history(email_html):
+    # Removing the conversation's history
+    for marker in QUOTE_MARKERS:
+        index = email_html.find(marker)
+        if index != -1:
+            email_html = f'{email_html[:index]}</body></html>'
+    return email_html
 
 def create_email_html(email_html='', entry_id_list=None):
     """Modify the email's html body to use entry IDs instead of CIDs and remove the original message body if exists.
@@ -52,16 +59,6 @@ def create_email_html(email_html='', entry_id_list=None):
     Returns:
         str. Email Html.
     """
-
-    # Removing the conversation's history
-    for marker in QUOTE_MARKERS:
-        index = email_html.find(marker)
-        if index != -1:
-            email_html = f'{email_html[:index]}</body></html>'
-    #TODO
-    matches = re.findall('(src="cid(.*?))"', email_html)
-    number_of_matches = len(matches)
-    entry_id_list = entry_id_list[-number_of_matches:]
     # Replacing the images' sources
     for image_name, image_entry_id in entry_id_list:
         if re.search(f'src="[^>]+"(?=[^>]+alt="{image_name}")', email_html):
@@ -188,7 +185,7 @@ def check_incident_status(incident_details, email_related_incident):
             raise DemistoException(ERROR_TEMPLATE.format(f'Reopen incident {email_related_incident}', res['Contents']))
 
 
-def get_attachments_using_instance(email_related_incident, labels, email_to):
+def get_attachments_using_instance(email_related_incident, labels, email_to, attachment_ids=""):
     """Use the instance from which the email was received to fetch the attachments.
         Only supported with: EWS V2, Gmail
 
@@ -209,10 +206,10 @@ def get_attachments_using_instance(email_related_incident, labels, email_to):
         elif label.get('type') == 'Brand':
             integration_name = label.get('value')
 
-    if integration_name in ['EWS v2', 'EWSO365']:
+    if integration_name in ['EWS v2', 'EWSO365 dev']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'ews-get-attachment', 'incidents': email_related_incident,
-                                'arguments': {'item-id': str(message_id), 'using': instance_name}})
+                                'arguments': {'item-id': str(message_id), 'attachment-ids': attachment_ids, 'using': instance_name}})
 
     elif integration_name in ['Gmail', 'Gmail Single User']:
         demisto.executeCommand("executeCommandAt",
@@ -403,6 +400,7 @@ def main():
     reputation_calc_async = argToBoolean(args.get('reputation_calc_async', False))
 
     try:
+        demisto.debug(f"this_is_the_attachment_before{attachments[0]}")
         email_related_incident_code = email_subject.split('<')[1].split('>')[0]
         email_original_subject = email_subject.split('<')[-1].split('>')[1].strip()
 
@@ -413,27 +411,32 @@ def main():
         incident_details = get_incident_by_query(query)[0]
 
         check_incident_status(incident_details, email_related_incident)
-        get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to)
+
+        email_html = remove_html_conversation_history(email_html)
+
+        #Count how many images needs to be replaced
+        matches = re.findall('(src="cid(.*?))"', email_html) or []
+        number_of_matches = len(matches)
+        demisto.debug(f"{number_of_matches=}")
+        demisto.debug(f"{attachments[0]['name'].split('_')[1]}")
+        attachment_ids_array = [attachment['name'].split('_')[1] for attachment in attachments[-number_of_matches:]]
+        get_attachments_using_instance(email_related_incident, incident.get('labels'), email_to, ",".join(attachment_ids_array))
 
         # Adding a 5 seconds sleep in order to wait for all the attachments to get uploaded to the server.
-        time.sleep(30)
+        time.sleep(45)
         files = get_incident_related_files(email_related_incident)
+        demisto.debug(f"{files=}")
+        demisto.debug(f"this_is_the_attachment_after{attachments[0]}")
         entry_id_list = get_entry_id_list(attachments, files)
+        entry_id_list = entry_id_list[-number_of_matches:]
+        demisto.debug(f"{entry_id_list=}")
         html_body = create_email_html(email_html, entry_id_list)
 
-        if incident_details['type'] == 'Email Communication':
-            # Add new email message as Entry if type is 'Email Communication'
-            demisto.debug(
-                "Incoming email related to Email Communication Incident"
-                f" {email_related_incident}. Appending a message there.")
-            email_reply = set_email_reply(email_from, email_to, email_cc, html_body, attachments)
-            add_entries(email_reply, email_related_incident, reputation_calc_async)
-        else:
-            # For all other incident types, add message details as context entry
-            demisto.debug(f"Incoming email related to Incident {email_related_incident}.  Appending message there.")
-            create_thread_context(email_related_incident_code, email_cc, email_bcc, email_text, email_from, html_body,
-                                  email_latest_message, email_received, email_replyto, email_subject, email_to,
-                                  email_related_incident, attachments)
+        # For all other incident types, add message details as context entry
+        demisto.debug(f"Incoming email related to Incident {email_related_incident}.  Appending message there.")
+        create_thread_context(email_related_incident_code, email_cc, email_bcc, email_text, email_from, html_body,
+                              email_latest_message, email_received, email_replyto, email_subject, email_to,
+                              email_related_incident, attachments)
 
         # Return False - tell pre-processing to not create new incident
         return_results(False)
