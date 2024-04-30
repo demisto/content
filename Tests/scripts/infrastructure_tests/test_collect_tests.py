@@ -837,3 +837,6 @@ def test_sort_packs_to_upload_new_pack(mocker):
 
     assert packs_to_upload == ["myPack"], "myPack should be marked for hard upload"
     assert packs_to_update_metadata == [], "myPack should not be marked for metadata update"
+
+def test_failing_test():
+    pytest.fail("testing UT infra")
