@@ -1172,6 +1172,7 @@ def tc_add_indicator_command(client: Client, args: dict, rating: str = '0', indi
     indicator = args.get('indicator', indicator)
     indicator_type = args.get('indicatorType', indicator_type)
     description = args.get('description', description)
+    owner = args.get('owner', demisto.params().get('defaultOrg'))
     if tags:
         tmp = []
         for tag in tags:
@@ -1182,6 +1183,7 @@ def tc_add_indicator_command(client: Client, args: dict, rating: str = '0', indi
         "type": indicator_type,
         "confidence": confidence,
         "rating": rating,
+        "ownerName": owner,
         "tags": {
             "data": tags
         },
