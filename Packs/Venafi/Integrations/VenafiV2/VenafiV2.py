@@ -22,9 +22,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, verify: bool, proxy: bool, username: str, password: str, client_id: str):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        demisto.debug("in client init")
         self.token = self._login(client_id, username, password)
-        demisto.debug(f"end of login, {self.token=}")
 
     def _login(self, client_id: str, username: str, password: str) -> str:
         """
@@ -43,7 +41,6 @@ class Client(BaseClient):
         """
 
         integration_context = get_integration_context()
-        demisto.debug(f"{integration_context=}")
         if token := integration_context.get('token'):
             expires_date = integration_context.get('expires')
             if expires_date and not self._is_token_expired(expires_date):
