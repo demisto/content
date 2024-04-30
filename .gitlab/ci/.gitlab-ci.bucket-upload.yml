@@ -840,7 +840,7 @@ sync-buckets-between-projects:
         echo "Syncing gs://marketplace-xsiam-dev"
         gsutil -m rsync -r gs://marketplace-v2-dist-private gs://marketplace-xsiam-dev-private
         echo "Syncing gs://marketplace-xpanse-dev"
-        gsutil -m rsync -r gs://xpanse-dist-private gs://marketplace-xpanse-dev-private
+        gsutil -m rsync -r gs://marketplace-xpanse-dist-private gs://marketplace-xpanse-dev-private
       
         ./Tests/scripts/validate_synced_buckets.sh "dev"
 
@@ -851,7 +851,7 @@ sync-buckets-between-projects:
         echo "Syncing gs://marketplace-xsiam-prod-us"
         gsutil -m rsync -r gs://marketplace-v2-dist-private gs://marketplace-xsiam-prod-us-private
         echo "Syncing gs://marketplace-xpanse-prod-us"
-        gsutil -m rsync -r gs://xpanse-dist-private gs://marketplace-xpanse-prod-us-private
+        gsutil -m rsync -r gs://marketplace-xpanse-dist-private gs://marketplace-xpanse-prod-us-private
         
         ./Tests/scripts/validate_synced_buckets.sh "prod-us"
       
