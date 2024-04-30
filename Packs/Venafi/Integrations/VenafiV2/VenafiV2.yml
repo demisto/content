@@ -108,7 +108,7 @@ script:
       required: false
     - description: Comma-separated list of the bit size of the public key in the certificate (e.g., 2048).
       name: KeySize
-      required: true
+      required: false
     - description: The size for which the public key size is greater than.
       name: KeySizeGreater
       required: false
