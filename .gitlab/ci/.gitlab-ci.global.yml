@@ -424,6 +424,7 @@
 
 
 .test-infrastructure:
+  stage: unittests-and-validations
   extends:
     - .default-job-settings
   script:
