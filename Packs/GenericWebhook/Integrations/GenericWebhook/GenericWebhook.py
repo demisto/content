@@ -52,10 +52,10 @@ class GenericWebhookAccessFormatter(AccessFormatter):
 
 @app.post('/')
 async def handle_post(
-        incident: Incident,
-        request: Request,
-        credentials: HTTPBasicCredentials = Depends(basic_auth),
-        token: APIKey = Depends(token_auth)
+    incident: Incident,
+    request: Request,
+    credentials: HTTPBasicCredentials = Depends(basic_auth),
+    token: APIKey = Depends(token_auth)
 ):
     header_name = None
     request_headers = dict(request.headers)
@@ -67,11 +67,10 @@ async def handle_post(
         auth_failed = False
         if username.startswith('_header'):
             header_name = username.split(':')[1]
-            token_auth.model.name = header_name
             if not token or not compare_digest(token, password):
                 auth_failed = True
         elif (not credentials) or (not (compare_digest(credentials.username, username)
-                                   and compare_digest(credentials.password, password))):
+                                        and compare_digest(credentials.password, password))):
             auth_failed = True
         if auth_failed:
             secret_header = (header_name or 'Authorization').lower()
@@ -107,6 +106,15 @@ async def handle_post(
     return demisto.createIncidents([incident])
 
 
+def setup_credentials():
+    if credentials_param := demisto.params().get('credentials'):
+        if username := credentials_param.get('identifier'):
+            if username.startswith('_header:'):
+                header_name = username.split(':')[1]
+                demisto.debug(f'Overwriting Authorization parameter with {username}')
+                token_auth.model.name = header_name
+
+
 def fetch_samples() -> None:
     """Extracts sample events stored in the integration context and returns them as incidents
 
@@ -122,7 +130,8 @@ def main() -> None:
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         try:
-            port = int(demisto.params().get('longRunningPort'))
+            if port_param := demisto.params().get('longRunningPort'):
+                port = int(port_param)
         except ValueError as e:
             raise ValueError(f'Invalid listen port - {e}')
         if demisto.command() == 'test-module':
@@ -165,6 +174,7 @@ def main() -> None:
                         '()': GenericWebhookAccessFormatter,
                         'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
                     }
+                    setup_credentials()
                     uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)
                 except Exception as e:
                     demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
