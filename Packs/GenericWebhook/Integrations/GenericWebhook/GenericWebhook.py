@@ -27,21 +27,13 @@ token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 
 
 async def parse_incidents(request: Request) -> list[dict]:
-    body_bytes = await request.body()
-    body = body_bytes.decode('utf-8')
-    demisto.debug(f'received body {sys.getsizeof(body)=}')
-    json_body = json.loads(body)
+    json_body = await request.json()
+    demisto.debug(f'received body {sys.getsizeof(json_body)=}')
     incidents = json_body if isinstance(json_body, list) else [json_body]
     demisto.debug(f'received create incidents request of length {len(incidents)}')
     for incident in incidents:
-        if raw_json := (incident.get('raw_json') or incident.get('rawJson')):
-            if isinstance(raw_json, str):
-                demisto.debug('raw_json is string, decoding')
-                raw_json = json.loads(raw_json)
-            incident['raw_json'] = raw_json
-        else:
-            incident['raw_json'] = copy(incident)
-    return incidents
+        if not incident.get('rawJson'):
+            incident['rawJson'] = copy(incident)
 
 
 class GenericWebhookAccessFormatter(AccessFormatter):
@@ -72,7 +64,7 @@ async def handle_post(
         incidents = await parse_incidents(request)
     except JSONDecodeError as e:
         demisto.error(f'could not decode request {e}')
-        return Response(status_code=status.HTTP_400_BAD_REQUEST, content='Request, and raw_json field must be in JSON format')
+        return Response(status_code=status.HTTP_400_BAD_REQUEST, content='Request, and rawJson field if exists must be in JSON format')
     header_name = None
     request_headers = dict(request.headers)
 
@@ -99,14 +91,14 @@ async def handle_post(
     request_headers.pop(secret_header, None)
 
     for incident in incidents:
-        incident.get('raw_json', {})['headers'] = request_headers
+        incident.get('rawJson', {})['headers'] = request_headers
         demisto.debug(f'{incident=}')
 
     incidents = [{
         'name': incident.get('name') or 'Generic webhook triggered incident',
         'type': incident.get('type') or demisto.params().get('incidentType'),
         'occurred': incident.get('occurred'),
-        'rawJSON': json.dumps(incident.get('raw_json'))
+        'rawJSON': json.dumps(incident.get('rawJson'))
     } for incident in incidents]
 
     demisto.debug('returning incidents')
