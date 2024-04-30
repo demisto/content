@@ -75,7 +75,7 @@ script:
         description: The number of different object types in the schema
         type: Number
   - arguments:
-      - description: The schema from which the command will retrieve object types. Values can be received by running the `list-object-schema` command
+      - description: The schema from which the command will retrieve object types. Values can be received by running the `jira-asset-object-schema-list` command
         name: schema_id
         required: true
       - description: Query to filter on available object types.
@@ -121,6 +121,93 @@ script:
       - contextPath: JiraAsset.ObjectType.ParentObjectTypeInherited
         description: ''
         type: Boolean
+  - arguments:
+      - description: The object type for which the command will retrieve attributes. Values can be received by running the `jira-asset-object-type-list` command
+        name: object_type_id
+        required: true
+      - description: Whether to only return attributes that can be edited.
+        name: is_editable
+        defaultvalue: false
+      - description: Whether to sort the results by the attribute name.
+        name: order_by_name
+        defaultvalue: false
+      - description: Query to filter on available object type attributes.
+        name: query
+      - description: Should the response only include attributes where attribute values exists.
+        name: include_value_exist
+        defaultvalue: false
+      - description: Should the response exclude parent attributes.
+        name: exclude_parent_attributes
+        defaultvalue: false
+      - description: Should the response include child attributes.
+        name: include_children
+        defaultvalue: false
+      - description: Should the response be ordered by the number of required attributes.
+        name: order_by_required
+        defaultvalue: false
+      - description: The amount of object types to retrieve.
+        name: limit
+      - all_results: Whether to retrieve all object types with no limit.
+        name: all_results
+    name: jira-asset-object-type-attribute-list
+    outputs:
+      - contextPath: JiraAsset.Attribute.ID
+        description: The id of the attribute.
+        type: Number
+      - contextPath: JiraAsset.Attribute.Name
+        description: The name of the attribute.
+        type: String
+      - contextPath: JiraAsset.Attribute.Label
+        description: Whether this attribute is used as the label for objects of that type.
+        type: Boolean
+      - contextPath: JiraAsset.Attribute.Type
+        description: The type of the attribute (Default, Reference, User, Project etc.).
+        type: String
+      - contextPath: JiraAsset.Attribute.DefaultType.id
+        description: Id for the sub-type of the default type.
+        type: Number
+      - contextPath: JiraAsset.Attribute.DefaultType.name
+        description: Name for the sub-type of the default type.
+        type: String
+      - contextPath: JiraAsset.Attribute.Editable
+        description: Whether this attribute is editable.
+        type: Boolean
+      - contextPath: JiraAsset.Attribute.System
+        description: Whether this attribute is a system attribute or a custom one.
+        type: Boolean
+      - contextPath: JiraAsset.Attribute.Sortable
+        description: Can the objects be sorted by that attribute.
+        type: Boolean
+      - contextPath: JiraAsset.Attribute.Summable
+        description: Can this attribute be summarized.
+        type: Boolean
+      - contextPath: JiraAsset.Attribute.Indexed
+        description: Is this attribute indexed.
+        type: Boolean
+      - contextPath: JiraAsset.Attribute.MinimumCardinality
+        description: The minimum amount of elements this attribute should populate.
+        type: Number
+      - contextPath: JiraAsset.Attribute.MaximumCardinality
+        description: The maximum amount of elements this attribute should populate.
+        type: Number
+      - contextPath: JiraAsset.Attribute.Removable
+        description: Whether this attribute can be removed from the object.
+        type: Boolean
+      - contextPath: JiraAsset.Attribute.Hidden
+        description: Whether this attribute is a hidden attribute.
+        type: Boolean
+      - contextPath: JiraAsset.Attribute.IncludeChildObjectTypes
+        description: Whether this attribute includes child object types.
+        type: Boolean
+      - contextPath: JiraAsset.Attribute.UniqueAttribute
+        description: Whether this attribute is unique to its object.
+        type: Boolean
+      - contextPath: JiraAsset.Attribute.Options
+        description: Options for the attributes.
+        type: String
+      - contextPath: JiraAsset.Attribute.Position
+        description: The position of the attribute in relation to other object attributes.
+        type: Number
   runonce: false
   script: '-'
   type: python

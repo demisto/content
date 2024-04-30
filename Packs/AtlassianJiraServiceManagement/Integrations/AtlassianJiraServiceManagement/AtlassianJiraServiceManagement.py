@@ -102,9 +102,9 @@ def convert_keys_to_pascal(objects: List[dict[str, Any]], key_mapping: Optional[
 
 
 def get_object_attribute_string_type(attribute: Dict[str, Any]) -> str:
-    match attribute['type']:
+    match attribute['Type']:
         case 0:
-            return attribute['defaultType']['name']
+            return attribute['DefaultType']['name']
         case 1:
             return 'Object Reference'
         case 2:
@@ -117,6 +117,16 @@ def get_object_attribute_string_type(attribute: Dict[str, Any]) -> str:
             return 'Status'
         case 8:
             return 'Bitbucket Repository'
+
+
+def clean_object_attributes(attributes: List[Dict[str, any]]) -> List[Dict[str, any]]:
+    pascal_attributes = convert_keys_to_pascal(attributes, {'id': 'ID'})
+    string_typed_attributes = [{
+        **attribute,
+        'Type': get_object_attribute_string_type(attribute)}
+        for attribute in pascal_attributes
+    ]
+    return [{k: v for k, v in attribute.items() if k != 'ObjectType'} for attribute in string_typed_attributes]
 
 
 ''' COMMAND FUNCTIONS '''
@@ -247,20 +257,18 @@ def jira_asset_object_type_attribute_list_command(client: Client, args: dict[str
 
     # build outputs
     res = client.http_get(url_suffix, params)
-    outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
+    outputs = clean_object_attributes(list(res))
+
     if not all_results:
         limit = int(limit)
         outputs = outputs[:limit]
 
-    # build readable outputs
     hr_headers = ['ID', 'Name', 'Type', 'Description', 'MinimumCardinality', 'Editable']
-    readable_outputs = [{**attribute, 'Type': get_object_attribute_string_type(attribute)} for attribute in outputs]
-
     return CommandResults(
-        outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.ObjectType',
+        outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Attribute',
         outputs_key_field='ID',
         outputs=outputs,
-        readable_output=tableToMarkdown('Object Types', readable_outputs, headers=hr_headers)
+        readable_output=tableToMarkdown('Object Types', outputs, headers=hr_headers)
     )
 
 
@@ -304,6 +312,10 @@ def main() -> None:
 
         if command == 'jira-asset-object-type-list':
             result = jira_asset_object_type_list_command(client, args)
+            return_results(result)
+
+        if command == 'jira-asset-object-type-attribute-list':
+            result = jira_asset_object_type_attribute_list_command(client, args)
             return_results(result)
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
