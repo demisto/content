@@ -17,10 +17,6 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 """ CLIENT CLASS """
 
 
-def bool_converter(bool_as_str: str) -> bool:
-    return (isinstance(bool_as_str, bool) and bool_as_str) or (isinstance(bool_as_str, str) and bool_as_str.lower() == "true")
-
-
 class Client(BaseClient):
     """Client class to interact with the service API
 
@@ -41,21 +37,21 @@ class Client(BaseClient):
         if param["scan_type"] == "sandbox":
             metafields = [
                 {"metafieldId": "environment", "value": param["environment"]},
-                {"metafieldId": "private", "value": bool_converter(param["private"])},
+                {"metafieldId": "private", "value": argToBoolean(param["private"])},
                 {"metafieldId": "timeout", "value": int(param["timeout"])},
                 {"metafieldId": "work_path", "value": param["work_path"]},
-                {"metafieldId": "mouse_simulation", "value": bool_converter(param["mouse_simulation"])},
-                {"metafieldId": "https_inspection", "value": bool_converter(param["https_inspection"])},
-                {"metafieldId": "internet_connection", "value": bool_converter(param["internet_connection"])},
-                {"metafieldId": "raw_logs", "value": bool_converter(param["raw_logs"])},
-                {"metafieldId": "snapshot", "value": bool_converter(param["snapshot"])},
+                {"metafieldId": "mouse_simulation", "value": argToBoolean(param["mouse_simulation"])},
+                {"metafieldId": "https_inspection", "value": argToBoolean(param["https_inspection"])},
+                {"metafieldId": "internet_connection", "value": argToBoolean(param["internet_connection"])},
+                {"metafieldId": "raw_logs", "value": argToBoolean(param["raw_logs"])},
+                {"metafieldId": "snapshot", "value": argToBoolean(param["snapshot"])},
             ]
             analyzeConfig = json.dumps(metafields)
             payload = {"analyzeConfig": analyzeConfig}
         else:
             payload = {
                 "isPublic": param["isPublic"],
-                "extensionCheck": param["extensionCheck"],
+                "extensionCheck": param["extension_check"],
             }
         suffix = "/public-api/scan/" + param["scan_type"]
         return self._http_request(method="POST", url_suffix=suffix, data=payload, files=param["files"])
@@ -493,14 +489,14 @@ def threatzone_static_cdr_upload_sample(client: Client, args: dict[str, Any]) ->
     file_obj = demisto.getFilePath(file_id)
     file_name = encode_file_name(file_obj["name"])
     file_path = file_obj["path"]
-    extensionCheck = args.get("extensionCheck", "false")
+    extension_check = args.get("extension_check", "false")
     private = args.get("private", True)
     files = [("file", (file_name, open(file_path, "rb"), "application/octet-stream"))]
     param = {
         "scan_type": scan_type,
         "files": files,
-        "extensionCheck": str(extensionCheck).lower(),
-        "isPublic": str(not bool_converter(private)).lower(),
+        "extension_check": str(extension_check).lower(),
+        "isPublic": str(not argToBoolean(private)).lower(),
     }
 
     result = client.threatzone_add(param=param)
