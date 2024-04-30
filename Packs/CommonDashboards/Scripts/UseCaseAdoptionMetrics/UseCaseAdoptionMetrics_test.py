@@ -25,13 +25,13 @@ def test_check_phishing_incidents_incidents_not_exists(mocker):
 def test_check_phishing_incidents(mocker):
     """
     Given:
-        - No incidents fetched from Demisto.
+        - Incidents fetched from Demisto.
 
     When:
         - Checking for phishing incidents.
 
     Then:
-        - No incidents are found.
+        - Returns True.
     """
     mocker.patch.object(
         demisto,
@@ -52,7 +52,7 @@ def test_is_rapid_breach_response_installed_packs_not_installed(mocker):
         - Checking if Rapid Breach Response is installed.
 
     Then:
-        - Rapid Breach Response is not installed.
+        - Returns False.
     """
     # Simulate no content packs installed
     mocker.patch.object(
@@ -73,7 +73,7 @@ def test_is_rapid_breach_response_installed(mocker):
         - Checking if Rapid Breach Response is installed.
 
     Then:
-        - Rapid Breach Response is not installed.
+        - Returns True.
     """
     mocker.patch.object(
         demisto,
