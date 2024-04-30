@@ -423,11 +423,17 @@
     - .default-job-settings
 
 
+<<<<<<< Updated upstream
 .run-pre-commit:
   cache:
     policy: pull-push
   extends:
     - .pre-commit-settings
+=======
+.test-infrastructure:
+  extends:
+    - .default-job-settings
+>>>>>>> Stashed changes
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v --disable-warnings
@@ -441,6 +447,15 @@
       fi
     - section_end "Test Infrastructure"
 
+<<<<<<< Updated upstream
+=======
+.run-pre-commit:
+  cache:
+    policy: pull-push
+  extends:
+    - .pre-commit-settings
+  script:
+>>>>>>> Stashed changes
     - section_start "Revoking GCP Auth and Configure Docker"
     # we need to configure the docker with the registry in order to be able to pull the images
     - gcloud auth revoke "${GCS_ARTIFACTS_ACCOUNT_NAME}" >> "${ARTIFACTS_FOLDER}/logs/gcloud_auth.log" 2>&1
