@@ -316,7 +316,7 @@ def check_email_body_command(client: OpenAiClient, args: Dict[str, Any]) -> Comm
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:
