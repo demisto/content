@@ -45,7 +45,8 @@ def main():
             if isinstance(root, list):
                 similarity_percentage = root[0].get('SimilarityPercentage')
                 return_results(create_widget_entry(similarity_percentage))
-            return_results("Please wait for calculation.")
+            else:
+                return_results("Please wait for calculation.")
         else:
             return_results(create_widget_entry(similarity_percentage))
 

@@ -64,7 +64,7 @@ def main():
 
             return_outputs(human_readable, context, results)
         else:
-            return_error("Failed to load images. Please check the provided image paths.")
+            raise DemistoException("Failed to load images. Please check the provided image paths.")
 
     except Exception as e:
         return_error(f"An error occurred: {str(e)}")
