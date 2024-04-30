@@ -127,7 +127,8 @@ class Pack:
         self._is_modified = is_modified
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
-        self._is_data_source = False
+        self._default_data_source_name = None  # initialized in load_user_metadata function, prior to setting _is_data_source
+        self._is_data_source = False  # initialized in collect_content_items function
         self._single_integration = True  # pack assumed to have a single integration until processing a 2nd integration
 
         # Dependencies attributes - these contain only packs that are a part of this marketplace
@@ -515,10 +516,18 @@ class Pack:
         )
 
     def is_data_source_pack(self, yaml_content):
+        """
+        Checks if the pack is a data source, by verifying:
+            1. The pack is in XSIAM
+            2. The pack has a default dara source selected, or has a single fetching integration
+        """
+        if self._default_data_source_name and XSIAM_MP in self.marketplaces:
+            logging.info(f"The pack has a default Data Source: {self._default_data_source_name}")
+            return True
 
         is_data_source = self._is_data_source
         # this's the first integration in the pack, and the pack is in xsiam
-        if self._single_integration and 'marketplacev2' in self.marketplaces:
+        if self._single_integration and XSIAM_MP in self.marketplaces:
 
             # the integration contains isfetch or isfetchevents (no matter if its deprecated or not)
             if yaml_content.get('script', {}).get('isfetchevents', False) or \
@@ -537,6 +546,7 @@ class Pack:
     def add_pack_type_tags(self, yaml_content, yaml_type):
         """
         Checks if a pack objects is siem or feed object. If so, updates Pack._is_feed or Pack._is_siem
+        Also, checks if the pack is data source and updated Pack._is_data_source
         Args:
             yaml_content: The yaml content extracted by yaml.safe_load().
             yaml_type: The type of object to check.
@@ -718,6 +728,7 @@ class Pack:
             Metadata.CONTENT_DISPLAYS: self._content_displays_map,
             Metadata.SEARCH_RANK: self._search_rank,
             Metadata.INTEGRATIONS: self._related_integration_images,
+            Metadata.DEFAULT_DATA_SOURCE_NAME: self._default_data_source_name,
             Metadata.USE_CASES: self._use_cases,
             Metadata.KEY_WORDS: self._keywords,
             Metadata.DEPENDENCIES: self._parsed_dependencies,
@@ -2395,6 +2406,7 @@ class Pack:
             self._eula_link = user_metadata.get(Metadata.EULA_LINK, Metadata.EULA_URL)
             self._marketplaces = user_metadata.get(Metadata.MARKETPLACES, ['xsoar', 'marketplacev2'])
             self._modules = user_metadata.get(Metadata.MODULES, [])
+            self._default_data_source_name = user_metadata.get(Metadata.DEFAULT_DATA_SOURCE_NAME)
 
             if 'xsoar' in self.marketplaces:
                 self.marketplaces.append('xsoar_saas')

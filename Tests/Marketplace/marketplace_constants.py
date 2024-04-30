@@ -209,10 +209,10 @@ class Metadata:
     DOWNLOADS = 'downloads'
     TAGS = 'tags'
     CATEGORIES = 'categories'
-    CONTENT_ITEMS = 'contentItems'
+    CONTENT_ITEMS = 'contentItems'  # todo order
     CONTENT_DISPLAYS = 'contentDisplays'
     SEARCH_RANK = 'searchRank'
-    INTEGRATIONS = 'integrations'
+    INTEGRATIONS = 'integrations'  # todo order
     USE_CASES = 'useCases'
     KEY_WORDS = 'keywords'
     DEPENDENCIES = 'dependencies'
@@ -232,6 +232,7 @@ class Metadata:
     MARKETPLACES = 'marketplaces'
     DISABLE_MONTHLY = 'disableMonthly'
     MODULES = 'modules'
+    DEFAULT_DATA_SOURCE_NAME = 'defaultDataSourceName'
 
 
 class PackFolders(enum.Enum):

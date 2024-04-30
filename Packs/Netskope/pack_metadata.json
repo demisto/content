@@ -16,5 +16,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "defaultDataSourceName": "Netskope (API v2)"
 }
