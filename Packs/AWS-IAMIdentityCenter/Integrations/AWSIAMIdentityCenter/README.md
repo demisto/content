@@ -5,24 +5,23 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 ## Configure AWS - IAM Identity Center on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AWS - IAM Identity Center - TEST.
+2. Search for AWS - IAM Identity Center.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Role Arn |  | False |
-    | Role Session Name |  | False |
+    | Role Session Name | A descriptive name for the assumed role session. | False |
     | AWS Default Region |  | True |
     | Role Session Duration |  | False |
-    | Identity Store ID |  | False |
+    | Identity Store ID | The Identity Store ID parameter is required for API requests. It can be provided as a parameter or as an argument. If the Identity Store ID was not specified - Test failure. | False |
     | Access Key |  | False |
     | Secret Key |  | False |
     | Access Key |  | False |
     | Secret Key |  | False |
-    | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
+    | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 seconds will be used. | False |
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
     | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  |  |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -47,25 +46,25 @@ Creates a new IAM Identity Center user for your AWS account.
 | --- | --- | --- |
 | userName | The username of the user to create. | Required | 
 | familyName | The family name of the user to create. | Required | 
-| givenName | The First name of the user to create. | Required | 
+| givenName | The first name of the user to create. | Required | 
 | userEmailAddress | The email address of the user to create. | Optional | 
 | displayName | The display name of the user to create. | Required | 
 | profileUrl | The profile URL of the user to create. | Optional | 
-| userEmailAddressPrimary | Is this the primary email address for the associated resource. Possible values are: yes, no. Default is True. | Optional | 
+| userEmailAddressPrimary | Is this the primary email address for the associated resource?. Possible values are: yes, no. | Optional | 
 | userType | The type of the user to create. | Optional | 
 | title | The title of the user to create. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.IAMIdentityCenter.User.UserId | string | The user Id. | 
-| AWS.IAMIdentityCenter.User.IdentityStoreId | string | Identity Store Id. | 
+| AWS.IAMIdentityCenter.User.UserId | string | The user ID. | 
+| AWS.IAMIdentityCenter.User.IdentityStoreId | string | Identity Store ID. | 
 
 #### Command example
 ```!aws-iam-identitycenter-create-user displayName=example familyName=fam givenName=example userName=exampleName userEmailAddress=test@example.com```
@@ -76,7 +75,7 @@ Creates a new IAM Identity Center user for your AWS account.
         "IAMIdentityCenter": {
             "User": {
                 "IdentityStoreId": "d-9967750fbd",
-                "UserId": "13746842-e011-70fe-14fe-600d496510f0"
+                "UserId": "634418e2-20c1-703e-4358-a8312472c85d"
             }
         }
     }
@@ -85,17 +84,17 @@ Creates a new IAM Identity Center user for your AWS account.
 
 #### Human Readable Output
 
->### User exampleName has been successfully created with user id 13746842-e011-70fe-14fe-600d496510f0
+>### User exampleName has been successfully created with user id 634418e2-20c1-703e-4358-a8312472c85d
 >|IdentityStoreId|UserId|
 >|---|---|
->| d-9967750fbd | 13746842-e011-70fe-14fe-600d496510f0 |
+>| d-9967750fbd | 634418e2-20c1-703e-4358-a8312472c85d |
 
 
 
 ### aws-iam-identitycenter-get-user
 
 ***
-Retrieves information about the specified IAM user, including the user creation date, path, unique ID, and ARN.
+Retrieves information about the specified IAM user.
 
 #### Base Command
 
@@ -105,11 +104,11 @@ Retrieves information about the specified IAM user, including the user creation 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
 | userName | The name of the user to get information about. | Required | 
 
 #### Context Output
@@ -158,16 +157,9 @@ Retrieves information about the specified IAM user, including the user creation 
     "AWS": {
         "IAMIdentityCenter": {
             "User": {
-                "Addresses": [
-                    {
-                        "Region": "None"
-                    }
-                ],
                 "DisplayName": "example",
                 "Emails": [
                     {
-                        "Primary": true,
-                        "Type": "work",
                         "Value": "test@example.com"
                     }
                 ],
@@ -176,11 +168,8 @@ Retrieves information about the specified IAM user, including the user creation 
                     "FamilyName": "fam",
                     "GivenName": "example"
                 },
-                "ProfileUrl": "None",
-                "Title": "None",
-                "UserId": "13746842-e011-70fe-14fe-600d496510f0",
-                "UserName": "exampleName",
-                "UserType": "None"
+                "UserId": "634418e2-20c1-703e-4358-a8312472c85d",
+                "UserName": "exampleName"
             }
         }
     }
@@ -192,7 +181,7 @@ Retrieves information about the specified IAM user, including the user creation 
 >### AWS IAM Identity Center Users
 >|DisplayName|Emails|UserId|UserName|
 >|---|---|---|---|
->| example | test@example.com | 13746842-e011-70fe-14fe-600d496510f0 | exampleName |
+>| example | test@example.com | 634418e2-20c1-703e-4358-a8312472c85d | exampleName |
 
 
 
@@ -209,12 +198,12 @@ Lists the IAM users, returns all users in the AWS account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
-| limit | Number of results to display. Default is 50. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
+| limit | Number of results to return. Default is 50. | Optional | 
 | nextToken | The pagination token. | Optional | 
 
 #### Context Output
@@ -265,22 +254,19 @@ Lists the IAM users, returns all users in the AWS account.
         "IAMIdentityCenter": {
             "User": [
                 {
-                    "Addresses": [
+                    "DisplayName": "dean",
+                    "Emails": [
                         {
-                            "Region": "None"
+                            "Value": "dean@gmail.com"
                         }
                     ],
-                    "DisplayName": "Test",
                     "IdentityStoreId": "d-9967750fbd",
                     "Name": {
-                        "FamilyName": "Fam",
-                        "GivenName": "Test"
+                        "FamilyName": "arbel",
+                        "GivenName": "dean"
                     },
-                    "ProfileUrl": "None",
-                    "Title": "None",
-                    "UserId": "c3f438a2-e041-7033-75e8-63eb8c64b0e4",
-                    "UserName": "test",
-                    "UserType": "None"
+                    "UserId": "8374c852-10e1-70e2-8996-5b0d54bf8ccd",
+                    "UserName": "dean"
                 },
             ],
             "UserNextToken": null
@@ -292,9 +278,10 @@ Lists the IAM users, returns all users in the AWS account.
 #### Human Readable Output
 
 >### AWS IAM Identity Center Users
->|DisplayName|UserId|UserName|
->|---|---|---|
->| Test | c3f438a2-e041-7033-75e8-63eb8c64b0e4 | test |
+>|DisplayName|Emails|UserId|UserName|
+>|---|---|---|---|
+>| dean | dean@gmail.com | 8374c852-10e1-70e2-8996-5b0d54bf8ccd | dean |
+
 
 
 ### aws-iam-identitycenter-list-groups
@@ -310,12 +297,12 @@ Lists all the IAM groups in the AWS account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
-| limit | Number of results to display. Default is 50. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
+| limit | Number of results to return. Default is 50. | Optional | 
 | nextToken | The pagination token. | Optional | 
 
 #### Context Output
@@ -337,11 +324,13 @@ Lists all the IAM groups in the AWS account.
 {
     "AWS": {
         "IAMIdentityCenter": {
-            "Group": {
-                "DisplayName": "groupy",
-                "GroupId": "83e458c2-d011-70b8-0aee-d9fed9d78714",
-                "IdentityStoreId": "d-9967750fbd"
-            },
+            "Group": [
+                {
+                    "DisplayName": "new",
+                    "GroupId": "53142802-e001-7004-9134-9e6e4e1e10c0",
+                    "IdentityStoreId": "d-9967750fbd"
+                }
+            ],
             "GroupNextToken": null
         }
     }
@@ -353,8 +342,7 @@ Lists all the IAM groups in the AWS account.
 >### AWS IAM Identity Center Groups
 >|DisplayName|GroupId|
 >|---|---|
->| groupy | 83e458c2-d011-70b8-0aee-d9fed9d78714 |
-
+>| new | 53142802-e001-7004-9134-9e6e4e1e10c0 |
 
 
 ### aws-iam-identitycenter-list-groups-for-user
@@ -370,12 +358,12 @@ Lists the IAM Identity Center groups that the specified IAM user belongs to.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
-| limit | Number of results to display. Default is 50. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
+| limit | Number of results to return. Default is 50. | Optional | 
 | nextToken | The pagination token. | Optional | 
 | userName | The name of the user to list groups for. | Required | 
 
@@ -383,9 +371,10 @@ Lists the IAM Identity Center groups that the specified IAM user belongs to.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.IAMIdentityCenter.User.UserId | string | User Id. | 
+| AWS.IAMIdentityCenter.User.UserId | string | User ID. | 
 | AWS.IAMIdentityCenter.User.GroupMemeberships.MembershipId | string | The friendly name that identifies the group. | 
 | AWS.IAMIdentityCenter.User.GroupMemeberships.GroupId | string | The stable and unique string identifying the group. | 
+
 
 #### Command example
 ```!aws-iam-identitycenter-list-groups-for-user userName=exampleName```
@@ -430,11 +419,11 @@ Adds the specified user to the specified group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
 | userName | The name of the user to add. | Required | 
 | groupName | The name of the group to update. | Required | 
 
@@ -445,7 +434,7 @@ There is no context output for this command.
 ```!aws-iam-identitycenter-add-user-to-group groupName=NewGroup userName=exampleName```
 #### Human Readable Output
 
->The membership id a3f47882-5021-7099-8bd8-e81c7c5ec9ed has been successfully created.
+>The membership id 4314c862-b0c1-705e-d5da-ccf59fd045f3 has been successfully created.
 
 ### aws-iam-identitycenter-get-group
 
@@ -460,11 +449,11 @@ Get AWS IAM Identity Center group Information.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
 | displayName | The name of the group to search. | Required | 
 
 #### Context Output
@@ -488,7 +477,7 @@ Get AWS IAM Identity Center group Information.
             "Group": {
                 "Description": "New",
                 "DisplayName": "NewGroup",
-                "GroupId": "03c428a2-a0b1-701f-0f7e-5e137f533231",
+                "GroupId": "f3a478d2-50b1-7078-81a4-c97c703007f3",
                 "IdentityStoreId": "d-9967750fbd"
             }
         }
@@ -501,12 +490,13 @@ Get AWS IAM Identity Center group Information.
 >### AWS IAM Identity Center Groups
 >|DisplayName|GroupId|
 >|---|---|
->| NewGroup | 03c428a2-a0b1-701f-0f7e-5e137f533231 |
+>| NewGroup | f3a478d2-50b1-7078-81a4-c97c703007f3 |
 
 
 ### aws-iam-identitycenter-get-user-by-email
 
 ***
+Retrieves information about the specified IAM user.
 
 #### Base Command
 
@@ -516,12 +506,12 @@ Get AWS IAM Identity Center group Information.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
-| emailAddress | The email of the user to be removed. | Required | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
+| emailAddress | The email of the user. | Required | 
 
 #### Context Output
 
@@ -570,11 +560,6 @@ Get AWS IAM Identity Center group Information.
     "AWS": {
         "IAMIdentityCenter": {
             "User": {
-                "Addresses": [
-                    {
-                        "Region": "None"
-                    }
-                ],
                 "DisplayName": "example",
                 "Emails": [
                     {
@@ -588,11 +573,8 @@ Get AWS IAM Identity Center group Information.
                     "FamilyName": "fam",
                     "GivenName": "example"
                 },
-                "ProfileUrl": "None",
-                "Title": "None",
                 "UserId": "13746842-e011-70fe-14fe-600d496510f0",
                 "UserName": "exampleName",
-                "UserType": "None"
             }
         }
     }
@@ -605,7 +587,6 @@ Get AWS IAM Identity Center group Information.
 >|DisplayName|Emails|UserId|UserName|
 >|---|---|---|---|
 >| example | test@example.com | 13746842-e011-70fe-14fe-600d496510f0 | exampleName |
-
 
 ### aws-iam-identitycenter-list-memberships
 
@@ -620,12 +601,12 @@ Lists the memberships of the group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
-| limit | Number of results to display. Default is 50. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
+| limit | Number of results to return. Default is 50. | Optional | 
 | nextToken | The pagination token. | Optional | 
 | groupName | The name of the group to list the memberships. | Required | 
 
@@ -668,6 +649,64 @@ Lists the memberships of the group.
 >| a3948882-5051-7090-524c-c8c850bf1919	 | e374b872-9011-7000-c847-55fdcc299204 | c3f438a2-e041-7033-75e8-63eb8c64b0e4 |
 
 
+### aws-iam-identitycenter-delete-user
+
+***
+Removes the specified user from the AWS IAM Identity Center.
+
+#### Base Command
+
+`aws-iam-identitycenter-delete-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
+| userName | The name of the user to remove. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!aws-iam-identitycenter-delete-user userName=exampleName```
+#### Human Readable Output
+
+>The User 634418e2-20c1-703e-4358-a8312472c85d has been removed.
+
+### aws-iam-identitycenter-delete-group
+
+***
+Removes the specified group from the IAM Identity Center.
+
+#### Base Command
+
+`aws-iam-identitycenter-delete-group`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
+| groupName | The name of the group to remove. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!aws-iam-identitycenter-delete-group groupName=NewGroup```
+#### Human Readable Output
+
+>The Group f3a478d2-50b1-7078-81a4-c97c703007f3 has been removed.
+
 ### aws-iam-identitycenter-create-group
 
 ***
@@ -681,11 +720,11 @@ Creates a new IAM Identity Center group for your AWS account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
 | displayName | The name of the group to create. | Required | 
 | description | The description of the group to create. | Optional | 
 
@@ -693,8 +732,8 @@ Creates a new IAM Identity Center group for your AWS account.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.IAMIdentityCenter.Group.GroupId | string | The user Id. | 
-| AWS.IAMIdentityCenter.Group.IdentityStoreId | string | Identity Store Id. | 
+| AWS.IAMIdentityCenter.Group.GroupId | string | The user ID. | 
+| AWS.IAMIdentityCenter.Group.IdentityStoreId | string | Identity store ID. | 
 
 #### Command example
 ```!aws-iam-identitycenter-create-group description=New displayName=NewGroup```
@@ -704,7 +743,7 @@ Creates a new IAM Identity Center group for your AWS account.
     "AWS": {
         "IAMIdentityCenter": {
             "Group": {
-                "GroupId": "03c428a2-a0b1-701f-0f7e-5e137f533231",
+                "GroupId": "f3a478d2-50b1-7078-81a4-c97c703007f3",
                 "IdentityStoreId": "d-9967750fbd"
             }
         }
@@ -714,69 +753,81 @@ Creates a new IAM Identity Center group for your AWS account.
 
 #### Human Readable Output
 
->### Group NewGroup has been successfully created with id 03c428a2-a0b1-701f-0f7e-5e137f533231
+>### Group NewGroup has been successfully created with id f3a478d2-50b1-7078-81a4-c97c703007f3
 >|GroupId|IdentityStoreId|
 >|---|---|
->| 03c428a2-a0b1-701f-0f7e-5e137f533231 | d-9967750fbd |
+>| f3a478d2-50b1-7078-81a4-c97c703007f3 | d-9967750fbd |
 
 
-### aws-iam-identitycenter-delete-group
+### aws-iam-identitycenter-update-group
 
 ***
-Removes the entered group.
+Updates an IAM Identity Center group for your AWS account.
 
 #### Base Command
 
-`aws-iam-identitycenter-delete-group`
+`aws-iam-identitycenter-update-group`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
-| groupName | The name of the group to remove. | Required | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
+| displayName | The name of the group to update. | Required | 
+| description | The description of the group to update. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
 #### Command example
-```!aws-iam-identitycenter-delete-group groupName=NewGroup```
+```!aws-iam-identitycenter-update-group description=changed displayName=NewGroup```
 #### Human Readable Output
 
->The Group 03c428a2-a0b1-701f-0f7e-5e137f533231 has been removed.
+>Group NewGroup has been successfully updated
 
-### aws-iam-identitycenter-delete-user
+### aws-iam-identitycenter-update-user
 
 ***
-Removes the entered user.
+Updates an IAM Identity Center user for your AWS account.
 
 #### Base Command
 
-`aws-iam-identitycenter-delete-user`
+`aws-iam-identitycenter-update-user`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
-| userName | The name of the user to remove. | Required | 
+| userName | The username of the user to update. | Required | 
+| familyName | The family name of the user to update. | Optional | 
+| givenName | The first name of the user to update. | Optional | 
+| userEmailAddressPrimary | Is this the primary email address for the associated resource. Possible values are: yes, no. | Optional | 
+| userEmailAddress | The email address of the user to update. | Optional | 
+| displayName | The display name of the user to update. | Optional | 
+| profileUrl | The profile URL of the user to update. | Optional | 
+| userType | The type of the user to update. | Optional | 
+| title | The title of the user to update. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
+
+
 #### Command example
-```!aws-iam-identitycenter-delete-user userName=exampleName```
+```!aws-iam-identitycenter-update-user userName=example familyName=changed```
+
 #### Human Readable Output
 
->The User 13746842-e011-70fe-14fe-600d496510f0 has been removed.
+>User example has been successfully updated
 
 ### aws-iam-identitycenter-delete-group-membership
 
@@ -791,13 +842,13 @@ Deletes a user from all groups if a username is provided, or deletes multiple me
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| roleArn | The Amazon Resource Name. | Optional | 
+| roleSessionDuration | Role session duration. | Optional | 
+| roleSessionName | Role session name. | Optional | 
+| IdentityStoreId | Identity store ID. | Optional | 
 | userName | The name of the user to delete from all groups. | Optional | 
-| membershipId | Comma seperated list of membership Ids to delete. | Optional | 
+| membershipId | Comma-separated list of membership IDs to delete. | Optional | 
 
 #### Context Output
 
@@ -807,75 +858,3 @@ There is no context output for this command.
 #### Human Readable Output
 
 >User is not member of any group.
-
-
-### aws-iam-identitycenter-update-user
-
-***
-Updates an IAM Identity Center user in your AWS account.
-
-#### Base Command
-
-`aws-iam-identitycenter-update-user`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| userName | The username of the user to update. | Required | 
-| familyName | The family name of the user to update. | Optional | 
-| givenName | The First name of the user to update. | Optional | 
-| userEmailAddress | The email address of the user to update. | Optional | 
-| displayName | The display name of the user to update. | Optional | 
-| profileUrl | The profile URL of the user to update. | Optional | 
-| userType | The type of the user to update. | Optional | 
-| title | The title of the user to update. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command example
-```!aws-iam-identitycenter-update-user userName=example familyName=changed```
-
-#### Human Readable Output
-
->### User example has been successfully updated
-
-
-### aws-iam-identitycenter-update-group
-
-***
-Updates an IAM Identity Center group in your AWS account.
-
-#### Base Command
-
-`aws-iam-identitycenter-update-group`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
-| roleArn | Role Arn. | Optional | 
-| roleSessionDuration | Role Session Duration. | Optional | 
-| roleSessionName | Role Session Name. | Optional | 
-| IdentityStoreId | Identity Store ID. | Optional | 
-| displayName | The name of the group to update. | Required | 
-| description | The description of the group to update. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command example
-```!aws-iam-identitycenter-update-group description=changed displayName=NewGroup```
-
-#### Human Readable Output
-
->### Group NewGroup has been successfully updated
