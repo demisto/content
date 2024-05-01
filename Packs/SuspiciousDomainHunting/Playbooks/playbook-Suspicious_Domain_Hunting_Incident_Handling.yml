@@ -1263,6 +1263,7 @@ tasks:
       id: d50b598a-066a-4007-8a8f-5830f1d0ac5c
       version: -1
       name: Check if a malicious Domain was identified
+      description: ""
       type: condition
       iscommand: false
       brand: ""
