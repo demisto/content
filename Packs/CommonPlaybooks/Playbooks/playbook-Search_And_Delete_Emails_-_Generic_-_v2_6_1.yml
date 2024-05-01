@@ -44,11 +44,11 @@ tasks:
       id: 0a7ca589-107b-48e4-8705-2becca697165
       version: -1
       name: Search And Delete Emails - EWS
-      playbookName: Search And Delete Emails - EWS
       description: This playbook searches EWS to identify and delete emails with similar attributes of a malicious email.
       type: playbook
       iscommand: false
       brand: ""
+      playbookName: Search And Delete Emails - EWS
     nexttasks:
       '#none#':
       - "2"
@@ -77,7 +77,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
+          "x": 265,
           "y": 515
         }
       }
@@ -105,8 +105,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1585,
-          "y": 1740
+          "x": 2015,
+          "y": 1910
         }
       }
     note: false
@@ -172,8 +172,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1135,
-          "y": 1565
+          "x": 1350,
+          "y": 1740
         }
       }
     note: false
@@ -638,7 +638,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
+          "x": 1125,
           "y": 515
         }
       }
@@ -708,7 +708,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 617.5,
+          "x": 360,
           "y": 865
         }
       }
@@ -754,7 +754,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1460,
+          "x": 1515,
           "y": 865
         }
       }
@@ -909,8 +909,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1800,
-          "y": 1405
+          "x": 2015,
+          "y": 1580
         }
       }
     note: false
@@ -963,8 +963,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1800,
-          "y": 1565
+          "x": 2015,
+          "y": 1740
         }
       }
     note: false
@@ -994,8 +994,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2230,
-          "y": 1405
+          "x": 2445,
+          "y": 1580
         }
       }
     note: false
@@ -1033,8 +1033,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2230,
-          "y": 1565
+          "x": 2445,
+          "y": 1740
         }
       }
     note: false
@@ -1053,7 +1053,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "18"
+      - "21"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1083,7 +1083,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 695,
+          "x": 592.5,
           "y": 1215
         }
       }
@@ -1108,20 +1108,20 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 039f998c-618c-48f4-8620-36df73d6575c
+      id: 868ccba1-d67f-4118-8f01-1f8cedc910ee
       iscommand: false
-      name: Create KQL query - search last 7 days
+      name: Create KQL query - provided query + search last 7 days
       script: Set
       type: regular
       version: -1
-    taskid: 039f998c-618c-48f4-8620-36df73d6575c
+    taskid: 868ccba1-d67f-4118-8f01-1f8cedc910ee
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 695,
-          "y": 1390
+          "x": 592.5,
+          "y": 1565
         }
       }
   "19":
@@ -1161,18 +1161,18 @@ tasks:
     task:
       brand: ""
       description: Check whether to modify KQL to search this week (the last 7 days) only. Only modify the KQL if the SearchThisWeek input is set to true AND the provided KQL query is not already time-bounded (it does not already contain LastModifiedTime).
-      id: 9679e6a1-d27a-4c73-8fb8-51622131fbca
+      id: 027d5ff5-7e8e-41c0-8184-b33789251d51
       iscommand: false
       name: Search this week only and query not already time-bounded?
       type: condition
       version: -1
-    taskid: 9679e6a1-d27a-4c73-8fb8-51622131fbca
+    taskid: 027d5ff5-7e8e-41c0-8184-b33789251d51
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 1135,
+          "x": 940,
           "y": 1040
         }
       }
@@ -1209,8 +1209,85 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
+          "x": 1135,
+          "y": 1565
+        }
+      }
+  "21":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.O365KQL
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ab3b6a6c-20f1-47c4-8bfd-68fa86a7c5a2
+      iscommand: false
+      name: KQL query provided?
+      type: condition
+      version: -1
+    taskid: ab3b6a6c-20f1-47c4-8bfd-68fa86a7c5a2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
           "y": 1390
+        }
+      }
+  "22":
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: KQLQuery
+      value:
+        simple: LastModifiedTime>=${Time7DaysAgo}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: b631cc61-9aae-45ae-8e63-1fc6cba0af2a
+      iscommand: false
+      name: Create KQL query - search last 7 days
+      script: Set
+      type: regular
+      version: -1
+    taskid: b631cc61-9aae-45ae-8e63-1fc6cba0af2a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1565,
+          "y": 1565
         }
       }
 view: |-
@@ -1219,14 +1296,15 @@ view: |-
       "4_13_Gmail": 0.81,
       "4_15_Agari Phishing Defense": 0.86,
       "4_2_#default#": 0.9,
-      "5_8_Recipient's Mailbox": 0.6,
-      "6_7_All Mailboxes": 0.51,
+      "5_7_All Mailboxes": 0.62,
+      "5_8_Recipient's Mailbox": 0.36,
+      "6_7_All Mailboxes": 0.37,
       "6_8_Recipients Mailbox": 0.63
     },
     "paper": {
       "dimensions": {
-        "height": 1755,
-        "width": 2560,
+        "height": 1925,
+        "width": 2775,
         "x": 50,
         "y": 50
       }
@@ -1273,7 +1351,7 @@ inputs:
 - key: O365KQL
   value: {}
   required: false
-  description: Used only in O365. Text search string or a query that is formatted using the Keyword Query Language (KQL).
+  description: Used only in O365. Text search string or a query that is formatted using the Keyword Query Language (KQL). Note that if you are using the LastModifiedTime filter in your KQL query, the SearchThisWeek input will not be taken into consideration.
   playbookInputQuery:
 - key: O365AllowNotFoundExchangeLocations
   value:
@@ -1295,9 +1373,9 @@ inputs:
   value:
     simple: "true"
   required: false
-  description: Whether to limit the search to the current week.
+  description: Whether to limit the search to the current week. Note that if you are using the LastModifiedTime filter in the O365KQL input, this input will not be taken into consideration.
   playbookInputQuery:
 outputs: []
 tests:
- - No tests
+- No tests
 fromversion: 6.1.0
