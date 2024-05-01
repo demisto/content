@@ -3496,8 +3496,6 @@ def  mimecast_create_webwhiteurl_policy_command(args: dict) -> CommandResults:
     
     
     payload = {"data": [data]}
-    with open("aa.json", 'w') as json_file:
-        json.dump(payload, json_file, indent=4)
     api_endpoint = '/api/policy/webwhiteurl/create-policy-with-targets'
     response = http_request('POST', api_endpoint, payload)
     
@@ -3508,6 +3506,78 @@ def  mimecast_create_webwhiteurl_policy_command(args: dict) -> CommandResults:
         outputs_prefix='Mimecast.WebWhiteUrlPolicy',
         outputs=response,
         readable_output= 'WebWhite URL policy was created successfully'
+    )
+
+
+def  mimecast_update_webwhiteurl_policies_command(args: dict) -> CommandResults:
+    description = args.get('description')
+    id = args.get('id') #
+    bidirectional = argToBoolean(args.get('bidirectional')) if args.get('bidirectional') else None
+    comment = args.get('comment')
+    conditions = args.get('conditions')
+    enabled = argToBoolean(args.get('enabled'))
+    enforced = argToBoolean(args.get('enforced'))
+    from_date = args.get('from_date')
+    from_eternal = argToBoolean(args.get('from_eternal'))
+    from_part = args.get('from_part')
+    to_date = args.get('to_date')
+    to_eternal = argToBoolean(args.get('to_eternal'))
+    override = argToBoolean(args.get('override')) if args.get('override') else None
+    url_action = args.get('url_action') 
+    url_id = args.get('url_id')
+    url_type = args.get('url_type')
+    url_value = args.get('url_value')
+    # page = args.get('page')
+    # page_size = args.get('page_size')
+    # limit = args.get('limit')
+
+    data = {
+      "id": id,
+      "policies": [{"enabled": enabled,
+          "enforced": enforced,
+          "fromEternal": from_eternal,
+          "toEternal": to_eternal,
+          }],
+      "urls": [
+        {
+          "action": url_action,
+          "type": url_type,
+        }
+      ]
+    }
+  
+    if description:
+        data['description'] = description
+    if bidirectional:
+        data['policies']['bidirectional'] = bidirectional
+    if comment:
+        data['policies']['comment'] = comment
+    if conditions:
+        data['policies']['conditions'] = conditions
+    if from_date:
+        data['policies']['fromDate'] = from_date
+    if from_part:
+        data['policies']['fromPart'] = from_part
+    if to_date:
+        data['policies']['toDate'] = to_date
+    if override:
+        data['policies']['override'] = override
+    if url_id:
+        data['urls'][0]['id'] = url_id
+    if url_value:
+        data['urls'][0]['value'] = url_value
+
+    payload = {"data": [data]}
+    api_endpoint = '/api/policy/webwhiteurl/update-policy-with-targets'
+    response = http_request('POST', api_endpoint, payload)
+    
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+
+    return CommandResults(
+        outputs_prefix='Mimecast.WebWhiteUrlPolicy',
+        outputs=response,
+        readable_output= f'{id} has been updated successfully'
     )
 
 
@@ -3618,6 +3688,8 @@ def main():
             return_results(mimecast_update_antispoofing_bypass_policy_command(args))
         elif command == 'mimecast-create-webwhiteurl-policy':
             return_results(mimecast_create_webwhiteurl_policy_command(args))
+        elif command == 'mimecast-update-webwhiteurl-policies':
+            return_results(mimecast_update_webwhiteurl_policies_command(args))
 
     except Exception as e:
         return_error(e)
