@@ -2546,6 +2546,53 @@ script:
       - contextPath: Mimecast.AntispoofingBypassPolicy.data.policy.lastUpdated
         description: The most recent modification timestamp of the policy.
         type: Date
+  - name: mimecast-create-webwhiteurl-policy
+    description: This endpoint can be used to create a Web Security Block or Allow List policy for domains or URLs.
+    arguments:
+    - name: description
+      description: A description of the policies for future reference.
+      required: true
+    - name: bidirectional
+      description: Determines if the policy should apply in both directions, where the from and to configurations are reversed.
+      type: boolean
+    - name: from_date
+      description: string (yyyy-MM-dd'T'HH:mm:ssZ) Specifies the date of a policy should go into effect, in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the fromEternal value to false.
+    - name: from_eternal
+      description: Specifies if the policy should have no start date.
+      type: boolean
+      defaultValue: true
+    - name: from_part
+      description: Policy from part - envelope_from , header_from, both
+      auto: PREDEFINED
+      predefined:
+      - envelope_from
+      - header_from
+      - both
+    - name: to_date
+      description: Specifies the expiration date of a policy in ISO 8601 format (e.g. 2015-11-16T14:49:18+0000). When specified, this will override the toEternal value to false.
+    - name: to_eternal
+      description: Specifies if the policy should have no expiration date. 
+      type: boolean
+      defaultValue: true
+    - name: action
+      description: Action to be taken - allow or block. 
+      auto: PREDEFINED
+      predefined:
+      - allow
+      - block
+      defaultValue: allow
+    - name: id
+      description: The Mimecast secure ID of web white URL. If omitted (for request) a new web white URL will be created
+    - name: type
+      description: Type of web block/allow list entry - url or domain. 
+      auto: PREDEFINED
+      predefined:
+      - url
+      - domain
+      defaultValue: url
+    - name: value
+      description: Url or domain to be blocked or allowed.
+      required: true 
 
   isfetch: true
   runonce: false

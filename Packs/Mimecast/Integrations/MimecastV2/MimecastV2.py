@@ -3449,6 +3449,68 @@ def  mimecast_update_antispoofing_bypass_policy_command(args: dict) -> CommandRe
     )
 
 
+def  mimecast_create_webwhiteurl_policy_command(args: dict) -> CommandResults:
+    description = args.get('description')
+    if args.get('bidirectional'):
+        bidirectional = argToBoolean(args.get('bidirectional'))
+    from_date = args.get('from_date')
+    from_eternal = argToBoolean(args.get('from_eternal'))
+    from_part = args.get('from_part')
+    to_date = args.get('to_date')
+    to_eternal = argToBoolean(args.get('to_eternal'))
+    action = args.get('action')
+    id = args.get('id')
+    urls_type = args.get('type')
+    urls_value = args.get('value')
+
+    
+    data = {
+        'description': description,
+        'policies': [{
+            'fromEternal': from_eternal,
+            'description': description
+        }],
+        'urls':
+                [
+            {
+            'action': action,
+            'type': urls_type
+            }
+                ]
+            }
+    
+    if args.get('bidirectional'):
+        data['policies'][0]['bidirectional'] = bidirectional
+    if from_date:
+        data['policies'][0]['fromDate'] = from_date
+    if from_part:
+        data['policies'][0]['fromPart'] = from_part
+    if to_date:
+        data['policies'][0]['toDate'] = to_date
+    if to_eternal:
+        data['policies'][0]['toEternal'] = to_eternal
+    if urls_value:
+        data['urls'][0]['value'] = urls_value
+    if id:
+        data['urls'][0]['id'] = id
+    
+    
+    payload = {"data": [data]}
+    with open("aa.json", 'w') as json_file:
+        json.dump(payload, json_file, indent=4)
+    api_endpoint = '/api/policy/webwhiteurl/create-policy-with-targets'
+    response = http_request('POST', api_endpoint, payload)
+    
+    if response.get('fail'):
+        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+
+    return CommandResults(
+        outputs_prefix='Mimecast.WebWhiteUrlPolicy',
+        outputs=response,
+        readable_output= 'WebWhite URL policy was created successfully'
+    )
+
+
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     # Check if token needs to be refresh, if it does and relevant params are set, refresh.
@@ -3554,6 +3616,8 @@ def main():
             return_results(mimecast_create_antispoofing_bypass_policy_command(args))
         elif command == 'mimecast-update-antispoofing-bypass-policy':
             return_results(mimecast_update_antispoofing_bypass_policy_command(args))
+        elif command == 'mimecast-create-webwhiteurl-policy':
+            return_results(mimecast_create_webwhiteurl_policy_command(args))
 
     except Exception as e:
         return_error(e)
