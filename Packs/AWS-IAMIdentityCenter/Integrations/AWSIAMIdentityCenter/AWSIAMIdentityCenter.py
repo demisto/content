@@ -329,22 +329,21 @@ def get_user_by_email(args: dict, client, IdentityStoreId: Any) -> None:
         IdentityStoreId=IdentityStoreId,
     )
     for user in response.get('Users'):
-        user_emails = user.get('Emails')
-        if user_emails:
-            for email in user_emails:
-                if email.get('Value') == email_arg:
-                    emails = []
-                    for appendEmail in user_emails:
-                        emails.append(appendEmail.get('Value'))
+        user_emails = user.get('Emails', [])
+        for email in user_emails:
+            if email.get('Value') == email_arg:
+                emails = []
+                for append_email in user_emails:
+                    emails.append(append_email.get('Value'))
 
-                    user_details = {
-                        'UserName': user.get('UserName'),
-                        'UserId': user.get('UserId'),
-                        'Emails': emails,
-                        'DisplayName': user.get('DisplayName')
-                    }
-                    hr_data = user_details
-                    context_data = user
+                user_details = {
+                    'UserName': user.get('UserName'),
+                    'UserId': user.get('UserId'),
+                    'Emails': emails,
+                    'DisplayName': user.get('DisplayName')
+                }
+                hr_data = user_details
+                context_data = user
 
     human_readable = tableToMarkdown('AWS IAM Identity Center Users ', hr_data, removeNull=True)
     result = CommandResults(
