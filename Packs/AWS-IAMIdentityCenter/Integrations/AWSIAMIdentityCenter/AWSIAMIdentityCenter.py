@@ -328,7 +328,7 @@ def get_user_by_email(args: dict, client, IdentityStoreId: str) -> None:
             hr_data = user_details
             context_data = user
             break
-        
+
     if not email_exists:
         return_error(f'User with the email {email_arg} was not found.')
 
@@ -464,7 +464,7 @@ def delete_group(args: dict, client, IdentityStoreId: str) -> None:
         IdentityStoreId=IdentityStoreId,
         GroupId=group_id
     )
-    
+
     hr_data = f'The Group {group_id} has been removed.'
     demisto.debug(hr_data)
     result = CommandResults(

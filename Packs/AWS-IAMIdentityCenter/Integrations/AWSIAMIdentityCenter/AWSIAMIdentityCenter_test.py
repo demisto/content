@@ -55,7 +55,7 @@ class Boto3Client:
 
     def update_group(self):
         pass
-    
+
     def get_user_operations_list(self):
         pass
 
@@ -362,6 +362,7 @@ def test_get_user_by_email(mocker):
         'EntryContext').values()
     assert 'AWS IAM Identity Center Users' in contents.get('HumanReadable')
 
+
 def test_get_user_by_email_not_exist(mocker):
     """
     Given:
@@ -380,23 +381,23 @@ def test_get_user_by_email_not_exist(mocker):
 
     # Mock the response to indicate that no user exists
     res = {'Users': [
-            {
-                'UserId': 'USER_ID',
-                'UserName': 'test_user',
-                'DisplayName': 'Test User',
-                'Name': {
-                    'FamilyName': 'User',
-                    'GivenName': 'Test',
-                },
-                'Emails': [
-                    {'Value': 'test@example.com',
-                     'Type': 'work',
-                     'Primary': True}
-                ],
-            }
-        ],
+        {
+            'UserId': 'USER_ID',
+            'UserName': 'test_user',
+            'DisplayName': 'Test User',
+            'Name': {
+                'FamilyName': 'User',
+                'GivenName': 'Test',
+            },
+            'Emails': [
+                {'Value': 'test@example.com',
+                 'Type': 'work',
+                 'Primary': True}
+            ],
+        }
+    ],
         'ResponseMetadata': {'HTTPStatusCode': 200}}
-    
+
     mocker.patch.object(Boto3Client, "list_users", return_value=res)
     mocker.patch.object(demisto, 'results')
     return_error_mock = mocker.patch.object(AWSIAMIdentityCenter, 'return_error')
@@ -404,11 +405,9 @@ def test_get_user_by_email_not_exist(mocker):
     from AWSIAMIdentityCenter import get_user_by_email
     client = Boto3Client()
     get_user_by_email(args, client, IDENTITY_STORE_ID)
-    
+
     assert return_error_mock.call_count == 1
     assert 'User with the email notexist@example.com was not found.' in return_error_mock.call_args.args
-   
-
 
 
 def test_get_group(mocker):
@@ -658,6 +657,7 @@ def test_list_group_memberships(mocker):
     assert {'GroupId': 'GROUP_ID', 'GroupMemberships': [{'MembershipId': 'MEMBERSHIP_ID', 'UserId': 'USER_ID'}],
             'GroupMembershipNextToken': 'NEXT_TOKEN'} in contents.get('EntryContext').values()
     assert 'AWS IAM Identity Center Groups' in contents.get('HumanReadable')
+
 
 def test_get_user_operations_list_empty_region():
     """
