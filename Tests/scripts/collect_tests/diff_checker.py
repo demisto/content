@@ -15,7 +15,8 @@ class DiffChecker:
         self.marketplace = marketplace
 
     def get_diff_master_bucket(self):
-        return ['Zoom', 'AHA']  # TODO
+        # return ['Zoom', 'AHA']  # TODO
+        return []
 
     def get_git_diff(self) -> FilesToCollect: #TODO ADD rshunim upload_delta_from_last_upload
         """

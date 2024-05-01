@@ -1286,7 +1286,6 @@ class NightlyTestCollector(TestCollector, ABC):
                     (or is equal to it, if `only_value` is used).
         """
         result = []
-        logger.info(f"TPBs= {self.id_set.test_playbooks=}")
         for playbook in self.id_set.test_playbooks:
             try:
                 if not (
