@@ -328,7 +328,7 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
 
     response = client.fetch_by_aql_query(
         aql_query=event_type.aql_query,
-        max_fetch=max_fetch,
+        max_fetch=max_fetch + len(last_run.get(last_fetch_ids) or []),
         after=event_type_fetch_start_time,
         order_by=event_type.order_by
     )
