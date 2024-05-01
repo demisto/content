@@ -8,6 +8,7 @@ BRAND_NAME = "IPinfo"  # matches context output path for faster caching
 IS_TIME_SENSITIVE = hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
 demisto.debug(f'Is time sensitive: {IS_TIME_SENSITIVE}')
 
+
 class Client(BaseClient):
     def __init__(self, api_key: str, base_url: str, verify_certificate: bool, proxy: bool, reliability: str):
         """
