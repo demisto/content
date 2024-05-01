@@ -25,14 +25,21 @@ class Email:
         """
         self.mail_bytes = message_bytes
         try:
+            demisto.debug('ML: trying to parse email from bytes')
             email_object = parse_from_bytes(message_bytes)
+            demisto.debug('ML: success to parse email from bytes')
         except UnicodeDecodeError as e:
             demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
                          '\nWill replace backslash and try to parse again')
             message_bytes = self.handle_message_slashes(message_bytes)
             email_object = parse_from_bytes(message_bytes)
-        except Exception:
-            email_object = parse_from_string(message_bytes.decode('ISO-8859-1'))
+        except TypeError:
+            demisto.debug('ML: trying to parse email from str')
+            message_string = message_bytes.decode('ISO-8859-1')
+            demisto.debug(f'ML: {message_string=}')
+            email_object = parse_from_string(message_string)
+            demisto.debug('ML: success to parse email from str')
+            
         eml_attachments = self.get_eml_attachments(message_bytes)
         self.id = id_
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
@@ -56,8 +63,19 @@ class Email:
 
     @staticmethod
     def get_eml_attachments(message_bytes: bytes) -> list:
+        demisto.debug('ML: get_eml_attachments')
         eml_attachments = []
-        msg = email.message_from_bytes(message_bytes)
+        try:
+            demisto.debug('ML: trying to parse attachment from bytes')
+            msg = email.message_from_bytes(message_bytes)
+            demisto.debug('ML: success to parse attachment from bytes')
+        except TypeError:
+            demisto.debug('ML: trying to parse attachment from str')
+            message_string = message_bytes.decode('ISO-8859-1')
+            demisto.debug(f'ML: {message_string=}')
+            msg = email.message_from_string(message_string)
+            demisto.debug('ML: success to parse attachment from str')
+
         if msg:
             for part in msg.walk():
                 if part.get_content_maintype() == "multipart" or part.get("Content-Disposition") is None:
@@ -264,6 +282,7 @@ def fetch_incidents(client: IMAPClient,
         incidents: Incidents that will be created in Demisto
     """
     logger(fetch_incidents)
+    demisto.debug("ML: Starting to fetch incidents")
     time_to_fetch_from = None
     # First fetch - using the first_fetch_time
     demisto.debug(f"{last_run=}")
@@ -328,7 +347,7 @@ def fetch_mails(client: IMAPClient,
     """
     if message_id:
         messages_uids = [message_id]
-        demisto.debug("message_id provided, using it for message_uids")
+        demisto.debug("ML: message_id provided, using it for message_uids")
     else:
         messages_query = generate_search_query(time_to_fetch_from,
                                                with_headers,
@@ -343,16 +362,17 @@ def fetch_mails(client: IMAPClient,
             if uid_to_fetch_from == 0:
                 # first fetch takes last page only (workaround as first_fetch filter is date accurate)
                 messages_uids = messages_uids[-limit:]
-                demisto.debug(f"limiting to the LAST {limit=} messages since uid_to_fetch_from == 0")
+                demisto.debug(f"ML: limiting to the LAST {limit=} messages since uid_to_fetch_from == 0")
             else:
                 messages_uids = messages_uids[:limit]
-                demisto.debug(f"limiting to the first {limit=} messages")
-        demisto.debug(f"{messages_uids=}")
+                demisto.debug(f"ML: limiting to the first {limit=} messages")
+        demisto.debug(f"ML: {messages_uids=}")
 
     fetched_email_objects = []
-    demisto.debug(f'Messages to fetch: {messages_uids}')
+    demisto.debug(f'ML: Messages to fetch: {messages_uids}')
 
     for mail_id, message_data in client.fetch(messages_uids, 'RFC822').items():
+        demisto.debug(f"ML: Starting to parse the mail with {mail_id=}")
         message_bytes = message_data.get(b'RFC822')
         # For cases the message_bytes is returned as a string. If failed, will try to use the message_bytes returned.
         try:
@@ -365,10 +385,11 @@ def fetch_mails(client: IMAPClient,
             continue
 
         try:
+            demisto.debug("ML: Creating email object")
             email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
-            demisto.debug(f"{mail_id=}: Created email object.")
+            demisto.debug(f"ML: {mail_id=}: Created email object.")
         except Exception as e:
-            demisto.debug(f"{mail_id=}: Failed creating Email object, skipping. {message_data=}. Error: {e}")
+            demisto.debug(f"ML: {mail_id=}: Failed creating Email object, skipping. {message_data=}. Error: {e}")
             continue
 
         # Add mails if the current email UID is higher than the previous incident UID
