@@ -23,7 +23,7 @@ BLACKLISTED_URL_ERROR_MESSAGES = [
     'The submitted domain is on our blacklist, we will not scan it.'
 ]
 BRAND = 'urlscan.io'
-IS_SYNC_MODE = argToBoolean(demisto.args().get("syncMode", False))
+IS_TIME_SENSITIVE = hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
 DEFAULT_LIMIT = 20
 MAX_WORKERS = 5
 
@@ -43,8 +43,6 @@ RELATIONSHIP_TYPE = {
     }
 }
 
-IS_TIME_SENSITIVE = hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
-demisto.debug(f'Is time sensitive: {IS_TIME_SENSITIVE}')
 
 class Client:
     def __init__(self, api_key='', user_agent='', scan_visibility=None, threshold=None, use_ssl=False,
@@ -98,7 +96,7 @@ def schedule_polling(items_to_schedule, next_polling_interval):
     return CommandResults(scheduled_command=scheduled_items)
 
 
-def http_request(client, method, url_suffix, json=None):
+def http_request(client, method, url_suffix, json=None, retries=0):
     headers = {'API-Key': client.api_key,
                'Accept': 'application/json'}
     if client.user_agent:
@@ -562,7 +560,7 @@ def urlscan_submit_command(client):
     rate_limit_reset_after: int = 60
 
     urls = argToList(demisto.args().get('url'))
-    if IS_SYNC_MODE:
+    if IS_TIME_SENSITIVE:
         args = ((client, url, command_results, execution_metrics) for url in urls)
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             executor.map(lambda p: urlscan_search_only(*p), args)
@@ -850,8 +848,8 @@ def main():
     )
 
     demisto.debug(f'Command being called is {demisto.command()}')
-    if IS_SYNC_MODE:
-        demisto.debug('Running in sync mode')
+    demisto.info(f'Is time sensitive: {IS_TIME_SENSITIVE}')
+
     try:
         handle_proxy()
         if demisto.command() == 'test-module':
