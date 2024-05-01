@@ -6,14 +6,6 @@ import re
 
 def main():
     try:
-        # context = demisto.context()
-        # version = demisto.demistoVersion()
-        # calling_context = demisto.callingContext
-        # urls = demisto.demistoUrls()
-        # demisto.log(f'{context.get("context")=}')
-        # demisto.log(f'{version=}')
-        # demisto.log(f'{calling_context=}')
-        # demisto.log(f'{urls=}')
         dest = demisto.args()['address']
         ping_out = subprocess.check_output(
             ['ping', '-c', '3', '-q', dest], stderr=subprocess.STDOUT, universal_newlines=True
