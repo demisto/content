@@ -5,7 +5,7 @@ args:
   name: address
   predefined: []
   required: true
-comment: Pings an IP or url address, to verify it's up. Note: On Cortex XSOAR 8 and Cortex XSIAM, the script can run only on a custom engine.
+comment: Pings an IP or url address, to verify it's up. Note - On Cortex XSOAR 8 and Cortex XSIAM, the script can run only on a custom engine.
 commonfields: {id: Ping, version: -1}
 enabled: true
 name: Ping
