@@ -14,7 +14,7 @@ SERVER_URL = (
     "http://server-url.test"  # ".test" is a reserved tld and should not be registered
 )
 
-JSON_REPONSES_DIRECTORY = Path("test_data/responses")
+JSON_REPONSES_DIRECTORY = Path("test_data")
 
 Client: TypeAlias = Hurukai.Client
 RequestsMock: TypeAlias = requests_mock.Mocker
