@@ -9,6 +9,7 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+FETCH_INTERVAL_DEFAULT = 1
 MAX_FETCH_DEFAULT = 10
 SAAS_NAMES = [
     'office365_emails',
@@ -605,7 +606,7 @@ def main() -> None:  # pragma: no cover
                 'severities': [SEVERITY_VALUES.get(x.lower()) for x in argToList(params.get('event_severity'))],
                 'threat_types': [x.lower().replace(' ', '_') for x in argToList(params.get('threat_type'))],
                 'max_fetch': int(params.get('max_fetch', MAX_FETCH_DEFAULT)),
-                'fetch_interval': params.get('incidentFetchInterval'),
+                'fetch_interval': int(params.get('incidentFetchInterval', FETCH_INTERVAL_DEFAULT)),
             }
             fetch_incidents(client, **kwargs)
         elif command == 'checkpointhec-get-entity':
