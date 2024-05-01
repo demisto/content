@@ -148,7 +148,7 @@ script:
         - description: The maximum number of certificates to return. Default value = 50
           name: Limit
           required: false
-      description: Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z format. Additional fields information at https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-attribute.htm and https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-status.htm
+      description: "Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z format. For additional field information, see: https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-attribute.htm and https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-status.htm"
       name: venafi-get-certificates
       outputs:
         - contextPath: Venafi.Certificate.CreatedOn
