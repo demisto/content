@@ -78,7 +78,7 @@ script:
         - description: The specific folder from which to retrieve certificates. (The subfolders will also be scanned.) Accepts a single value.
           name: ParentDnRecursive
           required: false
-        - description: Whether to include only certificates that are pending workflow resolution (have an outstanding workflow ticket). This parameter does not require a value to be specified.
+        - description: Whether to include only certificates that are pending workflow resolution (have an outstanding workflow ticket). 
           name: PendingWorkflow
           required: false
         - description: Comma-separated list of stages in the certificate lifecycle. Will retrieve certificates at one or more of the stages.
