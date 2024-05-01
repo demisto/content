@@ -48,6 +48,7 @@ def test_fail_ping_permission_error_xsoar8(mocker):
     mocker.patch.object(subprocess, "check_output", side_effect=Exception("ping: socket: Operation not permitted"))
     mocker.patch.object(demisto, 'args', return_value={'address': "8.8.8.8"})
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    mocker.patch("Ping.is_xsoar_on_prem", return_value=False)
     main()
 
     err_msg = return_error_mock.call_args[0][0]
