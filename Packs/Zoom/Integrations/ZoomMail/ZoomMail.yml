@@ -1,181 +1,200 @@
 commonfields:
   id: Zoom Mail
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Zoom Mail
 display: Zoom Mail
 category: Email
 description: Enables interaction with the Zoom Mail API.
 configuration:
-- section: Connect
-  display: Server URL (e.g., https://api.zoom.us)
-  name: url
-  defaultvalue: https://api.zoom.us
-  type: 0
-  required: true
-- section: Collect
-  display: Fetch incidents
-  name: isFetch
-  type: 8
-  required: false
-- section: Connect
-  display: Incident type
-  name: incidentType
-  type: 13
-  required: false
-- section: Collect
-  display: Maximum number of alerts per fetch
-  name: max_fetch
-  defaultvalue: '10'
-  type: 0
-  required: false
-- section: Connect
-  display: Client ID
-  displaypassword: Client Secret
-  name: credentials
-  type: 9
-  required: true
-- section: Collect
-  display: First fetch time
-  name: first_fetch
-  defaultvalue: 3 days
-  type: 0
-  required: false
-- section: Connect
-  advanced: true
-  display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
-- section: Connect
-  advanced: true
-  display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
-- display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  defaultvalue: '1'
-  type: 19
-  required: false
-- display: Account ID
-  name: account_id
-  type: 0
-  required: false
-- display: Fetch Mailbox
-  name: fetch_from
-  type: 0
-  required: false
-  additionalinfo: Mailbox to fetch incidents from
-- display: Fetch Query
-  name: fetch_query
-  type: 0
-  required: false
-  additionalinfo: Elastic query to filter messages in the specified inbox.
+  - section: Connect
+    display: 'Server URL (e.g., https://api.zoom.us/v2)'
+    name: url
+    defaultvalue: 'https://api.zoom.us/v2'
+    type: 0
+    required: true
+  - section: Collect
+    display: Fetch incidents
+    name: isFetch
+    type: 8
+    required: false
+  - section: Connect
+    display: Incident type
+    name: incidentType
+    type: 13
+    required: false
+  - section: Collect
+    display: Maximum number of alerts per fetch
+    name: max_fetch
+    defaultvalue: "10"
+    type: 0
+    required: false
+  - section: Connect
+    display: Client ID
+    displaypassword: Client Secret
+    name: credentials
+    type: 9
+    required: true
+  - section: Collect
+    display: First fetch time
+    name: first_fetch
+    defaultvalue: 3 days
+    type: 0
+    required: false
+  - section: Connect
+    advanced: true
+    display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    required: false
+  - section: Connect
+    advanced: true
+    display: Use system proxy settings
+    name: proxy
+    type: 8
+    required: false
+  - display: Incidents Fetch Interval
+    name: incidentFetchInterval
+    defaultvalue: "1"
+    type: 19
+    required: false
+  - display: Account ID
+    name: account_id
+    type: 0
+    required: false
+  - display: Fetch Mailbox
+    name: fetch_from
+    type: 0
+    required: false
+    additionalinfo: Mailbox to fetch incidents from
+  - display: Fetch Query
+    name: fetch_query
+    type: 0
+    required: false
+    additionalinfo: Elastic query to filter messages in the specified inbox.
 script:
-  script: ''
+  script: ""
   type: python
   commands:
-  - name: zoom-mail-trash-email
-    arguments:
-    - name: email
-    - name: message_id
-    description: Move a message to the trash
-  - name: zoom-mail-list-emails
-    arguments:
-    - name: email
-      required: true
-      description: The target mailbox to list emails
-    - name: query
-      description: Query to filter emails within the given mailbox.
-    - name: max_results
-      description: Maximum number of emails to list
-    - name: page_token
-    - name: include_spam_trash
-      description: Whether or not to include spam or trash messages in the results.
-    description: Lists the messages in the user's mailbox
-  - name: zoom-mail-get-email-thread
-    arguments:
-    - name: email
-      required: true
-      description: The target mailbox to list emails
-    - name: thread_id
-      description: Unique identifier for the email thread you want to retrieve
-    - name: format
-      auto: PREDEFINED
-      predefined:
-      - full
-      - metadata
-      - minimal
-      description: Specifies the format in which the email messages in the thread should be returned.
-    - name: metadata_headers
-      description: When the format is set to metadata, this argument allows you to specify which email headers should be included in the response.
-    - name: max_results
-      description: Default is 50.
-    - name: page_token
-    description: Get an email thread.
-  - name: zoom-mail-get-email-attachment
-    arguments:
-    - name: email
-      required: true
-      description: The email address of the inbox.
-    - name: message_id
-      required: true
-      description: The immutable message ID
-    - name: attachment_id
-      required: true
-    description: Get an email attachment.
-  - name: zoom-mail-get-email-message
-    arguments:
-    - name: email
-      required: true
-      description: The target mailbox
-    - name: message_id
-      required: true
-      description: The immutable message ID.
-    - name: format
-      auto: PREDEFINED
-      predefined:
-      - full
-      - metadata
-      - minimal
-      description: The format to return the message with.
-    description: Retrieves the specified email message
-  - name: zoom-mail-send-email
-    arguments:
-    - name: from
-      required: true
-      description: The sender address
-    - name: to
-      required: true
-      description: The recipient address
-      isArray: true
-    - name: subject
-      description: The subject of the email
-    - name: body
-      description: The plain text body of the email
-    - name: html_body
-      description: The HTML body of the email
-    - name: attachments
-      description: Comma-separated list of War Room entry IDs
-      isArray: true
-    description: Sends an email message with support for plain text, HTML, and attachments
-  - name: zoom-mail-get-mailbox-profile
-    arguments:
-    - name: email
-      description: The target mailbox
-    description: Retrieves the mailbox profile.
-  - name: zoom-mail-list-users
-    arguments:
-    - name: status
-    - name: page_size
-    - name: role_id
-    - name: page_number
-    - name: include_fields
-    - name: next_page_token
-    - name: license
+    - name: zoom-mail-trash-email
+      arguments:
+        - name: email
+          required: true
+          description: The target mailbox to delete the email from
+        - name: message_id
+          description: The message_id of the message to delete
+          required: true
+      description: Move a message to the trash.
+    - name: zoom-mail-list-emails
+      arguments:
+        - name: email
+          required: true
+          description: The target mailbox to list emails.
+        - name: query
+          description: Query to filter emails within the given mailbox.
+        - name: max_results
+          description: Maximum number of emails to list.
+        - name: page_token
+          description: The token for the next page of results.
+        - name: include_spam_trash
+          description: Whether or not to include spam or trash messages in the results.
+      description: Lists the messages in the user's mailbox.
+    - name: zoom-mail-get-email-thread
+      arguments:
+        - name: email
+          required: true
+          description: The target mailbox to list emails.
+        - name: thread_id
+          description: Unique identifier for the email thread you want to retrieve.
+        - name: format
+          auto: PREDEFINED
+          predefined:
+            - full
+            - metadata
+            - minimal
+          description: Specifies the format in which the email messages in the thread
+            should be returned.
+        - name: metadata_headers
+          description: When the format is set to metadata, this argument allows you to
+            specify which email headers should be included in the response.
+        - name: max_results
+          description: Default is 50.
+        - name: page_token
+          description: The token for the next page of results.
+      description: Get an email thread.
+    - name: zoom-mail-get-email-attachment
+      arguments:
+        - name: email
+          required: true
+          description: The email address of the inbox.
+        - name: message_id
+          required: true
+          description: The immutable message ID.
+        - name: attachment_id
+          description: The immutable attachment ID.
+          required: true
+      description: Get an email attachment.
+    - name: zoom-mail-get-email-message
+      arguments:
+        - name: email
+          required: true
+          description: The target mailbox.
+        - name: message_id
+          required: true
+          description: The immutable message ID.
+        - name: format
+          auto: PREDEFINED
+          predefined:
+            - full
+            - metadata
+            - minimal
+          description: The format to return the message with.
+      description: Retrieves the specified email message.
+    - name: zoom-mail-send-email
+      arguments:
+        - name: from
+          required: true
+          description: The sender address.
+        - name: to
+          required: true
+          description: The recipient address.
+          isArray: true
+        - name: subject
+          description: The subject of the email.
+        - name: body
+          description: The plain text body of the email.
+        - name: html_body
+          description: The HTML body of the email.
+        - name: attachments
+          description: Comma-separated list of War Room entry IDs.
+          isArray: true
+      description: Sends an email message with support for plain text, HTML, and
+        attachments.
+    - name: zoom-mail-get-mailbox-profile
+      arguments:
+        - name: email
+          description: The target mailbox.
+      description: Retrieves the mailbox profile.
+    - name: zoom-mail-list-users
+      description: Lists the available users.
+      arguments:
+        - name: status
+          description: The status of the User.
+        - name: page_size
+          description: The max amount of users to return per page.
+        - name: role_id
+          description: The ID for the role of the User.
+        - name: page_number
+          description: The page number of results.
+        - name: include_fields
+          description: Indicates whether or not to include fields.
+        - name: next_page_token
+          description: The token used to fetch the next page.
+        - name: license
+          description: Indicates if the user is licensed or not.
   dockerimage: demisto/python3:3.10.12.62631
   isfetch: true
   runonce: false
   subtype: python3
-sourcemoduleid: Zmail Integration
+fromversion: 6.10.0
+tests:
+  - No tests (auto formatted)

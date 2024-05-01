@@ -1054,6 +1054,7 @@ def main():
     command = demisto.command()
     if command in COMMAND_FUNCTIONS:
         return_results(COMMAND_FUNCTIONS[command]())
+
     else:
         raise NotImplementedError(f"Command '{command}' is not implemented.")
 
