@@ -1,0 +1,32 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "08ff1d86-d7d3-4cb4-8abc-fe76a605c431",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 0,
+	"mapping": null,
+	"name": "Zoom Mail Classifier",
+	"nameRaw": "Zoom Mail Classifier",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}
