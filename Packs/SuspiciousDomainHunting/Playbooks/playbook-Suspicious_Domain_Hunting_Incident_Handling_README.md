@@ -29,7 +29,11 @@ This playbook does not use any integrations.
 * domain
 * setIndicators
 * rasterize
+* expireIndicators
+* whois
 * closeInvestigation
+* url
+* setIndicators
 
 ## Playbook Inputs
 
@@ -37,7 +41,8 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| similarityThreshold | The minimum threshold value for similarity comparison | 0.5 | Optional |
+| similarityMaxThreshold | The minimum threshold value for malicious verdict | 0.5 | Optional |
+| similarityMinThreshold | The minimum threshold value for suspicious verdict | 0.2 | Optional |
 
 ## Playbook Outputs
 
