@@ -43,7 +43,7 @@ Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z fo
 | CreatedOnLess | Specify YYYY-MM-DD or the ISO 8601 format. | Optional | 
 | Disabled | Include only certificates that are enabled 0 or disabled 1. | Optional | 
 | InError | Whether to include only certificates that are in an error state (1) or not in an error state (0). | Optional | 
-| ValidationState | Validation state. Possible values: "Blank", "Success", or "Failure". Possible values are: Blank, Success, Failure. | Optional | 
+| ValidationState | Validation state. Possible values are: Blank, Success, Failure. | Optional | 
 | ManagementType | Management type. Possible values: "Unassigned", "Monitoring", "Enrollment", or "Provisioning". Possible values are: Unassigned, Monitoring, Enrollment, Provisioning. | Optional | 
 | Name | Name of the certificate object. | Optional | 
 | NetworkValidationDisabled | Whether to include only certificates with network validation disabled (1) or enabled (0). | Optional | 
