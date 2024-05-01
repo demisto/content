@@ -19,7 +19,7 @@ warnings.filterwarnings('ignore', category=UserWarning)
 
 INCIDENT_ALIAS = 'alert' if is_xsiam() else 'incident'
 MESSAGE_NO_FIELDS_USED = "- No field are used to find similarity. Possible reasons: 1) No field selected  " \
-                         f" 2) Selected field are empty for this {INCIDENT_ALIAS}  3) Fields are misspelled"
+                        f" 2) Selected field are empty for this {INCIDENT_ALIAS}  3) Fields are misspelled"
 
 MESSAGE_NO_INCIDENT_FETCHED = f"- 0 {INCIDENT_ALIAS}s fetched with these exact match for the given dates."
 
@@ -30,7 +30,7 @@ MESSAGE_WARNING_TRUNCATED = f"- {INCIDENT_ALIAS.capitalize()} fetched have been 
                             "to more than %s."
 
 MESSAGE_NO_CURRENT_INCIDENT = f"- {INCIDENT_ALIAS.capitalize()} %s does not exist within the given time range. " \
-                              f"Please check incidentId value or that you are running the command within an {INCIDENT_ALIAS}."
+                            f"Please check incidentId value or that you are running the command within an {INCIDENT_ALIAS}."
 MESSAGE_NO_FIELD = f"- %s field(s) does not exist in the current {INCIDENT_ALIAS}."
 MESSAGE_INCORRECT_FIELD = f"- %s field(s) don't/doesn't exist within the fetched {INCIDENT_ALIAS}s."
 
@@ -41,8 +41,8 @@ ORDER_SCORE_WITH_INDICATORS = [SIMILARITY_COLUNM_NAME, SIMILARITY_COLUNM_NAME_IN
 ORDER_SCORE_NO_INDICATORS = [SIMILARITY_COLUNM_NAME]
 COLUMN_ID = f'{INCIDENT_ALIAS} ID'
 FIRST_COLUMNS_INCIDENTS_DISPLAY = [COLUMN_ID, 'created', 'name', SIMILARITY_COLUNM_NAME,
-                                   SIMILARITY_COLUNM_NAME_INDICATOR,
-                                   IDENTICAL_INDICATOR]
+                                    SIMILARITY_COLUNM_NAME_INDICATOR,
+                                    IDENTICAL_INDICATOR]
 REMOVE_COLUMNS_INCIDENTS_DISPLAY = ['id', 'Id']
 FIELDS_NO_AGGREGATION = ['id', 'created', COLUMN_ID]
 COLUMN_TIME = 'created'
@@ -52,15 +52,15 @@ KEEP_COLUMNS_INDICATORS = ['Identical indicators', 'similarity indicators']
 
 PREFIXES_TO_REMOVE = ['incident.']
 CONST_PARAMETERS_INDICATORS_SCRIPT = {'threshold': '0',
-                                      'showActualIncident': 'False',
-                                      'debug': 'False',
-                                      'maxIncidentsToDisplay': '3000'
-                                      }
+                                    'showActualIncident': 'False',
+                                    'debug': 'False',
+                                    'maxIncidentsToDisplay': '3000'
+                                    }
 KEYS_ARGS_INDICATORS = ['indicatorsTypes', 'maxIncidentsInIndicatorsForWhiteList', 'minNumberOfIndicators',
                         'incidentId']
 
 REGEX_DATE_PATTERN = [re.compile(r"^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),
-                      re.compile(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]
+                    re.compile(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]
 REGEX_IP = re.compile(
     r'(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])')
 REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
@@ -137,6 +137,7 @@ def remove_duplicates(seq: list[str]) -> list[str]:
     seen = set()  # type: ignore
     seen_add = seen.add
     return [x for x in seq if not (x in seen or seen_add(x))]
+
 
 
 def recursive_filter(item: list[dict] | dict, regex_patterns: list, *fieldsToRemove):
@@ -277,6 +278,7 @@ class Tfidf(BaseEstimator, TransformerMixin):
         self.params = tfidf_params
         self.normalize_function = normalize_function
         if self.normalize_function:
+            demisto.debug('DBS: ')
             current_incident = current_incident[self.incident_field].apply(self.normalize_function)
         self.vocabulary = TfidfVectorizer(**self.params, use_idf=False).fit(current_incident).vocabulary_
         self.vec = TfidfVectorizer(**self.params, vocabulary=self.vocabulary)
@@ -290,6 +292,8 @@ class Tfidf(BaseEstimator, TransformerMixin):
         if self.normalize_function:
             x = x[self.incident_field].apply(self.normalize_function)
         self.vec.fit(x)
+        demisto.debug('TFIDF transformer (fit function)')
+        demisto.debug(f'{x=}')
         return self
 
     def transform(self, x):
@@ -300,8 +304,12 @@ class Tfidf(BaseEstimator, TransformerMixin):
         """
         if self.normalize_function:
             x = x[self.incident_field].apply(self.normalize_function)
+            demisto.debug('TFIDF transformer (transform if)')
+            demisto.debug(f'{x=}')
         else:
             x = x[self.incident_field]
+            demisto.debug('TFIDF transformer (transform else)')
+            demisto.debug(f'{x=}')
         return self.vec.transform(x).toarray()
 
 
@@ -332,15 +340,15 @@ TRANSFORMATION = {
                     'scoring_function': euclidian_similarity_capped
                     },
     'potentialMatch': {'transformer': Identity,
-                       'normalize': None,
-                       'params': {},
-                       'scoring_function': identity
-                       },
+                        'normalize': None,
+                        'params': {},
+                        'scoring_function': identity
+                        },
     'json': {'transformer': Tfidf,
-             'normalize': normalize_json,
-             'params': {'analyzer': 'char', 'max_features': 10000, 'ngram_range': (2, 5)},
-             'scoring_function': euclidian_similarity_capped
-             }
+            'normalize': normalize_json,
+            'params': {'analyzer': 'char', 'max_features': 10000, 'ngram_range': (2, 5)},
+            'scoring_function': euclidian_similarity_capped
+            }
 }
 
 
@@ -373,6 +381,7 @@ class Transformer():
         transformer = transformation['transformer'](self.field, transformation['params'], transformation['normalize'],
                                                     self.incident_to_match)
         x_vect = transformer.fit_transform(self.incidents_df)
+        demisto.debug('DBS: Transformer - X_Vect')
         incident_vect = transformer.transform(self.incident_to_match)
         demisto.debug('DBS: Transformer - fit_transform end')
         return x_vect, incident_vect
@@ -479,7 +488,7 @@ class Model:
             demisto.debug(f'DBS: {self.incidents_df=}')
         demisto.debug(f'DBS: {self.incident_to_match=}')
         demisto.debug(f'DBS: {self.transformation=}')
-        
+
         for field in self.field_for_command_line:
             t = Transformer('commandline', field, self.incidents_df, self.incident_to_match, self.transformation)
             demisto.debug(f'DBS: Getting score for field {field} in field_for_command_line')
@@ -528,8 +537,8 @@ def return_clean_date(timestamp: str) -> str:
 
 
 def prepare_incidents_for_display(similar_incidents: pd.DataFrame, confidence: float, show_distance: bool, max_incidents: int,
-                                  fields_used: list[str],
-                                  aggregate: str, include_indicators_similarity: bool) -> pd.DataFrame:
+                                fields_used: list[str],
+                                aggregate: str, include_indicators_similarity: bool) -> pd.DataFrame:
     """
     Organize data
     :param similar_incidents: DataFrame of incident
@@ -590,8 +599,8 @@ def get_incident_by_id(incident_id: str, populate_fields: list[str], from_date: 
 
 
 def get_all_incidents_for_time_window_and_exact_match(exact_match_fields: list[str], populate_fields: list[str],
-                                                      incident: dict, from_date: str, to_date: str,
-                                                      query_sup: str, limit: int):
+                                                    incident: dict, from_date: str, to_date: str,
+                                                    query_sup: str, limit: int):
     """
     Get incidents for a time window and exact match for somes fields
     :param exact_match_fields: List of field for exact match
@@ -757,7 +766,7 @@ def dumps_json_field_in_incident(incident: dict):
 
 
 def return_outputs_summary(confidence: float, number_incident_fetched: int, number_incidents_found: int,
-                           fields_used: list[str], global_msg: str) -> None:
+                            fields_used: list[str], global_msg: str) -> None:
     """
     Return entry for summary of the automation - Give information about the automation run
     :param confidence: confidence level given by the user
@@ -797,8 +806,8 @@ def create_context_for_incidents(similar_incidents=pd.DataFrame()):
 
 
 def return_outputs_similar_incidents(show_actual_incident: bool, current_incident: pd.DataFrame,
-                                     similar_incidents: pd.DataFrame, context: dict,
-                                     tag: str | None = None):
+                                    similar_incidents: pd.DataFrame, context: dict,
+                                    tag: str | None = None):
     """
     Return entry and context for similar incidents
     :param show_actual_incident: Boolean if showing the current incident
@@ -813,11 +822,11 @@ def return_outputs_similar_incidents(show_actual_incident: bool, current_inciden
     colums_to_display = similar_incidents.columns.tolist()
     colums_to_display = [x for x in FIRST_COLUMNS_INCIDENTS_DISPLAY if x in similar_incidents.columns] + \
                         [x for x in colums_to_display if (x not in FIRST_COLUMNS_INCIDENTS_DISPLAY and x not in
-                                                          REMOVE_COLUMNS_INCIDENTS_DISPLAY)]
+                                                        REMOVE_COLUMNS_INCIDENTS_DISPLAY)]
 
     first_col = [x for x in colums_to_display if x in current_incident.columns]
     col_current_incident_to_display = first_col + [x for x in current_incident.columns if
-                                                   (x not in first_col and x not in REMOVE_COLUMNS_INCIDENTS_DISPLAY)]
+                                                    (x not in first_col and x not in REMOVE_COLUMNS_INCIDENTS_DISPLAY)]
 
     similar_incidents = similar_incidents.rename(str.title, axis='columns')
     current_incident = current_incident.rename(str.title, axis='columns')
@@ -907,8 +916,8 @@ def enriched_with_indicators_similarity(full_args_indicators_script: dict, simil
 
 
 def prepare_current_incident(incident_df: pd.DataFrame, display_fields: list[str], similar_text_field: list[str],
-                             similar_json_field: list[str], similar_categorical_field: list[str],
-                             exact_match_fields: list[str]) -> pd.DataFrame:
+                            similar_json_field: list[str], similar_categorical_field: list[str],
+                            exact_match_fields: list[str]) -> pd.DataFrame:
     """
     Prepare current incident for visualization
     :param incident_df: incident_df
@@ -921,8 +930,8 @@ def prepare_current_incident(incident_df: pd.DataFrame, display_fields: list[str
     """
 
     incident_filter = incident_df.copy()[[x for x in
-                                          display_fields + similar_text_field + similar_categorical_field
-                                          + exact_match_fields if x in incident_df.columns]]
+                                        display_fields + similar_text_field + similar_categorical_field
+                                        + exact_match_fields if x in incident_df.columns]]
     if COLUMN_TIME in incident_filter.columns.tolist():
         incident_filter[COLUMN_TIME] = incident_filter[COLUMN_TIME].apply(lambda x: return_clean_date(x))
     if 'id' in incident_filter.columns.tolist():
@@ -944,9 +953,9 @@ def main():
         to_date, show_distance, confidence, max_incidents, query, aggregate, limit, show_actual_incident, \
         incident_id, include_indicators_similarity = get_args()
     fields_values = build_message_of_values([similar_text_field, similar_json_field, similar_categorical_field,
-                                             exact_match_fields, display_fields, from_date, to_date, confidence,
-                                             max_incidents, aggregate, limit, incident_id,
-                                             ])
+                                            exact_match_fields, display_fields, from_date, to_date, confidence,
+                                            max_incidents, aggregate, limit, incident_id,
+                                            ])
     demisto.debug(f"DBS: Starting,\n{fields_values=}")
 
     global_msg = ""
@@ -965,8 +974,8 @@ def main():
     # load the related incidents
     populate_fields.remove('id')
     incidents, msg = get_all_incidents_for_time_window_and_exact_match(exact_match_fields, populate_high_level_fields,
-                                                                       incident,
-                                                                       from_date, to_date, query, limit)
+                                                                        incident,
+                                                                        from_date, to_date, query, limit)
     global_msg += "%s \n" % msg
 
     if incidents:
@@ -991,7 +1000,7 @@ def main():
     # remove fields that does not exist in the incidents
     display_fields, similar_text_field, similar_json_field, similar_categorical_field = \
         remove_fields_not_in_incident(display_fields, similar_text_field, similar_json_field, similar_categorical_field,
-                                      incorrect_fields=incorrect_fields)
+                                    incorrect_fields=incorrect_fields)
 
     # Dumps all dict in the current incident
     incident_df = dumps_json_field_in_incident(deepcopy(incident))
@@ -1002,8 +1011,8 @@ def main():
     model = Model(p_transformation=TRANSFORMATION)
     demisto.debug('DBS: Starting the model prediction')
     model.init_prediction(incident_df, incidents_df, similar_text_field,
-                          similar_categorical_field, display_fields, similar_json_field)
-    
+                        similar_categorical_field, display_fields, similar_json_field)
+
     similar_incidents, fields_used = model.predict()
 
     demisto.debug(f'DBS: Finished the model prediction, found {len(similar_incidents)} similar_incidents, used {len(fields_used)} fields.')
@@ -1023,12 +1032,12 @@ def main():
 
     demisto.debug('DBS: Preparing incidents for display.')
     similar_incidents = prepare_incidents_for_display(similar_incidents, confidence, show_distance, max_incidents,
-                                                      fields_used, aggregate, include_indicators_similarity)
+                                                    fields_used, aggregate, include_indicators_similarity)
 
     # Filter incident to investigate
     demisto.debug('DBS: Preparing incident to investigate.')
     incident_filter = prepare_current_incident(incident_df, display_fields, similar_text_field, similar_json_field,
-                                               similar_categorical_field, exact_match_fields)
+                                                similar_categorical_field, exact_match_fields)
 
     # Return summary outputs of the automation
     number_incidents_found = len(similar_incidents)
