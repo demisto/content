@@ -524,7 +524,7 @@ class Build(ABC):
         failed_tests = set()
         successful_tests = set()
         # Test all module instances (of modified + unchanged integrations) pre-updating content
-        if all_module_instances:
+        if all_module_instances: # todo - why empty
             # only print start message if there are instances to configure
             logging.info(f'Start of Instance Testing ("Test" button) ({update_status}-update)')
         else:
