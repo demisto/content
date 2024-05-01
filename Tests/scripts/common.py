@@ -259,14 +259,14 @@ def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
     return pipelines, commits
 
 
-def get_thread_id_from_job_logs(gitlab_client: Gitlab, project_id, job_id):
+def get_thread_id_from_job_artifacts(gitlab_client: Gitlab, project_id, job_id):
     """
     """
     project = gitlab_client.projects.get(project_id)
     job = project.jobs.get(job_id)
-    logs = job.trace.decode()
-    pattern = r'thread_id:\s*(\S+)'
-    match = re.search(pattern, logs)
+    artifact = job.artifact('artifacts/ slack_msg.json').decode()
+    pattern = r'with thread id:\s*(\S+)'
+    match = re.search(pattern, artifact)
     if match:
         return match.group(1)
     else:

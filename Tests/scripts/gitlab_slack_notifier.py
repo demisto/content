@@ -22,7 +22,7 @@ from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, get_instance_directories, \
     get_properties_for_test_suite, BUCKET_UPLOAD, BUCKET_UPLOAD_BRANCH_SUFFIX, TEST_MODELING_RULES_REPORT_FILE_NAME, get_slack_message_job_id, \
-    get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, get_thread_id_from_job_logs, \
+    get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, get_thread_id_from_job_artifacts, \
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.common import get_pipelines_and_commits, is_pivot, get_commit_by_sha, get_pipeline_by_commit, \
@@ -53,7 +53,7 @@ CI_COMMIT_SHA = os.getenv('CI_COMMIT_SHA', '')
 CI_SERVER_HOST = os.getenv('CI_SERVER_HOST', '')
 DEFAULT_BRANCH = 'master'
 ALL_FAILURES_WERE_CONVERTED_TO_JIRA_TICKETS = ' (All failures were converted to Jira tickets)'
-LOOK_BACK_HOURS = 48
+LOOK_BACK_HOURS = 72
 UPLOAD_BUCKETS = [
     (ARTIFACTS_FOLDER_XSOAR_SERVER_TYPE, "XSOAR", True),
     (ARTIFACTS_FOLDER_XSOAR_SAAS_SERVER_TYPE, "XSOAR SAAS", True),
@@ -643,7 +643,7 @@ def main():
 
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     shame_message = None
-    if options.current_branch == DEFAULT_BRANCH and triggering_workflow == CONTENT_MERGE:
+    if True:
         computed_slack_channel = "dmst-build-test"
         # Check if the current commit's pipeline differs from the previous one. If the previous pipeline is still running,
         # compare the next build. For commits without pipelines, compare the current one to the nearest commit with a
@@ -678,7 +678,7 @@ def main():
                                 "comparing current pipeline status with nearest newer pipeline status")
                             pipeline_changed_status = is_pivot(current_pipeline=next_pipeline,
                                                                pipeline_to_compare=current_pipeline)
-                    if pipeline_changed_status is not None: 
+                    if pipeline_changed_status is not None:
                         # if we already sent a shame message for newer commits, we don't want to send another one for older commits,
                         # but we will just add a message to its thread to inform that we fixed it #TODO rewrite
                         if was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines):
@@ -686,7 +686,7 @@ def main():
                             slack_job_id = get_slack_message_job_id(gitlab_client=gitlab_client,
                                                                        project_id=project_id,
                                                                        pipeline_id=current_pipeline.id)
-                            thread_id = get_thread_id_from_job_logs(gitlab_client=gitlab_client,
+                            thread_id = get_thread_id_from_job_artifacts(gitlab_client=gitlab_client,
                                                                        project_id=project_id, job_id=slack_job_id)
                             if thread_id:
                                 special_message = "whatever"
@@ -724,8 +724,8 @@ def main():
             #adding the thread_ts to the message that was saved in the artifacts folder
             data: dict = response.data  # type: ignore[assignment]
             thread_ts: str = data['ts']
-            # with open(output_file, 'a') as f:
-            #     f.write("\n" + json.dumps({"thread_ts": thread_ts}, indent=4, sort_keys=True, default=str))
+            with open(output_file, 'a') as f:
+                f.write(f"\n The message above was sent to channel {channel} with thread id: {thread_ts}")
             
             if threaded_messages:
                 for slack_msg in threaded_messages:
@@ -736,7 +736,7 @@ def main():
                     )
 
             link = build_link_to_message(response)
-            logging.info(f'Successfully sent Slack message to channel {channel} link: {link} , thread_id: {thread_ts} ')
+            logging.info(f'Successfully sent Slack message to channel {channel} link: {link}')
         except Exception:
             if strtobool(options.allow_failure):
                 logging.warning(f'Failed to send Slack message to channel {channel} not failing build')
