@@ -3,7 +3,6 @@ from CommonServerPython import *
 ''' IMPORTS '''
 
 import re
-import requests
 import urllib3
 
 # Disable insecure warnings
@@ -18,9 +17,7 @@ BASE_URL = 'https://haveibeenpwned.com/api/v3'
 DEFAULT_DBOT_SCORE_EMAIL = 2 if params.get('default_dbot_score_email') == 'SUSPICIOUS' else 3
 DEFAULT_DBOT_SCORE_DOMAIN = 2 if params.get('default_dbot_score_domain') == 'SUSPICIOUS' else 3
 
-
 ''' GLOBALS/PARAMS '''
-
 
 VENDOR = 'Have I Been Pwned? V2'
 SUFFIXES = {
@@ -38,49 +35,36 @@ RETRIES_END_TIME = datetime.min
 ''' HELPER FUNCTIONS '''
 
 
-def http_request(method, url_suffix, params=None, data=None):
-    while True:
-        res = requests.request(
-            method,
-            BASE_URL + url_suffix,
-            verify=USE_SSL,
-            params=params,
-            data=data,
-            headers={
-                'hibp-api-key': API_KEY,
-                'user-agent': 'DBOT-API',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        )
-
-        if res.status_code != 429:
-            # Rate limit response code
-            break
-
-        if datetime.now() > RETRIES_END_TIME:
-            return_error('Max retry time has exceeded.')
-
-        wait_regex = re.search(r'\d+', res.json()['message'])
-        if wait_regex:
-            wait_amount = wait_regex.group()
-        else:
-            demisto.error('failed extracting wait time will use default (5). Res body: {}'.format(res.text))
-            wait_amount = '5'
-        if datetime.now() + timedelta(seconds=int(wait_amount)) > RETRIES_END_TIME:
-            return_error('Max retry time has exceeded.')
-        time.sleep(int(wait_amount))
-
+def error_handler(res):
     if res.status_code == 404:
-        return None
-    if not res.status_code == 200:
-        if not res.status_code == 401:
-            demisto.error(
-                'Error in API call to Pwned Integration [%d]. Full text: %s' % (res.status_code, res.text))
-        return_error('Error in API call to Pwned Integration [%d] - %s' % (res.status_code, res.reason))
-        return None
+        raise DemistoException("No result found.")
+    else:
+        demisto.error(
+            'Error in API call to Pwned Integration [%d]. Full text: %s' % (res.status_code, res.text))
+    return_error('Error in API call to Pwned Integration [%d] - %s' % (res.status_code, res.reason))
 
-    return res.json()
+
+def http_request(method, url_suffix, params=None, data=None):
+    headers = {
+        'hibp-api-key': API_KEY,
+        'user-agent': 'DBOT-API',
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+    }
+    try:
+        return generic_http_request(method=method,
+                                    server_url=BASE_URL,
+                                    verify=USE_SSL,
+                                    client_headers=headers,
+                                    url_suffix=url_suffix,
+                                    data=data,
+                                    params=params,
+                                    error_handler=error_handler,
+                                    status_list_to_retry=[429],
+                                    retries=5,
+                                    ok_codes=(200,))
+    except DemistoException:
+        return None
 
 
 def html_description_to_human_readable(breach_description):
@@ -154,7 +138,7 @@ def create_dbot_score_dictionary(indicator_value, indicator_type, dbot_score):
 
 
 def create_context_entry(context_type, context_main_value, comp_sites, comp_pastes, malicious_score):
-    context_dict = dict()  # dict
+    context_dict = {}  # dict
 
     if context_type == 'email':
         context_dict['Address'] = context_main_value
@@ -183,9 +167,9 @@ def add_malicious_to_context(malicious_type):
 
 def email_to_entry_context(email, api_email_res, api_paste_res):
     dbot_score = 0
-    comp_email = dict()  # type: dict
+    comp_email = {}  # type: dict
     comp_sites = sorted([item['Title'] for item in api_email_res])
-    comp_pastes = sorted(set(item['Source'] for item in api_paste_res))
+    comp_pastes = sorted({item['Source'] for item in api_paste_res})
 
     if len(comp_sites) > 0:
         dbot_score = DEFAULT_DBOT_SCORE_EMAIL
@@ -200,7 +184,7 @@ def email_to_entry_context(email, api_email_res, api_paste_res):
 def domain_to_entry_context(domain, api_res):
     comp_sites = [item['Title'] for item in api_res]
     comp_sites = sorted(comp_sites)
-    comp_domain = dict()  # type: dict
+    comp_domain = {}  # type: dict
     dbot_score = 0
 
     if len(comp_sites) > 0:
@@ -331,7 +315,7 @@ def pwned_username(username_list):
     return api_res_list
 
 
-def main():
+def main():  # pragma: no cover
     if not API_KEY:
         raise DemistoException('API key must be provided.')
     command = demisto.command()
