@@ -299,7 +299,7 @@ script:
           description: A list of certificate renewal information
           type: dictionary
         - contextPath: ValidationDetails
-          description: 'A list of host identity information and the overall certificate validation state result. If no validation occurred, only the lastvalidationstateupdate field appears. all other validationdetails fields are absent.'
+          description: 'A list of host identity information and the overall certificate validation state result. If no validation occurred, only the lastvalidationstateupdate field appears. All other validationdetails fields are absent.'
           type: dictionary
       description: Uses a certificate GUID to extract more details from the certificate store.
   runonce: false
