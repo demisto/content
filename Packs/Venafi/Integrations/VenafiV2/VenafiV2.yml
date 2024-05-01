@@ -281,7 +281,7 @@ script:
           description: An array of User Principal Name (UPN) SANs.
           type: string
         - contextPath: CertificateDetails.SubjectAltNameIPAddress
-          description: An array of IP Address SANs.
+          description: An array of IP address SANs.
           type: string
         - contextPath: CertificateDetails.SubjectAltNameURI
           description: An array of Uniform Resource Indicator (URI) SANs.
