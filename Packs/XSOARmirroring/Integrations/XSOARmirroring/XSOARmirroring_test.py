@@ -134,7 +134,9 @@ def test_fetch_incidents(mocker):
         - Running the fetch_incidents and getting these incidents.
 
     Then:
-        - Ensure the incidents result and the last_fetch in the LastRun object as expected.
+        - Ensure
+            1. The incidents result and the last_fetch in the LastRun object as expected.
+            2. The integration context is updated as expected.
     """
     mocker.patch.object(Client, 'search_incidents', return_value=INCIDENTS)
     mock_integration_context = mocker.patch('XSOARmirroring.set_to_integration_context_with_retries')
@@ -154,13 +156,15 @@ def test_fetch_incidents(mocker):
 def test_fetch_incidents_with_integration_context(mocker):
     """
     Given:
-        - List of incidents.
+        - List of incidents + List of incident IDs in context (from previous fetch).
 
     When:
         - Running the fetch_incidents and getting these incidents.
 
     Then:
-        - Ensure the incidents result and the last_fetch in the LastRun object as expected.
+        - Ensure
+            1. The incidents result and the last_fetch in the LastRun object as expected.
+            2. The integration context is updated as expected.
     """
     mocker.patch.object(Client, 'search_incidents', return_value=INCIDENTS)
     mocker.patch('XSOARmirroring.get_integration_context', return_value=INCIDENTS_IN_CONTEXT)
