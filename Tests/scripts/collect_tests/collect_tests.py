@@ -1310,9 +1310,9 @@ class NightlyTestCollector(TestCollector, ABC):
 
         return CollectionResult.union(result)
 
-    def _collect_from_changed_packs_nightly(self, changed_packs: tuple[str, ...]) -> CollectionResult | None:
+    def _collect_packs_nightly(self, packs: tuple[str, ...] | set[str]) -> CollectionResult | None:
         result = []
-        for pack in changed_packs:
+        for pack in packs:
             try:
                 pack_metadata = PACK_MANAGER.get_pack_metadata(pack)
 
@@ -1448,7 +1448,7 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
     def _collect(self) -> CollectionResult | None:
         changed_packs = self.diff_checker.get_diff_master_bucket()
         return CollectionResult.union([
-            self._collect_from_changed_packs_nightly(changed_packs),
+            self._collect_packs_nightly(changed_packs),
         ])
 
 
@@ -1463,10 +1463,11 @@ class XSOAR_SAASNightlyTestCollector(NightlyTestCollector):
         self.diff_checker = DiffChecker(repo_path, self.branch_name, self.service_account, marketplace)
 
     def _collect(self) -> CollectionResult | None:
-        collect_from = self.diff_checker.get_diff_master_bucket()
+        collect_from = self.diff_checker.get_diff_master_bucket() # todo + file from bucket
         return CollectionResult.union([
             # self._collect_from_changed_packs_nightly(collect_from.changed_files),
-            self._collect_from_changed_packs_nightly(collect_from),
+            self._collect_packs_nightly(collect_from),
+            self._collect_packs_nightly(self.conf.nightly_packs),
             # self._collect_packs_from_which_files_were_removed(collect_from.pack_ids_files_were_removed_from), # todo eyal
             # self._collect_packs_diff_master_bucket(),
             self._id_set_tests_matching_marketplace_value()
