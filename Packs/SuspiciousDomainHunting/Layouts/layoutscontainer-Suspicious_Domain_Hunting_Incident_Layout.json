@@ -266,46 +266,102 @@
                                 "startCol": 0
                             },
                             {
-                                "args": {},
-                                "buttonClass": "warning",
+                                "args": {
+                                    "domain": {
+                                        "complex": {
+                                            "accessor": "domainname",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    }
+                                },
+                                "buttonClass": "primary",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "150cc770-78ca-11ee-825c-270ac8ef585b",
                                 "index": 1,
                                 "name": "Run !Domain",
-                                "scriptId": "VirusTotal (API v3)|||domain",
+                                "scriptId": "DomainReputation",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
                             {
                                 "args": {
-                                    "extended_data": {
-                                        "simple": "",
-                                        "userMarkedRequired": true
+                                    "url": {
+                                        "complex": {
+                                            "accessor": "domainname",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": [
+                                                {
+                                                    "args": {
+                                                        "prefix": {
+                                                            "isContext": false,
+                                                            "value": {
+                                                                "simple": "https://"
+                                                            }
+                                                        },
+                                                        "suffix": {
+                                                            "isContext": false
+                                                        }
+                                                    },
+                                                    "operator": "concat"
+                                                }
+                                            ]
+                                        }
                                     }
                                 },
-                                "buttonClass": "warning",
+                                "buttonClass": "primary",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "231eaa40-7979-11ee-98e4-c5340a9b9a3f",
                                 "index": 2,
                                 "name": "Run !url",
-                                "scriptId": "Panorama|||url",
+                                "scriptId": "URLReputation",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
                             {
                                 "args": {
                                     "body": {
-                                        "simple": "Dear ${Domain.Whois.Registrar.Name.[0]},\n\nI am writing to report abusive activity on the domain ${incident.domain}. \nThis activity is in violation of your terms of service or acceptable use policy.\nI kindly request your prompt investigation and necessary action to address this abuse, which may include suspending the domain.\n\nYour swift response and cooperation in resolving this matter are greatly appreciated.\n\nSincerely,\n${inputs.contactEmail}"
+                                        "simple": "To whom it may concern,\n\nI am writing to report abusive activity on the domain ${incident.domainname}. \nThis activity violates your terms of service or acceptable use policy.\nI kindly request your prompt investigation and necessary action to address this abuse, which may include suspending the domain.\n\nYour swift response and cooperation in resolving this matter are greatly appreciated.\n\nSincerely,\n${inputs.contactEmail}",
+                                        "userMarkedRequired": true
                                     },
                                     "subject": {
-                                        "simple": "Report of Abuse ${incident.domain}"
+                                        "complex": {
+                                            "accessor": "domainname}",
+                                            "filters": [],
+                                            "root": "${incident",
+                                            "transformers": [
+                                                {
+                                                    "args": {
+                                                        "prefix": {
+                                                            "isContext": false,
+                                                            "value": {
+                                                                "simple": "Report of Abuse "
+                                                            }
+                                                        },
+                                                        "suffix": {
+                                                            "isContext": false
+                                                        }
+                                                    },
+                                                    "operator": "concat"
+                                                }
+                                            ]
+                                        },
+                                        "userMarkedRequired": false
                                     },
                                     "to": {
-                                        "simple": ""
+                                        "complex": {
+                                            "accessor": "AbuseEmail",
+                                            "filters": [],
+                                            "root": "Domain.[0].Registrar",
+                                            "transformers": []
+                                        },
+                                        "userMarkedRequired": false
                                     }
                                 },
                                 "buttonClass": "error",
