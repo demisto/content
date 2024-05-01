@@ -168,14 +168,14 @@ def get_email_parts(entry_id: str) -> tuple[List[Dict[str, str]] | None, str | N
             - html_body (str | None): The HTML body of the email, if available.
     """
     if not entry_id:
-        return_error("Provide an entryId of an uploaded '.eml' file.")
+        DemistoException("Provide an entryId of an uploaded '.eml' file.")
 
     get_file_path_res = demisto.getFilePath(entry_id)
     file_path = get_file_path_res["path"]
     file_name = get_file_path_res["name"]
 
     if not file_name.endswith(EML_FILE_PREFIX):
-        return_error("Provided 'entryId' does not point to a valid '.eml' file.")
+        DemistoException("Provided 'entryId' does not point to a valid '.eml' file.")
 
     email_parser = parse_emails.EmailParser(file_path=file_path)
     email_parser.parse()

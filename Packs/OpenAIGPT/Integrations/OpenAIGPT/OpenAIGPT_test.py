@@ -1,14 +1,7 @@
-import importlib
 import io
 import pytest
 from CommonServerPython import *
-
-OpenAIGPT = importlib.import_module("OpenAIGPT")
-
-
-class OpenAiClient:
-    def get_chat_completions(self):
-        pass
+from OpenAIGPT import EmailParts
 
 
 def util_load_json(path):
@@ -35,29 +28,43 @@ def test_extract_assistant_message():
     assert conversation == [{'role': 'assistant', 'content': 'Hello! How can I assist you today?'}]
 
 
-def test_get_email_parts(mocker):
+@pytest.mark.parametrize('entry_id, should_raise_error', [('VALID_ENTRY_ID', False), ('INVALID_ENTRY_ID', True), ('', True)])
+def test_get_email_parts(mocker, entry_id, should_raise_error):
     """ Tests email parsing and parts extraction. """
 
     from OpenAIGPT import get_email_parts
 
-    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './test_data/attachment_malicious_url.eml',
-                                                              'name': 'attachment_malicious_url.eml'})
+    def mock_file(_entry_id: str):
+        if _entry_id == 'VALID_ENTRY_ID':
+            return {'path': './test_data/attachment_malicious_url.eml', 'name': 'attachment_malicious_url.eml'}
+        elif _entry_id == 'INVALID_ENTRY_ID':
+            return {'path': './test_data/dummy_file.txt', 'name': 'dummy_file.txt'}
 
-    headers, text_body, html_body = get_email_parts(entry_id="0")
+    mocker.patch.object(demisto, 'getFilePath', side_effect=mock_file)
+    if should_raise_error:
+        with pytest.raises(Exception):
+            get_email_parts(entry_id=entry_id)
+    else:
+        headers, text_body, html_body = get_email_parts(entry_id=entry_id)
+        assert headers == util_load_json('./test_data/expected_headers.json')
+        assert text_body == 'Body of the text'
+        assert html_body.replace('\r\n', '\n') == util_load_text('test_data/expected_html_body.txt')
 
-    assert headers == util_load_json('./test_data/expected_headers.json')
-    assert text_body == 'Body of the text'
-    assert html_body.replace('\r\n', '\n') == util_load_text('test_data/expected_html_body.txt')
 
-
-def test_check_email_parts(mocker, email_part, expected_conversation):
+@pytest.mark.parametrize('email_part, args',
+                         [(EmailParts.HEADERS, {'entryId': 'XYZ', 'additionalInstructions': 'Identify spoofing.'}),
+                          (EmailParts.BODY, {'entryId': '123', 'additionalInstructions': 'Identify data breaches.'})])
+def test_check_email_parts(mocker, email_part: str, args: dict):
     """ Tests 'check_email_parts' function. '"""
 
     from OpenAIGPT import OpenAiClient, check_email_part
+
+    mocker.patch.object(OpenAiClient, '_http_request', return_value=util_load_json('test_data/mock_response.json'))
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': './test_data/attachment_malicious_url.eml',
+                                                              'name': 'attachment_malicious_url.eml'})
+
     client = OpenAiClient(api_key='DUMMY_API_KEY', model='gpt-4', proxy=False, verify=False)
-    # 1 - mock args
-    # 2 - check_email_part()
-    pass
+    check_email_part(email_part, client, args)
 
 
 @pytest.mark.parametrize('args, expected_conversation',
