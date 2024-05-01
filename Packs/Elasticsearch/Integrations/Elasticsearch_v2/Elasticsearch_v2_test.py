@@ -1092,9 +1092,7 @@ def test_key_not_found():
     """
     dictionary = {
         'a': {
-            'b': {
-                'c': 123
-            }
+            'b': True
         },
         'x': {
             'y': 456
