@@ -50,7 +50,7 @@ script:
           name: InError
           required: false
         - auto: PREDEFINED
-          description: 'Validation state. Possible values: "Blank", "Success", or "Failure".'
+          description: Validation state. 
           name: ValidationState
           predefined:
             - Blank
