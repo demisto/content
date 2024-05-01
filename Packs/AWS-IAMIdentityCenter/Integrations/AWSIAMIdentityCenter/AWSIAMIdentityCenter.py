@@ -331,6 +331,8 @@ def get_user_by_email(args: dict, client, IdentityStoreId: Any) -> None:
         IdentityStoreId=IdentityStoreId,
     )
     email_exists = False
+    hr_data = {}
+    context_data = {}
     for user in response.get('Users'):
         user_emails = user.get('Emails', [])
         user_emails_values = [email.get('Value') for email in user_emails]

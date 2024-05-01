@@ -359,6 +359,54 @@ def test_get_user_by_email(mocker):
         'EntryContext').values()
     assert 'AWS IAM Identity Center Users' in contents.get('HumanReadable')
 
+def test_get_user_by_email_not_exist(mocker):
+    """
+    Given:
+        Not existing email address
+
+    When:
+        Asking for a user details using the get-user-by-email command
+
+    Then:
+        Return an error
+    """
+
+    args = {
+        'emailAddress': 'notexist@example.com'
+    }
+
+    # Mock the response to indicate that no user exists
+    res = {'Users': [
+            {
+                'UserId': 'USER_ID',
+                'UserName': 'test_user',
+                'DisplayName': 'Test User',
+                'Name': {
+                    'FamilyName': 'User',
+                    'GivenName': 'Test',
+                },
+                'Emails': [
+                    {'Value': 'test@example.com',
+                     'Type': 'work',
+                     'Primary': True}
+                ],
+            }
+        ],
+        'ResponseMetadata': {'HTTPStatusCode': 200}}
+    
+    mocker.patch.object(Boto3Client, "list_users", return_value=res)
+    mocker.patch.object(demisto, 'results')
+    return_error_mock = mocker.patch.object(AWSIAMIdentityCenter, 'return_error')
+
+    from AWSIAMIdentityCenter import get_user_by_email
+    client = Boto3Client()
+    get_user_by_email(args, client, IDENTITY_STORE_ID)
+    
+    assert return_error_mock.call_count == 1
+    assert 'User with the email notexist@example.com was not found.' in return_error_mock.call_args.args
+   
+
+
 
 def test_get_group(mocker):
     """
