@@ -3,6 +3,8 @@ from CommonServerPython import *  # noqa: F401
 
 from AWSApiModule import *
 
+''' CONSTANTS '''
+
 SERVICE = 'identitystore'
 PREFIX = 'AWS.IAMIdentityCenter'
 PREFIXUSER = 'AWS.IAMIdentityCenter.User'
