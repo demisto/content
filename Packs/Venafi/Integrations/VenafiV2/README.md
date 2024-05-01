@@ -138,7 +138,7 @@ Uses a certificate GUID to extract more details from the certificate store.
 | CertificateDetails.SubjectAltNameDNS | string | An array of Domain Name System \(DNS\) SANs. | 
 | CertificateDetails.SubjectAltNameEmail | string | An array of Email SANs. Based on RFC 822. | 
 | CertificateDetails.SubjectAltNameOtherNameUPN | string | An array of User Principal Name \(UPN\) SANs. | 
-| CertificateDetails.SubjectAltNameIPAddress | string | An array of IP Address SANs. | 
+| CertificateDetails.SubjectAltNameIPAddress | string | An array of IP address SANs. | 
 | CertificateDetails.SubjectAltNameURI | string | An array of Uniform Resource Indicator \(URI\) SANs. | 
 | CreatedBy | string | The object that initiated enrollment or provisioning changes. The default is Web SDK. | 
 | Origin | string |  | 
