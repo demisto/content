@@ -52,4 +52,3 @@ def test_fail_ping_permission_error_xsoar8(mocker):
 
     err_msg = return_error_mock.call_args[0][0]
     assert "The Ping script can be executed only on custom engines" in err_msg
-
