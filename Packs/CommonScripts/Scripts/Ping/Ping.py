@@ -6,6 +6,14 @@ import re
 
 def main():
     try:
+        # context = demisto.context()
+        # version = demisto.demistoVersion()
+        # calling_context = demisto.callingContext
+        # urls = demisto.demistoUrls()
+        # demisto.log(f'{context.get("context")=}')
+        # demisto.log(f'{version=}')
+        # demisto.log(f'{calling_context=}')
+        # demisto.log(f'{urls=}')
         dest = demisto.args()['address']
         ping_out = subprocess.check_output(
             ['ping', '-c', '3', '-q', dest], stderr=subprocess.STDOUT, universal_newlines=True
@@ -29,6 +37,9 @@ def main():
             msg = e.output  # pylint: disable=no-member
         else:
             msg = str(e)
+        demisto.debug(f'{msg=}')
+        if not is_xsoar_on_prem() and "ping: socket: Operation not permitted" in msg:
+            msg = "The Ping script can be executed only on custom engines"
         return_error(msg)
 
 

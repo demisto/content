@@ -34,3 +34,22 @@ def test_fail_ping(mocker):
     # call_args last call with a tuple of args list and kwargs
     err_msg = return_error_mock.call_args[0][0]
     assert 'Name does not resolve' in err_msg or 'Name or service not known' in err_msg
+
+
+def test_fail_ping_permission_error_xsoar8(mocker):
+    """
+    Given: ping which cannot be executed on engine0
+
+    When: running ping script
+
+    Then: Ensure that error indicating that ping can only run on custom engines
+    """
+    import subprocess
+    mocker.patch.object(subprocess, "check_output", side_effect=Exception("ping: socket: Operation not permitted"))
+    mocker.patch.object(demisto, 'args', return_value={'address': "8.8.8.8"})
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    main()
+
+    err_msg = return_error_mock.call_args[0][0]
+    assert "The Ping script can be executed only on custom engines" in err_msg
+
