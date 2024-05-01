@@ -17,7 +17,7 @@ configuration:
 - name: keyword_search
   display: Keyword Search
   type: 0
-  additionalinfo: This returns only the CVEs where the word or phrase is found in the description.
+  additionalinfo: Returns only the CVEs where the word or phrase is found in the description.
   required: false
 - name: cvssv3severity
   display: CVSS 3 Severity Filter
@@ -32,11 +32,11 @@ configuration:
   type: 16
 - defaultvalue: 1 year
   display: First fetch time
-  additionalinfo: How far back should the integration fetch in its first run (1 day, 2 weeks, 3 months etc.)
+  additionalinfo: How far back should the integration fetch in its first run (1 day, 2 weeks, 3 months, etc.)
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: 'See the following URL for more information: https://nvd.nist.gov/developers/vulnerabilities#cves-hasKev' # disable-secrets-detection
+- additionalinfo: "See the following for more information: https://nvd.nist.gov/developers/vulnerabilities#cves-hasKev' # disable-secrets-detection."
   defaultvalue: "false"
   display: Return Known Exploited Vulnerabilities (KEV) only.
   name: hasKev
@@ -55,7 +55,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: Indicators from this integration instance will be marked with this reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -121,7 +121,7 @@ image: ''
 name: FeedNVDv2
 script:
   commands:
-  - description: Manually retrieve CVEs from NVD using the history parameter for number of days back to fetch.
+  - description: Manually retrieve CVEs from NVD using the history parameter for the number of days back to fetch.
     name: nvd-get-indicators
     arguments:
     - auto: PREDEFINED
