@@ -1,0 +1,21 @@
+{
+    "name": "OpenCVE_copy",
+    "description": "OpenCVE is a platform used to locally import the list of CVEs and perform searches on it (by vendors, products, CVSS, CWE…).\nUsers subscribe to vendors or products and OpenCVE alerts them when a new CVE is created or when an update is done in an existing CVE.\nYou can manually install OpenCVE, or use docker. We also provide a running instance on https://www.opencve.io if you don’t want to host it yourself.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "iamwinstonm",
+    "url": "",
+    "email": "",
+    "created": "2024-05-01T14:53:40Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "iamwinstonm"
+    ]
+}
