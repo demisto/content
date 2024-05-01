@@ -4,7 +4,7 @@
     "name": "Threat Intel",
     "fromVersion": "6.5.0",
     "definitionIds": [
-        "case"
+        "Case"
     ],
     "views": [
         {
