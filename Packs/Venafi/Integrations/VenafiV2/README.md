@@ -88,7 +88,7 @@ Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z fo
 ### venafi-get-certificate-details
 
 ***
-Uses a certificate GUID to extract more details from the cert store.
+Uses a certificate GUID to extract more details from the certificate store.
 
 #### Base Command
 
