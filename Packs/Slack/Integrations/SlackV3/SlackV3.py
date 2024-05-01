@@ -3012,14 +3012,18 @@ def main() -> None:
         if EXTENSIVE_LOGGING:
             os.environ['PYTHONASYNCIODEBUG'] = "1"
         demisto.info('before support_multithreading')
-        support_multithreading()
+        # support_multithreading()
         demisto.info('after support_multithreading')
         command_func()  # type: ignore
     except Exception as e:
-        demisto.debug(e)
+        demisto.debug('in exception block')
+        demisto.error(f'Error occured error: {str(e)}')
+        demisto.debug('debugged it')
         return_error(str(e))
+
     finally:
         demisto.info(f'{command_name} completed.')  # type: ignore
+        demisto.info(f'finally block: {traceback.print_exc()}')
         if EXTENSIVE_LOGGING:
             print_thread_dump()
 
