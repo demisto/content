@@ -8,9 +8,9 @@ category: Email
 description: Enables interaction with the Zoom Mail API.
 configuration:
 - section: Connect
-  display: Server URL (e.g., https://urldefense.proofpoint.com/v2/url?u=https-3A__api.zoom.us_v2&d=DwIGAg&c=V9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&r=1wrQ_1Kmu1DXcIVHrAzDDifbMLQbnQ0xb6cSBef05-w&m=DUVR5IrBZQI48XhMh3oUHiNb5gWYfAa3nOyiG-KDYCozZ63iCyRZXu9cmZZLDISj&s=Eu7T6r9G15jJ-1zHfZqKXuvnjhHD5HR7lFjm-P8MdK8&e= )
+  display: Server URL (e.g., https://api.zoom.us)
   name: url
-  defaultvalue: https://urldefense.proofpoint.com/v2/url?u=https-3A__api.zoom.us_v2&d=DwIGAg&c=V9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&r=1wrQ_1Kmu1DXcIVHrAzDDifbMLQbnQ0xb6cSBef05-w&m=DUVR5IrBZQI48XhMh3oUHiNb5gWYfAa3nOyiG-KDYCozZ63iCyRZXu9cmZZLDISj&s=Eu7T6r9G15jJ-1zHfZqKXuvnjhHD5HR7lFjm-P8MdK8&e=
+  defaultvalue: https://api.zoom.us
   type: 0
   required: true
 - section: Collect

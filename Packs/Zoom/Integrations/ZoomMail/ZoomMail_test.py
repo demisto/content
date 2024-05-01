@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from ZoomMail import ZoomMailClient
 
 class TestZoomMailClient(unittest.TestCase):
@@ -43,9 +43,8 @@ class TestZoomMailClient(unittest.TestCase):
         response = self.client.trash_email(email='me', message_id='123')
         self.assertEqual(response['success'], True)
 
-    # More tests for other methods such as send_email, list_emails, etc.
+    #TODO: More tests for other methods such as send_email, list_emails, etc.
 
-# Additional tests for command functions like test_module, fetch_incidents etc.
 
 if __name__ == '__main__':
     unittest.main()
