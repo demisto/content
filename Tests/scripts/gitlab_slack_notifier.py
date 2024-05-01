@@ -21,8 +21,8 @@ from slack_sdk.web import SlackResponse
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.scripts.common import CONTENT_NIGHTLY, CONTENT_PR, WORKFLOW_TYPES, get_instance_directories, \
-    get_properties_for_test_suite, BUCKET_UPLOAD, BUCKET_UPLOAD_BRANCH_SUFFIX, TEST_MODELING_RULES_REPORT_FILE_NAME, \
-    get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, \
+    get_properties_for_test_suite, BUCKET_UPLOAD, BUCKET_UPLOAD_BRANCH_SUFFIX, TEST_MODELING_RULES_REPORT_FILE_NAME, get_slack_message_job_id, \
+    get_test_results_files, CONTENT_MERGE, UNIT_TESTS_WORKFLOW_SUBSTRINGS, TEST_PLAYBOOKS_REPORT_FILE_NAME, get_thread_id_from_job_logs, \
     replace_escape_characters
 from Tests.scripts.github_client import GithubPullRequest
 from Tests.scripts.common import get_pipelines_and_commits, is_pivot, get_commit_by_sha, get_pipeline_by_commit, \
@@ -683,8 +683,11 @@ def main():
                         # but we will just add a message to its thread to inform that we fixed it #TODO rewrite
                         if was_message_already_sent(current_commit_index, list_of_commits, list_of_pipelines):
                             #get the tread id
-                            get_artifacts = get_artifact_data(ROOT_ARTIFACTS_FOLDER, 'slack_msg.json')
-                            thread_id = 1234
+                            slack_job_id = get_slack_message_job_id(gitlab_client=gitlab_client,
+                                                                       project_id=project_id,
+                                                                       pipeline_id=current_pipeline.id)
+                            thread_id = get_thread_id_from_job_logs(gitlab_client=gitlab_client,
+                                                                       project_id=project_id, job_id=slack_job_id)
                             if thread_id:
                                 special_message = "whatever"
                                 try:
