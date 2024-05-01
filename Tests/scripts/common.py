@@ -1,6 +1,7 @@
 import json
 from datetime import datetime, timedelta
 from pathlib import Path
+import re
 from typing import Any
 
 import pandas as pd
@@ -256,6 +257,35 @@ def get_pipelines_and_commits(gitlab_client: Gitlab, project_id,
                                        source='push', order_by='id', sort='asc')
 
     return pipelines, commits
+
+
+def get_thread_id_from_job_logs(gitlab_client: Gitlab, project_id, job_id):
+    """
+    """
+    project = gitlab_client.projects.get(project_id)
+    job = project.jobs.get(job_id)
+    logs = job.trace.decode()
+    pattern = r'thread_id:\s*(\S+)'
+    match = re.search(pattern, logs)
+    if match:
+        return match.group(1)
+    else:
+        return None
+
+
+def get_slack_message_job_id(gitlab_client: Gitlab, project_id, pipeline_id):
+    """
+    """
+    project = gitlab_client.projects.get(project_id)
+    child_pipelines = project.pipelines.get(pipeline_id).bridges.list()
+    
+    for pipeline in child_pipelines:
+        if pipeline.name == 'slack-notify-on-merge':
+            return pipeline.id
+    return None
+    
+
+    
 
 
 def get_person_in_charge(commit: ProjectCommit) -> tuple[str, str, str] | tuple[None, None, None]:

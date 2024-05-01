@@ -721,8 +721,8 @@ def main():
             #adding the thread_ts to the message that was saved in the artifacts folder
             data: dict = response.data  # type: ignore[assignment]
             thread_ts: str = data['ts']
-            with open(output_file, 'a') as f:
-                f.write("\n" + json.dumps({"thread_ts": thread_ts}, indent=4, sort_keys=True, default=str))
+            # with open(output_file, 'a') as f:
+            #     f.write("\n" + json.dumps({"thread_ts": thread_ts}, indent=4, sort_keys=True, default=str))
             
             if threaded_messages:
                 for slack_msg in threaded_messages:
@@ -733,7 +733,7 @@ def main():
                     )
 
             link = build_link_to_message(response)
-            logging.info(f'Successfully sent Slack message to channel {channel} link: {link}')
+            logging.info(f'Successfully sent Slack message to channel {channel} link: {link} , thread_id: {thread_ts} ')
         except Exception:
             if strtobool(options.allow_failure):
                 logging.warning(f'Failed to send Slack message to channel {channel} not failing build')
