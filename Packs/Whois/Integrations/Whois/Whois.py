@@ -13,8 +13,7 @@ import urllib
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
 RATE_LIMIT_ERRORS_SUPPRESSEDL_DEFAULT: bool = False
-IS_SYNC_MODE = argToBoolean(demisto.args().get("syncMode", False))
-
+IS_TIME_SENSITIVE = hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
 # flake8: noqa
 
 """
@@ -8530,7 +8529,7 @@ def ip_command(reliability: str, should_error: bool) -> List[CommandResults]:
     ips = demisto.args().get('ip', '1.1.1.1')
     rate_limit_retry_count: int = (
         RATE_LIMIT_RETRY_COUNT_DEFAULT
-        if IS_SYNC_MODE
+        if IS_TIME_SENSITIVE
         else int(
             get_param_or_arg('rate_limit_retry_count', 'rate_limit_retry_count')
             or RATE_LIMIT_RETRY_COUNT_DEFAULT
@@ -8828,6 +8827,7 @@ def setup_proxy():
 
 def main():  # pragma: no cover
     demisto.debug(f"command is {demisto.command()}")
+    demisto.info(f'Is time sensitive: {IS_TIME_SENSITIVE}')
     command = demisto.command()
     should_error = argToBoolean(demisto.params().get('with_error', False))
 
