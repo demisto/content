@@ -330,22 +330,24 @@ def get_user_by_email(args: dict, client, IdentityStoreId: Any) -> None:
     response = client.list_users(
         IdentityStoreId=IdentityStoreId,
     )
+    email_exists = False
     for user in response.get('Users'):
         user_emails = user.get('Emails', [])
-        for email in user_emails:
-            if email.get('Value') == email_arg:
-                emails = []
-                for append_email in user_emails:
-                    emails.append(append_email.get('Value'))
-
-                user_details = {
-                    'UserName': user.get('UserName'),
-                    'UserId': user.get('UserId'),
-                    'Emails': emails,
-                    'DisplayName': user.get('DisplayName')
-                }
-                hr_data = user_details
-                context_data = user
+        user_emails_values = [email.get('Value') for email in user_emails]
+        if email_arg in user_emails_values:
+            email_exists = True
+            user_details = {
+                'UserName': user.get('UserName'),
+                'UserId': user.get('UserId'),
+                'Emails': user_emails_values,
+                'DisplayName': user.get('DisplayName')
+            }
+            hr_data = user_details
+            context_data = user
+            break
+        
+    if not email_exists:
+        return_error(f'User with the email {email_arg} was not found.')
 
     human_readable = tableToMarkdown('AWS IAM Identity Center Users ', hr_data, removeNull=True)
     result = CommandResults(
