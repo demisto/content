@@ -176,7 +176,7 @@ script:
       arguments:
         - name: guid
           required: true
-          description: The id of the certificate, add description that the user can get this value by running the command “venafi-get-certificates”
+          description: The ID of the certificate. Add a description so the user can get this value by running the command “venafi-get-certificates”. 
       outputs:
         - contextPath: Venafi.Certificate.ID
           description: The certificate object GUID.
