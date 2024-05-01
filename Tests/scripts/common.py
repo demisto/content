@@ -379,7 +379,7 @@ def get_reviewer(pr_url: str) -> str | None:
     return approved_reviewer
 
 
-def get_slack_user_name(name: str | None, name_mapping_path: str) -> str:#to
+def get_slack_user_name(name: str | None, name_mapping_path: str) -> str:
     """
     Get the slack user name for a given Github name.
     Args:
