@@ -1,10 +1,6 @@
-import urllib3
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-# disable insecure warnings
-urllib3.disable_warnings()
 
 """ GLOBAL VARS """
 ADD = "ADD_TO_LIST"
@@ -62,6 +58,9 @@ AUTO_ACTIVATE_CHANGES_COMMANDS = (
     "zscaler-delete-ip-destination-groups",
 )
 
+IS_TIME_SENSITIVE = hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
+demisto.debug(f'Is time sensitive: {IS_TIME_SENSITIVE}')
+
 """ HANDLE PROXY """
 # Remove proxy if not set to true in params
 handle_proxy()
@@ -78,7 +77,7 @@ class AuthorizationError(DemistoException):
 
 def error_handler(res):
     """
-        Deals with unsuccessfull calls
+        Deals with unsuccessful calls
     """
     if res.status_code in (401, 403):
         raise AuthorizationError(res.content)
@@ -94,19 +93,17 @@ def error_handler(res):
     else:
         if res.status_code in ERROR_CODES_DICT:
             raise Exception(
-                "Your request failed with the following error: {}.\nMessage: {}".format(
-                    ERROR_CODES_DICT[res.status_code], res.text
-                )
+                f"Your request failed with the following error: {ERROR_CODES_DICT[res.status_code]}.\nMessage: {res.text}"
             )
         else:
             raise Exception(
-                "Your request failed with the following error: {}.\nMessage: {}".format(
-                    res.status_code, res.text
-                )
+                f"Your request failed with the following error: {res.status_code}.\nMessage: {res.text}"
             )
 
 
 def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
+    retries = 0 if IS_TIME_SENSITIVE else 10
+    status_list_to_retry = None if IS_TIME_SENSITIVE else [429]
     try:
         res = generic_http_request(method=method,
                                    server_url=BASE_URL,
@@ -119,8 +116,8 @@ def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
                                    data=data or {},
                                    ok_codes=(200, 204),
                                    error_handler=error_handler,
-                                   retries=10,
-                                   status_list_to_retry=[429],
+                                   retries=retries,
+                                   status_list_to_retry=status_list_to_retry,
                                    resp_type=resp_type)
 
     except Exception as e:
