@@ -3023,7 +3023,6 @@ def main() -> None:
 
     finally:
         demisto.info(f'{command_name} completed.')  # type: ignore
-        demisto.info(f'finally block: {traceback.print_exc()}')
         if EXTENSIVE_LOGGING:
             print_thread_dump()
 
