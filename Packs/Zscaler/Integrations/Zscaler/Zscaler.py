@@ -119,7 +119,7 @@ def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
                                    data=data or {},
                                    ok_codes=(200, 204),
                                    error_handler=error_handler,
-                                   retries=10,
+                                   retries=3,
                                    status_list_to_retry=[429],
                                    resp_type=resp_type)
 
