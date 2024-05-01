@@ -49,7 +49,7 @@ Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z fo
 | NetworkValidationDisabled | Whether to include only certificates with network validation disabled (1) or enabled (0). | Optional | 
 | ParentDn | The full path to the parent of the object in Trust Protection Platform (e.g., \VED\Policy\Engineering,\VED\Policy\HR). | Optional | 
 | ParentDnRecursive | The specific folder from which to retrieve certificates. (The subfolders will also be scanned.) Accepts a single value. | Optional | 
-| PendingWorkflow | Whether to include only certificates that are pending workflow resolution (have an outstanding workflow ticket). This parameter does not require a value to be specified. | Optional | 
+| PendingWorkflow | Whether to include only certificates that are pending workflow resolution (have an outstanding workflow ticket).  | Optional | 
 | Stage | Comma-separated list of stages in the certificate lifecycle. Will retrieve certificates at one or more of the stages. | Optional | 
 | StageGreater | Find certificates with a stage greater than the specified stage (does not include specified stage). | Optional | 
 | StageLess | Stage before which to retrieve certificates. | Optional | 
