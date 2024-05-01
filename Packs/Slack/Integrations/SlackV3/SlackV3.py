@@ -2844,7 +2844,9 @@ def init_globals(command_name: str = ''):
     FILE_MIRRORING_ENABLED = demisto.params().get('enable_outbound_file_mirroring', False)
     LONG_RUNNING_ENABLED = demisto.params().get('longRunning', True)
     DEMISTO_API_KEY = demisto.params().get('demisto_api_key', {}).get('password', '')
+    demisto.debug('before demistourls')
     demisto_urls = demisto.demistoUrls()
+    demisto.debug('after demistourls')
     DEMISTO_URL = demisto_urls.get('server')
     IGNORE_RETRIES = demisto.params().get('ignore_event_retries', True)
     EXTENSIVE_LOGGING = demisto.params().get('extensive_logging', False)
@@ -2874,6 +2876,7 @@ def init_globals(command_name: str = ''):
 
     # Handle Long-Running Specific Globals
     if command_name == 'long-running-execution':
+        demisto.debug('in long running execution init globals')
         # Bot identification
         integration_context = get_integration_context(SYNC_CONTEXT)
         if integration_context.get('bot_user_id'):
@@ -3003,10 +3006,14 @@ def main() -> None:
     try:
         demisto.info(f'{command_name} started.')
         command_func = commands[command_name]
+        demisto.info('before init globals')
         init_globals(command_name)
+        demisto.info('after init globals')
         if EXTENSIVE_LOGGING:
             os.environ['PYTHONASYNCIODEBUG'] = "1"
+        demisto.info('before support_multithreading')
         support_multithreading()
+        demisto.info('after support_multithreading')
         command_func()  # type: ignore
     except Exception as e:
         demisto.debug(e)
