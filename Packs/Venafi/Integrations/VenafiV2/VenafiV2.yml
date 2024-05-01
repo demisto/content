@@ -239,7 +239,7 @@ script:
           description: Available only when the certificate was issued by a well-configured CA. An array of Authority Information Access (AIA). Shows the CA issuer link and the CA's certificate details. May also include Online Certificate Status Protocol (OCSP) information about revocation.
           type: array
         - contextPath: CertificateDetails.CN
-          description: The Common name attribute of Subject Distinguished Name (DN).
+          description: The Common Name attribute of Subject Distinguished Name (DN).
           type: string
         - contextPath: CertificateDetails.EnhancedKeyUsage
           description: The PKI Server Authentication object identifier (OID).
