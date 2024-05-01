@@ -98,7 +98,7 @@ Uses a certificate GUID to extract more details from the certificate store.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| guid | The id of the certificate, add description that the user can get this value by running the command “venafi-get-certificates”. | Required | 
+| guid | The ID of the certificate. Add a description so the user can get this value by running the command “venafi-get-certificates”. | Required | 
 
 #### Context Output
 
