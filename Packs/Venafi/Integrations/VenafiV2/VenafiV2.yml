@@ -58,7 +58,7 @@ script:
             - Failure
           required: false
         - auto: PREDEFINED
-          description: 'Management type. Possible values: "Unassigned", "Monitoring", "Enrollment", or "Provisioning".'
+          description: Management type. 
           name: ManagementType
           predefined:
             - Unassigned
