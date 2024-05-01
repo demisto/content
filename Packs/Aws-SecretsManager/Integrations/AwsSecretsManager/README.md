@@ -134,7 +134,7 @@ Retrieve all secrets.
                         "Tags": []
                     },
                     {
-                        "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:test_for_moishy-fVYXb6",
+                        "ARN": "arn:aws:secretsmanager:eu-central-1:123456789012:secret:test_account",
                         "CreatedDate": "2022-08-21T13:54:05",
                         "Description": "new description",
                         "LastAccessedDate": "2022-10-23T00:00:00",
@@ -165,7 +165,7 @@ Retrieve all secrets.
 >| arn:aws:secretsmanager:eu-central-1:123456789012:secret:fdff-vnNyyc |  | 2022-10-23T13:40:55 | fdff |
 >| arn:aws:secretsmanager:eu-central-1:123456789012:secret:gmail-oF08mg |  | 2022-08-31T09:47:24 | gmail |
 >| arn:aws:secretsmanager:eu-central-1:123456789012:secret:DB_credentials-3ic9K7 |  | 2022-08-31T09:45:33 | DB_credentials |
->| arn:aws:secretsmanager:eu-central-1:123456789012:secret:test_for_moishy-fVYXb6 | new description | 2022-09-08T07:14:13 | test_for_moishy |
+>| arn:aws:secretsmanager:eu-central-1:123456789012:secret:test_account | new description | 2022-09-08T07:14:13 | test_for_moishy |
 
 
 ### aws-secrets-manager-secret–value-get
