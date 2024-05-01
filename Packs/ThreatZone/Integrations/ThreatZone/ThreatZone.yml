@@ -187,7 +187,7 @@ script:
             - "false"
           description: If this is false then everyone can see the submisison. If this is true then only your workspace participants can see the submission
           defaultValue: "true"
-        - name: extensionCheck
+        - name: extension_check
           required: false
           auto: PREDEFINED
           predefined:
