@@ -3012,7 +3012,7 @@ def main() -> None:
         if EXTENSIVE_LOGGING:
             os.environ['PYTHONASYNCIODEBUG'] = "1"
         demisto.info('before support_multithreading')
-        # support_multithreading()
+        support_multithreading()
         demisto.info('after support_multithreading')
         command_func()  # type: ignore
     except Exception as e:
