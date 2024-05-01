@@ -683,7 +683,9 @@ def fetch_incidents(client: Client,
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
         if last_fetch_datetime and incident_created_time <= last_fetch_datetime:
-            demisto.debug(f"Incident created time: {incident_created_time} was part of a previous poll cycle. Last fetch time: {last_fetch_datetime}")
+            demisto.debug(
+                f'''Incident created time: {incident_created_time} was part of a previous poll cycle.
+                Last fetch time: {last_fetch_datetime}''')
             continue
 
         brand = alert.get('node', {}).get('asset', {}).get('brand')
