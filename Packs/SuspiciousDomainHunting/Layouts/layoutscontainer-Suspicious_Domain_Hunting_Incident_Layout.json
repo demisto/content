@@ -408,7 +408,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Verdict Results",
+                        "name": "VerdictResult",
                         "query": "08acf853-2e81-420d-8302-2282289478b1",
                         "queryType": "script",
                         "static": false,
