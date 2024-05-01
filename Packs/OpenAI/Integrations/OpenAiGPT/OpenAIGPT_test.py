@@ -46,7 +46,7 @@ def test_get_email_parts(mocker, entry_id, should_raise_error):
             get_email_parts(entry_id=entry_id)
     else:
         headers, text_body, html_body = get_email_parts(entry_id=entry_id)
-        assert headers == util_load_json('./test_data/expected_headers.json')
+        assert headers == util_load_json('test_data/expected_headers.json')
         assert text_body == 'Body of the text'
         assert html_body.replace('\r\n', '\n') == util_load_text('test_data/expected_html_body.txt')
 
