@@ -144,4 +144,4 @@ Uses a certificate GUID to extract more details from the certificate store.
 | Origin | string |  | 
 | ProcessingDetails | dictionary | Absent when the certificate is not currently processing in the Trust Protection Platform lifecycle: InError, InProcess, Stage, Status, TicketDN | 
 | RenewalDetails | dictionary | A list of certificate renewal information | 
-| ValidationDetails | dictionary | A list of host identity information and the overall certificate validation state result. If no validation occurred, only the lastvalidationstateupdate field appears. all other validationdetails fields are absent. | 
+| ValidationDetails | dictionary | A list of host identity information and the overall certificate validation state result. If no validation occurred, only the lastvalidationstateupdate field appears. All other validationdetails fields are absent. | 
