@@ -26,7 +26,9 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### venafi-get-certificates
 
 ***
-Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z format. Additional fields information at https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-attribute.htm and https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-status.htm
+Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z format. For additional field information, see:
+- https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-attribute.htm
+- https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-status.htm
 
 #### Base Command
 
