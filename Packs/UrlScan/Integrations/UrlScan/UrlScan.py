@@ -43,6 +43,8 @@ RELATIONSHIP_TYPE = {
     }
 }
 
+IS_TIME_SENSITIVE = hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
+demisto.debug(f'Is time sensitive: {IS_TIME_SENSITIVE}')
 
 class Client:
     def __init__(self, api_key='', user_agent='', scan_visibility=None, threshold=None, use_ssl=False,
@@ -96,7 +98,7 @@ def schedule_polling(items_to_schedule, next_polling_interval):
     return CommandResults(scheduled_command=scheduled_items)
 
 
-def http_request(client, method, url_suffix, json=None, retries=0):
+def http_request(client, method, url_suffix, json=None):
     headers = {'API-Key': client.api_key,
                'Accept': 'application/json'}
     if client.user_agent:
@@ -104,8 +106,7 @@ def http_request(client, method, url_suffix, json=None, retries=0):
     if method == 'POST':
         headers.update({'Content-Type': 'application/json'})
     demisto.debug(
-        'requesting https request with method: {}, url: {}, data: {}'.format(method, client.base_api_url + url_suffix,
-                                                                             json))
+        f'requesting https request with method: {method}, url: {client.base_api_url + url_suffix}, data: {json}')
     r = requests.request(
         method,
         client.base_api_url + url_suffix,
