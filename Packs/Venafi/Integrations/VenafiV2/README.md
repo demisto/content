@@ -124,7 +124,7 @@ Uses a certificate GUID to extract more details from the certificate store.
 | CertificateDetails.ValidFrom | string | Certificate validation start date. | 
 | CertificateDetails.ValidTo | string | Certificate validation end time. | 
 | CertificateDetails.AIACAIssuerURL | array | Available only when the certificate was issued by a well-configured CA. An array of Authority Information Access \(AIA\). Shows the CA issuer link and the CA's certificate details. May also include Online Certificate Status Protocol \(OCSP\) information about revocation. | 
-| CertificateDetails.CN | string | The Common name attribute of Subject Distinguished Name \(DN\). | 
+| CertificateDetails.CN | string | The Common Name attribute of Subject Distinguished Name \(DN\). | 
 | CertificateDetails.EnhancedKeyUsage | string | The PKI Server Authentication object identifier \(OID\). | 
 | CertificateDetails.KeyAlgorithm | string | The algorithm for the public key. | 
 | CertificateDetails.KeySize | string | Only available for RSA certificates. The bit size of the public key. | 
