@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
   - defaultvalue: "https://ao-tlspd.dev.ven-eco.com"
-    display: Server URL (e.g. https://192.168.0.1)
+    display: Server URL (e.g., https://192.168.0.1)
     name: server
     required: true
     type: 0
