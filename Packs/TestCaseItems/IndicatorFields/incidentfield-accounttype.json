@@ -1,10 +1,10 @@
 {
     "closeForm": false,
-    "cliName": "accounttype",
+    "cliName": "accounttype1111",
     "neverSetAsRequired": false,
     "threshold": 72,
     "defaultRows": null,
-    "id": "indicator_accounttype",
+    "id": "indicator_accounttype1111",
     "group": 2,
     "script": "",
     "isReadOnly": false,
