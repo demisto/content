@@ -24,7 +24,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self.token = self._login(client_id, username, password)
 
-    def _login(self, client_id: str, username: str, password: str) -> str:
+    def login(self, client_id: str, username: str, password: str) -> str:
         """
         Log into the Venafi API using the provided credentials.
         If it's the first time logging in, it will create a new token, save it to the integration context, and log in.
@@ -48,24 +48,21 @@ class Client(BaseClient):
                 return token
             else:
                 refresh_token = integration_context.get('refresh_token')
-                url_suffix = '/vedauth/authorize/token'
                 json_data = {
                     'client_id': client_id,
                     'refresh_token': refresh_token
                 }
-                return self._create_new_token(url_suffix, json_data)
+                return self._create_new_token(json_data, is_token_exist=True)
 
-        url_suffix = '/vedauth/authorize/oauth'
         json_data = {
             'username': username,
             'password': password,
             'client_id': client_id,
             'scope': 'certificate'
         }
+        return self._create_new_token(json_data, is_token_exist=False)
 
-        return self._create_new_token(url_suffix, json_data)
-
-    def _is_token_expired(self, expires_date: str) -> bool:
+    def is_token_expired(self, expires_date: str) -> bool:
         """
         This method checks if the token is expired.
 
@@ -80,25 +77,29 @@ class Client(BaseClient):
         expires_datetime = arg_to_datetime(expires_date)
         return utc_now > expires_datetime
 
-    def _create_new_token(self, url_suffix: str, json_data: dict) -> str:
+    def create_new_token(self, json_data: dict, is_token_exist: bool) -> str:
         """
         This method creates a new token.
 
         Args:
-            url_suffix (str): The url to use in the http request.
             json_data (dict): The data that contain user credentials.
+            is_token_exist (bool): Rather token exist or not
 
         Returns:
             str: The new token
         """
 
-        payload = json.dumps(json_data)
+        if is_token_exist:
+            url_suffix = '/vedauth/authorize/token'
+        else:
+            url_suffix = '/vedauth/authorize/oauth'
+
         try:
             access_token_obj = self._http_request(
                 method='POST',
                 url_suffix=url_suffix,
                 headers={'Content-Type': 'application/json'},
-                data=payload,
+                data=json.dumps(json_data),
             )
         except DemistoException as e:
             if 'Unauthorized' in str(e):
@@ -112,7 +113,7 @@ class Client(BaseClient):
 
         return new_token
 
-    def _store_token_in_context(self, token: str, refresh_token: str, expire_in: int) -> None:
+    def store_token_in_context(self, token: str, refresh_token: str, expire_in: int) -> None:
         """
         This method stores the generated token and its expiration date in the integration context.
 
@@ -131,7 +132,7 @@ class Client(BaseClient):
             'expire_date': str(expire_date)
         })
 
-    def _get_certificates(self, args: dict[str, Any]) -> dict:
+    def get_certificates(self, args: dict[str, Any]) -> dict:
         """
         This method creates the HTTP request to retrieve the certificates the user has.
 
@@ -155,7 +156,7 @@ class Client(BaseClient):
 
         return certificates
 
-    def _get_certificate_details(self, guid: str) -> dict:
+    def get_certificate_details(self, guid: str) -> dict:
         """
         This method creates the HTTP request to retrieve certificate details.
 
@@ -197,18 +198,16 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
     try:
         test_empty_args: Dict = {}
-        results = client._get_certificates(test_empty_args)
+        results = client.get_certificates(test_empty_args)
         if results:
-            message = 'ok'
+            return 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+            return 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
-    return message
 
 
 def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -223,7 +222,7 @@ def get_certificates_command(client: Client, args: dict[str, Any]) -> CommandRes
     """
 
     outputs: dict[str, Any] = {}
-    response = client._get_certificates(args)
+    response = client.get_certificates(args)
     if response:
         outputs = delete_links_from_response(response)
 
@@ -256,10 +255,7 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
 
     outputs: dict[str, Any] = {}
     guid = args.get('guid', '')
-    response = client._get_certificate_details(guid)
-    if response:
-        outputs = response
-
+    response = client.get_certificate_details(guid)
     human_readable = []
     certificate_details = get_human_readable_object(outputs)
     human_readable.append(certificate_details)
@@ -269,7 +265,7 @@ def get_certificate_details_command(client: Client, args: dict[str, Any]) -> Com
     return CommandResults(
         outputs_prefix=CONTEXT_OUTPUT_BASE_PATH,
         outputs=outputs,
-        raw_response=response,
+        raw_response=response if response else {},
         readable_output=markdown_table
     )
 
@@ -332,10 +328,10 @@ def main() -> None:  # pragma: no cover
 
     demisto_params = demisto.params()
     base_url = demisto_params.get('server', 'https://ao-tlspd.dev.ven-eco.com')
-    username = demisto_params.get('credentials')['identifier']
-    password = demisto_params.get('credentials')['password']
+    username = demisto_params.get('credentials', {}).get('identifier')
+    password = demisto_params.get('credentials', {}).get('password')
     client_id = demisto_params.get('client_id')
-    verify_certificate = demisto_params.get('insecure', False)
+    verify_certificate = not demisto_params.get('insecure', False)
     proxy = demisto_params.get('proxy', False)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -350,8 +346,7 @@ def main() -> None:  # pragma: no cover
 
         args = demisto.args()
         if command == 'test-module':
-            test_module_result = test_module(client)
-            return_results(test_module_result)
+            return_results(test_module(client))
         elif command == 'venafi-get-certificates':
             command_result = get_certificates_command(client, args)
             return_results(command_result)

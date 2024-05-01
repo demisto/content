@@ -34,13 +34,13 @@ name: Venafi TLS Protect
 script:
   commands:
     - arguments:
-        - description: Specify YYYY-MM-DD or the ISO 8601 format.
+        - description: The date on which the certificated was created. Specify YYYY-MM-DD or the ISO 8601 format.
           name: CreatedOn
           required: false
-        - description: Specify YYYY-MM-DD or the ISO 8601 format.
+        - description: Find certificates created after this date. Specify YYYY-MM-DD or the ISO 8601 format.
           name: CreatedOnGreater
           required: false
-        - description: Specify YYYY-MM-DD or the ISO 8601 format.
+        - description: Find certificates created before this date. Specify YYYY-MM-DD or the ISO 8601 format.
           name: CreatedOnLess
           required: false
         - description: Include only certificates that are enabled 0 or disabled 1.
@@ -120,9 +120,6 @@ script:
           required: false
         - description: Find certificates by Organization attribute of Subject DN.
           name: O
-          required: false
-        - description: Find certificates by State/Province attribute of Subject DN.
-          name: S
           required: false
         - description: Find certificates by State/Province attribute of Subject DN.
           name: S
@@ -290,7 +287,7 @@ script:
           description: The object that initiated enrollment or provisioning changes. The default is Web SDK.
           type: string
         - contextPath: Origin
-          description: ""
+          description: Filter by origin
           type: string
         - contextPath: ProcessingDetails
           description: 'Absent when the certificate is not currently processing in the Trust Protection Platform lifecycle: InError, InProcess, Stage, Status, TicketDN'
